@@ -4,7 +4,9 @@ import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { pageMeta, paginateInMemory } from "@/lib/pagination";
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
+	ABANDONED_FILTER,
 	CONFIRMED_MEMBERS,
+	DEFAULT_STAGE_FILTER,
 	VISIBLE_STATUSES,
 } from "@/repositories/scout.games";
 import { estimateInvestment } from "@/services/investment/estimate";
@@ -113,9 +115,14 @@ export const GET = pipe(
 			: {}),
 		...(platforms.length ? { platform: { in: platforms } } : {}),
 		...(genres.length ? { genre: { in: genres } } : {}),
+		// Named stages are honoured exactly, including the ones hidden by
+		// default: picking "Support" is how a scout asks to see them.
 		...(stages.length
 			? { workflow: { currentStep: { name: { in: stages } } } }
 			: {}),
+		// Collected under `AND` because each is its own `NOT`, and spreading two
+		// of those into one object silently keeps only the last.
+		AND: [ABANDONED_FILTER, ...(stages.length ? [] : [DEFAULT_STAGE_FILTER])],
 	};
 
 	const projects = await prisma.project.findMany({
@@ -138,7 +145,7 @@ export const GET = pipe(
 			author: { select: { id: true, name: true, image: true } },
 			workflow: {
 				select: {
-					currentStep: { select: { name: true } },
+					currentStep: { select: { name: true, order: true } },
 					// The project's own workflow is what the estimate is weighted
 					// against — a schema is editable, so nothing may be assumed
 					// about how many steps there are or what they are called.
@@ -233,6 +240,7 @@ export const GET = pipe(
 				})),
 				openPositions: project.team?._count.vacancies ?? 0,
 				steps,
+				currentStepOrder: project.workflow?.currentStep?.order ?? null,
 			}),
 			lastActivityAt: project.updatedAt,
 		};

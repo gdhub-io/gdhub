@@ -9,8 +9,13 @@ const cabinetDelete = vi.fn();
 const cabinetFindUnique = vi.fn();
 const memberUpdateMany = vi.fn();
 const joinSpace = vi.fn();
+const cacheDelete = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
+
+vi.mock("@/services/cache", () => ({
+	cacheDelete: (...args: unknown[]) => cacheDelete(...args),
+}));
 
 // Covered by space-guard.test.ts; mocked here so the assertions are about the
 // cabinet rather than about access resolution.
@@ -165,6 +170,9 @@ describe("POST /api/admin/scouts", () => {
 		expect(joinSpace.mock.calls[0][0]).toMatchObject({
 			invitedById: "u-admin",
 		});
+		// The new scout's switcher, not the admin's — otherwise the cabinet is
+		// invisible to the person who was just granted it until the TTL lapses.
+		expect(cacheDelete).toHaveBeenCalledWith("user-spaces:u-new");
 	});
 
 	it("refuses a scout type that is not in the enum", async () => {
@@ -361,5 +369,7 @@ describe("DELETE /api/scout/cabinet", () => {
 		expect(cabinetDelete).toHaveBeenCalledWith({
 			where: { userId: "u-scout" },
 		});
+		// Or the header keeps offering a cabinet that now 404s.
+		expect(cacheDelete).toHaveBeenCalledWith("user-spaces:u-scout");
 	});
 });

@@ -79,7 +79,6 @@ describe("estimateInvestment", () => {
 		);
 
 		expect(estimate?.maturity).toBe(0.14);
-		expect(estimate?.stagesDone).toBe(3);
 	});
 
 	it("charges nothing for a project that has only been introduced", () => {
@@ -98,9 +97,9 @@ describe("estimateInvestment", () => {
 		);
 
 		// Support and Project Completion are neither in the denominator nor able
-		// to push the project past done.
+		// to push the project past done: finishing the release build is 100%,
+		// with two steps still sitting in the list.
 		expect(released?.maturity).toBe(1);
-		expect(released?.stagesTotal).toBe(7);
 		expect(released?.remaining).toBe(0);
 	});
 
@@ -288,5 +287,39 @@ describe("estimateInvestment", () => {
 
 		expect(development).toBeGreaterThan(45_000);
 		expect(development).toBeLessThan(70_000);
+	});
+
+	it("reads progress off the step the project stands on", () => {
+		// Advancing a project writes `currentStepId` and nothing else, so every
+		// step it walked past still says `done: false`. Going by that alone, a
+		// project at the release build reads as untouched.
+		const untouched = WORKFLOW.map((name, index) => ({
+			name,
+			order: index + 1,
+			done: false,
+		}));
+
+		const estimate = estimateInvestment(
+			input({ steps: untouched, currentStepOrder: 7 }),
+		);
+
+		expect(estimate?.maturity).toBeGreaterThan(0.7);
+	});
+
+	it("still trusts a step that says it is done", () => {
+		const estimate = estimateInvestment(
+			input({ steps: stepsUpTo("Concepting"), currentStepOrder: null }),
+		);
+
+		expect(estimate?.maturity).toBe(0.14);
+	});
+
+	it("counts a step once, however both signals read", () => {
+		// Concepting is both flagged done and behind the current step.
+		const estimate = estimateInvestment(
+			input({ steps: stepsUpTo("Concepting"), currentStepOrder: 4 }),
+		);
+
+		expect(estimate?.maturity).toBe(0.14);
 	});
 });

@@ -22,6 +22,47 @@ export const CONFIRMED_MEMBERS = {
 	finishedAt: null,
 };
 
+/**
+ * Stages a scout has no deal to do with, named as the `default` workflow seeds
+ * them: a project sitting on `Introduction` has been registered and no more,
+ * and `Support` / `Project Completion` are past the point where money goes in.
+ *
+ * Matched on the name because nothing in the schema marks a stage this way —
+ * the same limitation the investment estimate works around, and the same place
+ * a `phase` flag on the workflow step would fix both.
+ */
+const HIDDEN_STAGES = ["Introduction", "Support", "Project Completion"];
+
+/**
+ * Applied only when the scout has not named stages themselves. Written as a
+ * negation so it keeps projects with no workflow at all: those have not said
+ * where they are, which is not the same as saying they are somewhere dull.
+ */
+export const DEFAULT_STAGE_FILTER = {
+	NOT: {
+		workflow: {
+			is: {
+				currentStep: {
+					is: {
+						name: { in: HIDDEN_STAGES, mode: "insensitive" as const },
+					},
+				},
+			},
+		},
+	},
+};
+
+/**
+ * A project whose author anonymised their account. `personalDataDeletedAt` is
+ * what the GDPR deletion stamps; the row survives with placeholder names, and a
+ * scout has nobody to talk to about it.
+ *
+ * A negation again, so a project with no author on it at all still shows.
+ */
+export const ABANDONED_FILTER = {
+	NOT: { author: { is: { personalDataDeletedAt: { not: null } } } },
+};
+
 export type ScoutFacets = {
 	genres: string[];
 	platforms: string[];

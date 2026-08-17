@@ -149,7 +149,52 @@ describe("GET /api/scout/games", () => {
 
 		expect(where.genre).toEqual({ in: ["Strategy"] });
 		expect(where).not.toHaveProperty("platform");
-		expect(where).not.toHaveProperty("workflow");
+	});
+
+	it("hides the stages a scout has no deal to do with", async () => {
+		await call();
+
+		// The names the `default` workflow actually seeds: registered and no
+		// more, and the two that come after release.
+		const [, stageFilter] = listArgs().where.AND;
+
+		expect(stageFilter.NOT.workflow.is.currentStep.is.name.in).toEqual([
+			"Introduction",
+			"Support",
+			"Project Completion",
+		]);
+	});
+
+	it("keeps a project that has no workflow to be dull in", async () => {
+		await call();
+
+		// A negation, not an `in`: saying nothing about your stage is not the
+		// same as saying you are somewhere a scout would skip.
+		expect(listArgs().where).not.toHaveProperty("workflow");
+	});
+
+	it("leaves out projects whose author anonymised their account", async () => {
+		await call();
+
+		// `personalDataDeletedAt` is what the GDPR deletion stamps: the row is
+		// still there under placeholder names, but there is nobody to talk to.
+		const [abandoned] = listArgs().where.AND;
+
+		expect(abandoned.NOT.author).toEqual({
+			is: { personalDataDeletedAt: { not: null } },
+		});
+	});
+
+	it("shows a hidden stage the moment the scout asks for it", async () => {
+		await call("?stages=Support");
+
+		const { where } = listArgs();
+
+		expect(where.workflow).toEqual({
+			currentStep: { name: { in: ["Support"] } },
+		});
+		// Only the abandoned-author filter is left; the stage default steps aside.
+		expect(where.AND).toHaveLength(1);
 	});
 
 	it("searches by name, case-insensitively", async () => {
@@ -215,9 +260,6 @@ describe("GET /api/scout/games", () => {
 		expect(body.data[0].estimatedInvestment).toMatchObject({
 			teamSize: 3,
 			openPositions: 2,
-			// Introduction and Ideation done, out of the three pre-release steps.
-			stagesDone: 2,
-			stagesTotal: 3,
 		});
 		expect(body.data[0].estimatedInvestment.remaining).toBeGreaterThan(0);
 	});

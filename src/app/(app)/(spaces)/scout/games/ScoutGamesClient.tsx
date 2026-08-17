@@ -24,7 +24,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Image from "next/image";
 import type { Key } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SavedSearches } from "@/components/scout/SavedSearches";
 import { formatDollar } from "@/helpers/format";
@@ -119,74 +119,104 @@ function EstimateBreakdown({
 	raised: ScoutGame["raised"];
 }) {
 	const { t } = useTranslate();
+	const money = (value: number, currency?: string) =>
+		formatDollar(value, { currency, fractionDigits: 0 });
 
-	const rows = [
-		// First, because it is the number everything below is compared against:
-		// what the team itself is asking for, or a dash saying it has not said.
-		[t("scout.games.investment.asking", "Team asks for"), stated ?? "—"],
-		[
-			t("scout.games.investment.burn", "Team costs per month"),
-			formatDollar(estimate.monthlyBurn, { fractionDigits: 0 }),
-		],
-		[
-			t("scout.games.investment.progress", "Progress to release"),
-			`${estimate.stagesDone}/${estimate.stagesTotal}`,
-		],
-		[
-			t("scout.games.investment.pace", "Pace"),
-			t("scout.games.investment.paceValue", "{percent}% of full time", {
-				percent: Math.round(estimate.pace * 100),
-			}),
-		],
-		[
-			t("scout.games.investment.eta", "Release at this pace"),
-			estimate.monthsToRelease === null
-				? "—"
-				: duration(estimate.monthsToRelease, t),
-		],
-		[
-			t("scout.games.investment.team", "Team"),
-			t("scout.games.investment.people", "{count} people", {
-				count: estimate.teamSize,
-			}),
-		],
-		[
-			t("scout.games.investment.open", "Open positions"),
-			String(estimate.openPositions),
-		],
-		[
-			t("scout.games.investment.raised", "Put in so far"),
-			raised.length
-				? raised
-						.map((row) =>
-							formatDollar(row.amount, {
-								currency: row.currency,
-								fractionDigits: 0,
-							}),
-						)
-						.join(" · ")
-				: "—",
-		],
-		[
-			t("scout.games.investment.work", "Work put in, estimated"),
-			formatDollar(estimate.total, { fractionDigits: 0 }),
-		],
+	// Grouped by where a number comes from, because that is what decides how
+	// much a scout should trust it: what the team says, what we worked out, and
+	// what has actually changed hands.
+	const groups = [
+		{
+			title: t("scout.games.investment.group.team", "The team"),
+			rows: [
+				[t("scout.games.investment.asking", "Team asks for"), stated ?? "—"],
+				[
+					t("scout.games.investment.team", "Team"),
+					t("scout.games.investment.people", "{count} people", {
+						count: estimate.teamSize,
+					}),
+				],
+				[
+					t("scout.games.investment.open", "Open positions"),
+					String(estimate.openPositions),
+				],
+			],
+		},
+		{
+			title: t("scout.games.investment.group.estimate", "Automatic estimate"),
+			// Behind an icon rather than in the body: it is the caveat you read
+			// once, not a number you come back to.
+			hint: t(
+				"scout.games.investment.note",
+				"An automatic guess at what finishing this game would take, from the team's skill levels and stated hours, how far the workflow has moved and the roles still open. Includes a contingency reserve and a marketing share. Not a figure the project has quoted.",
+			),
+			rows: [
+				// The same figure the column shows, so the popover explains the
+				// number the scout clicked rather than a cousin of it.
+				[
+					t("scout.games.investment.need", "Need to release"),
+					money(estimate.remaining),
+				],
+				[
+					t("scout.games.investment.burn", "Team costs per month"),
+					money(estimate.monthlyBurn),
+				],
+				[
+					t("scout.games.investment.pace", "Pace"),
+					t("scout.games.investment.paceValue", "{percent}% of full time", {
+						percent: Math.round(estimate.pace * 100),
+					}),
+				],
+				[
+					t("scout.games.investment.eta", "Release at this pace"),
+					estimate.monthsToRelease === null
+						? "—"
+						: duration(estimate.monthsToRelease, t),
+				],
+			],
+		},
+		{
+			title: t("scout.games.investment.group.raised", "Money invested"),
+			rows: [
+				[
+					t("scout.games.investment.raised", "Put in so far"),
+					raised.length
+						? raised.map((row) => money(row.amount, row.currency)).join(" · ")
+						: "—",
+				],
+			],
+		},
 	];
 
 	return (
-		<Flex vertical gap={8} className={styles.estimate}>
-			{rows.map(([label, value]) => (
-				<Flex key={label} justify="space-between" gap={24}>
-					<Text type="secondary">{label}</Text>
-					<Text strong>{value}</Text>
-				</Flex>
+		<Flex vertical className={styles.estimate}>
+			{groups.map((group) => (
+				<div key={group.title} className={styles.group}>
+					<Flex align="center" gap={6}>
+						<Text type="secondary" className={styles.groupTitle}>
+							{group.title}
+						</Text>
+						{group.hint && (
+							<Tooltip title={group.hint}>
+								<IconInfoCircle size={14} className={styles.info} />
+							</Tooltip>
+						)}
+					</Flex>
+					{/* One grid for the whole group, not a row each: that is what
+					    lines the values up with one another instead of leaving
+					    each to float against its own label. */}
+					<div className={styles.rows}>
+						{group.rows.map(([label, value]) => (
+							<Fragment key={label}>
+								<Text type="secondary">{label}</Text>
+								<Text strong className={styles.value}>
+									{value}
+								</Text>
+							</Fragment>
+						))}
+					</div>
+				</div>
 			))}
-			<Text type="secondary" className={styles.estimateNote}>
-				{t(
-					"scout.games.investment.note",
-					"An automatic guess at what finishing this game would take, from the team's skill levels and stated hours, how far the workflow has moved and the roles still open. Includes a contingency reserve and a marketing share. Not a figure the project has quoted.",
-				)}
-			</Text>
 		</Flex>
 	);
 }
@@ -427,7 +457,6 @@ export function ScoutGamesClient() {
 								})}
 							</Text>
 							<Popover
-								title={t("scout.games.investment.estimate", "Estimating")}
 								content={
 									<EstimateBreakdown
 										estimate={game.estimatedInvestment}
