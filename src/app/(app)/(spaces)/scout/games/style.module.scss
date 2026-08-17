@@ -32,11 +32,37 @@
 	max-width: 300px;
 }
 
-.estimateNote {
+/* Separated rather than boxed: the divider is what says these numbers come
+   from different places, and a popover has no room for three cards. */
+.group {
+	padding: var(--gd-space-3) 0;
+
+	& + .group {
+		border-top: 1px solid var(--gd-neutral-100);
+	}
+}
+
+/* One grid per group, so every value in it shares a left edge — separate rows
+   would each size to their own label and read as one mixed column. */
+.rows {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	column-gap: var(--gd-space-6);
+	row-gap: var(--gd-space-2);
+	align-items: baseline;
+	margin-top: var(--gd-space-2);
+}
+
+.value {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.groupTitle {
 	font-size: var(--gd-font-size-body-sm);
-	line-height: var(--gd-line-height-relaxed);
-	padding-top: var(--gd-space-2);
-	border-top: 1px solid var(--gd-neutral-100);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--gd-neutral-400);
 }
 
 /* Covers are 16:9 everywhere else in the product; a square avatar squashed

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import {
 	ScoutType,
 	type ScoutType as ScoutTypeValue,
@@ -13,6 +14,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { createScout, listScouts } from "@/repositories/scout";
+import { cacheDelete } from "@/services/cache";
 
 const CreateSchema = z.object({
 	userId: z.string().min(1),
@@ -40,11 +42,16 @@ export const POST = pipe(
 
 	const { userId, type, ...rest } = body as CreateBody;
 
-	return json(
-		await createScout(
-			userId,
-			{ ...rest, type: type as ScoutTypeValue },
-			currentUser.id,
-		),
+	const cabinet = await createScout(
+		userId,
+		{ ...rest, type: type as ScoutTypeValue },
+		currentUser.id,
 	);
+
+	// The new scout's switcher, not the admin's: without this the cabinet is
+	// invisible in their header until the 60s TTL lapses, and the person who
+	// was just granted it has no way to know that is why.
+	await cacheDelete(userSpacesCacheKey(userId));
+
+	return json(cabinet);
 });

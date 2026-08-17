@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import {
 	ScoutType,
 	type ScoutType as ScoutTypeValue,
@@ -13,6 +14,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { deleteScout, getCabinet, updateCabinet } from "@/repositories/scout";
+import { cacheDelete } from "@/services/cache";
 
 const nullableText = z.string().trim().nullable().optional();
 
@@ -78,6 +80,9 @@ export const DELETE = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	await deleteScout(currentUser.id);
+
+	// Otherwise the header keeps offering a cabinet that now 404s.
+	await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 	return json({ ok: true });
 });

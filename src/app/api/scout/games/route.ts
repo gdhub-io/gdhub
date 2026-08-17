@@ -138,7 +138,7 @@ export const GET = pipe(
 			author: { select: { id: true, name: true, image: true } },
 			workflow: {
 				select: {
-					currentStep: { select: { name: true } },
+					currentStep: { select: { name: true, order: true } },
 					// The project's own workflow is what the estimate is weighted
 					// against — a schema is editable, so nothing may be assumed
 					// about how many steps there are or what they are called.
@@ -233,6 +233,7 @@ export const GET = pipe(
 				})),
 				openPositions: project.team?._count.vacancies ?? 0,
 				steps,
+				currentStepOrder: project.workflow?.currentStep?.order ?? null,
 			}),
 			lastActivityAt: project.updatedAt,
 		};

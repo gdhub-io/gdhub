@@ -126,6 +126,14 @@ export type EstimateInput = {
 	openPositions: number;
 	/** The project's workflow steps, in any order. Empty when it has none. */
 	steps: readonly EstimateStep[];
+	/**
+	 * `order` of the step the project stands on, when it has one.
+	 *
+	 * Load-bearing: advancing a project writes `currentStepId` and nothing
+	 * else, so `done` stays false on every step it has already walked past.
+	 * Read on its own, a project at the release build looks untouched.
+	 */
+	currentStepOrder?: number | null;
 };
 
 export type InvestmentEstimate = {
@@ -141,8 +149,6 @@ export type InvestmentEstimate = {
 	pace: number;
 	/** Months to release at that pace. `null` when nobody is working on it. */
 	monthsToRelease: number | null;
-	stagesDone: number;
-	stagesTotal: number;
 	teamSize: number;
 	openPositions: number;
 };
@@ -192,13 +198,16 @@ const releaseArc = (steps: readonly EstimateStep[]): EstimateStep[] =>
  * workflow is the only thing on the platform that says how much of the game is
  * really done.
  */
-const maturityOf = (arc: readonly EstimateStep[]): number => {
+const maturityOf = (
+	arc: readonly EstimateStep[],
+	isDone: (step: EstimateStep) => boolean,
+): number => {
 	// 0 + 1 + … + (n-1), the weights of every step in the arc.
 	const whole = (arc.length * (arc.length - 1)) / 2;
 	if (whole <= 0) return 0;
 
 	const done = arc.reduce(
-		(total, step, index) => (step.done ? total + index : total),
+		(total, step, index) => (isDone(step) ? total + index : total),
 		0,
 	);
 
@@ -242,7 +251,12 @@ export function estimateInvestment(
 	const openSeatCost = openPositions * FULL_TIME_HOURS * OPEN_POSITION_RATE;
 
 	const arcSteps = releaseArc(input.steps);
-	const maturity = maturityOf(arcSteps);
+	// A step is behind the project if it says so, or if the project now stands
+	// on a later one — `done` alone is never written when a project advances.
+	const current = input.currentStepOrder;
+	const isDone = (step: EstimateStep) =>
+		step.done || (current != null && step.order < current);
+	const maturity = maturityOf(arcSteps, isDone);
 	const factor = (1 + CONTINGENCY) * (1 + MARKETING_SHARE);
 
 	const pace = teamSize ? teamHours / (teamSize * FULL_TIME_HOURS_PER_WEEK) : 0;
@@ -262,8 +276,6 @@ export function estimateInvestment(
 		monthsToRelease: pace
 			? Math.round((TOTAL_MONTHS * (1 - maturity)) / pace)
 			: null,
-		stagesDone: arcSteps.filter((step) => step.done).length,
-		stagesTotal: arcSteps.length,
 		teamSize,
 		openPositions,
 	};

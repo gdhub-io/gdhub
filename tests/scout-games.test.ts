@@ -215,9 +215,6 @@ describe("GET /api/scout/games", () => {
 		expect(body.data[0].estimatedInvestment).toMatchObject({
 			teamSize: 3,
 			openPositions: 2,
-			// Introduction and Ideation done, out of the three pre-release steps.
-			stagesDone: 2,
-			stagesTotal: 3,
 		});
 		expect(body.data[0].estimatedInvestment.remaining).toBeGreaterThan(0);
 	});
