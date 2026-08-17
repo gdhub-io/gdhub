@@ -37,7 +37,11 @@ export function NewScoutModal({
 		queryKey: ["user-search", search],
 		queryFn: () =>
 			axios
-				.get<UserOption[]>("/api/users/search", { params: { q: search } })
+				.get<UserOption[]>("/api/users/search", {
+					// An admin granting themselves a cabinet is ordinary — and the
+					// only way to try the space on production.
+					params: { q: search, includeSelf: true },
+				})
 				.then((res) => res.data),
 		enabled: open,
 	});
