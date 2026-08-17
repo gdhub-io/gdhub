@@ -20,6 +20,8 @@ export type UserSpaces = {
 	projects: UserSpaceGroup;
 	events: UserSpaceGroup;
 	courses: UserSpaceGroup;
+	/** Whether the user has a scout cabinet — the space is single-instance. */
+	hasScoutCabinet: boolean;
 };
 
 /**
@@ -56,7 +58,11 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 	const idsOf = (type: string) =>
 		memberships.filter((row) => row.spaceType === type).map((r) => r.spaceId);
 
-	const [projects, events, courses] = await Promise.all([
+	const [scoutCabinet, projects, events, courses] = await Promise.all([
+		prisma.scoutCabinet.findUnique({
+			where: { userId },
+			select: { id: true },
+		}),
 		prisma.project.findMany({
 			where: { id: { in: idsOf("project") } },
 			select: {
@@ -95,6 +101,7 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 	};
 
 	return {
+		hasScoutCabinet: !!scoutCabinet,
 		projects: group(
 			"project",
 			new Map(

@@ -136,17 +136,25 @@ export function formatEventPeriod(
 	}
 }
 
-export function formatDollar(amount: number) {
-	const formatter = new Intl.NumberFormat("en-US", {
+/**
+ * Money as a short label: 1234 → "$1.23K".
+ *
+ * `currency` because an investor picks theirs, and `fractionDigits` because a
+ * rough estimate wants "$58K" where a stated figure wants "$58.40K" — one
+ * formatter either way, so two screens cannot spell dollars differently.
+ */
+export function formatDollar(
+	amount: number,
+	{ currency = "USD", fractionDigits = 2 } = {},
+) {
+	return new Intl.NumberFormat("en-US", {
 		style: "currency",
-		currency: "USD",
+		currency,
 		notation: "compact",
 		compactDisplay: "short",
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
+		minimumFractionDigits: fractionDigits,
+		maximumFractionDigits: fractionDigits,
 	}).format(amount);
-
-	return formatter;
 }
 
 const COMPACT_UNITS = [

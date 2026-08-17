@@ -173,6 +173,7 @@ describe("registry", () => {
 			"event",
 			"hub",
 			"project",
+			"scout",
 		]);
 	});
 

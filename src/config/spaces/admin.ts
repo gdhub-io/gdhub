@@ -19,6 +19,8 @@ export const adminSpace = defineSpace({
 		// any event: staff moderate the listing, they do not join the space (§3.1).
 		events: ["view", "manage"],
 		projects: ["view", "manage"],
+		// Scout cabinets: who may scout, and the card they scout under.
+		scouts: ["view", "manage"],
 		// Workflow from the platform side: the template library and editing any
 		// project's process. Not to be confused with `project.workflow` (§3.4).
 		workflow: ["view", "manage"],
