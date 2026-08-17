@@ -1,0 +1,51 @@
+.toolbar {
+	margin-bottom: var(--gd-space-4);
+}
+
+.search {
+	width: 320px;
+}
+
+.filter {
+	min-width: 180px;
+}
+
+.loadMore {
+	margin-top: var(--gd-space-4);
+}
+
+/* Both need `min-width: 0`: a flex item defaults to `min-width: auto`, which
+   refuses to shrink below its content, and the ellipsis never engages. */
+.projectCell,
+.projectText,
+.authorCell {
+	min-width: 0;
+}
+
+.info {
+	color: var(--gd-neutral-400);
+	cursor: help;
+	flex: none;
+}
+
+.estimate {
+	max-width: 300px;
+}
+
+.estimateNote {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-relaxed);
+	padding-top: var(--gd-space-2);
+	border-top: 1px solid var(--gd-neutral-100);
+}
+
+/* Covers are 16:9 everywhere else in the product; a square avatar squashed
+   them. Fixed box + `cover`, so a source of any ratio lands the same. */
+.cover {
+	flex: none;
+	width: 64px;
+	height: 36px;
+	object-fit: cover;
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-base);
+}

@@ -9,6 +9,7 @@ import { devSpace } from "./dev";
 import { eventSpace } from "./event";
 import { hubSpace } from "./hub";
 import { projectSpace } from "./project";
+import { scoutSpace } from "./scout";
 
 /**
  * Every space the platform has. Gates, the API guard, the access provider, the
@@ -22,6 +23,7 @@ export const SPACES = registerSpaces([
 	projectSpace,
 	eventSpace,
 	courseSpace,
+	scoutSpace,
 	adminSpace,
 	devSpace,
 ]);
@@ -46,4 +48,5 @@ export {
 	eventSpace,
 	hubSpace,
 	projectSpace,
+	scoutSpace,
 };

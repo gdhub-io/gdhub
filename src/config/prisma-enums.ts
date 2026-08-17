@@ -34,6 +34,7 @@ import type {
 	ProjectStatus as ProjectStatusType,
 	QueueJobStatus as QueueJobStatusType,
 	QueueJobType as QueueJobTypeType,
+	ScoutType as ScoutTypeType,
 	SkillLevel as SkillLevelType,
 	SpaceRole as SpaceRoleType,
 	SubscriptionStatus as SubscriptionStatusType,
@@ -355,6 +356,15 @@ export const QueueJobType = {
 	Cron: "Cron",
 } as const satisfies Record<QueueJobTypeType, QueueJobTypeType>;
 export type QueueJobType = QueueJobTypeType;
+
+export const ScoutType = {
+	Angel: "Angel",
+	Fund: "Fund",
+	Publisher: "Publisher",
+	Studio: "Studio",
+	Other: "Other",
+} as const satisfies Record<ScoutTypeType, ScoutTypeType>;
+export type ScoutType = ScoutTypeType;
 
 export const SkillLevel = {
 	Novice: "Novice",

@@ -3,6 +3,7 @@ import { courseSpaceAdapter } from "@/repositories/course.space";
 import { eventSpaceAdapter } from "@/repositories/event.space";
 import { hubSpaceAdapter } from "@/repositories/hub.space";
 import { projectSpaceAdapter } from "@/repositories/project.space";
+import { scoutSpaceAdapter } from "@/repositories/scout.space";
 import type { SpaceAdapter } from "./types";
 
 /**
@@ -17,4 +18,5 @@ export const SPACE_ADAPTERS: Partial<Record<SpaceType, SpaceAdapter>> = {
 	project: projectSpaceAdapter,
 	event: eventSpaceAdapter,
 	course: courseSpaceAdapter,
+	scout: scoutSpaceAdapter,
 };
