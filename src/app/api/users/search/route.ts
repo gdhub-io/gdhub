@@ -11,6 +11,16 @@ import { prisma } from "@/services/prisma";
 
 const SearchSchema = z.object({
 	q: z.string().optional(),
+	/**
+	 * The caller is left out by default — you do not start a chat with yourself
+	 * or add yourself to an event you are already in. Granting a role is the
+	 * other case: an admin making themselves a scout is ordinary, and without
+	 * this they simply cannot find themselves in the picker.
+	 */
+	includeSelf: z
+		.string()
+		.optional()
+		.transform((value) => value === "true"),
 });
 
 type SearchQuery = z.infer<typeof SearchSchema>;
@@ -21,12 +31,12 @@ export const GET = pipe(
 	withValidation(SearchSchema, "query"),
 )(async (_req, _ctx, { user, body }) => {
 	const currentUser = user as SessionUser;
-	const { q } = body as SearchQuery;
+	const { q, includeSelf } = body as SearchQuery;
 	const query = q?.trim();
 
 	const users = await prisma.user.findMany({
 		where: {
-			id: { not: currentUser.id },
+			...(includeSelf ? {} : { id: { not: currentUser.id } }),
 			onboardingDone: true,
 			email: { not: null },
 			...(query
