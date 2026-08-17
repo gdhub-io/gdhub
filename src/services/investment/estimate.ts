@@ -99,15 +99,15 @@ export const MARKETING_SHARE = 0.25;
 const OPEN_POSITION_RATE = HOURLY_RATE[Level.Skillful];
 
 /**
- * Steps that happen after the game is out — `Support` and `Project Completion`
- * in the default workflow. Investment is the story up to and including release;
- * what comes after runs against revenue, so counting it would make every
- * shipped project look like it is still burning money.
+ * Steps that happen after the game is out — `Support` and `Project Completion`,
+ * as the `default` workflow seeds them. Investment is the story up to and
+ * including release; what comes after runs against revenue, so counting it
+ * would make every shipped project look like it is still burning money.
  *
  * Matched by name because nothing in the schema marks a step as post-release.
  * Position cannot tell us either: a workflow may end at the release build.
  */
-const POST_RELEASE = ["support", "completion", "closing", "closed"];
+const POST_RELEASE = ["support", "projectcompletion"];
 
 const normalize = (name: string): string =>
 	name.toLowerCase().replace(/[^a-z]/g, "");
