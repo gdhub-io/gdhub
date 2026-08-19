@@ -16,6 +16,7 @@ import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { useHideCrispWidget } from "@/hooks/useHideCrispWidget";
 import styles from "./ChatModal.module.scss";
 import ChatTopic from "./ChatTopic";
 import NewChatModal from "./NewChatModal";
@@ -48,6 +49,9 @@ export const ChatModal = () => {
 		openChatModal: open,
 		setOpenChatModal,
 	} = useChat();
+
+	// the Crisp bubble sits in the same corner and covers the chat input
+	useHideCrispWidget(open);
 
 	const onClose = () => setOpenChatModal(false);
 
