@@ -12,10 +12,11 @@ import {
 } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
+import { signOutWithChat } from "@/components/Chat/session";
 import styles from "./style.module.scss";
 
 export const MainHeader = ({ className }: { className?: string }) => {
@@ -214,7 +215,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const logoutButton = useMemo(() => {
 		if (authStatus === "authenticated") {
 			return (
-				<Button type="text" size="small" onClick={() => signOut()}>
+				<Button type="text" size="small" onClick={() => signOutWithChat()}>
 					<IconLogout /> {t("mainHeader.logout", "Logout")}
 				</Button>
 			);

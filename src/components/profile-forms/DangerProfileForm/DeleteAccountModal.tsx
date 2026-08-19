@@ -14,8 +14,8 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { signOutWithChat } from "@/components/Chat/session";
 import {
 	getErrorMessage,
 	getUserDeletionPreview,
@@ -91,7 +91,7 @@ const DeleteAccountModal = ({
 					"Your account has been anonymized successfully",
 				),
 			);
-			await signOut({ callbackUrl: "/" });
+			await signOutWithChat({ callbackUrl: "/" });
 		} catch (error) {
 			message.error(getErrorMessage(error));
 		}

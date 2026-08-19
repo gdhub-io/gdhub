@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { registerMatrixPusher } from "@/helpers/matrix-pushers";
+import { pusherCacheKey, registerMatrixPusher } from "@/helpers/matrix-pushers";
 import type { MatrixChatSessionResponse } from "@/types/chat";
 
 type UseMatrixPushRegistrationArgs = {
@@ -24,14 +24,15 @@ export function useMatrixPushRegistration({
 	useEffect(() => {
 		const accessToken = session?.token;
 		const deviceId = session?.deviceId;
+		const userId = session?.userId;
 		const pushKey = explicitPushKey || subscription?.endpoint;
 
-		if (!accessToken || !deviceId || !pushKey) {
+		if (!accessToken || !deviceId || !userId || !pushKey) {
 			return;
 		}
 		if (registeringRef.current) return;
 
-		const cacheKey = `matrix-pusher:${deviceId}:${pushKey}`;
+		const cacheKey = pusherCacheKey(userId, deviceId, pushKey);
 		if (typeof window !== "undefined" && localStorage.getItem(cacheKey)) {
 			return;
 		}
@@ -63,6 +64,7 @@ export function useMatrixPushRegistration({
 		explicitPushKey,
 		session?.deviceId,
 		session?.token,
+		session?.userId,
 		subscription,
 		subscription?.endpoint,
 	]);

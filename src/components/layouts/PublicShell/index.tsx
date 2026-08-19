@@ -17,8 +17,9 @@ import {
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { signOutWithChat } from "@/components/Chat/session";
 import { MainFooter } from "@/components/MainFooter";
 import { publicTheme } from "@/config/design";
 import { useTelegram } from "@/helpers/useTelegram";
@@ -201,7 +202,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 				label: t("Sign out"),
 				key: "logout",
 				danger: true,
-				onClick: () => signOut(),
+				onClick: () => signOutWithChat(),
 			},
 		];
 

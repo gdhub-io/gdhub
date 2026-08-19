@@ -4,9 +4,18 @@ import {
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import * as sdk from "matrix-js-sdk";
-import { EventType, MsgType } from "matrix-js-sdk";
+import {
+	EventType,
+	GuestAccess,
+	HistoryVisibility,
+	MsgType,
+	Preset,
+	Visibility,
+} from "matrix-js-sdk";
 import { env } from "@/helpers/env";
-import { ensureMatrixUser, getMatrixUserToken } from "@/services/matrix/admin";
+import { isAllowedRemoteImage } from "@/helpers/remote-image";
+import { ensureMatrixUser } from "@/services/matrix/admin";
+import { getMatrixUserToken } from "@/services/matrix/session";
 import { prisma } from "@/services/prisma";
 
 export type EnsureChatRoomArgs = {
@@ -110,7 +119,8 @@ export async function ensureChatRoom(
 		.filter((m) => m.userId !== initiatorUserId)
 		.map((m) => m.matrixUserId);
 
-	const session = await getMatrixUserToken(initiatorUserId);
+	// Backend device, separate from the initiator's browser session.
+	const session = await getMatrixUserToken(initiatorUserId, "svc_backend");
 
 	// Fresh client per request — never reuse the shared singleton, which would
 	// leak one user's token across requests.
@@ -124,11 +134,28 @@ export async function ensureChatRoom(
 	let roomId: string;
 	try {
 		const room = await client.createRoom({
+			// Local alias, not a public-directory listing: it is the recovery
+			// handle for the M_ROOM_IN_USE branch below, nothing else.
 			room_alias_name: `room-${row.id}`,
 			name: title,
 			topic: topic || undefined,
 			is_direct: isDirect,
 			invite: inviteeMatrixIds,
+			// Never rely on the homeserver's defaults for a private conversation.
+			preset: Preset.PrivateChat,
+			visibility: Visibility.Private,
+			initial_state: [
+				{
+					type: EventType.RoomHistoryVisibility,
+					state_key: "",
+					content: { history_visibility: HistoryVisibility.Invited },
+				},
+				{
+					type: EventType.RoomGuestAccess,
+					state_key: "",
+					content: { guest_access: GuestAccess.Forbidden },
+				},
+			],
 		});
 		roomId = room.room_id;
 	} catch (error) {
@@ -158,8 +185,7 @@ export async function ensureChatRoom(
 		await Promise.all(
 			inviteeUserIds.map(async (inviteeId) => {
 				try {
-					// Dedicated device id — minting for an existing device would rotate
-					// its token and log out that user's live web session.
+					// Backend device, separate from the invitee's browser session.
 					const invitee = await getMatrixUserToken(inviteeId, "svc_autojoin");
 					const resp = await fetch(
 						`${baseUrl}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/join`,
@@ -183,7 +209,7 @@ export async function ensureChatRoom(
 		);
 	}
 
-	if (avatarUrl) {
+	if (avatarUrl && isAllowedRemoteImage(avatarUrl)) {
 		try {
 			const file = await fetch(avatarUrl).then((res) => res.blob());
 			const uploaded = await client.uploadContent(file, {

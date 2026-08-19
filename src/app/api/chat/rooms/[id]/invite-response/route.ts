@@ -6,6 +6,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	isChatParticipant,
+	participationSelect,
+} from "@/services/chat/participation";
 import { getRoomMemberIds, matrixIdToUserId } from "@/services/matrix/admin";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -39,19 +43,36 @@ export const POST = withAuth({ mode: "user" })(
 
 		// counterparts = current room members other than the actor (the inviter,
 		// for an admin-created 1:1 DM)
-		let counterpartIds: string[] = [];
+		let memberIds: string[];
 		try {
-			const memberIds = await getRoomMemberIds(roomId);
-			counterpartIds = Array.from(
-				new Set(
-					memberIds
-						.map(matrixIdToUserId)
-						.filter((id): id is string => !!id && id !== currentUser.id),
-				),
-			);
+			memberIds = await getRoomMemberIds(roomId);
 		} catch (error) {
 			console.error("[chat/invite-response] failed to read members", error);
+			return json({ notified: 0 });
 		}
+
+		const platformMemberIds = memberIds
+			.map(matrixIdToUserId)
+			.filter((id): id is string => !!id);
+
+		// Without this any signed-in user could push "X accepted your invitation"
+		// into the inbox of anyone whose room id they know. A decline leaves the
+		// room *before* calling here, so Matrix membership alone is not enough —
+		// the registry still knows they belong to this chat.
+		const room = await prisma.chatRoom.findUnique({
+			where: { matrixRoomId: roomId },
+			select: participationSelect,
+		});
+		const authorized = room
+			? await isChatParticipant(room, currentUser.id)
+			: platformMemberIds.includes(currentUser.id);
+		if (!authorized) {
+			return apiError.forbidden();
+		}
+
+		const counterpartIds = Array.from(
+			new Set(platformMemberIds.filter((id) => id !== currentUser.id)),
+		);
 
 		if (counterpartIds.length === 0) {
 			return json({ notified: 0 });
