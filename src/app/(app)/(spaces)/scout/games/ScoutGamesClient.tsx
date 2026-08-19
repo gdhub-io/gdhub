@@ -22,18 +22,36 @@ import {
 import type { SortOrder } from "antd/es/table/interface";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import type { Key } from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SavedSearches } from "@/components/scout/SavedSearches";
 import { formatDollar } from "@/helpers/format";
+import {
+	estimateInputRows,
+	estimateOutputRows,
+	money,
+} from "@/helpers/investment";
 import { toOptions } from "@/helpers/select";
 import type { PageMeta } from "@/lib/pagination";
 import type { ScoutCabinet } from "@/repositories/scout";
 import type { ScoutFacets } from "@/repositories/scout.games";
 import type { InvestmentEstimate } from "@/services/investment/estimate";
 import styles from "./style.module.scss";
+
+/**
+ * The card is a click away, not a page load: it pulls in the roadmap chart and
+ * the whole modal body, and most scouts read the table without opening a row.
+ */
+const ProjectCardModal = dynamic(
+	() =>
+		import("@/components/scout/ProjectCardModal").then(
+			(module) => module.ProjectCardModal,
+		),
+	{ ssr: false },
+);
 
 const { Text } = Typography;
 
@@ -84,30 +102,6 @@ const PAGE_SIZE = 20;
 /** How long the search box waits before it costs a request. */
 const SEARCH_DEBOUNCE_MS = 300;
 
-/**
- * A span in the units a person thinks in. Past a year, "29 months" is arithmetic
- * the reader has to do; "2y 5m" is the same fact already done.
- */
-const duration = (months: number, t: ReturnType<typeof useTranslate>["t"]) => {
-	const inMonths = (count: number) =>
-		t(
-			"scout.games.investment.months",
-			"{count, plural, one {# month} other {# months}}",
-			{ count },
-		);
-
-	if (months < 12) return inMonths(months);
-
-	const years = t(
-		"scout.games.investment.years",
-		"{count, plural, one {# year} other {# years}}",
-		{ count: Math.floor(months / 12) },
-	);
-	const rest = months % 12;
-
-	return rest ? `${years} ${inMonths(rest)}` : years;
-};
-
 /** What the estimate is built from, so a scout can judge whether to trust it. */
 function EstimateBreakdown({
 	estimate,
@@ -119,8 +113,6 @@ function EstimateBreakdown({
 	raised: ScoutGame["raised"];
 }) {
 	const { t } = useTranslate();
-	const money = (value: number, currency?: string) =>
-		formatDollar(value, { currency, fractionDigits: 0 });
 
 	// Grouped by where a number comes from, because that is what decides how
 	// much a scout should trust it: what the team says, what we worked out, and
@@ -130,16 +122,7 @@ function EstimateBreakdown({
 			title: t("scout.games.investment.group.team", "The team"),
 			rows: [
 				[t("scout.games.investment.asking", "Team asks for"), stated ?? "—"],
-				[
-					t("scout.games.investment.team", "Team"),
-					t("scout.games.investment.people", "{count} people", {
-						count: estimate.teamSize,
-					}),
-				],
-				[
-					t("scout.games.investment.open", "Open positions"),
-					String(estimate.openPositions),
-				],
+				...estimateInputRows(estimate, t),
 			],
 		},
 		{
@@ -157,22 +140,7 @@ function EstimateBreakdown({
 					t("scout.games.investment.need", "Need to release"),
 					money(estimate.remaining),
 				],
-				[
-					t("scout.games.investment.burn", "Team costs per month"),
-					money(estimate.monthlyBurn),
-				],
-				[
-					t("scout.games.investment.pace", "Pace"),
-					t("scout.games.investment.paceValue", "{percent}% of full time", {
-						percent: Math.round(estimate.pace * 100),
-					}),
-				],
-				[
-					t("scout.games.investment.eta", "Release at this pace"),
-					estimate.monthsToRelease === null
-						? "—"
-						: duration(estimate.monthsToRelease, t),
-				],
+				...estimateOutputRows(estimate, t),
 			],
 		},
 		{
@@ -228,6 +196,7 @@ export function ScoutGamesClient() {
 	const [filters, setFilters] = useState<Filters | null>(null);
 	const [sort, setSort] = useState<Sort>(DEFAULT_SORT);
 	const [page, setPage] = useState(1);
+	const [openProjectId, setOpenProjectId] = useState<string | null>(null);
 
 	// The typed value and the requested one are separate: every keystroke would
 	// otherwise be a full page of the list.
@@ -581,6 +550,12 @@ export function ScoutGamesClient() {
 				onChange={(_pagination, _filters, sorter) =>
 					applySort(Array.isArray(sorter) ? sorter[0] : sorter)
 				}
+				// The whole row opens the card: the chevron is an affordance, not
+				// the only target.
+				onRow={(game) => ({
+					className: styles.row,
+					onClick: () => setOpenProjectId(game.id),
+				})}
 				// Any `scroll.x` turns on `table-layout: fixed`, which is what makes
 				// the widths above binding; narrower than that, the table scrolls
 				// instead of crushing its own columns.
@@ -590,6 +565,11 @@ export function ScoutGamesClient() {
 				// genre line the width was there to truncate never truncates.
 				// Summed from the columns so the two cannot drift apart.
 				scroll={{ x: tableWidth }}
+			/>
+
+			<ProjectCardModal
+				projectId={openProjectId}
+				onClose={() => setOpenProjectId(null)}
 			/>
 
 			{data && !data.meta.isLastPage && (

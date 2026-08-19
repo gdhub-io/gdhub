@@ -1,4 +1,4 @@
-import { IconRosetteDiscountCheck, IconX } from "@tabler/icons-react";
+import { IconShieldCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -12,23 +12,42 @@ import {
 import axios from "axios";
 import dayjs, { type Dayjs } from "dayjs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ProjectWorkflowWithSteps } from "../WorkflowContent";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
+
+/**
+ * Only what the chart draws.
+ *
+ * Deliberately narrower than `ProjectWorkflowWithSteps`: the scout's project
+ * card shows the same roadmap read-only, and it has no reason to assemble a
+ * whole Prisma workflow — tasks, equity promises and all — to do it.
+ */
+export type RoadmapStep = {
+	id: string;
+	name: string;
+	order: number;
+	plannedAt: Date | string | null;
+};
+
+export type RoadmapWorkflow = {
+	projectId: string;
+	steps: RoadmapStep[];
+	currentStep: RoadmapStep;
+};
 
 export const RoadmapChart = ({
 	workflow,
 	editable = false,
 }: {
-	workflow: ProjectWorkflowWithSteps;
+	workflow: RoadmapWorkflow;
 	editable?: boolean;
 }) => {
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 	const screens = Grid.useBreakpoint();
 	const roadmapRef = useRef<HTMLDivElement>(null);
-	const stepRefs = useRef<HTMLDivElement[]>([]);
+	const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 	const [currentProgress, setCurrentProgress] = useState(0);
 	const steps = useMemo(
 		() => workflow.steps.slice(1).slice(0, -1),
@@ -89,12 +108,6 @@ export const RoadmapChart = ({
 	const calculateProgress = useCallback(() => {
 		if (stepRefs.current.length === 0 || !roadmapRef.current) return;
 
-		const stepPosX = [];
-		for (let i = 0; i <= stepRefs.current.length; i++) {
-			const rect = stepRefs.current[i]?.getBoundingClientRect();
-			stepPosX.push(rect?.left || 0);
-		}
-
 		// Find current step index in screenSteps (not all steps)
 		const currentStepIndex = screenSteps.findIndex(
 			(step) => step.id === workflow.currentStep.id,
@@ -106,29 +119,33 @@ export const RoadmapChart = ({
 			return;
 		}
 
-		const completedWidth = stepPosX[currentStepIndex] - stepPosX[0];
-		const totalWidth = roadmapRef.current.offsetWidth;
-		const progress = totalWidth > 0 ? (completedWidth / totalWidth) * 100 : 0;
+		const first = stepRefs.current[0]?.getBoundingClientRect();
+		const current = stepRefs.current[currentStepIndex]?.getBoundingClientRect();
 
-		setCurrentProgress(progress);
-	}, [workflow.currentStep, screenSteps, roadmapRef.current, stepRefs.current]);
+		const totalWidth = roadmapRef.current.offsetWidth;
+
+		// Nothing laid out yet — leave the marker where it is rather than
+		// snapping it back to the start of the road.
+		if (!first || !current || totalWidth === 0) return;
+
+		setCurrentProgress(((current.left - first.left) / totalWidth) * 100);
+	}, [workflow.currentStep, screenSteps]);
 
 	useEffect(() => {
 		calculateProgress();
 
-		// Recalculate on window resize
-		const handleResize = () => calculateProgress();
-		window.addEventListener("resize", handleResize);
+		// The chart also lives inside a modal, which is still animating when it
+		// first paints: measuring then puts "You're here" at the very start of the
+		// road, over a stage the project left long ago. Watching the container
+		// rather than the window is what makes it re-measure once it settles.
+		const container = roadmapRef.current;
+		if (!container) return;
 
-		return () => {
-			window.removeEventListener("resize", handleResize);
-		};
-	}, [
-		workflow.currentStep,
-		screenSteps,
-		roadmapRef.current?.offsetWidth,
-		calculateProgress,
-	]);
+		const observer = new ResizeObserver(() => calculateProgress());
+		observer.observe(container);
+
+		return () => observer.disconnect();
+	}, [calculateProgress]);
 
 	const handleDateChange = (stepId: string, date: Dayjs) => {
 		updateStepMutation({ id: stepId, plannedAt: date?.toDate() || null });
@@ -194,9 +211,12 @@ export const RoadmapChart = ({
 					style={{ width: `${currentProgress}%` }}
 				>
 					<div className={styles.currentTime}>
+						{/* A badge with a tick, the shape this marker has always had —
+						    the icon migration swapped `MdBeenhere` for a rosette, whose
+						    scalloped edge reads as a sticker rather than a marker. */}
 						<span className={styles.currentTimeText}>
 							You&apos;re here
-							<IconRosetteDiscountCheck />
+							<IconShieldCheck />
 						</span>
 					</div>
 				</div>
@@ -207,7 +227,10 @@ export const RoadmapChart = ({
 						key={step.id}
 						className={styles.stepContainer}
 						ref={(el: HTMLDivElement | null) => {
-							if (el) stepRefs.current[idx] = el;
+							// Cleared as well as set: a narrower breakpoint leaves the
+							// wider one's nodes behind otherwise, and they measure as if
+							// they were still on screen.
+							stepRefs.current[idx] = el;
 						}}
 					>
 						<div className={styles.dateContainer}>
