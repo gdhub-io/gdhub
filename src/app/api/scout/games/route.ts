@@ -1,5 +1,6 @@
 import { TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { totalPerCurrency } from "@/helpers/investment";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { pageMeta, paginateInMemory } from "@/lib/pagination";
 import { withSpaceGuard } from "@/lib/space-guard";
@@ -81,23 +82,6 @@ const activityScore = (
 	(updatedAt.getTime() > Date.now() - MONTH ? 0.5 : 0);
 
 /** Investor money, summed inside each currency and dropped where it is zero. */
-const totalPerCurrency = (
-	investors: readonly { value: number; currency: string }[],
-) => {
-	const totals = new Map<string, number>();
-
-	for (const investor of investors) {
-		totals.set(
-			investor.currency,
-			(totals.get(investor.currency) ?? 0) + investor.value,
-		);
-	}
-
-	return [...totals]
-		.filter(([, amount]) => amount > 0)
-		.map(([currency, amount]) => ({ currency, amount }));
-};
-
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "scout.games.view" }),
@@ -221,8 +205,6 @@ export const GET = pipe(
 			// carries no such field. The scout reads the dash for what it is —
 			// the team has not said — and has the estimate to fall back on.
 			investment: null,
-			// Totalled per currency rather than added up: an investor picks
-			// theirs, so one sum across USD, EUR and XTR would mean nothing.
 			raised: totalPerCurrency(project.team?.investors ?? []),
 			devlogCount: project._count.reports,
 			activityScore: activityScore(

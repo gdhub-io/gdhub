@@ -1,0 +1,853 @@
+.body {
+	padding: 0;
+}
+
+/* Bare elements in this module carry fixed heights next to their padding, and
+   the page reset does not reach them — without this every box is its height
+   plus its padding, which is what made the card read as loose. Anything built
+   from the `card` mixin gets this from there. */
+.header,
+.footer {
+	box-sizing: border-box;
+}
+
+.modal {
+	:global(.ant-modal-container) {
+		padding: 0;
+		border-radius: var(--gd-radius-panel);
+		overflow: hidden;
+	}
+}
+
+.loading {
+	padding: var(--gd-space-6);
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────
+   The cover is the header, not a picture inside one: 220 tall, everything
+   sitting on it, and a scrim carrying the text over artwork of any
+   brightness. */
+.header {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 220px;
+	padding: 20px 28px;
+	background: var(--gd-neutral-900);
+	border-radius: var(--gd-radius-panel) var(--gd-radius-panel) 0 0;
+	overflow: hidden;
+}
+
+.cover {
+	object-fit: cover;
+}
+
+/* The top strip only, so the eyebrow and the link chips hold against a bright
+   sky. The middle of the cover is left alone — it is the artwork. */
+.scrim {
+	position: absolute;
+	inset: 0 0 auto;
+	height: 45%;
+	background: linear-gradient(
+		180deg,
+		rgba(0, 0, 0, 0.65) 0%,
+		rgba(0, 0, 0, 0) 100%
+	);
+}
+
+/* The title band sits on its own ground: a gradient rising out of the bottom
+   edge and fading to nothing well before the middle. Without it the title is
+   legible on one cover and lost in the detail of the next — this one had a
+   line of the game's own copy running straight through it. */
+.scrimBottom {
+	position: absolute;
+	inset: auto 0 0;
+	height: 62%;
+	background: linear-gradient(
+		0deg,
+		rgba(0, 0, 0, 0.92) 0%,
+		rgba(0, 0, 0, 0.7) 30%,
+		rgba(0, 0, 0, 0.3) 65%,
+		rgba(0, 0, 0, 0) 100%
+	);
+}
+
+.headerTop,
+.headerBottom {
+	position: relative;
+}
+
+/* The same eyebrow the talent card wears (`person-card`): 11px, regular, wide
+   tracking, uppercased by the stylesheet rather than by the string — so the
+   two cards announce themselves in one voice, and a translator writes a word
+   instead of a shout. Only the colour differs: this one sits on artwork. */
+.kind {
+	color: var(--gd-neutral-0);
+	font-size: 11px;
+	font-weight: 400;
+	letter-spacing: 1.4px;
+	text-transform: uppercase;
+	opacity: 0.8;
+}
+
+/* Round chips on the artwork rather than plain icons: at 32 they stay a hit
+   target, and the fill is what keeps them visible over a light cover. */
+.headerButton {
+	width: 32px;
+	height: 32px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-neutral-900);
+	color: var(--gd-neutral-0);
+	border: none;
+
+	/* The platform marks come from `platformOptions` at their own default
+	   size; the chip is 32 and every mark has to sit in it the same. */
+	svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	&:hover {
+		background: var(--gd-neutral-800) !important;
+		color: var(--gd-neutral-0) !important;
+	}
+}
+
+.close {
+	composes: headerButton;
+	background: var(--gd-neutral-0);
+	color: var(--gd-neutral-900);
+
+	&:hover {
+		background: var(--gd-neutral-0) !important;
+		color: var(--gd-neutral-900) !important;
+	}
+}
+
+.titleWrap {
+	min-width: 0;
+}
+
+.title {
+	margin: 0 !important;
+	color: var(--gd-neutral-0) !important;
+	font-size: var(--gd-font-size-h1) !important;
+	font-weight: 800 !important;
+	line-height: var(--gd-line-height-display) !important;
+}
+
+.meta {
+	color: var(--gd-neutral-0);
+	opacity: 0.85;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.headerAction {
+	width: 172px;
+	background: var(--gd-color-surface) !important;
+}
+
+.headerOffer {
+	width: 172px;
+
+	/* Deals are not built yet, so this one is genuinely dead — but antd draws a
+	   disabled primary as a pale grey surface with grey ink, and over the cover
+	   that collapses into a ghost outline whose label is unreadable. The tooltip
+	   only explains the button if you can still read it, so the dead state gets
+	   drawn for this band: a flat translucent white, no outline. */
+	&:disabled {
+		background: rgba(255, 255, 255, 0.2) !important;
+		border-color: transparent !important;
+		color: rgba(255, 255, 255, 0.75) !important;
+	}
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────
+   Pills on a hairline, not antd's underline: the header above is already a
+   strong horizontal band and a second rule under it reads as a seam. */
+.tabs {
+	:global(.ant-tabs-nav) {
+		margin: 0;
+		padding: 10px var(--gd-space-6);
+		border-bottom: 1px solid var(--gd-color-border);
+	}
+
+	:global(.ant-tabs-nav::before) {
+		display: none;
+	}
+
+	:global(.ant-tabs-nav-list) {
+		gap: var(--gd-space-1);
+	}
+
+	:global(.ant-tabs-ink-bar) {
+		display: none;
+	}
+
+	:global(.ant-tabs-tab) {
+		margin: 0 !important;
+		padding: 8px 13px;
+		border-radius: var(--gd-radius-control);
+	}
+
+	:global(.ant-tabs-tab-active) {
+		background: var(--gd-fill-base);
+	}
+
+	:global(.ant-tabs-tab-btn) {
+		font-size: var(--gd-font-size-body);
+		font-weight: 500;
+	}
+
+	:global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+		font-weight: 600;
+	}
+
+	/* The card is a fixed 220 of cover plus a tab bar and a footer; only the
+	   panes scroll, and they stop where the viewport does rather than pushing
+	   the footer off the bottom of it. */
+	:global(.ant-tabs-body-holder) {
+		max-height: max(240px, calc(100vh - 358px));
+		overflow-y: auto;
+	}
+
+	:global(.ant-tabs-content) {
+		padding: var(--gd-space-6);
+	}
+
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────
+   One recipe, the same one the job cards on hub/jobs use: a 12 radius, the
+   strong border rather than the hairline, and a lift on hover instead of a
+   colour change. Everything in the card body that is a box wears it, so the
+   modal does not read as a second card language inside the product.
+
+   A mixin and not `composes`: composition chains through a class that is never
+   written in the markup, and one broken link takes the whole recipe with it. */
+@mixin card {
+	box-sizing: border-box;
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	transition: box-shadow 0.2s;
+}
+
+/* A centred square holding one glyph. `ui/IconTile` is this primitive, but it
+   takes an icon component and these wrap arbitrary nodes — so the recipe is
+   shared here rather than written out four times. */
+@mixin tile($size, $radius) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: $size;
+	height: $size;
+	border-radius: $radius;
+	background: var(--gd-fill-base);
+	color: var(--gd-color-text-secondary);
+	flex: none;
+}
+
+/* A label in a pill: a count, a status, a score. */
+@mixin chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-fill-base);
+	color: var(--gd-color-text-secondary);
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+@mixin card-hover {
+	@include card;
+
+	/* Shallower than the job cards': those sit on a page and have room to lift,
+	   these are inside a modal that is already raised off one, and the same
+	   shadow there reads as the card jumping at the cursor. */
+	&:hover {
+		box-shadow:
+			0 0 0 1px rgba(0, 0, 0, 0.05),
+			0 2px 4px rgba(0, 0, 0, 0.03);
+	}
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────
+   Numbers below come from the frame (AyHRN → CxREm → Body). Where the frame
+   sits off the token scales — 14 and 20 paddings, 15px headings — the frame is
+   what ships here and the scale is what it should be snapped to later. */
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* About is tighter than the digests below it — 8 against their 10. */
+.sectionTight {
+	composes: section;
+	gap: var(--gd-space-2);
+}
+
+.sectionHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+}
+
+.sectionTitle {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--gd-color-text);
+}
+
+.sectionLink {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: 0;
+	border: none;
+	background: none;
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--gd-color-accent);
+	cursor: pointer;
+}
+
+.about {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-body);
+}
+
+/* Details and the pitch video are one 270-tall media block, side by side. */
+.mediaRow {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 480px;
+	gap: var(--gd-space-4);
+}
+
+/* A project with neither a cover nor a video has nothing for the second column,
+   and an empty 480 beside the details reads as a failed image. */
+.mediaRowSolo {
+	composes: mediaRow;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+/* The same treatment the project page gives this card: no fill, and the rows
+   bleed to the card's edges divided by the card's own border, so the frame and
+   the dividers are one line weight rather than two. */
+.detailsCard {
+	@include card;
+	display: flex;
+	flex-direction: column;
+	background: transparent;
+}
+
+.detailsHead {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: 16px 20px;
+}
+
+/* Sized by its two lines, and pinned to the top of the row so the grid does
+   not stretch it back to the height of the cover beside it. */
+.detailsCardEmpty {
+	@include card;
+	display: flex;
+	flex-direction: column;
+	align-self: start;
+	background: transparent;
+}
+
+.detailRows {
+	display: flex;
+	flex-direction: column;
+}
+
+.detailRow,
+.detailRowStacked {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	min-width: 0;
+	padding: 10px 20px;
+	border-top: 1px solid var(--gd-color-border-strong);
+}
+
+/* A value too long for its label's line becomes a paragraph, and a paragraph
+   ragged-left in the right-hand third is unreadable — so it drops under the
+   label, takes the width and sets left like the prose it is. */
+.detailRowStacked {
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--gd-space-1);
+
+	.detailValue {
+		text-align: left;
+	}
+}
+
+.detailKey {
+	font-size: 12px;
+	line-height: 1.4;
+	color: var(--gd-color-text-secondary);
+	white-space: nowrap;
+	flex: none;
+}
+
+.detailValue {
+	flex: 1;
+	min-width: 0;
+	font-size: 14px;
+	line-height: 1.4;
+	text-align: right;
+	word-break: break-word;
+}
+
+.videoCover {
+	object-fit: cover;
+}
+
+/* Only painted when there is a video: it is what carries the label, and over a
+   plain cover it would just dim the artwork for nothing. */
+.videoScrim {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(0, 0, 0, 0.1) 0%,
+		rgba(0, 0, 0, 0.55) 100%
+	);
+}
+
+.videoLabel {
+	position: absolute;
+	left: var(--gd-space-4);
+	bottom: var(--gd-space-4);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--gd-neutral-0);
+}
+
+/* Three across, two rows, 112 tall — the frame's 3 + 3. */
+.summary {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--gd-space-3);
+}
+
+/* A button, not a box: each card answers its question in full on a tab. */
+.summaryCard {
+	@include card-hover;
+	appearance: none;
+	font: inherit;
+	color: inherit;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--gd-space-2);
+	min-height: 112px;
+	padding: 14px;
+	background: var(--gd-neutral-25);
+	min-width: 0;
+	text-align: left;
+	cursor: pointer;
+
+	&:hover .summaryGo {
+		color: var(--gd-color-accent);
+	}
+}
+
+.summaryHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-2);
+}
+
+/* Regular weight, like the card's own eyebrow in the header: at 11px and
+   uppercase the tracking already does the work of setting the label apart, and
+   bold on top of that made six of them shout over the numbers they label. */
+.eyebrow {
+	font-size: 11px;
+	font-weight: 400;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	color: var(--gd-color-text-secondary);
+}
+
+.summaryGo {
+	color: var(--gd-neutral-300);
+	flex: none;
+}
+
+.summaryValue {
+	font-size: var(--gd-font-size-h4);
+	font-weight: 700;
+}
+
+.summarySub {
+	font-size: 12px;
+	color: var(--gd-color-text-secondary);
+}
+
+.authorName {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+}
+
+.stageDot {
+	width: 8px;
+	height: 8px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-success-solid);
+	flex: none;
+}
+
+/* Same treatment the speaker stack uses: an opaque disc with the surface as
+   its ring, so overlapping faces read as depth rather than as one blurred
+   shape with the letters showing through each other. */
+.avatars {
+	:global(.ant-avatar) {
+		outline: 2px solid var(--gd-color-surface);
+		background: var(--gd-color-border-strong);
+		color: var(--gd-color-text);
+		font-size: 12px;
+		font-weight: 600;
+	}
+}
+
+/* The overflow disc reads as a count rather than one more face. */
+.avatarMore {
+	background: var(--gd-color-accent-subtle) !important;
+	color: var(--gd-color-accent) !important;
+}
+
+.fileCards {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: var(--gd-space-3);
+}
+
+.fileCard {
+	@include card-hover;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 14px;
+	min-width: 0;
+
+	&:hover .fileGo {
+		color: var(--gd-color-accent);
+	}
+}
+
+/* Only shows the card leads somewhere; the hover state is what confirms it. */
+.fileGo {
+	color: var(--gd-neutral-300);
+	flex: none;
+}
+
+.fileTile {
+	@include tile(32px, var(--gd-radius-control));
+}
+
+.fileName {
+	flex: 1;
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 150 tall with a 200 cover on the left — the cover is the card's left edge,
+   so it is a flex row and not a padded box with a picture in it. */
+.devlogCard {
+	@include card;
+	display: flex;
+	height: 150px;
+	overflow: hidden;
+}
+
+.devlogCover {
+	position: relative;
+	width: 200px;
+	flex: none;
+}
+
+.devlogBody {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	justify-content: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4);
+	min-width: 0;
+}
+
+.devlogExcerpt {
+	margin: 0 !important;
+	font-size: 13px;
+}
+
+.readPost {
+	display: inline-flex;
+	align-self: flex-start;
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: 8px 14px;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-chip);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+/* One bordered box with hairlines between rows, not seven floating lines. */
+.feed {
+	@include card;
+	overflow: hidden;
+}
+
+.feedRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	transition: background-color 0.15s ease;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+
+	& + .feedRow {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+/* What happened is carried by the icon as much as the sentence: a scout scans
+   the column of glyphs and only reads the lines that matter. */
+.feedTile {
+	@include tile(32px, var(--gd-radius-pill));
+}
+
+.feedTileOk {
+	@include tile(32px, var(--gd-radius-pill));
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.feedText {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.feedLabel {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.feedMore {
+	width: 100%;
+	border-top: 1px solid var(--gd-color-border);
+	border-radius: 0;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.caption,
+.nowrap {
+	font-size: 12px;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+.person {
+	min-width: 0;
+}
+
+.review {
+	@include card;
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: 14px;
+}
+
+.reviewNotes {
+	margin: 0 !important;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+.footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: 14px var(--gd-space-6);
+	border-top: 1px solid var(--gd-color-border);
+	color: var(--gd-neutral-400);
+	font-size: 12px;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────────
+   The card's tables are boxes, not bare grids: one rounded hairline around
+   the whole thing and a tinted header row, so a section reads as a unit
+   against the white pane. */
+.cardTable {
+	:global(.ant-table) {
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-card);
+		overflow: hidden;
+	}
+
+	:global(.ant-table-thead > tr > th) {
+		height: 40px;
+		background: var(--gd-neutral-25);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.6px;
+		text-transform: uppercase;
+	}
+
+	:global(.ant-table-tbody > tr > td) {
+		font-size: 13px;
+	}
+}
+
+.countChip {
+	@include chip;
+	justify-content: center;
+	min-width: 24px;
+	padding: 2px var(--gd-space-2);
+	border-radius: var(--gd-radius-chip);
+	font-size: 13px;
+}
+
+/* Grey and not amber: amber reads as a warning about something in progress,
+   and identity verification is not in progress — it is not built. */
+.kycNone {
+	@include chip;
+	padding: var(--gd-space-1) var(--gd-space-2);
+}
+
+.scoreChip {
+	@include chip;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-1) var(--gd-space-3);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-on-tint);
+	font-size: 13px;
+}
+
+.fileGlyph {
+	display: inline-flex;
+	color: var(--gd-color-accent);
+	flex: none;
+}
+
+.openLink {
+	display: inline-flex;
+	color: var(--gd-color-text-secondary);
+}
+
+/* The name cell opens the document, same as the icon at the end of the row. */
+.fileRowLink {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+	color: var(--gd-color-text);
+
+	&:hover {
+		color: var(--gd-color-accent);
+	}
+}
+
+/* ── Investment ───────────────────────────────────────────────────────────
+   Three figures a scout weighs against each other, so they sit on one row at
+   the same size rather than in a list where the first one wins by position. */
+.headline {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+}
+
+/* Sized by its three lines. The floor it used to carry was measured against
+   the frame, where padding sits inside the box — here it was added on top of
+   it, and every card ended in a band of nothing. */
+.headlineCard {
+	@include card;
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4);
+	background: var(--gd-neutral-25);
+	min-width: 0;
+}
+
+.headlineValue,
+.headlineMuted {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 700;
+}
+
+/* A dash is not a number, and at h3 weight it reads as one. */
+.headlineMuted {
+	color: var(--gd-color-text-secondary);
+}
+
+/* The caveat is a paragraph, not a row: the icon holds the first line. */
+.bannerTop {
+	@include card;
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-2);
+	padding: 10px 14px;
+	background: var(--gd-neutral-25);
+	color: var(--gd-color-text-secondary);
+}
+
+.bannerIcon {
+	margin-top: 2px;
+	flex: none;
+}
+
+/* The equity plot draws itself to the width of its mount, so it needs a box
+   with a width and nothing else opinionated around it. */
+.plot {
+	@include card;
+	width: 100%;
+	padding: var(--gd-space-4);
+	background: var(--gd-neutral-25);
+}
+
+/* The legal arrangement: a tile, a status and the sentence that qualifies it. */
+.legal {
+	@include card;
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4);
+	background: var(--gd-neutral-25);
+}
+
+.legalTile {
+	@include tile(40px, var(--gd-radius-control));
+}

@@ -8,8 +8,8 @@ icons, each row carrying the `--gd-*` name you type. The values themselves live
 in [`src/config/design`](../../src/config/design) and the primitives in
 [`src/components/ui`](../../src/components/ui).
 
-Read this before building a page. It is short on purpose — six layout rules and
-three colour rules.
+Read this before building a page. It is short on purpose: the rules are the
+few that get broken, and each one says what breaks when it is.
 
 ## Colour
 
@@ -90,6 +90,35 @@ when you are fighting a genuine exception.
 Elevation has four steps and `e0` — flat — is the default. A shadow means "this
 floats above the page" (dropdown, modal), not "this is a card".
 
+## Pixel perfect
+
+Build from the values in the design file, not from what the screenshot looks
+like. Open the node, read its numbers, use them. A layout that is "about right"
+costs the next person the same hour of guessing it cost you.
+
+Every number you type comes from a token. If a design asks for something the
+scales do not have — 18px of padding, a 7px radius — the design is wrong: fix
+the frame, do not hardcode the exception. `tests/design-tokens-guard.test.ts`
+fails on hardcoded colours and on `--gd-*` names the theme never emits, and a
+misspelt custom property is silent — the browser drops the declaration and the
+styling simply goes missing.
+
+**The 4-grid covers spacing and box sizes.** Padding, gaps, margins, widths,
+heights, control sizes: all multiples of 4, off the scale above.
+
+**Three things are deliberately not on it, and must not be "corrected":**
+
+- **Radii** — 6 / 10 / 12 / 16. The product is full of rounded squares sitting
+  inside one another, and a 4-step radius ladder reads as a different family.
+- **Type** — 13 / 14 / 16 / 20 / 24 / 32, with line heights as ratios. Type is
+  sized by reading distance, not by a grid.
+- **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes
+  follow the set (14 / 16 / 20 / 24), not the spacing scale.
+
+Optical beats mathematical where they disagree. An icon centred by its bounding
+box next to text usually sits a fraction low; trust the eye, then write the
+correction down in a comment so it is not "fixed" later.
+
 ## Typography
 
 Onest runs everything. One family carries both roles, so a heading differs from
@@ -121,6 +150,44 @@ theme of its own — it re-declares the roles *and* swaps the antd theme, which 
 what stops a dark header from serving a button with dark text on a dark
 background. Pass `transparent` when the band sits on artwork that supplies its
 own background.
+
+## Craft
+
+Small rules that are cheap to follow and expensive to retrofit.
+
+**Hit targets.** 40 is the standard control height; 32 only inside dense
+surfaces like table rows, and then with padding around it. Nothing interactive
+is smaller than 32 square, icon buttons included.
+
+**Truncation.** A cell is one line: truncate with an ellipsis and put the full
+value in a tooltip. Wrapping a table cell silently changes the height of every
+row beside it. Truncation needs `min-width: 0` on the flex parent — a flex item
+defaults to `min-width: auto` and refuses to shrink below its content, so the
+ellipsis never engages. In an antd `Table`, column widths are only binding under
+`table-layout: fixed`, which antd turns on once `scroll.x` is set; leave it on
+auto and one long string takes the space every other column needed.
+
+**Numbers.** Right-align them, `tnum` on, and keep the unit out of the cell and
+in the header where it repeats. Centre only short enums and counts. Left-align
+text, always.
+
+**Nothing versus zero.** `—` means the platform does not know; `0` means it
+measured zero and the answer is none. They are different facts and a scout reads
+them differently — never print `0` for missing data.
+
+**States.** Every list has four: loading, empty, error, and the one with data.
+Keep the previous page on screen while the next loads rather than blanking it.
+An empty state says what would fill it and offers the action that does.
+
+**Disabled says why.** A control nobody can press is a dead end unless it
+carries a tooltip explaining the condition. The same goes for a section behind a
+permission — hide it, or show it disabled with a reason, never show it broken.
+
+**Motion.** Short, few, and only where something moved or appeared. Nothing
+animates on first paint.
+
+**No card inside a card.** Nesting elevation flattens the hierarchy it was meant
+to express — use a separator, a heading, or space.
 
 ## Text
 

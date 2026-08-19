@@ -1,4 +1,5 @@
 import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import type { SkillLevel } from "@/config/prisma-enums";
 import { prisma } from "@/services/prisma";
 
 /** Projects a scout would not act on: finished, shelved or turned down. */
@@ -9,18 +10,52 @@ export const VISIBLE_STATUSES = [
 ];
 
 /**
- * Founders and hired members are the team; applicants and the people who have
- * left are not. The same predicate `getProjectCardFacts` uses — without
- * `finishedAt`, a departed member still counts towards the team size and the
- * seats the investment estimate prices.
+ * Someone who was really on the team rather than an applicant or a rejection —
+ * whether or not they are still on it.
  */
-export const CONFIRMED_MEMBERS = {
+export const CONFIRMED_STATUS = {
 	// Not `as const`: Prisma's `in` wants a mutable array, and a readonly tuple
 	// makes it fall back to the overload without `select`, silently widening
 	// every row to the whole Project model.
 	status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder] },
-	finishedAt: null,
 };
+
+/**
+ * The team as it stands today. Without `finishedAt`, a departed member still
+ * counts towards the team size and the seats the investment estimate prices —
+ * so anything sizing the team wants this, and anything telling its history
+ * wants `CONFIRMED_STATUS`.
+ */
+export const CONFIRMED_MEMBERS = { ...CONFIRMED_STATUS, finishedAt: null };
+
+/**
+ * The estimator's input, assembled once.
+ *
+ * The games table and the card both quote this figure, and a scout opens the
+ * card from the row — so they read the same number or the feature is broken.
+ * Keeping the mapping here is what makes that structural instead of a habit.
+ */
+export const toEstimateInput = (project: {
+	team?: {
+		members: {
+			speciality: { level: SkillLevel };
+			user: { profile: { timeForWork: number[] } | null };
+		}[];
+		_count: { vacancies: number };
+	} | null;
+	workflow?: {
+		currentStep: { order: number } | null;
+		steps: { name: string; order: number; done: boolean }[];
+	} | null;
+}) => ({
+	team: (project.team?.members ?? []).map((member) => ({
+		level: member.speciality.level,
+		hoursPerWeek: member.user.profile?.timeForWork ?? null,
+	})),
+	openPositions: project.team?._count.vacancies ?? 0,
+	steps: project.workflow?.steps ?? [],
+	currentStepOrder: project.workflow?.currentStep?.order ?? null,
+});
 
 /**
  * Stages a scout has no deal to do with, named as the `default` workflow seeds
