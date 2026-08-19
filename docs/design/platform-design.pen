@@ -67063,7 +67063,6 @@
                                 12,
                                 16
                               ],
-                              "justifyContent": "end",
                               "alignItems": "center",
                               "children": [
                                 {
@@ -67071,7 +67070,7 @@
                                   "id": "KzAOG",
                                   "name": "T",
                                   "fill": "$text-secondary",
-                                  "content": "SHARES",
+                                  "content": "ON THE PROJECT",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "600",
@@ -67150,7 +67149,7 @@
                                       "id": "NRSz8",
                                       "name": "E",
                                       "fill": "$text-secondary",
-                                      "content": "owen@hollowtide.co",
+                                      "content": "Game Designer · Senior",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -67211,7 +67210,7 @@
                                   "type": "frame",
                                   "id": "D7jZk",
                                   "name": "KYC",
-                                  "fill": "#ECFDF3",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -67226,16 +67225,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#067647"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "H4OM4g",
                                       "name": "L",
-                                      "fill": "#067647",
-                                      "content": "Verified",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -67250,7 +67249,6 @@
                               "name": "Cell",
                               "width": 104,
                               "padding": 16,
-                              "justifyContent": "end",
                               "alignItems": "center",
                               "children": [
                                 {
@@ -67258,7 +67256,7 @@
                                   "id": "EOiLo",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "60%",
+                                  "content": "1 year 3 months",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "700"
@@ -67336,7 +67334,7 @@
                                       "id": "kSzzD",
                                       "name": "E",
                                       "fill": "$text-secondary",
-                                      "content": "sofia@hollowtide.co",
+                                      "content": "Concept Artist · Expert",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -67397,7 +67395,7 @@
                                   "type": "frame",
                                   "id": "ExAM3",
                                   "name": "KYC",
-                                  "fill": "#ECFDF3",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -67412,16 +67410,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#067647"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "xUUr8",
                                       "name": "L",
-                                      "fill": "#067647",
-                                      "content": "Verified",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -67436,7 +67434,6 @@
                               "name": "Cell",
                               "width": 104,
                               "padding": 16,
-                              "justifyContent": "end",
                               "alignItems": "center",
                               "children": [
                                 {
@@ -67444,7 +67441,7 @@
                                   "id": "cOSz7",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "18%",
+                                  "content": "1 year",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "700"
@@ -67522,7 +67519,7 @@
                                       "id": "aDyF9",
                                       "name": "E",
                                       "fill": "$text-secondary",
-                                      "content": "liam@hollowtide.co",
+                                      "content": "Programmer · Skillful",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -67583,7 +67580,7 @@
                                   "type": "frame",
                                   "id": "aWJKq",
                                   "name": "KYC",
-                                  "fill": "#FFFAEB",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -67598,16 +67595,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "triangle-alert",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#B54708"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "xWCf4",
                                       "name": "L",
-                                      "fill": "#B54708",
-                                      "content": "Pending",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -67622,7 +67619,6 @@
                               "name": "Cell",
                               "width": 104,
                               "padding": 16,
-                              "justifyContent": "end",
                               "alignItems": "center",
                               "children": [
                                 {
@@ -67630,7 +67626,7 @@
                                   "id": "xO7LI",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "4%",
+                                  "content": "8 months",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "700"
@@ -67704,7 +67700,7 @@
                                       "id": "z8up3T",
                                       "name": "E",
                                       "fill": "$text-secondary",
-                                      "content": "mia@hollowtide.co",
+                                      "content": "Composer · Skillful",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -67765,7 +67761,7 @@
                                   "type": "frame",
                                   "id": "eiZyc",
                                   "name": "KYC",
-                                  "fill": "#ECFDF3",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -67780,16 +67776,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#067647"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "JCdQO",
                                       "name": "L",
-                                      "fill": "#067647",
-                                      "content": "Verified",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -67804,7 +67800,6 @@
                               "name": "Cell",
                               "width": 104,
                               "padding": 16,
-                              "justifyContent": "end",
                               "alignItems": "center",
                               "children": [
                                 {
@@ -67812,7 +67807,7 @@
                                   "id": "r3JHZ",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "—",
+                                  "content": "3 months",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "700"
@@ -68153,7 +68148,7 @@
                                   "type": "frame",
                                   "id": "x8BndN",
                                   "name": "KYC",
-                                  "fill": "#ECFDF3",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -68168,16 +68163,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#067647"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "AtrYC",
                                       "name": "L",
-                                      "fill": "#067647",
-                                      "content": "Verified",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -68315,7 +68310,7 @@
                                   "type": "frame",
                                   "id": "DW7qE",
                                   "name": "KYC",
-                                  "fill": "#FFFAEB",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -68330,16 +68325,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "triangle-alert",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#B54708"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "J521q",
                                       "name": "L",
-                                      "fill": "#B54708",
-                                      "content": "Pending",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -68372,36 +68367,6 @@
                           ]
                         }
                       ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "P0Npq",
-                  "name": "Foot",
-                  "width": "fill_container",
-                  "gap": 8,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "TfaeG",
-                      "name": "Ic",
-                      "width": 16,
-                      "height": 16,
-                      "icon": "info",
-                      "library": "lucide",
-                      "fill": "$text-secondary"
-                    },
-                    {
-                      "type": "text",
-                      "id": "dZPae",
-                      "name": "L",
-                      "fill": "$text-secondary",
-                      "content": "Platform holds 3% (fixed) · Mentor pool 4% · Investment reserve 8% · Unallocated 15%. Fully diluted, as of Jun 2026.",
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -151649,6 +151614,106 @@
                 },
                 {
                   "type": "frame",
+                  "id": "omL4S",
+                  "name": "Legal Section",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "miYmT",
+                      "name": "H",
+                      "fill": "$text-primary",
+                      "content": "Legal structure",
+                      "fontFamily": "$font",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "a3DrE",
+                      "name": "Legal",
+                      "width": "fill_container",
+                      "fill": "#FAFAFA",
+                      "cornerRadius": 12,
+                      "stroke": "$border-strong",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 12,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "rU0Ze",
+                          "name": "Tile",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "#F4F4F5",
+                          "cornerRadius": 6,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "ukh51",
+                              "name": "Ic",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "gavel",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Sg8Vt",
+                          "name": "Body",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Sphds",
+                              "name": "Status",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "IIVTr",
+                                  "name": "L",
+                                  "fill": "$text-primary",
+                                  "content": "Nothing on record",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "PZZK5",
+                              "name": "P",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "The team has not stated how the project is arranged legally — no co-development agreement and no operating company on record. Treat the cap table below as an agreement between people, not between entities.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
                   "id": "cUYiZ",
                   "name": "Equity Section",
                   "width": "fill_container",
@@ -152095,57 +152160,14 @@
                               "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "frame",
-                                  "id": "tD00I",
-                                  "name": "Avatar",
-                                  "width": 40,
-                                  "height": 40,
-                                  "fill": "#E7E7EA",
-                                  "cornerRadius": 9999,
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "xrDl4",
-                                      "name": "In",
-                                      "fill": "#6B6B70",
-                                      "content": "NA",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "700"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "Q9AQpO",
-                                  "name": "NI",
-                                  "width": "fill_container",
-                                  "layout": "vertical",
-                                  "gap": 4,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "ZD0Wc",
-                                      "name": "N",
-                                      "fill": "$text-primary",
-                                      "content": "Northgate Angels",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "tMMTM",
-                                      "name": "E",
-                                      "fill": "$text-secondary",
-                                      "content": "Pre-seed",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
+                                  "type": "text",
+                                  "id": "VfwX9",
+                                  "name": "N",
+                                  "fill": "$text-primary",
+                                  "content": "Investor 1",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
                                 }
                               ]
                             },
@@ -152161,7 +152183,7 @@
                                   "type": "frame",
                                   "id": "z9vwc",
                                   "name": "KYC",
-                                  "fill": "#ECFDF3",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -152176,16 +152198,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#067647"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "cEPYB",
                                       "name": "L",
-                                      "fill": "#067647",
-                                      "content": "Verified",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
@@ -152237,57 +152259,14 @@
                               "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "frame",
-                                  "id": "uw6ox",
-                                  "name": "Avatar",
-                                  "width": 40,
-                                  "height": 40,
-                                  "fill": "#E7E7EA",
-                                  "cornerRadius": 9999,
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "G0wkE",
-                                      "name": "In",
-                                      "fill": "#6B6B70",
-                                      "content": "FF",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "700"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "f4C1w",
-                                  "name": "NI",
-                                  "width": "fill_container",
-                                  "layout": "vertical",
-                                  "gap": 4,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "mhbzm",
-                                      "name": "N",
-                                      "fill": "$text-primary",
-                                      "content": "Foundry Fund",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "e5Il4",
-                                      "name": "E",
-                                      "fill": "$text-secondary",
-                                      "content": "Seed",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
+                                  "type": "text",
+                                  "id": "XFGJ6",
+                                  "name": "N",
+                                  "fill": "$text-primary",
+                                  "content": "Investor 2",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
                                 }
                               ]
                             },
@@ -152303,7 +152282,7 @@
                                   "type": "frame",
                                   "id": "MoOvR",
                                   "name": "KYC",
-                                  "fill": "#ECFDF3",
+                                  "fill": "#F1F0EE",
                                   "cornerRadius": 16,
                                   "gap": 4,
                                   "padding": [
@@ -152318,16 +152297,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
+                                      "icon": "circle-dashed",
                                       "library": "lucide",
-                                      "fill": "#067647"
+                                      "fill": "#76756F"
                                     },
                                     {
                                       "type": "text",
                                       "id": "JKMX4",
                                       "name": "L",
-                                      "fill": "#067647",
-                                      "content": "Verified",
+                                      "fill": "#76756F",
+                                      "content": "Not verified",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "600"
