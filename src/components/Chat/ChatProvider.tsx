@@ -1,26 +1,30 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
-import { Avatar, notification } from "antd";
+import { App, Avatar } from "antd";
 import axios from "axios";
 import {
 	ClientEvent,
+	HttpApiEvent,
 	type MatrixClient,
 	type MatrixEvent,
 	NotificationCountType,
 	type Room,
 	RoomEvent,
+	SyncState,
 } from "matrix-js-sdk";
 import { useSession } from "next-auth/react";
 import { type ReactNode, useCallback, useEffect, useRef } from "react";
 import { getDeviceDisplayName } from "@/helpers/device";
+import { pusherCacheKey } from "@/helpers/matrix-pushers";
 import { useChatDrawerQuery } from "@/hooks/useChatDrawerQuery";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
 import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
-import { createMatrixClient } from "@/lib/matrix-client";
+import { createMatrixClient, INITIAL_SYNC_LIMIT } from "@/lib/matrix-client";
 import type { MatrixChatSessionResponse } from "@/types/chat";
+import { endChatSession } from "./session";
 import { useChat } from "./useChat";
 
 /**
@@ -33,6 +37,8 @@ import { useChat } from "./useChat";
 export function ChatProvider({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
 	const { getLanguage } = useTolgee();
+	const { notification } = App.useApp();
+	const queryClient = useQueryClient();
 	const matrixDeviceId = useMatrixDeviceId();
 	const clientRef = useRef<MatrixClient | null>(null);
 	const { chatClient, setChatClient, setReady, setUnreadTotal } = useChat();
@@ -73,10 +79,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 	const setPushStatus = useChat((s) => s.setPushStatus);
 	useEffect(() => {
 		const deviceId = chatSessionData?.deviceId;
+		const matrixUserId = chatSessionData?.userId;
 		const pusherRegistered =
-			typeof window !== "undefined" && deviceId && firebasePushToken
+			typeof window !== "undefined" &&
+			deviceId &&
+			matrixUserId &&
+			firebasePushToken
 				? !!localStorage.getItem(
-						`matrix-pusher:${deviceId}:${firebasePushToken}`,
+						pusherCacheKey(matrixUserId, deviceId, firebasePushToken),
 					)
 				: false;
 		setPushStatus({
@@ -88,6 +98,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		});
 	}, [
 		chatSessionData?.deviceId,
+		chatSessionData?.userId,
 		firebasePushToken,
 		pushSupported,
 		pushPermission,
@@ -120,11 +131,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		let active = true;
 		let createdClient: MatrixClient | null = null;
 
-		const handleSync = (state: string) => {
-			if (state === "PREPARED") {
-				setReady(true);
-				if (createdClient) tryComputeUnreadTotal(createdClient);
-			}
+		// `on`, not `once`: the first sync event is ERROR whenever the homeserver
+		// is unreachable at boot, and consuming it would leave the chat stuck on
+		// its loader for the rest of the session.
+		const handleSync = (state: SyncState) => {
+			if (state !== SyncState.Prepared) return;
+			setReady(true);
+			if (createdClient) tryComputeUnreadTotal(createdClient);
+		};
+
+		// The homeserver rejected the token (expired, revoked, account erased).
+		// Drop it and pull a fresh session instead of dying silently.
+		const handleLoggedOut = () => {
+			endChatSession({ expired: true }).finally(() => {
+				queryClient.invalidateQueries({ queryKey: ["chat-client-session"] });
+			});
 		};
 
 		createMatrixClient({
@@ -139,8 +160,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 				}
 				clientRef.current = client;
 				createdClient = client;
-				client.startClient();
-				client.once(ClientEvent.Sync, handleSync);
+				client.on(ClientEvent.Sync, handleSync);
+				client.on(HttpApiEvent.SessionLoggedOut, handleLoggedOut);
+				// Lazy members and a bounded timeline keep the initial sync small
+				// on accounts with many rooms.
+				client.startClient({
+					lazyLoadMembers: true,
+					initialSyncLimit: INITIAL_SYNC_LIMIT,
+				});
 				setChatClient(client);
 			})
 			.catch(() => {});
@@ -149,6 +176,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 			active = false;
 			if (createdClient) {
 				createdClient.removeListener(ClientEvent.Sync, handleSync);
+				createdClient.removeListener(
+					HttpApiEvent.SessionLoggedOut,
+					handleLoggedOut,
+				);
 				createdClient.stopClient();
 			}
 			clientRef.current = null;
@@ -159,6 +190,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		chatSessionData?.deviceId,
 		chatSessionData?.token,
 		chatSessionData?.userId,
+		queryClient,
 		setChatClient,
 		setReady,
 		tryComputeUnreadTotal,
@@ -248,7 +280,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		return () => {
 			chatClient.removeListener(RoomEvent.Timeline, onTimeline);
 		};
-	}, [chatClient]);
+	}, [chatClient, notification]);
 
 	// in-app toast when a new chat invitation arrives (live only)
 	useEffect(() => {
@@ -304,7 +336,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		return () => {
 			chatClient.removeListener(RoomEvent.MyMembership, onMembership);
 		};
-	}, [chatClient]);
+	}, [chatClient, notification]);
 
 	// global "open-chat" event (used by notifications / deep links)
 	useEffect(() => {

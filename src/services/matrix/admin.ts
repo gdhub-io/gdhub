@@ -1,4 +1,6 @@
 import { env } from "@/helpers/env";
+import { isAllowedRemoteImage } from "@/helpers/remote-image";
+import { getMatrixUserToken } from "@/services/matrix/session";
 
 export async function ensureMatrixUser(
 	localpart: string,
@@ -13,66 +15,62 @@ export async function ensureMatrixUser(
 	const userId = `@${localpart}:${DOMAIN}`;
 
 	// Check if user exists via Synapse Admin API
-	try {
-		const getResp = await fetch(
-			`${BASE_URL}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`,
-			{
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${ADMIN_TOKEN}`,
-				},
+	const getResp = await fetch(
+		`${BASE_URL}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`,
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${ADMIN_TOKEN}`,
 			},
-		);
+		},
+	);
 
-		if (getResp.ok) {
-			const existing = (await getResp.json()) as {
-				avatar_url?: string;
-				threepids?: SynapseThreepid[];
-			};
+	if (getResp.ok) {
+		const existing = (await getResp.json()) as {
+			avatar_url?: string;
+			threepids?: SynapseThreepid[];
+		};
 
-			const updatingData: Record<string, unknown> = {};
-			if (displayname) updatingData.displayname = displayname;
-			// Profile avatars must be mxc:// media URIs — an HTTP URL is stored
-			// but never rendered by clients. Upload once; keep an existing mxc one.
-			if (avatarUrl && !existing.avatar_url?.startsWith("mxc://")) {
-				const mxc = await uploadMatrixMedia(avatarUrl).catch(() => null);
-				if (mxc) updatingData.avatar_url = mxc;
-			}
+		const updatingData: Record<string, unknown> = {};
+		if (displayname) updatingData.displayname = displayname;
+		// Profile avatars must be mxc:// media URIs — an HTTP URL is stored
+		// but never rendered by clients. Upload once; keep an existing mxc one.
+		if (avatarUrl && !existing.avatar_url?.startsWith("mxc://")) {
+			const mxc = await uploadMatrixMedia(avatarUrl).catch(() => null);
+			if (mxc) updatingData.avatar_url = mxc;
+		}
 
-			if (Object.keys(updatingData).length > 0) {
-				await fetch(
-					`${BASE_URL}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`,
-					{
-						method: "PUT",
-						headers: {
-							"Content-Type": "application/json",
-							Authorization: `Bearer ${ADMIN_TOKEN}`,
-						},
-						body: JSON.stringify(updatingData),
+		if (Object.keys(updatingData).length > 0) {
+			await fetch(
+				`${BASE_URL}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`,
+				{
+					method: "PUT",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${ADMIN_TOKEN}`,
 					},
-				).catch(() => {});
-			}
-
-			if (email) {
-				// Pass the threepids we already fetched — for an already-configured
-				// user this makes the whole call a no-op with zero extra requests.
-				await ensureMatrixEmailNotifications(
-					localpart,
-					email,
-					existing.threepids ?? [],
-				).catch((e) =>
-					console.error("[matrix] email notifications setup failed", e),
-				);
-			}
-
-			return { user_id: userId };
+					body: JSON.stringify(updatingData),
+				},
+			).catch(() => {});
 		}
-		if (getResp.status !== 404) {
-			const text = await getResp.text();
-			throw new Error(`Failed to check user: ${getResp.status} ${text}`);
+
+		if (email) {
+			// Pass the threepids we already fetched — for an already-configured
+			// user this makes the whole call a no-op with zero extra requests.
+			await ensureMatrixEmailNotifications(
+				localpart,
+				email,
+				existing.threepids ?? [],
+			).catch((e) =>
+				console.error("[matrix] email notifications setup failed", e),
+			);
 		}
-	} catch (err) {
-		throw err;
+
+		return { user_id: userId };
+	}
+	if (getResp.status !== 404) {
+		const text = await getResp.text();
+		throw new Error(`Failed to check user: ${getResp.status} ${text}`);
 	}
 
 	// Create user if not found
@@ -86,7 +84,7 @@ export async function ensureMatrixUser(
 		deactivated: false,
 	};
 
-	let createResp = await fetch(
+	const createResp = await fetch(
 		`${BASE_URL}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`,
 		{
 			method: "PUT",
@@ -97,21 +95,6 @@ export async function ensureMatrixUser(
 			body: JSON.stringify(createBody),
 		},
 	);
-
-	// Fallback for some deployments where v2 path is unavailable via proxy
-	if (createResp.status === 404) {
-		createResp = await fetch(
-			`${BASE_URL}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${ADMIN_TOKEN}`,
-				},
-				body: JSON.stringify(createBody),
-			},
-		);
-	}
 
 	if (!createResp.ok) {
 		const text = await createResp.text();
@@ -151,7 +134,9 @@ async function uploadMatrixMedia(imageUrl: string): Promise<string | null> {
 	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
 	const ADMIN_TOKEN = env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN");
 
-	if (!/^https?:\/\//.test(imageUrl)) return null;
+	// The URL comes from platform data (profile image, project cover) — fetching
+	// an arbitrary one from the server would be an SSRF.
+	if (!isAllowedRemoteImage(imageUrl)) return null;
 
 	const img = await fetch(imageUrl);
 	if (!img.ok) return null;
@@ -267,8 +252,8 @@ export async function ensureMatrixEmailNotifications(
 
 	let pusherCreated = false;
 	if (!hasEmailPusher) {
-		// Dedicated device id: minting a token for an existing device rotates its
-		// access token, which would log out a live web session.
+		// Its own device: deleting the browser's device (or logging it out) must
+		// not take the email pusher with it.
 		const { accessToken } = await getMatrixUserToken(
 			localpart,
 			"svc_email_pusher",
@@ -324,15 +309,38 @@ async function getRoomCreatorToken(matrixRoomId: string) {
 		throw new Error(`Room ${matrixRoomId} has no local creator`);
 	}
 
-	// Dedicated device id — never rotate a live web-session token.
+	// Backend work gets its own device, so revoking a user's browser session
+	// never breaks it — and vice versa.
 	const token = await getMatrixUserToken(creatorLocalpart, "svc_room_admin");
 	return { creatorMatrixId: details.creator as string, ...token };
+}
+
+type PowerLevels = {
+	users?: Record<string, number>;
+	events_default?: number;
+	[key: string]: unknown;
+};
+
+async function getRoomPowerLevels(
+	matrixRoomId: string,
+	accessToken: string,
+): Promise<PowerLevels> {
+	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
+	const resp = await fetch(
+		`${BASE_URL}/_matrix/client/v3/rooms/${encodeURIComponent(matrixRoomId)}/state/m.room.power_levels`,
+		{ headers: { Authorization: `Bearer ${accessToken}` } },
+	);
+	if (!resp.ok) {
+		const text = await resp.text();
+		throw new Error(`Failed to read power levels: ${resp.status} ${text}`);
+	}
+	return (await resp.json()) as PowerLevels;
 }
 
 async function setRoomPowerLevels(
 	matrixRoomId: string,
 	accessToken: string,
-	powerLevels: Record<string, unknown>,
+	powerLevels: PowerLevels,
 ): Promise<void> {
 	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
 	const resp = await fetch(
@@ -352,51 +360,40 @@ async function setRoomPowerLevels(
 	}
 }
 
-// Freeze a room: history stays readable, members can't post (events_default
-// above their level). The creator must KEEP PL 100 — Matrix auth rules forbid
-// raising your own level, so demoting the creator would make the freeze
-// unrecoverable; the creator technically could still post, but the chat UI
-// hides the input once the ChatRoom status is Closed.
-export async function makeRoomReadOnly(matrixRoomId: string): Promise<void> {
+/**
+ * Move `events_default` only: a PUT replaces the whole state event, so writing
+ * a hand-built content would silently drop `notifications`, `historical` and
+ * every other elevated member. The creator must KEEP power level 100 — Matrix
+ * auth rules forbid raising your own level, so demoting them would make the
+ * change unrecoverable.
+ */
+async function setEventsDefault(
+	matrixRoomId: string,
+	eventsDefault: number,
+): Promise<void> {
 	const { creatorMatrixId, accessToken } =
 		await getRoomCreatorToken(matrixRoomId);
+	const current = await getRoomPowerLevels(matrixRoomId, accessToken);
 
-	const powerLevels = {
-		users: { [creatorMatrixId]: 100 },
-		users_default: 0,
-		events: {},
-		events_default: 100,
-		state_default: 50,
-		ban: 50,
-		kick: 50,
-		redact: 50,
-		invite: 50,
-	};
-
-	await setRoomPowerLevels(matrixRoomId, accessToken, powerLevels);
+	await setRoomPowerLevels(matrixRoomId, accessToken, {
+		...current,
+		users: { ...current.users, [creatorMatrixId]: 100 },
+		events_default: eventsDefault,
+	});
 }
 
-// Undo makeRoomReadOnly (e.g. an application chat reopened on re-apply):
-// restore the default power levels so members can post again. Only lowers
-// events_default (100 -> 0) and keeps the creator at 100 — both changes the
-// creator's own token is allowed to make.
+/**
+ * Freeze a room: history stays readable, members can't post. The creator can
+ * technically still post, but the chat UI hides the input once the ChatRoom
+ * status is Closed.
+ */
+export async function makeRoomReadOnly(matrixRoomId: string): Promise<void> {
+	await setEventsDefault(matrixRoomId, 100);
+}
+
+// Undo makeRoomReadOnly (e.g. an application chat reopened on re-apply).
 export async function makeRoomWritable(matrixRoomId: string): Promise<void> {
-	const { creatorMatrixId, accessToken } =
-		await getRoomCreatorToken(matrixRoomId);
-
-	const powerLevels = {
-		users: { [creatorMatrixId]: 100 },
-		users_default: 0,
-		events: {},
-		events_default: 0,
-		state_default: 50,
-		ban: 50,
-		kick: 50,
-		redact: 50,
-		invite: 50,
-	};
-
-	await setRoomPowerLevels(matrixRoomId, accessToken, powerLevels);
+	await setEventsDefault(matrixRoomId, 0);
 }
 
 // (Re-)invite a user into an existing room on behalf of the initiator.
@@ -409,7 +406,7 @@ export async function inviteUserToRoom(
 ): Promise<boolean> {
 	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
 	const DOMAIN = env("MATRIX_CHAT_HOMESERVER_DOMAIN");
-	// Dedicated device id — never rotate a live web-session token.
+	// Backend device, separate from the user's browser session.
 	const { accessToken } = await getMatrixUserToken(
 		initiatorLocalpart,
 		"svc_backend",
@@ -441,7 +438,7 @@ export async function sendRoomMessageAs(
 	text: string,
 ): Promise<void> {
 	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
-	// Dedicated device id — never rotate a live web-session token.
+	// Backend device, separate from the user's browser session.
 	const { accessToken } = await getMatrixUserToken(localpart, "svc_backend");
 
 	const txnId = crypto.randomUUID();
@@ -538,54 +535,4 @@ export async function getRoomMemberIds(roomId: string): Promise<string[]> {
 
 	const data = (await resp.json()) as { members?: string[] };
 	return data.members || [];
-}
-
-export type MatrixUserToken = {
-	accessToken: string;
-	deviceId?: string;
-	userId?: string;
-};
-
-export async function getMatrixUserToken(
-	platformUserId: string,
-	deviceId?: string,
-): Promise<MatrixUserToken> {
-	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
-	const ADMIN_TOKEN = env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN");
-	const DOMAIN = env("MATRIX_CHAT_HOMESERVER_DOMAIN");
-
-	const userId = `@${platformUserId}:${DOMAIN}`;
-	const desiredDeviceId = deviceId || `web_${platformUserId}`;
-
-	const resp = await fetch(
-		`${BASE_URL}/_synapse/admin/v1/users/${encodeURIComponent(userId)}/login`,
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${ADMIN_TOKEN}`,
-			},
-			body: JSON.stringify({
-				device_id: desiredDeviceId,
-				initial_device_display_name: "GDHub Web",
-			}),
-		},
-	);
-
-	if (!resp.ok) {
-		const text = await resp.text();
-		throw new Error(`Failed to get matrix token: ${resp.status} ${text}`);
-	}
-
-	const data = (await resp.json()) as {
-		access_token: string;
-		device_id?: string;
-		user_id?: string;
-	};
-
-	return {
-		accessToken: data.access_token,
-		deviceId: data.device_id || desiredDeviceId,
-		userId: data.user_id,
-	};
 }

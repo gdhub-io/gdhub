@@ -21,3 +21,9 @@ export function getMatrixDeviceId() {
 
 	return deviceId;
 }
+
+/** Drop the device id so the next account on this browser gets its own. */
+export function clearMatrixDeviceId() {
+	if (typeof window === "undefined") return;
+	window.localStorage.removeItem(STORAGE_KEY);
+}

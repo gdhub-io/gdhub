@@ -381,3 +381,360 @@ Known gaps (test of 2026-06-29 showed users with **0 pushers**):
 4. Nudge UX: prompt users to enable notifications when they first open the
    chat drawer (permission request currently happens silently in
    `ChatProvider`).
+
+## 7. Sessions, tokens and access control (2026-08-19)
+
+An audit of the integration turned up three things that were wrong by design
+rather than by accident. All three are fixed in code; one of them needs a
+homeserver change to take full effect.
+
+### 7.1 Access tokens
+
+`POST /_synapse/admin/v1/users/{id}/login` — the endpoint every Matrix session
+used to come from — accepts **only** `valid_until_ms`, returns **only**
+`access_token`, creates **no device**, and by default hands out tokens that
+**never expire**. Every page load therefore minted another permanent
+credential, and nothing ever revoked one.
+
+Now, in [src/services/matrix/session.ts](../src/services/matrix/session.ts):
+
+- Tokens are cached in Redis per `(user, device)` — one token per browser,
+  reused across requests and tabs instead of one per page load.
+- The admin-login fallback always sends `valid_until_ms` (12 h).
+- `DELETE /api/chat/session` revokes the token via `/_matrix/client/v3/logout`
+  and drops the cache — the browser hands its own token along, so revocation
+  never hinges on Redis still holding the key; every sign-out path goes through `signOutWithChat`
+  ([src/components/Chat/session.ts](../src/components/Chat/session.ts)), which
+  also stops the client, clears the IndexedDB timeline, the device id and the
+  pusher bookkeeping.
+- The client listens for `HttpApiEvent.SessionLoggedOut` and pulls a fresh
+  session instead of silently dying when a token is rejected.
+
+**Legacy tokens already issued never expire.** Purging them is a one-off
+server-side operation — `POST /_synapse/admin/v1/reset_password/{user_id}`
+drops a user's tokens (the passwords are random UUIDs nobody holds), and
+`/logout/all` on the admin account drops every puppet token at once, including
+`MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN` itself, which then has to be re-issued.
+Verify on staging first.
+
+### 7.2 Real devices via an application service
+
+The `device_id` the browser generates was fiction: the admin API ignored it,
+so the SDK believed in a device the homeserver had never heard of, and none of
+the `svc_*` device ids did what their comments claimed.
+
+`getMatrixUserToken` now prefers a **real** login when
+`MATRIX_CHAT_APPSERVICE_TOKEN` is set: `POST /_matrix/client/v3/login` with
+`m.login.application_service`. That produces a genuine device — visible in
+`/devices`, revocable with `/logout`, and owning its pushers.
+
+Verified against the local stack (Synapse latest, 2026-08-19): the login
+returns `device_id`, the device shows up in `/devices`, `/logout` kills both
+the device and its tokens, and the appservice is refused (`M_FORBIDDEN`) when
+it tries to log in as `@admin` — the namespace regex holds. Re-logging in with
+the same `device_id` does **not** invalidate the previous token, so the Redis
+cache is what keeps token count down; the `svc_*` device ids exist so that
+revoking a browser session and revoking backend access stay independent.
+
+Rollout (the code falls back to admin login until step 3, so deploy order is
+free):
+
+1. Install a registration file on the homeserver, e.g.
+   `/etc/matrix-synapse/gdhub-appservice.yaml`:
+
+   ```yaml
+   id: gdhub
+   url: null                      # pull-only: Synapse never pushes to us
+   as_token: "<long random secret>"
+   hs_token: "<another long random secret>"
+   sender_localpart: gdhub_appservice
+   rate_limited: false
+   namespaces:
+     users:
+       # Platform users are cuids: "c" + lowercase alphanumerics. Deliberately
+       # narrower than @.*  — the AS must not be able to log in as the admin.
+       - exclusive: false
+         regex: "@c[a-z0-9]+:matrix\\.gdhub\\.io"
+     aliases: []
+     rooms: []
+   ```
+
+2. Reference it from `homeserver.yaml` (`app_service_config_files:`) and
+   restart Synapse.
+3. Set `MATRIX_CHAT_APPSERVICE_TOKEN` to the `as_token` value in the app's
+   environment. **Add it to `.env.example` too.**
+4. Once prod runs on it, delete `adminLogin` from `session.ts`.
+
+Note the namespace regex has to keep matching the platform's id format — it is
+tied to `User.id` being a cuid.
+
+The local dev stack (`matrix-chat-server`) already has this installed:
+`synapse/gdhub-appservice.yaml` plus `app_service_config_files` in
+`homeserver.yaml`. Its `as_token` is the value for `MATRIX_CHAT_APPSERVICE_TOKEN`
+in `.env`.
+
+### 7.3 Who may read a chat
+
+`GET /api/chat/rooms/[matrixRoomId]` returned the chat context — advice topic
+and comment, vacancy title, offered amount, project — to **any** signed-in
+caller, and room ids travel in Novu deep links. `invite-response` notified the
+members of any room id it was handed, and `rooms/kinds` confirmed which room
+ids exist.
+
+[src/services/chat/participation.ts](../src/services/chat/participation.ts) is
+now the single answer to "does this user belong to this chat": `directKey`
+segments and context fields, plus one batched query for the author side of a
+vacancy chat, and — for a single room, once the cheap checks fail — Matrix
+membership itself. The fallback is not optional: a vacancy chat may be opened
+by any project admin (the route gates on `project.vacancies.manage`), and the
+registry has no idea who that is. `invite-response` accepts registry participation *or* current
+Matrix membership — a decline leaves the room before calling, so membership
+alone would silence the notification.
+
+This stays a stopgap until `ChatRoomMember` is actually written (§4) — that
+row is what would make membership a single indexed lookup.
+
+### 7.4 Client bootstrap
+
+- `IndexedDBStore` per Matrix user + `lazyLoadMembers` + `initialSyncLimit`:
+  a page load resumes the sync instead of replaying a full one.
+- The sync listener uses `on`, not `once` — the first sync event is `ERROR`
+  whenever the homeserver is unreachable at boot, and consuming it left the
+  drawer stuck on its loader for the rest of the session.
+- Pusher registration is cached per **account**, not per device: the device id
+  and the FCM token survive a sign-out, so the next account on the same
+  browser used to skip registration while the pusher still pointed at the
+  previous one.
+- Rooms are created with an explicit `preset`, `history_visibility: invited`
+  and `guest_access: forbidden`. **The homeserver must not set
+  `encryption_enabled_by_default_for_room_type`** — the web client runs
+  without crypto, and server-side puppeting is incompatible with E2EE.
+- Server-side image fetches (profile avatar, room avatar) go through an
+  allowlist ([src/helpers/remote-image.ts](../src/helpers/remote-image.ts)),
+  mirroring `images.remotePatterns` in next.config.js.
+- `POST /api/dev/push-test` was unauthenticated: anyone could push arbitrary
+  notifications to any known pushkey through our gateway. It now requires a
+  session and 404s in production.
+
+### 7.5 Where the notification emails link
+
+Synapse's "you have missed messages" emails linked to **matrix.to** — a third
+party running a client we do not use. The destination is a homeserver setting,
+`email.client_base_url`, and the URL shape it produces is fixed:
+
+```
+{client_base_url}/#/room/{roomId}          # the room
+{client_base_url}/#/room/{roomId}/{eventId} # a single notification
+```
+
+Templates cannot help: the mailer hands them a finished `link` and no room id.
+
+So `client_base_url` points at `https://gdhub.io/chat` (locally
+`http://localhost:3000/chat`), and [src/app/chat](../src/app/chat) turns that
+shape into `/hub?chat=1&roomId=…`. The room id lives in the URL *fragment*,
+which never reaches the server, so the page is a client-side redirect —
+[deep-link.ts](../src/app/chat/deep-link.ts) holds the mapping and is unit
+tested.
+
+`src/proxy.ts` now keeps the query string in `callbackUrl`: without it a
+signed-out reader following a chat link landed on the hub with no chat open.
+
+Also on the server side: `notif_mail.html` still carried the matrix.org logo
+(`_base.html` had already been switched to gdhub's), and the appservice
+namespace regex had to widen — seeded dev users are `@user-author-1`, not
+cuids, so a cuid-shaped regex 500'd their `/api/chat/session`. It still
+excludes `@admin` and the appservice's own account.
+
+
+## 8. Spaces and chats (design, 2026-08-19)
+
+Where a chat belongs, who may read it, and how it looks in a third-party
+Matrix client. Supersedes the "`ChatRoomMember` is never written" and
+"sidebar fully from DB" items in §4 — they are stages here now.
+
+### 8.1 Two families, one access rule
+
+```
+kind == Group  →  participant = SpaceMember(spaceType, spaceId)
+otherwise      →  participant = ChatRoomMember
+```
+
+That is the whole rule, and it needs no special case for a conversation whose
+two sides live in different places. A scout talking to a project author, an
+advisor talking to a user, a recruiter talking to a candidate — in each of them
+one side acts from within a space and the other is an outsider, and none of
+them is a chat *of* a space. They are 1:1 chats with a subject attached, the
+shape `AdviceRequest` has had in production all along.
+
+It replaces [src/services/chat/participation.ts](../src/services/chat/participation.ts),
+which infers participation from `directKey` segments and context fields
+because nothing better exists yet (§7.3).
+
+### 8.2 The space on a chat is its SUBJECT, not its initiator
+
+Storing the initiator's space would file a scout's deal chat under the scout
+cabinet for the project author — a place they are not in and should not see.
+Storing the subject makes one field serve both sides:
+
+| Chat | `spaceType/spaceId` | Insider | Outsider |
+|---|---|---|---|
+| Scout deal | `project/{projectId}` | author — under their project | scout — "Deals" bucket |
+| Vacancy offer | `project/{projectId}` | author, recruiter | candidate — "Offers" |
+| Advice request | `project/{id}` or `hub/default` | author, when it is about a project | expert — "Experts" |
+| Advisor session | `hub/default`, or the project | — | both — "Advisors" |
+| Team / course / event chat | the space itself | everyone | — |
+
+Drawer rule, one line: **a chat shows under its space when you are a member of
+that space, and in a `kind` bucket otherwise.** So `kind-groups.ts` does not
+disappear — it becomes the fallback for the outside party.
+
+Permission to *create* such a chat comes from the initiator's own space and is
+checked on the route, the way `rooms/vacancy` already composes
+`hub.talent_pool.contact` with `project.vacancies.manage`.
+
+Schema:
+
+```prisma
+model ChatRoom {
+  spaceType String                       // "project" | "course" | "event" | "hub" | …
+  spaceId   String @default("default")   // entity id; "default" for single-instance spaces
+  kind      ChatRoomKind                 // Group | Direct | AdviceRequest | VacancyOffer | ScoutDeal
+  parentId  String?                      // course study-group rooms hang under the course room
+  @@index([spaceType, spaceId])
+}
+```
+
+`ProjectGroup` / `EventGroup` / `CourseGroup` collapse into a single `Group`:
+with `spaceType` present they only differed by it, and no row was ever created
+with any of them. `ChatRoomMember` starts being written — for 1:1 chats it is
+the access list, for group chats it only carries per-room state (`lastReadAt`,
+`notificationsMuted`, and the alias columns).
+
+**Scout deals wait for the domain.** `scoutSpace` declares
+`deals: ["view", "create", "manage"]`, but there is no `ScoutDeal` model — the
+scout space is still being built. Every other kind hangs off a domain row
+(`TeamVacancy`, `AdviceRequest`) that its provider loads, gates `canClose` on
+and syncs on close; the deal chat gets built when that row exists, not before.
+The alias columns on `ChatRoomMember` find their first real user here: a fund
+often does not want to reveal itself in the first message.
+
+A scout cabinet is personal (`ScoutCabinet.userId @unique`) while the scout
+space is single-instance, so a colleague does not see someone else's deal chat.
+If a fund's team ever should, that is extra `ChatRoomMember` rows — not a space
+rule.
+
+### 8.3 Membership sync
+
+Group chats mirror `SpaceMember` into Matrix membership. The single write path
+already exists — `joinSpace` / `revokeSpaceMember` / `deleteSpaceMembership` in
+[src/services/access/membership.ts](../src/services/access/membership.ts) — but
+those take a transaction client, so a Matrix call must not happen inside them.
+Enqueue after commit (BullMQ; today `src/queues` has only `matching` and
+`telegram`), and run a reconcile job: Matrix calls fail, and without one the
+drift accumulates silently.
+
+Matrix has no way to keep someone in a room. A user can leave from any client,
+so reconcile re-invites rather than force-joins, and the platform shows "not in
+the chat" instead of pretending otherwise.
+
+Power levels follow the space role: Owner/Admin → 50, Member → 0. A read-only
+Guest cannot be expressed by a power level alone (it would mean raising
+`events_default` to 25 and putting members at 25) — decide before rooms exist,
+because changing it later means rewriting state in every room.
+
+### 8.4 Third-party clients
+
+The goal is that people can talk from Element while the platform stays the
+control plane: it creates rooms, syncs membership, closes them.
+
+**Nobody can log in today.** Accounts are provisioned with a
+`crypto.randomUUID()` password that is never shown, and the platform itself has
+no passwords (Google OAuth + magic link). The practical fix is an app password:
+a "connect a chat app" section in profile settings that generates one, sets it
+via `PUT /_synapse/admin/v2/users/{id}`, and shows it once together with the
+user's `@id:matrix.gdhub.io` and the homeserver URL. OIDC is the textbook
+answer and a poor fit here — mapping a Google token onto an existing cuid
+localpart needs a custom Synapse mapping module, and magic-link users have no
+Google identity at all.
+
+**Structure in Element comes from `m.space`.** One space room per platform
+space, group chats as `m.space.child`. 1:1 chats get no parent and instead need
+`m.direct` account data on both sides — currently `is_direct: true` is passed to
+`createRoom`, which only marks the invite, so Element would file them as
+ordinary rooms rather than under People.
+
+Deal chats may be hung under the scout cabinet's space room so the scout gets a
+pipeline view; the outsider, not being in that space, sees the room in Home.
+Do **not** write the reciprocal `m.space.parent` into the chat room then — it
+would point the outsider at a space they must not see. Verify the Home
+behaviour in a real Element before relying on it.
+
+**Power levels stop being cosmetic.** In Element a default-power member can
+invite anyone, rename the room and enable encryption — and `SpaceMember` turns
+into a lie. Group rooms need `invite: 50`, `kick: 50`, `ban: 50`,
+`state_default: 50`, members at 0.
+
+The application service (§7.2) is the natural owner: let
+`@gdhub_appservice` create group rooms and hold PL 100, instead of "whoever
+happened to initiate". Today the creator is the initiating user, which is why
+`makeRoomReadOnly` has to look the creator up through the admin API and mint a
+token as them. The bot shows up in the member list — give it a display name and
+an avatar.
+
+Federation is off (`federation_domain_whitelist: []` plus the removed listener
+resource), so no outsider can be pulled in and rooms cannot leak to another
+server. If a scout space ever needs an external investor with their own Matrix
+account, federation has to open — and then `invite: 50` is the only thing left
+holding the line.
+
+### 8.5 Invariants
+
+1. **Matrix membership is written by the platform only.** Clients may leave;
+   they may not add anyone. Enforced by power levels, not by convention.
+2. **Rooms are never encrypted.** E2EE breaks server-side sending
+   (`sendRoomMessageAs`, opening messages) and the web client, which runs
+   without crypto. `state_default: 50` keeps members from turning it on, and
+   the homeserver must not set
+   `encryption_enabled_by_default_for_room_type`.
+3. **The registry is the source of truth for what a chat *is*;** Matrix is the
+   transport and the delivery ACL. Both have to agree, and the reconcile job is
+   what makes them.
+
+### 8.6 Gaps
+
+| | |
+|---|---|
+| 1 | `ChatRoom.spaceType/spaceId/parentId` — a chat has no place in the model |
+| 2 | No `chat` feature in project/event/course/scout; `hub.chat.use` is declared and never checked |
+| 3 | Group chats do not exist: enum values, no provider, no creation, no lifecycle |
+| 4 | Nothing syncs `SpaceMember` into Matrix membership, and nothing reconciles |
+| 5 | `ChatRoomMember` is never written — no server-side unread, mute or aliases |
+| 6 | No `SpaceRole` → power level mapping |
+| 7 | Archiving a project, finishing a course, ending an event does nothing to its chat |
+| 8 | Room name, topic and avatar are set once at creation and never follow the entity |
+| 9 | No queue for best-effort Matrix work — it is inline with `console.error` |
+| 10 | No way to sign in from a third-party client |
+| 11 | No `m.space` rooms, no `m.space.child` — Element would show a flat list |
+| 12 | Power levels are open: a member can invite, rename and enable encryption |
+| 13 | `m.direct` is not written, so 1:1 chats do not look like DMs |
+| 14 | Leaving a room from another client is not handled anywhere |
+| 15 | Creating a Direct chat is gated by `admin.users.manage`, a stand-in for `hub.chat.use` |
+
+### 8.7 Staging
+
+1. **Schema** — `spaceType` / `spaceId` / `parentId`, collapse the three group
+   kinds into `Group`, index. In `@gdhub-io/gdhub-prisma`, so it starts there.
+2. **Permissions** — `chat: ["view", "post", "manage"]` on project/event/course/
+   scout; enforce `hub.chat.use` and drop the `admin.users.manage` stand-in.
+3. **Access rule** — replace `participation.ts` with §8.1; start writing
+   `ChatRoomMember`.
+4. **Power levels and the encryption lock** — before anyone signs into Element,
+   otherwise every existing room has to be rewritten afterwards.
+5. **Group chats** — `ensureSpaceChat(spaceType, spaceId)`, a provider, the
+   project team chat first.
+6. **Membership sync** — queue plus reconcile job (§8.3).
+7. **App password** — independent of everything above, can ship any time.
+8. **`m.space` mirroring** — after stage 1, when the mapping is a straight
+   read of the registry.
+9. **Lifecycle and metadata** — freeze/purge on space events, name and avatar
+   following the entity.

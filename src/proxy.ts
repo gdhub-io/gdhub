@@ -19,7 +19,12 @@ export default auth((req) => {
 
 	if (!session) {
 		const signInUrl = new URL("/signin", req.url);
-		signInUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+		// Keep the query: a chat deep link is `/hub?chat=1&roomId=…`, and a path
+		// without it drops the reader on the hub with no chat open.
+		signInUrl.searchParams.set(
+			"callbackUrl",
+			`${req.nextUrl.pathname}${req.nextUrl.search}`,
+		);
 		return NextResponse.redirect(signInUrl);
 	}
 

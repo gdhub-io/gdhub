@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
+import {
+	filterParticipantRooms,
+	participationSelect,
+} from "@/services/chat/participation";
 import { prisma } from "@/services/prisma";
 
 const KindsQuerySchema = z.object({
@@ -29,12 +33,17 @@ export const GET = withAuth({ mode: "user" })(
 
 		const rooms = await prisma.chatRoom.findMany({
 			where: { matrixRoomId: { in: ids } },
-			select: { matrixRoomId: true, kind: true },
+			select: { matrixRoomId: true, ...participationSelect },
 		});
+
+		// The client sends room ids from its own sync, but nothing stops it from
+		// sending someone else's — the mapping would then confirm which rooms
+		// exist and what they are about.
+		const own = await filterParticipantRooms(rooms, user.id);
 
 		return json(
 			Object.fromEntries(
-				rooms
+				own
 					.filter((room) => room.matrixRoomId)
 					.map((room) => [room.matrixRoomId as string, room.kind]),
 			),

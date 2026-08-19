@@ -13,34 +13,55 @@ import { redisConnect } from "@/services/redis";
  * One long-lived client for the process, the way the queues do it. Connecting
  * per call would open a TCP connection on every read and leak it whenever a
  * command threw before the cleanup ran.
- *
- * `undefined` means "not tried yet", `null` means "tried and unusable" — the
- * difference is what stops a missing REDIS_URL from being retried on every
- * single call.
  */
 let client: Redis | null | undefined;
+let connecting: Promise<Redis | null> | undefined;
 
-function getClient(): Redis | null {
+/**
+ * The client, once its socket is actually up.
+ *
+ * Connecting is asynchronous, so the first command of a process would other-
+ * wise be sent into a socket that does not exist yet and die with "Stream
+ * isn't writeable" — every cold start lost its first cache hit. Waiting for
+ * the connection fixes that WITHOUT re-enabling the offline queue, which would
+ * make commands hang for the whole reconnect loop while Redis is down.
+ *
+ * A failed connect is not remembered: the next call tries again, so a Redis
+ * that was restarting at boot does not disable the cache for the process life.
+ */
+async function getClient(): Promise<Redis | null> {
 	if (client !== undefined) return client;
+	if (connecting) return connecting;
 
-	try {
-		client = redisConnect({
+	connecting = (async () => {
+		// `redisConnect` throws when REDIS_URL is absent.
+		const redis = redisConnect({
 			maxRetriesPerRequest: 1,
 			// Fail the command rather than queue it forever while Redis is down.
 			enableOfflineQueue: false,
+			lazyConnect: true,
 		});
-	} catch (error) {
-		// `redisConnect` throws when REDIS_URL is absent.
-		console.error("[cache] unavailable, running without it", error);
-		client = null;
-	}
+		await redis.connect();
+		return redis;
+	})()
+		.then((redis) => {
+			client = redis;
+			return redis;
+		})
+		.catch((error) => {
+			console.error("[cache] unavailable, running without it", error);
+			return null;
+		})
+		.finally(() => {
+			connecting = undefined;
+		});
 
-	return client;
+	return connecting;
 }
 
 /** The cached value, or `undefined` on a miss, a parse failure or an outage. */
 export async function cacheGet<T>(key: string): Promise<T | undefined> {
-	const redis = getClient();
+	const redis = await getClient();
 	if (!redis) return undefined;
 
 	try {
@@ -58,7 +79,7 @@ export async function cacheSet<T>(
 	value: T,
 	ttlSeconds: number,
 ): Promise<void> {
-	const redis = getClient();
+	const redis = await getClient();
 	if (!redis) return;
 
 	try {
@@ -70,7 +91,7 @@ export async function cacheSet<T>(
 
 /** Drops a key, so the next read goes back to the source. */
 export async function cacheDelete(key: string): Promise<void> {
-	const redis = getClient();
+	const redis = await getClient();
 	if (!redis) return;
 
 	try {

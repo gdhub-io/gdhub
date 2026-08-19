@@ -1,5 +1,17 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+// Tokens are cached in Redis; keep the tests hermetic with an in-memory stand-in.
+const tokenCache = new Map<string, unknown>();
+vi.mock("../src/services/cache", () => ({
+	cacheGet: async (key: string) => tokenCache.get(key),
+	cacheSet: async (key: string, value: unknown) => {
+		tokenCache.set(key, value);
+	},
+	cacheDelete: async (key: string) => {
+		tokenCache.delete(key);
+	},
+}));
+
 // The admin service talks to Synapse over plain HTTP — stub fetch and assert
 // the wire protocol (power levels, threepids, pushers).
 
@@ -41,6 +53,7 @@ beforeAll(() => {
 beforeEach(() => {
 	fetchCalls = [];
 	fetchRoutes = [];
+	tokenCache.clear();
 });
 
 function stubRoomAdminFlow() {
@@ -56,15 +69,30 @@ function stubRoomAdminFlow() {
 			respond: () => respondJson({ access_token: "creator-token" }),
 		},
 		{
-			match: (url) => url.includes("/state/m.room.power_levels"),
+			// Current state — freezing is a read-modify-write
+			match: (url, init) =>
+				url.includes("/state/m.room.power_levels") && init?.method !== "PUT",
+			respond: () =>
+				respondJson({
+					users: { [`@creator:${DOMAIN}`]: 100, [`@other:${DOMAIN}`]: 50 },
+					users_default: 0,
+					events_default: 0,
+					notifications: { room: 50 },
+				}),
+		},
+		{
+			match: (url, init) =>
+				url.includes("/state/m.room.power_levels") && init?.method === "PUT",
 			respond: () => respondJson({ event_id: "$e" }),
 		},
 	);
 }
 
 function powerLevelsBody() {
-	const call = fetchCalls.find((c) =>
-		c.url.includes("/state/m.room.power_levels"),
+	const call = fetchCalls.find(
+		(c) =>
+			c.url.includes("/state/m.room.power_levels") &&
+			c.init?.method === "PUT",
 	);
 	expect(call).toBeDefined();
 	// biome-ignore lint/style/noNonNullAssertion: asserted above
@@ -81,9 +109,14 @@ describe("room freeze / unfreeze power levels", () => {
 		const body = powerLevelsBody();
 		// The creator must stay at 100: Matrix auth rules forbid raising your own
 		// level, so demoting the creator would make the freeze unrecoverable.
-		expect(body.users).toEqual({ [`@creator:${DOMAIN}`]: 100 });
+		expect(body.users).toEqual({
+			[`@creator:${DOMAIN}`]: 100,
+			[`@other:${DOMAIN}`]: 50,
+		});
 		expect(body.events_default).toBe(100);
 		expect(body.users_default).toBe(0);
+		// A PUT replaces the whole event — everything else must survive it.
+		expect(body.notifications).toEqual({ room: 50 });
 	});
 
 	it("makeRoomWritable only lowers events_default — a change the creator may make", async () => {
@@ -93,7 +126,10 @@ describe("room freeze / unfreeze power levels", () => {
 		await makeRoomWritable("!room1");
 
 		const body = powerLevelsBody();
-		expect(body.users).toEqual({ [`@creator:${DOMAIN}`]: 100 });
+		expect(body.users).toEqual({
+			[`@creator:${DOMAIN}`]: 100,
+			[`@other:${DOMAIN}`]: 50,
+		});
 		expect(body.events_default).toBe(0);
 	});
 });

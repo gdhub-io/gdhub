@@ -293,7 +293,9 @@ export default function ChatMessages() {
 					const type = ev.getType();
 					const senderId = ev.getSender();
 					const time = dayjs(ev.getTs()).format("HH:mm");
-					const key = ev.getId() || `${ev.getTs()}-${Math.random()}`;
+					// A local echo has no event id yet — its transaction id is stable,
+					// while a random key would remount the bubble on every render.
+					const key = ev.getId() || ev.getTxnId() || `${ev.getTs()}`;
 
 					if (type === "m.room.message") {
 						const content = (ev.getContent() || {}) as MessageEventContent;

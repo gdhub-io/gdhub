@@ -1,6 +1,6 @@
 import type * as sdk from "matrix-js-sdk";
 import { create } from "zustand";
-import type { MatrixSession } from "@/services/matrix";
+import type { MatrixSession } from "@/types/chat";
 
 export type PushStatus = {
 	supported: boolean;

@@ -21,10 +21,11 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { genConfig } from "react-nice-avatar";
 import { useAccess } from "@/components/access/AccessProvider";
+import { signOutWithChat } from "@/components/Chat/session";
 import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
@@ -255,7 +256,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				label: t("hub.menu.signOut", "Sign out"),
 				key: "logout",
 				danger: true,
-				onClick: () => signOut({ redirect: true, callbackUrl: "/" }),
+				onClick: () => signOutWithChat({ redirect: true, callbackUrl: "/" }),
 			},
 		];
 

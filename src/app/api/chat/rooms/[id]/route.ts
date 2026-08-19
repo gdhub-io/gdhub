@@ -1,4 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { isChatParticipant } from "@/services/chat/participation";
 import { getChatProvider } from "@/services/chat/providers";
 import { prisma } from "@/services/prisma";
 
@@ -17,11 +18,18 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			kind: true,
 			status: true,
 			finishedAt: true,
+			directKey: true,
 			context: true,
 		},
 	});
 
 	if (room) {
+		// The context carries private data (advice topic and comment, offered
+		// amount, project) — a room id alone must not unlock it.
+		if (!(await isChatParticipant(room, currentUser.id, matrixRoomId))) {
+			return apiError.forbidden();
+		}
+
 		const provider = getChatProvider(room.kind);
 		if (provider) {
 			const loaded = await provider.load(room);

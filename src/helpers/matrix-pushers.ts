@@ -1,3 +1,29 @@
+const PUSHER_CACHE_PREFIX = "matrix-pusher:";
+
+/**
+ * Registration bookkeeping is per ACCOUNT, not just per device: the device id
+ * and the FCM token both survive a sign-out, so a key without the user would
+ * tell the next account on this browser that its pusher is already registered
+ * while the pusher still points at the previous one.
+ */
+export function pusherCacheKey(
+	userId: string,
+	deviceId: string,
+	pushKey: string,
+) {
+	return `${PUSHER_CACHE_PREFIX}${userId}:${deviceId}:${pushKey}`;
+}
+
+export function clearPusherCache() {
+	if (typeof window === "undefined") return;
+
+	for (const key of Object.keys(window.localStorage)) {
+		if (key.startsWith(PUSHER_CACHE_PREFIX)) {
+			window.localStorage.removeItem(key);
+		}
+	}
+}
+
 type RegisterMatrixPusherArgs = {
 	accessToken: string;
 	deviceId: string;
@@ -44,7 +70,7 @@ export async function registerMatrixPusher({
 			(typeof navigator !== "undefined" ? navigator.userAgent : "Web"),
 		lang:
 			lang || (typeof navigator !== "undefined" ? navigator.language : "en"),
-		device_id: deviceId,
+		// `pushers/set` has no device field — the token's device owns the pusher.
 		profile_tag: deviceId.slice(-8),
 		append: false,
 		data: {
