@@ -89,6 +89,34 @@ export async function cacheSet<T>(
 	}
 }
 
+/**
+ * Stores a value only if the key is free, and returns whichever value now holds
+ * it — the one just written, or the one that was already there.
+ *
+ * `cacheSet` cannot express this: two processes racing to create the same key
+ * would each overwrite the other, and a caller that derives something from the
+ * stored value (a rotating salt, a lock token) would see it change underneath
+ * them. Returns `undefined` only when Redis is unreachable.
+ */
+export async function cacheClaim(
+	key: string,
+	value: string,
+	ttlSeconds: number,
+): Promise<string | undefined> {
+	const redis = await getClient();
+	if (!redis) return undefined;
+
+	try {
+		const claimed = await redis.set(key, value, "EX", ttlSeconds, "NX");
+		if (claimed) return value;
+
+		return (await redis.get(key)) ?? undefined;
+	} catch (error) {
+		console.error(`[cache] claim failed for ${key}`, error);
+		return undefined;
+	}
+}
+
 /** Drops a key, so the next read goes back to the source. */
 export async function cacheDelete(key: string): Promise<void> {
 	const redis = await getClient();

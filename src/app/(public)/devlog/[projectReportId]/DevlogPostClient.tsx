@@ -22,9 +22,10 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
-import { PageViews } from "@/components/PageViews";
+import { ViewCount } from "@/components/ViewCount";
 import { getCleanTextContent } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
+import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
@@ -147,6 +148,8 @@ const MarkdownImage = ({
 export function DevlogPostClient({ post }: PageProps) {
 	const { t } = useTranslate();
 
+	useContentPageView("ProjectReport", post.id);
+
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
 		return date.toISOString().split("T")[0].split("-").reverse().join("/");
@@ -241,10 +244,9 @@ export function DevlogPostClient({ post }: PageProps) {
 										{post?.createdAt ? formatDate(post.createdAt) : ""}
 									</Text>
 								</Flex>
-								<PageViews
-									path={`/devlog/${post?.id}`}
+								<ViewCount
+									count={post.viewsCount}
 									containerStyle={{ fontSize: "12px" }}
-									startDate={post?.createdAt}
 								/>
 							</Flex>
 						</Flex>

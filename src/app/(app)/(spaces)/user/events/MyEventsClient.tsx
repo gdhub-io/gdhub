@@ -21,6 +21,7 @@ import React, { useMemo } from "react";
 import { MyEventCard } from "@/components/events/MyEventCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
+import { ViewCount } from "@/components/ViewCount";
 import { EventStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
@@ -37,11 +38,6 @@ const CreateLocaleVersionModal = dynamic(
 		import("@/components/modals/CreateLocaleVersionModal").then(
 			(m) => m.default,
 		),
-	{ ssr: false },
-);
-const PageViews = dynamic(
-	() =>
-		import("@/components/PageViews").then((m) => m.PageViews).then((m) => m),
 	{ ssr: false },
 );
 
@@ -376,13 +372,7 @@ const MyEventsClient = () => {
 											event.slug && event.publishedAt ? (
 												<>
 													{" \u00b7 "}
-													<PageViews
-														path={`/event/${event.slug}`}
-														locale={event.lang}
-														isUnique={!!event.parentId}
-														startDate={event.publishedAt}
-														minViews={0}
-													/>
+													<ViewCount count={event.viewsCount} minViews={0} />
 												</>
 											) : null
 										}

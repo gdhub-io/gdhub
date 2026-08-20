@@ -10,8 +10,9 @@ import type React from "react";
 import { useMemo, useState } from "react";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import { DevlogPostLink } from "@/components/DevlogPostLink";
-import { PageViews } from "@/components/PageViews";
+import { ViewCount } from "@/components/ViewCount";
 import { getPageCover } from "@/helpers/content";
+import { useFeedViews } from "@/hooks/useContentViews";
 import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
@@ -24,6 +25,7 @@ interface DevlogPost {
 	coverImage?: string;
 	publishedAt: string;
 	applauseCount?: number;
+	viewsCount: number;
 	isSystem?: boolean;
 	video: string | null;
 	project?: {
@@ -133,12 +135,7 @@ const PostCard: React.FC<{
 							{post.applauseCount ? (
 								<ApplauseButton count={post.applauseCount} />
 							) : null}
-							{!post.isSystem && (
-								<PageViews
-									path={`/devlog/${post.id}`}
-									startDate={post.publishedAt}
-								/>
-							)}
+							{!post.isSystem && <ViewCount count={post.viewsCount} />}
 						</div>
 					</div>
 				</div>
@@ -178,6 +175,7 @@ const PostSkeleton = () => {
 const PublicDevlogPosts = ({ projectId }: PublicDevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
+	const trackView = useFeedViews("ProjectReport");
 
 	const { data: posts, isLoading } = useQuery<DevlogPost[]>({
 		queryKey: ["public-devlog-posts", projectId],
@@ -228,7 +226,12 @@ const PublicDevlogPosts = ({ projectId }: PublicDevlogPostsProps) => {
 
 			<div className={styles.postsList}>
 				{posts.map((post) => (
-					<div key={post.id} className={styles.postWrapper}>
+					<div
+						key={post.id}
+						className={styles.postWrapper}
+						ref={trackView}
+						data-view-id={post.id}
+					>
 						<PostCard post={post} onClick={(e) => e.stopPropagation()} />
 					</div>
 				))}
