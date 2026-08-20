@@ -10,6 +10,7 @@ import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { isHeadlineEvent } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import { useWorkDirections } from "@/hooks/library";
+import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -24,6 +25,8 @@ export interface EventPageProps {
 }
 
 export function EventPageClient({ event }: EventPageProps) {
+	useContentPageView("EventPage", event.id);
+
 	const { data: workDirections } = useWorkDirections();
 	const { getLanguage, t } = useTolgee();
 

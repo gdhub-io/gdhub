@@ -84,6 +84,7 @@ export async function GET(_req: Request, { params }: { params: Params }) {
 			coverImage: report.project?.coverImage,
 			createdAt: report.publishedAt,
 			applauseCount,
+			viewsCount: report.viewsCount,
 			video: report.video,
 			author: report.author
 				? {

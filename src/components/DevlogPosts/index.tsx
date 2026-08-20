@@ -15,13 +15,14 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
-import { PageViews } from "@/components/PageViews";
+import { ViewCount } from "@/components/ViewCount";
 import {
 	getEditorjsPageCover,
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
 import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
+import { useFeedViews } from "@/hooks/useContentViews";
 import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
@@ -154,12 +155,7 @@ const PostCard: React.FC<{
 								subject={{ kind: "devlog", id: post.id }}
 								count={post.applauseCount}
 							/>
-							{!post.isSystem && (
-								<PageViews
-									path={`/devlog/${post.id}`}
-									startDate={post.publishedAt.toString()}
-								/>
-							)}
+							{!post.isSystem && <ViewCount count={post.viewsCount} />}
 						</span>
 
 						<span className={styles.postTime}>
@@ -210,6 +206,7 @@ const DevlogPosts = ({
 }: DevlogPostsProps) => {
 	const { t } = useTranslate();
 	const limit = 5;
+	const trackView = useFeedViews("ProjectReport");
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useInfiniteQuery({
@@ -330,7 +327,12 @@ const DevlogPosts = ({
 		<>
 			<div className={styles.postsList}>
 				{posts.map((post) => (
-					<div key={`post-${post.id}`} className={styles.postWrapper}>
+					<div
+						key={`post-${post.id}`}
+						className={styles.postWrapper}
+						ref={trackView}
+						data-view-id={post.id}
+					>
 						<PostCard
 							post={
 								post as ProjectReport & {

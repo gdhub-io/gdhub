@@ -5,8 +5,9 @@ import { useTranslate } from "@tolgee/react";
 import { Avatar, Card, Flex, Typography } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
-import { PageViews } from "@/components/PageViews";
+import { ViewCount } from "@/components/ViewCount";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
+import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -19,7 +20,7 @@ export interface BlogPost {
 	createdAt: string;
 	updatedAt: string;
 	publishedAt: string;
-	viewsCount?: number;
+	viewsCount: number;
 	slug: string;
 	description: string;
 	authors: Array<{
@@ -30,6 +31,8 @@ export interface BlogPost {
 
 export function BlogPostClient({ post }: { post: BlogPost }) {
 	const { t } = useTranslate();
+
+	useContentPageView("BlogPost", post.id);
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
@@ -68,10 +71,9 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 										{post?.publishedAt ? formatDate(post.publishedAt) : ""}
 									</Text>
 								</Flex>
-								<PageViews
-									path={`/blog/${post?.slug}`}
+								<ViewCount
+									count={post.viewsCount}
 									containerStyle={{ fontSize: "12px" }}
-									startDate={post?.publishedAt}
 								/>
 							</Flex>
 						</Flex>

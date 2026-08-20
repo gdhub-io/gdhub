@@ -37,6 +37,7 @@ import { ProjectAuthorCard } from "@/components/project/ProjectAuthorCard";
 import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import { gtmEventTrigger } from "@/helpers/gtm";
+import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./styles.module.scss";
 
 const { Text } = Typography;
@@ -81,6 +82,8 @@ export interface JobPageProps {
 }
 
 export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
+	useContentPageView("VacancyPage", vacancy.id);
+
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const router = useRouter();

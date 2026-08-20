@@ -25,7 +25,6 @@ import {
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -35,8 +34,8 @@ import {
 } from "@/components/admin/AnnouncePreviewModal";
 import { EventStatusDot } from "@/components/events/EventCardParts";
 import ModernTable from "@/components/ModernTable";
-import { PageViews } from "@/components/PageViews";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { ViewCount } from "@/components/ViewCount";
 import { EventStatus, EventType } from "@/config/prisma-enums";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./style.module.scss";
@@ -210,12 +209,7 @@ export default function EventsAdminPage() {
 			// Nothing to count before the page exists.
 			render: (_, record) =>
 				record.slug && record.publishedAt ? (
-					<PageViews
-						path={`/event/${record.slug}`}
-						locale={record.lang}
-						startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
-						minViews={0}
-					/>
+					<ViewCount count={record.viewsCount} minViews={0} />
 				) : (
 					<Text type="secondary">—</Text>
 				),

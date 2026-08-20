@@ -12,6 +12,7 @@ import { Button, Space, Tag, Typography } from "antd";
 import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph } = Typography;
@@ -31,6 +32,8 @@ export default function CoursePage() {
 		queryFn: () => axios.get(`/api/courses/${slug}`).then((res) => res.data),
 		enabled: !!slug,
 	});
+
+	useContentPageView("CoursePage", course?.id);
 
 	if (isLoading) {
 		return (

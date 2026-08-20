@@ -6,6 +6,7 @@ import type {
 	BlogPostStatus as BlogPostStatusType,
 	ChatRoomKind as ChatRoomKindType,
 	ChatRoomStatus as ChatRoomStatusType,
+	ContentViewSubject as ContentViewSubjectType,
 	CourseGroupStatus as CourseGroupStatusType,
 	CourseInvoiceStatus as CourseInvoiceStatusType,
 	CoursePaymentStatus as CoursePaymentStatusType,
@@ -123,6 +124,17 @@ export const ChatRoomStatus = {
 	Closed: "Closed",
 } as const satisfies Record<ChatRoomStatusType, ChatRoomStatusType>;
 export type ChatRoomStatus = ChatRoomStatusType;
+
+export const ContentViewSubject = {
+	ProjectReport: "ProjectReport",
+	BlogPost: "BlogPost",
+	CoursePage: "CoursePage",
+	EventPage: "EventPage",
+	ExpertPage: "ExpertPage",
+	ScoutPage: "ScoutPage",
+	VacancyPage: "VacancyPage",
+} as const satisfies Record<ContentViewSubjectType, ContentViewSubjectType>;
+export type ContentViewSubject = ContentViewSubjectType;
 
 export const CourseGroupStatus = {
 	Draft: "Draft",

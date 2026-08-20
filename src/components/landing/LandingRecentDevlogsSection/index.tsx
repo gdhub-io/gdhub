@@ -4,22 +4,22 @@ import type { OutputData } from "@editorjs/editorjs";
 import type { Project, ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Card, Col, Grid, Row, Skeleton, Space, Typography } from "antd";
+import { Card, Col, Row, Skeleton, Space, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useId } from "react";
 import {
-	getCleanTextContent,
 	getEditorjsPageCover,
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
 import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
+import { useFeedViews } from "@/hooks/useContentViews";
 import styles from "./style.module.scss";
 
 const { Title, Text, Paragraph } = Typography;
-const { useBreakpoint } = Grid;
 
 const getInitials = (title: string): string => {
 	if (!title) return "";
@@ -33,6 +33,8 @@ const getInitials = (title: string): string => {
 
 export const LandingRecentDevlogsSection = () => {
 	const { t } = useTranslate();
+	const sectionId = useId();
+	const trackView = useFeedViews("ProjectReport");
 
 	// Use real data
 	const { data: recentDevlogs, isLoading } = useQuery({
@@ -41,10 +43,7 @@ export const LandingRecentDevlogsSection = () => {
 	});
 
 	return (
-		<div
-			className={styles.section}
-			id={`recent-devlogs-${Math.random().toString(36).substring(2, 15)}`}
-		>
+		<div className={styles.section} id={`recent-devlogs-${sectionId}`}>
 			<div className={styles.container}>
 				<div className={styles.preTitle}>
 					{t("landing.devlogs.pretitle", "Active Development")}
@@ -96,7 +95,11 @@ export const LandingRecentDevlogsSection = () => {
 
 									return (
 										<Col key={devlog.id} xs={24} sm={12} md={8}>
-											<Link href={`/devlog/${devlog.id}`}>
+											<Link
+												href={`/devlog/${devlog.id}`}
+												ref={trackView}
+												data-view-id={devlog.id}
+											>
 												<Card className={styles.devlogCard}>
 													{pageCoverFromEditorjs || pageCoverFromContent ? (
 														<div className={styles.cardImage}>

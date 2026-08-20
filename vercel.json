@@ -15,6 +15,10 @@
 		{
 			"path": "/api/cron/project-status-maintenance",
 			"schedule": "0 4 * * *"
+		},
+		{
+			"path": "/api/cron/content-views-retention",
+			"schedule": "0 5 * * *"
 		}
 	],
 	"functions": {

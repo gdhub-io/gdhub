@@ -38,9 +38,13 @@ beforeEach(() => {
 		"fetch",
 		vi.fn(async (input: unknown, init?: unknown) => {
 			const url = resolveUrl(input);
-			if (url.endsWith(".ttf")) {
-				const file = url.split("/").pop() as string;
-				return new Response(readFileSync(path.join(FONTS_DIR, file)));
+
+			// Match the directory, not the extension: the cards moved from .ttf to
+			// Onest .woff and an extension-bound stub silently stopped intercepting,
+			// sending every font request to a localhost that is not listening.
+			const font = url.match(/\/fonts\/([^/?#]+)/)?.[1];
+			if (font) {
+				return new Response(readFileSync(path.join(FONTS_DIR, font)));
 			}
 			if (url.startsWith(IMG)) {
 				return new Response(ONE_PX_PNG, {

@@ -35,8 +35,8 @@ import {
 	type AnnounceTarget,
 } from "@/components/admin/AnnouncePreviewModal";
 import ModernTable from "@/components/ModernTable";
-import { PageViews } from "@/components/PageViews";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { ViewCount } from "@/components/ViewCount";
 import {
 	getCleanTextContent,
 	getEditorjsPageCover,
@@ -218,11 +218,7 @@ export default function DevlogPostsAdminPage() {
 				record.isSystem ? (
 					<Text type="secondary">—</Text>
 				) : (
-					<PageViews
-						path={`/devlog/${id}`}
-						startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
-						minViews={0}
-					/>
+					<ViewCount count={record.viewsCount} minViews={0} />
 				),
 		},
 		{

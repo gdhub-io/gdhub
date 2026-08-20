@@ -20,6 +20,7 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { getCleanTextContent } from "@/helpers/content";
+import { useContentPageView } from "@/hooks/useContentViews";
 
 const { Text, Title } = Typography;
 
@@ -34,6 +35,10 @@ export interface ExpertPageProps {
 }
 
 export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
+	// The public expert page is a speciality's page — that is what the route keys
+	// on, and what carries the counter.
+	useContentPageView("ExpertPage", expert?.speciality?.id);
+
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const [modalOpen, setModalOpen] = React.useState(false);

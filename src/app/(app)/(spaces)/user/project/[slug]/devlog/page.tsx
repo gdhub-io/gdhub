@@ -17,8 +17,8 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
-import { PageViews } from "@/components/PageViews";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
+import { ViewCount } from "@/components/ViewCount";
 import {
 	getCleanTextContent,
 	getEditorjsPageCover,
@@ -154,11 +154,7 @@ export default function MyProjectDevlogPage() {
 				key: "views",
 				render: (id, record) =>
 					record.isSystem ? null : (
-						<PageViews
-							path={`/devlog/${id}`}
-							startDate={dayjs(record.publishedAt).format("YYYY-MM-DD")}
-							minViews={0}
-						/>
+						<ViewCount count={record.viewsCount} minViews={0} />
 					),
 			},
 			{
