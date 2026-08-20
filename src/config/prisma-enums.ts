@@ -133,6 +133,7 @@ export const ContentViewSubject = {
 	ExpertPage: "ExpertPage",
 	ScoutPage: "ScoutPage",
 	VacancyPage: "VacancyPage",
+	ProjectPage: "ProjectPage",
 } as const satisfies Record<ContentViewSubjectType, ContentViewSubjectType>;
 export type ContentViewSubject = ContentViewSubjectType;
 

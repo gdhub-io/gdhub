@@ -14,7 +14,8 @@ type ViewCountedModel =
 	| "event"
 	| "speciality"
 	| "scoutCabinet"
-	| "teamVacancy";
+	| "teamVacancy"
+	| "project";
 
 /**
  * The two calls a subject's table has to answer. Prisma's per-model delegates
@@ -41,6 +42,7 @@ const SUBJECT_MODEL: Record<ContentViewSubject, ViewCountedModel> = {
 	[ContentViewSubject.ExpertPage]: "speciality",
 	[ContentViewSubject.ScoutPage]: "scoutCabinet",
 	[ContentViewSubject.VacancyPage]: "teamVacancy",
+	[ContentViewSubject.ProjectPage]: "project",
 };
 
 type RecordViewsParams = {

@@ -36,6 +36,7 @@ import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
 import { DisclosureSection } from "@/components/ui";
 import { platformOptions } from "@/helpers/react-content";
+import { useContentPageView } from "@/hooks/useContentViews";
 import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import type { ProjectLink } from "@/types/project";
 import styles from "./style.module.scss";
@@ -90,6 +91,8 @@ export function ProjectPageClient({
 	projectApplauseCount,
 	seo,
 }: ProjectPageParams) {
+	useContentPageView("ProjectPage", project.id);
+
 	const { t } = useTranslate();
 	const pathname = usePathname();
 	const screens = Grid.useBreakpoint();
