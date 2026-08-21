@@ -1,0 +1,217 @@
+/* Filled, like every panel in the admin tab — §10 of the spec. */
+.panel {
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+/* Seven segments fit on one line at desktop width. Below that the control takes
+   its own row and scrolls — a Select would hide six of seven options and turn a
+   one-click comparison into three. */
+.segmented {
+	flex-shrink: 0;
+	max-width: 100%;
+	overflow-x: auto;
+}
+
+@media (max-width: 1099px) {
+	.header {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+
+/* Ten rows plus the head, held across type switches so the panel never jumps. */
+.tableWrap {
+	min-height: 604px;
+	transition: opacity 0.2s ease;
+
+	&[data-dimmed="true"] {
+		opacity: 0.6;
+	}
+}
+
+.state {
+	padding: var(--gd-space-16) var(--gd-space-6);
+}
+
+/* ModernTable ships its own card — white, radius 8, a shadow and a top margin.
+   Inside a panel the table is full-bleed, so that wrapper is undone here rather
+   than repainted globally: the rule is mounted on 18 screens (§10). */
+.table > div {
+	margin-top: 0;
+	background: transparent;
+	border-radius: 0;
+	box-shadow: none;
+	overflow: visible;
+}
+
+/* The class is doubled on purpose: these rules override ModernTable's own,
+   which sit at identical specificity, and leaving the winner to stylesheet
+   order is a coin toss the head height and the row dividers would lose. */
+.table.table {
+	:global(.ant-table-thead > tr > th) {
+		height: 44px;
+		padding: 0 var(--gd-space-4);
+		color: var(--gd-color-text-secondary);
+		font-size: var(--gd-font-size-label);
+		border-bottom: 1px solid var(--gd-color-border);
+	}
+
+	:global(.ant-table-tbody > tr > td) {
+		height: 56px;
+		padding: 0 var(--gd-space-4);
+		border-bottom: 1px solid var(--gd-color-border);
+	}
+
+	/* The first character of a row lines up with the panel header above it. */
+	:global(.ant-table-thead > tr > th:first-child),
+	:global(.ant-table-tbody > tr > td:first-child) {
+		padding-inline-start: var(--gd-space-6);
+	}
+
+	:global(.ant-table-thead > tr > th:last-child),
+	:global(.ant-table-tbody > tr > td:last-child) {
+		padding-inline-end: var(--gd-space-6);
+	}
+
+	/* Neutral, not the accent: ten brand-tinted rows per type would drain the
+	   accent of the meaning it carries elsewhere. */
+	:global(.ant-table-tbody > tr.table-row:hover > td),
+	:global(.ant-table-cell-row-hover) {
+		background-color: var(--gd-fill-subtle) !important;
+	}
+}
+
+/* The one footnote band on the page: the two conventions the table leans on
+   (the dash, and the fixed ten rows) said once, under the rows they govern. */
+.footer {
+	padding: var(--gd-space-3) var(--gd-space-6);
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
+	border-top: 1px solid var(--gd-color-border);
+}
+
+.rank {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	font-feature-settings: "tnum";
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.title {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	min-width: 0;
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	text-decoration: none;
+
+	/* Colour and an underline, never colour alone — a hue-only hover is
+	   invisible to a colour-blind reader. */
+	&:hover {
+		color: var(--gd-color-link);
+		text-decoration: underline;
+	}
+
+	/* `focusRingWidth` (3) in graphite; `borderFocus` is neutral-900 in light
+	   mode, and this page runs on productTheme. */
+	&:focus-visible {
+		outline: 3px solid var(--gd-color-border-focus);
+		outline-offset: 2px;
+		border-radius: var(--gd-radius-chip);
+	}
+}
+
+.titleText {
+	overflow: hidden;
+	/* A flex item defaults to `min-width: auto` and refuses to shrink below its
+	   content, which is what keeps an ellipsis from ever engaging. */
+	min-width: 0;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* Kept in flow at rest so the row does not reflow under the cursor. */
+.titleIcon {
+	flex-shrink: 0;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.table.table :global(.ant-table-tbody > tr:hover) .titleIcon {
+	opacity: 1;
+}
+
+.titleDead {
+	display: block;
+	overflow: hidden;
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.subtitle {
+	overflow: hidden;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.views {
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body);
+	font-feature-settings: "tnum";
+}
+
+.skeletonRank,
+.skeletonTitle,
+.skeletonSubtitle,
+.skeletonViews {
+	display: block;
+	height: 12px;
+	background: var(--gd-neutral-100);
+	border-radius: var(--gd-radius-chip);
+}
+
+.skeletonRank {
+	width: 16px;
+}
+
+.skeletonTitle {
+	width: 280px;
+	max-width: 100%;
+	height: 14px;
+}
+
+.skeletonSubtitle {
+	width: 160px;
+	max-width: 100%;
+	margin-top: var(--gd-space-1);
+}
+
+.skeletonViews {
+	width: 48px;
+	margin-inline-start: auto;
+}

@@ -145,6 +145,41 @@ export const directionColors = {
 export type DirectionSlug = keyof typeof directionColors;
 
 /**
+ * Series colours for charts — the platform's first categorical palette.
+ *
+ * The slots are positions, not subjects: whatever a chart plots first takes
+ * slot 1. Naming them after one report's content types would bind every other
+ * chart on the platform to that report's vocabulary.
+ *
+ * None of the ramps above could carry it. The direction tints all sit at L≈93 so
+ * that eighteen chips can coexist, their inks at L≈25 so they read on those
+ * tints; neither survives as a 2px line. The brand is a single accent by design,
+ * and the four semantics are reserved for state — a "series 4" in the danger red
+ * would mean something it does not.
+ *
+ * Slot order is binding: it is the order the set was validated in. Against the
+ * page fill it passes the lightness band, the chroma floor, the normal-vision
+ * floor and 3:1 contrast; colourblind separation lands exactly on the 8.0 target
+ * for the worst adjacent pair (slot 5 ↔ slot 4 under deuteranopia). The margin
+ * is spent — an eighth series has to be re-validated, not picked by eye.
+ *
+ * These are **mark** colours. 3:1 is the bar a line clears, not a label: three of
+ * the seven fall short of the 4.5:1 small text needs, so nothing sets type in
+ * them. Identity travels as a coloured dot beside ink text.
+ */
+export const chartSeries = {
+	slot1: "#2F6BD8",
+	slot2: "#E4572E",
+	slot3: "#7B4FD1",
+	slot4: "#1F8A5B",
+	slot5: "#A05C00",
+	slot6: "#0E8FB0",
+	slot7: "#C2255C",
+} as const;
+
+export type ChartSeriesSlot = keyof typeof chartSeries;
+
+/**
  * Families are bound to CSS variables so the `next/font` loaders in `fonts.ts`
  * stay out of any module that only needs a value.
  */

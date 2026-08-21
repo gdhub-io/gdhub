@@ -25,6 +25,9 @@ export const adminSpace = defineSpace({
 		// project's process. Not to be confused with `project.workflow` (§3.4).
 		workflow: ["view", "manage"],
 		audit_logs: ["view"],
+		// The content-view report. Read-only by nature: there is nothing here to
+		// manage, only numbers the platform already counted.
+		views: ["view"],
 	},
 	inheritRoleFrom: { space: "hub", atLeast: SpaceRole.Admin },
 });

@@ -46,6 +46,7 @@ export function ModernTable<T extends object>({
 	rowTone,
 	density = "default",
 	locale,
+	scroll,
 	...props
 }: ModernTableProps<T>) {
 	const { t } = useTranslate();
@@ -75,7 +76,10 @@ export function ModernTable<T extends object>({
 					{...props}
 					locale={{ ...locale, emptyText }}
 					showHeader={showHeader}
-					scroll={{ x: "max-content" }}
+					// `max-content` sizes the table to its content, which leaves
+					// column widths advisory and lets one long string eat the row.
+					// A caller that has fixed widths passes its own total instead.
+					scroll={scroll ?? { x: "max-content" }}
 					rowClassName={(record, index) =>
 						classNames(
 							"table-row",
