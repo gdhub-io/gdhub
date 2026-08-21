@@ -16,6 +16,8 @@ export {
 } from "./roles";
 export {
 	brand,
+	type ChartSeriesSlot,
+	chartSeries,
 	type DirectionColor,
 	type DirectionSlug,
 	directionColors,

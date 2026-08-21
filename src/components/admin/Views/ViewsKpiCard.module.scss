@@ -1,0 +1,70 @@
+/* The filled panel this page shares with the rest of the admin tab — see §10 of
+   docs/design/specs/admin-views.md for why it is a fill and not an outline. */
+.card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4);
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.head {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+}
+
+.name {
+	overflow: hidden;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.figures {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.total {
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+	font-feature-settings: "tnum";
+}
+
+/* Neutral, never red: a card that reports fewer views is not a failure. */
+.delta {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	font-feature-settings: "tnum";
+}
+
+.skeletonTotal,
+.skeletonDelta {
+	display: block;
+	background: var(--gd-neutral-100);
+	border-radius: var(--gd-radius-chip);
+}
+
+/* Sized to the type they stand in for, so nothing reflows when data lands. */
+.skeletonTotal {
+	width: 72px;
+	height: 24px;
+}
+
+.skeletonDelta {
+	width: 40px;
+	height: 12px;
+	margin-top: var(--gd-space-1);
+}

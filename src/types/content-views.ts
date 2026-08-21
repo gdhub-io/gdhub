@@ -11,3 +11,12 @@ export type ContentViewSource = (typeof CONTENT_VIEW_SOURCES)[number];
  * every full flush into a silent 400.
  */
 export const CONTENT_VIEW_BATCH_MAX = 50;
+
+/**
+ * How long individual view rows are kept.
+ *
+ * The nightly prune and the report must agree on this number: the report's
+ * honesty depends on it. Rows past this age are deleted, so a report that
+ * clamped at a longer horizon would print pruned days as measured zeroes.
+ */
+export const CONTENT_VIEW_RETENTION_DAYS = 90;

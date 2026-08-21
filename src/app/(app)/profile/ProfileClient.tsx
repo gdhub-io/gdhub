@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SkillCapitalIcon } from "@/components/profile/SkillCapitalIcon";
+import { formatCount } from "@/helpers/format";
 
 type SkillCapitalResponse = {
 	scTotal: number;
@@ -36,9 +37,6 @@ type SkillCapitalResponse = {
 };
 
 const { Title, Text, Paragraph } = Typography;
-const numberFormatter = new Intl.NumberFormat();
-
-const formatNumber = (value: number) => numberFormatter.format(value);
 
 const StatTile = ({
 	label,
@@ -181,7 +179,7 @@ const ProfileClient = () => {
 								level={1}
 								style={{ margin: 0, fontSize: 88, lineHeight: 1 }}
 							>
-								{formatNumber(skillCapital?.scTotal ?? 0)}
+								{formatCount(skillCapital?.scTotal ?? 0)}
 							</Title>
 							<Text style={{ fontSize: 18, fontWeight: 500 }}>
 								Skill Capital
@@ -222,7 +220,7 @@ const ProfileClient = () => {
 								<Col span={12}>
 									<StatTile
 										label={t("profile.page.skillCapital.lc", "Leadership")}
-										value={formatNumber(skillCapital?.leadershipCapital ?? 0)}
+										value={formatCount(skillCapital?.leadershipCapital ?? 0)}
 										icon={
 											<IconTrophy
 												style={{ color: "var(--gd-warning-solid)" }}
@@ -237,7 +235,7 @@ const ProfileClient = () => {
 								<Col span={12}>
 									<StatTile
 										label={t("profile.page.skillCapital.ec", "Execution")}
-										value={formatNumber(skillCapital?.executionCapital ?? 0)}
+										value={formatCount(skillCapital?.executionCapital ?? 0)}
 										icon={
 											<IconTrophy
 												style={{ color: "var(--gd-success-solid)" }}
@@ -252,7 +250,7 @@ const ProfileClient = () => {
 								<Col span={12}>
 									<StatTile
 										label={t("profile.page.skillCapital.mc", "Mentorship")}
-										value={formatNumber(skillCapital?.mentorshipCapital ?? 0)}
+										value={formatCount(skillCapital?.mentorshipCapital ?? 0)}
 										icon={
 											<IconTrophy style={{ color: "var(--gd-info-solid)" }} />
 										}

@@ -184,3 +184,16 @@ export function formatCompactCount(
 	const scaled = Math.trunc((rounded / unit.divisor) * 10) / 10;
 	return `${scaled.toLocaleString(locale, { maximumFractionDigits: 1 })}${unit.suffix}`;
 }
+
+/**
+ * A count in full, with the locale's grouping: 1234 → "1,234".
+ *
+ * The compact form belongs on a badge; this one is for a figure the reader is
+ * meant to compare or quote exactly.
+ */
+export function formatCount(
+	value: number,
+	locale: string = defaultLocale,
+): string {
+	return new Intl.NumberFormat(locale).format(value);
+}

@@ -1,0 +1,87 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+.pageHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	flex-wrap: wrap;
+}
+
+.titleBlock {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.pageTitle {
+	margin: 0 !important;
+}
+
+.subtitle {
+	max-width: 640px;
+	margin: 0;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-ui);
+}
+
+/* The zone the day buckets were cut in — the same thing the audit log prints
+   next to its timestamps. */
+.timezone {
+	color: var(--gd-color-text-tertiary);
+}
+
+/* Seven equal channels of one instrument. Four-plus-three would leave a hole in
+   the second row and make one type look more important than the other six. */
+.kpiRow {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+}
+
+@media (max-width: 1439px) {
+	.kpiRow {
+		/* Fixed width, so the three cards on the second row do not stretch. 172 is
+		   the 4-grid step nearest the ~170 the seven measure at full width. */
+		grid-template-columns: repeat(4, 172px);
+		justify-content: start;
+	}
+}
+
+@media (max-width: 1199px) {
+	.kpiRow {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 767px) {
+	.kpiRow {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* Empty and error both collapse everything below the KPI row into one panel. */
+.statePanel {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-16) var(--gd-space-6);
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+/* For the support thread, not for the reader — hence the tertiary rank. */
+.reference {
+	margin: 0;
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+	font-feature-settings: "tnum";
+}

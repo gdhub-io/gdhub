@@ -2,6 +2,7 @@ import { type DesignDensity, type DesignMode, densities, roles } from "./roles";
 import {
 	amber,
 	brand,
+	chartSeries,
 	directionColors,
 	elevation,
 	fill,
@@ -59,6 +60,12 @@ export function designCssVariables(
 	for (const [slug, value] of Object.entries(directionColors)) {
 		vars[`--gd-direction-${slug}-tint`] = value.tint;
 		vars[`--gd-direction-${slug}-ink`] = value.ink;
+	}
+
+	// `slot3` → `--gd-chart-series-3`: the key is a valid identifier, the custom
+	// property reads as the position it is.
+	for (const [slot, value] of Object.entries(chartSeries)) {
+		vars[`--gd-chart-series-${slot.replace("slot", "")}`] = value;
 	}
 	// Shadows were the one scale the theme kept to itself, so a stylesheet that
 	// wanted elevation had to hardcode the value — and `var(--gd-shadow-e2)`,

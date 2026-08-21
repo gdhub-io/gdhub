@@ -1,0 +1,22 @@
+.control {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--gd-space-2);
+}
+
+/* The bound carries its reason in view rather than in a tooltip nobody opens. */
+.hint {
+	max-width: 320px;
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
+	text-align: right;
+}
+
+.footer {
+	display: block;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
+}
