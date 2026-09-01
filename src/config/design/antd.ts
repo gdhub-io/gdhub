@@ -271,10 +271,25 @@ export function buildAntdTheme({
 				lineWidth: 0,
 				borderRadiusSM: radius.chip,
 			},
+			/*
+			 * A tooltip annotates something; it should not read as a panel. antd
+			 * sizes the bubble off the global control scale — body type in a
+			 * 32px-tall box — which next to a caption-sized meta row looked like a
+			 * dialog. Tooltip's own tokens are only `maxWidth` and `zIndexPopup`,
+			 * so the box comes from alias overrides scoped to the component:
+			 * `minHeight` is `controlHeight`, and the padding is `paddingSM / 2`
+			 * vertically by `paddingXS` horizontally.
+			 */
 			Tooltip: {
 				colorBgSpotlight: r.surfaceInverse,
 				colorTextLightSolid: r.textInverse,
-				borderRadius: radius.control,
+				borderRadius: radius.chip,
+				fontSize: fontSize.caption,
+				lineHeight: lineHeight.ui,
+				controlHeight: 24,
+				paddingSM: space[2],
+				paddingXS: space[2],
+				sizePopupArrow: 12,
 			},
 			Checkbox: {
 				controlInteractiveSize: 18,

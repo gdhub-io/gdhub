@@ -5,10 +5,11 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Space, Table, Tag, Typography, theme } from "antd";
+import { Space, Table, Tag, Typography, theme } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useCallback, useState } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import SpecialistPreviewModal from "../modals/SpecialistPreviewModal";
 
 interface MyProjectAIReccomendCandidatesArgs {
@@ -69,7 +70,7 @@ const MyProjectAIReccomendCandidates = ({
 						onClick={() => handleShowAICandidate(record.specialityId)}
 					>
 						<Space>
-							<Avatar
+							<AppAvatar
 								shape="square"
 								size={32}
 								src={record.specialist.user.image || null}

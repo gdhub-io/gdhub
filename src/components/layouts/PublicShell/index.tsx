@@ -3,7 +3,6 @@
 import { IconBrandTelegram, IconX } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	ConfigProvider,
 	Drawer,
@@ -21,6 +20,7 @@ import { useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { signOutWithChat } from "@/components/Chat/session";
 import { MainFooter } from "@/components/MainFooter";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { publicTheme } from "@/config/design";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./style.module.scss";
@@ -233,7 +233,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 					className={styles.mobileMenuDrawer}
 					title={
 						<Space>
-							<Avatar
+							<AppAvatar
 								src={
 									(session as { user?: { image?: string | null } } | null)?.user
 										?.image ?? undefined

@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, Modal, message, Select, Space } from "antd";
+import { Modal, message, Select, Space } from "antd";
 import axios from "axios";
 import { ClientEvent, type Room } from "matrix-js-sdk";
 import { useState } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { useChat } from "./useChat";
 
 type UserOption = {
@@ -109,9 +110,9 @@ export default function NewChatModal({ open, onClose }: NewChatModalProps) {
 					value: u.id,
 					label: (
 						<Space>
-							<Avatar size="small" src={u.image}>
+							<AppAvatar size="small" src={u.image}>
 								{(u.name || u.email)?.[0]?.toUpperCase()}
-							</Avatar>
+							</AppAvatar>
 							{u.name || u.email}
 						</Space>
 					),

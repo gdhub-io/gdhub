@@ -16,6 +16,7 @@ import {
 } from "matrix-js-sdk";
 import { useSession } from "next-auth/react";
 import { type ReactNode, useCallback, useEffect, useRef } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { getDeviceDisplayName } from "@/helpers/device";
 import { pusherCacheKey } from "@/helpers/matrix-pushers";
 import { useChatDrawerQuery } from "@/hooks/useChatDrawerQuery";
@@ -265,7 +266,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 					message: senderName,
 					description: body,
 					icon: (
-						<Avatar src={avatarUrl}>{senderName?.[0]?.toUpperCase()}</Avatar>
+						<AppAvatar src={avatarUrl}>
+							{senderName?.[0]?.toUpperCase()}
+						</AppAvatar>
 					),
 					onClick: () => {
 						setSelectedRoomId(room.roomId);
@@ -320,7 +323,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 					message: "New chat",
 					description: `${inviterName} started a chat with you`,
 					icon: (
-						<Avatar src={avatarUrl}>{inviterName?.[0]?.toUpperCase()}</Avatar>
+						<AppAvatar src={avatarUrl}>
+							{inviterName?.[0]?.toUpperCase()}
+						</AppAvatar>
 					),
 					onClick: () => {
 						const { setSelectedRoomId, setOpenChatModal } = useChat.getState();

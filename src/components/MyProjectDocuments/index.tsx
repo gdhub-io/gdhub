@@ -3,7 +3,6 @@ import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Flex,
 	message,
@@ -19,6 +18,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useContext, useState } from "react";
 import ModernTable from "@/components/ModernTable";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { ProjectContext } from "@/contexts/ProjectContext";
 
 const { Text } = Typography;
@@ -120,7 +120,7 @@ const MyProjectDocuments = () => {
 			width: "20%",
 			render: (value, data) => (
 				<Space align="center" size={8}>
-					<Avatar src={data.createdByUser.image} size={24} />
+					<AppAvatar src={data.createdByUser.image} size={24} />
 					<Text>{value}</Text>
 				</Space>
 			),

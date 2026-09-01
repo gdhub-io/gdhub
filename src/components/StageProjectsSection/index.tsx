@@ -12,8 +12,8 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import Image from "next/image";
 import Link from "next/link";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./style.module.scss";
 
 type ProjectsSectionArgs = {
@@ -81,7 +81,12 @@ export const StageProjectsSection = ({
 							className={styles.card}
 							cover={
 								project.coverImage ? (
-									<Image alt="cover" src={project.coverImage} fill />
+									<AppImage
+										alt="cover"
+										src={project.coverImage}
+										fill
+										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+									/>
 								) : null
 							}
 						>

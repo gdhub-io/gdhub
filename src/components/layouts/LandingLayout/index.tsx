@@ -1,7 +1,6 @@
 import { IconX } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Drawer,
 	Flex,
@@ -19,6 +18,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { MainFooter } from "@/components/MainFooter";
 import { MainHeader } from "@/components/MainHeader";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { InverseBand } from "@/components/ui/InverseBand";
 import styles from "./style.module.scss";
 
@@ -185,7 +185,7 @@ export const LandingLayout = ({ children }: any) => {
 						title={
 							!!session && (
 								<Flex align="center" justify="space-between">
-									<Avatar
+									<AppAvatar
 										src={session.user?.image ?? undefined}
 										shape="square"
 									/>

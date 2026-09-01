@@ -6,10 +6,11 @@ import {
 	IconUser,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Card, Col, Flex, Row, Space, Typography } from "antd";
+import { Button, Card, Col, Flex, Row, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { VerifyCertificateResponse } from "@/app/api/verify/_helpers";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./style.module.scss";
 
 const { Text, Title, Paragraph } = Typography;
@@ -91,7 +92,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 								{t("verify.result.recipient", "Recipient")}
 							</SectionLabel>
 							<Flex gap={14} align="center">
-								<Avatar
+								<AppAvatar
 									size={56}
 									src={data.participant.image ?? undefined}
 									style={{
@@ -102,7 +103,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									}}
 								>
 									{initials(data.participant.name)}
-								</Avatar>
+								</AppAvatar>
 								<Flex vertical gap={4} style={{ flex: 1, minWidth: 0 }}>
 									<Title level={4} style={{ margin: 0, fontWeight: 700 }}>
 										{data.participant.name}

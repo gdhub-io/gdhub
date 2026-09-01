@@ -9,7 +9,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Card,
 	Col,
@@ -26,6 +25,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SkillCapitalIcon } from "@/components/profile/SkillCapitalIcon";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { formatCount } from "@/helpers/format";
 
 type SkillCapitalResponse = {
@@ -153,7 +153,7 @@ const ProfileClient = () => {
 						style={{ marginBottom: 10 }}
 					>
 						<Space size={10} align="center">
-							<Avatar src={session?.user?.image || undefined} size={48} />
+							<AppAvatar src={session?.user?.image || undefined} size={48} />
 							<Space orientation="vertical" size={0}>
 								<Text strong style={{ fontSize: 17, lineHeight: "22px" }}>
 									{session?.user?.name || "User"}

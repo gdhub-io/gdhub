@@ -12,6 +12,7 @@ import {
 	IconBrandTwitter,
 	IconBrandYoutube,
 } from "@tabler/icons-react";
+import { imageSrcSet, optimizedImage } from "@/helpers/image";
 
 export const hasImageUrl = (content: string) => {
 	return (
@@ -52,8 +53,12 @@ export const renderContentWithImageUrl = (content: string) => {
 						// eslint-disable-next-line @next/next/no-img-element
 						<img
 							key={`img-${src}-${idx.toString()}`}
-							src={src}
+							src={optimizedImage(src, { width: 640 })}
+							srcSet={imageSrcSet(src, [320, 640, 960, 1280])}
+							sizes="(max-width: 640px) 100vw, 640px"
 							alt={`image-${idx}`}
+							loading="lazy"
+							decoding="async"
 							style={{ maxWidth: "100%", borderRadius: 8 }}
 						/>
 					))}

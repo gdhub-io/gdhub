@@ -197,3 +197,40 @@ export function formatCount(
 ): string {
 	return new Intl.NumberFormat(locale).format(value);
 }
+
+/**
+ * How a timestamp should read in a meta row, X-style: a compact age while the
+ * post is fresh, then the calendar date. Returns the decision rather than the
+ * string so the caller can translate the unit and format the date in its own
+ * locale.
+ */
+export type RelativeStamp =
+	| { unit: "now" }
+	| { unit: "seconds" | "minutes" | "hours"; value: number }
+	| { unit: "date"; sameYear: boolean };
+
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+/** Below this a ticking seconds counter is noise, not information. */
+const JUST_NOW_MS = 10 * SECOND_MS;
+
+export function relativeStamp(
+	date: Date,
+	now: Date = new Date(),
+): RelativeStamp {
+	// A clock skew between the server and the reader can put a fresh post in the
+	// future; it is still "now" rather than a negative age.
+	const elapsed = Math.max(0, now.getTime() - date.getTime());
+
+	if (elapsed < JUST_NOW_MS) return { unit: "now" };
+	if (elapsed < MINUTE_MS)
+		return { unit: "seconds", value: Math.floor(elapsed / SECOND_MS) };
+	if (elapsed < HOUR_MS)
+		return { unit: "minutes", value: Math.floor(elapsed / MINUTE_MS) };
+	if (elapsed < DAY_MS)
+		return { unit: "hours", value: Math.floor(elapsed / HOUR_MS) };
+
+	return { unit: "date", sameYear: date.getFullYear() === now.getFullYear() };
+}

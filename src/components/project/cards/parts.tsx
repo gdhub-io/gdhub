@@ -1,5 +1,5 @@
-import Image from "next/image";
 import DefaultCover from "@/components/GameCard/DefaultCover";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./parts.module.scss";
 
 export type ProjectCardMember = {
@@ -36,7 +36,7 @@ export function Cover({
 	if (!coverImage) return <DefaultCover title={title} />;
 
 	return (
-		<Image
+		<AppImage
 			src={coverImage}
 			alt={title}
 			fill
@@ -88,13 +88,12 @@ export function TeamFacts({
 							style={{ left: index * 14, zIndex: index }}
 						>
 							{member.image ? (
-								<Image
+								<AppImage
 									src={member.image}
 									alt={member.name ?? ""}
 									width={20}
 									height={20}
 									className={styles.avatarImage}
-									unoptimized
 								/>
 							) : (
 								initials(member.name)

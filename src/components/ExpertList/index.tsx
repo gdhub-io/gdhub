@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Row, Space, Spin, Typography } from "antd";
 import axios from "axios";
+import { avatarImage } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 type Expert = {
@@ -81,7 +82,7 @@ const ExpertList = ({
 										<div
 											className={styles.expertCardAvatar}
 											style={{
-												backgroundImage: `url(${expert.image})`,
+												backgroundImage: `url(${avatarImage(expert.image, 96)})`,
 											}}
 										/>
 

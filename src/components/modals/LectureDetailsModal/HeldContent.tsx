@@ -5,11 +5,12 @@ import type {
 	User,
 } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
-import { Alert, Avatar, Card } from "antd";
+import { Alert, Card } from "antd";
 import dayjs from "dayjs";
 import { Fragment, useMemo } from "react";
 import YouTube from "react-youtube";
 import { TextWithLineBreak } from "@/components/TextWithLineBreak";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./style.module.scss";
 
 export const HeldContent = ({
@@ -29,7 +30,7 @@ export const HeldContent = ({
 
 	const lectureAvatar = () => {
 		const image = lecturer?.user.image;
-		return image ? <Avatar shape="square" size={64} src={image} /> : null;
+		return image ? <AppAvatar shape="square" size={64} src={image} /> : null;
 	};
 
 	return (

@@ -1,5 +1,6 @@
-import { Avatar, Space, Typography } from "antd";
+import { Space, Typography } from "antd";
 import { toInitials } from "@/components/person-card";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import type { AuditActorRef } from "@/types/audit";
 
 const { Text } = Typography;
@@ -21,9 +22,9 @@ export function AuditPerson({ person, caption }: AuditPersonProps) {
 
 	return (
 		<Space size={10}>
-			<Avatar size={24} src={person?.image || undefined}>
+			<AppAvatar size={24} src={person?.image || undefined}>
 				{person ? toInitials(name) : "S"}
-			</Avatar>
+			</AppAvatar>
 			<Space orientation="vertical" size={0}>
 				{person ? <Text>{name}</Text> : <Text type="secondary">System</Text>}
 				{caption ? <Text type="secondary">{caption}</Text> : null}

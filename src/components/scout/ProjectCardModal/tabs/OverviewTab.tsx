@@ -8,8 +8,9 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { Avatar, Flex, Typography } from "antd";
 import dayjs from "dayjs";
-import Image from "next/image";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
+import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AppImage } from "@/components/ui/AppImage";
 import { formatDollar } from "@/helpers/format";
 import { date, LONG_DETAIL, shortDate, specialityLine } from "../format";
 import {
@@ -195,9 +196,9 @@ export function OverviewTab({
 					onClick={() => onOpenTab("team")}
 				>
 					<Flex align="center" gap={10}>
-						<Avatar size={34} src={project.author.image}>
+						<AppAvatar size={34} src={project.author.image}>
 							{project.author.name?.charAt(0)}
-						</Avatar>
+						</AppAvatar>
 						<Flex vertical gap={2} className={styles.person}>
 							<Text className={styles.authorName} ellipsis>
 								{project.author.name ?? "—"}
@@ -217,14 +218,14 @@ export function OverviewTab({
 					    stack renders and antd owns the overlap and the rings. */}
 					<Avatar.Group size={30} max={{ count: 5 }} className={styles.avatars}>
 						{project.teamFaces.map((face) => (
-							<Avatar key={face.id} src={face.image} alt={face.name ?? ""}>
+							<AppAvatar key={face.id} src={face.image} alt={face.name ?? ""}>
 								{face.name?.charAt(0)}
-							</Avatar>
+							</AppAvatar>
 						))}
 						{project.teamSize > project.teamFaces.length && (
-							<Avatar key="more" className={styles.avatarMore}>
+							<AppAvatar key="more" className={styles.avatarMore}>
 								+{project.teamSize - project.teamFaces.length}
-							</Avatar>
+							</AppAvatar>
 						)}
 					</Avatar.Group>
 					<Text className={styles.summarySub}>
@@ -305,7 +306,7 @@ export function OverviewTab({
 					<div className={styles.devlogCard}>
 						{project.coverImage && (
 							<div className={styles.devlogCover}>
-								<Image
+								<AppImage
 									src={project.coverImage}
 									alt=""
 									fill

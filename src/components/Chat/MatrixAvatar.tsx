@@ -1,5 +1,6 @@
-import { Avatar, type AvatarProps } from "antd";
+import type { AvatarProps } from "antd";
 import { useEffect, useState } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { useChat } from "./useChat";
 
 type MatrixAvatarProps = Omit<AvatarProps, "src"> & {
@@ -65,8 +66,8 @@ export function MatrixAvatar({
 	}, [mxcUrl, chatClient, size]);
 
 	return (
-		<Avatar {...rest} src={blobUrl}>
+		<AppAvatar {...rest} src={blobUrl}>
 			{children}
-		</Avatar>
+		</AppAvatar>
 	);
 }

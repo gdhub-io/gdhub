@@ -13,11 +13,11 @@ import { App, Button, Modal, message, Space, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
+import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
 import {
 	getCleanTextContent,
@@ -106,7 +106,7 @@ export default function MyProjectDevlogPage() {
 					if (!coverSrc) return null;
 
 					return (
-						<Image
+						<AppImage
 							src={coverSrc}
 							alt="Cover"
 							width={80}
@@ -153,9 +153,7 @@ export default function MyProjectDevlogPage() {
 				dataIndex: "id",
 				key: "views",
 				render: (id, record) =>
-					record.isSystem ? null : (
-						<ViewCount count={record.viewsCount} minViews={0} />
-					),
+					record.isSystem ? null : <ViewCount count={record.viewsCount} />,
 			},
 			{
 				title: "Actions",

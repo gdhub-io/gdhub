@@ -1,0 +1,5 @@
+.trigger {
+	display: inline-flex;
+	// The exact moment is on hover, so the pointer should not promise a link.
+	cursor: default;
+}

@@ -1,9 +1,10 @@
 import { IconPacman } from "@tabler/icons-react";
-import { Avatar, Card, Tag, Tooltip, Typography } from "antd";
-import Image from "next/image";
+import { Card, Tag, Tooltip, Typography } from "antd";
 import Link from "next/link";
 import type React from "react";
 import { ApplauseButton } from "@/components/ApplauseButton";
+import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AppImage } from "@/components/ui/AppImage";
 import { ProjectStatus } from "@/config/prisma-enums";
 import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
@@ -65,7 +66,7 @@ const GameCard: React.FC<GameCardProps> = ({
 					<div className={styles.hubCardContent}>
 						<div className={styles.hubImageContainer}>
 							{coverImage ? (
-								<Image
+								<AppImage
 									src={coverImage}
 									alt={`${title} cover`}
 									fill
@@ -111,7 +112,7 @@ const GameCard: React.FC<GameCardProps> = ({
 				<div className={styles.gameCardContent}>
 					<div className={styles.gameCardImageContainer}>
 						{coverImage ? (
-							<Image
+							<AppImage
 								src={coverImage}
 								alt={`${title} cover`}
 								fill
@@ -147,15 +148,15 @@ const GameCard: React.FC<GameCardProps> = ({
 						<div className={styles.gameCardAuthor}>
 							<Tooltip title={`Author: ${authorName}`}>
 								{authorAvatar ? (
-									<Avatar
+									<AppAvatar
 										src={authorAvatar}
 										alt={authorName}
 										className={styles.authorAvatar}
 									/>
 								) : (
-									<Avatar className={styles.authorAvatar}>
+									<AppAvatar className={styles.authorAvatar}>
 										{authorName.charAt(0).toUpperCase()}
-									</Avatar>
+									</AppAvatar>
 								)}
 							</Tooltip>
 						</div>

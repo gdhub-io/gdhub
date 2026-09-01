@@ -8,7 +8,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Flex,
 	Input,
@@ -23,11 +22,12 @@ import type { SortOrder } from "antd/es/table/interface";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import type { Key } from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SavedSearches } from "@/components/scout/SavedSearches";
+import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AppImage } from "@/components/ui/AppImage";
 import { formatDollar } from "@/helpers/format";
 import {
 	estimateInputRows,
@@ -304,7 +304,7 @@ export function ScoutGamesClient() {
 				render: (_: unknown, game: ScoutGame) => (
 					<Flex align="center" gap={12} className={styles.projectCell}>
 						{game.coverImage ? (
-							<Image
+							<AppImage
 								className={styles.cover}
 								src={game.coverImage}
 								alt=""
@@ -331,9 +331,9 @@ export function ScoutGamesClient() {
 				width: 180,
 				render: (_: unknown, game: ScoutGame) => (
 					<Flex align="center" gap={8} className={styles.authorCell}>
-						<Avatar size={24} src={game.author?.image}>
+						<AppAvatar size={24} src={game.author?.image}>
 							{game.author?.name?.charAt(0)}
-						</Avatar>
+						</AppAvatar>
 						<Text ellipsis={{ tooltip: game.author?.name }}>
 							{game.author?.name}
 						</Text>

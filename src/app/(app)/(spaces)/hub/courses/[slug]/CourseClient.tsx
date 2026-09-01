@@ -37,11 +37,12 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./course.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
@@ -189,7 +190,7 @@ const CourseClient = () => {
 							].join(" ")}
 						>
 							{data.image ? (
-								<Image
+								<AppImage
 									src={data.image}
 									alt={data.name}
 									fill
@@ -226,13 +227,13 @@ const CourseClient = () => {
 										className={styles.authorAvatarGroup}
 									>
 										{teachers.map((tch) => (
-											<Avatar
+											<AppAvatar
 												key={tch.id}
 												src={tch.image ?? undefined}
 												style={{ backgroundColor: "var(--gd-color-surface)" }}
 											>
 												{tch.name?.[0]}
-											</Avatar>
+											</AppAvatar>
 										))}
 									</Avatar.Group>
 								) : null}
@@ -267,7 +268,7 @@ const CourseClient = () => {
 								<div className={styles.teachersList}>
 									{teachers.map((tch) => (
 										<div key={tch.id} className={styles.teacherCard}>
-											<Avatar
+											<AppAvatar
 												shape="square"
 												size={48}
 												src={tch.image ?? undefined}
@@ -278,7 +279,7 @@ const CourseClient = () => {
 												}}
 											>
 												{tch.name?.[0]}
-											</Avatar>
+											</AppAvatar>
 											<div className={styles.teacherInfo}>
 												<Text className={styles.teacherName}>{tch.name}</Text>
 											</div>

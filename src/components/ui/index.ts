@@ -1,3 +1,4 @@
+export { AppImage, type AppImageProps } from "./AppImage";
 export { ApplauseIcon, type ApplauseIconProps } from "./ApplauseIcon";
 export {
 	DisclosureSection,
@@ -6,6 +7,12 @@ export {
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { IconTile, type IconTileProps } from "./IconTile";
 export { InverseBand, type InverseBandProps } from "./InverseBand";
+export {
+	META_ICON_STROKE,
+	MetaStat,
+	type MetaStatProps,
+	type MetaStatSize,
+} from "./MetaStat";
 export {
 	SectionHeading,
 	type SectionHeadingProps,

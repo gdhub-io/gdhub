@@ -33,6 +33,7 @@ import {
 } from "@/components/person-card";
 import cardStyles from "@/components/person-card/style.module.scss";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
+import { avatarImage } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 interface ExpertRequestModalProps {
@@ -323,7 +324,7 @@ export default function ExpertRequestModal({
 									{expert.image ? (
 										// biome-ignore lint/performance/noImgElement: external avatar url
 										<img
-											src={expert.image}
+											src={avatarImage(expert.image, 76)}
 											alt={expert.name || ""}
 											className={cardStyles.avatarImg}
 										/>

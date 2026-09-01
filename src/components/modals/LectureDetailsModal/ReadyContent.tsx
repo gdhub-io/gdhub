@@ -1,11 +1,12 @@
 import type { LecturerRequest } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Card, Space } from "antd";
+import { Button, Card, Space } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Fragment, useMemo } from "react";
 import { TextWithLineBreak } from "@/components/TextWithLineBreak";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import type { LectureDetails } from ".";
 
 export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
@@ -25,7 +26,7 @@ export const ReadyContent = ({ lecture }: { lecture: LectureDetails }) => {
 
 	const lectureAvatar = () => {
 		const image = lecturer?.user.image;
-		return image ? <Avatar shape="square" size={64} src={image} /> : null;
+		return image ? <AppAvatar shape="square" size={64} src={image} /> : null;
 	};
 
 	return (

@@ -5,6 +5,7 @@ import Link from "next/link";
 import EmailIcon from "@/assets/images/icons/email.svg";
 import TelegramIcon from "@/assets/images/icons/telegram.svg";
 import BgImage from "@/assets/images/landing/gdhub-contacts-image.png";
+import { staticImageUrl } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -19,7 +20,7 @@ export const LandingContactsSection = () => {
 		<div
 			id="contacts"
 			className={styles.section}
-			style={{ backgroundImage: `url(${BgImage.src})` }}
+			style={{ backgroundImage: `url(${staticImageUrl(BgImage.src, 1920)})` }}
 		>
 			<div className={styles.container}>
 				<div className={styles.preTitle}>

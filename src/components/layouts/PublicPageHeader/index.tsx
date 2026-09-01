@@ -13,6 +13,7 @@ import {
 import PublicHeaderBg from "@/assets/images/public-header-bg.png";
 import { MainHeader } from "@/components/MainHeader";
 import { InverseBand } from "@/components/ui/InverseBand";
+import { optimizedImage } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 const { Header } = Layout;
@@ -69,8 +70,14 @@ export function PublicPageHeader({
 		observer.observe(node);
 		return () => observer.disconnect();
 	}, [sticky]);
-	const background = backgroundImage
-		? `linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.3)), url(${backgroundImage})`
+	// A CSS background gets no srcset, so the hero is requested once at the
+	// widest layout it can reach.
+	const heroImage = optimizedImage(backgroundImage, {
+		width: 1920,
+		quality: 70,
+	});
+	const background = heroImage
+		? `linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(117, 19, 93, 0.3)), url(${heroImage})`
 		: `url(${PublicHeaderBg.src})`;
 
 	return (

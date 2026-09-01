@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar } from "antd";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./style.module.scss";
 
 export type SpeakerLike = {
@@ -40,13 +41,13 @@ export function SpeakerAvatars({
 			{speakers.map((speaker, index) => {
 				const name = speakerName(speaker);
 				return (
-					<Avatar
+					<AppAvatar
 						key={speaker.id || index}
 						src={speaker.user?.image || undefined}
 						alt={name}
 					>
 						{name ? name[0] : null}
-					</Avatar>
+					</AppAvatar>
 				);
 			})}
 		</Avatar.Group>

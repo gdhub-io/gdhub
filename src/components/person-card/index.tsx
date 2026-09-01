@@ -10,6 +10,7 @@ import Link from "next/link";
 import type React from "react";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import { ProjectStatus } from "@/config/prisma-enums";
+import { avatarImage } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 const { Paragraph } = Typography;
@@ -286,7 +287,7 @@ const ProjectPreview = ({
 										{project.author?.image ? (
 											// biome-ignore lint/performance/noImgElement: external avatar url
 											<img
-												src={project.author.image}
+												src={avatarImage(project.author.image, 28)}
 												alt={authorName}
 												className={styles.ppAvatarImg}
 											/>

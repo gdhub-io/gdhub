@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Divider,
 	Form,
@@ -14,6 +13,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./styles.module.scss";
 
 const { Text, Title } = Typography;
@@ -157,7 +157,7 @@ const EquityTransferModal = ({
 								{filteredTeamMembers.map((member) => (
 									<Option key={member.userId} value={member.userId}>
 										<div className={styles.memberOption}>
-											<Avatar
+											<AppAvatar
 												size="small"
 												src={member.user?.image}
 												icon={!member.user?.image}

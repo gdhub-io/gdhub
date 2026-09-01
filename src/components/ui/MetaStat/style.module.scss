@@ -1,0 +1,49 @@
+/*
+ * These stand next to `ApplauseButton` in every meta row, so they borrow that
+ * control's metrics rather than inventing their own: one icon box, a value at
+ * 80% of it, and the colour inherited from the row. Keep them in step — a glyph
+ * styled with `font-size` (which a tabler icon ignores) came out at tabler's
+ * 24px default next to a 16px applause mark.
+ */
+.stat {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	font-family: var(--gd-font-ui);
+	line-height: 1;
+	color: inherit;
+}
+
+.default {
+	--meta-icon: 16px;
+
+	// Matches the applause gap, which is measured from the edge of that icon's
+	// disc — these glyphs have no disc, so they pay the disc's padding as gap.
+	gap: 8px;
+}
+
+.large {
+	--meta-icon: 20px;
+	gap: 11px;
+
+	// A hero on a wide screen can carry a bigger mark; a phone cannot.
+	@media (min-width: 992px) {
+		--meta-icon: 24px;
+	}
+}
+
+.iconWrap {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: var(--meta-icon);
+	height: var(--meta-icon);
+}
+
+/* A step below the icon, exactly as the applause count is. */
+.value {
+	font-size: calc(var(--meta-icon) * 0.8);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+}

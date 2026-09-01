@@ -6,6 +6,7 @@ import { useTranslate } from "@tolgee/react";
 import axios from "axios";
 import Link from "next/link";
 import type React from "react";
+import { avatarImage } from "@/helpers/image";
 import type { UserSpaceGroup, UserSpaces } from "@/repositories/user-spaces";
 import styles from "./style.module.scss";
 import type { SpaceKind } from "./types";
@@ -25,7 +26,7 @@ function CoverSwatch({ name, url }: { name: string; url: string | null }) {
 			// A plain <img>: these are 26px and come from arbitrary hosts, so the
 			// image pipeline would cost more than it saves.
 			// biome-ignore lint/performance/noImgElement: 26px avatar from any host
-			<img src={url} alt="" className={styles.swatch} />
+			<img src={avatarImage(url, 26)} alt="" className={styles.swatch} />
 		);
 	}
 

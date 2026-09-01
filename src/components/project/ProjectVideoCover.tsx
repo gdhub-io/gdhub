@@ -2,8 +2,8 @@
 
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useState } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import { toPlayableVideoUrl } from "@/helpers/video";
 import styles from "./ProjectVideoCover.module.scss";
 
@@ -78,10 +78,11 @@ export function ProjectVideoCover({
 	return (
 		<div className={`${styles.cover} ${className ?? ""}`}>
 			{coverImage && (
-				<Image
+				<AppImage
 					src={coverImage}
 					alt={alt || "Project cover"}
 					fill
+					sizes="(max-width: 992px) 100vw, 800px"
 					style={{ objectFit: "cover" }}
 				/>
 			)}

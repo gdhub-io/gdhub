@@ -18,8 +18,8 @@ import {
 	type UploadProps,
 } from "antd";
 import axios from "axios";
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import { EventType, Language } from "@/config/prisma-enums";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
@@ -219,7 +219,12 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 											className={styles.cover}
 											style={{ aspectRatio: "16 / 9" }}
 										>
-											<Image src={`${cover}?w=1200`} fill alt="" />
+											<AppImage
+												src={cover}
+												fill
+												sizes="(max-width: 992px) 100vw, 600px"
+												alt=""
+											/>
 											<Popover
 												content={t(
 													"event.modal.image.deletePopover",
@@ -275,7 +280,12 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 											className={styles.cover}
 											style={{ aspectRatio: "4 / 5" }}
 										>
-											<Image src={`${cover}?w=750`} fill alt="" />
+											<AppImage
+												src={cover}
+												fill
+												sizes="(max-width: 992px) 100vw, 375px"
+												alt=""
+											/>
 											<Popover
 												content={t(
 													"event.modal.image.deletePopover",

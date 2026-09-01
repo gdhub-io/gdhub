@@ -21,7 +21,6 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Dropdown,
 	Flex,
@@ -48,6 +47,7 @@ import InviteMemberModal from "@/components/modals/InviteMemberModal";
 import MemberEquityPromiseModal from "@/components/modals/MemberEquityPromiseModal";
 import TeamMemberCard from "@/components/TeamMemberCard";
 import { EmptyState } from "@/components/ui";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { TeamMemberStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -396,7 +396,7 @@ const MyTeam = () => {
 						style={{ display: "flex", alignItems: "center" }}
 						onClick={() => handleShowMemberCard(record.id)}
 					>
-						<Avatar
+						<AppAvatar
 							shape="square"
 							size={32}
 							src={record.user.image || null}
@@ -652,7 +652,7 @@ const MyTeam = () => {
 						}}
 					>
 						<div style={{ display: "flex", alignItems: "center" }}>
-							<Avatar
+							<AppAvatar
 								shape="square"
 								size={32}
 								src={advisor.image || null}

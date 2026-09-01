@@ -21,12 +21,12 @@ import {
 import ImgCrop from "antd-img-crop";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { DirectionSelect } from "@/components/DirectionSelect";
+import { AppImage } from "@/components/ui/AppImage";
 import { EventFormat, EventType, Language } from "@/config/prisma-enums";
 import { useEvent } from "@/hooks/event";
 import { useQualifiedDirections } from "@/hooks/speciality";
@@ -354,7 +354,12 @@ const EventModal: React.FC<EventModalProps> = ({
 										className={styles.cover}
 										style={{ aspectRatio: "16 / 9" }}
 									>
-										<Image src={`${imageUrl}?w=1200`} fill alt="" />
+										<AppImage
+											src={imageUrl}
+											fill
+											sizes="(max-width: 992px) 100vw, 600px"
+											alt=""
+										/>
 										<Popover
 											content={t(
 												"event.modal.image.deletePopover",
@@ -407,7 +412,12 @@ const EventModal: React.FC<EventModalProps> = ({
 										className={styles.cover}
 										style={{ aspectRatio: "4 / 5" }}
 									>
-										<Image src={`${imageUrl}?w=750`} fill alt="" />
+										<AppImage
+											src={imageUrl}
+											fill
+											sizes="(max-width: 992px) 100vw, 375px"
+											alt=""
+										/>
 										<Popover
 											content={t(
 												"event.modal.image.deletePopover",

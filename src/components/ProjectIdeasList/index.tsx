@@ -1,7 +1,7 @@
 import type { Project } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { Card, Col, Descriptions, Grid, Row, Spin, Typography } from "antd";
-import Image from "next/image";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./style.module.scss";
 
 export const ProjectIdeasList = ({
@@ -36,7 +36,12 @@ export const ProjectIdeasList = ({
 							className={styles.card}
 							cover={
 								project["Cover Image"] ? (
-									<Image alt="cover" src={project["Cover Image"]} fill />
+									<AppImage
+										alt="cover"
+										src={project["Cover Image"]}
+										fill
+										sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+									/>
 								) : (
 									<div className={styles.emptyCover}>No cover</div>
 								)

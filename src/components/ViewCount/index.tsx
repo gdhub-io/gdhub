@@ -1,7 +1,10 @@
-import { IconEye } from "@tabler/icons-react";
+import { IconChartBar } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
-import { Space } from "antd";
-import type { CSSProperties } from "react";
+import {
+	META_ICON_STROKE,
+	MetaStat,
+	type MetaStatSize,
+} from "@/components/ui/MetaStat";
 import { formatCompactCount } from "@/helpers/format";
 
 interface ViewCountProps {
@@ -12,11 +15,8 @@ interface ViewCountProps {
 	 * behind.
 	 */
 	count: number;
-	containerStyle?: CSSProperties;
-	iconStyle?: CSSProperties;
-	textStyle?: CSSProperties;
-	/** Below this the number says more about the counter than about the content. */
-	minViews?: number;
+	size?: MetaStatSize;
+	className?: string;
 }
 
 /**
@@ -25,23 +25,24 @@ interface ViewCountProps {
  */
 export const ViewCount = ({
 	count,
-	containerStyle,
-	iconStyle = { fontSize: "12px" },
-	textStyle = { fontSize: "12px" },
-	minViews = 10,
+	size = "default",
+	className,
 }: ViewCountProps) => {
 	const { getLanguage } = useTolgee();
 
-	// Locally the counter starts empty and the threshold would hide every number
-	// there is, which reads as "the feature is broken" rather than "nobody looked".
-	const threshold = process.env.NODE_ENV === "development" ? 0 : minViews;
-
-	if (count < threshold) return null;
-
 	return (
-		<Space size={4} style={containerStyle}>
-			<IconEye style={iconStyle} />
-			<span style={textStyle}>{formatCompactCount(count, getLanguage())}</span>
-		</Space>
+		<MetaStat
+			size={size}
+			className={className}
+			icon={
+				<IconChartBar
+					size="100%"
+					stroke={META_ICON_STROKE}
+					aria-hidden="true"
+				/>
+			}
+		>
+			{formatCompactCount(count, getLanguage())}
+		</MetaStat>
 	);
 };

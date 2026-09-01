@@ -7,9 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Card, Col, Descriptions, Grid, Row } from "antd";
 import axios from "axios";
-import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./style.module.scss";
 
 type ProjectsSectionArgs = {
@@ -60,7 +60,12 @@ export const SeasonProjectsSection = ({
 						className={styles.card}
 						cover={
 							project.coverImage ? (
-								<Image alt="cover" src={project.coverImage} fill />
+								<AppImage
+									alt="cover"
+									src={project.coverImage}
+									fill
+									sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+								/>
 							) : null
 						}
 					>

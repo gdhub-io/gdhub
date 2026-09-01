@@ -27,7 +27,6 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -36,6 +35,7 @@ import {
 } from "@/components/admin/AnnouncePreviewModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
 import {
 	getCleanTextContent,
@@ -150,12 +150,11 @@ export default function DevlogPostsAdminPage() {
 				}
 
 				return (
-					<Image
+					<AppImage
 						src={coverSrc}
 						alt={record.project?.name || "DevLog cover"}
 						width={80}
 						height={45}
-						unoptimized
 						style={{
 							borderRadius: 8,
 							objectFit: "cover",
@@ -218,7 +217,7 @@ export default function DevlogPostsAdminPage() {
 				record.isSystem ? (
 					<Text type="secondary">—</Text>
 				) : (
-					<ViewCount count={record.viewsCount} minViews={0} />
+					<ViewCount count={record.viewsCount} />
 				),
 		},
 		{

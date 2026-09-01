@@ -5,7 +5,6 @@ import { useTranslate } from "@tolgee/react";
 import { Skeleton, Spin, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ApplauseButton } from "@/components/ApplauseButton";
@@ -15,7 +14,9 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
+import { DEVLOG_FEED_LIMIT, devlogFeedQueryKey } from "@/config/devlog-feed";
 import {
 	getEditorjsPageCover,
 	getEditorjsShortContent,
@@ -43,6 +44,11 @@ interface DevlogPostsProps {
 	edgeToEdgeOnMobile?: boolean;
 }
 
+// The hub feed paints the cover as a full-width banner, not the 120px square
+// the default variant uses — without this the browser would settle for the
+// thumbnail candidate and the banner would look washed out.
+const HUB_COVER_SIZES = "(max-width: 767px) 100vw, 900px";
+
 const PostCard: React.FC<{
 	post: ProjectReport & {
 		project: Project;
@@ -53,7 +59,10 @@ const PostCard: React.FC<{
 		};
 	};
 	onClick: (e: React.MouseEvent) => void;
-}> = ({ post, onClick }) => {
+	variant: "default" | "hub";
+	/** The first card is above the fold — its cover is what LCP measures. */
+	eager?: boolean;
+}> = ({ post, onClick, variant, eager = false }) => {
 	/** Two letters when there is no photo — a tinted circle beats a generated face. */
 	const authorInitials = useMemo(() => {
 		const name = post.author?.name?.trim();
@@ -110,13 +119,12 @@ const PostCard: React.FC<{
 				<div className={styles.postContent}>
 					<div className={styles.postHeader}>
 						{post.author?.image ? (
-							<Image
+							<AppImage
 								src={post.author.image}
 								alt={post.author?.name || ""}
 								width={36}
 								height={36}
 								className={styles.authorAvatar}
-								unoptimized
 							/>
 						) : (
 							<span className={styles.authorAvatar} aria-hidden="true">
@@ -139,12 +147,13 @@ const PostCard: React.FC<{
 
 					{postCover ? (
 						<div className={styles.postImage}>
-							<Image
+							<AppImage
 								src={postCover}
 								alt={post.project?.name || ""}
 								width={240}
 								height={240}
-								unoptimized
+								sizes={variant === "hub" ? HUB_COVER_SIZES : undefined}
+								preload={eager}
 							/>
 						</div>
 					) : null}
@@ -205,12 +214,12 @@ const DevlogPosts = ({
 	edgeToEdgeOnMobile = false,
 }: DevlogPostsProps) => {
 	const { t } = useTranslate();
-	const limit = 5;
+	const limit = DEVLOG_FEED_LIMIT;
 	const trackView = useFeedViews("ProjectReport");
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useInfiniteQuery({
-			queryKey: ["devlog-posts", projectId],
+			queryKey: devlogFeedQueryKey(projectId),
 			queryFn: async ({ pageParam }) => {
 				const params = new URLSearchParams({ limit: String(limit) });
 				if (projectId) params.set("projectId", projectId);
@@ -326,7 +335,7 @@ const DevlogPosts = ({
 	const listBlock = (
 		<>
 			<div className={styles.postsList}>
-				{posts.map((post) => (
+				{posts.map((post, index) => (
 					<div
 						key={`post-${post.id}`}
 						className={styles.postWrapper}
@@ -344,6 +353,8 @@ const DevlogPosts = ({
 								}
 							}
 							onClick={(e) => e.stopPropagation()}
+							variant={variant}
+							eager={index === 0}
 						/>
 					</div>
 				))}

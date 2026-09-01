@@ -9,11 +9,11 @@ import type {
 import { useTolgee } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import { AppImage } from "@/components/ui/AppImage";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { hasEventEnded } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
@@ -53,7 +53,7 @@ const EventConferenceOrGamelabView = ({
 			{event.image && (
 				<div className={styles.coverWrap}>
 					<div className={styles.cover}>
-						<Image
+						<AppImage
 							src={event.image}
 							alt={event.title}
 							fill

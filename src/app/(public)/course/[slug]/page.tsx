@@ -10,8 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Space, Tag, Typography } from "antd";
 import axios from "axios";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import { AppImage } from "@/components/ui/AppImage";
 import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./style.module.scss";
 
@@ -75,7 +75,7 @@ export default function CoursePage() {
 			<div className={styles.courseHeader}>
 				<div className={styles.courseImage}>
 					{course.image && (
-						<Image
+						<AppImage
 							src={course.image}
 							alt={course.title}
 							fill

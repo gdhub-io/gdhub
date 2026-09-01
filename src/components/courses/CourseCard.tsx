@@ -6,9 +6,9 @@ import {
 } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
 import { Card, Tag } from "antd";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./style.module.scss";
 
 function getCourseIcon(category: string) {
@@ -77,7 +77,7 @@ export const CourseCard = ({ course, token }: { course: any; token: any }) => {
 								overflow: "hidden",
 							}}
 						>
-							<Image
+							<AppImage
 								src={course.image}
 								alt={course.title}
 								fill
