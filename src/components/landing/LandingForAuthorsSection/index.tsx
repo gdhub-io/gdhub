@@ -8,6 +8,7 @@ import ReactNiceAvatar, { genConfig } from "react-nice-avatar";
 import Star2Icon from "@/assets/images/icons/star-2.svg";
 // import BgImageXS from '@/assets/images/landing/gdhub-talent-pool.png'
 import BgImage from "@/assets/images/landing/gdhub-talent-pool.png";
+import { staticImageUrl } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -50,7 +51,11 @@ export const LandingForAuthorsSection = () => {
 				id="for-authors"
 				className={styles.section}
 				style={
-					screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined
+					screens.xl
+						? {
+								backgroundImage: `url(${staticImageUrl(BgImage.src, 1920)})`,
+							}
+						: undefined
 				}
 			>
 				<div className={styles.container}>

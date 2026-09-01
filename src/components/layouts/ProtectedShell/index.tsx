@@ -4,7 +4,6 @@ import { IconExternalLink, IconX } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	ConfigProvider,
 	Drawer,
@@ -30,6 +29,7 @@ import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
 import type { Permission } from "@/config/spaces";
@@ -363,7 +363,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							/* No space: this names who is signed in, not where you are —
 							   so no switcher, no separator and no hover chip. */
 							<Space className={styles.identity}>
-								<Avatar src={session?.user?.image ?? undefined} size={24} />
+								<AppAvatar src={session?.user?.image ?? undefined} size={24} />
 								{screens.sm ? (
 									<Text className="username">{session?.user?.name}</Text>
 								) : null}
@@ -395,7 +395,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 						className={styles.mobileMenuDrawer}
 						title={
 							<Space>
-								<Avatar
+								<AppAvatar
 									src={session?.user?.image ?? undefined}
 									shape="square"
 								/>

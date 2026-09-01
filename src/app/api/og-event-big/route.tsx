@@ -2,8 +2,22 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
+import { optimizedImage } from "@/helpers/image";
 import { loadOgFont, safeDecodeURIComponent } from "@/helpers/og-font";
 import { ogPalette } from "@/helpers/og-palette";
+
+/**
+ * Satori fetches the cover itself and cannot negotiate a modern format, so the
+ * upload is asked for pre-cropped to the card frame as JPEG rather than at
+ * whatever resolution it was uploaded at.
+ */
+const OG_COVER = {
+	width: 1200,
+	height: 630,
+	fit: "crop",
+	quality: 70,
+	format: "jpg",
+} as const;
 
 export const runtime = "edge";
 
@@ -55,7 +69,7 @@ export async function GET(request: NextRequest) {
 					aria-label="OG Image"
 					width="1200"
 					height="630"
-					src={coverImage}
+					src={optimizedImage(coverImage, OG_COVER)}
 					style={{
 						position: "absolute",
 						top: 0,

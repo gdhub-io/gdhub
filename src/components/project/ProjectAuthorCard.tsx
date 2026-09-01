@@ -3,12 +3,12 @@
 import { IconQuote } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Typography } from "antd";
-import Image from "next/image";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./ProjectAuthorCard.module.scss";
 
 const { Text } = Typography;
@@ -57,10 +57,11 @@ export function ProjectAuthorCard({
 			<div className={styles.row}>
 				<div className={styles.avatar}>
 					{author.image ? (
-						<Image
+						<AppImage
 							src={author.image}
 							alt={displayName}
 							fill
+							sizes="48px"
 							style={{ objectFit: "cover" }}
 						/>
 					) : (

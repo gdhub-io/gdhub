@@ -9,9 +9,9 @@ import type {
 import { useTolgee } from "@tolgee/react";
 import { Flex, Grid } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
-import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import { AppImage } from "@/components/ui/AppImage";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { hasEventEnded } from "@/helpers/event";
 import styles from "./EventDefaultView.module.scss";
@@ -73,7 +73,7 @@ const EventDefaultView = ({
 			{event.image && screens.lg && (
 				<div className={styles.coverColumn}>
 					<div className={styles.cover}>
-						<Image
+						<AppImage
 							src={event.image}
 							alt={event.title}
 							fill

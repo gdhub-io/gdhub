@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Star2Icon from "@/assets/images/icons/star-2.svg";
 import BgImage from "@/assets/images/landing/gdhub-specialist-image.png";
+import { AppImage } from "@/components/ui/AppImage";
+import { staticImageUrl } from "@/helpers/image";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -41,7 +43,11 @@ export const LandingForSpecialistsSection = () => {
 			<div
 				className={styles.section}
 				style={
-					screens.xl ? { backgroundImage: `url(${BgImage.src})` } : undefined
+					screens.xl
+						? {
+								backgroundImage: `url(${staticImageUrl(BgImage.src, 1920)})`,
+							}
+						: undefined
 				}
 			>
 				<div className={styles.container}>
@@ -107,7 +113,7 @@ export const LandingForSpecialistsSection = () => {
 														<div className={styles.projectCardBody}>
 															<div className={styles.projectCover}>
 																{p.coverImage ? (
-																	<Image
+																	<AppImage
 																		src={p.coverImage}
 																		alt={p.name}
 																		width={96}

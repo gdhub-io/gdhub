@@ -4,12 +4,12 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import { DevlogPostLink } from "@/components/DevlogPostLink";
+import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
 import { useFeedViews } from "@/hooks/useContentViews";
 import styles from "./styles.module.scss";
@@ -113,30 +113,27 @@ const PostCard: React.FC<{
 				<div className={styles.postContent}>
 					<div className={styles.postImage}>
 						{!imageError && post.coverImage ? (
-							<Image
+							<AppImage
 								src={post.coverImage}
 								alt={post.project?.name || ""}
 								width={240}
 								height={240}
-								unoptimized
 								onError={() => setImageError(true)}
 							/>
 						) : !contentImageError && getImageFromContent(post.content) ? (
-							<Image
+							<AppImage
 								src={getImageFromContent(post.content)!}
 								alt={post.project?.name || ""}
 								width={240}
 								height={240}
-								unoptimized
 								onError={() => setContentImageError(true)}
 							/>
 						) : !contentImageError && post.project?.coverImage ? (
-							<Image
+							<AppImage
 								src={post.project.coverImage}
 								alt={post.project.name}
 								width={240}
 								height={240}
-								unoptimized
 								onError={() => setContentImageError(true)}
 							/>
 						) : (

@@ -14,7 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Flex, message, Space, Spin, Typography } from "antd";
+import { Button, Flex, message, Space, Spin, Typography } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -28,6 +28,7 @@ import {
 } from "@/components/hub/HubSection";
 import hubSection from "@/components/hub/hubSection.module.scss";
 import { ViewAllLink } from "@/components/ui";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { useChat } from "../Chat/useChat";
 import ExpertRequestModal from "../modals/ExpertRequestModal";
@@ -395,7 +396,7 @@ const AdviceHubListRow: React.FC<{
 
 	const main = (
 		<div className={styles.hubListRowMain}>
-			<Avatar
+			<AppAvatar
 				size={28}
 				className={styles.hubAvatar}
 				src={type === "incoming" ? req.fromUser?.image : req.toUser?.image}
@@ -539,7 +540,7 @@ const RequestCard: React.FC<{
 		<div className={styles.requestCard}>
 			<Flex align="center" gap={16}>
 				<div style={{ position: "relative", display: "inline-block" }}>
-					<Avatar
+					<AppAvatar
 						src={type === "incoming" ? req.fromUser?.image : req.toUser?.image}
 					/>
 					<span
@@ -567,7 +568,7 @@ const RequestCard: React.FC<{
 						<Space size={[8, 8]} wrap>
 							{req.project && (
 								<Space key={req.project.id} align="center" size={8}>
-									<Avatar
+									<AppAvatar
 										src={req.project.coverImage}
 										shape="square"
 										size={24}

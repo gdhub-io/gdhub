@@ -13,8 +13,8 @@ import { Button, Flex, Modal, Skeleton, Tabs, Tooltip, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import { platformOptions } from "@/helpers/react-content";
 import styles from "./style.module.scss";
 import {
@@ -145,7 +145,7 @@ export function ProjectCardModal({
 				<>
 					<header className={styles.header}>
 						{project.coverImage && (
-							<Image
+							<AppImage
 								className={styles.cover}
 								src={project.coverImage}
 								alt=""

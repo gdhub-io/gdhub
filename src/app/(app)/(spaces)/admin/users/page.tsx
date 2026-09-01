@@ -10,7 +10,6 @@ import {
 } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-	Avatar,
 	Badge,
 	Button,
 	Dropdown,
@@ -35,6 +34,7 @@ import { BrevoSyncModal } from "@/components/admin/BrevoSyncModal";
 import { UserRolesModal } from "@/components/admin/UserRolesModal";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { ROLE_META } from "@/config/permissions/role-meta";
 import { SPACE_ROLES, type SpaceRole } from "@/config/permissions/roles";
 import { SPACE_TYPES, type SpaceType } from "@/config/spaces";
@@ -281,9 +281,9 @@ export default function UsersAdminPage() {
 				key: "image",
 				width: 70,
 				render: (value, record) => (
-					<Avatar src={value || undefined}>
+					<AppAvatar src={value || undefined}>
 						{!value && record.name ? record.name[0] : null}
-					</Avatar>
+					</AppAvatar>
 				),
 			},
 			{

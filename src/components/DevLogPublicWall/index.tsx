@@ -3,12 +3,14 @@
 import type { ProjectReport } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Flex, List, Space, Typography } from "antd";
+import { Flex, List, Space, Typography } from "antd";
 import axios from "axios";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player";
 import rehypeRaw from "rehype-raw";
+import { AppAvatar } from "@/components/ui/AppAvatar";
+import { imageSrcSet, optimizedImage } from "@/helpers/image";
 import { DevLogPost } from "../DevLogWall/DevLogPost";
 import styles from "./style.module.scss";
 
@@ -23,6 +25,14 @@ type ProjectReportItem =
 	| undefined;
 
 const { Title, Paragraph, Text } = Typography;
+
+/**
+ * The devlog wall column. The ladder runs to 2× the widest slot so a retina
+ * screen still has a candidate to pick — stopping at 1× is what makes a feed
+ * image look washed out.
+ */
+const WALL_IMAGE_SIZES = "(max-width: 1000px) 100vw, 1000px";
+const WALL_IMAGE_WIDTHS = [480, 768, 1024, 1400, 2000];
 
 export const DevLogPublicWall = ({ projectId }: any) => {
 	const { t } = useTranslate();
@@ -70,7 +80,7 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 					authorId: report.authorId,
 					label: (
 						<Flex gap={16}>
-							<Avatar src={report.author.image} size={48} />
+							<AppAvatar src={report.author.image} size={48} />
 							<Space orientation="vertical" size={0}>
 								<Text>{report.author.profile.name || report.author.name}</Text>
 								<Text type="secondary">
@@ -85,13 +95,22 @@ export const DevLogPublicWall = ({ projectId }: any) => {
 								<ReactMarkdown
 									rehypePlugins={[rehypeRaw as any]}
 									components={{
-										img: (props) => (
-											<img
-												style={{ maxWidth: "100%" }}
-												alt={props.alt || ""}
-												{...props}
-											/>
-										),
+										img: ({ src, ...props }) => {
+											const url = typeof src === "string" ? src : undefined;
+
+											return (
+												<img
+													style={{ maxWidth: "100%" }}
+													{...props}
+													alt={props.alt || ""}
+													src={optimizedImage(url, { width: 1024 })}
+													srcSet={imageSrcSet(url, WALL_IMAGE_WIDTHS)}
+													sizes={WALL_IMAGE_SIZES}
+													loading="lazy"
+													decoding="async"
+												/>
+											);
+										},
 									}}
 								>
 									{report.content}

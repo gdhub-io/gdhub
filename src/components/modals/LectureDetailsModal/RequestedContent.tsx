@@ -5,10 +5,11 @@ import type {
 	User,
 } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Card } from "antd";
+import { Card } from "antd";
 import { useSession } from "next-auth/react";
 import { Fragment, useMemo } from "react";
 import { TextWithLineBreak } from "@/components/TextWithLineBreak";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 
 export const RequestedContent = ({
 	lecture,
@@ -28,7 +29,7 @@ export const RequestedContent = ({
 
 	const lectureAvatar = () => {
 		return lecturer?.user.image ? (
-			<Avatar shape="square" size={64} src={lecturer.user.image} />
+			<AppAvatar shape="square" size={64} src={lecturer.user.image} />
 		) : null;
 	};
 

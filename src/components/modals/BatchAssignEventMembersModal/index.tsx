@@ -1,20 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import {
-	Alert,
-	Avatar,
-	Form,
-	Modal,
-	message,
-	Select,
-	Spin,
-	Typography,
-} from "antd";
+import { Alert, Form, Modal, message, Select, Spin, Typography } from "antd";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import qs from "qs";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 
 interface CommonProject {
 	id: string;
@@ -238,9 +230,9 @@ const BatchAssignEventMembersModal: React.FC<
 							};
 							return (
 								<div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-									<Avatar size={24} src={data.image ?? undefined}>
+									<AppAvatar size={24} src={data.image ?? undefined}>
 										{!data.image && data.label ? data.label[0] : null}
-									</Avatar>
+									</AppAvatar>
 									<div>
 										<div>{data.label}</div>
 										<div

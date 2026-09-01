@@ -14,7 +14,6 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Button,
 	Dropdown,
 	Input,
@@ -54,6 +53,7 @@ import AddEventMembersModal from "@/components/modals/AddEventMembersModal";
 import BatchAssignEventMembersModal from "@/components/modals/BatchAssignEventMembersModal";
 import EditEventMemberModal from "@/components/modals/EditEventMemberModal";
 import { EventSpace } from "@/components/spaces/EventSpace";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 
 const { Text } = Typography;
 
@@ -133,9 +133,9 @@ const renderMentorsCell = (mentors?: EventMemberMentor[] | null) => {
 						key={mentor.id}
 						style={{ display: "flex", alignItems: "center", gap: 8 }}
 					>
-						<Avatar size={20} src={mentor.user?.image ?? undefined}>
+						<AppAvatar size={20} src={mentor.user?.image ?? undefined}>
 							{!mentor.user?.image && displayName ? displayName[0] : null}
-						</Avatar>
+						</AppAvatar>
 						<div style={{ lineHeight: 1.2 }}>
 							<Text style={{ fontSize: 13 }}>{displayName}</Text>
 							<div>
@@ -565,9 +565,9 @@ export default function EventMembersPage() {
 
 							return (
 								<div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-									<Avatar src={user?.image ?? undefined}>
+									<AppAvatar src={user?.image ?? undefined}>
 										{!user?.image && displayName ? displayName[0] : null}
-									</Avatar>
+									</AppAvatar>
 									<div>
 										<Text strong>{displayName}</Text>
 										{user?.email && (

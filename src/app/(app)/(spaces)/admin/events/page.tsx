@@ -25,7 +25,6 @@ import {
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -35,6 +34,7 @@ import {
 import { EventStatusDot } from "@/components/events/EventCardParts";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
 import { EventStatus, EventType } from "@/config/prisma-enums";
 import { formatEventPeriod } from "@/helpers/format";
@@ -115,12 +115,11 @@ export default function EventsAdminPage() {
 			width: 104,
 			render: (image, record) =>
 				image ? (
-					<Image
+					<AppImage
 						src={image}
 						alt={record.title}
 						width={80}
 						height={45}
-						unoptimized
 						className={styles.cover}
 					/>
 				) : (

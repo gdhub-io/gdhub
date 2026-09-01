@@ -25,9 +25,9 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import {
 	useGameDifficulties,
@@ -304,7 +304,7 @@ const ProjectCandidatePreviewModal = ({
 								>
 									{!!candidate.data.user.image && (
 										<div className={styles.avatar}>
-											<Image
+											<AppImage
 												src={candidate.data.user.image}
 												alt="project member avatar"
 												width={160}

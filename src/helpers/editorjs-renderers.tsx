@@ -1,7 +1,9 @@
 import { Card, Flex, Typography } from "antd";
-import Image from "next/image";
+import parse from "html-react-parser";
 import Link from "next/link";
 import { useState } from "react";
+import { AppImage } from "@/components/ui/AppImage";
+import { imageSrcSet, optimizedImage } from "@/helpers/image";
 
 const { Text, Title } = Typography;
 
@@ -118,14 +120,14 @@ const LinkToolRenderer = ({ data }: { data: LinkToolData }) => {
 						}}
 					>
 						{hasImage && data.meta?.image?.url ? (
-							<Image
+							<AppImage
 								src={data.meta.image.url}
 								alt={data.meta?.title || "Link preview"}
 								fill
+								sizes="64px"
 								style={{
 									objectFit: "cover",
 								}}
-								unoptimized
 								onError={() => setImageError(true)}
 							/>
 						) : (
@@ -138,6 +140,61 @@ const LinkToolRenderer = ({ data }: { data: LinkToolData }) => {
 	);
 };
 
+interface ImageBlockData {
+	file?: { url: string; name?: string };
+	url?: string;
+	caption?: string;
+	withBorder?: boolean;
+	withBackground?: boolean;
+	stretched?: boolean;
+}
+
+/** Article body column, so the browser never fetches more than it paints. */
+const CONTENT_IMAGE_SIZES = "(max-width: 1024px) 100vw, 1024px";
+
+const ACTION_CLASS_NAMES: Record<string, string> = {
+	stretched: "image-block--stretched",
+	withBorder: "image-block--with-border",
+	withBackground: "image-block--with-background",
+};
+
+/**
+ * Replaces the library's image renderer, which emits a bare `<img>` pointing at
+ * the full-resolution upload — a devlog post with five screenshots was tens of
+ * megabytes. Same markup, plus a srcset and lazy loading.
+ */
+const ImageBlockRenderer = ({
+	data,
+	className = "",
+}: {
+	data: ImageBlockData;
+	className?: string;
+}) => {
+	const src = data?.file?.url || data?.url;
+	const classNames = [className];
+	for (const [action, actionClass] of Object.entries(ACTION_CLASS_NAMES)) {
+		if (data[action as keyof ImageBlockData] === true)
+			classNames.push(actionClass);
+	}
+
+	return (
+		<figure className={classNames.filter(Boolean).join(" ") || undefined}>
+			{!!src && (
+				<img
+					src={optimizedImage(src, { width: 1024 })}
+					srcSet={imageSrcSet(src)}
+					sizes={CONTENT_IMAGE_SIZES}
+					alt={data.caption || data.file?.name || ""}
+					loading="lazy"
+					decoding="async"
+				/>
+			)}
+			{!!data.caption && <figcaption>{parse(data.caption)}</figcaption>}
+		</figure>
+	);
+};
+
 export const editorjsRenderers = {
+	image: ImageBlockRenderer,
 	linkTool: LinkToolRenderer,
 };

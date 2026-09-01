@@ -6,12 +6,13 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Space, Table, Tag } from "antd";
+import { Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import ProjectCandidatePreviewModal from "@/components/modals/ProjectCandidatePreviewModal";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { ProjectContext } from "@/contexts/ProjectContext";
 
 const MyProjectCandidates = () => {
@@ -65,7 +66,7 @@ const MyProjectCandidates = () => {
 						onClick={() => handleShowCandidate(record.id)}
 					>
 						<Space>
-							<Avatar
+							<AppAvatar
 								shape="square"
 								size={32}
 								src={record.user.image || null}

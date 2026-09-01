@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar } from "antd";
+import {} from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/hub/HubSection";
 import { HubSectionRow } from "@/components/hub/HubSectionRow";
 import { SKILL_LEVEL_STEP } from "@/components/ui";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import type { SkillLevel } from "@/config/prisma-enums";
 import styles from "./styles.module.scss";
 
@@ -65,9 +66,9 @@ export default function NewMembers() {
 							.filter(Boolean)
 							.join(" · ")}
 						media={
-							<Avatar src={user.image} size={32} className={styles.avatar}>
+							<AppAvatar src={user.image} size={32} className={styles.avatar}>
 								{user.speciality?.charAt(0)?.toUpperCase()}
-							</Avatar>
+							</AppAvatar>
 						}
 					/>
 				))}

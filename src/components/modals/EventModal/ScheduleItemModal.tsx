@@ -2,7 +2,6 @@ import type { WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
-	Avatar,
 	Col,
 	DatePicker,
 	Form,
@@ -20,6 +19,7 @@ import { useSession } from "next-auth/react";
 import qs from "qs";
 import React, { useEffect } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EventFormat, Language } from "@/config/prisma-enums";
 import type { ScheduleItemFormValues } from ".";
 import styles from "./style.module.scss";
@@ -372,9 +372,13 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 										<div
 											style={{ display: "flex", alignItems: "center", gap: 8 }}
 										>
-											<Avatar size={24} src={avatar} style={{ marginRight: 8 }}>
+											<AppAvatar
+												size={24}
+												src={avatar}
+												style={{ marginRight: 8 }}
+											>
 												{!avatar && label ? label[0] : null}
-											</Avatar>
+											</AppAvatar>
 											<div>
 												<div>{label}</div>
 												<div

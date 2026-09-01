@@ -25,6 +25,7 @@ import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { ViewCount } from "@/components/ViewCount";
 import { getCleanTextContent } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
+import { imageSrcSet, optimizedImage } from "@/helpers/image";
 import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./styles.module.scss";
 
@@ -78,6 +79,9 @@ export interface Post {
 	} | null;
 }
 
+/** Article body column — see the devlog styles `max-width`. */
+const CONTENT_IMAGE_SIZES = "(max-width: 800px) 100vw, 800px";
+
 interface PageProps {
 	post: Post;
 }
@@ -111,9 +115,13 @@ const MarkdownImage = ({
 			<span style={containerStyle}>
 				{/* biome-ignore lint/performance/noImgElement: avoid hydration mismatch before AntImage mounts on the client */}
 				<img
-					src={src}
+					src={optimizedImage(src, { width: 1024 })}
+					srcSet={imageSrcSet(src)}
+					sizes={CONTENT_IMAGE_SIZES}
 					alt={alt}
 					width={width}
+					loading="lazy"
+					decoding="async"
 					style={{
 						maxWidth: "100%",
 						height: "auto",
@@ -128,10 +136,15 @@ const MarkdownImage = ({
 	return (
 		<span style={containerStyle} className={styles.imagePreview}>
 			<AntImage
-				src={src}
+				src={optimizedImage(src, { width: 1024 })}
+				srcSet={imageSrcSet(src)}
+				sizes={CONTENT_IMAGE_SIZES}
 				alt={alt}
 				width={width}
+				loading="lazy"
 				preview={{
+					// The lightbox is the one place the full-size upload is worth it.
+					src: optimizedImage(src, { width: 2048 }),
 					rootClassName: styles.imagePreview,
 				}}
 				style={{

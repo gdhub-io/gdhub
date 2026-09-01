@@ -8,7 +8,7 @@
  * Mirrors `images.remotePatterns` in next.config.js: everything the frontend
  * is allowed to render, and nothing else.
  */
-const ALLOWED_HOSTS = new Set([
+export const ALLOWED_IMAGE_HOSTS = new Set([
 	"images.unsplash.com",
 	"img.youtube.com",
 	"lh3.googleusercontent.com",
@@ -41,5 +41,7 @@ export function isAllowedRemoteImage(url: string): boolean {
 
 	if (parsed.protocol !== "https:") return false;
 
-	return ALLOWED_HOSTS.has(parsed.hostname) || parsed.hostname === appHost();
+	return (
+		ALLOWED_IMAGE_HOSTS.has(parsed.hostname) || parsed.hostname === appHost()
+	);
 }

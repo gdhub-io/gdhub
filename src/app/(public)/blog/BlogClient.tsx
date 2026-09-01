@@ -3,9 +3,9 @@
 import { IconUser } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Typography } from "antd";
-import Image from "next/image";
 import Link from "next/link";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
@@ -50,7 +50,7 @@ export function BlogClient({ posts }: { posts: BlogPost[] }) {
 								>
 									{post.image && (
 										<div className={styles.coverImage}>
-											<Image
+											<AppImage
 												src={post.image}
 												alt={post.title}
 												width={512}
@@ -72,7 +72,7 @@ export function BlogClient({ posts }: { posts: BlogPost[] }) {
 											</Text>
 											<div className={styles.authorWrap}>
 												{author?.image ? (
-													<Image
+													<AppImage
 														src={author.image}
 														alt={author.name}
 														width={24}

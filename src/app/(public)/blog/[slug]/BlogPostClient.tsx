@@ -2,9 +2,10 @@
 
 import { IconClock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Card, Flex, Typography } from "antd";
+import { Card, Flex, Typography } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { ViewCount } from "@/components/ViewCount";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { useContentPageView } from "@/hooks/useContentViews";
@@ -58,7 +59,7 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 						>
 							<Flex align="center" gap={8} justify="center">
 								{author?.image && (
-									<Avatar src={author.image} alt={author.name} size={16} />
+									<AppAvatar src={author.image} alt={author.name} size={16} />
 								)}
 								<Text strong style={{ fontSize: "12px" }}>
 									{author?.name || "Anonymous"}

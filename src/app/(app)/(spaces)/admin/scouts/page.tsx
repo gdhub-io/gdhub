@@ -3,13 +3,14 @@
 import { IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Flex, Table, Tag, Typography } from "antd";
+import { Button, Flex, Table, Tag, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { NewScoutModal } from "@/components/admin/NewScoutModal";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 
 const { Text } = Typography;
 
@@ -47,9 +48,9 @@ export default function AdminScoutsPage() {
 			key: "user",
 			render: (_: unknown, scout: Scout) => (
 				<Flex align="center" gap={8}>
-					<Avatar size={28} src={scout.user.image}>
+					<AppAvatar size={28} src={scout.user.image}>
 						{scout.user.name?.charAt(0)}
-					</Avatar>
+					</AppAvatar>
 					<Flex vertical>
 						<Text strong>{scout.user.name}</Text>
 						<Text type="secondary">{scout.user.email}</Text>

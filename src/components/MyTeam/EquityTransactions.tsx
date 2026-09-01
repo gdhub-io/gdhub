@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Card, Table, Typography } from "antd";
+import { Card, Table, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { StatusDot } from "@/components/ui";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EquityTransactionType } from "@/config/prisma-enums";
 import styles from "./EquityTransactions.module.scss";
 
@@ -97,7 +98,7 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({
 	const renderUser = (user: Transaction["toAllocation"]["owner"]) => {
 		return (
 			<div className={styles.userInfo}>
-				<Avatar
+				<AppAvatar
 					size="small"
 					src={user.image}
 					icon={!user.image}

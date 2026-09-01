@@ -8,10 +8,10 @@ import {
 	IconPacman,
 } from "@tabler/icons-react";
 import { Col, Row, Skeleton, Tag, Typography } from "antd";
-import Image from "next/image";
 import Link from "next/link";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import DefaultCover from "@/components/GameCard/DefaultCover";
+import { AppImage } from "@/components/ui/AppImage";
 import type { ProjectLink } from "@/types/project";
 import styles from "./styles.module.scss";
 
@@ -149,7 +149,7 @@ const GameOnStoreCardList = ({
 							>
 								<div className={styles.cover}>
 									{project.coverImage ? (
-										<Image
+										<AppImage
 											src={project.coverImage}
 											alt={`${project.name} cover`}
 											fill

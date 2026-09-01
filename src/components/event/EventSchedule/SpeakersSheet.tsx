@@ -1,8 +1,9 @@
 "use client";
 
 import { useTolgee } from "@tolgee/react";
-import { Avatar, Drawer, Flex, Grid, Modal, Tag } from "antd";
+import { Drawer, Flex, Grid, Modal, Tag } from "antd";
 import type { ReactNode } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { formatSlotTime } from "@/helpers/event";
 import type { ScheduleItem } from ".";
 import styles from "./SpeakersSheet.module.scss";
@@ -53,9 +54,13 @@ export function SpeakersSheet({
 						gap={12}
 						className={styles.row}
 					>
-						<Avatar size={44} src={speaker.user?.image || undefined} alt={name}>
+						<AppAvatar
+							size={44}
+							src={speaker.user?.image || undefined}
+							alt={name}
+						>
 							{name ? name[0] : null}
-						</Avatar>
+						</AppAvatar>
 						<Flex vertical gap={4} flex={1}>
 							<span className={styles.name}>{name}</span>
 							<Flex align="center" gap={8} wrap>

@@ -22,9 +22,9 @@ import {
 } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
+import { AppImage } from "@/components/ui/AppImage";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { normUploadFile } from "@/helpers/file";
 import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
@@ -285,7 +285,12 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 						) : (
 							<Spin spinning={coverProcessing}>
 								<div className={styles.cover}>
-									<Image src={cover + "?w=750"} fill alt="" />
+									<AppImage
+										src={cover}
+										fill
+										sizes="(max-width: 992px) 100vw, 640px"
+										alt=""
+									/>
 									<Popover
 										content={t(
 											"page.my.projects.settings.coverImage.deletePopover",

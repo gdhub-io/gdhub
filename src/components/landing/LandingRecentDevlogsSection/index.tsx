@@ -7,9 +7,9 @@ import { useTranslate } from "@tolgee/react";
 import { Card, Col, Row, Skeleton, Space, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import Image from "next/image";
 import Link from "next/link";
 import { useId } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import {
 	getEditorjsPageCover,
 	getEditorjsShortContent,
@@ -103,7 +103,7 @@ export const LandingRecentDevlogsSection = () => {
 												<Card className={styles.devlogCard}>
 													{pageCoverFromEditorjs || pageCoverFromContent ? (
 														<div className={styles.cardImage}>
-															<Image
+															<AppImage
 																src={
 																	pageCoverFromEditorjs ||
 																	pageCoverFromContent ||
@@ -112,7 +112,7 @@ export const LandingRecentDevlogsSection = () => {
 																alt={devlog.project?.name || ""}
 																width={240}
 																height={240}
-																unoptimized
+																sizes="(max-width: 576px) 100vw, (max-width: 768px) 50vw, 33vw"
 																className={styles.image}
 															/>
 														</div>

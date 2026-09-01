@@ -21,10 +21,10 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
 import SpecialitySelectModal from "../SpecialitySelectModal";
 import styles from "./style.module.scss";
@@ -261,10 +261,11 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 													</Button>
 												</div>
 											)}
-											<Image
+											<AppImage
 												src={vacancy.data.team.project.coverImage}
 												alt="Project cover"
 												fill
+												sizes="(max-width: 768px) 100vw, 640px"
 												style={{ objectFit: "cover" }}
 											/>
 										</div>

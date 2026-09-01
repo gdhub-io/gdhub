@@ -1,3 +1,4 @@
+export { AppImage, type AppImageProps } from "./AppImage";
 export { ApplauseIcon, type ApplauseIconProps } from "./ApplauseIcon";
 export {
 	DisclosureSection,

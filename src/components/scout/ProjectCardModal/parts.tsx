@@ -15,9 +15,10 @@ import {
 	IconVideo,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Button, Flex, Skeleton, Tooltip, Typography } from "antd";
+import { Button, Flex, Skeleton, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import type { ReactNode } from "react";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { shortDate } from "./format";
 import styles from "./style.module.scss";
@@ -54,9 +55,9 @@ export function Person({
 }) {
 	return (
 		<Flex align="center" gap={10} className={styles.person}>
-			<Avatar size={size} src={image}>
+			<AppAvatar size={size} src={image}>
 				{name?.charAt(0)}
-			</Avatar>
+			</AppAvatar>
 			<Flex vertical className={styles.person}>
 				<Text strong ellipsis>
 					{name ?? "—"}

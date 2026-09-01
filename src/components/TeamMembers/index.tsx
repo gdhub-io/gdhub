@@ -1,7 +1,7 @@
 import type { Team, TeamMember, User } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Flex, List, Space, Typography } from "antd";
+import { Flex, List, Space, Typography } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -12,6 +12,7 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
@@ -75,11 +76,11 @@ const TeamMembers = ({
 					>
 						{session ? (
 							item.avatar ? (
-								<Avatar size={40} src={item.avatar} />
+								<AppAvatar size={40} src={item.avatar} />
 							) : (
-								<Avatar size={40}>
+								<AppAvatar size={40}>
 									{item.title?.charAt(0)?.toUpperCase()}
-								</Avatar>
+								</AppAvatar>
 							)
 						) : (
 							<ReactNiceAvatar
@@ -135,7 +136,7 @@ const TeamMembers = ({
 						session ? (
 							<List.Item key={index}>
 								<List.Item.Meta
-									avatar={<Avatar size={64} src={item.avatar} />}
+									avatar={<AppAvatar size={64} src={item.avatar} />}
 									title={item.title}
 									description={item.description}
 								/>

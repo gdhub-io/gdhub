@@ -38,6 +38,7 @@ import {
 	toInitials,
 } from "@/components/person-card";
 import styles from "@/components/person-card/style.module.scss";
+import { avatarImage } from "@/helpers/image";
 import { useMyOpenPositions } from "@/hooks/useVacancyChat";
 
 const { Paragraph, Text } = Typography;
@@ -187,7 +188,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 									{data.user.image ? (
 										// biome-ignore lint/performance/noImgElement: external avatar url
 										<img
-											src={data.user.image}
+											src={avatarImage(data.user.image, 76)}
 											alt={data.user.name || ""}
 											className={styles.avatarImg}
 										/>

@@ -755,6 +755,10 @@
 	"error_sending_email": "Error sending email. Please try again.",
 	"event": {
 		"about": "About the event",
+		"action": {
+			"book": "Attend",
+			"bookFree": "Attend for free"
+		},
 		"bookNow": "Book Now Free",
 		"button": {
 			"publicPage": "Go to page",
@@ -888,7 +892,7 @@
 			"create": "Сreate draft",
 			"danger": "Delete Event",
 			"danger.button": "Delete",
-			"danger.description": "Removes the event, its schedule and its member list. This cannot be undone.",
+			"danger.description": "Are you sure you want to delete this event?",
 			"danger.description2": "This action cannot be undone.",
 			"danger.description3": "This will delete all the event data and all the event data will be lost.",
 			"direction": "Direction",
@@ -979,7 +983,7 @@
 						"success": "Organizer settings saved"
 					}
 				},
-				"description": "Participants can be given a certificate once the event is over.",
+				"description": "When enabled, you can issue certificates to event participants from the Members page.",
 				"organizer": {
 					"description": "Shown in the left signature block of the certificate. Leave blank to use the event creator's profile name and first speciality.",
 					"name": {
@@ -994,7 +998,7 @@
 				"preview.download": "Open in a new tab",
 				"preview.fallback": "Your browser cannot display PDFs inline.",
 				"preview.title": "Certificate preview",
-				"title": "Issue certificates for this event",
+				"title": "Certification",
 				"toggle": {
 					"error": "Failed to update certification setting"
 				}
@@ -1004,7 +1008,7 @@
 				"archive.button": "Archive",
 				"archive.cancel": "No",
 				"archive.confirm": "Are you sure you want to archive this event?",
-				"archive.description": "Moves the event to the archive and hides it from the public. You can restore it later.",
+				"archive.description": "Are you sure you want to archive this event?",
 				"archive.description2": "This will move the event to the archive and it will be hidden from the public.",
 				"archive.success": "Event archived successfully",
 				"delete": {
@@ -1016,7 +1020,7 @@
 				"restore": "Restore Event",
 				"restore.button": "Restore",
 				"restore.cancel": "No",
-				"restore.description": "Brings the event back as a draft, so you can review it before publishing again.",
+				"restore.description": "Are you sure you want to restore this event?",
 				"restore.description2": "This will move the event to the draft status and will be visible to the your events list.",
 				"restore.success": "Event restored successfully"
 			},
@@ -1144,7 +1148,7 @@
 		},
 		"view-all": "View all",
 		"welcome-subtitle": "It's a good day for game development",
-		"welcome-title": "Welcome back, {userName} 👋"
+		"welcome-title": "Welcome back, {userName} \uD83D\uDC4B"
 	},
 	"interest": "Main interest",
 	"interests": "Interests",
@@ -1200,7 +1204,7 @@
 			"text2": "I work as a GD (game designer) in a dev company, making games for the mobile market. I came there\n\t\timmediately after the lab as a level designer. I still communicate with some team members, and we work\n\t\ttogether with the 3D artist :)",
 			"text3": "I wish the following projects on the lab: experienced leads and clearer goals. And also the same passion and interest in the project as our team.",
 			"text4": "Thank you so much for this experience. I was able to experience a lot of things live.",
-			"text5": "Team - 🔥🔥🔥. Thank you for the opportunity to work with you!)",
+			"text5": "Team - \uD83D\uDD25\uD83D\uDD25\uD83D\uDD25. Thank you for the opportunity to work with you!)",
 			"text6": "I love my team! I would like to continue working together. My wish is to achieve success and move on despite all obstacles)",
 			"text7": "No training will give you as many emotions and as much new practice as the GD Hub gave me personally. After all, all members of your team do not owe you anything and are not obligated to do anything. All you have is your idea, your experience in something and your internal energy, which will allow you to lead the team from start to finish and continue to lead it further until your product reaches a real player.",
 			"text8": "The team has formed quite well, if this game doesn’t work out and the majority doesn’t run away, then you can try to start the next game from scratch and taking into account the experience gained.",
@@ -1709,12 +1713,16 @@
 		},
 		"interests": {
 			"back": "Back",
+			"mentor": {
+				"description": "I want to share my expertise and help other developers"
+			},
 			"motivation": {
 				"description": "Information about your motivations and preferences. This information will allow the platform to suggest you the most suitable projects, vacancies or candidates for your project."
 			},
 			"saveAndContinue": "Save and continue",
 			"title": "Interests",
 			"wantToBe": {
+				"mentor": "Advisor",
 				"text": "I want to be"
 			},
 			"youCanChangeItOrAddMoreOnesAfter": "You can change it or add more ones after"

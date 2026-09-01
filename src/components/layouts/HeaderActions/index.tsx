@@ -3,13 +3,14 @@
 import { IconMenu2 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import type { MenuProps } from "antd";
-import { Avatar, Button, Dropdown, Grid, Space } from "antd";
+import { Button, Dropdown, Grid, Space } from "antd";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import ReactNiceAvatar, { type AvatarFullConfig } from "react-nice-avatar";
 import { ChatButton } from "@/components/ChatButton";
+import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AppImage } from "@/components/ui/AppImage";
 
 const NotificationsBell = dynamic(
 	() =>
@@ -46,10 +47,15 @@ export const HeaderActions = ({
 	const { data: session } = useSession();
 
 	const avatar = session?.user?.image ? (
-		<Avatar
+		<AppAvatar
 			size={32}
 			src={
-				<Image src={session.user.image} width={32} height={32} alt="avatar" />
+				<AppImage
+					src={session.user.image}
+					width={32}
+					height={32}
+					alt="avatar"
+				/>
 			}
 		/>
 	) : avatarConfig ? (

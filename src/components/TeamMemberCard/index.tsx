@@ -21,9 +21,9 @@ import {
 	theme,
 } from "antd";
 import axios from "axios";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import { AppImage } from "@/components/ui/AppImage";
 import styles from "./style.module.scss";
 
 const { Paragraph, Text, Title } = Typography;
@@ -212,7 +212,7 @@ const TeamMemberCard = ({ memberId, open, onCancel }: TeamMemberCardProps) => {
 								</Col>
 								<Col xs={24} md={6}>
 									<div className={styles.avatarWrapper}>
-										<Image
+										<AppImage
 											src={member.data.user.image || "/images/avatar.png"}
 											alt={member.data.user.name}
 											width={120}

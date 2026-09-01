@@ -4,6 +4,7 @@ import { Button, Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
 import heroBgImage from "@/assets/images/landing/gdhub-hero-image.png";
 import StarIcon from "@/assets/images/landing/star.svg";
+import { staticImageUrl } from "@/helpers/image";
 import { HeroStats } from "../HeroStats";
 import styles from "./style.module.scss";
 
@@ -34,7 +35,9 @@ export const LandingHeroSection = ({
 		<div
 			className={styles.section}
 			style={{
-				backgroundImage: screens.lg ? `url(${heroBgImage.src})` : undefined,
+				backgroundImage: screens.lg
+					? `url(${staticImageUrl(heroBgImage.src, 1920)})`
+					: undefined,
 			}}
 		>
 			<div className={styles.container}>
