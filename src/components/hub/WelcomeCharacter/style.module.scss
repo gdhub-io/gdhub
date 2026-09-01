@@ -1,0 +1,40 @@
+/**
+ * The character leans out of the card: its head crosses the top border and its
+ * body is cut by the bottom one. That only works if this wrapper is the single
+ * thing that clips — the welcome card itself must not, or the head goes with it.
+ */
+.character {
+	position: absolute;
+	top: -32px;
+	right: 24px;
+	bottom: 0;
+	width: 144px;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.art {
+	position: absolute;
+}
+
+.female {
+	top: 0;
+	left: 0;
+	width: 144px;
+	height: 156px;
+}
+
+// His head reads bigger than hers, so he is scaled down to the same visual mass.
+.male {
+	top: 5px;
+	left: 6px;
+	width: 132px;
+	height: 143px;
+}
+
+// Narrow layouts give the greeting too little room to share with a character.
+@media (max-width: 991px) {
+	.character {
+		display: none;
+	}
+}

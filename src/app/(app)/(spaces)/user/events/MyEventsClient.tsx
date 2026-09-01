@@ -372,7 +372,7 @@ const MyEventsClient = () => {
 											event.slug && event.publishedAt ? (
 												<>
 													{" \u00b7 "}
-													<ViewCount count={event.viewsCount} minViews={0} />
+													<ViewCount count={event.viewsCount} />
 												</>
 											) : null
 										}

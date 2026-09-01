@@ -217,7 +217,7 @@ export default function DevlogPostsAdminPage() {
 				record.isSystem ? (
 					<Text type="secondary">—</Text>
 				) : (
-					<ViewCount count={record.viewsCount} minViews={0} />
+					<ViewCount count={record.viewsCount} />
 				),
 		},
 		{

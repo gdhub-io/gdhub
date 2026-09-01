@@ -2,6 +2,7 @@ import Icon from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import heroBgImage from "@/assets/images/landing/gdhub-hero-image.png";
 import StarIcon from "@/assets/images/landing/star.svg";
 import { staticImageUrl } from "@/helpers/image";
@@ -34,11 +35,11 @@ export const LandingHeroSection = ({
 	return (
 		<div
 			className={styles.section}
-			style={{
-				backgroundImage: screens.lg
-					? `url(${staticImageUrl(heroBgImage.src, 1920)})`
-					: undefined,
-			}}
+			style={
+				{
+					"--hero-illustration": `url(${staticImageUrl(heroBgImage.src, 1920)})`,
+				} as CSSProperties
+			}
 		>
 			<div className={styles.container}>
 				<Row gutter={[screens.lg ? 64 : 0, 64]}>

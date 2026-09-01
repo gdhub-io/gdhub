@@ -1,64 +1,46 @@
-<svg viewBox="0 0 782 669" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="0 0 782 669" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M166.515 60.7008L270.651 0.57735L374.788 60.7008V180.948L270.651 241.071L166.515 180.948V60.7008Z" stroke="#FFFDFC"/>
 <a class="team-member-1">
-  <path d="M270.651 28.1924L350.873 74.5084V167.14L270.651 213.456L190.43 167.14V74.5084L270.651 28.1924Z" fill="url(#pattern0)"/>
+  <image href="/_next/image?url=/images/team/olga-khaladovich.jpg&amp;w=384&amp;q=75" x="190.43" y="28.1924" width="160.443" height="185.264" clip-path="url(#hex0)"/>
 </a>
 <path d="M166.515 487.829L270.651 427.705L374.788 487.829V608.076L270.651 668.199L166.515 608.076V487.829Z" stroke="#FFFDFC"/>
 <a class="team-member-6">
-  <path d="M270.651 455.32L350.873 501.636V594.268L270.651 640.584L190.43 594.268V501.636L270.651 455.32Z" fill="url(#pattern1)"/>
+  <image href="/_next/image?url=/images/team/kate-shtirts.jpeg&amp;w=384&amp;q=75" x="190.43" y="455.32" width="160.443" height="185.264" clip-path="url(#hex1)"/>
 </a>
 <path d="M408.165 60.7008L512.302 0.57735L616.439 60.7008V180.948L512.302 241.071L408.165 180.948V60.7008Z" stroke="#FFFDFC"/>
 <a class="team-member-2">
-  <path d="M512.303 28.1924L592.524 74.5084V167.14L512.303 213.456L432.081 167.14V74.5084L512.303 28.1924Z" fill="url(#pattern2)"/>
+  <image href="/_next/image?url=/images/team/vitaly-moroz.jpg&amp;w=384&amp;q=75" x="432.081" y="28.1924" width="160.443" height="185.264" clip-path="url(#hex2)"/>
 </a>
 <path d="M408.165 487.829L512.302 427.705L616.439 487.829V608.076L512.302 668.199L408.165 608.076V487.829Z" stroke="#FFFDFC"/>
 <a class="team-member-7">
-  <path d="M512.303 455.32L592.524 501.636V594.268L512.303 640.584L432.081 594.268V501.636L512.303 455.32Z" fill="url(#pattern3)"/>
+  <image href="/_next/image?url=/images/team/team-member-7.png&amp;w=384&amp;q=75" x="432.081" y="455.32" width="160.443" height="185.264" clip-path="url(#hex3)"/>
 </a>
 <path d="M287.241 274.157L391.378 214.034L495.515 274.157V394.404L391.378 454.528L287.241 394.404V274.157Z" stroke="#FFFDFC"/>
 <a class="team-member-4">
-  <path d="M391.377 241.648L471.599 287.964V380.596L391.377 426.912L311.155 380.596V287.964L391.377 241.648Z" fill="url(#pattern4)"/>
+  <image href="/_next/image?url=/images/team/dima-drynau.png&amp;w=384&amp;q=75" x="311.155" y="241.648" width="160.443" height="185.264" clip-path="url(#hex4)"/>
 </a>
 <path d="M529.03 274.157L633.167 214.034L737.304 274.157V394.404L633.167 454.528L529.03 394.404V274.157Z" stroke="#FFFDFC"/>
 <a class="team-member-5">
-  <path d="M633.166 241.648L713.388 287.964V380.596L633.166 426.912L552.945 380.596V287.964L633.166 241.648Z" fill="url(#pattern5)"/>
+  <image href="/_next/image?url=/images/team/team-member-6.png&amp;w=384&amp;q=75" x="552.945" y="241.648" width="160.443" height="185.264" clip-path="url(#hex5)"/>
 </a>
 <path d="M45.369 274.157L149.506 214.034L253.643 274.157V394.404L149.506 454.528L45.369 394.404V274.157Z" stroke="#FFFDFC"/>
 <a class="team-member-3">
-  <path d="M149.507 241.648L229.729 287.964V380.596L149.507 426.912L69.2853 380.596V287.964L149.507 241.648Z" fill="url(#pattern6)"/>
+  <image href="/_next/image?url=/images/team/nik-evtihiev.jpg&amp;w=384&amp;q=75" x="69.2853" y="241.648" width="160.443" height="185.264" clip-path="url(#hex6)"/>
 </a>
 <path d="M166 593.128L40.9996 593.128C18.9082 593.128 0.999664 575.219 0.999664 553.128V374.128C0.999664 352.037 18.9083 334.128 40.9997 334.128H44.9093" stroke="#FFFDFC"/>
 <path d="M166 75.128L41.0004 75.1279C18.909 75.1279 1.00041 93.0365 1.00041 115.128V294.128C1.00041 316.219 18.909 334.128 41.0004 334.128H44.9101" stroke="#FFFDFC"/>
 <path d="M617 593.128L741 593.128C763.091 593.128 781 575.219 781 553.128V374.128C781 352.037 763.091 334.128 741 334.128H737.09" stroke="#FFFDFC"/>
 <path d="M617 75.1279L741 75.128C763.091 75.128 781 93.0366 781 115.128V294.128C781 316.219 763.091 334.128 741 334.128H737.09" stroke="#FFFDFC"/>
 <defs>
-<pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_5" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<pattern id="pattern1" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_2" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<pattern id="pattern2" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_3" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<pattern id="pattern3" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_7" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<pattern id="pattern4" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_1" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<pattern id="pattern5" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_6" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<pattern id="pattern6" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use href="#team_member_4" transform="scale(0.00194167, 0.0017)"/>
-</pattern>
-<image id="team_member_1" width="512" height="592" href="/images/team/dima-drynau.png" />
-<image id="team_member_2" width="512" height="592" href="/images/team/kate-shtirts.jpeg" />
-<image id="team_member_3" width="512" height="592" href="/images/team/vitaly-moroz.jpg" />
-<image id="team_member_4" width="512" height="592" href="/images/team/nik-evtihiev.jpg" />
-<image id="team_member_5" width="512" height="592" href="/images/team/olga-khaladovich.jpg" />
-<image id="team_member_6" width="512" height="592" href="/images/team/team-member-6.png" />
-<image id="team_member_7" width="512" height="592" href="/images/team/team-member-7.png" />
+<!-- The photos are clipped <image> elements rather than <pattern> fills: a
+     pattern tile is rasterised at CSS resolution, so every face came out soft
+     on a retina screen however large the source was. -->
+<clipPath id="hex0"><path d="M270.651 28.1924L350.873 74.5084V167.14L270.651 213.456L190.43 167.14V74.5084L270.651 28.1924Z"/></clipPath>
+<clipPath id="hex1"><path d="M270.651 455.32L350.873 501.636V594.268L270.651 640.584L190.43 594.268V501.636L270.651 455.32Z"/></clipPath>
+<clipPath id="hex2"><path d="M512.303 28.1924L592.524 74.5084V167.14L512.303 213.456L432.081 167.14V74.5084L512.303 28.1924Z"/></clipPath>
+<clipPath id="hex3"><path d="M512.303 455.32L592.524 501.636V594.268L512.303 640.584L432.081 594.268V501.636L512.303 455.32Z"/></clipPath>
+<clipPath id="hex4"><path d="M391.377 241.648L471.599 287.964V380.596L391.377 426.912L311.155 380.596V287.964L391.377 241.648Z"/></clipPath>
+<clipPath id="hex5"><path d="M633.166 241.648L713.388 287.964V380.596L633.166 426.912L552.945 380.596V287.964L633.166 241.648Z"/></clipPath>
+<clipPath id="hex6"><path d="M149.507 241.648L229.729 287.964V380.596L149.507 426.912L69.2853 380.596V287.964L149.507 241.648Z"/></clipPath>
 </defs>
 </svg>

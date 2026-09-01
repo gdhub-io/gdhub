@@ -7,6 +7,7 @@ import {
 } from "@/helpers/matrix-device";
 import { clearPusherCache } from "@/helpers/matrix-pushers";
 import { clearMatrixClientStore } from "@/helpers/matrix-store";
+import { clearWelcomeCharacter } from "@/helpers/welcome-character";
 import { useChat } from "./useChat";
 
 /**
@@ -63,5 +64,7 @@ export async function signOutWithChat(
 	options?: SignOutParams<true>,
 ): Promise<void> {
 	await endChatSession().catch(() => {});
+	// Draws the greeting character again on the next sign-in.
+	clearWelcomeCharacter();
 	await signOut(options);
 }

@@ -16,6 +16,7 @@ import {
 } from "@/components/hub/HubSection";
 import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
+import { DEVLOG_FEED_LIMIT, devlogFeedQueryKey } from "@/config/devlog-feed";
 import {
 	getEditorjsPageCover,
 	getEditorjsShortContent,
@@ -213,12 +214,12 @@ const DevlogPosts = ({
 	edgeToEdgeOnMobile = false,
 }: DevlogPostsProps) => {
 	const { t } = useTranslate();
-	const limit = 5;
+	const limit = DEVLOG_FEED_LIMIT;
 	const trackView = useFeedViews("ProjectReport");
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useInfiniteQuery({
-			queryKey: ["devlog-posts", projectId],
+			queryKey: devlogFeedQueryKey(projectId),
 			queryFn: async ({ pageParam }) => {
 				const params = new URLSearchParams({ limit: String(limit) });
 				if (projectId) params.set("projectId", projectId);

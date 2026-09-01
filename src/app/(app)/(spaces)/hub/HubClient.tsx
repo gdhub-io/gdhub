@@ -7,16 +7,15 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useMemo, useRef } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import DevlogPosts from "@/components/DevlogPosts";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
 } from "@/components/hub/HubSection";
+import { WelcomeCharacter } from "@/components/hub/WelcomeCharacter";
 import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import styles from "./style.module.scss";
 
-const DevlogPosts = dynamic(() => import("@/components/DevlogPosts"), {
-	ssr: false,
-});
 const MyAdviceRequests = dynamic(
 	() => import("@/components/MyAdviceRequests"),
 	{ ssr: false },
@@ -41,7 +40,16 @@ const HubQuickCounts = dynamic(
 
 const { Title, Text } = Typography;
 
-export default function HubClient() {
+export default function HubClient({
+	feedVisible,
+}: {
+	/**
+	 * What the server already knows about this user. `useSession()` reports
+	 * "loading" on the first render on both sides, and without this the feed
+	 * would be absent from the HTML and appear only after hydration.
+	 */
+	feedVisible: boolean;
+}) {
 	const session = useSession();
 	const { can } = useAccess();
 	const { getLanguage, t } = useTolgee();
@@ -52,8 +60,12 @@ export default function HubClient() {
 	// Every block is mounted once and the grid decides where it lands, so moving
 	// between widths costs a repaint rather than a remount and a refetch.
 	const isWideLayout = !!screens.md;
-	const showMainFeed = isAuthenticated && isOnboardingDone;
-	const showOnboardingAlert = isAuthenticated && !isOnboardingDone;
+	const sessionSettled = session.status !== "loading";
+	const showMainFeed = sessionSettled
+		? isAuthenticated && isOnboardingDone
+		: feedVisible;
+	const showOnboardingAlert =
+		sessionSettled && isAuthenticated && !isOnboardingDone;
 
 	// The sidebar is taller than the viewport, so it follows the reading
 	// direction: down until its last card meets the bottom edge, back up until
@@ -79,42 +91,10 @@ export default function HubClient() {
 		<div className={styles.hubGrid}>
 			<div className={styles.welcomeArea}>
 				<section
-					className={`${getHubSectionShellClass("inset")} ${styles.mainBundleSlot}`}
+					className={`${getHubSectionShellClass("inset")} ${styles.mainBundleSlot} ${styles.welcomeSlot}`}
 				>
 					<HubSectionBody flush className={styles.welcomeHero}>
-						<div className={styles.welcomeArtwork} aria-hidden="true">
-							<svg
-								className={styles.welcomeCurves}
-								viewBox="0 0 320 100"
-								preserveAspectRatio="xMaxYMid meet"
-							>
-								<title>Decoration</title>
-								<path
-									d="M 0 72 Q 80 20 160 56 T 320 40"
-									fill="none"
-									stroke="rgba(229, 62, 62, 0.35)"
-									strokeWidth="2.5"
-									strokeLinecap="round"
-								/>
-								<path
-									d="M 20 88 Q 120 48 220 72 T 320 56"
-									fill="none"
-									stroke="rgba(245, 158, 11, 0.4)"
-									strokeWidth="2"
-									strokeLinecap="round"
-								/>
-								<path
-									d="M 40 52 Q 140 8 260 44 T 320 28"
-									fill="none"
-									stroke="rgba(139, 92, 246, 0.35)"
-									strokeWidth="2"
-									strokeLinecap="round"
-								/>
-							</svg>
-							<span className={styles.artDotOne} />
-							<span className={styles.artDotTwo} />
-							<span className={styles.artDotThree} />
-						</div>
+						<WelcomeCharacter userId={session?.data?.user?.id} />
 
 						<div className={styles.welcomeContent}>
 							<Flex vertical gap={4}>

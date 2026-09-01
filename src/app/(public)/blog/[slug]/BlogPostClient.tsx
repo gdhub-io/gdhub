@@ -1,10 +1,10 @@
 "use client";
 
-import { IconClock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Card, Flex, Typography } from "antd";
 import Blocks from "editorjs-blocks-react-renderer";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { PublishedDate } from "@/components/PublishedDate";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { ViewCount } from "@/components/ViewCount";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
@@ -35,11 +35,6 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 
 	useContentPageView("BlogPost", post.id);
 
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toISOString().split("T")[0].split("-").reverse().join("/");
-	};
-
 	const author = post.authors?.[0];
 
 	return (
@@ -66,16 +61,8 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 								</Text>
 							</Flex>
 							<Flex align="center" gap={16}>
-								<Flex align="center" gap={8}>
-									<IconClock style={{ fontSize: "12px" }} />
-									<Text type="secondary" style={{ fontSize: "12px" }}>
-										{post?.publishedAt ? formatDate(post.publishedAt) : ""}
-									</Text>
-								</Flex>
-								<ViewCount
-									count={post.viewsCount}
-									containerStyle={{ fontSize: "12px" }}
-								/>
+								<ViewCount count={post.viewsCount} />
+								<PublishedDate date={post.publishedAt} />
 							</Flex>
 						</Flex>
 

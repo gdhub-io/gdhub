@@ -13,6 +13,18 @@
 }
 
 /*
+ * The illustration only belongs to the wide layout. The breakpoint lives here
+ * rather than in a `useBreakpoint()` call so the browser can see the picture in
+ * the stylesheet — gating it in JS meant nothing was requested until the bundle
+ * had downloaded and hydrated.
+ */
+@media screen and (min-width: 992px) {
+  .section {
+    background-image: var(--hero-illustration);
+  }
+}
+
+/*
  * The illustration is the section's background image and it runs past the
  * bottom of the columns, so the figures standing on it had the rest of the
  * picture poking out below them.

@@ -153,9 +153,7 @@ export default function MyProjectDevlogPage() {
 				dataIndex: "id",
 				key: "views",
 				render: (id, record) =>
-					record.isSystem ? null : (
-						<ViewCount count={record.viewsCount} minViews={0} />
-					),
+					record.isSystem ? null : <ViewCount count={record.viewsCount} />,
 			},
 			{
 				title: "Actions",

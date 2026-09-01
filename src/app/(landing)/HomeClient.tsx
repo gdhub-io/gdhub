@@ -10,23 +10,16 @@ import { signIn } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { LandingContactsSection } from "@/components/landing/LandingContactsSection";
 import { LandingFeedbackSection } from "@/components/landing/LandingFeedbackSection";
+import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
 import { LandingWhoWeAreSection } from "@/components/landing/LandingWhoWeAreSection";
+import { LandingLayout } from "@/components/layouts/LandingLayout";
 import { publicTheme } from "@/config/design";
 import { useTelegram } from "@/helpers/useTelegram";
 import styles from "./home.module.scss";
 
-const LandingLayout = dynamic(
-	() =>
-		import("@/components/layouts/LandingLayout").then((m) => m.LandingLayout),
-	{ ssr: false },
-);
-const LandingHeroSection = dynamic(
-	() =>
-		import("@/components/landing/LandingHeroSection").then(
-			(m) => m.LandingHeroSection,
-		),
-	{ ssr: false },
-);
+// The shell and the hero are the first screen, so they are imported normally:
+// deferring them to a client-only chunk left the document empty until the
+// bundle had run, and the hero illustration is what LCP measures.
 const LandingForAuthorsSection = dynamic(
 	() =>
 		import("@/components/landing/LandingForAuthorsSection").then(

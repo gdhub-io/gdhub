@@ -208,7 +208,7 @@ export default function EventsAdminPage() {
 			// Nothing to count before the page exists.
 			render: (_, record) =>
 				record.slug && record.publishedAt ? (
-					<ViewCount count={record.viewsCount} minViews={0} />
+					<ViewCount count={record.viewsCount} />
 				) : (
 					<Text type="secondary">—</Text>
 				),

@@ -33552,8 +33552,8 @@
       "name": "Hub Page (/hub)",
       "clip": true,
       "width": 1280,
-      "height": 1590,
-      "fill": "#FFFFFF",
+      "height": 1620,
+      "fill": "$page-bg",
       "layout": "vertical",
       "children": [
         {
@@ -33561,6 +33561,7 @@
           "id": "I9Hc12",
           "name": "Header",
           "width": "fill_container",
+          "fill": "$surface",
           "layout": "vertical",
           "children": [
             {
@@ -33843,8 +33844,10 @@
           "width": "fill_container",
           "gap": 24,
           "padding": [
-            24,
-            32
+            36,
+            50,
+            16,
+            50
           ],
           "children": [
             {
@@ -33858,13 +33861,10 @@
                   "type": "frame",
                   "id": "V5x7F9",
                   "name": "MainBundle",
-                  "clip": true,
                   "width": "fill_container",
                   "cornerRadius": 16,
-                  "stroke": "#DCDBD8",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
                   "layout": "vertical",
+                  "gap": 24,
                   "children": [
                     {
                       "type": "frame",
@@ -33872,11 +33872,12 @@
                       "name": "WelcomeHero",
                       "clip": true,
                       "width": "fill_container",
-                      "height": 144,
-                      "padding": [
-                        28,
-                        24
-                      ],
+                      "cornerRadius": "$radius-xl",
+                      "stroke": "$card-border",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 24,
+                      "padding": 24,
                       "justifyContent": "space_between",
                       "alignItems": "center",
                       "children": [
@@ -33886,7 +33887,7 @@
                           "name": "WelcomeContent",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 6,
+                          "gap": 4,
                           "children": [
                             {
                               "type": "text",
@@ -33905,106 +33906,12 @@
                               "id": "zqzJe",
                               "fill": "#76756F",
                               "textGrowth": "fixed-width",
-                              "width": "fill_container",
+                              "width": 520,
                               "content": "It's a good day for game development",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
                               "fontSize": 15,
                               "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "v1IcpB",
-                          "name": "WelcomeArt",
-                          "width": 280,
-                          "height": 80,
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "path",
-                              "id": "X37QL",
-                              "x": 0,
-                              "y": 0,
-                              "geometry": "M0 60q70-52 140-16t140-16",
-                              "viewBox": [
-                                0,
-                                0,
-                                280,
-                                80
-                              ],
-                              "width": 280,
-                              "height": 80,
-                              "stroke": "#E53E3E59",
-                              "strokeWidth": 2.5,
-                              "strokeAlignment": "inner",
-                              "strokeLinecap": "round"
-                            },
-                            {
-                              "type": "path",
-                              "id": "d5kVDj",
-                              "x": 0,
-                              "y": 0,
-                              "geometry": "M16 76q94-40 184-16t80-16",
-                              "viewBox": [
-                                0,
-                                0,
-                                280,
-                                80
-                              ],
-                              "width": 280,
-                              "height": 80,
-                              "stroke": "#F59E0B66",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "inner",
-                              "strokeLinecap": "round"
-                            },
-                            {
-                              "type": "path",
-                              "id": "Ehnzn",
-                              "x": 0,
-                              "y": 0,
-                              "geometry": "M36 40q94-40 204-8t40-16",
-                              "viewBox": [
-                                0,
-                                0,
-                                280,
-                                80
-                              ],
-                              "width": 280,
-                              "height": 80,
-                              "stroke": "#8B5CF659",
-                              "strokeWidth": 2,
-                              "strokeAlignment": "inner",
-                              "strokeLinecap": "round"
-                            },
-                            {
-                              "type": "ellipse",
-                              "id": "KN2JM",
-                              "x": 188,
-                              "y": 14,
-                              "fill": "#E53E3E73",
-                              "width": 12,
-                              "height": 12
-                            },
-                            {
-                              "type": "ellipse",
-                              "id": "ZQFXC",
-                              "x": 144,
-                              "y": 38,
-                              "fill": "#F59E0B73",
-                              "width": 10,
-                              "height": 10
-                            },
-                            {
-                              "type": "ellipse",
-                              "id": "hxAPU",
-                              "x": 240,
-                              "y": 22,
-                              "fill": "#8B5CF661",
-                              "width": 14,
-                              "height": 14
                             }
                           ]
                         }
@@ -34015,7 +33922,9 @@
                       "id": "QEV27",
                       "name": "ActivityFeedSection",
                       "width": "fill_container",
-                      "stroke": "#EBEAE8",
+                      "cornerRadius": "$radius-xl",
+                      "stroke": "$card-border",
+                      "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "strokeLinejoin": "round",
                       "layout": "vertical",
@@ -34684,6 +34593,35 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "gg6JC",
+                  "layoutPosition": "absolute",
+                  "x": 668,
+                  "y": -32,
+                  "name": "WelcomeCharacterOverlay",
+                  "clip": true,
+                  "width": 144,
+                  "height": 134,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "k81n2a",
+                      "x": 0,
+                      "y": 0,
+                      "name": "CharacterArt (female)",
+                      "width": 144,
+                      "height": 156,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "images/welcome-character-female.png",
+                        "mode": "fit"
+                      }
+                    }
+                  ]
                 }
               ]
             },
@@ -35187,7 +35125,6 @@
                   "name": "My projects",
                   "clip": true,
                   "width": "fill_container",
-                  "fill": "#FFFFFF",
                   "cornerRadius": 16,
                   "stroke": "#DCDBD8",
                   "strokeWidth": 1,
@@ -35686,7 +35623,6 @@
                   "context": "Advice requests waiting on the user. Rendered only when there are any — MyAdviceRequests already has the hub layout (isHubLayout previews 3). Links to /user/advice-requests. Tinted count badge because this is the one sidebar block that asks for an answer rather than offering something to browse.",
                   "clip": true,
                   "width": "fill_container",
-                  "fill": "#FFFFFF",
                   "cornerRadius": 16,
                   "stroke": "#DCDBD8",
                   "strokeWidth": 1,
@@ -172980,6 +172916,319 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "N3yhZD",
+      "x": 9860,
+      "y": 10555,
+      "name": "Hub — Welcome hero character",
+      "clip": true,
+      "width": 1000,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 32,
+      "padding": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "zsMDr",
+          "name": "Heading",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "hYxiv",
+              "name": "Title",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Welcome hero — character",
+              "lineHeight": 1.25,
+              "fontFamily": "$font",
+              "fontSize": 24,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "j0PuRc",
+              "name": "Subtitle",
+              "fill": "$text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "The abstract artwork is replaced by a 3D character. One of two variants is picked at random when the session starts and stays the same until the user signs out.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "miJSL",
+          "name": "Variant A — female",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "Y2QyOX",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Variant A — female",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "600",
+              "letterSpacing": 0.4
+            },
+            {
+              "type": "frame",
+              "id": "ZZtFH",
+              "name": "Block",
+              "width": "fill_container",
+              "height": 135,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "K0S5Qj",
+                  "x": 0,
+                  "y": 32,
+                  "name": "Welcome card",
+                  "clip": true,
+                  "width": 904,
+                  "cornerRadius": "$radius-xl",
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "n2jr4",
+                      "name": "WelcomeHero",
+                      "clip": true,
+                      "width": "fill_container",
+                      "cornerRadius": "$radius-xl",
+                      "stroke": "$card-border",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 24,
+                      "padding": 24,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "X2MnGp",
+                          "name": "WelcomeContent",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "oGO22",
+                              "fill": "#1A1917",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Welcome back, Dmitry 👋",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font",
+                              "fontSize": 22,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "qYmri",
+                              "fill": "#76756F",
+                              "textGrowth": "fixed-width",
+                              "width": 520,
+                              "content": "It's a good day for game development",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "m41cLW",
+                  "x": 736,
+                  "y": 0,
+                  "name": "CharacterOverlay",
+                  "clip": true,
+                  "width": 144,
+                  "height": 134,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "LhJFw",
+                      "x": 0,
+                      "y": 0,
+                      "name": "CharacterArt",
+                      "width": 144,
+                      "height": 156,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "images/welcome-character-female.png",
+                        "mode": "fit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Wh3oE",
+          "name": "Variant B — male",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "nEaGY",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Variant B — male",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "600",
+              "letterSpacing": 0.4
+            },
+            {
+              "type": "frame",
+              "id": "AyOrR",
+              "name": "Block",
+              "width": "fill_container",
+              "height": 135,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "cVWjC",
+                  "x": 0,
+                  "y": 32,
+                  "name": "Welcome card",
+                  "clip": true,
+                  "width": 904,
+                  "cornerRadius": "$radius-xl",
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dTA5t",
+                      "name": "WelcomeHero",
+                      "clip": true,
+                      "width": "fill_container",
+                      "cornerRadius": "$radius-xl",
+                      "stroke": "$card-border",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 24,
+                      "padding": 24,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "F6cPD",
+                          "name": "WelcomeContent",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "dbMjT",
+                              "fill": "#1A1917",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Welcome back, Dmitry 👋",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font",
+                              "fontSize": 22,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "B89lb",
+                              "fill": "#76756F",
+                              "textGrowth": "fixed-width",
+                              "width": 520,
+                              "content": "It's a good day for game development",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "z4Byb",
+                  "x": 736,
+                  "y": 0,
+                  "name": "CharacterOverlay",
+                  "clip": true,
+                  "width": 144,
+                  "height": 134,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "JcL9w",
+                      "x": 6,
+                      "y": 5,
+                      "name": "CharacterArt",
+                      "width": 132,
+                      "height": 143,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "images/welcome-character-male.png",
+                        "mode": "fit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "id": "DVlqv",
+      "x": 9500,
+      "y": 10555,
+      "name": "Note — Hub — Welcome character",
+      "width": 300,
+      "height": 340,
+      "content": "Hub — Welcome character\n\nPage chrome matches the app: header $surface with a bottom border, page background $page-bg, content gutter 50 / top 36 / bottom 16, grid 1fr + 320 with gap 24. Every hub section is TRANSPARENT — only a 1px $card-border and radius 16; the page background shows through (hubSection.module.scss: background: transparent). Welcome and feed are two separate cards stacked with gap 24, not one bundle.\n\nWelcomeHero: padding 24, title 22/700/1.25, subtitle 15/1.5 capped at 520. Height is content-driven (~103).\n\nCharacter: replaces the abstract lines. Assets welcome-character-female.png / welcome-character-male.png (transparent PNG). A 144-wide wrapper inset 24 from the card's right edge starts 32px above the top border and ends at the bottom border — it is the only node that clips, so the head overflows the top border while the body is cut by the bottom one. The card must not clip it, so the wrapper is a sibling of the card, not a child.\nFemale art: 144x156 at 0,0. Male art: 132x143 at 6,5 (his head reads bigger, so he is scaled down to match).\n\nSelection: one of the two is picked at random once per session, on sign-in, and stays stable for the whole session. Sign out and back in re-rolls it.\n\nNot updated yet: Hub Page — Mobile (/hub) still shows the old artwork.\n\nThe 32px overhang is what keeps the crossed arms above the bottom border. With a 103-tall card, character size and arm visibility trade off against that overhang, and the 36px of page padding above the card is its ceiling."
     }
   ],
   "variables": {

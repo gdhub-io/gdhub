@@ -22,6 +22,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { PublishedDate } from "@/components/PublishedDate";
 import { ViewCount } from "@/components/ViewCount";
 import { getCleanTextContent } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
@@ -163,11 +164,6 @@ export function DevlogPostClient({ post }: PageProps) {
 
 	useContentPageView("ProjectReport", post.id);
 
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toISOString().split("T")[0].split("-").reverse().join("/");
-	};
-
 	const prepareEditorjsData = (
 		data: EditorJsData | undefined,
 	): PreparedEditorJsData => {
@@ -251,16 +247,8 @@ export function DevlogPostClient({ post }: PageProps) {
 									subject={{ kind: "devlog", id: post.id }}
 									count={post.applauseCount}
 								/>
-								<Flex align="center" gap={8}>
-									<IconClock style={{ fontSize: "12px" }} />
-									<Text type="secondary" style={{ fontSize: "12px" }}>
-										{post?.createdAt ? formatDate(post.createdAt) : ""}
-									</Text>
-								</Flex>
-								<ViewCount
-									count={post.viewsCount}
-									containerStyle={{ fontSize: "12px" }}
-								/>
+								<ViewCount count={post.viewsCount} />
+								<PublishedDate date={post.createdAt} />
 							</Flex>
 						</Flex>
 
