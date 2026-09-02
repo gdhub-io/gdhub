@@ -57,6 +57,10 @@ belongs to a token.
    dropdowns, popovers, input fills. Using it for every card flattens that
    distinction and leaves nothing to say "this floats".
 
+   Three surfaces are white by design and are not exceptions to argue with: the
+   catalogue cards (rules in `DS · 08`), the settings card (rule 7) and a table
+   (rule 8). Everything else groups with a hairline, not a fill.
+
    The consequence to remember: a neutral fill inside a panel is read against the
    *page*, not against white. `--gd-color-surface-sunken` disappears there — go a
    step further to `--gd-neutral-100`.
@@ -79,6 +83,27 @@ belongs to a token.
 
 6. **One "more behind this" affordance.** `<ViewAllLink>` in a card header —
    not a ghost button, not a bare arrow.
+
+7. **A settings section is one card.** Section menu 220 wide on the left, one
+   white card on the right, 24 between them. The card sits on the page ground by
+   its fill alone — **no outer border**; the only hairline it owns is under its
+   head, which carries the section name (16/600) and the single control that
+   owns the section. The form lives in the body at 24 padding.
+   **Save sits under the card, not inside it**: it commits the section.
+   A field is a 14 *regular* label (with a grey suffix for a counter or
+   `(optional)`), a filled 40-high input at radius 10, and help text under it at
+   14 secondary. A list the user grows — questions, links, criteria — is rows of
+   input plus a red trash icon, ending in an empty input that adds on Enter.
+   The reference frame is `DS · 10 Forms & settings`.
+
+8. **A table is a white card with hairlines.** `--gd-color-surface`, radius 12,
+   clipped, and no outer border. The head is a 44 band on
+   `--gd-color-surface-sunken` with uppercase 11/600 labels; rows are 56 and
+   separated by `--gd-color-border-subtle` — the lightest hairline in the system,
+   there because `--gd-color-border` repeated down a list reads as a grid. The
+   last row carries none. A long list ends with a full-width text `Load more`,
+   or antd pagination when there is a real page count — never both.
+   The reference frame is `DS · 11 Tables`.
 
 ## Spacing and shape
 
