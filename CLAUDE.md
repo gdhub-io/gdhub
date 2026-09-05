@@ -53,8 +53,11 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 **Package manager: Bun only** (pinned via `packageManager` in `package.json`, lockfile
 `bun.lock`). Never use `yarn`/`npm`/`pnpm` — they would produce a competing lockfile.
 
-`bun run lint` runs on **pre-commit** (husky); `bun run refresh-translations` runs on
-**pre-push**. Before opening a PR, run `bun run lint && bun run type-check && bun run test`.
+`bun run lint` runs on **pre-commit** (husky). **Pre-push** refreshes translations and
+then runs the full gate — lint, type-check and the unit tests, about 15s. The same three
+run in CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) on every PR and on pushes
+to `dev`/`main`; the repository is private on a free plan, so GitHub branch protection is
+unavailable and the pre-push hook is what actually holds the line.
 
 ## Repository layout
 
@@ -146,6 +149,22 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 - **Comments:** English, only where they add non-obvious context.
 - **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
   Never `Read`/`Edit`/`Grep` a `.pen` file directly.
+
+## Changing the database schema
+
+The schema, seeds and Prisma extensions live in the sibling repo
+[gdhub-prisma](https://github.com/gdhub-io/gdhub-prisma) (locally `../prisma`), never
+here. A schema change is a two-repo loop:
+
+1. Edit the schema / seed / extension there, commit it in Conventional Commits style,
+   merge to `dev` or `main`.
+2. Its `release.yml` (semantic-release) publishes a new `@gdhub-io/gdhub-prisma` to
+   GitHub Packages.
+3. Back here: bump the pinned version in `package.json`, `bun install`,
+   `bun run db:generate`, then adapt the app code and its tests.
+
+Never hand-edit anything under `node_modules/@gdhub-io/gdhub-prisma` — the next
+install throws the change away.
 
 ## Testing
 
