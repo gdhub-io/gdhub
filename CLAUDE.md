@@ -53,8 +53,10 @@ or a one-file bug needs none of this — say so and do the work.
 - **Database:** Prisma via the external package `@gdhub-io/gdhub-prisma`. The schema is
   **not** in this repo — it lives at
   `node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma`. Access the client via
-  `import { prisma } from "@/services/prisma"`. Prisma types come from
-  `@gdhub-io/gdhub-prisma/dist/client`.
+  `import { prisma } from "@/services/prisma"`. Types and enums come from the package
+  root — `import { ProjectStatus } from "@gdhub-io/gdhub-prisma"`, which is what every
+  file here does. The package's `exports` map publishes only `.`, `./client`, `./types`
+  and `./seed`; a deeper path such as `dist/client` does not resolve.
 - **Auth:** NextAuth v5 (`auth()` from `@/auth`).
 - **i18n:** Tolgee. Translation files in `src/i18n/`, refreshed via `bun run refresh-translations`.
 - **Queues/jobs:** BullMQ (`src/queues`), Redis (`ioredis`).
@@ -206,5 +208,9 @@ install throws the change away.
 
 - The Prisma schema is in `node_modules`, not the repo — don't look for a local `prisma/`
   folder for the schema; use `bun run db:generate` after the package updates.
+- **"Column X does not exist" usually means the wrong database, not a missing migration.**
+  `DATABASE_URL` points at `localhost:5432`, and any other project's Postgres container
+  can be holding that port. `bun run db:status` names the database it reached and whether
+  it is up to date — run it before believing the error.
 - ESLint is intentionally disabled in the editor; Biome is the single source of truth.
 - `tsconfig.tsbuildinfo` / `.next` are build artifacts — never edit.
