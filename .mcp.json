@@ -4,7 +4,7 @@
 			"type": "http",
 			"url": "https://tolgee.gdhub.io/mcp/developer",
 			"headers": {
-				"X-API-Key": "${NEXT_PUBLIC_TOLGEE_API_KEY}"
+				"X-API-Key": "${TOLGEE_API_KEY}"
 			}
 		}
 	}
