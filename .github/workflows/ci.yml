@@ -12,9 +12,10 @@ on:
     paths-ignore: ['**/*.md', 'docs/**']
   # Nothing changes and the suite breaks anyway: an assertion can depend on the
   # date, and one here did — it went red on the first of a month and stayed red
-  # unnoticed. A nightly run finds that on its own, instead of on the next push.
+  # unnoticed. Weekly rather than nightly, which finds that a few days later for
+  # a tenth of the runner minutes.
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '0 5 * * 1'
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
