@@ -16,10 +16,8 @@ updates:
       - github-packages
     schedule:
       interval: 'weekly'
-    # Updates land in dev and reach production only through the usual dev -> main
-    # promotion. Targeting the default branch would put them straight into a
-    # Vercel production deploy.
-    target-branch: 'dev'
+    # No target-branch here on purpose: pointing it at a non-default branch turns
+    # off security updates for the ecosystem, and those are the ones that matter.
     ignore:
       # The two-repo schema loop in CLAUDE.md is deliberate: a new gdhub-prisma
       # is adopted with a db:generate and a look at what changed, not merged for us.
