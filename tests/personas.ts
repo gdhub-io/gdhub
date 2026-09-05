@@ -300,11 +300,9 @@ export const PERSONAS: Persona[] = [
 	},
 ];
 
-export const PERSONA_BY_KEY = new Map(PERSONAS.map((p) => [p.key, p]));
-
 /** Grants an existing user everything a persona is, without moving their identity. */
 export async function becomePersona(userId: string, key: PersonaKey) {
-	const persona = PERSONA_BY_KEY.get(key);
+	const persona = PERSONAS.find((candidate) => candidate.key === key);
 	if (!persona) throw new Error(`Unknown persona "${key}"`);
 
 	await persona.apply(userId);

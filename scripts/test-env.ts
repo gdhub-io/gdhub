@@ -83,16 +83,14 @@ async function waitForPostgres() {
 }
 
 async function up(fresh: boolean) {
-	const state = containerState();
-
-	if (fresh && state !== "absent") {
-		console.log(`Removing the previous ${CONTAINER}…`);
+	if (fresh) {
+		console.log(`Removing any previous ${CONTAINER}…`);
 		docker(["rm", "-f", CONTAINER], true);
 	}
 
-	const current = fresh ? "absent" : state;
+	const state = containerState();
 
-	if (current === "absent") {
+	if (state === "absent") {
 		console.log(`Starting ${IMAGE} as ${CONTAINER} on port ${PORT}…`);
 
 		const created = docker([
@@ -112,7 +110,7 @@ async function up(fresh: boolean) {
 		if (created.status !== 0) {
 			throw new Error(`docker run failed: ${created.stderr}`);
 		}
-	} else if (current === "stopped") {
+	} else if (state === "stopped") {
 		console.log(`Starting the existing ${CONTAINER}…`);
 		docker(["start", CONTAINER]);
 	} else {
