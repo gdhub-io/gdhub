@@ -13,14 +13,22 @@ const requestCount = vi.fn();
 const requestGroupBy = vi.fn();
 const requestUpdate = vi.fn();
 const memberFindMany = vi.fn();
+const specialityUpdateMany = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
+
+vi.mock("@/services/brevo/sync", () => ({
+	syncUserAvailabilityToBrevo: vi.fn(),
+}));
+
+vi.mock("@/services/cache", () => ({ cacheDelete: vi.fn(), cached: vi.fn() }));
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		speciality: {
 			count: (...a: unknown[]) => specialityCount(...a),
 			findMany: (...a: unknown[]) => specialityFindMany(...a),
+			updateMany: (...a: unknown[]) => specialityUpdateMany(...a),
 		},
 		adviceRequest: {
 			findMany: (...a: unknown[]) => requestFindMany(...a),
@@ -248,5 +256,65 @@ describe("marking a request done", () => {
 		const data = requestUpdate.mock.calls.at(-1)?.[0].data;
 		expect(data.status).toBe("Executed");
 		expect(data.finishedAt).toBeInstanceOf(Date);
+	});
+});
+
+describe("turning mentorship on", () => {
+	const save = async (body: Record<string, unknown>) => {
+		const { PUT } = await import("@/app/api/user/profile/mentorship/route");
+
+		return PUT(
+			new Request("http://localhost/api/user/profile/mentorship", {
+				method: "PUT",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify(body),
+			}) as never,
+			{} as never,
+			{ user: advisor } as never,
+		);
+	};
+
+	beforeEach(() => {
+		specialityUpdateMany.mockResolvedValue({ count: 1 });
+	});
+
+	/**
+	 * The form loads the speciality and sends its fields back untouched, and
+	 * `timeForMentoring` is nullable — so this payload is what a specialist who
+	 * never filled in a response time produces, and it used to 400.
+	 */
+	it("accepts the nulls the form echoes back from the database", async () => {
+		const response = await save({
+			enabled: true,
+			specialityId: "spec-1",
+			openForQuestions: ["How do I price a DLC?"],
+			timeForMentoring: null,
+		});
+
+		expect(response.status).toBe(200);
+		expect(specialityUpdateMany).toHaveBeenCalled();
+	});
+
+	it("stores a missing response time as null rather than an empty string", async () => {
+		await save({
+			enabled: true,
+			specialityId: "spec-1",
+			timeForMentoring: null,
+		});
+
+		expect(specialityUpdateMany.mock.calls.at(-1)?.[0].data).toMatchObject({
+			isOpenForMentoring: true,
+			timeForMentoring: null,
+		});
+	});
+
+	/** Scoped by `userId` as well as by id, or it would flip someone else's flag. */
+	it("never opens a speciality that belongs to another person", async () => {
+		await save({ enabled: true, specialityId: "spec-1" });
+
+		expect(specialityUpdateMany.mock.calls.at(-1)?.[0].where).toEqual({
+			id: "spec-1",
+			userId: "u-advisor",
+		});
 	});
 });

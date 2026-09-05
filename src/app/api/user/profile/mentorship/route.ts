@@ -24,8 +24,12 @@ import { prisma } from "@/services/prisma";
 const MentorshipSchema = z.object({
 	enabled: z.boolean(),
 	specialityId: z.string().optional(),
-	timeForMentoring: z.string().optional(),
-	openForQuestions: z.array(z.string()).optional(),
+	// `nullish`, not `optional`: the form loads the speciality and sends its
+	// fields back unchanged, and both columns are nullable. `optional()` accepts
+	// a missing key but rejects an explicit null, so anyone who had never filled
+	// in a response time could not turn mentorship on at all.
+	timeForMentoring: z.string().nullish(),
+	openForQuestions: z.array(z.string()).nullish(),
 });
 
 type MentorshipBody = z.infer<typeof MentorshipSchema>;
