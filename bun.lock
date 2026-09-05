@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "gamelab",
@@ -23,7 +24,7 @@
         "@dnd-kit/utilities": "^3.2.2",
         "@documenso/embed-react": "^0.6.1",
         "@documenso/sdk-typescript": "^0.8.0",
-        "@docuseal/api": "^1.0.23",
+        "@docuseal/api": "^1.0.25",
         "@edge-csrf/nextjs": "^2.5.3-cloudflare-rc1",
         "@editorjs/checklist": "^1.6.0",
         "@editorjs/delimiter": "^1.4.2",
@@ -578,7 +579,7 @@
 
     "@documenso/sdk-typescript": ["@documenso/sdk-typescript@0.8.1", "", { "dependencies": { "@modelcontextprotocol/sdk": "^1.26.0", "zod": "^3.25.0 || ^4.0.0" }, "bin": { "mcp": "bin/mcp-server.js" } }, "sha512-+i9vMb+GL6acZLv+AJjRnbR/sQKRkP3q5qAqSJ3d7f/Ut6fl+GN7q36LcbbuYnw4Yeq3UHZXI+Zx0HGxJXd7BQ=="],
 
-    "@docuseal/api": ["@docuseal/api@1.0.24", "", {}, "sha512-pkP4kJseah16sknEG2RAceYrCXdmQ5kZWOTbyxVS0+NaN84WX+nGfNg+ZQpCp1En4AQdMAMhf9OEoOj6sEMdLA=="],
+    "@docuseal/api": ["@docuseal/api@1.0.25", "", {}, "sha512-BSt6sgXaMejle8O+SmO/bnPA63WnkDbU4xPQpAEadwcVZCOV3y9abUfie0tLF4XCKpQYR4srx2ofGZW884Fagw=="],
 
     "@edge-csrf/nextjs": ["@edge-csrf/nextjs@2.5.3-cloudflare-rc1", "", { "peerDependencies": { "next": "^13.0.0 || ^14.0.0 || ^15.0.0" } }, "sha512-sH8HKl2s/zFkIgXcVzODljHsBhKW7LN2gXeUNEQTSP31Chy40ryjR7iTf0MA/DtPhOpXUkd6IBUMMF820sK+rA=="],
 
