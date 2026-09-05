@@ -1,20 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Mocking the OpenAI client does not stop its module from being evaluated, and
+// its constructor demands a key. Set one so the suite does not lean on a real .env.
+process.env.OPENAI_API_KEY ||= "test-key";
+
 // The service talks to OpenAI (moderation + a chat completion). Mock the shared
 // client so we can drive both responses and assert the merge / severity logic.
 const moderationCreate = vi.fn();
 const chatCreate = vi.fn();
 
-vi.mock("@/services/openai", () => ({
-	openAI: {
-		openai: {
-			moderations: { create: (...args: unknown[]) => moderationCreate(...args) },
-			chat: {
-				completions: {
-					create: (...args: unknown[]) => chatCreate(...args),
-				},
+// The service reaches the client through a lazy `import("@/services/openai")`,
+// which vi.mock does not intercept — mocking the SDK is what keeps the suite off
+// the network.
+vi.mock("openai", () => ({
+	OpenAI: class {
+		moderations = {
+			create: (...args: unknown[]) => moderationCreate(...args),
+		};
+		chat = {
+			completions: {
+				create: (...args: unknown[]) => chatCreate(...args),
 			},
-		},
+		};
 	},
 }));
 

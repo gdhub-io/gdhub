@@ -5,7 +5,15 @@ import {
 	TeamVacancyStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	beforeAll,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 
 const authMock = vi.fn();
 const projectFindMany = vi.fn();
@@ -99,6 +107,18 @@ const call = async (query = "") => {
 };
 
 const listArgs = () => projectFindMany.mock.calls[0][0];
+
+// The fixture is pinned to an August 2026 updatedAt and the activity score adds a
+// bonus for an edit within the last month, so the expected score would otherwise
+// drift with the calendar.
+beforeAll(() => {
+	vi.useFakeTimers({ toFake: ["Date"] });
+	vi.setSystemTime(new Date("2026-08-15T00:00:00.000Z"));
+});
+
+afterAll(() => {
+	vi.useRealTimers();
+});
 
 beforeEach(() => {
 	vi.clearAllMocks();
