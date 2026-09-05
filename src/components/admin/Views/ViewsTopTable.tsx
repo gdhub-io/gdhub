@@ -85,7 +85,14 @@ export function ViewsTopTable({ range }: ViewsTopTableProps) {
 				) : (
 					<div className={styles.content}>
 						{row.href ? (
-							<Link className={styles.title} href={row.href}>
+							// A new tab: the row is a reference read mid-report, and
+							// following it in place loses the range and the scroll.
+							<Link
+								className={styles.title}
+								href={row.href}
+								target="_blank"
+								rel="noopener"
+							>
 								<span className={styles.titleText}>{rowTitle(row)}</span>
 								<IconArrowUpRight
 									className={styles.titleIcon}
