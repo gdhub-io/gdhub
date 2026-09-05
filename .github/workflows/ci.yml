@@ -1,0 +1,108 @@
+name: CI
+
+# Documentation and design files cannot break a build, so they do not spend a run.
+# A push touching both docs and code still runs: the skip needs every changed file
+# to match.
+on:
+  pull_request:
+    branches: [dev, main]
+    paths-ignore: ['**/*.md', 'docs/**']
+  push:
+    branches: [dev, main]
+    paths-ignore: ['**/*.md', 'docs/**']
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify:
+    name: Lint, types and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.19
+
+      # @gdhub-io/* are published from sibling repositories, which GITHUB_TOKEN may
+      # not read — it answers 403 on the tarball. PACKAGES_TOKEN is a PAT with
+      # read:packages, held as both an Actions and a Dependabot secret.
+      - name: Authenticate with GitHub Packages
+        env:
+          REGISTRY_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "@gdhub-io:registry=https://npm.pkg.github.com/"
+            echo "//npm.pkg.github.com/:_authToken=${REGISTRY_TOKEN}"
+          } > .npmrc
+
+      - name: Cache Bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - run: bun install --frozen-lockfile
+
+      # Nothing here reaches a real service, but modules read their config through
+      # env() as they load, so the keys have to exist.
+      - name: Provide a test environment
+        run: cp .env.example .env
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Type-check
+        run: bun run type-check
+
+      - name: Unit tests
+        run: bun run test
+
+  # Dependabot's pull requests are merged by this job rather than by GitHub's
+  # auto-merge, which without branch protection would merge them before the checks
+  # above had run. `needs: verify` is the gate. A major version, or anything from
+  # @gdhub-io, waits for a human.
+  auto-merge:
+    name: Merge a green Dependabot update
+    needs: verify
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v2
+
+      # Security updates arrive as one pull request covering several packages, and
+      # the single `update-type` output is empty for those. Judge every entry, and
+      # merge only when each one is a patch.
+      - id: gate
+        env:
+          UPDATES: ${{ steps.meta.outputs.updated-dependencies-json }}
+        run: |
+          non_patch=$(printf '%s' "$UPDATES" | jq '[.[] | select((.updateType // "") != "version-update:semver-patch")] | length')
+          ours=$(printf '%s' "$UPDATES" | jq '[.[] | select(.dependencyName | startswith("@gdhub-io/"))] | length')
+          count=$(printf '%s' "$UPDATES" | jq 'length')
+
+          if [ "$count" -gt 0 ] && [ "$non_patch" -eq 0 ] && [ "$ours" -eq 0 ]; then
+            echo "merge=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "merge=false" >> "$GITHUB_OUTPUT"
+            echo "Left for review: $count updates, $non_patch of them beyond a patch, $ours from @gdhub-io." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Merge
+        if: steps.gate.outputs.merge == 'true'
+        env:
+          # GITHUB_TOKEN is read-only on a Dependabot pull request and cannot merge.
+          GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+        run: gh pr merge --squash --delete-branch "${{ github.event.pull_request.html_url }}"

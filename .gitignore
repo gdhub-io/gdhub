@@ -27,6 +27,7 @@
 !.claude/settings.json
 !.claude/agents/
 !.claude/skills/
+!.claude/hooks/
 .claude/settings.local.json
 
 # debug

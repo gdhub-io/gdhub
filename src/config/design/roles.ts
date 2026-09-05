@@ -18,6 +18,11 @@ export type DesignRoles = {
 	/** Opposite-mode surface: tooltips, inverse bands, dark chips. */
 	surfaceInverse: string;
 	border: string;
+	/**
+	 * The lightest hairline in the system: row separators inside a table, where
+	 * `border` repeats often enough to read as a grid.
+	 */
+	borderSubtle: string;
 	borderStrong: string;
 	borderFocus: string;
 	text: string;
@@ -54,6 +59,7 @@ export const roles: Record<DesignMode, DesignRoles> = {
 		surfaceSunken: neutral[50],
 		surfaceInverse: neutral[900],
 		border: neutral[100],
+		borderSubtle: neutral[50],
 		borderStrong: neutral[200],
 		borderFocus: neutral[900],
 		text: neutral[900],
@@ -77,6 +83,7 @@ export const roles: Record<DesignMode, DesignRoles> = {
 		surfaceSunken: neutral[800],
 		surfaceInverse: neutral[0],
 		border: "#FFFFFF14",
+		borderSubtle: "#FFFFFF0A",
 		borderStrong: "#FFFFFF29",
 		borderFocus: brand[500],
 		// Pure white, not neutral-50: on a dark band the off-white reads as a

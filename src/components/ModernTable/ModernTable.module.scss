@@ -7,7 +7,7 @@
   :global(.ant-table-thead > tr > th) {
     font-weight: 600;
     background: transparent;
-    border-bottom: 1px solid rgba(5, 5, 5, 0.08);
+    border-bottom: 1px solid var(--gd-color-border);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-size: 12px;
@@ -15,7 +15,7 @@
   }
 
   :global(.ant-table-tbody > tr > td) {
-    border-bottom: 1px solid rgba(5, 5, 5, 0.04);
+    border-bottom: 1px solid var(--gd-color-border-subtle);
     transition: all 0.2s ease;
   }
 

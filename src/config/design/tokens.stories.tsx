@@ -233,7 +233,7 @@ export const Directions: StoryObj = {
 
 const roleGroups: [string, (keyof (typeof roles)["light"])[]][] = [
 	["Surface", ["bg", "surface", "surfaceSunken", "surfaceInverse"]],
-	["Border", ["border", "borderStrong", "borderFocus"]],
+	["Border", ["border", "borderSubtle", "borderStrong", "borderFocus"]],
 	["Text", ["text", "textSecondary", "textTertiary", "textInverse"]],
 	["Action", ["action", "actionHover", "onAction"]],
 	["Accent", ["accent", "accentHover", "accentSubtle", "link"]],

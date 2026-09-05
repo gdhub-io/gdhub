@@ -14,6 +14,35 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 - Keep commit messages short and in Conventional Commits style (`feat(scope): ...`,
   `fix(scope): ...`, `chore(scope): ...`).
 
+## Accounts
+
+This machine holds more than one GitHub and more than one Linear account, and the wrong
+one fails quietly rather than loudly: GitHub answers **404**, not 403, for a repository
+a token cannot see, and Linear would write into the other workspace without complaint.
+
+- GitHub: `dmitrydrynov`. `gh auth switch --hostname github.com --user dmitrydrynov`
+  (the name must be passed with `--user`; a positional argument is ignored).
+- Commits: `dmitry.drynov@gmail.com`.
+- Linear: `dmitry.drynov`, workspace GDHub, team `GDHUB`. **Confirm with
+  `get_user("me")` before the first write of a session** — every read is harmless, a
+  write into the wrong workspace is not undone by retrying.
+
+`.claude/hooks/account-guard.sh` blocks `gh` and `git push` from the wrong account and
+forces a prompt on Linear writes; `.husky/pre-push` repeats the check for pushes made
+outside Claude.
+
+## Starting a piece of work
+
+Anything larger than a one-file fix starts with an **intent** — a short file in
+[docs/intent/](docs/intent/) stating what is wanted, why, and what must not move,
+written before the design and before the code. The `/intent` skill writes one from a
+Linear issue and opens the branch for it.
+
+Linear issues here are titles with empty descriptions, so the intent is the only
+written statement of the goal; the detailed spec (`docs/<feature>.md`) grows out of it
+afterwards, and the UI handoff (`docs/design/specs/`) out of that. A typo, a copy change
+or a one-file bug needs none of this — say so and do the work.
+
 ## Tech stack
 
 - **Framework:** Next.js 16 (App Router, Turbopack), React 19, TypeScript (strict).
@@ -53,8 +82,11 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 **Package manager: Bun only** (pinned via `packageManager` in `package.json`, lockfile
 `bun.lock`). Never use `yarn`/`npm`/`pnpm` — they would produce a competing lockfile.
 
-`bun run lint` runs on **pre-commit** (husky); `bun run refresh-translations` runs on
-**pre-push**. Before opening a PR, run `bun run lint && bun run type-check && bun run test`.
+`bun run lint` runs on **pre-commit** (husky). **Pre-push** refreshes translations and
+then runs the full gate — lint, type-check and the unit tests, about 15s. The same three
+run in CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) on every PR and on pushes
+to `dev`/`main`; the repository is private on a free plan, so GitHub branch protection is
+unavailable and the pre-push hook is what actually holds the line.
 
 ## Repository layout
 
@@ -146,6 +178,22 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 - **Comments:** English, only where they add non-obvious context.
 - **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
   Never `Read`/`Edit`/`Grep` a `.pen` file directly.
+
+## Changing the database schema
+
+The schema, seeds and Prisma extensions live in the sibling repo
+[gdhub-prisma](https://github.com/gdhub-io/gdhub-prisma) (locally `../prisma`), never
+here. A schema change is a two-repo loop:
+
+1. Edit the schema / seed / extension there, commit it in Conventional Commits style,
+   merge to `dev` or `main`.
+2. Its `release.yml` (semantic-release) publishes a new `@gdhub-io/gdhub-prisma` to
+   GitHub Packages.
+3. Back here: bump the pinned version in `package.json`, `bun install`,
+   `bun run db:generate`, then adapt the app code and its tests.
+
+Never hand-edit anything under `node_modules/@gdhub-io/gdhub-prisma` — the next
+install throws the change away.
 
 ## Testing
 
