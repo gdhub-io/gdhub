@@ -56,12 +56,17 @@ Flow:
    and an `Open signing page ↗` button.
 3. **Signed.** Documenso calls the webhook `POST /api/legal/webhooks`
    (`document.completed`). The handler matches the envelope by `externalId`,
-   stores `signedAt`, and only then unlocks everything:
-   `Speciality.isOpenForMentoring = true` plus a `SpaceMember(advisor, default,
-   member)` row. The settings card turns into *Advisor agreement signed · view
-   document* and the space link opens. Like the certificates, the **status itself
-   is not a column**: a read that needs it calls `getEnvelope(externalId)` and
-   uses `signedAt` as the platform-side fact.
+   stores `signedAt`, and only then unlocks everything by setting
+   `Speciality.isOpenForMentoring = true`. **No `SpaceMember` row** — see §3 for
+   why the role is derived instead. The settings card turns into *Advisor
+   agreement signed · view document* and the space link opens. Like the
+   certificates, the **status itself is not a column**: a read that needs it
+   calls `getEnvelope(externalId)` and uses `signedAt` as the platform-side fact.
+
+   One consequence to handle in the same change: today the mentorship switch
+   sets `isOpenForMentoring` itself. Once the agreement gates the space, the
+   switch may only record the intent and the webhook must be what opens it,
+   or an unsigned advisor would still resolve.
 4. **Switching mentorship off** closes the space and hides the expert card. It
    does not void the agreement: turning mentorship back on later reuses the
    signed row, and only a new agreement **version** creates a new document to
@@ -82,7 +87,7 @@ export const advisorSpace = defineSpace({
   type: "advisor",
   features: {
     requests: ["view", "manage"],   // accept, decline, close
-    reviews: ["view", "create", "manage"],
+    reviews: ["view", "create", "manage", "delete"],
     settings: ["view", "manage"],
   },
 });
@@ -90,8 +95,19 @@ export const advisorSpace = defineSpace({
 
 The adapter answers whether the space exists, the way `scout.space.ts` does:
 a signed agreement **and** at least one `Speciality.isOpenForMentoring` → the
-space resolves; otherwise the whole `/advisor/*` subtree is a 404. The role
-comes from the `SpaceMember` row.
+space resolves; otherwise the whole `/advisor/*` subtree is a 404. Until the
+agreement exists, the speciality alone decides (step 1 of the order of work).
+
+**The role is derived there too, not read from `SpaceMember`** — a departure
+from an earlier draft of this document, made when the space was built. One fact
+in one place: switching mentorship off closes the space in the same write that
+hides the expert card, nothing can drift out of step, and the advisors who
+already exist need no backfill.
+
+**And it is `Owner`, not `member`.** `manage` and `delete` are not member-class
+actions (`CLASS_DEFAULT_ROLES`), so a `Member` advisor could read their own
+inbox and change nothing in it — not accept a request, not delete their own
+review.
 
 No `team` / `invite` features: an advisor works alone.
 
