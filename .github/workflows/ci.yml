@@ -27,12 +27,13 @@ jobs:
         with:
           bun-version: 1.2.19
 
-      # @gdhub-io/* are published to GitHub Packages. GITHUB_TOKEN is enough when
-      # the package grants this repository access; PACKAGES_TOKEN (a PAT with
-      # read:packages) is the fallback when it does not.
+      # @gdhub-io/* are published from sibling repositories, and GITHUB_TOKEN cannot
+      # read those — it answers 403 on the tarball. A PAT with read:packages is
+      # required; PACKAGES_TOKEN is the one to add, GH_TOKEN is the older secret
+      # kept as a fallback.
       - name: Authenticate with GitHub Packages
         env:
-          REGISTRY_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          REGISTRY_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           {
             echo "@gdhub-io:registry=https://npm.pkg.github.com/"
