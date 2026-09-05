@@ -14,6 +14,18 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 - Keep commit messages short and in Conventional Commits style (`feat(scope): ...`,
   `fix(scope): ...`, `chore(scope): ...`).
 
+## Starting a piece of work
+
+Anything larger than a one-file fix starts with an **intent** — a short file in
+[docs/intent/](docs/intent/) stating what is wanted, why, and what must not move,
+written before the design and before the code. The `/intent` skill writes one from a
+Linear issue and opens the branch for it.
+
+Linear issues here are titles with empty descriptions, so the intent is the only
+written statement of the goal; the detailed spec (`docs/<feature>.md`) grows out of it
+afterwards, and the UI handoff (`docs/design/specs/`) out of that. A typo, a copy change
+or a one-file bug needs none of this — say so and do the work.
+
 ## Tech stack
 
 - **Framework:** Next.js 16 (App Router, Turbopack), React 19, TypeScript (strict).
