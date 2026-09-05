@@ -31,6 +31,9 @@ permissions:
 jobs:
   verify:
     name: Lint, types and unit tests
+    # A pull request from dev to main carries commits that already ran on the push
+    # to dev. Checking them twice buys nothing and costs a runner every time.
+    if: github.event_name != 'pull_request' || github.head_ref != 'dev'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
