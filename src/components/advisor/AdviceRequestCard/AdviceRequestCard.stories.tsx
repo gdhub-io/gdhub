@@ -12,7 +12,6 @@ const request: AdvisorRequest = {
 		"We are 3 months from launch and the publisher pushes for a season pass instead of one paid DLC. Our wishlist is 12k with 60% from one streamer spike.",
 	matrixRoomId: null,
 	asker: {
-		id: "user-1",
 		name: "Anna Volkova",
 		image: null,
 		role: "Producer",
@@ -80,7 +79,6 @@ export const FromOutside: Story = {
 			topic: "Can I show my build at the next stream?",
 			question: null,
 			asker: {
-				id: null,
 				name: "@marat_dev",
 				image: null,
 				role: null,

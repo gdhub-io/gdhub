@@ -70,6 +70,7 @@ export function AdviceRequestModal({
 	if (!request) return null;
 
 	const status = REQUEST_STATUS[request.status];
+	const { specialityId } = request.asker;
 	const isNew = request.status === AdviceRequestStatus.Created;
 	const isAccepted = request.status === AdviceRequestStatus.Approved;
 
@@ -139,13 +140,10 @@ export function AdviceRequestModal({
 								</span>
 							)}
 						</div>
-						{request.asker.specialityId && (
+						{specialityId && (
 							<Button
 								type="link"
-								onClick={() =>
-									request.asker.specialityId &&
-									onViewTalentCard(request.asker.specialityId)
-								}
+								onClick={() => onViewTalentCard(specialityId)}
 							>
 								{t("advisor.requests.modal.talentCard", "View talent card")}
 							</Button>

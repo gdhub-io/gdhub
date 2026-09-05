@@ -61,13 +61,6 @@ const PAGE_SIZE = 10;
 /** How long the search box waits before it costs a request. */
 const SEARCH_DEBOUNCE_MS = 300;
 
-/**
- * The advisor's inbox.
- *
- * Pages accumulate rather than replace, because "Load more" is a longer list and
- * not a different one; changing the filter or the search starts a new list, so
- * both reset the page to the first.
- */
 export function AdvisorRequestsClient() {
 	const { t } = useTranslate();
 	const { setSelectedRoomId, setSelectedRoomByAlias, setOpenChatModal } =

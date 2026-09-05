@@ -31,7 +31,6 @@ export type AdvisorRequest = {
 	/** Set once accepted; what "Open chat" resolves the room by. */
 	matrixRoomId: string | null;
 	asker: {
-		id: string | null;
 		name: string;
 		image: string | null;
 		/** Their role on the project the question came from, when they hold one. */
@@ -83,7 +82,7 @@ const REQUEST_SELECT = {
 	matrixRoomId: true,
 	fromUserId: true,
 	fromUser: {
-		select: { id: true, image: true, profile: { select: { name: true } } },
+		select: { image: true, profile: { select: { name: true } } },
 	},
 	fromTelegramUser: true,
 	project: {
@@ -202,7 +201,7 @@ export async function listAdvisorRequests(
 			where,
 			select: REQUEST_SELECT,
 			orderBy: { createdAt: "desc" },
-			skip: (Math.max(page, 1) - 1) * limit,
+			skip: (page - 1) * limit,
 			take: limit,
 		}),
 	]);
@@ -229,7 +228,6 @@ export async function listAdvisorRequests(
 			question: row.comment,
 			matrixRoomId: row.matrixRoomId,
 			asker: {
-				id: row.fromUser?.id ?? null,
 				name:
 					row.fromUser?.profile?.name ||
 					telegramName(row.fromTelegramUser) ||
