@@ -7,6 +7,10 @@ const nextConfig = {
 	// standalone build stops emitting `.next/next-server.js.nft.json`, which the
 	// Vercel builder opens and fails without.
 	output: process.env.VERCEL ? undefined : "standalone",
+
+	// Lets `dev:test` run beside the ordinary dev server: Next refuses a second
+	// instance sharing one build directory.
+	distDir: process.env.NEXT_DIST_DIR || ".next",
 	serverExternalPackages: [
 		"discord.js",
 		"matrix-js-sdk",

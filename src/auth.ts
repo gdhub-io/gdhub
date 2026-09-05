@@ -20,7 +20,7 @@ import type {
 //   - NODE_ENV must not be "production"
 //   - E2E_TEST_AUTH must be exactly "1"
 // Lets Playwright sign in as an existing user by email, no SMTP/Google needed.
-const isE2EAuth =
+export const isE2EAuth =
 	process.env.NODE_ENV !== "production" && process.env.E2E_TEST_AUTH === "1";
 
 const e2eCredentialsProvider = CredentialsProvider({

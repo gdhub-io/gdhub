@@ -50,9 +50,12 @@
     "scripts/**/*.ts",
     "src/components/admin/BlogPostEditor",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    ".next-test/types/**/*.ts",
+    ".next-test/dev/types/**/*.ts"
   ],
   "exclude": [
+    ".next-test",
     "node_modules",
     "tsconfig.json",
     ".vscode",
