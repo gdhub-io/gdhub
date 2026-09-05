@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify:
+    name: Lint, types and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.19
+
+      # @gdhub-io/* are published to GitHub Packages. GITHUB_TOKEN is enough when
+      # the package grants this repository access; PACKAGES_TOKEN (a PAT with
+      # read:packages) is the fallback when it does not.
+      - name: Authenticate with GitHub Packages
+        env:
+          REGISTRY_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "@gdhub-io:registry=https://npm.pkg.github.com/"
+            echo "//npm.pkg.github.com/:_authToken=${REGISTRY_TOKEN}"
+          } > .npmrc
+
+      - name: Cache Bun install
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - run: bun install --frozen-lockfile
+
+      # Nothing here reaches a real service, but modules read their config through
+      # env() as they load, so the keys have to exist.
+      - name: Provide a test environment
+        run: cp .env.example .env
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Type-check
+        run: bun run type-check
+
+      - name: Unit tests
+        run: bun run test
