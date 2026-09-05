@@ -75,7 +75,33 @@ file does not say:
 - Comments only where they carry what the code cannot. Prefer explaining *why
   this and not the obvious alternative*.
 
-## 5. Verify, then report
+## 5. Leave it verifiable by someone else
+
+A screen that only its author can check is unfinished. Two artefacts, both
+written in the same pass as the code, never afterwards:
+
+**A story, for anything reusable.** A card, a modal, a row, a state machine
+with more than one visible state — `Component.stories.tsx` next to it, one
+story per state the design drew, including empty and loading. This is where the
+four states stop being a promise: `Modal — …` and `· empty` frames exist in the
+design file precisely so they can be rendered side by side without a database.
+A one-off page section does not need one; a thing that will be reused or that
+looks different in three situations does.
+
+**A test, for anything that can be wrong silently.** Not coverage — the places
+where a mistake would ship green:
+
+- the filter or bucket map, where a status quietly lands in the wrong tab;
+- the query's scoping — the `where` that separates one user's rows from
+  everyone else's is a security boundary, and it is one word long;
+- a state transition that must refuse an illegal move;
+- anything derived from time, a locale or a timezone;
+- the space definition and its permissions, when a space is added.
+
+Say in the report what you chose not to test and why. "The card renders" is not
+a test worth writing; "a declined request never appears under Answered" is.
+
+**Then the gate:**
 
 ```
 bun run lint && bun run type-check && bun run test
@@ -85,7 +111,10 @@ bun run lint && bun run type-check && bun run test
 and `--gd-*` names the theme never emits — a misspelt custom property fails
 silently in the browser, so a green run here is the only proof.
 
-Add or extend a test whenever you touched API or domain logic.
+**And the handoff spec.** When the work implements frames from the design file,
+write or extend `docs/design/specs/<screen>.md`: what was built, which node IDs
+it came from, and every place the code deliberately departs from the frame. The
+next agent reads that file instead of re-deriving the screen from a picture.
 
 Report: the Pencil node IDs, the files, what you decided that was not asked,
 and anything you deliberately did not do. If something in the request was

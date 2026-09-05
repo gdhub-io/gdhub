@@ -215,6 +215,12 @@ install throws the change away.
 - E2E: Playwright in `tests/e2e`. `*.authed.spec.ts` need an authenticated session.
   Run with `bun run test:e2e` (uses `.env.test`).
 - When changing API or domain logic, add/extend a test rather than only manual checks.
+- **A reusable component ships with a story.** `Component.stories.tsx` next to it,
+  one story per state the design drew — including empty and loading. It is the only
+  way those states can be looked at without a database behind them.
+- Test what can be wrong silently, not what is easy to assert: filter and status
+  maps, the `where` that scopes one user's rows from everyone else's, transitions
+  that must refuse an illegal move, and anything derived from time or timezone.
 
 ## Gotchas
 
