@@ -1,10 +1,15 @@
 name: CI
 
+# Documentation and design files cannot break a build, so they do not spend a run.
+# A push touching both docs and code still runs: the skip needs every changed file
+# to match.
 on:
   pull_request:
     branches: [dev, main]
+    paths-ignore: ['**/*.md', 'docs/**']
   push:
     branches: [dev, main]
+    paths-ignore: ['**/*.md', 'docs/**']
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
