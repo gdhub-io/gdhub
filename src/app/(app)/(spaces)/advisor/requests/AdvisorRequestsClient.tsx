@@ -1,13 +1,13 @@
 "use client";
 
 import { IconInbox, IconSearch } from "@tabler/icons-react";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Input, message, Segmented, Skeleton } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AdviceRequestCard } from "@/components/advisor/AdviceRequestCard";
 import { useChat } from "@/components/Chat/useChat";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
@@ -76,8 +76,6 @@ export function AdvisorRequestsClient() {
 	const [filter, setFilter] = useState<RequestFilter>("new");
 	const [search, setSearch] = useState("");
 	const [debounced, setDebounced] = useState("");
-	const [page, setPage] = useState(1);
-	const [loaded, setLoaded] = useState<AdvisorRequest[]>([]);
 	const [opened, setOpened] = useState<AdvisorRequest | null>(null);
 	const [talentCardId, setTalentCardId] = useState<string | undefined>();
 
@@ -86,44 +84,40 @@ export function AdvisorRequestsClient() {
 		return () => clearTimeout(timer);
 	}, [search]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: a new list, not a new page
-	useEffect(() => {
-		setPage(1);
-		setLoaded([]);
-	}, [filter, debounced]);
+	const {
+		data,
+		isLoading,
+		isError,
+		refetch,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteQuery<RequestsResponse>({
+		queryKey: ["advisor-requests", filter, debounced],
+		initialPageParam: 1,
+		queryFn: ({ pageParam }) =>
+			axios
+				.get<RequestsResponse>("/api/advisor/requests", {
+					params: {
+						filter,
+						search: debounced || undefined,
+						page: pageParam,
+						limit: PAGE_SIZE,
+					},
+				})
+				.then((res) => res.data),
+		getNextPageParam: (last) => last.meta.nextPage,
+	});
 
-	const { data, isLoading, isError, refetch, isFetching } =
-		useQuery<RequestsResponse>({
-			queryKey: ["advisor-requests", filter, debounced, page],
-			queryFn: () =>
-				axios
-					.get<RequestsResponse>("/api/advisor/requests", {
-						params: {
-							filter,
-							search: debounced || undefined,
-							page,
-							limit: PAGE_SIZE,
-						},
-					})
-					.then((res) => res.data),
-			placeholderData: keepPreviousData,
-		});
-
-	useEffect(() => {
-		if (!data) return;
-
-		setLoaded((previous) =>
-			data.meta.currentPage === 1 ? data.data : [...previous, ...data.data],
-		);
-	}, [data]);
+	const loaded = data?.pages.flatMap((page) => page.data) ?? [];
+	const counts = data?.pages[0]?.counts;
+	const askedIn = data?.pages[0]?.askedIn ?? null;
 
 	const act = useMutation({
 		mutationFn: ({ id, action }: { id: string; action: string }) =>
 			axios.put(`/api/user/advice-request/${id}/${action}`).then((r) => r.data),
 		onSuccess: () => {
 			setOpened(null);
-			setPage(1);
-			setLoaded([]);
 			refetch();
 		},
 		onError: () =>
@@ -150,20 +144,14 @@ export function AdvisorRequestsClient() {
 		await openChat({ ...request, matrixRoomId: updated?.matrixRoomId ?? null });
 	};
 
-	const options = useMemo(
-		() =>
-			FILTERS.map(({ value, key, label }) => {
-				const count = data?.counts?.[value];
+	const options = FILTERS.map(({ value, key, label }) => {
+		const count = counts?.[value];
 
-				return {
-					value,
-					label: count ? `${t(key, label)} ${count}` : t(key, label),
-				};
-			}),
-		[data?.counts, t],
-	);
-
-	const hasMore = data ? !data.meta.isLastPage : false;
+		return {
+			value,
+			label: count ? `${t(key, label)} ${count}` : t(key, label),
+		};
+	});
 
 	return (
 		<div className="layout-background">
@@ -240,7 +228,7 @@ export function AdvisorRequestsClient() {
 							<AdviceRequestCard
 								key={request.id}
 								request={request}
-								askedIn={data?.askedIn ?? null}
+								askedIn={askedIn}
 								busy={act.isPending}
 								onShowDetails={setOpened}
 								onDecline={(item) =>
@@ -254,13 +242,13 @@ export function AdvisorRequestsClient() {
 						))}
 					</div>
 
-					{hasMore && (
+					{hasNextPage && (
 						<Button
 							block
 							type="text"
 							className={styles.loadMore}
-							loading={isFetching}
-							onClick={() => setPage((current) => current + 1)}
+							loading={isFetchingNextPage}
+							onClick={() => fetchNextPage()}
 						>
 							{t("advisor.requests.loadMore", "Load more")}
 						</Button>

@@ -114,8 +114,19 @@ where a mistake would ship green:
 Say in the report what you chose not to test and why. "The card renders" is not
 a test worth writing; "a declined request never appears under Answered" is.
 
-**Then a pass over your own diff**, deleting every comment that restates its
-code. Then the gate:
+**Then simplify, before anyone is asked to read it.** Re-read your own diff
+looking for what can go, not for what is missing:
+
+- State you are keeping that a library already keeps — accumulating pages by
+  hand where `useInfiniteQuery` exists, a `useEffect` that only mirrors a prop.
+- A helper used once. Inline it.
+- A branch no caller can reach, an option nothing passes, a `useMemo` around
+  something cheap.
+- Two functions that are the same shape with one value different.
+- Every comment that restates its code.
+
+A diff that is smaller after this pass is the deliverable; if nothing came out,
+say so. Then the gate:
 
 ```
 bun run lint && bun run type-check && bun run test

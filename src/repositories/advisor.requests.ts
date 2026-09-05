@@ -181,18 +181,14 @@ export async function listAdvisorRequests(
 					OR: [
 						{
 							fromUser: {
-								is: {
-									profile: {
-										is: {
-											name: { contains: term, mode: "insensitive" as const },
-										},
-									},
+								profile: {
+									name: { contains: term, mode: "insensitive" as const },
 								},
 							},
 						},
 						{
 							project: {
-								is: { name: { contains: term, mode: "insensitive" as const } },
+								name: { contains: term, mode: "insensitive" as const },
 							},
 						},
 					],
