@@ -38,6 +38,12 @@ Anything larger than a one-file fix starts with an **intent** — a short file i
 written before the design and before the code. The `/intent` skill writes one from a
 Linear issue and opens the branch for it.
 
+Work happens on `dev` and is promoted to `main` by a pull request; `main` is what Vercel
+deploys. Dependabot is the one exception to that direction — it can only target the
+default branch, so its updates land on `main` and
+[.github/workflows/sync-dev.yml](.github/workflows/sync-dev.yml) merges them back into
+`dev`. Never promote in that direction by hand.
+
 Linear issues here are titles with empty descriptions, so the intent is the only
 written statement of the goal; the detailed spec (`docs/<feature>.md`) grows out of it
 afterwards, and the UI handoff (`docs/design/specs/`) out of that. A typo, a copy change

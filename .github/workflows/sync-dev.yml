@@ -1,0 +1,51 @@
+name: Sync dev
+
+# Dependabot merges into the default branch, because pointing it elsewhere turns
+# its security updates off. Everything it lands therefore exists on main and not
+# on dev, which is where the work happens — dev had drifted 82 commits behind
+# before this existed.
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: sync-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Merge main back into dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout dev
+
+          if ! git merge --no-edit origin/main; then
+            git merge --abort
+            {
+              echo "### dev could not be synced automatically"
+              echo
+              echo "main and dev disagree on the same lines. Merge it by hand:"
+              echo
+              echo '```'
+              echo "git switch dev && git merge origin/main"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          # A push authenticated with GITHUB_TOKEN starts no further workflows, so
+          # this cannot loop back through CI.
+          git push origin dev
