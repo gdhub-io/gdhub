@@ -101,7 +101,10 @@ jobs:
         run: |
           allowed='["version-update:semver-patch","version-update:semver-minor"]'
           blocked=$(printf '%s' "$UPDATES" | jq --argjson ok "$allowed" '[.[] | (.updateType // "") as $t | select($ok | index($t) | not)] | length')
-          ours=$(printf '%s' "$UPDATES" | jq '[.[] | select(.dependencyName | startswith("@gdhub-io/"))] | length')
+          # next is excluded by name: 16.3.4 passed lint, types and 628 tests and then
+          # failed the Vercel build, which nothing here can see. The framework is
+          # adopted deliberately, with a deploy watched.
+          ours=$(printf '%s' "$UPDATES" | jq '[.[] | select((.dependencyName | startswith("@gdhub-io/")) or .dependencyName == "next")] | length')
           count=$(printf '%s' "$UPDATES" | jq 'length')
 
           if [ "$count" -gt 0 ] && [ "$blocked" -eq 0 ] && [ "$ours" -eq 0 ]; then
@@ -116,4 +119,25 @@ jobs:
         env:
           # GITHUB_TOKEN is read-only on a Dependabot pull request and cannot merge.
           GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
-        run: gh pr merge --squash --delete-branch "${{ github.event.pull_request.html_url }}"
+          PR: ${{ github.event.pull_request.html_url }}
+        run: |
+          # These land in batches and every one of them touches bun.lock, so a merge
+          # regularly loses the race with another that has just moved the base.
+          for attempt in 1 2 3; do
+            if out=$(gh pr merge --squash --delete-branch "$PR" 2>&1); then
+              echo "Merged on attempt $attempt." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "$out"
+            sleep 20
+          done
+
+          # Losing the race is not a failure: Dependabot rebases when the base moves,
+          # and the run that follows merges it. Anything else is worth a red mark.
+          case "$out" in
+            *"Base branch was modified"* | *"not mergeable"* | *"merge conflict"*)
+              echo "Left to Dependabot's next rebase: $out" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+              ;;
+          esac
+          exit 1
