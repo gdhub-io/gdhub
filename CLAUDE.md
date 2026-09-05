@@ -14,6 +14,23 @@ events, devlogs, equity, paid job listings). Single Next.js app.
 - Keep commit messages short and in Conventional Commits style (`feat(scope): ...`,
   `fix(scope): ...`, `chore(scope): ...`).
 
+## Accounts
+
+This machine holds more than one GitHub and more than one Linear account, and the wrong
+one fails quietly rather than loudly: GitHub answers **404**, not 403, for a repository
+a token cannot see, and Linear would write into the other workspace without complaint.
+
+- GitHub: `dmitrydrynov`. `gh auth switch --hostname github.com --user dmitrydrynov`
+  (the name must be passed with `--user`; a positional argument is ignored).
+- Commits: `dmitry.drynov@gmail.com`.
+- Linear: `dmitry.drynov`, workspace GDHub, team `GDHUB`. **Confirm with
+  `get_user("me")` before the first write of a session** — every read is harmless, a
+  write into the wrong workspace is not undone by retrying.
+
+`.claude/hooks/account-guard.sh` blocks `gh` and `git push` from the wrong account and
+forces a prompt on Linear writes; `.husky/pre-push` repeats the check for pushes made
+outside Claude.
+
 ## Starting a piece of work
 
 Anything larger than a one-file fix starts with an **intent** — a short file in

@@ -56,8 +56,10 @@ Do not restate the stack, the conventions or the API pattern — they are in
 
 ## 4. Offer to push it back to Linear
 
-The issue description is empty; the intent is exactly what belongs there. Ask
-first — it writes to the tracker, outside the repository — then
+The issue description is empty; the intent is exactly what belongs there.
+Confirm first that `get_user("me")` is `dmitry.drynov` — there is more than one
+Linear account here and a write lands wherever the connector points. Then ask the
+user, because it writes outside the repository, and
 `mcp__claude_ai_Linear__save_issue` with the intent body. Now the ticket is
 readable by someone who does not have the repo open.
 

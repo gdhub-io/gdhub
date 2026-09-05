@@ -1,6 +1,28 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Two GitHub accounts live on this machine and only one can see gdhub-io. A push
+# from the other fails as a 404, and commits authored under the wrong address are
+# only noticed later, in the history.
+expected_email="dmitry.drynov@gmail.com"
+expected_login="dmitrydrynov"
+
+actual_email=$(git config user.email)
+if [ "$actual_email" != "$expected_email" ]; then
+	echo "pre-push: commits are authored as '$actual_email', expected '$expected_email'." >&2
+	echo "          fix: git config user.email $expected_email" >&2
+	exit 1
+fi
+
+if command -v gh >/dev/null 2>&1; then
+	actual_login=$(gh api user --jq .login 2>/dev/null)
+	if [ -n "$actual_login" ] && [ "$actual_login" != "$expected_login" ]; then
+		echo "pre-push: gh is signed in as '$actual_login', expected '$expected_login'." >&2
+		echo "          fix: gh auth switch --hostname github.com --user $expected_login" >&2
+		exit 1
+	fi
+fi
+
 # Translations first, so the files this generates are covered by the checks below.
 bun run refresh-translations
 
