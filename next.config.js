@@ -2,7 +2,11 @@
 
 const nextConfig = {
 	reactStrictMode: true,
-	output: "standalone",
+	// `standalone` exists for the Docker image, which copies `.next/standalone`.
+	// Vercel does not need it and since Next 16.3 it breaks there: the Turbopack
+	// standalone build stops emitting `.next/next-server.js.nft.json`, which the
+	// Vercel builder opens and fails without.
+	output: process.env.VERCEL ? undefined : "standalone",
 	serverExternalPackages: [
 		"discord.js",
 		"matrix-js-sdk",
