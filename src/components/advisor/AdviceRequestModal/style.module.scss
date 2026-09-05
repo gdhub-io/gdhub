@@ -1,0 +1,105 @@
+.state {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	margin-top: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+}
+
+.caption {
+	display: block;
+	margin-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.rowText {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	flex: 1;
+}
+
+.rowName {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.rowNote {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+/*
+ * The only outlined panel in the modal. Everything else sits flat on the
+ * surface, so the question is what the eye lands on.
+ */
+.question {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.topic {
+	margin: 0 0 var(--gd-space-2);
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+}
+
+.text {
+	margin: 0;
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-relaxed);
+	color: var(--gd-color-text-secondary);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.cover {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-subtle);
+	overflow: hidden;
+}
+
+.coverImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.hint {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+
+	svg {
+		flex: none;
+	}
+}

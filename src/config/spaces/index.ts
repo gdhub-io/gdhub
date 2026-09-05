@@ -1,4 +1,5 @@
 import { adminSpace } from "./admin";
+import { advisorSpace } from "./advisor";
 import { courseSpace } from "./course";
 import {
 	type PermissionsOf,
@@ -24,6 +25,7 @@ export const SPACES = registerSpaces([
 	eventSpace,
 	courseSpace,
 	scoutSpace,
+	advisorSpace,
 	adminSpace,
 	devSpace,
 ]);
@@ -43,6 +45,7 @@ export const spaceList = (): SpaceDefinition[] =>
 
 export {
 	adminSpace,
+	advisorSpace,
 	courseSpace,
 	devSpace,
 	eventSpace,

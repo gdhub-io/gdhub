@@ -168,6 +168,7 @@ describe("registry", () => {
 	it("registers every space", () => {
 		expect(Object.keys(SPACES).sort()).toEqual([
 			"admin",
+			"advisor",
 			"course",
 			"dev",
 			"event",
