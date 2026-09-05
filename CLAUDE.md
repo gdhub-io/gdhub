@@ -189,7 +189,13 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   are generated and overwritten on every push — the **i18n skill** has the procedure and
   the traps.
 - **Formatting:** let Biome handle it (tabs, double quotes). Don't hand-format or fight it.
-- **Comments:** English, only where they add non-obvious context.
+- **Comments:** English, one line, and only where they carry what the code cannot.
+  A longer block is for a file or an exported function whose *why* is genuinely
+  not obvious. Delete anything that restates its code, and do a pass over the diff
+  before committing.
+- **Markup is antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
+  `Typography` — if antd ships it, use it. Hand-rolled markup needs a bespoke
+  design behind it and a note naming the frame; layout itself is still CSS.
 - **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
   Never `Read`/`Edit`/`Grep` a `.pen` file directly.
 

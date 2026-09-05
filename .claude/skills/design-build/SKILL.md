@@ -61,8 +61,21 @@ Delegate to **`frontend-component-builder`** (UI) and **`api-route-builder`**
 (endpoints) for anything substantial, or write it inline when small.
 
 The stack, the API pattern and the conventions are in
-[CLAUDE.md](../../../CLAUDE.md) — do not restate them, follow them. What that
-file does not say:
+[CLAUDE.md](../../../CLAUDE.md) — do not restate them, follow them. Three that
+get broken anyway:
+
+- **Build with antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
+  `Typography` — if antd ships the thing, use it. Hand-rolled markup is for a
+  bespoke anatomy the design file actually draws, and then it needs a sentence
+  naming the frame. Layout itself — a grid, a stack — is CSS, not a component;
+  that is not what this rule is about.
+- **Icons are `@tabler/icons-react`.** One family, one stroke weight, nothing
+  else.
+- **Comments: one line, and only what the code cannot say.** A block is for a
+  file or an exported function whose *why* is genuinely not obvious. Everything
+  inline gets one line or gets deleted.
+
+What CLAUDE.md does not say:
 
 - **Reuse first.** Grep before writing a helper. Things that exist and get
   rewritten anyway: `formatDollar` / `formatCompactCount`
@@ -101,7 +114,8 @@ where a mistake would ship green:
 Say in the report what you chose not to test and why. "The card renders" is not
 a test worth writing; "a declined request never appears under Answered" is.
 
-**Then the gate:**
+**Then a pass over your own diff**, deleting every comment that restates its
+code. Then the gate:
 
 ```
 bun run lint && bun run type-check && bun run test
