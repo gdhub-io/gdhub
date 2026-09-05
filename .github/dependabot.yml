@@ -1,24 +1,16 @@
 version: 2
 
-# @gdhub-io/* are published to GitHub Packages, which Dependabot cannot read
-# without credentials. PACKAGES_TOKEN is a Dependabot secret (repository
-# Settings -> Secrets -> Dependabot), separate from the Actions secret.
-registries:
-  github-packages:
-    type: npm-registry
-    url: https://npm.pkg.github.com
-    token: ${{secrets.PACKAGES_TOKEN}}
-
 updates:
   - package-ecosystem: 'bun'
     directory: '/'
-    registries:
-      - github-packages
     schedule:
       interval: 'weekly'
-    # No target-branch here on purpose: pointing it at a non-default branch turns
-    # off security updates for the ecosystem, and those are the ones that matter.
+    # No target-branch on purpose: pointing it at a non-default branch turns off
+    # security updates for the ecosystem, and those are the ones that matter.
     ignore:
-      # The two-repo schema loop in CLAUDE.md is deliberate: a new gdhub-prisma
-      # is adopted with a db:generate and a look at what changed, not merged for us.
+      # The two-repo schema loop in CLAUDE.md is deliberate: a new gdhub-prisma is
+      # adopted with a db:generate and a look at what changed, not merged for us.
+      # This is also why no `registries` entry is declared — with the private
+      # registry listed, Dependabot treated it as the base and rewrote 140 public
+      # packages in bun.lock to npm.pkg.github.com, which then 403s in CI.
       - dependency-name: '@gdhub-io/*'
