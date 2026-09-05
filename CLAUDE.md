@@ -38,6 +38,11 @@ Anything larger than a one-file fix starts with an **intent** — a short file i
 written before the design and before the code. The `/intent` skill writes one from a
 Linear issue and opens the branch for it.
 
+Every task gets a Linear issue, including the small ones that skip the intent file.
+Move it to **In Review** when the pull request is open and waiting — that status is how
+Dmitry sees, on his own board, that something needs him, and it says in its description
+what was deliberately left undone.
+
 Work happens on `dev` and is promoted to `main` by a pull request; `main` is what Vercel
 deploys. Dependabot is the one exception to that direction — it can only target the
 default branch, so its updates land on `main` and
