@@ -413,8 +413,9 @@ describe("GET /api/scout/games/[id]/[section]", () => {
 		await call("section", { id: "p1", section: "team" });
 
 		// The first call is the visibility guard; the team read is the next one.
-		const { where, orderBy } =
-			projectFindFirst.mock.calls.at(-1)[0].select.team.select.members;
+		const lastCall = projectFindFirst.mock.calls.at(-1);
+		if (!lastCall) throw new Error("projectFindFirst was never called");
+		const { where, orderBy } = lastCall[0].select.team.select.members;
 
 		// `CONFIRMED_MEMBERS` also pins `finishedAt: null`, which would drop
 		// every departed member from the table.
