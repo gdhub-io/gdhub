@@ -6,7 +6,7 @@ import {
 	IconUser,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button } from "antd";
+import { Button, Tag } from "antd";
 import dayjs from "dayjs";
 import { REQUEST_STATUS } from "@/components/advisor/requestStatus";
 import { getWorkDirection } from "@/components/DirectionBadge";
@@ -26,10 +26,8 @@ export type AdviceRequestCardProps = {
 };
 
 /**
- * One question in the advisor's inbox.
- *
- * A card and not a table row: what has to be read here is a person and a
- * question, and a row can carry neither at a length that means anything.
+ * One question in the inbox. Hand-built rather than antd's `Card`: the anatomy
+ * is drawn in `Advisor — Requests` (node DiaZB) — identity strip, body, foot.
  */
 export function AdviceRequestCard({
 	request,
@@ -66,9 +64,13 @@ export function AdviceRequestCard({
 
 				<div className={styles.text}>
 					<div className={styles.chips}>
-						<span className={styles.chip} data-tone={status.tone}>
+						<Tag
+							bordered={false}
+							className={styles.chip}
+							data-tone={status.tone}
+						>
 							{t(status.key, status.label)}
-						</span>
+						</Tag>
 						<span className={styles.time}>
 							{dayjs(request.askedAt).fromNow()}
 						</span>

@@ -18,17 +18,10 @@ const { Text } = Typography;
 /** Bare `http(s)` runs, captured so `split` keeps them as their own parts. */
 const URL_PATTERN = /(https?:\/\/[^\s<]+[^\s<.,:;"')\]])/g;
 
-/** The same shape without `g`: a global regex carries `lastIndex` between
- * `test` calls, which would make every other link render as plain text. */
+/** Without `g`: a global regex carries `lastIndex` and would skip every other link. */
 const IS_URL = /^https?:\/\//;
 
-/**
- * The question as the asker typed it, with any links live.
- *
- * Split rather than parsed into HTML: the text is someone else's, and building
- * markup from it is how an injection gets in. A new tab because the reader is
- * mid-question — following a link in place loses their place in it.
- */
+/** Split, never parsed into HTML: the text is someone else's. */
 function QuestionText({ text }: { text: string }) {
 	return (
 		<p className={styles.text}>
@@ -60,9 +53,8 @@ export type AdviceRequestModalProps = {
 /**
  * The whole question, and the decision on it.
  *
- * The status and the date sit in the header rather than beside the person: they
- * describe the request, and putting them in the identity block made them read
- * as facts about the asker.
+ * Status and date sit in the header, not beside the person: they describe the
+ * request, and in the identity block they read as facts about the asker.
  */
 export function AdviceRequestModal({
 	request,

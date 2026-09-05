@@ -5,11 +5,9 @@ import { prisma } from "@/services/prisma";
 /**
  * The advisor marks an accepted question answered.
  *
- * `Executed` already meant this — `person-card`, `skill-capital` and the admin
- * user list all count it as advice given — but until now nothing wrote it, so
- * an accepted request stayed in progress for ever. Only `Approved` may move:
- * finishing something never started, or re-finishing something declined, is a
- * mistake worth refusing rather than absorbing.
+ * `Executed` already meant advice given — person-card, skill-capital and the
+ * admin user list all count it — but nothing ever wrote it. Only `Approved`
+ * may move.
  */
 export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;

@@ -23,13 +23,7 @@ const QuerySchema = z.object({
 
 type Query = z.infer<typeof QuerySchema>;
 
-/**
- * The advisor's inbox.
- *
- * The counts and the speciality travel with the page because the toolbar shows
- * both on first paint: fetching them separately would render the filters
- * without their numbers for a frame, which reads as an empty inbox.
- */
+/** Counts ride with the page: fetched apart, the filters paint without them. */
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "advisor.requests.view" }),

@@ -3,13 +3,10 @@ import { pageMeta } from "@/lib/pagination";
 import { prisma } from "@/services/prisma";
 
 /**
- * The inbox's four filters, as the stored statuses behind them.
+ * The inbox's four filters, as the statuses behind them.
  *
- * `Rejected` and `Closed` get no filter of their own: a question the advisor
- * declined and one the asker withdrew are history rather than work, and they
- * surface under `all`. `Executed` is the only status that means the advisor
- * finished — nothing in the app writes it today, which is what the `complete`
- * route adds.
+ * `Rejected` and `Closed` get none of their own — declined and withdrawn are
+ * history, not work, and surface under `all`.
  */
 export const REQUEST_FILTERS = {
 	new: [AdviceRequestStatus.Created],
@@ -55,13 +52,7 @@ export type AdvisorRequest = {
 
 export type RequestCounts = Record<RequestFilter, number>;
 
-/**
- * How much is in the inbox, per filter.
- *
- * Deliberately blind to the search box: the numbers on the buttons say how much
- * work is waiting, not how much of it matches what is being typed. A count that
- * moved with every keystroke would stop being a fact about the inbox.
- */
+/** Blind to the search box: the numbers say what is waiting, not what matches. */
 export async function countAdvisorRequests(
 	advisorId: string,
 ): Promise<RequestCounts> {
@@ -123,9 +114,8 @@ const telegramName = (payload: unknown): string | null => {
 /**
  * The asker's role on the project they asked about.
  *
- * A second query rather than a nested filter: the row to keep depends on the
- * request's own `fromUserId`, and Prisma cannot filter a nested relation by a
- * sibling column. One `IN` over both keys costs less than a query per card.
+ * A second query because the row to keep depends on the request's own
+ * `fromUserId`, and Prisma cannot filter a nested relation by a sibling column.
  */
 type TeamRole = {
 	role: string | null;
@@ -168,9 +158,8 @@ async function rolesOnProjects(
 /**
  * One page of the advisor's inbox, newest first.
  *
- * Always scoped by `toUserId`: the space is single-instance and every advisor
- * shares it, so the caller's id is the only thing separating one inbox from the
- * next.
+ * `toUserId` is the whole boundary: the space is single-instance and shared, so
+ * the caller's id is the only thing separating one inbox from the next.
  */
 export async function listAdvisorRequests(
 	advisorId: string,
@@ -269,13 +258,10 @@ export async function listAdvisorRequests(
 }
 
 /**
- * The speciality a question was asked in.
+ * The speciality a question was asked in — knowable only when one is open.
  *
- * `AdviceRequest` does not record one: the ask form offers the questions of the
- * expert's mentoring speciality and stores only the chosen text. So the answer
- * is knowable exactly when the advisor has opened a single speciality, and is a
- * guess otherwise — in which case the cards say nothing rather than something
- * plausible. A `specialityId` on the request is what would fix it.
+ * `AdviceRequest` records no `specialityId`, so with two open specialities this
+ * would be a guess, and the cards would rather say nothing.
  */
 export async function askedInSpeciality(
 	advisorId: string,

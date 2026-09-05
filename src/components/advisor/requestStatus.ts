@@ -2,13 +2,10 @@ import type { StatusTone } from "@/components/ui/StatusDot";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 
 /**
- * How a stored status reads in the advisor's inbox.
+ * How a stored status reads in the inbox.
  *
- * The words are the advisor's, not the database's: `Created` is a question
- * nobody has answered yet, `Executed` is one that has been. `Closed` is what
- * the asker's cancel and the reminder cron write, so it is withdrawn rather
- * than declined — telling the two apart is the whole reason this map exists
- * instead of showing the enum.
+ * `Closed` is what the asker's cancel and the reminder cron write, so it is
+ * withdrawn rather than declined — telling those apart is why this map exists.
  */
 export const REQUEST_STATUS: Record<
 	AdviceRequestStatus,
