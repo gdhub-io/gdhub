@@ -93,20 +93,22 @@ jobs:
 
       # Security updates arrive as one pull request covering several packages, and
       # the single `update-type` output is empty for those. Judge every entry, and
-      # merge only when each one is a patch.
+      # merge only when each one is a patch or a minor — a major, an unrecognised
+      # update type or anything from @gdhub-io waits for a human.
       - id: gate
         env:
           UPDATES: ${{ steps.meta.outputs.updated-dependencies-json }}
         run: |
-          non_patch=$(printf '%s' "$UPDATES" | jq '[.[] | select((.updateType // "") != "version-update:semver-patch")] | length')
+          allowed='["version-update:semver-patch","version-update:semver-minor"]'
+          blocked=$(printf '%s' "$UPDATES" | jq --argjson ok "$allowed" '[.[] | (.updateType // "") as $t | select($ok | index($t) | not)] | length')
           ours=$(printf '%s' "$UPDATES" | jq '[.[] | select(.dependencyName | startswith("@gdhub-io/"))] | length')
           count=$(printf '%s' "$UPDATES" | jq 'length')
 
-          if [ "$count" -gt 0 ] && [ "$non_patch" -eq 0 ] && [ "$ours" -eq 0 ]; then
+          if [ "$count" -gt 0 ] && [ "$blocked" -eq 0 ] && [ "$ours" -eq 0 ]; then
             echo "merge=true" >> "$GITHUB_OUTPUT"
           else
             echo "merge=false" >> "$GITHUB_OUTPUT"
-            echo "Left for review: $count updates, $non_patch of them beyond a patch, $ours from @gdhub-io." >> "$GITHUB_STEP_SUMMARY"
+            echo "Left for review: $count updates, $blocked of them beyond a minor, $ours from @gdhub-io." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Merge
