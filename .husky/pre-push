@@ -1,12 +1,18 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Translations first, so the files this generates are covered by the checks below.
 bun run refresh-translations
 
-# Add changed translation files
 git add src/i18n/*
 
-# If there are changes — make a commit
 if ! git diff --cached --quiet; then
 	git commit -m 'chore: update translations before push'
 fi
+
+# GitHub branch protection needs a paid plan, so this hook is the gate instead:
+# the same three checks CI runs on the PR, about 15s, before anything leaves the
+# machine. CI stays the backstop for whatever is pushed from elsewhere.
+bun run lint
+bun run type-check
+bun run test

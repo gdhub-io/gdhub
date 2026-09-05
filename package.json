@@ -17,7 +17,7 @@
 		"prebuild": "bun run refresh-translations && bun run lint",
 		"export": "next export",
 		"start": "next start",
-		"lint": "biome check --diagnostic-level=error ./src",
+		"lint": "biome check --diagnostic-level=error ./src ./tests ./scripts",
 		"type-check": "tsc --noEmit",
 		"prepare": "husky install",
 		"refresh-translations": "dotenv -- node scripts/import-translations.js",
