@@ -101,7 +101,10 @@ jobs:
         run: |
           allowed='["version-update:semver-patch","version-update:semver-minor"]'
           blocked=$(printf '%s' "$UPDATES" | jq --argjson ok "$allowed" '[.[] | (.updateType // "") as $t | select($ok | index($t) | not)] | length')
-          ours=$(printf '%s' "$UPDATES" | jq '[.[] | select(.dependencyName | startswith("@gdhub-io/"))] | length')
+          # next is excluded by name: 16.3.4 passed lint, types and 628 tests and then
+          # failed the Vercel build, which nothing here can see. The framework is
+          # adopted deliberately, with a deploy watched.
+          ours=$(printf '%s' "$UPDATES" | jq '[.[] | select((.dependencyName | startswith("@gdhub-io/")) or .dependencyName == "next")] | length')
           count=$(printf '%s' "$UPDATES" | jq 'length')
 
           if [ "$count" -gt 0 ] && [ "$blocked" -eq 0 ] && [ "$ours" -eq 0 ]; then
