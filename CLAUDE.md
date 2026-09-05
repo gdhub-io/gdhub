@@ -174,8 +174,9 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   one set of names. `@react-icons` and `@ant-design/icons` are **removed**; the only
   survivors are antd's own `LoadingOutlined` (it drives the `indicator` prop) and its
   `Icon` wrapper for custom SVG.
-- **i18n:** add user-facing strings as Tolgee keys, not hardcoded text; run
-  `bun run refresh-translations` after adding keys.
+- **i18n:** add user-facing strings as Tolgee keys, not hardcoded text. `src/i18n/*.json`
+  are generated and overwritten on every push — the **i18n skill** has the procedure and
+  the traps.
 - **Formatting:** let Biome handle it (tabs, double quotes). Don't hand-format or fight it.
 - **Comments:** English, only where they add non-obvious context.
 - **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
