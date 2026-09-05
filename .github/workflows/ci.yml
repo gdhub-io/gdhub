@@ -41,12 +41,12 @@ jobs:
         with:
           bun-version: 1.2.19
 
-      # @gdhub-io/* are published from sibling repositories, which GITHUB_TOKEN may
-      # not read — it answers 403 on the tarball. PACKAGES_TOKEN is a PAT with
-      # read:packages, held as both an Actions and a Dependabot secret.
+      # @gdhub-io/* are private packages published from sibling repositories. They
+      # grant this repository Read under their Manage Actions access, so the built-in
+      # token is enough and no PAT has to be kept in a secret.
       - name: Authenticate with GitHub Packages
         env:
-          REGISTRY_TOKEN: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           {
             echo "@gdhub-io:registry=https://npm.pkg.github.com/"
