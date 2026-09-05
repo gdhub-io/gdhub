@@ -66,3 +66,27 @@ jobs:
 
       - name: Unit tests
         run: bun run test
+
+  # Dependabot's pull requests are merged by this job rather than by GitHub's
+  # auto-merge, which without branch protection would merge them before the checks
+  # above had run. `needs: verify` is the gate. A major version, or anything from
+  # @gdhub-io, waits for a human.
+  auto-merge:
+    name: Merge a green Dependabot update
+    needs: verify
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v2
+
+      - name: Merge
+        if: >-
+          steps.meta.outputs.update-type != 'version-update:semver-major' &&
+          !contains(steps.meta.outputs.dependency-names, '@gdhub-io/')
+        env:
+          # GITHUB_TOKEN is read-only on a Dependabot pull request and cannot merge.
+          GH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+        run: gh pr merge --squash --delete-branch "${{ github.event.pull_request.html_url }}"
