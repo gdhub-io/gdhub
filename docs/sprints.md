@@ -183,8 +183,18 @@ it.
 Only real contributions count. A visit, a login or opening the page is not
 activity, and treating it as such would make the whole signal worthless.
 
-Rules: the token is valid until the end of its week; confirming twice is a no-op;
-a member who joined the team mid-sprint gets requests from the next week on.
+Rules: the token is valid until the end of its week, and confirming twice is a
+no-op.
+
+**A row only covers the weeks a person was actually on the team.** Someone who
+joined on day 15 is not absent for weeks one and two — they were not there. Those
+cells are blank rather than missed, and the row says when they started: "joined
+14 Aug". Requests begin the following week. The same in reverse for someone who
+left: the weeks after they went are blank and the row says when.
+
+Getting this wrong is not cosmetic. The verdict reads the matrix, so a member
+counted as missing for weeks they had not joined makes a team look like it was
+falling apart when it was growing.
 
 ## 6. The scope moment, day 14
 
