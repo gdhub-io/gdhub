@@ -509,6 +509,18 @@ The steps: what exists now, what will exist in 28 days, who curates, then a
 summary with the price and the payment. Progress across the top, back and next at
 the bottom, and leaving is not losing.
 
+**Paying ends on a screen of its own**, not by dropping the author back into a
+list. It confirms the sprint has started and sends them to it. What it carries is
+dates, not congratulation: the sprint runs to such a date, the first devlog is due
+on such a date, the curator answers the day after each one.
+
+That screen has to work **before the webhook lands**. Paddle returns the author
+faster than it calls us, and the sprint only becomes `Active` on the webhook, so
+for a few seconds there is a paid sprint that is still `Draft`. The screen shows
+that as starting rather than as an error, and settles by itself. Never treat the
+redirect as proof of payment — the webhook is the only authority, and a screen
+that believes the URL is a screen that can be forged by typing it.
+
 **Leaving is not cancelling, and cancelling asks first.** Closing the tab keeps
 the draft; there is a `Cancel` on every step that throws it away, and it opens a
 confirm because typed work is lost and nothing else on the page can undo it. The
@@ -596,6 +608,7 @@ feature that ships on manual checks.
 - Only one `Active` sprint per project.
 - A sprint stays `Draft` until the payment webhook lands.
 - The payment webhook is idempotent: the same event twice starts one sprint.
+- Opening the success URL by hand does not start a sprint.
 - A sprint closes and the next one starts with no feedback at all.
 - No average rating is shown below five answers.
 - A closed sprint still reads correctly after its stage is deleted.
