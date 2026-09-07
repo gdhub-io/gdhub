@@ -411,7 +411,7 @@ supposed to do.
 | Screen | Holds |
 |---|---|
 | Sprint list | One row per sprint: stage, number, dates, verdict or day counter. The running one is a card, the past ones are rows. |
-| Start a sprint | Asked in steps, not as one form: what exists now, what will exist in 28 days, who curates, pay. |
+| Start a sprint | One step per page, each with its own route: what exists now, what will exist in 28 days, who curates, pay. |
 | Sprint page | A short header, **one action card**, then the thread. |
 | Verdict | The curator's own focused screen, reached from their list. Not a section on the project's page. |
 | Artifacts | The renamed Documents tab, grouped by stage and sprint |
@@ -456,6 +456,18 @@ Everything that was a panel becomes either a thread entry or a collapsed line:
   opens with `DisclosureSection`.
 - The check-in matrix is one compact row per member with four dots, not a table.
 - Artifacts show as a count and a link; they live in their own tab.
+
+### Starting a sprint
+
+One step per page, each on its own route under `/sprints/new`, not a wizard
+inside one screen. Every step writes to the `Draft` sprint as it is left, so the
+back button works, a refresh loses nothing, and a half-filled sprint is still
+there tomorrow. `SprintStatus.Draft` exists for exactly this; it is not a state
+invented for the payment gap.
+
+The steps: what exists now, what will exist in 28 days, who curates, then a
+summary with the price and the payment. Progress across the top, back and next at
+the bottom, and leaving is not losing.
 
 ### Where a review and a rating are written
 
