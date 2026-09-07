@@ -140,7 +140,7 @@ Day 1 is `startedAt`. Weeks are days 1–7, 8–14, 15–21, 22–28.
 | 1 | Goal card fixed. AI curator checks it is reachable in 28 days and says so. A human curator does this on the call. | `goal`, `inputs`, `outcomes` |
 | 4, 11, 18, 25 | Devlog reminder, only if that week has no devlog | — |
 | 6, 13, 20, 27 | Check-in request, only to members not already confirmed that week | `SprintCheckIn` rows |
-| on publish | Every devlog gets feedback from the AI curator | feedback on `ProjectReport` |
+| the day after a devlog | The AI curator's feedback on it arrives, with a notification | feedback on `ProjectReport` |
 | 7, 21 | A human curator answers the week's devlog on the call | comment on `ProjectReport` |
 | 14 | Scope moment. See §6. | `midNote`, and `revisedAt` if the author changes the outcomes |
 | 26 | Artifact reminder | — |
@@ -222,14 +222,23 @@ folder, no free-text parsing):
 | When | Input | Output |
 |---|---|---|
 | Day 1 | Goal card, project stage and its template requirements | Is this reachable in 28 days, and what is missing from the outcome list |
-| Every devlog, on publish | The devlog and the goal card | Feedback: what reads as progress, which outcomes it moves, what is still untouched |
+| The day after each devlog | The devlog and the goal card | Feedback: what reads as progress, which outcomes it moves, what is still untouched |
 | Day 14 | The summaries so far, outcomes, artifact | `midNote` per §6 |
 | Day 28 | Everything below | `summary` and `verdict` |
 
 Seven calls per sprint, then — one on day 1, four pieces of feedback, the day-14
-note, the day-28 report. Feedback is written when a devlog is published rather
-than on a schedule: the author gets an answer while the work is still in their
-hands, and the load is spread.
+note, the day-28 report.
+
+**Feedback arrives the day after the devlog, not the moment it is posted.** It
+runs in the same daily cron as everything else, so there is no second queue path,
+and the author is told: the curator has read your devlog, here is what they said.
+An answer three seconds after publishing reads as a machine reflex and gets
+skimmed; the next morning it reads as something that was looked at, and it brings
+the author back to the sprint a day later, which is the point.
+
+The fourth devlog is the exception. Its feedback would land on day 28 alongside
+the report, so it is folded into the report instead — one message that day, not
+two saying overlapping things.
 
 **Feedback answers, it does not grade.** It says what reads as progress, which
 outcomes the post moves, and which are still untouched — all of it checkable
@@ -536,6 +545,7 @@ New Novu workflows beside the existing ones:
 |---|---|---|
 | `sprint-checkin-request` | Each member | Days 3, 10, 17, 24 |
 | `sprint-devlog-reminder` | Author and publishers | Days 6, 13, 20, 27, if the week has no devlog |
+| `sprint-devlog-feedback` | Author | The day after a devlog, when the curator's answer lands |
 | `sprint-mid-note` | Author | Day 14 |
 | `sprint-artifact-reminder` | Author | Day 26 |
 | `sprint-closed` | Author and members | When the verdict is written |
