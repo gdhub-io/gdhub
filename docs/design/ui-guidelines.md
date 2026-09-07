@@ -72,6 +72,12 @@ belongs to a token.
    *page*, not against white. `--gd-color-surface-sunken` disappears there — go a
    step further to `--gd-neutral-100`.
 
+   **Making something compact removes chrome, never structure.** A panel, a
+   heading, padding, a border: all fair game. The axis of a diagram is not — a
+   check-in grid without its week columns, a chart without its scale, a table
+   without its head are all smaller and none of them can be read. If compacting
+   costs a reader the ability to tell one cell from another, it went too far.
+
 2. **Tinted icon tile.** A list row, a quick action or an empty state gets an
    `<IconTile>` — 32/40/56px, radius 10/12/16. Direction rows inherit the craft
    colour; everything else falls back to neutral.
@@ -244,6 +250,11 @@ The order to reach for, and only in this order:
 
 A rule with real consequences: a screen that needs a paragraph to be understood
 is a screen that has not been designed yet.
+
+**A legend is not prose.** Axis labels, column heads, week markers and keys are
+labels — they are how a diagram names its own parts, and stripping them is not
+tidying, it is removing the thing that made the picture readable. This rule is
+about paragraphs of explanation, and it stops there.
 
 **A disabled control says why on hover, and carries a lock.** Never put the reason
 in a neighbouring element: text sitting beside a button, in the same box, reads as
