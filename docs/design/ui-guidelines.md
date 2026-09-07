@@ -61,6 +61,13 @@ belongs to a token.
    catalogue cards (rules in `DS · 08`), the settings card (rule 7) and a table
    (rule 8). Everything else groups with a hairline, not a fill.
 
+   **The one live item in a list of history takes the fill.** A running sprint
+   above its finished ones, a current cycle above past ones: exactly one row is
+   the present, and it gets `--gd-color-surface` while everything below it stays
+   outlined and transparent. This is not a fourth exception, it is what "this
+   floats" is for. It only works while it is one — the moment two things in the
+   list are filled, neither reads as the live one.
+
    The consequence to remember: a neutral fill inside a panel is read against the
    *page*, not against white. `--gd-color-surface-sunken` disappears there — go a
    step further to `--gd-neutral-100`.
