@@ -388,18 +388,53 @@ sprints: ["manage"],   // assign a curator, close a stuck sprint
 
 ## 13. Screens
 
-`/user/project/[slug]/sprints`, a new tab beside Workflow and Documents.
+**The rule for all of them: show what has to happen now, and put the rest in a
+thread.** A sprint is 28 days of events, not a dashboard of panels. The first
+draft of this section was a wall — header, goal card, matrix, devlogs, artifact,
+note, calls, all at once — and in a wall nobody finds the one thing they are
+supposed to do.
+
+`/user/project/[slug]/sprints`, a new tab beside Workflow and Artifacts.
 
 | Screen | Holds |
 |---|---|
-| Sprint list | Current sprint with day counter, past sprints with goal and verdict, button to start one |
+| Sprint list | One row per sprint: stage, number, dates, verdict or day counter. The running one is a card, the past ones are rows. |
+| Start a sprint | Asked in steps, not as one form: what exists now, what will exist in 28 days, who curates, pay. |
+| Sprint page | A short header, **one action card**, then the thread. |
+| Verdict | The curator's own focused screen, reached from their list. Not a section on the project's page. |
 | Artifacts | The renamed Documents tab, grouped by stage and sprint |
-| New sprint | Stage it runs in, curator kind, goal, inputs, outcomes, price, payment |
-| Sprint page | Day counter and dates, goal card, check-in matrix, devlogs of this sprint, artifact, day-14 note, result card when closed |
-| Result card | Summary, outcome by outcome, verdict with its author, and the author's rating form |
 
-Empty, loading, error and closed states drawn before any of it is called done.
-Cards follow `DS · 08 Cards`.
+### The sprint page
+
+Three things, in this order:
+
+1. **Header, one line high.** Stage and sprint number, day N of 28 with the end
+   date, the curator. Nothing else.
+2. **The action card.** Exactly one, and only when something is owed: post this
+   week's devlog, decide what to drop, attach the artifact, rate the assessment.
+   When nothing is owed there is no card.
+3. **The thread.** Every event of the sprint in time, one row each: devlogs with
+   the curator's answer beneath them, the day-14 note, check-in weeks as they
+   close, the artifact when it lands, the verdict at the end.
+
+Everything that was a panel becomes either a thread entry or a collapsed line:
+
+- The goal card collapses to the sentence plus "3 of 5 outcomes claimed", and
+  opens with `DisclosureSection`.
+- The check-in matrix is one compact row per member with four dots, not a table.
+- Artifacts show as a count and a link; they live in their own tab.
+
+### Where a review and a rating are written
+
+Neither gets its own destination, because a destination is a thing people fail to
+find.
+
+- **The verdict** is written by the curator from their own list, on a focused
+  screen with the goal card, the devlogs and the three buttons. That is their
+  whole job on that day; it should not be a section of somebody else's page.
+- **The author's rating** appears in the thread as an entry the moment the verdict
+  lands: the verdict, and directly under it "was this assessment any use?" with
+  the rating inline. It is answered where it is read.
 
 ## 14. Notifications
 
