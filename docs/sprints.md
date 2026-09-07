@@ -138,8 +138,8 @@ Day 1 is `startedAt`. Weeks are days 1–7, 8–14, 15–21, 22–28.
 | Day | What happens | Stored |
 |---|---|---|
 | 1 | Goal card fixed. AI curator checks it is reachable in 28 days and says so. A human curator does this on the call. | `goal`, `inputs`, `outcomes` |
-| 3, 10, 17, 24 | Check-in request to every team member | `SprintCheckIn` rows |
-| 6, 13, 20, 27 | Devlog reminder, only if that week has no devlog | — |
+| 4, 11, 18, 25 | Devlog reminder, only if that week has no devlog | — |
+| 6, 13, 20, 27 | Check-in request, only to members not already confirmed that week | `SprintCheckIn` rows |
 | 7, 21 | Curator answers the week's devlog | comment on `ProjectReport` |
 | 14 | Scope moment. See §6. | `midNote`, and `revisedAt` if the author changes the outcomes |
 | 26 | Artifact reminder | — |
@@ -169,6 +169,19 @@ mail and one on the page.
 
 The same action sits on the in-app notification, where the session already
 identifies the user and no token is needed.
+
+**Work already done counts as the check-in.** Anyone who authored a devlog that
+week is confirmed for that week automatically, `source: "devlog"`; so is anyone
+who attached an artifact, `source: "artifact"`. They are never asked. Nobody is
+made to press a button to say they did the thing they visibly just did.
+
+That is why the request goes out at the end of the week rather than the start:
+by day 6 the week's devlog either exists or does not, and only the people it does
+not cover are asked. One notification instead of two, and only to those who need
+it.
+
+Only real contributions count. A visit, a login or opening the page is not
+activity, and treating it as such would make the whole signal worthless.
 
 Rules: the token is valid until the end of its week; confirming twice is a no-op;
 a member who joined the team mid-sprint gets requests from the next week on.
@@ -496,6 +509,8 @@ feature that ships on manual checks.
 - Day arithmetic across a timezone and across a month boundary.
 - The check-in token: wrong week, wrong user, tampered payload, expired.
 - The check-in matrix when a member joins or leaves mid-sprint.
+- A devlog author is confirmed for that week without pressing anything, and is
+  not sent a request.
 - `sprint_verdict` condition: a `GoalMet` verdict must not open the stage.
 - The guardrail: no artifact and no claimed outcome cannot produce `StageClosed`,
   whatever the model returned.
