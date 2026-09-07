@@ -509,6 +509,15 @@ The steps: what exists now, what will exist in 28 days, who curates, then a
 summary with the price and the payment. Progress across the top, back and next at
 the bottom, and leaving is not losing.
 
+**The one-sentence goal is generated, not typed.** The author has already said
+what exists and what will exist; asking them to summarise their own two lists is
+asking the same question a third time. It is written from those lists, shown
+back so it is never a surprise, and can be edited by hand before payment. Once
+the sprint starts it is frozen with the rest of the goal card.
+
+The same applies anywhere else a field would restate what has already been
+entered: derive it, show it, let it be corrected, and do not make anyone type it.
+
 ### Where a review and a rating are written
 
 Neither gets its own destination, because a destination is a thing people fail to
