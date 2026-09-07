@@ -509,6 +509,16 @@ The steps: what exists now, what will exist in 28 days, who curates, then a
 summary with the price and the payment. Progress across the top, back and next at
 the bottom, and leaving is not losing.
 
+**Leaving is not cancelling, and cancelling asks first.** Closing the tab keeps
+the draft; there is a `Cancel` on every step that throws it away, and it opens a
+confirm because typed work is lost and nothing else on the page can undo it. The
+confirm is the one place a filled red button is allowed.
+
+Only a `Draft` can be cancelled. Once a sprint is paid for and running it goes to
+a verdict — a team that stops working ends at `GoalMissed`, not at a cancelled
+sprint. A deadline you can call off is not a deadline, which is the whole thing
+being sold. An admin can still close a stuck sprint; an author cannot.
+
 **The one-sentence goal is generated, not typed.** The author has already said
 what exists and what will exist; asking them to summarise their own two lists is
 asking the same question a third time. It is written from those lists, shown
