@@ -38,6 +38,11 @@ Anything larger than a one-file fix starts with an **intent** — a short file i
 written before the design and before the code. The `/intent` skill writes one from a
 Linear issue and opens the branch for it.
 
+Every task gets a Linear issue, including the small ones that skip the intent file.
+Move it to **In Review** when the pull request is open and waiting — that status is how
+Dmitry sees, on his own board, that something needs him, and it says in its description
+what was deliberately left undone.
+
 Work happens on `dev` and is promoted to `main` by a pull request; `main` is what Vercel
 deploys. Dependabot is the one exception to that direction — it can only target the
 default branch, so its updates land on `main` and
@@ -184,7 +189,17 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   are generated and overwritten on every push — the **i18n skill** has the procedure and
   the traps.
 - **Formatting:** let Biome handle it (tabs, double quotes). Don't hand-format or fight it.
-- **Comments:** English, only where they add non-obvious context.
+- **Comments:** English, one line, and only where they carry what the code cannot.
+  A longer block is for a file or an exported function whose *why* is genuinely
+  not obvious. Delete anything that restates its code, and do a pass over the diff
+  before committing.
+- **Simplify before opening a pull request.** Re-read the diff for what can be
+  deleted: state a library already keeps, helpers used once, options nothing
+  passes, branches nothing reaches, comments that restate their code. Say what
+  came out — or that nothing did.
+- **Markup is antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
+  `Typography` — if antd ships it, use it. Hand-rolled markup needs a bespoke
+  design behind it and a note naming the frame; layout itself is still CSS.
 - **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
   Never `Read`/`Edit`/`Grep` a `.pen` file directly.
 
@@ -210,6 +225,12 @@ install throws the change away.
 - E2E: Playwright in `tests/e2e`. `*.authed.spec.ts` need an authenticated session.
   Run with `bun run test:e2e` (uses `.env.test`).
 - When changing API or domain logic, add/extend a test rather than only manual checks.
+- **A reusable component ships with a story.** `Component.stories.tsx` next to it,
+  one story per state the design drew — including empty and loading. It is the only
+  way those states can be looked at without a database behind them.
+- Test what can be wrong silently, not what is easy to assert: filter and status
+  maps, the `where` that scopes one user's rows from everyone else's, transitions
+  that must refuse an illegal move, and anything derived from time or timezone.
 
 ## Gotchas
 
@@ -221,3 +242,13 @@ install throws the change away.
   it is up to date — run it before believing the error.
 - ESLint is intentionally disabled in the editor; Biome is the single source of truth.
 - `tsconfig.tsbuildinfo` / `.next` are build artifacts — never edit.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

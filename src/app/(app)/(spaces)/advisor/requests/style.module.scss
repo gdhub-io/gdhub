@@ -1,0 +1,32 @@
+.toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	flex-wrap: wrap;
+	margin-bottom: var(--gd-space-4);
+}
+
+.search {
+	width: 280px;
+	max-width: 100%;
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+}
+
+/* Same height as a card, so the page does not jump when the rows arrive. */
+.skeleton {
+	height: 174px;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	padding: var(--gd-space-4);
+}
+
+.loadMore {
+	margin-top: var(--gd-space-3);
+}

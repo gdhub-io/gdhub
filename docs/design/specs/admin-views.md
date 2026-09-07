@@ -209,6 +209,11 @@ draws its sorter with **Material Symbols Rounded**; that is drift, not a precede
 | focus-visible | ink label, graphite ring in `--gd-color-border-focus` at `focusRingWidth` (3px), radius `--gd-radius-chip` (6). Not the brand — `borderFocus` is `neutral-900` in `light` mode; `brand-500` is the **inverse**-mode value and this page runs on `productTheme`. |
 | visited | no special treatment — an admin re-reads the same rows every day. |
 
+The link opens in a **new tab** (`target="_blank"`, `rel="noopener"`). The row is a
+reference consulted in the middle of reading a report, and following it in place costs the
+admin the range, the scroll position and the comparison being made. The `IconArrowUpRight`
+on hover is the affordance that says so.
+
 The title is the anchor, not the row: ten links per screen times seven types would make the
 table an orange palisade and drain the accent of the meaning it carries elsewhere
 (selected row, focus ring, progress). The underline is not decoration — a hover expressed

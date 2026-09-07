@@ -213,6 +213,17 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 			});
 		}
 
+		if (userSpaces?.hasAdvisorSpace) {
+			menu.push({
+				label: (
+					<Link href="/advisor/requests">
+						{t("hub.menu.advisorSpace", "Advisor space")}
+					</Link>
+				),
+				key: "/advisor/requests",
+			});
+		}
+
 		menu = [
 			...menu,
 			{

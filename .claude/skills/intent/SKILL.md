@@ -63,7 +63,24 @@ user, because it writes outside the repository, and
 `mcp__claude_ai_Linear__save_issue` with the intent body. Now the ticket is
 readable by someone who does not have the repo open.
 
-## 5. Open the branch
+## 5. Linear is where a decision is asked for
+
+Statuses on the GDHub team are `Backlog`, `Todo`, `In Progress`, **`In Review`**,
+`Done`, `Canceled`. Use them as the signal, not a chat message that scrolls away:
+
+- Work starting → **In Progress**.
+- A pull request open and waiting on Dmitry → **In Review**, with the pull request
+  attached as a link. This is the one that matters: it is how he sees, on his own
+  board, that something needs him.
+- Merged → **Done**.
+
+Every task gets an issue, even the small ones that skip the intent file — the issue
+is cheap and it is the only place the request survives. Put in its description what
+was decided, and what was deliberately **not** done: an unwritten test, a version
+declined, a check that was not possible. A checklist ticked without comment tells
+him nothing.
+
+## 6. Open the branch
 
 Use Linear's own `gitBranchName` verbatim (`feature/gdhub-24-…`) so Linear links
 the branch to the issue, and cut it from `dev`:
@@ -76,7 +93,7 @@ Commit the intent on that branch as `docs(intent): …` before any code exists.
 The intent landing first is the point: it is what the diff will be judged
 against.
 
-## 6. Hand off
+## 7. Hand off
 
 Say which skill or agent takes it from here and why:
 
