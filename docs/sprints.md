@@ -531,6 +531,18 @@ a verdict — a team that stops working ends at `GoalMissed`, not at a cancelled
 sprint. A deadline you can call off is not a deadline, which is the whole thing
 being sold. An admin can still close a stuck sprint; an author cannot.
 
+**The first step arrives filled in.** What the project has now is largely known
+already: the stage it is on, the artifacts attached to it, the result card of the
+last sprint. Show that as the inputs list, ready to be corrected, instead of
+asking a question the platform can answer. The step people dread is the empty
+one.
+
+This is also the answer to whether the whole flow should be a modal instead of
+four pages. It should not — a modal has no URL, and a draft that can be resumed
+at the step it was left on needs one, as do back and refresh, and Paddle opens
+its own overlay on the last step. The flow feels heavy because of how much it
+asks, not because of the container it asks in. Ask less.
+
 **The one-sentence goal is generated, not typed.** The author has already said
 what exists and what will exist; asking them to summarise their own two lists is
 asking the same question a third time. It is written from those lists, shown
