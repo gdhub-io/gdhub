@@ -420,8 +420,11 @@ supposed to do.
 
 Three things, in this order:
 
-1. **Header, one line high.** Stage and sprint number, day N of 28 with the end
-   date, the curator. Nothing else.
+1. **Header, one line high.** Stage, sprint number and the dates as one meta
+   line — "Prototyping · Sprint 1 · 1–28 Aug 2026" — with the curator and the
+   status beneath. The status slot has three faces: the day counter while the
+   sprint runs, "awaiting verdict" between day 28 and the decision, the verdict
+   once it lands. Nothing else in the header.
 2. **The action card.** What is owed right now, with the button on it. Usually
    one; when nothing is owed there is no card.
 3. **The thread.** Every event of the sprint in time, one row each: devlogs with
