@@ -80,8 +80,10 @@ on.
       shows who confirmed which of the four weeks.
 - [ ] Devlog reminders fire on the sprint's own weekly schedule while a sprint
       is running, instead of the three-month project reminder.
-- [ ] The author attaches an artifact — a link, screenshots and a short
-      description — and it appears in the team's Documents tied to that sprint.
+- [ ] The author attaches an artifact — a document, images, a video or a link —
+      and it appears in the team's Artifacts tied to that sprint.
+- [ ] An artifact is checked for being openable by the backend when it is added,
+      and the author is told there and then if it cannot be read, with the reason.
 - [ ] On day 14 a sprint whose evidence does not match its outcome list is asked
       to decide what to drop: the note lists the outcomes nothing has been
       claimed against, says the calendar is half gone, and stops there. It never

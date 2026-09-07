@@ -283,6 +283,41 @@ feels to play. Nobody can tell from a clip that the jump is floaty. That
 judgement is what the human curator sells, and no copy in the product may blur
 the line.
 
+### Every artifact is checked before it counts
+
+An artifact the backend cannot open is not evidence. It is checked when it is
+added, not at the end — a failure found on day 28 is a failure the author can no
+longer fix.
+
+The check runs on the queue and stores its result on the artifact:
+
+| Result | Means | Shown as |
+|---|---|---|
+| `readable` | Fetched, the type matches what was claimed, within the size limit | Ready |
+| `unreachable` | Timed out, refused, 404, or needs a login | Cannot be opened, with the reason |
+| `unsupported` | Fetched, but nothing here reads this type | Saved, but the curator sees only the description |
+| `pending` | Not checked yet | Checking |
+
+`200` alone proves nothing. A private Google Drive or Notion link answers `200`
+with an HTML login page, so the check compares the actual content type against
+the kind the author chose: HTML where a video or a PDF was promised is
+`unreachable`, not `readable`. For a video the platform needs either a direct
+file or a provider it can extract frames from; a page that merely embeds a player
+is a page, and is recorded as one.
+
+The check is repeated once when the sprint closes, because links rot and
+permissions change mid-sprint.
+
+**Fetching a URL a user supplied is a way into the network,** so the fetcher
+refuses anything that is not http or https, resolves the host first and rejects
+loopback, link-local and private ranges, follows at most three redirects and
+re-checks the target of each, caps the body, and times out. This is the same
+class of hole as an image proxy and it gets the same treatment.
+
+An unreadable artifact counts as no artifact for the `StageClosed` guardrail, but
+the report says which of the two it was. "You attached a build we could not open"
+and "you attached nothing" are different things to tell an author who paid.
+
 ### The tab
 
 
@@ -396,6 +431,10 @@ feature that ships on manual checks.
 - `sprint_verdict` condition: a `GoalMet` verdict must not open the stage.
 - The guardrail: no artifact and no claimed outcome cannot produce `StageClosed`,
   whatever the model returned.
+- The artifact check: a login page answering `200` is `unreachable`, not
+  `readable`; a content type that contradicts the chosen kind is refused.
+- The fetcher refuses loopback, link-local and private addresses, and refuses a
+  redirect that lands on one.
 - Only one `Active` sprint per project.
 - A sprint stays `Draft` until the payment webhook lands.
 - The payment webhook is idempotent: the same event twice starts one sprint.
