@@ -157,7 +157,9 @@ of the sprint, its goal and its verdict stay visible.
 
 **For the curator:** the projects they ran, how many sprints, how many closed as
 goal met, the share that ended in "one more sprint", the share that missed the
-goal, and the average rating from authors.
+goal, and the rating from authors with the number of people who gave one. Rating
+is optional and often skipped, so the count is shown next to it and no average
+appears until five people have answered.
 
 **For a participant:** the sprints they were in with dates, the goal and result of
 each, their role in the project, and who the curator was.

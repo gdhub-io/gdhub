@@ -436,9 +436,19 @@ find.
   the rating inline. It is answered where it is read.
 
   Stars and a comment, nothing else. There is no separate "do you agree" control:
-  a low rating is disagreement, and the comment says what was wrong with it. Read
-  them that way in the admin view — the share of AI verdicts rated one or two is
-  the number that says whether the AI curator can be trusted with a stage.
+  a low rating is disagreement, and the comment says what was wrong with it.
+
+  **It is optional and most people will skip it.** Nothing waits on it: the sprint
+  closes, the stage opens and the next sprint starts whether or not it was
+  answered. No modal, no blocking step, no reminder. The entry simply stays
+  unanswered in the thread, and a past sprint can still be rated later.
+
+  Absence is a value, not a zero. Anywhere a rating is shown, the number of
+  answers is shown beside it, and no average is displayed below five answers —
+  two five-star ratings must not outrank forty averaging 4.6. The share of AI
+  verdicts rated one or two is the number that says whether the AI curator can be
+  trusted with a stage, and it is a share of the ones that were rated. Read it
+  knowing the sample leans unhappy: people who disagree answer more often.
 
 ## 14. Notifications
 
@@ -477,6 +487,8 @@ feature that ships on manual checks.
 - Only one `Active` sprint per project.
 - A sprint stays `Draft` until the payment webhook lands.
 - The payment webhook is idempotent: the same event twice starts one sprint.
+- A sprint closes and the next one starts with no feedback at all.
+- No average rating is shown below five answers.
 - A closed sprint still reads correctly after its stage is deleted.
 - The admin workflow edit and reset both refuse under a running sprint.
 - Only an admin can assign a curator; a project Owner cannot.
