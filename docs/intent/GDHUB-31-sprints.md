@@ -125,10 +125,12 @@ on.
 
 ## Open questions
 
-- **What can the AI curator actually read of an artifact?** Assumed: screenshots
-  through vision, text at a publicly reachable URL, and the author's own
-  description. It does not run builds, and no wording in the product may suggest
-  that it does.
+- **What can the AI curator actually read of an artifact?** Answered: documents
+  as text, images with vision, and **video as sampled frames plus the speech
+  transcript**. Video is how the game gets looked at without being run — no
+  runtime, no operating systems to match, no antivirus. It never downloads or
+  runs a build. Frames show that a thing exists; they do not show how it feels to
+  play, and that limit is what the human curator is for.
 - **What does the AI curator cost?** Assumed: one fixed price in config for now.
   Rate-based pricing arrives with the human curator.
 - **How is "behind" judged on day 14?** Assumed: the outcome list against the
