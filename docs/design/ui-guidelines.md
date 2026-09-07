@@ -237,3 +237,8 @@ The order to reach for, and only in this order:
 
 A rule with real consequences: a screen that needs a paragraph to be understood
 is a screen that has not been designed yet.
+
+**A disabled control says why on hover, and carries a lock.** Never put the reason
+in a neighbouring element: text sitting beside a button, in the same box, reads as
+a second control and gets pressed. The button keeps the label it always has, takes
+`IconLock`, and the reason lives in its tooltip.
