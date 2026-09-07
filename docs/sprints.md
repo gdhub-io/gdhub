@@ -95,8 +95,7 @@ model SprintFeedback {                   // how the author rated the assessment
   sprintId  String   @unique
   sprint    ProjectSprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
   authorId  String
-  rating    Int                          // 1..5
-  agreed    Boolean                      // agrees with the verdict
+  rating    Int                          // 1..5 — low is disagreement
   comment   String?
   createdAt DateTime @default(now())
 }
@@ -435,6 +434,11 @@ find.
 - **The author's rating** appears in the thread as an entry the moment the verdict
   lands: the verdict, and directly under it "was this assessment any use?" with
   the rating inline. It is answered where it is read.
+
+  Stars and a comment, nothing else. There is no separate "do you agree" control:
+  a low rating is disagreement, and the comment says what was wrong with it. Read
+  them that way in the admin view — the share of AI verdicts rated one or two is
+  the number that says whether the AI curator can be trusted with a stage.
 
 ## 14. Notifications
 
