@@ -140,7 +140,8 @@ Day 1 is `startedAt`. Weeks are days 1–7, 8–14, 15–21, 22–28.
 | 1 | Goal card fixed. AI curator checks it is reachable in 28 days and says so. A human curator does this on the call. | `goal`, `inputs`, `outcomes` |
 | 4, 11, 18, 25 | Devlog reminder, only if that week has no devlog | — |
 | 6, 13, 20, 27 | Check-in request, only to members not already confirmed that week | `SprintCheckIn` rows |
-| 7, 21 | Curator answers the week's devlog | comment on `ProjectReport` |
+| on publish | Every devlog gets feedback from the AI curator | feedback on `ProjectReport` |
+| 7, 21 | A human curator answers the week's devlog on the call | comment on `ProjectReport` |
 | 14 | Scope moment. See §6. | `midNote`, and `revisedAt` if the author changes the outcomes |
 | 26 | Artifact reminder | — |
 | 28 | Sprint moves to `Review`, report assembled | `summary` |
@@ -221,9 +222,23 @@ folder, no free-text parsing):
 | When | Input | Output |
 |---|---|---|
 | Day 1 | Goal card, project stage and its template requirements | Is this reachable in 28 days, and what is missing from the outcome list |
-| Days 7, 21 | That week's devlog, goal card | Short answer to the devlog |
-| Day 14 | Devlogs so far, outcomes, artifact | `midNote` per §6 |
+| Every devlog, on publish | The devlog and the goal card | Feedback: what reads as progress, which outcomes it moves, what is still untouched |
+| Day 14 | The summaries so far, outcomes, artifact | `midNote` per §6 |
 | Day 28 | Everything below | `summary` and `verdict` |
+
+Seven calls per sprint, then — one on day 1, four pieces of feedback, the day-14
+note, the day-28 report. Feedback is written when a devlog is published rather
+than on a schedule: the author gets an answer while the work is still in their
+hands, and the load is spread.
+
+**Feedback answers, it does not grade.** It says what reads as progress, which
+outcomes the post moves, and which are still untouched — all of it checkable
+against the goal card. It does not say whether the work is any good. That is the
+same line as the day-14 note: the AI curator reports what it can see, a human
+curator judges.
+
+It never replaces what the author wrote. It sits under the devlog, the post stays
+whole above it, and the author can ignore it.
 
 Report input on day 28, facts only:
 
