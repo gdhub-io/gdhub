@@ -343,19 +343,40 @@ day-28 report — goes onto a BullMQ queue, not into the request.
 
 ## 15. Tests
 
-What can be wrong silently:
+Money changes hands here and a verdict moves a project forward, so this is not a
+feature that ships on manual checks.
+
+**Unit — Vitest.** What can be wrong silently:
 
 - Day arithmetic across a timezone and across a month boundary.
 - The check-in token: wrong week, wrong user, tampered payload, expired.
 - The check-in matrix when a member joins or leaves mid-sprint.
 - `sprint_verdict` condition: a `GoalMet` verdict must not open the stage.
-- The guardrail: no artifact and no claimed outcome cannot produce `StageClosed`.
+- The guardrail: no artifact and no claimed outcome cannot produce `StageClosed`,
+  whatever the model returned.
 - Only one `Active` sprint per project.
 - A sprint stays `Draft` until the payment webhook lands.
+- The payment webhook is idempotent: the same event twice starts one sprint.
 - A closed sprint still reads correctly after its stage is deleted.
 - The admin workflow edit and reset both refuse under a running sprint.
 - Only an admin can assign a curator; a project Owner cannot.
 
+**E2E — Playwright, `tests/e2e`, authed.** The paths where a failure costs a
+customer money or a wrong stage:
+
+1. Author creates a sprint, pays, the sprint starts and the project shows it.
+2. Payment fails or is abandoned — the sprint stays `Draft` and nothing was
+   charged.
+3. A member opens the check-in link from the mail, confirms, and the matrix shows
+   the week filled.
+4. A sprint closes with `StageClosed` and the project can then move to the next
+   stage; with `GoalMet` it cannot.
+5. An admin assigns a curator without payment and the sprint runs.
+6. An admin tries to reset the workflow under a running sprint and is refused.
+
+The model is stubbed in tests; the AI curator's output is fed in as a fixture so
+the assertions are about what the platform does with a verdict, not about what
+the model wrote.
 ## 16. Order of work
 
 1. Schema release in `../prisma`.
