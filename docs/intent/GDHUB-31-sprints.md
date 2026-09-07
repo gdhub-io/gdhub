@@ -50,7 +50,12 @@ on.
   `estimations` already do. No second path between stages, no change to the
   gate.
 - **Devlogs stay `ProjectReport`, documents stay `TeamDocument`.** A sprint links
-  them; it does not own a copy of them.
+  them; it does not own a copy of them. The project's **Documents** tab is renamed
+  **Artifacts** and every artifact says which sprint and which stage it came from;
+  the model keeps its name.
+- **A running sprint must not be broken from the admin panel.** An admin can edit
+  and reset a project's workflow today, and that deletes steps. While a sprint is
+  running on a step, both are refused and say which sprint blocks them.
 - **Reminders reuse the existing cron pattern** — a route under `api/cron/*`
   behind `withAuth({ mode: "vercel_cron" })` wrapped in `runWithCronLog`, sending
   through `NovuService`. No new scheduler and no second notification path.
@@ -92,6 +97,13 @@ on.
 - [ ] The author rates the assessment after seeing the verdict, and that rating
       is readable by admins only.
 - [ ] A sprint cannot start until it is paid for.
+- [ ] An admin can assign any curator to a sprint, including themselves, behind a
+      permission a normal user does not hold — this is how a sprint is given for
+      free.
+- [ ] Editing or resetting a project's workflow from the admin panel is refused
+      while that project has a running sprint, and the refusal names it.
+- [ ] The project's artifacts are listed under the stage and sprint they belong
+      to, and an artifact from before sprints exist still shows.
 
 ## Out of scope
 
@@ -103,7 +115,11 @@ on.
   existing `Event`.
 - **File uploads** beyond images.
 - **The workflow template editor.** The sprint reads stages; it does not change
-  how they are authored.
+  how they are authored. It only gains a guard against editing under a running
+  sprint.
+- **Ordering artifacts across the whole project.** Grouping by stage and sprint
+  is in; a considered order of what supersedes what is a later question and is
+  written down in the spec, not solved here.
 - **Rewriting `/user/project/[slug]/workflow`.** The sprint gets its own tab and
   links to the stage; the workflow page keeps working as it does.
 
@@ -127,3 +143,6 @@ on.
 - **What happens to a running sprint if the project changes stage by other
   means?** Assumed: nothing automatic; the sprint keeps its own stage reference
   and the report says the project moved.
+- **Is `TeamDocument` renamed too?** Assumed: no. The tab, the route and the copy
+  become Artifacts; the model keeps its name so the rename costs one release
+  instead of touching every usage. Renaming it is a later, separate change.

@@ -27,8 +27,9 @@ model ProjectSprint {
   id        String   @id @default(cuid())
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  stepId    String                       // stage the sprint runs inside
-  step      ProjectWorkflowStep @relation(fields: [stepId], references: [id])
+  stepId    String?                      // stage the sprint runs inside
+  step      ProjectWorkflowStep? @relation(fields: [stepId], references: [id], onDelete: SetNull)
+  stageName String                       // snapshot: the stage can be edited or deleted later
   order     Int                          // sprint number within the stage
 
   curatorKind SprintCuratorKind          // AI | Human
@@ -95,8 +96,13 @@ enum SprintStatus      { Draft Active Review Closed Cancelled }
 enum SprintVerdict     { StageClosed GoalMet GoalMissed }
 ```
 
-Also in the package: `ProjectReport.sprintId`, `TeamDocument.sprintId`, both
-nullable with an index, `PayableType.SPRINT`, and `TeamDocumentType.SprintArtifact`.
+Also in the package: `ProjectReport.sprintId`, `TeamDocument.sprintId` and
+`TeamDocument.stepId`, all nullable with an index, `PayableType.SPRINT`, and
+`TeamDocumentType.SprintArtifact`.
+
+`stepId` is nullable and `stageName` is a snapshot because an admin can edit a
+project's workflow and delete steps. A closed sprint has to stay readable after
+the stage it ran in is gone.
 
 `checkIns` rows are created when the request goes out, not when confirmed, so an
 unanswered week is a row with `confirmedAt: null` rather than a missing row. The
@@ -236,7 +242,46 @@ changes.
 The scout project card reads `decidedById` on the sprint that closed the stage
 and shows either the AI curator or the person's name.
 
-## 9. Money
+## 9. Artifacts
+
+The project's **Documents** tab becomes **Artifacts**: same model, new name,
+route `/user/project/[slug]/artifacts` with a redirect from the old one. The i18n
+keys move with it.
+
+Each artifact may name the sprint and the stage it came from. Both are nullable —
+everything uploaded before sprints existed has neither, and stays listed.
+
+The list groups by stage in workflow order, then by sprint number, then by date.
+Artifacts with no stage sit in an "Unsorted" group at the end.
+
+**Left for later, deliberately.** Which artifact supersedes which — a build from
+sprint 3 replacing the one from sprint 2, a design document that is still current
+two stages on — is a real question and this is not the change that answers it.
+The grouping above is enough to read the history; superseding needs its own
+thinking and its own issue.
+
+## 10. Admin
+
+**Assigning a curator.** An admin can set the curator on a sprint to any user,
+including themselves, and can set `curatorKind` to `Human` without a payment.
+That is how a sprint is given for free. Behind `admin.sprints.manage`; nothing on
+the project space grants it. Every assignment writes an `AuditLog` row.
+
+**Not breaking a running sprint.** Today `PUT /api/admin/project-workflow/[id]`
+deletes steps through `plan.deleteIds`, and `POST .../reset` re-applies a
+template. Either one, run on a project with a sprint in `Active` or `Review`,
+would pull the stage out from under it.
+
+Both refuse while such a sprint exists, and the refusal names the sprint and its
+end date. The reset's `dryRun` plan reports the same thing instead of a plan, so
+an admin sees it before confirming rather than after.
+
+The `sprint_verdict` task seeded into each stage is what gates the workflow. An
+admin removing it from a template silently ungates every project on that
+template, so the template editor marks it and asks for a second confirmation
+before it goes.
+
+## 11. Money
 
 `PayableType.SPRINT`, `payableId` = sprint id, the existing Paddle flow. The
 sprint stays `Draft` until the payment webhook lands, then becomes `Active` with
@@ -247,12 +292,15 @@ computed from their hourly rate and lands with that issue.
 
 No refunds are automated. A sprint that a curator abandoned is an admin action.
 
-## 10. Permissions
+## 12. Permissions
 
 New feature on the project space:
 
 ```ts
+// project space
 sprints: ["view", "create", "manage"],
+// admin space
+sprints: ["manage"],   // assign a curator, close a stuck sprint
 ```
 
 - `create` and `manage` — Owner and Admin.
@@ -261,13 +309,14 @@ sprints: ["view", "create", "manage"],
   for the life of the sprint and revoked when it closes. That arrives with the
   human-curator issue.
 
-## 11. Screens
+## 13. Screens
 
 `/user/project/[slug]/sprints`, a new tab beside Workflow and Documents.
 
 | Screen | Holds |
 |---|---|
 | Sprint list | Current sprint with day counter, past sprints with goal and verdict, button to start one |
+| Artifacts | The renamed Documents tab, grouped by stage and sprint |
 | New sprint | Stage it runs in, curator kind, goal, inputs, outcomes, price, payment |
 | Sprint page | Day counter and dates, goal card, check-in matrix, devlogs of this sprint, artifact, day-14 note, result card when closed |
 | Result card | Summary, outcome by outcome, verdict with its author, and the author's rating form |
@@ -275,7 +324,7 @@ sprints: ["view", "create", "manage"],
 Empty, loading, error and closed states drawn before any of it is called done.
 Cards follow `DS · 08 Cards`.
 
-## 12. Notifications
+## 14. Notifications
 
 New Novu workflows beside the existing ones:
 
@@ -292,7 +341,7 @@ and wrapped in `runWithCronLog`. It walks `Active` sprints, computes the day
 number from `startedAt`, and dispatches. Heavy work — the day-14 note and the
 day-28 report — goes onto a BullMQ queue, not into the request.
 
-## 13. Tests
+## 15. Tests
 
 What can be wrong silently:
 
@@ -303,8 +352,11 @@ What can be wrong silently:
 - The guardrail: no artifact and no claimed outcome cannot produce `StageClosed`.
 - Only one `Active` sprint per project.
 - A sprint stays `Draft` until the payment webhook lands.
+- A closed sprint still reads correctly after its stage is deleted.
+- The admin workflow edit and reset both refuse under a running sprint.
+- Only an admin can assign a curator; a project Owner cannot.
 
-## 14. Order of work
+## 16. Order of work
 
 1. Schema release in `../prisma`.
 2. Sprint object, tab, list, goal card, permissions.
@@ -312,3 +364,5 @@ What can be wrong silently:
 4. AI curator: the five calls, `midNote`, report, verdict.
 5. `sprint_verdict` condition, seeded task, scout card.
 6. Paddle.
+7. Documents renamed to Artifacts, with the stage and sprint links.
+8. Admin: curator assignment, and the guards on workflow edit and reset.
