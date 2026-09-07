@@ -441,6 +441,12 @@ Three things, in this order:
    the curator's answer beneath them, the day-14 note, check-in weeks as they
    close, the artifact when it lands, the verdict at the end.
 
+**Money is shown once, before it is spent, and never again.** The price belongs
+on the last step of starting a sprint, where the decision is made. After that the
+sprint says nothing about what it cost: the opening entry in the thread is
+"Sprint started" and the curator's name, not a sum. Anyone wanting the amount has
+`/user/settings/payments`, where every payment already lives.
+
 **Every action is one press, on the spot, in a modal.** Nothing is reached by
 navigating somewhere else and coming back. An entry in the thread that can still
 be acted on keeps its own button, so an artifact that was never attached can be
