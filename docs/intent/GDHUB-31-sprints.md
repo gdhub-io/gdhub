@@ -119,6 +119,9 @@ on.
 - **The workflow template editor.** The sprint reads stages; it does not change
   how they are authored. It only gains a guard against editing under a running
   sprint.
+- **The sprint history in the scout space** — goals, verdicts and result cards on
+  the project card and in the scout's modal. GDHUB-44. This issue ships only the
+  provenance line: which kind of curator closed each stage.
 - **Ordering artifacts across the whole project.** Grouping by stage and sprint
   is in; a considered order of what supersedes what is a later question and is
   written down in the spec, not solved here.
