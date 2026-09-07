@@ -18,6 +18,16 @@ of the same thing.
 - **Result card** — the report and the verdict, written at the end.
 - **Stage** — `ProjectWorkflowStep`. A stage takes one sprint or several.
 
+The stages are the ones that already exist. The `default` workflow, seeded in the
+schema package and pointing at the Gamelab pipeline, runs: Introduction, Ideation,
+Concepting, Prototyping, Preparing a demo version, Taking and analyzing metrics,
+Preparing a release version, Support, Project Completion. Nothing here invents a
+ladder of its own — sprints run inside those nine.
+
+Note what is already on them: `Request expert advice` is a task on five stages,
+carrying the `advice_requests` condition. That is the existing consultation and
+the human curator stands beside it, not in place of it.
+
 ## 2. Data
 
 Lands in `@gdhub-io/gdhub-prisma` and is released before any code here uses it.
@@ -235,7 +245,8 @@ case "sprint_verdict": {
 ```
 
 A required task carrying that condition is seeded into every stage of the
-workflow template. `PUT /api/project/move` already recomputes conditions and
+workflow template, worded like the tasks already there — imperative and plain,
+"Close the stage with a sprint verdict". `PUT /api/project/move` already recomputes conditions and
 refuses to advance while a required task is undone, so nothing in the transition
 changes.
 
