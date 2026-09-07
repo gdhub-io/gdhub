@@ -255,6 +255,37 @@ and shows either the AI curator or the person's name.
 
 ## 9. Artifacts
 
+### Kinds, and what the AI curator can do with each
+
+An artifact is evidence that an outcome exists. Four kinds, and the platform
+never runs anything:
+
+| Kind | How it arrives | What the AI reads |
+|---|---|---|
+| **Document** | Link to a doc, deck or PDF | The text, if the link is publicly reachable |
+| **Image** | Uploaded through `SanityService.uploadImage` | The image itself, with vision |
+| **Video** | Link preferred; a short file if there is no link | Frames sampled evenly, plus the speech transcript |
+| **Build or page** | Link to itch, Steam, a repository | The page text only. It is never downloaded and never run |
+
+**Video is how the game gets seen without being run.** A gameplay clip or a
+trailer says more than a build would, and it costs nothing to look at safely: no
+runtime, no operating systems to match, no antivirus, no sandbox. Frames are
+sampled server-side with ffmpeg on the queue, and where there is narration the
+transcript usually carries the pitch itself. Only the extracted frames are kept;
+an uploaded file is dropped afterwards.
+
+This fits what the product already does — `Project.videoLink`, the `video` field
+on a devlog, and the existing Concepting task "Add a pitch or gameplay video".
+
+**The honest limit.** Frames and a transcript show that a thing exists and
+roughly what it is: a level, a character, a UI, a menu. They do not show how it
+feels to play. Nobody can tell from a clip that the jump is floaty. That
+judgement is what the human curator sells, and no copy in the product may blur
+the line.
+
+### The tab
+
+
 The project's **Documents** tab becomes **Artifacts**: same model, new name,
 route `/user/project/[slug]/artifacts` with a redirect from the old one. The i18n
 keys move with it.
