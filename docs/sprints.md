@@ -1,0 +1,314 @@
+# Sprints
+
+How a sprint works, what it stores and what has to be built. Grows out of
+[docs/intent/GDHUB-31-sprints.md](intent/GDHUB-31-sprints.md); where the two
+disagree, the intent wins.
+
+The rules a curator and an author follow are in
+[docs/sprint-standard.md](sprint-standard.md). This file is the engineering side
+of the same thing.
+
+## 1. Vocabulary
+
+- **Sprint** — 28 days on one project with a stated goal and a verdict at the end.
+- **Curator** — who runs the sprint. Either a person or **the AI curator**. One
+  role, two kinds; `curatorKind` says which.
+- **Goal card** — inputs, outcomes and one sentence, fixed on day 1.
+- **Check-in** — a member confirming once a week that they are still working.
+- **Result card** — the report and the verdict, written at the end.
+- **Stage** — `ProjectWorkflowStep`. A stage takes one sprint or several.
+
+## 2. Data
+
+Lands in `@gdhub-io/gdhub-prisma` and is released before any code here uses it.
+
+```prisma
+model ProjectSprint {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stepId    String                       // stage the sprint runs inside
+  step      ProjectWorkflowStep @relation(fields: [stepId], references: [id])
+  order     Int                          // sprint number within the stage
+
+  curatorKind SprintCuratorKind          // AI | Human
+  curatorId   String?                    // null for the AI curator
+  curator     User?    @relation("sprintCurator", fields: [curatorId], references: [id])
+
+  status    SprintStatus @default(Draft) // Draft | Active | Review | Closed | Cancelled
+  goal      String
+  inputs    Json                         // string[]: what exists at the start
+  outcomes  Json                         // string[]: what must exist at the end
+
+  revisedAt   DateTime?                  // day 14 scope change, if any
+  revisedNote String?
+
+  startedAt DateTime?
+  dueAt     DateTime?
+
+  midNote   String?                      // day 14 note from the curator
+  summary   String?                      // result card
+  verdict   SprintVerdict?               // StageClosed | GoalMet | GoalMissed
+  verdictNote String?
+  decidedAt DateTime?
+  decidedById String?                    // null when the AI curator decided
+
+  paymentId String?  @unique
+
+  checkIns  SprintCheckIn[]
+  feedback  SprintFeedback?
+  reports   ProjectReport[]
+  documents TeamDocument[]
+
+  @@unique([stepId, order])
+  @@index([projectId, status])
+  @@index([curatorId, status])
+}
+
+model SprintCheckIn {
+  id          String   @id @default(cuid())
+  sprintId    String
+  sprint      ProjectSprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  week        Int                        // 1..4
+  requestedAt DateTime
+  confirmedAt DateTime?
+  source      String?                    // "email" | "app"
+
+  @@unique([sprintId, userId, week])
+}
+
+model SprintFeedback {                   // how the author rated the assessment
+  id        String   @id @default(cuid())
+  sprintId  String   @unique
+  sprint    ProjectSprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  authorId  String
+  rating    Int                          // 1..5
+  agreed    Boolean                      // agrees with the verdict
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+enum SprintCuratorKind { AI Human }
+enum SprintStatus      { Draft Active Review Closed Cancelled }
+enum SprintVerdict     { StageClosed GoalMet GoalMissed }
+```
+
+Also in the package: `ProjectReport.sprintId`, `TeamDocument.sprintId`, both
+nullable with an index, `PayableType.SPRINT`, and `TeamDocumentType.SprintArtifact`.
+
+`checkIns` rows are created when the request goes out, not when confirmed, so an
+unanswered week is a row with `confirmedAt: null` rather than a missing row. The
+report needs the difference.
+
+## 3. Lifecycle
+
+| Status | Means | Leaves it by |
+|---|---|---|
+| `Draft` | Goal card being written, not paid | Payment succeeds → `Active`; author cancels → `Cancelled` |
+| `Active` | The 28 days | Day 28 → `Review` |
+| `Review` | Collection stopped, verdict pending | Verdict written → `Closed` |
+| `Closed` | Result card stored | Terminal |
+| `Cancelled` | Never started | Terminal |
+
+One `Active` or `Review` sprint per project at a time. A new sprint may be
+created once the previous one is `Closed`, and its goal card is pre-filled from
+that sprint's result card.
+
+## 4. Calendar
+
+Day 1 is `startedAt`. Weeks are days 1–7, 8–14, 15–21, 22–28.
+
+| Day | What happens | Stored |
+|---|---|---|
+| 1 | Goal card fixed. AI curator checks it is reachable in 28 days and says so. A human curator does this on the call. | `goal`, `inputs`, `outcomes` |
+| 3, 10, 17, 24 | Check-in request to every team member | `SprintCheckIn` rows |
+| 6, 13, 20, 27 | Devlog reminder, only if that week has no devlog | — |
+| 7, 21 | Curator answers the week's devlog | comment on `ProjectReport` |
+| 14 | Scope moment. See §6. | `midNote`, and `revisedAt` if the author changes the outcomes |
+| 26 | Artifact reminder | — |
+| 28 | Sprint moves to `Review`, report assembled | `summary` |
+| 28–30 | Verdict written | `verdict`, `decidedAt`, `decidedById` |
+
+The author may change `outcomes` only on day 14, and the change is stored as
+`revisedNote` beside the original — never over it.
+
+## 5. Weekly check-in
+
+The link in the email carries a token, not a session:
+
+```
+token = base64url(sprintId + ":" + userId + ":" + week + ":" + hmac)
+hmac  = HMAC-SHA256(sprintId|userId|week, SPRINT_CHECKIN_SECRET)
+```
+
+`GET /api/sprint/check-in?t=<token>` resolves the token and renders a page with
+one button. The button `POST`s to the same route and writes `confirmedAt`.
+
+**The confirm page is deliberate.** A bare `GET` that writes would be triggered by
+the link scanners that most mail providers run, and every member would look
+present without opening the mail. The verdict rests on this data, so it must not
+be forgeable by a scanner. From the member's side it is still one click in the
+mail and one on the page.
+
+The same action sits on the in-app notification, where the session already
+identifies the user and no token is needed.
+
+Rules: the token is valid until the end of its week; confirming twice is a no-op;
+a member who joined the team mid-sprint gets requests from the next week on.
+
+## 6. The scope moment, day 14
+
+The AI curator compares `outcomes` against the devlogs written so far and the
+artifact if one exists, then writes `midNote`. The note:
+
+- lists the outcomes nothing has been claimed against,
+- says how much of the calendar is gone,
+- asks the author to decide what to drop.
+
+**It never names the cut.** That judgement belongs to a human curator, and saying
+otherwise would sell the AI curator as something it is not. The author changes
+the outcome list themselves, or leaves it.
+
+"Behind" is: half the calendar gone and at least one outcome with nothing claimed
+against it in any devlog. A quiet week on its own is not the signal.
+
+## 7. The AI curator
+
+Five model calls per sprint, through `src/services/openai`, following the shape
+of `src/services/ai-validation` (typed input, typed result, prompts in their own
+folder, no free-text parsing):
+
+| When | Input | Output |
+|---|---|---|
+| Day 1 | Goal card, project stage and its template requirements | Is this reachable in 28 days, and what is missing from the outcome list |
+| Days 7, 21 | That week's devlog, goal card | Short answer to the devlog |
+| Day 14 | Devlogs so far, outcomes, artifact | `midNote` per §6 |
+| Day 28 | Everything below | `summary` and `verdict` |
+
+Report input on day 28, facts only:
+
+- goal card, and the day-14 revision if there was one,
+- every devlog of the sprint with dates,
+- check-in matrix: member by week,
+- the artifact: link, screenshots, the author's description,
+- the stage and what the workflow template says it requires.
+
+The model never sees anything the platform cannot show the author.
+
+**Guardrails.** It reads screenshots, text at a public URL, and the author's
+description. It does not run builds and no copy may imply it does. It cannot
+write `StageClosed` when there is no artifact and no devlog claims an outcome —
+that combination is `GoalMissed` regardless of what the model returns.
+
+## 8. Verdict and the workflow
+
+Three values, and every one of them ends the sprint:
+
+| Verdict | Means | Next |
+|---|---|---|
+| `StageClosed` | Outcomes delivered and the stage's requirements met | The stage can be left |
+| `GoalMet` | Outcomes delivered, stage needs more | New sprint on the same stage |
+| `GoalMissed` | Outcomes not delivered | New sprint, inputs recomputed from what exists |
+
+The stage is not opened by a button. A new condition source joins the eleven in
+`src/schemas/workflowTaskCondition.ts`:
+
+```ts
+{ source: "sprint_verdict", verdict: "StageClosed" }
+```
+
+```ts
+case "sprint_verdict": {
+  const count = await prisma.projectSprint.count({
+    where: { stepId, verdict: "StageClosed" },
+  });
+  return count >= 1;
+}
+```
+
+A required task carrying that condition is seeded into every stage of the
+workflow template. `PUT /api/project/move` already recomputes conditions and
+refuses to advance while a required task is undone, so nothing in the transition
+changes.
+
+The scout project card reads `decidedById` on the sprint that closed the stage
+and shows either the AI curator or the person's name.
+
+## 9. Money
+
+`PayableType.SPRINT`, `payableId` = sprint id, the existing Paddle flow. The
+sprint stays `Draft` until the payment webhook lands, then becomes `Active` with
+`startedAt` at that moment.
+
+The AI curator has one price in config for now. The human curator's price is
+computed from their hourly rate and lands with that issue.
+
+No refunds are automated. A sprint that a curator abandoned is an admin action.
+
+## 10. Permissions
+
+New feature on the project space:
+
+```ts
+sprints: ["view", "create", "manage"],
+```
+
+- `create` and `manage` — Owner and Admin.
+- `view` — every member; Guests see nothing.
+- The human curator gets `view` plus the right to write the result card, granted
+  for the life of the sprint and revoked when it closes. That arrives with the
+  human-curator issue.
+
+## 11. Screens
+
+`/user/project/[slug]/sprints`, a new tab beside Workflow and Documents.
+
+| Screen | Holds |
+|---|---|
+| Sprint list | Current sprint with day counter, past sprints with goal and verdict, button to start one |
+| New sprint | Stage it runs in, curator kind, goal, inputs, outcomes, price, payment |
+| Sprint page | Day counter and dates, goal card, check-in matrix, devlogs of this sprint, artifact, day-14 note, result card when closed |
+| Result card | Summary, outcome by outcome, verdict with its author, and the author's rating form |
+
+Empty, loading, error and closed states drawn before any of it is called done.
+Cards follow `DS · 08 Cards`.
+
+## 12. Notifications
+
+New Novu workflows beside the existing ones:
+
+| Key | To | When |
+|---|---|---|
+| `sprint-checkin-request` | Each member | Days 3, 10, 17, 24 |
+| `sprint-devlog-reminder` | Author and publishers | Days 6, 13, 20, 27, if the week has no devlog |
+| `sprint-mid-note` | Author | Day 14 |
+| `sprint-artifact-reminder` | Author | Day 26 |
+| `sprint-closed` | Author and members | When the verdict is written |
+
+One cron route, `api/cron/sprints`, daily, behind `withAuth({ mode: "vercel_cron" })`
+and wrapped in `runWithCronLog`. It walks `Active` sprints, computes the day
+number from `startedAt`, and dispatches. Heavy work — the day-14 note and the
+day-28 report — goes onto a BullMQ queue, not into the request.
+
+## 13. Tests
+
+What can be wrong silently:
+
+- Day arithmetic across a timezone and across a month boundary.
+- The check-in token: wrong week, wrong user, tampered payload, expired.
+- The check-in matrix when a member joins or leaves mid-sprint.
+- `sprint_verdict` condition: a `GoalMet` verdict must not open the stage.
+- The guardrail: no artifact and no claimed outcome cannot produce `StageClosed`.
+- Only one `Active` sprint per project.
+- A sprint stays `Draft` until the payment webhook lands.
+
+## 14. Order of work
+
+1. Schema release in `../prisma`.
+2. Sprint object, tab, list, goal card, permissions.
+3. Cron route, check-in tokens and page, devlog reminders, artifact.
+4. AI curator: the five calls, `midNote`, report, verdict.
+5. `sprint_verdict` condition, seeded task, scout card.
+6. Paddle.
