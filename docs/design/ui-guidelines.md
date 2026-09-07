@@ -219,3 +219,21 @@ to express — use a separator, a heading, or space.
 Every user-facing string is a Tolgee key. The `ui` primitives take
 already-translated strings on purpose, so translation stays at the call site
 where the context is.
+
+**A screen explains itself through its headings and labels, not through
+paragraphs.** Explanatory prose is the first thing that stops being read and the
+last thing anyone updates, and it is usually there because a label was named
+badly. Fix the label.
+
+The order to reach for, and only in this order:
+
+1. **Name it properly.** If a heading, a column or a button needs a sentence
+   under it, the wrong word is on it.
+2. **An info icon.** Anything a user might want explained goes behind
+   `IconInfoCircle` with a tooltip — available, not in the way.
+3. **One line.** Something genuinely important, and unsayable in a label, gets a
+   single line in place. Not a paragraph, and never a block of grey text at the
+   top of a page.
+
+A rule with real consequences: a screen that needs a paragraph to be understood
+is a screen that has not been designed yet.
