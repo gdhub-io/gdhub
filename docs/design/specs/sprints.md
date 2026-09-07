@@ -30,7 +30,7 @@ most), and the **curator** (which of my sprints needs me today, and what am I de
 
 | Frame | Node id | What it shows |
 |---|---|---|
-| `Sprints — List (/user/project/[slug]/sprints)` | **iSVBs** | The tab with data: the running sprint as the one filled card, past sprints as a table (`G9bfNg`), `Start a sprint` disabled with a lock. |
+| `Sprints — List (/user/project/[slug]/sprints)` | **iSVBs** | The tab with data: the running sprint as the one filled card, past sprints as a paginated table (`G9bfNg`), `Start a sprint` disabled with a lock. |
 | `Sprints — List · empty / loading / error / read-only` | **THGwT** | The other four states, plus the disabled-control anatomy (`O5gROp`) and the header status slot with its three faces (`tRD1y`). |
 | `Sprint — Start · asked in steps` | **OEhQK** | The four-step start: what exists now, what will exist, who curates, pay. Step 2 open; steps 1, 3, 4 beside it. |
 | `Modal — Choose a curator` | **RSCXq** | The people picker: level, rate, sprints run, stages closed, ratings with their count. |
@@ -41,9 +41,10 @@ most), and the **curator** (which of my sprints needs me today, and what am I de
 | `Modal — Write the devlog` | **YOWK1** | antd `Modal`. Title, what got done / next / in the way, optional video. |
 | `Modal — Decide what to drop` | **n5OePF** | antd `Modal`. The outcome list with ticks for what comes off, and the reason. |
 | `Modal — Rate the assessment` | **QVA8m** | antd `Modal`. Stars and a comment. Nothing else. |
-| `Artifacts (/user/project/[slug]/artifacts)` | **Q41zlJ** | The renamed Documents tab as a table (`Z9yPB5`), grouped by stage → sprint → date, with the check result per row. |
+| `Artifacts (/user/project/[slug]/artifacts)` | **Q41zlJ** | The renamed Documents tab as a paginated table (`Z9yPB5`), grouped by stage → sprint → date, with the check result per row. |
 | `Artifacts · empty, loading & error` | **mJ7MM** | Empty, skeleton, error, and the artifact-check anatomy (`f1L6P`). |
 | `Modal — Add artifact` | **ZKHiF** | antd `Modal`. Kind picker, link or upload, name, description. |
+| `Sprints — long content, and what gives` | **VKETd** | The six places these screens break under real strings, and the decision for each. See §3. |
 
 ### Curator — the advisor space
 
@@ -95,8 +96,9 @@ row, sprint page, curator's list, result card. `Stage · Sprint N · dates`, the
 slot with three faces: the day counter while it runs, `Awaiting verdict` between day 28 and
 the verdict, the verdict chip once it lands.
 
-**Two lists in this feature are tables, and they are the same table** — `DS · 11 Tables`,
-rule 8 of the guidelines, `ModernTable` in code:
+### The two tables are the same table
+
+`DS · 11 Tables`, rule 8 of the guidelines, `ModernTable` in code:
 
 | | Past sprints (`G9bfNg`) | Artifacts (`Z9yPB5`) |
 |---|---|---|
@@ -105,12 +107,33 @@ rule 8 of the guidelines, `ModernTable` in code:
 | Row | 56, padding 16, outer edge 24 | same |
 | Divider | `--gd-color-border-subtle`, none on the last row | same |
 | Columns | sprint 220 · goal fill · dates 150 · verdict 130 · decided by 180 | artifact fill · check 160 · stage · sprint 190 · added by 160 · when 100 |
-| Footer | full-width text `Load more` | none — the list is grouped and finite |
+| Paging | **antd pagination** under the card, right-aligned, with the total on the left. No `Load more` — tables in this product paginate, and rule 8 allows one or the other, never both. | same |
 | Extra rows | — | group band 40 on `--gd-color-bg-muted`, sprint sub-head 32, and the failure strip on `--gd-danger-tint` under its row |
 
-Cells are one line and truncate; the artifact description moved to a tooltip to hold the
-56px row. The running-sprint card above the past-sprints table is **not** a table row: it is
-the one live item and takes the fill (§5).
+The running-sprint card above the past-sprints table is **not** a table row: it is the one
+live item and takes the fill (§5).
+
+### What gives when the content is long (frame `VKETd`)
+
+Drawn with the longest real strings, not the tidy ones.
+
+| Where | What gives |
+|---|---|
+| **Project title + stage + dates on one meta line** (curator's card) | The project title truncates first, the stage second; the dates and the status chip never move — they are what the row exists to say. |
+| **The goal sentence** | It wraps where it is the subject — the running card and the page header take up to three lines and clamp. Everywhere it is a reference (collapsed line, table cell, curator's card) it is one line with an ellipsis and the whole of it in a `Tooltip`. |
+| **The stage in the past-sprints table** | The `SPRINT` cell is two parts: the stage truncates, `· Sprint N` never does. |
+| **Artifact name, and a raw URL as a name** | One line, truncated in the middle of the column with the full value in a `Tooltip`. A URL has no break opportunity, so it must be truncated rather than wrapped; the kind chip after it never moves. |
+| **Check-in matrix, eight members, long names** | The four week columns are fixed at 72 and never shrink — they are the reading. The name column is the only elastic one: at page width eight long names fit; in the 820 drawer the name truncates and the role under it truncates first. Eight is the maximum the standard allows, so the block never scrolls. |
+| **Curator name + level in the badge** | The name truncates, the level never does — the price is computed from it. Full name in a `Tooltip`; in the picker, where there is room, nothing is truncated. |
+| **Verdict reasoning** | The field grows to 132 and then scrolls; it never pushes the drawer footer off screen. In the thread it is clamped to six lines with a `Show all`. |
+
+Two mechanics the frames assume, and the implementation must not contradict:
+
+- A column width binds only under `table-layout: fixed`, which antd turns on once `scroll.x`
+  is set — and `scroll.x: "max-content"` defeats truncation entirely. **Both tables pass a
+  number.**
+- Truncation inside a flex row needs `min-width: 0` on the parent; a flex item defaults to
+  `min-width: auto` and refuses to shrink below its content, so the ellipsis never engages.
 
 **Grid.** The start-a-sprint step card is full width with a 4-step rail above it; the three
 other steps sit as a 3-column row of previews. The verdict drawer is 820 wide over a scrim,
@@ -139,21 +162,22 @@ artifact, check and stage · sprint; the start-a-sprint step previews stack belo
 
 **Reuse `ModernTable`** (`src/components/ModernTable`, as the devlog page, `MyTeam`,
 `MyProjectReports` and `PaymentsList` already do) for **both** tables above:
-`density="compact"`, `pagination={false}`, `scroll={{ x }}` so the column widths bind, and
-`emptyState` for the per-group empty case. The artifacts table needs group rows and a
-per-row expansion for the failure strip; if `ModernTable` cannot express those, extend it
-there rather than hand-rolling a second row anatomy in this feature.
+`density="compact"`, antd pagination on, `scroll={{ x: <number> }}` so the column widths
+bind, and `emptyState` for the per-group empty case. The artifacts table needs group rows
+and a per-row expansion for the failure strip; if `ModernTable` cannot express those, extend
+it there rather than hand-rolling a second row anatomy in this feature.
 
 **antd**
 
 - `Modal` — write the devlog, decide what to drop, attach the artifact, rate the
   assessment, assign a curator, the workflow-locked dialog. Do not invent a dialog anatomy.
 - `Drawer` — the curator's verdict, `width={820}`, `placement="right"`.
+- `Pagination` — under both tables (inside `ModernTable`).
 - `Segmented` — artifact kind picker, artifact type filter, advisor list filter, curator
   level filter, admin curator kind.
 - `Steps` — the four-step start (`current`, `size="small"`), or the rail drawn in `OEhQK`.
-- `Tooltip` — every disabled control's reason, the source behind a check-in dot, and the
-  truncated artifact description.
+- `Tooltip` — every disabled control's reason, the source behind a check-in dot, and every
+  truncated string in §3.
 - `Rate` — the five stars in the rating modal.
 - `Input` / `Input.TextArea` / `Upload.Dragger` — the forms.
 
@@ -207,10 +231,11 @@ No literal colour ships from these frames. Every value below is a token name.
 | Day-14 note, cut outcome, `GoalMissed`, "Quiet", "Saved, not readable", "no payment taken" | `--gd-warning-tint` / `--gd-warning-on-tint` |
 | Artifact "Cannot be opened", failed payment, delete icon | `--gd-danger-tint` / `--gd-danger-on-tint` / `--gd-danger-solid` |
 | Missed check-in cell | `--gd-color-border-strong` fill (a hole, not a failure) |
+| Active page in pagination | `1px colorPrimary` border, ink label; the rest are `--gd-color-text-secondary` |
 | Craft colour | `getWorkDirection(name)` on the project disc in the curator's list and on team avatars. Chrome stays neutral. |
 | Spacing | `--gd-space-1` 4 · `2` 8 · `3` 12 · `4` 16 · `6` 24 · `8` 32 · `16` 64 |
 | Radii | chip 6 · control 10 · card 12 · panel 16 · pill 999 |
-| Control heights | 40 default · 36 inside cards and thread entries · 32 in dense rows |
+| Control heights | 40 default · 36 inside cards and thread entries · 32 in dense rows and pagination |
 | Type | 24/600 page title · 20/600 action card and modal title · 16/600 panel head · 15/600 entry title · 14 body · 13 dense · 12 meta · 11/600 `ls .5` table head and caption |
 
 Numbers (day counters, counts, prices) carry `font-feature-settings: "tnum"`.
@@ -300,7 +325,7 @@ Namespace `sprints`. Everything below is user-facing.
 | `sprints.past.column.dates` | DATES |
 | `sprints.past.column.verdict` | VERDICT |
 | `sprints.past.column.decidedBy` | DECIDED BY |
-| `sprints.past.loadMore` | Load more |
+| `sprints.past.total` | {count, plural, one {# closed sprint} other {# closed sprints}} |
 | `sprints.start.step1` | What exists now |
 | `sprints.start.step2` | What will exist in 28 days |
 | `sprints.start.step3` | Who curates |
@@ -341,6 +366,7 @@ Namespace `sprints`. Everything below is user-facing.
 | `sprints.checkins.source.pressed` | Week {week} · confirmed on {date} |
 | `sprints.thread.title` | The sprint so far |
 | `sprints.thread.artifacts` | Artifacts · {count} in this sprint |
+| `sprints.thread.showAll` | Show all |
 | `sprints.midnote.title` | Day 14 · half the calendar is gone |
 | `sprints.midnote.from` | From the AI curator |
 | `sprints.revision.label` | Revised on {date} |
@@ -359,6 +385,7 @@ Namespace `sprints`. Everything below is user-facing.
 | `sprints.next.cta` | Start the next sprint |
 | `artifacts.tab` | Artifacts |
 | `artifacts.add` | Add artifact |
+| `artifacts.total` | {count, plural, one {# artifact} other {# artifacts}} |
 | `artifacts.column.artifact` | ARTIFACT |
 | `artifacts.column.check` | CHECK |
 | `artifacts.column.where` | STAGE · SPRINT |
@@ -398,10 +425,10 @@ Domain level; the API agent shapes the endpoints.
 1. **Sprint list for a project** — the running or review sprint in full (stage name, sprint
    number, goal, `startedAt`, `dueAt`, status, curator kind + person, devlogs published of
    4, check-ins confirmed this week of team size, whether an artifact exists), and the
-   closed ones as table rows (stage, number, goal, dates, verdict, who decided) with
-   pagination or a cursor for `Load more`. Also: whether the caller may create a sprint,
-   and if not, the reason and the blocking sprint's end date, so the disabled tooltip is
-   server-truth rather than a client guess.
+   closed ones as **a paginated page** (stage, number, goal, dates, verdict, who decided)
+   with `page`, `pageSize` and a `total`, because the footer prints the count. Also: whether
+   the caller may create a sprint, and if not, the reason and the blocking sprint's end
+   date, so the disabled tooltip is server-truth rather than a client guess.
 2. **Sprint detail** — the goal card (inputs, outcomes, and which outcomes have been
    claimed in a devlog), the day-14 revision if any, the check-in matrix as
    *(member, week, state, source)* where state distinguishes confirmed / waiting / missed /
@@ -418,11 +445,11 @@ Domain level; the API agent shapes the endpoints.
 5. **Curator picker** — level, hourly rate, sprints run, stages closed, average rating **and
    the number of ratings**, with the average suppressed below five. Sorting is by stages
    closed / sprints run / rate — never by an average most curators will not have.
-6. **Artifacts** — grouped by stage in workflow order, then sprint number, then date, with
-   `stageName` and sprint number denormalised so a deleted stage still reads. Each row:
-   kind, name, description (tooltip), link or file, author, date, check result + reason +
-   checked-at. Adding one returns immediately with `pending`; the settled result arrives by
-   refetch.
+6. **Artifacts** — paginated, grouped by stage in workflow order, then sprint number, then
+   date, with `stageName` and sprint number denormalised so a deleted stage still reads.
+   Each row: kind, name, description (tooltip), link or file, author, date, check result +
+   reason + checked-at, and a `total` for the pager. Adding one returns immediately with
+   `pending`; the settled result arrives by refetch.
 7. **Verdict** — the curator submits verdict + reasoning; the server enforces the guardrail
    (no artifact and no claimed outcome cannot be `StageClosed`) and refuses before day 28.
 8. **Rating** — optional, stars 1–5 and a comment. Nothing waits on it and it can be sent or
@@ -437,7 +464,7 @@ Domain level; the API agent shapes the endpoints.
 | **`GoalMissed` is drawn in warning, not danger.** | Red is reserved for destructive and failed *platform* actions. A missed goal is the starting position of the next sprint, and a red chip on the author's own history reads as "something broke". |
 | **The day counter is the status, not the word "Active".** | §3 lists five statuses; "Active" tells the author nothing they cannot see. `Day 14 of 28` is the number they came for. `Draft` and `Cancelled` keep their words. |
 | **`Review` is called "Awaiting verdict" in the UI.** | The enum stays `Review`; the word "review" would suggest the author has something to review. |
-| **Past sprints are a table, not cards.** | Five facts per sprint, repeated down a list, is table work — `DS · 11` and `ModernTable`, the same one the devlog page uses. Only the running sprint stays a card, because it is the live item and takes the fill. |
+| **Past sprints are a table, not cards, and it paginates.** | Five facts per sprint repeated down a list is table work — `DS · 11` and `ModernTable`, the same one the devlog page uses. Only the running sprint stays a card, because it is the live item and takes the fill. |
 | **The artifact description left the row.** | A 56px row is one line. The description is a tooltip, and it is still in the modal and in the verdict input. |
 | **No call strip in the header for a human curator.** | §4 lists five consultations with dates. Five dated items in a header is a second navigation bar. The next call is the action card; the rest are thread entries. |
 | **The result card is not a destination.** | §13 previously listed it as a screen. It is a `DisclosureSection` inside the verdict thread entry — the same content, read where it lands. |
@@ -445,7 +472,7 @@ Domain level; the API agent shapes the endpoints.
 | **The check-in block kept its axis.** | §13 asks for "one compact row per member with four dots". Four bare dots with no week heads, no dates, no current-week mark and no legend stopped being readable; the frame keeps the labelled matrix inside a disclosure. Compaction removed the panel chrome, not the axis. |
 | **The artifact block is video-first with a kind picker.** | §9 lists four equal kinds. Video is the only one the platform can read without running anything, so it gets the empty state and the primary button; the other three sit under it. |
 | **A member is never asked for a check-in they have already earned.** | A devlog or artifact that week confirms its author, and the request goes at the end of the week to whoever is left. |
-| **`Introduction` and `Project Completion` were not drawn.** | The frames use Ideation, Concepting, Prototyping and Preparing a demo version, which is where sprints will actually be bought. |
+| **`Introduction` and `Project Completion` were not drawn.** | The frames use Ideation, Concepting, Prototyping and Preparing a release version, which is where sprints will actually be bought. |
 
 ---
 
@@ -466,9 +493,12 @@ Domain level; the API agent shapes the endpoints.
    against Sanity or the ffmpeg queue.
 7. **`ModernTable` group rows and the failure strip** may need the component extended; the
    frames assume it can carry a full-width row and an expanded row.
-8. **Timezone**: day numbers are assumed to be computed server-side in one fixed zone and
+8. **Page sizes** are assumed 10 for past sprints and 25 for artifacts; the frames draw two
+   pages of each.
+9. **Timezone**: day numbers are assumed to be computed server-side in one fixed zone and
    returned with the payload, the way the audit log does it.
-9. **Responsive layouts were described, not drawn** (§3).
+10. **Responsive layouts were described, not drawn** (§3), except the 820 drawer, which is
+    where the check-in name column actually truncates.
 
 ---
 
