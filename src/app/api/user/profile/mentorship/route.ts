@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import {
 	apiError,
 	json,
@@ -7,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
+import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -22,8 +24,12 @@ import { prisma } from "@/services/prisma";
 const MentorshipSchema = z.object({
 	enabled: z.boolean(),
 	specialityId: z.string().optional(),
-	timeForMentoring: z.string().optional(),
-	openForQuestions: z.array(z.string()).optional(),
+	// `nullish`, not `optional`: the form loads the speciality and sends its
+	// fields back unchanged, and both columns are nullable. `optional()` accepts
+	// a missing key but rejects an explicit null, so anyone who had never filled
+	// in a response time could not turn mentorship on at all.
+	timeForMentoring: z.string().nullish(),
+	openForQuestions: z.array(z.string()).nullish(),
 });
 
 type MentorshipBody = z.infer<typeof MentorshipSchema>;
@@ -65,6 +71,10 @@ export const PUT = withAuth({ mode: "user" })(
 
 			// The other half of Brevo's `AVAILABLE_FOR`.
 			await syncUserAvailabilityToBrevo(currentUser.id);
+			// The switch is also what opens and closes the advisor space, and the
+			// header's list of spaces is cached for a minute — without this the
+			// link lingers after it stops working.
+			await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 			return json({ enabled: false });
 		}
@@ -91,6 +101,7 @@ export const PUT = withAuth({ mode: "user" })(
 		if (updated.count === 0) return apiError.notFound("Speciality not found");
 
 		await syncUserAvailabilityToBrevo(currentUser.id);
+		await cacheDelete(userSpacesCacheKey(currentUser.id));
 
 		return json({ enabled: true });
 	}),

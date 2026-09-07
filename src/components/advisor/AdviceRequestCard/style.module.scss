@@ -1,0 +1,159 @@
+.card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4);
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.identity {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+}
+
+/*
+ * Not `IconTile`: that primitive is a rounded square (radius 10/12/16) and this
+ * sits in the avatar position, where the design makes it a disc. The colours
+ * still come from the direction palette, never from a literal.
+ */
+.tile {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-fill-subtle);
+}
+
+.text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+	flex: 1;
+}
+
+.chips {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+.chip {
+	margin: 0;
+	padding: 4px var(--gd-space-2);
+	border-radius: var(--gd-radius-pill);
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	line-height: 1.2;
+
+	&[data-tone="info"] {
+		color: var(--gd-info-on-tint);
+		background: var(--gd-info-tint);
+	}
+
+	&[data-tone="warning"] {
+		color: var(--gd-warning-on-tint);
+		background: var(--gd-warning-tint);
+	}
+
+	&[data-tone="success"] {
+		color: var(--gd-success-on-tint);
+		background: var(--gd-success-tint);
+	}
+
+	&[data-tone="danger"] {
+		color: var(--gd-danger-on-tint);
+		background: var(--gd-danger-tint);
+	}
+
+	&[data-tone="neutral"] {
+		color: var(--gd-color-text-secondary);
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.time {
+	font-size: var(--gd-font-size-label);
+	color: var(--gd-color-text-tertiary);
+}
+
+.topic {
+	margin: 0;
+	font-size: var(--gd-font-size-h4);
+	font-weight: 700;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--gd-space-1) var(--gd-space-3);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+.metaItem {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	min-width: 0;
+
+	> span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	svg {
+		flex: none;
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+/* The question is a preview here; the whole of it is in the modal. */
+.body {
+	margin: 0;
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text-secondary);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	flex-wrap: wrap;
+}
+
+.askedIn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+
+	svg {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	margin-left: auto;
+}

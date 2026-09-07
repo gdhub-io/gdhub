@@ -61,8 +61,21 @@ Delegate to **`frontend-component-builder`** (UI) and **`api-route-builder`**
 (endpoints) for anything substantial, or write it inline when small.
 
 The stack, the API pattern and the conventions are in
-[CLAUDE.md](../../../CLAUDE.md) — do not restate them, follow them. What that
-file does not say:
+[CLAUDE.md](../../../CLAUDE.md) — do not restate them, follow them. Three that
+get broken anyway:
+
+- **Build with antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
+  `Typography` — if antd ships the thing, use it. Hand-rolled markup is for a
+  bespoke anatomy the design file actually draws, and then it needs a sentence
+  naming the frame. Layout itself — a grid, a stack — is CSS, not a component;
+  that is not what this rule is about.
+- **Icons are `@tabler/icons-react`.** One family, one stroke weight, nothing
+  else.
+- **Comments: one line, and only what the code cannot say.** A block is for a
+  file or an exported function whose *why* is genuinely not obvious. Everything
+  inline gets one line or gets deleted.
+
+What CLAUDE.md does not say:
 
 - **Reuse first.** Grep before writing a helper. Things that exist and get
   rewritten anyway: `formatDollar` / `formatCompactCount`
@@ -75,7 +88,45 @@ file does not say:
 - Comments only where they carry what the code cannot. Prefer explaining *why
   this and not the obvious alternative*.
 
-## 5. Verify, then report
+## 5. Leave it verifiable by someone else
+
+A screen that only its author can check is unfinished. Two artefacts, both
+written in the same pass as the code, never afterwards:
+
+**A story, for anything reusable.** A card, a modal, a row, a state machine
+with more than one visible state — `Component.stories.tsx` next to it, one
+story per state the design drew, including empty and loading. This is where the
+four states stop being a promise: `Modal — …` and `· empty` frames exist in the
+design file precisely so they can be rendered side by side without a database.
+A one-off page section does not need one; a thing that will be reused or that
+looks different in three situations does.
+
+**A test, for anything that can be wrong silently.** Not coverage — the places
+where a mistake would ship green:
+
+- the filter or bucket map, where a status quietly lands in the wrong tab;
+- the query's scoping — the `where` that separates one user's rows from
+  everyone else's is a security boundary, and it is one word long;
+- a state transition that must refuse an illegal move;
+- anything derived from time, a locale or a timezone;
+- the space definition and its permissions, when a space is added.
+
+Say in the report what you chose not to test and why. "The card renders" is not
+a test worth writing; "a declined request never appears under Answered" is.
+
+**Then simplify, before anyone is asked to read it.** Re-read your own diff
+looking for what can go, not for what is missing:
+
+- State you are keeping that a library already keeps — accumulating pages by
+  hand where `useInfiniteQuery` exists, a `useEffect` that only mirrors a prop.
+- A helper used once. Inline it.
+- A branch no caller can reach, an option nothing passes, a `useMemo` around
+  something cheap.
+- Two functions that are the same shape with one value different.
+- Every comment that restates its code.
+
+A diff that is smaller after this pass is the deliverable; if nothing came out,
+say so. Then the gate:
 
 ```
 bun run lint && bun run type-check && bun run test
@@ -85,7 +136,10 @@ bun run lint && bun run type-check && bun run test
 and `--gd-*` names the theme never emits — a misspelt custom property fails
 silently in the browser, so a green run here is the only proof.
 
-Add or extend a test whenever you touched API or domain logic.
+**And the handoff spec.** When the work implements frames from the design file,
+write or extend `docs/design/specs/<screen>.md`: what was built, which node IDs
+it came from, and every place the code deliberately departs from the frame. The
+next agent reads that file instead of re-deriving the screen from a picture.
 
 Report: the Pencil node IDs, the files, what you decided that was not asked,
 and anything you deliberately did not do. If something in the request was

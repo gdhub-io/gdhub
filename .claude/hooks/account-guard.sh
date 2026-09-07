@@ -21,6 +21,9 @@ Bash)
 	cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
 	printf '%s' "$cmd" | grep -qE '(^|[;&|(][[:space:]]*)(gh|git[[:space:]]+push)[[:space:]]' || exit 0
 
+	# The remedy this guard names must stay reachable, or it locks out its own fix.
+	printf '%s' "$cmd" | grep -qE '(^|[;&|(][[:space:]]*)gh[[:space:]]+auth[[:space:]]+(switch|status|login)' && exit 0
+
 	command -v gh >/dev/null 2>&1 || exit 0
 	login=$(gh api user --jq .login 2>/dev/null)
 	[ -z "$login" ] && exit 0

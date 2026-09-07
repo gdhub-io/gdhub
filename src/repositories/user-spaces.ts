@@ -22,6 +22,12 @@ export type UserSpaces = {
 	courses: UserSpaceGroup;
 	/** Whether the user has a scout cabinet — the space is single-instance. */
 	hasScoutCabinet: boolean;
+	/**
+	 * Whether the advisor space is open. Single-instance too, and it has no
+	 * membership row of its own: offering mentorship is what opens it, exactly
+	 * as `advisorSpaceAdapter` decides.
+	 */
+	hasAdvisorSpace: boolean;
 };
 
 /**
@@ -58,30 +64,40 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 	const idsOf = (type: string) =>
 		memberships.filter((row) => row.spaceType === type).map((r) => r.spaceId);
 
-	const [scoutCabinet, projects, events, courses] = await Promise.all([
-		prisma.scoutCabinet.findUnique({
-			where: { userId },
-			select: { id: true },
-		}),
-		prisma.project.findMany({
-			where: { id: { in: idsOf("project") } },
-			select: {
-				id: true,
-				slug: true,
-				name: true,
-				status: true,
-				coverImage: true,
-			},
-		}),
-		prisma.event.findMany({
-			where: { id: { in: idsOf("event") } },
-			select: { id: true, slug: true, title: true, status: true, image: true },
-		}),
-		prisma.course.findMany({
-			where: { id: { in: idsOf("course") } },
-			select: { id: true, slug: true, name: true, status: true, image: true },
-		}),
-	]);
+	const [scoutCabinet, mentoring, projects, events, courses] =
+		await Promise.all([
+			prisma.scoutCabinet.findUnique({
+				where: { userId },
+				select: { id: true },
+			}),
+			prisma.speciality.count({
+				where: { userId, isOpenForMentoring: true },
+			}),
+			prisma.project.findMany({
+				where: { id: { in: idsOf("project") } },
+				select: {
+					id: true,
+					slug: true,
+					name: true,
+					status: true,
+					coverImage: true,
+				},
+			}),
+			prisma.event.findMany({
+				where: { id: { in: idsOf("event") } },
+				select: {
+					id: true,
+					slug: true,
+					title: true,
+					status: true,
+					image: true,
+				},
+			}),
+			prisma.course.findMany({
+				where: { id: { in: idsOf("course") } },
+				select: { id: true, slug: true, name: true, status: true, image: true },
+			}),
+		]);
 
 	const group = (
 		type: "project" | "event" | "course",
@@ -102,6 +118,7 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 
 	return {
 		hasScoutCabinet: !!scoutCabinet,
+		hasAdvisorSpace: mentoring > 0,
 		projects: group(
 			"project",
 			new Map(
