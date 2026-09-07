@@ -409,12 +409,30 @@ Three things, in this order:
 
 1. **Header, one line high.** Stage and sprint number, day N of 28 with the end
    date, the curator. Nothing else.
-2. **The action card.** Exactly one, and only when something is owed: post this
-   week's devlog, decide what to drop, attach the artifact, rate the assessment.
-   When nothing is owed there is no card.
+2. **The action card.** What is owed right now, with the button on it. Usually
+   one; when nothing is owed there is no card.
 3. **The thread.** Every event of the sprint in time, one row each: devlogs with
    the curator's answer beneath them, the day-14 note, check-in weeks as they
    close, the artifact when it lands, the verdict at the end.
+
+**Every action is one press, on the spot, in a modal.** Nothing is reached by
+navigating somewhere else and coming back. An entry in the thread that can still
+be acted on keeps its own button, so an artifact that was never attached can be
+attached from the artifact entry, and a verdict from a week ago can still be
+rated from the verdict entry.
+
+| Moment | Action | Opens |
+|---|---|---|
+| Any week | Write the devlog | Modal |
+| Weekly | I am working on this | No modal — one press |
+| Day 14 | Decide what to drop | Modal: the outcome list, tick what comes off |
+| By day 26 | Attach the artifact | Modal: kind, link or upload, description |
+| Human curator | Join the call | Button with the link, live around the time |
+| After the verdict | Rate the assessment | Modal: stars and a comment |
+
+The one exception is the curator writing a verdict. It needs the goal card and
+the devlogs visible while it is written, which a modal cannot hold, so it is a
+drawer over their own list — still one press, still no navigation.
 
 Everything that was a panel becomes either a thread entry or a collapsed line:
 
@@ -428,9 +446,10 @@ Everything that was a panel becomes either a thread entry or a collapsed line:
 Neither gets its own destination, because a destination is a thing people fail to
 find.
 
-- **The verdict** is written by the curator from their own list, on a focused
-  screen with the goal card, the devlogs and the three buttons. That is their
-  whole job on that day; it should not be a section of somebody else's page.
+- **The verdict** is written by the curator from their own list, in a drawer
+  holding the goal card, the devlogs and the three buttons. One press from the
+  row, no navigation, and roomy enough to write in. That is their whole job on
+  that day; it should not be a section of somebody else's page.
 - **The author's rating** appears in the thread as an entry the moment the verdict
   lands: the verdict, and directly under it "was this assessment any use?" with
   the rating inline. It is answered where it is read.
