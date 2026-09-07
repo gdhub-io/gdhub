@@ -65,7 +65,8 @@ on the project.
 - Publishes four devlogs, each before its call.
 - Writes in the devlog: what got done, what is next, what is in the way.
 - Prepares what to say at the gathering.
-- Rates the assessment once the verdict is out.
+- May rate the assessment once the verdict is out. Optional, and nothing waits
+  on it.
 
 **Curator**
 
@@ -89,7 +90,7 @@ and about 9.5 for a team of five, so two to three hours a week.
 | **Scope change** | day 14, if any | What came off the outcome list and why. Written beside the original, never over it. |
 | **Artefact** | by day 26 | A link, screenshots and a short description of what it is. |
 | **Result card** | by day 30 | What of the list got done, what was cut, the verdict and the reasoning. |
-| **Rating** | after the verdict | The author's rating of the assessment. Internal. |
+| **Rating** | after the verdict, if the author wants to | Stars and a comment on the assessment. Optional and internal; a sprint closes and the next one starts without it. |
 
 The result card of one sprint is the starting card of the next. A new curator
 reads it instead of asking.
