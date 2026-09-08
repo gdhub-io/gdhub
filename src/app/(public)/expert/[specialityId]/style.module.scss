@@ -78,6 +78,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  corner-shape: round;
   object-fit: cover;
 }
 
@@ -248,7 +249,7 @@
   aspect-ratio: 16/9;
   position: relative;
   background: var(--gd-color-text);
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   overflow: hidden;
   margin-bottom: 24px;
 

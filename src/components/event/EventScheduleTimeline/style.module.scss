@@ -55,6 +55,7 @@
 
 	&::-webkit-scrollbar-thumb {
 		border-radius: var(--gd-radius-pill);
+		corner-shape: round;
 		background: var(--gd-fill-strong);
 	}
 

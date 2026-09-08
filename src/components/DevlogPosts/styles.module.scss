@@ -98,7 +98,7 @@
 .postCard {
   width: 100%;
   margin-inline: -8px;
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   box-shadow: 0 3px 8px -3px rgba(0, 0, 0, .2);
   background: var(--gd-color-surface);
   transition: all 0.2s ease-in-out;
@@ -154,6 +154,7 @@
   width: 36px;
   height: 36px;
   border-radius: 999px;
+  corner-shape: round;
   object-fit: cover;
   display: inline-flex;
   align-items: center;

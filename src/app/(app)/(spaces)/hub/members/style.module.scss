@@ -302,6 +302,7 @@
 	width: 48px;
 	height: 48px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -325,6 +326,7 @@
 	background: var(--gd-color-surface-sunken);
 	color: var(--gd-neutral-700);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	padding: 3px 9px;
 	font-size: 11px;
 	font-weight: 600;
@@ -335,6 +337,7 @@
 	background: var(--gd-success-tint);
 	color: var(--gd-success-on-tint);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	padding: 3px 9px;
 	font-size: 11px;
 	font-weight: 600;
@@ -386,6 +389,7 @@
 	background: var(--gd-color-surface-sunken);
 	color: var(--gd-neutral-700);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	padding: 4px 10px;
 	font-size: 12px;
 	font-weight: 500;
@@ -412,6 +416,7 @@
 	width: 48px;
 	height: 48px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-neutral-100);
 	flex-shrink: 0;
 }
@@ -439,6 +444,7 @@
 	width: 64px;
 	height: 22px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-neutral-100);
 }
 

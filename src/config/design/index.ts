@@ -32,5 +32,6 @@ export {
 	radius,
 	type SemanticColor,
 	semantic,
+	shape,
 	space,
 } from "./tokens";

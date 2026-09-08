@@ -59,7 +59,7 @@
 .expertCard {
   background: var(--gd-color-surface);
   padding: 8px;
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   border: 1px solid var(--gd-color-border-strong);
   display: flex;
   flex-direction: column;

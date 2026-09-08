@@ -137,7 +137,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 											flex: "0 0 56px",
 											width: 56,
 											height: 56,
-											borderRadius: 10,
+											borderRadius: "var(--gd-radius-control)",
 											background: data.project.coverImage
 												? `url("${data.project.coverImage}") center/cover`
 												: "var(--gd-color-surface-sunken)",
@@ -204,7 +204,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 										flex: "0 0 48px",
 										width: 48,
 										height: 48,
-										borderRadius: 10,
+										borderRadius: "var(--gd-radius-control)",
 										background: "var(--gd-color-surface-sunken)",
 										color: "var(--gd-neutral-600)",
 									}}

@@ -227,13 +227,37 @@ export const letterSpacing = {
 } as const;
 
 export const radius = {
-	chip: 6,
-	// 10 rather than 8: the product is full of rounded squares — icon tiles,
-	// covers, avatars — and a tighter control radius read as a different family.
-	control: 10,
-	card: 12,
-	panel: 16,
+	chip: 8,
+	// The ladder was 6/10/12/16 until the corners became superellipses. Both that
+	// shape and the organic jitter are proportional to the radius, and at 10 they
+	// came to about a pixel each — real in the numbers, invisible on the screen.
+	// Raised until the corner reads at 1:1, keeping the steps between rungs.
+	control: 14,
+	card: 16,
+	panel: 20,
 	pill: 9999,
+} as const;
+
+/**
+ * Corner geometry.
+ *
+ * `corner-shape` turns a rounded corner into a superellipse, so a radius reads
+ * as one continuous curve instead of a quarter circle bolted onto two straight
+ * edges. It is Chrome 139+ / Safari 26+; everywhere else the declaration is
+ * dropped and the corner stays round, which is what the product looked like
+ * before — so there is nothing to fall back to.
+ *
+ * `organic` is the hand-drawn variant for controls: a per-corner jitter of
+ * `amp`, rotated by `i`, so a row of buttons is not four identical rectangles.
+ * `base` and `i` are placeholders — the stylesheet overrides them per control
+ * size and per position; they are emitted so the names resolve on their own.
+ */
+export const shape = {
+	cornerShape: "squircle",
+	organicAmp: "2px",
+	organicBase: `${radius.control}px`,
+	organicPhase: "0",
+	organicI: "1",
 } as const;
 
 export const space = {

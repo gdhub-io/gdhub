@@ -7,7 +7,7 @@
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	border: 1px solid var(--gd-color-border);
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 }
 
 .group:last-child .row:last-child {

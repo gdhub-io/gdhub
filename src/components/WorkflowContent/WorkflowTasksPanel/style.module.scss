@@ -7,7 +7,7 @@
 .panel {
 	background-color: var(--gd-color-surface);
 	border: 1px solid var(--gd-color-border-strong);
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	overflow: hidden;
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }

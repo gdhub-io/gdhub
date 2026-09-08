@@ -33,6 +33,7 @@
 
 .avatar {
   border-radius: 50%;
+  corner-shape: round;
   object-fit: cover;
 }
 
@@ -57,7 +58,7 @@
 
 .skillTag {
   margin: 4px;
-  border-radius: 16px;
+  border-radius: var(--gd-radius-panel);
   background-color: rgba(241, 85, 65, 0.08);
   border: none;
   color: rgba(5, 5, 5, 0.85);
@@ -72,7 +73,7 @@
 .levelBadge {
   background-color: rgba(241, 85, 65, 0.1);
   color: rgb(241, 85, 65);
-  border-radius: 16px;
+  border-radius: var(--gd-radius-panel);
   padding: 4px 12px;
   font-weight: 500;
   font-size: 14px;

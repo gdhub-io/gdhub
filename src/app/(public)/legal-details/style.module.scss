@@ -47,6 +47,7 @@
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
+	corner-shape: round;
 	background: rgba(241, 85, 65, 0.08);
 	color: var(--gd-color-accent);
 	display: flex;
@@ -80,7 +81,7 @@
 	align-items: center;
 	gap: 6px;
 	padding: 4px 10px 4px 8px;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	font-size: 12px;
 	font-weight: 500;
 	line-height: 1;
@@ -90,6 +91,7 @@
 	width: 6px;
 	height: 6px;
 	border-radius: 50%;
+	corner-shape: round;
 	background: currentColor;
 }
 

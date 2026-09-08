@@ -1,0 +1,149 @@
+// Corner geometry for the whole product.
+//
+// Two rules live here. Every rounded corner becomes a superellipse, so a radius
+// reads as one continuous curve instead of a quarter circle bolted onto two
+// straight edges. And controls get a per-corner jitter on top of their token
+// radius, so a row of buttons reads as drawn rather than stamped.
+
+@layer shape {
+
+	// `corner-shape` is Chrome 139+ / Safari 26+. Where it is missing the
+	// declaration is dropped and the corner stays round — the look the product
+	// had before — so there is nothing to fall back to.
+	@supports (corner-shape: squircle) {
+
+		// Not inherited, so it has to be said on every box. Read through a custom
+		// property: a subtree can opt out with `--gd-corner-shape: round` and
+		// everything nested inside follows.
+		//
+		// Measured in Chrome 152 over 600 repainting boxes: a background, a border
+		// and `overflow: hidden` clipping cost nothing, and only `box-shadow` pays
+		// — about 0.08ms per shadowed box per repaint, because the shadow can no
+		// longer take the rounded-rect fast path. The elevation scale defaults to
+		// `none`, so the bill lands on hover cards, modals and dropdowns; if a
+		// shadowed grid ever gets heavy, that is the property to look at.
+		*,
+		*::before,
+		*::after {
+			corner-shape: var(--gd-corner-shape, squircle);
+		}
+
+		// A circle and a pill are round by definition — a superellipse squares
+		// their ends off, which turns an avatar into an app icon and a status dot
+		// into a tiny square. App code says `corner-shape: round` next to its own
+		// 50%/pill radius; these are antd's, which cannot be annotated at source.
+		:is(
+			.ant-avatar-circle,
+			.ant-badge-count,
+			.ant-badge-dot,
+			.ant-btn-circle,
+			.ant-btn-round,
+			.ant-float-btn,
+			.ant-progress-circle,
+			.ant-radio,
+			.ant-slider-handle,
+			.ant-spin-dot-item,
+			.ant-switch,
+			.ant-timeline-item-head
+		) {
+			corner-shape: round;
+		}
+
+		// `:is()` never matches a pseudo-element — inside a forgiving list they are
+		// dropped without a word — so the radio's dot and the switch's knob need a
+		// selector of their own.
+		.ant-radio::after,
+		.ant-switch-handle::before {
+			corner-shape: round;
+		}
+
+		// The same for a circle set through the `style` prop, which the browser
+		// serialises back into the attribute. `corner-shape` is not in csstype
+		// yet, so the alternative at each of those sites is a cast.
+		[style*="border-radius: 50%"],
+		[style*="border-radius:50%"] {
+			corner-shape: round;
+		}
+	}
+
+	// Containers that repeat hand their children a phase, so a column of lone
+	// controls — one input per form item — does not land on the same variant all
+	// the way down. Without this the jitter reads as a systematic tilt.
+	:is(
+		.ant-card,
+		.ant-col,
+		.ant-form-item,
+		.ant-list-item,
+		.ant-space-item,
+		.ant-table-row
+	) {
+		@for $i from 1 through 4 {
+			&:nth-child(4n + #{$i}) {
+				--gd-organic-phase: #{$i};
+			}
+		}
+	}
+
+	// The controls themselves. Compact and grouped members are left alone: antd
+	// zeroes the radius on their touching sides to weld them into one control,
+	// and a blanket four-corner radius would break the seam.
+	:is(
+		.ant-btn,
+		.ant-input,
+		.ant-input-affix-wrapper,
+		.ant-input-number,
+		.ant-input-number-affix-wrapper,
+		.ant-picker,
+		.ant-select-selector
+	):not(
+		[class*="compact-item"],
+		.ant-btn-circle,
+		.ant-btn-round,
+		.ant-btn-group *,
+		.ant-input-group *
+	) {
+		--gd-organic-base: var(--gd-radius-control);
+
+		// Size variants keep their own scale — a small button jittered around the
+		// control radius would read as a different family. Nested so they outrank
+		// the base above rather than losing to its `:is()` + `:not()` specificity.
+		&:is(
+			.ant-btn-sm,
+			.ant-input-sm,
+			.ant-input-number-sm,
+			.ant-picker-small,
+			.ant-select-sm .ant-select-selector
+		) {
+			--gd-organic-base: var(--gd-radius-chip);
+			--gd-organic-amp: 1px;
+		}
+
+		&:is(
+			.ant-btn-lg,
+			.ant-input-lg,
+			.ant-input-number-lg,
+			.ant-picker-large,
+			.ant-select-lg .ant-select-selector
+		) {
+			--gd-organic-base: var(--gd-radius-card);
+		}
+
+		@for $i from 1 through 4 {
+			&:nth-of-type(4n + #{$i}) {
+				--gd-organic-i: calc(var(--gd-organic-phase) + #{$i});
+			}
+		}
+
+		// `mod()` is what lets the container phase and the control's own position
+		// compose into one index instead of a rule per combination. Gated because
+		// an unsupported function makes the whole declaration invalid — and an
+		// invalid `border-radius` is 0, not the antd value underneath it.
+		@supports (border-radius: mod(3px, 2px)) {
+			border-radius:
+				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 0, 3))
+				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 2, 3))
+				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 1, 3))
+				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 3, 3));
+		}
+	}
+}

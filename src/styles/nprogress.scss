@@ -48,6 +48,7 @@
     border-top-color: var(--gd-color-accent-hover);
     border-left-color: var(--gd-color-accent-hover);
     border-radius: 50%;
+    corner-shape: round;
 
     -webkit-animation: nprogress-spinner 400ms linear infinite;
     animation: nprogress-spinner 400ms linear infinite;

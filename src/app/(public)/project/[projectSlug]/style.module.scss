@@ -4,7 +4,7 @@
 	/* 16:9 Aspect Ratio */
 	position: relative;
 	aspect-ratio: 16 / 9;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	overflow: hidden;
 }
 
@@ -12,7 +12,7 @@
 	position: relative;
 	width: 100%;
 	aspect-ratio: 16 / 9;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	overflow: hidden;
 	background: var(--gd-color-text);
 
@@ -243,6 +243,7 @@
 	gap: 6px;
 	padding: 4px 10px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: rgba(255, 255, 255, 0.12);
 	font-family: var(--gd-font-ui);
 	font-size: 12px;
@@ -257,6 +258,7 @@
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
+	corner-shape: round;
 	background: var(--gd-success-solid);
 }
 
