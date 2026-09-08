@@ -133,7 +133,7 @@ const MyProjectCandidates = () => {
 						style={{
 							border: "1px solid var(--gd-color-text-tertiary)",
 							overflow: "hidden",
-							borderRadius: 16,
+							borderRadius: "var(--gd-radius-panel)",
 							marginTop: 16,
 						}}
 						columns={columns}

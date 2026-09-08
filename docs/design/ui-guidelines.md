@@ -66,7 +66,7 @@ belongs to a token.
    step further to `--gd-neutral-100`.
 
 2. **Tinted icon tile.** A list row, a quick action or an empty state gets an
-   `<IconTile>` — 32/40/56px, radius 10/12/16. Direction rows inherit the craft
+   `<IconTile>` — 32/40/56px, radius 14/16/20 (it reads the scale, so it follows it). Direction rows inherit the craft
    colour; everything else falls back to neutral.
 
 3. **Status is a dot and a word.** Use `<StatusDot>`. Statuses repeat down a
@@ -91,12 +91,12 @@ belongs to a token.
    owns the section. The form lives in the body at 24 padding.
    **Save sits under the card, not inside it**: it commits the section.
    A field is a 14 *regular* label (with a grey suffix for a counter or
-   `(optional)`), a filled 40-high input at radius 10, and help text under it at
+   `(optional)`), a filled 40-high input at the control radius, and help text under it at
    14 secondary. A list the user grows — questions, links, criteria — is rows of
    input plus a red trash icon, ending in an empty input that adds on Enter.
    The reference frame is `DS · 10 Forms & settings`.
 
-8. **A table is a white card with hairlines.** `--gd-color-surface`, radius 12,
+8. **A table is a white card with hairlines.** `--gd-color-surface`, the card radius,
    clipped, and no outer border. The head is a 44 band on
    `--gd-color-surface-sunken` with uppercase 11/600 labels; rows are 56 and
    separated by `--gd-color-border-subtle` — the lightest hairline in the system,
@@ -133,8 +133,19 @@ heights, control sizes: all multiples of 4, off the scale above.
 
 **Three things are deliberately not on it, and must not be "corrected":**
 
-- **Radii** — 6 / 10 / 12 / 16. The product is full of rounded squares sitting
+- **Radii** — 8 / 14 / 16 / 20. The product is full of rounded squares sitting
   inside one another, and a 4-step radius ladder reads as a different family.
+  The ladder was 6/10/12/16 until the corners became superellipses: both that
+  shape and the jitter below are proportional to the radius, and at 10 they came
+  to about a pixel each — present in the numbers, invisible on the screen.
+  Every corner is a superellipse rather than a quarter circle:
+  [src/styles/shape.scss](../../src/styles/shape.scss) sets `corner-shape:
+  squircle` on every box, and buttons and controls get a 1px per-corner jitter
+  on top of their token radius so a row of them reads as drawn, not stamped.
+  **A circle or a pill has to write `corner-shape: round;` under its radius** —
+  a superellipse squares off a 50% corner, which turns an avatar into an app
+  icon and a status dot into a square. The guard test fails on a missing one.
+  A whole subtree opts out with `--gd-corner-shape: round`.
 - **Type** — 13 / 14 / 16 / 20 / 24 / 32, with line heights as ratios. Type is
   sized by reading distance, not by a grid.
 - **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes

@@ -15,7 +15,7 @@
 	position: relative;
 	width: 400px;
 	height: 300px;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }

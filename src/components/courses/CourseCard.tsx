@@ -48,7 +48,7 @@ export const CourseCard = ({ course, token }: { course: any; token: any }) => {
 				onMouseEnter={() => setHovered(true)}
 				onMouseLeave={() => setHovered(false)}
 				style={{
-					borderRadius: 16,
+					borderRadius: "var(--gd-radius-panel)",
 					overflow: "hidden",
 					boxShadow: hovered ? token.boxShadowSecondary : token.boxShadow,
 					background: token.colorBgContainer,

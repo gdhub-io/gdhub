@@ -12,6 +12,7 @@ import {
 	neutral,
 	radius,
 	semantic,
+	shape,
 	space,
 } from "./tokens";
 
@@ -75,6 +76,9 @@ export function designCssVariables(
 	}
 	for (const [name, value] of Object.entries(radius)) {
 		vars[`--gd-radius-${name}`] = `${value}px`;
+	}
+	for (const [name, value] of Object.entries(shape)) {
+		vars[`--gd-${kebab(name)}`] = value;
 	}
 	for (const [step, value] of Object.entries(space)) {
 		vars[`--gd-space-${step}`] = `${value}px`;

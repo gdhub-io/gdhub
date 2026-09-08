@@ -152,7 +152,7 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 					padding: 0,
 					border: "none",
 					overflow: "hidden",
-					borderRadius: 16,
+					borderRadius: "var(--gd-radius-panel)",
 				},
 				body: { padding: 0 },
 			}}
@@ -530,7 +530,12 @@ const skInput = (width: number, height: number, block?: boolean) => (
 		style={
 			block
 				? { height, borderRadius: 8 }
-				: { width, minWidth: width, height, borderRadius: 6 }
+				: {
+						width,
+						minWidth: width,
+						height,
+						borderRadius: "var(--gd-radius-chip)",
+					}
 		}
 	/>
 );

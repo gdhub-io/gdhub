@@ -39,7 +39,7 @@
 	// Matches IconTile "sm" so every square in the sidebar lines up.
 	width: 32px;
 	height: 32px;
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	// Two steps below the page, not one: neutral-100 matches the row hover, so a
 	// project without cover art vanished the moment you pointed at it.
 	background-color: var(--gd-neutral-200);

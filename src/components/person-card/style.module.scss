@@ -291,7 +291,7 @@ $btn-black: var(--gd-color-text);
 	width: 100%;
 	background: $surface;
 	border: 1px solid $border;
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	padding: 10px;
 }
 
@@ -304,7 +304,7 @@ $btn-black: var(--gd-color-text);
 	text-align: left;
 	background: $surface;
 	border: 1px solid $border;
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	padding: 10px;
 	cursor: pointer;
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -378,7 +378,7 @@ $btn-black: var(--gd-color-text);
 
 .contentCard {
 	border: 1px solid $border;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	padding: 18px;
 	display: flex;
 	flex-direction: column;
@@ -432,7 +432,7 @@ $btn-black: var(--gd-color-text);
 .tag {
 	margin: 0;
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	background: var(--gd-color-surface-sunken);
 	color: var(--gd-neutral-700);
 	padding: 4px 12px;
@@ -442,7 +442,7 @@ $btn-black: var(--gd-color-text);
 .prefTag {
 	margin: 0;
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	background: var(--gd-color-accent-subtle);
 	color: var(--gd-color-link);
 	padding: 4px 12px;
@@ -463,7 +463,7 @@ $btn-black: var(--gd-color-text);
 }
 
 .matchPill {
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	padding: 5px 12px;
 	font-size: 12px;
 	font-weight: 700;
@@ -561,7 +561,7 @@ $btn-black: var(--gd-color-text);
 	gap: 5px;
 	background: rgba(0, 0, 0, 0.65);
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	padding: 0 10px;
 	height: 26px;
 	color: var(--gd-color-surface);
@@ -610,7 +610,7 @@ $btn-black: var(--gd-color-text);
 .ppStatusTag {
 	margin: 0;
 	border: none;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	background: var(--gd-color-accent-subtle);
 	color: var(--gd-color-link);
 	padding: 4px 10px;
@@ -678,6 +678,7 @@ $btn-black: var(--gd-color-text);
 	height: 28px;
 	flex-shrink: 0;
 	border-radius: 50%;
+	corner-shape: round;
 	background: var(--gd-color-border-strong);
 	display: inline-flex;
 	align-items: center;
@@ -724,7 +725,7 @@ $btn-black: var(--gd-color-text);
 	gap: 6px;
 	background: var(--gd-color-surface-sunken);
 	border: 1px solid $border;
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	padding: 9px 12px;
 	font-size: 13px;
 	font-weight: 600;
@@ -755,6 +756,7 @@ $btn-black: var(--gd-color-text);
 	height: 32px;
 	flex-shrink: 0;
 	border-radius: 50%;
+	corner-shape: round;
 	background: var(--gd-success-tint);
 	display: inline-flex;
 	align-items: center;
@@ -797,7 +799,7 @@ $btn-black: var(--gd-color-text);
 	width: 48px;
 	height: 48px;
 	flex-shrink: 0;
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	background-color: var(--gd-color-surface-sunken);
 	background-size: cover;
 	background-position: center;

@@ -71,7 +71,7 @@ const Card = ({ base, spec }: { base: string; spec: CardSpec }) => {
 						justifyContent: "center",
 						padding: 24,
 						textAlign: "center",
-						borderRadius: 12,
+						borderRadius: "var(--gd-radius-card)",
 						border: "1px dashed var(--gd-color-border-strong)",
 						background: "var(--gd-color-surface-sunken)",
 						color: "var(--gd-color-text-secondary)",
@@ -94,7 +94,7 @@ const Card = ({ base, spec }: { base: string; spec: CardSpec }) => {
 					style={{
 						width: "100%",
 						height: "auto",
-						borderRadius: 12,
+						borderRadius: "var(--gd-radius-card)",
 						border: "1px solid var(--gd-color-border)",
 						background: "var(--gd-color-surface-sunken)",
 					}}

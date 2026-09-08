@@ -1,4 +1,4 @@
-$drawer-border-radius: 16px;
+$drawer-border-radius: var(--gd-radius-panel);
 
 .agentDrawerWrapper {
   border-radius: $drawer-border-radius $drawer-border-radius 0 0;
@@ -62,7 +62,7 @@ $drawer-border-radius: 16px;
 .messageContent {
   max-width: 75%;
   padding: 8px 12px;
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   white-space: pre-wrap;
   word-break: break-word;
 }

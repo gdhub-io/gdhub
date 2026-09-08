@@ -1,12 +1,12 @@
 .avatar {
 	max-height: 180px;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
 }
 
 .descriptionBlock {
 	border: 1px solid var(--gd-color-border-strong);
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	padding: 16px;
 	margin: 8px 0;
 }

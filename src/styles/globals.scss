@@ -1,7 +1,7 @@
+@use './layers';
 @use './nprogress';
+@use './shape';
 @use './variables' as *;
-
-@layer antd, base, nprogress;
 
 @layer base {
 

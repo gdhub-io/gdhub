@@ -2,7 +2,7 @@
 	position: relative;
 	width: 100%;
 	aspect-ratio: 16 / 9;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	overflow: hidden;
 	background: var(--gd-neutral-900);
 }
@@ -11,7 +11,7 @@
 	position: relative;
 	width: 100%;
 	aspect-ratio: 16 / 9;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	overflow: hidden;
 	background: var(--gd-neutral-950);
 
@@ -38,6 +38,7 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
+	corner-shape: round;
 	cursor: pointer;
 	color: var(--gd-color-text);
 	background: rgba(255, 255, 255, 0.95);
@@ -55,7 +56,7 @@
 	right: 12px;
 	bottom: 12px;
 	padding: 3px 8px;
-	border-radius: 6px;
+	border-radius: var(--gd-radius-chip);
 	background: rgba(0, 0, 0, 0.65);
 	color: var(--gd-color-text-inverse);
 	font-size: 11px;

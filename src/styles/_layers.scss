@@ -1,0 +1,8 @@
+// The cascade order, in its own file so it is emitted before anything else.
+//
+// `@use` must come first in a Sass file, and it inlines the used file's CSS
+// ahead of the using file's own — so a layer statement written inside
+// globals.scss lands *after* the blocks it is supposed to order, and a layer
+// gets its position from wherever it happened to appear first instead. That is
+// how `shape` ended up below `antd` and lost every border-radius it set.
+@layer antd, base, shape, nprogress;

@@ -274,7 +274,7 @@ const CourseClient = () => {
 												src={tch.image ?? undefined}
 												style={{
 													backgroundColor: "rgb(0, 0, 0, 0.2)",
-													borderRadius: 10,
+													borderRadius: "var(--gd-radius-control)",
 													flexShrink: 0,
 												}}
 											>

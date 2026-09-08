@@ -9,7 +9,7 @@
 }
 
 .hubLink {
-  border-radius: 10px;
+  border-radius: var(--gd-radius-control);
   outline: none;
 
   &:hover {
@@ -23,12 +23,12 @@
 
   &:focus-visible {
     box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.35);
-    border-radius: 10px;
+    border-radius: var(--gd-radius-control);
   }
 }
 
 .gameCard {
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   height: 100%;
@@ -39,14 +39,14 @@
 
 .hubCard {
   border: 1px solid var(--gd-color-surface-sunken);
-  border-radius: 10px;
+  border-radius: var(--gd-radius-control);
   box-shadow: none;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
 
   &:global(.ant-card) {
-    border-radius: 10px;
+    border-radius: var(--gd-radius-control);
     background: var(--gd-color-surface) !important;
   }
 }
@@ -106,6 +106,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  corner-shape: round;
 }
 
 .hubMetaText {
@@ -186,6 +187,7 @@
   gap: 4px;
   padding: 4px 8px;
   border-radius: 999px;
+  corner-shape: round;
   background-color: color-mix(in srgb, var(--gd-color-accent) 27%, transparent);
   color: var(--gd-color-text-inverse);
   backdrop-filter: blur(4px);
@@ -326,7 +328,7 @@
 .gameCardSkeleton {
   overflow: hidden;
   border: 1px solid var(--gd-color-border);
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   background-color: white;
 }
 

@@ -1,7 +1,7 @@
 .jobCard {
 	background: var(--gd-color-surface);
 	padding: 8px;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	border: 1px solid var(--gd-color-border-strong);
 	display: flex;
 	flex-direction: column;
@@ -37,7 +37,7 @@
 			justify-content: center;
 			width: 32px;
 			height: 32px;
-			border-radius: 10px;
+			border-radius: var(--gd-radius-control);
 			background: rgba(255, 255, 255, 0.8);
 			flex-shrink: 0;
 		}

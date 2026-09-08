@@ -94,6 +94,7 @@
 	flex: none;
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: 50%;
+	corner-shape: round;
 	font-size: 11px;
 	color: var(--gd-color-text-secondary);
 	background: var(--gd-color-surface);
@@ -187,5 +188,6 @@
 	width: 6px;
 	height: 6px;
 	border-radius: 50%;
+	corner-shape: round;
 	background: var(--gd-warning-solid);
 }

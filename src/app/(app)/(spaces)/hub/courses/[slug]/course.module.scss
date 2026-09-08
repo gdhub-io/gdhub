@@ -9,7 +9,7 @@
 	position: relative;
 	width: 100%;
 	aspect-ratio: 16 / 9;
-	border-radius: 16px;
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
 	margin-bottom: 24px;
 }
@@ -33,7 +33,7 @@
 	bottom: 16px;
 
 	:global(.ant-avatar) {
-		border-radius: 12px;
+		border-radius: var(--gd-radius-card);
 	}
 }
 
@@ -61,7 +61,7 @@
 .teachersList {
 	display: flex;
 	flex-direction: column;
-	border-radius: 12px;
+	border-radius: var(--gd-radius-card);
 	border: 1px solid var(--gd-color-border-strong);
 	overflow: hidden;
 }
@@ -189,7 +189,7 @@
 	align-items: center;
 	gap: 10px;
 	padding: 10px 14px;
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 	border: 1px solid var(--gd-color-border-strong);
 	background: var(--gd-color-surface);
 
@@ -235,7 +235,7 @@
 }
 
 .enrollBtn {
-	border-radius: 10px !important;
+	border-radius: var(--gd-radius-control) !important;
 	height: 44px;
 	font-weight: 500;
 }

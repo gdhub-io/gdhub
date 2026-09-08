@@ -59,7 +59,7 @@ const StatTile = ({
 		style={{
 			padding: "10px 8px",
 			minHeight: 104,
-			borderRadius: 12,
+			borderRadius: "var(--gd-radius-card)",
 			background: disabled ? "var(--gd-neutral-25)" : "var(--gd-color-surface)",
 			border: "1px solid var(--gd-color-border)",
 			height: "100%",
@@ -206,7 +206,7 @@ const ProfileClient = () => {
 							size="small"
 							bordered={false}
 							style={{
-								borderRadius: 16,
+								borderRadius: "var(--gd-radius-panel)",
 								background: "var(--gd-neutral-25)",
 								border: "1px solid var(--gd-color-border)",
 							}}

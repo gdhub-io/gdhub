@@ -12,6 +12,7 @@
 	align-items: center;
 	flex: 0 0 auto;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	font-family: var(--gd-font-ui);
 	font-size: 11px;
 	font-weight: 600;
@@ -31,6 +32,7 @@
 	width: 7px;
 	height: 7px;
 	border-radius: 50%;
+	corner-shape: round;
 	background: var(--gd-success-solid);
 }
 
@@ -61,6 +63,7 @@
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
+	corner-shape: round;
 	overflow: hidden;
 	background: var(--gd-color-surface-sunken);
 	outline: 2px solid var(--gd-color-surface);

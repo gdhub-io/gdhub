@@ -41,7 +41,7 @@
 // lines up regardless of which card it belongs to.
 .avatar {
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: var(--gd-radius-control);
   background: var(--gd-color-surface-sunken);
   color: var(--gd-neutral-700);
   font-weight: 600;
