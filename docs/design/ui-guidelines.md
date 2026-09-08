@@ -61,9 +61,22 @@ belongs to a token.
    catalogue cards (rules in `DS · 08`), the settings card (rule 7) and a table
    (rule 8). Everything else groups with a hairline, not a fill.
 
+   **The one live item in a list of history takes the fill.** A running checkpoint
+   above its finished ones, a current cycle above past ones: exactly one row is
+   the present, and it gets `--gd-color-surface` while everything below it stays
+   outlined and transparent. This is not a fourth exception, it is what "this
+   floats" is for. It only works while it is one — the moment two things in the
+   list are filled, neither reads as the live one.
+
    The consequence to remember: a neutral fill inside a panel is read against the
    *page*, not against white. `--gd-color-surface-sunken` disappears there — go a
    step further to `--gd-neutral-100`.
+
+   **Making something compact removes chrome, never structure.** A panel, a
+   heading, padding, a border: all fair game. The axis of a diagram is not — a
+   pulse grid without its week columns, a chart without its scale, a table
+   without its head are all smaller and none of them can be read. If compacting
+   costs a reader the ability to tell one cell from another, it went too far.
 
 2. **Tinted icon tile.** A list row, a quick action or an empty state gets an
    `<IconTile>` — 32/40/56px, radius 10/12/16. Direction rows inherit the craft
@@ -72,6 +85,22 @@ belongs to a token.
 3. **Status is a dot and a word.** Use `<StatusDot>`. Statuses repeat down a
    list, and filled `<Tag>`s turn a table into confetti. Tags stay for things
    that are genuinely labels — skills, categories.
+
+   **A chip is an antd `<Tag>` and it has exactly one look**, already set by the
+   theme: `--gd-color-surface-sunken` fill, radius `chip` (6), **no border**,
+   label type at `--gd-color-text`. Nothing else: no pills, no per-chip radius,
+   no outlined variant, no tinted background to signal a state. Chips drifted
+   across the canvas — radius 7, 8, 10, 13, 16 and 999, four different fills —
+   because the rule was never written down; anything that does not match the
+   theme's Tag is a bug, not a variant.
+
+   **Which of the two you need is a question about the word, not the styling.**
+   "Video", "Expert", "Programming", "Week 2" name what a thing *is* and stay
+   chips. "Awaiting verdict", "Draft", "Quiet", "Cut on day 14", "Held" say what
+   *state* it is in and are a dot and a word — including inside a card, a modal
+   or a thread entry, not only in tables. A tinted chip carrying a state is the
+   one combination to never ship: it shouts a status that repeats, which is
+   precisely what the dot exists to stop.
 
 4. **Empty states are screens.** Use `<EmptyState>`: a tile, an affirmative
    title, one sentence saying what will appear here. Not antd's default grey
@@ -219,3 +248,31 @@ to express — use a separator, a heading, or space.
 Every user-facing string is a Tolgee key. The `ui` primitives take
 already-translated strings on purpose, so translation stays at the call site
 where the context is.
+
+**A screen explains itself through its headings and labels, not through
+paragraphs.** Explanatory prose is the first thing that stops being read and the
+last thing anyone updates, and it is usually there because a label was named
+badly. Fix the label.
+
+The order to reach for, and only in this order:
+
+1. **Name it properly.** If a heading, a column or a button needs a sentence
+   under it, the wrong word is on it.
+2. **An info icon.** Anything a user might want explained goes behind
+   `IconInfoCircle` with a tooltip — available, not in the way.
+3. **One line.** Something genuinely important, and unsayable in a label, gets a
+   single line in place. Not a paragraph, and never a block of grey text at the
+   top of a page.
+
+A rule with real consequences: a screen that needs a paragraph to be understood
+is a screen that has not been designed yet.
+
+**A legend is not prose.** Axis labels, column heads, week markers and keys are
+labels — they are how a diagram names its own parts, and stripping them is not
+tidying, it is removing the thing that made the picture readable. This rule is
+about paragraphs of explanation, and it stops there.
+
+**A disabled control says why on hover, and carries a lock.** Never put the reason
+in a neighbouring element: text sitting beside a button, in the same box, reads as
+a second control and gets pressed. The button keeps the label it always has, takes
+`IconLock`, and the reason lives in its tooltip.
