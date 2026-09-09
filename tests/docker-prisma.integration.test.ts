@@ -3,7 +3,6 @@ import net from "node:net";
 import { promisify } from "node:util";
 import { ProjectStatus, SkillLevel, TeamMemberStatus, TeamVacancyStatus, UserRole } from "@gdhub-io/gdhub-prisma";
 import { createMocks } from "node-mocks-http";
-import "reflect-metadata";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 const execFileAsync = promisify(execFile);
