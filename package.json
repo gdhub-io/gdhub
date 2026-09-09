@@ -4,7 +4,7 @@
 	"private": true,
 	"packageManager": "bun@1.2.19",
 	"engines": {
-		"node": ">=20.19.0",
+		"node": ">=24.0.0",
 		"bun": ">=1.2.0"
 	},
 	"scripts": {
@@ -169,7 +169,7 @@
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/lodash": "^4.17.16",
 		"@types/luxon": "^3.0.0",
-		"@types/node": "^22.7.4",
+		"@types/node": "^24.10.1",
 		"@types/node-fetch": "^2.6.2",
 		"@types/nodemailer": "^8.0.0",
 		"@types/nprogress": "^0.2.3",
