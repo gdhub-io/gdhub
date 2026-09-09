@@ -4,7 +4,7 @@ const decompress = require("decompress");
 const { config } = require("dotenv");
 const { execSync } = require("node:child_process");
 
-config();
+config({ quiet: true });
 
 async function main ()
 {
