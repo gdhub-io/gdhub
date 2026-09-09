@@ -10,6 +10,8 @@ RUN bun install --frozen-lockfile
 FROM deps AS builder
 WORKDIR /app
 COPY . .
+# The only consumer of `.next/standalone`; next.config.js emits it on request.
+ENV NEXT_OUTPUT_STANDALONE=1
 RUN bun run build
 
 # 3. Production image, copy all the files and run next
