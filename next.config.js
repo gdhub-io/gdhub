@@ -2,11 +2,13 @@
 
 const nextConfig = {
 	reactStrictMode: true,
-	// `standalone` exists for the Docker image, which copies `.next/standalone`.
-	// Vercel does not need it and since Next 16.3 it breaks there: the Turbopack
-	// standalone build stops emitting `.next/next-server.js.nft.json`, which the
-	// Vercel builder opens and fails without.
-	output: process.env.VERCEL ? undefined : "standalone",
+	// `.next/standalone` is read by the Docker image and by nothing else, so the
+	// Dockerfile's builder stage is what asks for it. Defaulting it on cost every
+	// other build an output mode nobody reads, and on Vercel it was worse than
+	// wasted: since Next 16.3 the Turbopack standalone build stops emitting
+	// `.next/next-server.js.nft.json`, which the Vercel builder opens and fails
+	// without.
+	output: process.env.NEXT_OUTPUT_STANDALONE ? "standalone" : undefined,
 
 	// Lets `dev:test` run beside the ordinary dev server: Next refuses a second
 	// instance sharing one build directory.
