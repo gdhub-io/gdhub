@@ -13,7 +13,7 @@ COPY . .
 RUN bun run build
 
 # 3. Production image, copy all the files and run next
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
