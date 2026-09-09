@@ -23,7 +23,7 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@documenso/embed-react": "^0.6.1",
-        "@documenso/sdk-typescript": "^0.8.0",
+        "@documenso/sdk-typescript": "^0.9.1",
         "@docuseal/api": "^1.0.25",
         "@edge-csrf/nextjs": "^2.5.3-cloudflare-rc1",
         "@editorjs/checklist": "^1.6.0",
@@ -578,7 +578,7 @@
 
     "@documenso/embed-react": ["@documenso/embed-react@0.6.2", "", { "peerDependencies": { "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-kMU8AW4myd+T+MokiWDQFVocnJ0sKsnNf5f1iAHV8gGe2TFm802JakBlrwwzkZf+CSSnZlrKznG/OEjBvmIPFQ=="],
 
-    "@documenso/sdk-typescript": ["@documenso/sdk-typescript@0.8.1", "", { "dependencies": { "@modelcontextprotocol/sdk": "^1.26.0", "zod": "^3.25.0 || ^4.0.0" }, "bin": { "mcp": "bin/mcp-server.js" } }, "sha512-+i9vMb+GL6acZLv+AJjRnbR/sQKRkP3q5qAqSJ3d7f/Ut6fl+GN7q36LcbbuYnw4Yeq3UHZXI+Zx0HGxJXd7BQ=="],
+    "@documenso/sdk-typescript": ["@documenso/sdk-typescript@0.9.1", "", { "dependencies": { "@modelcontextprotocol/sdk": "^1.26.0", "zod": "^3.25.0 || ^4.0.0" }, "bin": { "mcp": "bin/mcp-server.js" } }, "sha512-1ogs+wu6VEvAGyWolM5FiWUY1jWIMk3U6XZtJzFnHGC2qKERAHfaGSY31Gpnh3EKbGDxXctldorwwMMRKxv1rw=="],
 
     "@docuseal/api": ["@docuseal/api@1.0.25", "", {}, "sha512-BSt6sgXaMejle8O+SmO/bnPA63WnkDbU4xPQpAEadwcVZCOV3y9abUfie0tLF4XCKpQYR4srx2ofGZW884Fagw=="],
 

@@ -62,7 +62,7 @@
 		"@dnd-kit/sortable": "^10.0.0",
 		"@dnd-kit/utilities": "^3.2.2",
 		"@documenso/embed-react": "^0.6.1",
-		"@documenso/sdk-typescript": "^0.8.0",
+		"@documenso/sdk-typescript": "^0.9.1",
 		"@docuseal/api": "^1.0.25",
 		"@edge-csrf/nextjs": "^2.5.3-cloudflare-rc1",
 		"@editorjs/checklist": "^1.6.0",
