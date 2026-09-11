@@ -190,6 +190,8 @@
 // Portalled outside the inverse band, so colours here name ramp steps, not roles.
 .menuPopup {
   :global(.ant-menu) {
+    // The items carry a 4px block margin and an 8px inline one; this evens the frame out.
+    padding-block: var(--gd-space-1);
     border-radius: var(--gd-radius-card);
     // A ring, not a border: antd resets the list's border, and the wrapper has an 8px gap.
     box-shadow:

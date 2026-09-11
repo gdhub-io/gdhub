@@ -71,9 +71,12 @@ for prices, verdicts and guarantees.
 - **The curators are real people from the database.** There is no curator record yet, so
   `getFeaturedCurators` reads the closest true thing: a specialist at expert level who has
   opened themselves for mentoring — the same set the experts page lists. `isFeatured` puts
-  a chosen few first. The chips under a card are `openForQuestions`, not workflow stages:
-  the schema has no stage field, and inventing one on a landing page is how a placeholder
-  ships.
+  a chosen few first.
+- **The card carries no chips.** What belongs under a curator is the workflow stages they
+  can help on — the nine of the `default` schema, chosen by the curator in
+  [`/advisor/settings`](../../advisor-space.md#43-advisorsettings). Neither the field nor
+  that page exists yet, so the card ends at the bio rather than showing
+  `openForQuestions` under a label that would mean something else.
 
 ## Placeholders — must be real before this ships
 
@@ -107,3 +110,6 @@ for prices, verdicts and guarantees.
 - Tolgee keys exist in the source as `checkpointLanding.*` defaults but have not been
   pushed to Tolgee.
 - No e2e test. The page has one piece of behaviour worth covering — the FAQ accordion.
+- The stages a curator helps on are not on the card. They need `Speciality.curatorStages`
+  in `@gdhub-io/gdhub-prisma` and the General section of `/advisor/settings` to fill it —
+  see [advisor-space.md](../../advisor-space.md#43-advisorsettings).

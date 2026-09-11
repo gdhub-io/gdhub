@@ -9,8 +9,6 @@ export type FeaturedCurator = {
 	specialization: string;
 	summary: string;
 	image: string | null;
-	/** What the specialist takes questions on. */
-	topics: string[];
 };
 
 /** No curator record yet — the experts set, `isFeatured` first then most-read. */
@@ -31,7 +29,6 @@ export async function getFeaturedCurators(
 			name: true,
 			specialization: true,
 			summary: true,
-			openForQuestions: true,
 			user: {
 				select: {
 					name: true,
@@ -49,6 +46,5 @@ export async function getFeaturedCurators(
 		specialization: speciality.specialization,
 		summary: speciality.summary ?? "",
 		image: speciality.user.image,
-		topics: speciality.openForQuestions.slice(0, 3),
 	}));
 }

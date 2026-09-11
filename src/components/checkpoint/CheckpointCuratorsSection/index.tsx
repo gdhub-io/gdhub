@@ -17,11 +17,6 @@ export const CheckpointCuratorsSection = ({
 
 	if (!curators.length) return null;
 
-	const topicsLabel = t(
-		"checkpointLanding.curators.topicsLabel",
-		"Takes questions on",
-	);
-
 	return (
 		<CheckpointSection tone="dark">
 			<div className={styles.layout}>
@@ -55,20 +50,6 @@ export const CheckpointCuratorsSection = ({
 								<h3 className={styles.name}>{curator.name}</h3>
 								<p className={styles.experience}>{curator.specialization}</p>
 								<p className={styles.bio}>{curator.summary}</p>
-
-								{curator.topics.length ? (
-									<>
-										<hr className={styles.divider} />
-										<p className={styles.topicsLabel}>{topicsLabel}</p>
-										<ul className={styles.topics}>
-											{curator.topics.map((topic) => (
-												<li key={topic} className={styles.topic}>
-													{topic}
-												</li>
-											))}
-										</ul>
-									</>
-								) : null}
 							</div>
 						</li>
 					))}

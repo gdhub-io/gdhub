@@ -29,14 +29,14 @@ export const CheckpointHeroSection = () => {
 					<h1 className={styles.headline}>
 						{t(
 							"checkpointLanding.hero.headline",
-							"Reach your next Checkpoint in 28 days.",
+							"Reach your next Checkpoint in 28 days",
 						)}
 					</h1>
 
 					<p className={styles.subhead}>
 						{t(
 							"checkpointLanding.hero.subhead",
-							"Each cycle turns a realistic goal into saved progress. A curator reviews your builds, gameplay video, images, or documents — and the verdict becomes the starting point for the next cycle.",
+							"The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release. Over 28 days, the project team works with a curator to define a realistic goal, organize the work needed to achieve it, review progress, and adjust priorities when necessary.",
 						)}
 					</p>
 

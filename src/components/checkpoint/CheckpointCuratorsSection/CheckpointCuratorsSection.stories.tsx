@@ -11,7 +11,6 @@ const CURATORS: FeaturedCurator[] = [
 		summary:
 			"Systems and level design for mid-core games. Helps teams turn broad ideas into a playable, reviewable scope.",
 		image: null,
-		topics: ["Scope", "Combat design", "Level flow"],
 	},
 	{
 		id: "2",
@@ -21,7 +20,6 @@ const CURATORS: FeaturedCurator[] = [
 		summary:
 			"Unity and Unreal pipelines, architecture and production risks. Finds the version of the plan the build can carry.",
 		image: null,
-		topics: ["Unreal", "Build pipeline"],
 	},
 	{
 		id: "3",
@@ -31,7 +29,6 @@ const CURATORS: FeaturedCurator[] = [
 		summary:
 			"Visual direction for small teams. Turns a vague look into a concrete art milestone.",
 		image: null,
-		topics: [],
 	},
 ];
 

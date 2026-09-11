@@ -95,42 +95,6 @@
 	color: var(--gd-color-text-secondary);
 }
 
-.divider {
-	width: 100%;
-	height: 1px;
-	margin: 4px 0;
-	border: 0;
-	background-color: var(--gd-color-border);
-}
-
-.topicsLabel {
-	margin: 0;
-	font-size: var(--gd-font-size-label);
-	font-weight: 600;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--gd-color-text-tertiary);
-}
-
-.topics {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-// The theme's `Tag` look by hand: a real one here would take the inverse theme.
-.topic {
-	padding: 4px 8px;
-	border-radius: var(--gd-radius-chip);
-	background-color: var(--gd-neutral-50);
-	font-size: var(--gd-font-size-label);
-	font-weight: 500;
-	color: var(--gd-color-text);
-}
-
 @media screen and (min-width: 992px) {
 	.layout {
 		gap: 48px;
