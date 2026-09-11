@@ -49,6 +49,30 @@
 		display: block;
 	}
 
+	/**
+	 * The landings' call to action, scoped so a header on the same dark band keeps
+	 * the product's button. In CSS because antd treats `colorPrimary` as a seed
+	 * and has no token for a primary button's fill.
+	 */
+	[data-gd-landing] .ant-btn-primary {
+		background-color: var(--gd-brand-500);
+		color: var(--gd-neutral-0);
+		outline: 1px solid transparent;
+		outline-offset: 3px;
+
+		// Naming the properties keeps the outline out of antd's `transition: all`,
+		// which flashed the ring white on load. `box-shadow` cannot draw the gap.
+		transition-property: background-color, color, border-color;
+
+		// The fill holds; lightening it on hover drains the page's own colour.
+		&:hover,
+		&:focus-visible {
+			background-color: var(--gd-brand-500);
+			color: var(--gd-neutral-0);
+			outline-color: var(--gd-brand-500);
+		}
+	}
+
 	a.text-link {
 		border-bottom: 1px solid var(--gd-color-border-strong);
 		transition: border-color 0.5s;

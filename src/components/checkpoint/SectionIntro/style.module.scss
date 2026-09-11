@@ -1,0 +1,46 @@
+.intro {
+	display: grid;
+	gap: 16px;
+}
+
+.copy {
+	display: grid;
+	gap: 16px;
+}
+
+.eyebrow {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--gd-color-accent);
+}
+
+.headline {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-h2);
+	font-weight: 700;
+	line-height: 1.12;
+	letter-spacing: -0.02em;
+	color: var(--gd-color-text);
+}
+
+.lead {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-lead);
+	line-height: 1.6;
+	color: var(--gd-color-text-secondary);
+}
+
+@media screen and (min-width: 992px) {
+	.split {
+		grid-template-columns: minmax(0, 620px) minmax(0, 1fr);
+		column-gap: 64px;
+	}
+
+	// Bottom-aligned: top-aligned it reads as a caption beside the title.
+	.split .lead {
+		align-self: end;
+	}
+}

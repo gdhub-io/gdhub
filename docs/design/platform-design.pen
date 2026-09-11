@@ -215640,28 +215640,6 @@
                       "fontWeight": "normal"
                     }
                   ]
-                },
-                {
-                  "type": "frame",
-                  "id": "z2Cku",
-                  "x": 355.29354181061535,
-                  "y": 101,
-                  "name": "Concept and design documents",
-                  "rotation": -5,
-                  "width": 220,
-                  "height": 164,
-                  "fill": {
-                    "type": "image",
-                    "enabled": true,
-                    "url": "images/concept-artifacts-transparent-v3.png",
-                    "mode": "fit"
-                  },
-                  "effect": {
-                    "type": "shadow",
-                    "shadowType": "outer",
-                    "enabled": false,
-                    "color": "#000000"
-                  }
                 }
               ]
             }
@@ -216153,84 +216131,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "type": "frame",
-              "id": "Xrdpd",
-              "name": "Checkpoint cycle",
-              "clip": true,
-              "width": "fill_container",
-              "height": 92,
-              "fill": "#1A1917",
-              "cornerRadius": 16,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "eV1GK",
-                  "name": "Checkpoint token trail",
-                  "width": 216,
-                  "height": 92,
-                  "layout": "none",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "izIwk",
-                      "x": 0,
-                      "y": 0,
-                      "name": "3D Checkpoint journey",
-                      "width": 216,
-                      "height": 123,
-                      "fill": {
-                        "type": "image",
-                        "enabled": true,
-                        "url": "images/checkpoint-journey-branded-transparent.png",
-                        "mode": "fit"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "dZpgc",
-                  "name": "Cycle copy",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
-                  "padding": [
-                    20,
-                    24
-                  ],
-                  "justifyContent": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "BpT39",
-                      "name": "Cycle title",
-                      "fill": "#FFFFFF",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Checkpoint reached → progress saved → new goals → next 28-day cycle",
-                      "fontFamily": "Onest",
-                      "fontSize": 17,
-                      "fontWeight": "600"
-                    },
-                    {
-                      "type": "text",
-                      "id": "jxMio",
-                      "name": "Cycle note",
-                      "fill": "#FFFFFFB3",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Continue with the same curator or choose another one for the next stage of the project.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Onest",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
             }
           ]
         },
@@ -216303,7 +216203,7 @@
                       "fill": "#5A5955",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Pick live sessions and an industry specialist when the work itself needs judgement. Pick the AI curator when you need a lower-cost written review of visible progress.",
+                      "content": "Both options give the project the same 28-day structure: sprints, deadlines, tasks, devlogs and activity signals. Choose live judgement from an industry professional or a lower-cost written AI review.",
                       "lineHeight": 1.6,
                       "fontFamily": "Onest",
                       "fontSize": 18,
@@ -216336,8 +216236,8 @@
                     },
                     {
                       "type": "frame",
-                      "id": "g1XcSb",
-                      "name": "A named specialist from the game industry",
+                      "id": "rUsFk",
+                      "name": "Planning and progress tracking",
                       "width": "fill_container",
                       "height": 54,
                       "padding": [
@@ -216350,14 +216250,14 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "L3vvgb",
+                          "id": "mwSoF",
                           "name": "T",
                           "fill": "#5A5955",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "A professional with hands-on game industry experience",
+                          "content": "Planning and progress tracking",
                           "fontFamily": "Onest",
-                          "fontSize": 16,
+                          "fontSize": 15.5,
                           "fontWeight": "normal"
                         }
                       ]
@@ -216365,7 +216265,7 @@
                     {
                       "type": "frame",
                       "id": "KzCmG",
-                      "name": "Four sprint reviews",
+                      "name": "Sprint progress review",
                       "width": "fill_container",
                       "height": 54,
                       "padding": [
@@ -216383,63 +216283,7 @@
                           "fill": "#5A5955",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Four sprint reviews",
-                          "fontFamily": "Onest",
-                          "fontSize": 16,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "ZE2oV",
-                      "name": "A judgement of the work itself",
-                      "width": "fill_container",
-                      "height": 54,
-                      "padding": [
-                        0,
-                        16,
-                        0,
-                        0
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "WWNPf",
-                          "name": "T",
-                          "fill": "#5A5955",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "A judgement of how the game plays",
-                          "fontFamily": "Onest",
-                          "fontSize": 16,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "RxCdI",
-                      "name": "Reviews devlogs and submitted artifacts",
-                      "width": "fill_container",
-                      "height": 54,
-                      "padding": [
-                        0,
-                        16,
-                        0,
-                        0
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "U1XAg",
-                          "name": "T",
-                          "fill": "#5A5955",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Reviews devlogs and submitted artifacts",
+                          "content": "Sprint progress review",
                           "fontFamily": "Onest",
                           "fontSize": 16,
                           "fontWeight": "normal"
@@ -216468,6 +216312,62 @@
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
                           "content": "Weekly tracking of team activity signals",
+                          "fontFamily": "Onest",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "g1XcSb",
+                      "name": "A named specialist from the game industry",
+                      "width": "fill_container",
+                      "height": 54,
+                      "padding": [
+                        0,
+                        16,
+                        0,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "L3vvgb",
+                          "name": "T",
+                          "fill": "#5A5955",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "A professional with hands-on game industry experience",
+                          "fontFamily": "Onest",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZE2oV",
+                      "name": "A judgement of the work itself",
+                      "width": "fill_container",
+                      "height": 54,
+                      "padding": [
+                        0,
+                        16,
+                        0,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "WWNPf",
+                          "name": "T",
+                          "fill": "#5A5955",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "A judgement of how the game plays",
                           "fontFamily": "Onest",
                           "fontSize": 16,
                           "fontWeight": "normal"
@@ -216590,6 +216490,83 @@
                     },
                     {
                       "type": "frame",
+                      "id": "bClbC",
+                      "name": "Sprints, deadlines, tasks and devlogs",
+                      "width": "fill_container",
+                      "height": 54,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "c0Hrk",
+                          "name": "Ic",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "#12854B"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UiYRP",
+                      "name": "Four live sessions of 45 minutes",
+                      "width": "fill_container",
+                      "height": 54,
+                      "layout": "vertical",
+                      "gap": 3,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "g70ykf",
+                          "name": "Ic",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "#12854B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ee1Ac",
+                          "name": "T",
+                          "fill": "#76756F",
+                          "content": "live session",
+                          "textAlign": "center",
+                          "fontFamily": "Onest",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "e4WQd",
+                      "name": "Weekly tracking of team activity signals",
+                      "width": "fill_container",
+                      "height": 54,
+                      "gap": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "fqPqW",
+                          "name": "Ic",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "#12854B"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "fxOnM",
                       "name": "A named specialist from the game industry",
                       "width": "fill_container",
@@ -216612,38 +216589,6 @@
                     },
                     {
                       "type": "frame",
-                      "id": "UiYRP",
-                      "name": "Four live sessions of 45 minutes",
-                      "width": "fill_container",
-                      "height": 54,
-                      "gap": 8,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "g70ykf",
-                          "name": "Ic",
-                          "width": 19,
-                          "height": 19,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "#12854B"
-                        },
-                        {
-                          "type": "text",
-                          "id": "ee1Ac",
-                          "name": "T",
-                          "fill": "#76756F",
-                          "content": "live session",
-                          "fontFamily": "Onest",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "DSzll",
                       "name": "A judgement of the work itself",
                       "width": "fill_container",
@@ -216655,60 +216600,6 @@
                         {
                           "type": "icon",
                           "id": "QqM7p",
-                          "name": "Ic",
-                          "width": 19,
-                          "height": 19,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "#12854B"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "n8ACjo",
-                      "name": "Reviews devlogs and submitted artifacts",
-                      "width": "fill_container",
-                      "height": 54,
-                      "gap": 8,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "A68CyM",
-                          "name": "Ic",
-                          "width": 19,
-                          "height": 19,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "#12854B"
-                        },
-                        {
-                          "type": "text",
-                          "id": "AtLDX",
-                          "name": "T",
-                          "fill": "#76756F",
-                          "content": "live in the session",
-                          "fontFamily": "Onest",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "e4WQd",
-                      "name": "Weekly tracking of team activity signals",
-                      "width": "fill_container",
-                      "height": 54,
-                      "gap": 8,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "fqPqW",
                           "name": "Ic",
                           "width": 19,
                           "height": 19,
@@ -216845,23 +216736,22 @@
                     },
                     {
                       "type": "frame",
-                      "id": "BpEip",
-                      "name": "A named specialist from the game industry",
+                      "id": "hcTdi",
+                      "name": "Sprints, deadlines, tasks and devlogs",
                       "width": "fill_container",
                       "height": 54,
-                      "gap": 8,
                       "justifyContent": "center",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "icon",
-                          "id": "GqEKS",
+                          "id": "Clafn",
                           "name": "Ic",
                           "width": 19,
                           "height": 19,
-                          "icon": "minus",
+                          "icon": "check",
                           "library": "lucide",
-                          "fill": "#C5C4C0"
+                          "fill": "#12854B"
                         }
                       ]
                     },
@@ -216871,7 +216761,8 @@
                       "name": "Four live sessions of 45 minutes",
                       "width": "fill_container",
                       "height": 54,
-                      "gap": 8,
+                      "layout": "vertical",
+                      "gap": 3,
                       "justifyContent": "center",
                       "alignItems": "center",
                       "children": [
@@ -216891,60 +216782,7 @@
                           "name": "T",
                           "fill": "#76756F",
                           "content": "written summary",
-                          "fontFamily": "Onest",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "BUdwE",
-                      "name": "A judgement of the work itself",
-                      "width": "fill_container",
-                      "height": 54,
-                      "gap": 8,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "w6d9mq",
-                          "name": "Ic",
-                          "width": 19,
-                          "height": 19,
-                          "icon": "minus",
-                          "library": "lucide",
-                          "fill": "#C5C4C0"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "rMh7d",
-                      "name": "Reviews devlogs and submitted artifacts",
-                      "width": "fill_container",
-                      "height": 54,
-                      "gap": 8,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "l1ckY6",
-                          "name": "Ic",
-                          "width": 19,
-                          "height": 19,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "#12854B"
-                        },
-                        {
-                          "type": "text",
-                          "id": "v11Mn8",
-                          "name": "T",
-                          "fill": "#76756F",
-                          "content": "in the sprint summary",
+                          "textAlign": "center",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -216970,6 +216808,50 @@
                           "icon": "check",
                           "library": "lucide",
                           "fill": "#12854B"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BpEip",
+                      "name": "A named specialist from the game industry",
+                      "width": "fill_container",
+                      "height": 54,
+                      "gap": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "GqEKS",
+                          "name": "Ic",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "minus",
+                          "library": "lucide",
+                          "fill": "#C5C4C0"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BUdwE",
+                      "name": "A judgement of the work itself",
+                      "width": "fill_container",
+                      "height": 54,
+                      "gap": 8,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "w6d9mq",
+                          "name": "Ic",
+                          "width": 19,
+                          "height": 19,
+                          "icon": "minus",
+                          "library": "lucide",
+                          "fill": "#C5C4C0"
                         }
                       ]
                     },
@@ -217153,7 +217035,7 @@
                           "id": "s6h2B",
                           "name": "Experience",
                           "fill": "#1A1917",
-                          "content": "Systems & Level Design · 12 years in games",
+                          "content": "Systems & Level Design ",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "600"
@@ -217335,7 +217217,7 @@
                           "id": "ROy04",
                           "name": "Experience",
                           "fill": "#1A1917",
-                          "content": "Engine & Pipelines · 10 years in games",
+                          "content": "Engine & Pipelines ",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "600"
@@ -217517,7 +217399,7 @@
                           "id": "Lbz5Q",
                           "name": "Experience",
                           "fill": "#1A1917",
-                          "content": "Visual Direction & 2D · 9 years in games",
+                          "content": "Visual Direction & 2D",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "600"
@@ -217722,18 +217604,13 @@
               "type": "frame",
               "id": "lPjow",
               "name": "Price table",
+              "clip": true,
               "width": "fill_container",
               "cornerRadius": 16,
               "stroke": "#FFFFFF1F",
               "strokeWidth": 1,
               "strokeAlignment": "inner",
               "layout": "vertical",
-              "padding": [
-                8,
-                28,
-                20,
-                28
-              ],
               "children": [
                 {
                   "type": "frame",
@@ -217741,6 +217618,11 @@
                   "name": "Head row",
                   "width": "fill_container",
                   "height": 56,
+                  "fill": "#FFFFFF0A",
+                  "padding": [
+                    0,
+                    28
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -217859,6 +217741,10 @@
                   "name": "Middle",
                   "width": "fill_container",
                   "height": 74,
+                  "padding": [
+                    0,
+                    28
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -217973,6 +217859,10 @@
                   "name": "Experienced",
                   "width": "fill_container",
                   "height": 74,
+                  "padding": [
+                    0,
+                    28
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -218087,6 +217977,10 @@
                   "name": "Expert",
                   "width": "fill_container",
                   "height": 74,
+                  "padding": [
+                    0,
+                    28
+                  ],
                   "alignItems": "center",
                   "children": [
                     {
@@ -218337,19 +218231,6 @@
                       "fontWeight": "600"
                     }
                   ]
-                },
-                {
-                  "type": "text",
-                  "id": "FoINC",
-                  "name": "Pricing CTA note",
-                  "fill": "#FFFFFF8A",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Create the scope and compare available curators before paying.",
-                  "lineHeight": 1.5,
-                  "fontFamily": "Onest",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
                 }
               ]
             }
@@ -220520,74 +220401,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "type": "frame",
-              "id": "LK5Z9",
-              "name": "Cycle",
-              "clip": true,
-              "width": "fill_container",
-              "fill": "#1A1917",
-              "cornerRadius": 16,
-              "layout": "vertical",
-              "gap": 12,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "Mv89k",
-                  "name": "Journey",
-                  "width": "fill_container",
-                  "height": 132,
-                  "fill": {
-                    "type": "image",
-                    "enabled": true,
-                    "url": "images/checkpoint-journey-branded-transparent.png",
-                    "mode": "fill"
-                  }
-                },
-                {
-                  "type": "frame",
-                  "id": "I04GI",
-                  "name": "Copy",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
-                  "padding": [
-                    0,
-                    20,
-                    20,
-                    20
-                  ],
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "AKUO4",
-                      "name": "Title",
-                      "fill": "#FFFFFF",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Checkpoint reached → progress saved → new goals",
-                      "lineHeight": 1.35,
-                      "fontFamily": "Onest",
-                      "fontSize": 16,
-                      "fontWeight": "600"
-                    },
-                    {
-                      "type": "text",
-                      "id": "npvuW",
-                      "name": "Note",
-                      "fill": "#FFFFFFB3",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Continue with the same curator or choose another for the next 28-day cycle.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "Onest",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
             }
           ]
         },
@@ -220635,7 +220448,7 @@
               "fill": "#5A5955",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Pick live sessions when the game itself needs judgement. Pick AI for a lower-cost written review of visible progress.",
+              "content": "Both options organize the work into sprints, deadlines, tasks and devlogs. Choose live judgement from an industry professional or a lower-cost written AI review.",
               "lineHeight": 1.55,
               "fontFamily": "Onest",
               "fontSize": 15,
@@ -220722,8 +220535,40 @@
                   "children": [
                     {
                       "type": "frame",
+                      "id": "ZVkJX",
+                      "name": "Planning and progress tracking",
+                      "width": "fill_container",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Tv3uL",
+                          "name": "Check",
+                          "width": 17,
+                          "height": 17,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "#12854B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mUkkh",
+                          "name": "Feature",
+                          "fill": "#1A1917",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Planning and progress tracking",
+                          "fontFamily": "Onest",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "QZqwo",
-                      "name": "4 live sprint reviews",
+                      "name": "Live sprint progress review",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -220745,39 +220590,7 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "4 live sprint reviews",
-                          "fontFamily": "Onest",
-                          "fontSize": 14,
-                          "fontWeight": "500"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "eoVFo",
-                      "name": "Reviews devlogs and artifacts",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "iLSOY",
-                          "name": "Check",
-                          "width": 17,
-                          "height": 17,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "#12854B"
-                        },
-                        {
-                          "type": "text",
-                          "id": "YWmnt",
-                          "name": "Feature",
-                          "fill": "#1A1917",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Reviews devlogs and artifacts",
+                          "content": "Live sprint progress review",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -220961,8 +220774,40 @@
                   "children": [
                     {
                       "type": "frame",
+                      "id": "IjXO9",
+                      "name": "Planning and progress tracking",
+                      "width": "fill_container",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "h2u23B",
+                          "name": "Check",
+                          "width": 17,
+                          "height": 17,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "#12854B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "KTQXv",
+                          "name": "Feature",
+                          "fill": "#1A1917",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Planning and progress tracking",
+                          "fontFamily": "Onest",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "H61cl",
-                      "name": "4 written sprint summaries",
+                      "name": "Written sprint progress summary",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -220984,39 +220829,7 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "4 written sprint summaries",
-                          "fontFamily": "Onest",
-                          "fontSize": 14,
-                          "fontWeight": "500"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "fgmPO",
-                      "name": "Reviews devlogs and artifacts",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "q7rgOR",
-                          "name": "Check",
-                          "width": 17,
-                          "height": 17,
-                          "icon": "check",
-                          "library": "lucide",
-                          "fill": "#12854B"
-                        },
-                        {
-                          "type": "text",
-                          "id": "oNq2W",
-                          "name": "Feature",
-                          "fill": "#1A1917",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Reviews devlogs and artifacts",
+                          "content": "Written sprint progress summary",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"

@@ -72,6 +72,10 @@ export function buildAntdTheme({
 			colorWarning: semantic.warning.solid,
 			colorError: semantic.danger.solid,
 
+			// antd's own close-icon grey lands at 45% white on an inverse surface.
+			colorIcon: r.textSecondary,
+			colorIconHover: r.text,
+
 			colorTextBase: r.text,
 			// antd derives headings as 85% of the base, which on a dark band reads
 			// as a dimmed grey rather than a heading.
@@ -216,6 +220,7 @@ export function buildAntdTheme({
 				// "you are here" is carried by a neutral fill and extra weight.
 				itemSelectedColor: r.text,
 				itemSelectedBg: fills.strong,
+				horizontalItemHoverColor: r.text,
 				horizontalItemSelectedColor: r.text,
 				horizontalItemSelectedBg: r.surfaceSunken,
 				// antd lets a horizontal menu stretch its items to the bar's own

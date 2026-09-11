@@ -1,4 +1,5 @@
 @use "sass:meta";
+@use "../../styles/variables.scss";
 .container {
   background-color: transparent;
   transition: background-color 0.5s, backdrop-filter 0.4s;
@@ -16,8 +17,9 @@
     z-index: 1;
   }
 
+  // One bar height on every public page; left to its content it drifted.
   .topLine {
-    padding: 24px 0;
+    height: variables.$landing-header-height;
     width: 100%;
   }
 
@@ -67,6 +69,36 @@
         color: var(--gd-color-text) !important;
       }
     }
+
+    // A submenu title is not an `.ant-menu-item`, so the rules above miss it.
+    :global(.ant-menu-submenu-title) {
+      height: var(--gd-control-height);
+      line-height: var(--gd-control-height);
+      padding-inline: 16px;
+      margin-inline: 4px;
+      border-radius: var(--gd-radius-control);
+      color: var(--gd-color-text);
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      // A bare `<a>` takes the link colour; navigation is neutral in every state.
+      a {
+        color: var(--gd-color-text);
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: var(--gd-color-text);
+
+        a {
+          color: var(--gd-color-text);
+        }
+      }
+    }
+
+    :global(.ant-menu-submenu-open) > :global(.ant-menu-submenu-title) {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
   }
 
   .rightControls {
@@ -75,16 +107,13 @@
     gap: 12px;
   }
 
+  // No hover fill of its own — it would paint over the primary button's colour.
   .actionButton {
     height: 40px;
     padding: 0 20px;
     border-radius: 4px;
     font-weight: 500;
     transition: all 0.3s ease;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.08);
-    }
   }
 
   .actionButtonSkeleton {
@@ -104,15 +133,33 @@
   }
 }
 
+// Portalled outside the inverse band, so colours here name ramp steps, not roles.
 .mobileMenuDrawer {
-  background: linear-gradient(-90deg, rgba(6, 22, 41, 1) 0%, rgba(4, 13, 20, 1) 50%, rgba(1, 11, 22, 1) 100%) !important;
+  background: var(--gd-neutral-950) !important;
 
   :global(.ant-drawer-close)>svg {
-    color: var(--gd-color-text);
+    color: var(--gd-neutral-0);
   }
 
   :global(.ant-menu) {
     background: transparent;
+  }
+
+  // antd's inline-menu rail is for a sidebar beside content, not for a drawer.
+  :global(.ant-menu-root) {
+    border-inline-end: 0;
+  }
+
+  :global(.ant-menu-item) a,
+  :global(.ant-menu-submenu-title) {
+    color: var(--gd-neutral-0);
+    font-weight: 500;
+  }
+
+  // One step down, so the group reads as sitting under its parent.
+  :global(.ant-menu-sub) :global(.ant-menu-item) a {
+    color: var(--gd-neutral-300);
+    font-weight: 400;
   }
 
   :global(.ant-drawer-body) {
@@ -140,3 +187,17 @@
 @include meta.load-css('styles/lg.scss'); // screen ≥ 992px
 @include meta.load-css('styles/xl.scss'); // screen ≥ 1200px
 @include meta.load-css('styles/xxl.scss'); // screen ≥ 1600px
+// Portalled outside the inverse band, so colours here name ramp steps, not roles.
+.menuPopup {
+  :global(.ant-menu) {
+    border-radius: var(--gd-radius-card);
+    // A ring, not a border: antd resets the list's border, and the wrapper has an 8px gap.
+    box-shadow:
+      0 0 0 1px var(--gd-neutral-700),
+      var(--gd-shadow-e3);
+  }
+
+  :global(.ant-menu-item) a {
+    color: var(--gd-neutral-0);
+  }
+}
