@@ -24,6 +24,8 @@ export type StartLayoutProps = {
 	question: string;
 	hint: string;
 	children: ReactNode;
+	/** Sits left of the forward button, qualifying what it does. */
+	footNote?: ReactNode;
 	onBack?: () => void;
 	onCancel: () => void;
 	forward: ReactNode;
@@ -35,6 +37,7 @@ export function StartLayout({
 	question,
 	hint,
 	children,
+	footNote,
 	onBack,
 	onCancel,
 	forward,
@@ -165,7 +168,10 @@ export function StartLayout({
 						{t("checkpoints.start.cancel", "Cancel")}
 					</Button>
 				</Flex>
-				{forward}
+				<Flex gap={12} align="center">
+					{footNote}
+					{forward}
+				</Flex>
 			</footer>
 		</div>
 	);

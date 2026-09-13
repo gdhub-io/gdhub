@@ -42,20 +42,23 @@ export type GoalCheckInput = {
 	stage: CuratorStage;
 };
 
-export type OutcomeConcern = {
-	/** The outcome this is about, echoed back from the card. */
+/**
+ * What the curator has to say about one task.
+ *
+ * Prose, not a category. The author reads it and edits the task themselves —
+ * there is no button that applies a suggestion, so a machine-readable stance
+ * would be structure nothing consumes. Trimming, extending and rewording all
+ * come out as the same thing: a sentence about that line.
+ */
+export type ItemNote = {
+	/** The task this is about, echoed back from the card. */
 	itemId: string;
-	kind: "too_big" | "no_input" | "unclear";
-	/**
-	 * A smaller version of the line the author may take or ignore. The curator
-	 * offers it; it never rewrites the card, and no copy may say it decided.
-	 */
-	smaller?: string;
+	note: string;
 };
 
 export type GoalCheckResult = {
 	reachable: boolean;
-	concerns: OutcomeConcern[];
+	notes: ItemNote[];
 	/** Outcomes the stage requires that the card does not promise. */
 	missing: string[];
 	/** One paragraph the author reads, in their own language. */

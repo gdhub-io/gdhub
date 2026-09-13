@@ -21,10 +21,10 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 			description:
 				"true if this outcome list is plausible for a small team in 28 days",
 		},
-		concerns: {
+		notes: {
 			type: "array",
 			description:
-				"At most one entry per outcome, and only where there is one.",
+				"At most one note per task, and only where there is something to say.",
 			items: {
 				type: "object",
 				properties: {
@@ -32,19 +32,13 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 						type: "string",
 						enum: input.card.outcomes.map((item) => item.id),
 					},
-					kind: {
-						type: "string",
-						enum: ["too_big", "no_input", "unclear"],
-						description:
-							"too_big: several outcomes' worth of work. no_input: nothing on the day-1 list to build it from. unclear: nothing here says how anyone would know it exists.",
-					},
-					smaller: {
+					note: {
 						type: "string",
 						description:
-							"A smaller version of this line the author may take or ignore. Omit where the concern is not about size.",
+							"One or two sentences about this task. Where it is several tasks' worth of work, say so and offer a smaller wording. Where nothing on the day-1 list builds towards it, say that. Where nothing about it would prove it exists at the end, say that.",
 					},
 				},
-				required: ["itemId", "kind"],
+				required: ["itemId", "note"],
 			},
 		},
 		missing: {
@@ -59,7 +53,7 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 				"One short paragraph the author reads. Say what stands out; do not repeat the list back.",
 		},
 	},
-	required: ["reachable", "concerns", "missing", "note"],
+	required: ["reachable", "notes", "missing", "note"],
 });
 
 export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
@@ -72,10 +66,11 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			Judge only whether it fits 28 days of work for a small indie team, and
 			whether the stage's own requirements are covered.
 
-			An outcome is "unclear" when nothing about it says what would prove it
-			exists at the end. An outcome with "no_input" has nothing on the day-1
-			list to build from — say so, do not assume they will start it from
-			scratch and still finish.
+			The author reads you and then edits their own tasks, so write to be
+			read rather than to be parsed. Offer a smaller wording where a task is
+			several tasks' worth of work. Say plainly where nothing on the day-1
+			list builds towards one — do not assume they will start it from scratch
+			and still finish. Say where nothing about a task would prove it exists.
 
 			${localeLine(locale)}
 		`,

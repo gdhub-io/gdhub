@@ -16,6 +16,7 @@ import { useCurrentProject } from "@/hooks/project";
 import { useProjectArtifacts } from "@/hooks/project-artifacts";
 import { type GoalLine, GoalLines } from "./GoalLines";
 import { StartLayout, type StartStep } from "./StartLayout";
+import styles from "./StartStepPage.module.scss";
 
 export type StartStepPageProps = {
 	step: Extract<StartStep, "now" | "goal">;
@@ -151,6 +152,19 @@ export function StartStepPage({ step }: StartStepPageProps) {
 			}
 			onBack={isNow ? undefined : () => goTo(`${base}/new/inputs`)}
 			onCancel={cancel}
+			footNote={
+				// Steps 3 and 4 are drawn in the rail but not built (GDHUB-42, GDHUB-38).
+				// Saying so beats a forward button that reads as if the purchase were
+				// finished two steps early.
+				isNow ? undefined : (
+					<Typography.Text type="secondary" className={styles.pending}>
+						{t(
+							"checkpoints.start.stepsPending",
+							"Choosing a curator and paying are not open yet",
+						)}
+					</Typography.Text>
+				)
+			}
 			forward={
 				<Button
 					type="primary"
@@ -159,7 +173,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 				>
 					{isNow
 						? t("checkpoints.start.next1", "Next — what will exist")
-						: t("checkpoints.start.saveAndClose", "Save and close")}
+						: t("checkpoints.start.saveDraft", "Save the draft")}
 				</Button>
 			}
 		>
@@ -187,7 +201,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 				<Typography.Paragraph type="secondary" style={{ marginTop: 16 }}>
 					{t(
 						"checkpoints.start.draftNote",
-						"The curator goes through this list with you on day 1 and cuts it to what 28 days actually hold. It is fixed after that call, not at checkout.",
+						"Next you choose a curator and pay. The 28 days start once the curator has taken the checkpoint on, and they go through this list with you on day 1 — it is fixed after that, not at checkout.",
 					)}
 				</Typography.Paragraph>
 			)}
