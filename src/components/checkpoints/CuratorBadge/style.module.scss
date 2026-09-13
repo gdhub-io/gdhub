@@ -1,0 +1,16 @@
+.aiTile {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-accent-subtle);
+	color: var(--gd-color-accent);
+}
+
+.name {
+	font-size: 13px;
+	// The name gives way; the kind beside it never does.
+	min-width: 0;
+}

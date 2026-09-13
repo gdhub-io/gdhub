@@ -12,6 +12,7 @@ import {
 	getCreationBlocker,
 	getUnfinishedCheckpoint,
 	listClosedCheckpoints,
+	withProgress,
 } from "@/repositories/checkpoint.repository";
 import {
 	type CheckpointListQuery,
@@ -44,7 +45,12 @@ export const GET = pipe(
 		getCreationBlocker(projectId),
 	]);
 
-	return json({ current, closed, canCreate: blocker === null, blocker });
+	return json({
+		current: withProgress(current),
+		closed: { ...closed, rows: closed.rows.map(withProgress) },
+		canCreate: blocker === null,
+		blocker,
+	});
 });
 
 export const POST = pipe(
@@ -65,7 +71,7 @@ export const POST = pipe(
 
 	// A draft left half-written is the attempt in progress, not a second one.
 	const existingDraft = await getUnfinishedCheckpoint(projectId);
-	if (existingDraft) return json(existingDraft);
+	if (existingDraft) return json(withProgress(existingDraft));
 
-	return json(await createDraftCheckpoint(projectId));
+	return json(withProgress(await createDraftCheckpoint(projectId)));
 });

@@ -124,6 +124,18 @@ export const ProjectSpace = ({
 					</Link>
 				),
 			},
+			...(can("project.checkpoints.view")
+				? [
+						{
+							key: `/user/project/${projectSlug}/checkpoints`,
+							label: (
+								<Link href={`/user/project/${projectSlug}/checkpoints`}>
+									{t("checkpoints.tab", "Checkpoints")}
+								</Link>
+							),
+						},
+					]
+				: []),
 			{
 				key: `/user/project/${projectSlug}/documents`,
 				label: (

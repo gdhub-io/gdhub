@@ -227,3 +227,42 @@ export const dueDateFrom = (startedAt: Date) => {
 
 	return due;
 };
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const utcMidnight = (date: Date) =>
+	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+
+/**
+ * Which of the 28 days a checkpoint is on, counted in UTC and on the server.
+ *
+ * Counted from midnight to midnight rather than from the hour it started, so a
+ * checkpoint bought at 23:50 is not on day 2 ten minutes later. Computed here
+ * and sent with the payload because a browser in another timezone would show a
+ * different day number for the same checkpoint, and the deadline is the product.
+ */
+export const checkpointDay = (startedAt: Date, now = new Date()) => {
+	const elapsed = (utcMidnight(now) - utcMidnight(startedAt)) / MS_PER_DAY;
+
+	return Math.min(Math.max(elapsed + 1, 1), CHECKPOINT_DAYS);
+};
+
+/** The day number and days left, or nulls for a checkpoint that has not started. */
+export const checkpointProgress = (
+	startedAt: Date | null,
+	now = new Date(),
+) => {
+	if (!startedAt) return { day: null, daysLeft: null };
+
+	const day = checkpointDay(startedAt, now);
+
+	return { day, daysLeft: CHECKPOINT_DAYS - day };
+};
+
+/** Stamps the day count onto a checkpoint before it leaves the server. */
+export const withProgress = <T extends { startedAt: Date | null }>(
+	checkpoint: T | null,
+) =>
+	checkpoint
+		? { ...checkpoint, ...checkpointProgress(checkpoint.startedAt) }
+		: null;

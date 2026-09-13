@@ -12,6 +12,7 @@ import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
 	getCheckpoint,
 	replaceCheckpointItems,
+	withProgress,
 } from "@/repositories/checkpoint.repository";
 import {
 	type UpdateCheckpointBody,
@@ -39,7 +40,7 @@ export const GET = pipe(
 
 	if (!checkpoint) return apiError.notFound();
 
-	return json(checkpoint);
+	return json(withProgress(checkpoint));
 });
 
 /**
@@ -83,7 +84,7 @@ export const PUT = pipe(
 		await replaceCheckpointItems(id, CheckpointItemKind.Outcome, outcomes);
 	}
 
-	return json(await getCheckpoint(id));
+	return json(withProgress(await getCheckpoint(id)));
 });
 
 /**
