@@ -4,6 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import { Collapse, Flex, Typography } from "antd";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { CheckpointThread } from "../CheckpointThread";
 import { GoalCard } from "../GoalCard";
 import styles from "./style.module.scss";
 
@@ -57,11 +58,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				]}
 			/>
 
-			{checkpoint.midNote && (
-				<Typography.Paragraph className={styles.note}>
-					{checkpoint.midNote}
-				</Typography.Paragraph>
-			)}
+			<CheckpointThread checkpoint={checkpoint} />
 		</Flex>
 	);
 }

@@ -37,6 +37,15 @@ export type CheckpointItemDto = {
 	artifact: CheckpointArtifactRef | null;
 };
 
+/** A devlog of this checkpoint, with the curator's answer under it. */
+export type CheckpointDevlogDto = {
+	id: string;
+	publishedAt: string;
+	content: string;
+	curatorFeedback: string | null;
+	curatorFeedbackAt: string | null;
+};
+
 export type CheckpointDto = {
 	id: string;
 	projectId: string;
@@ -61,6 +70,8 @@ export type CheckpointDto = {
 	createdAt: string;
 	updatedAt: string;
 	items: CheckpointItemDto[];
+	/** Sent by the detail endpoint only — the list does not carry them. */
+	reports?: CheckpointDevlogDto[];
 	/** Counted in UTC on the server — see `checkpointProgress`. */
 	day: number | null;
 	daysLeft: number | null;

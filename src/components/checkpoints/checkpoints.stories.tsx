@@ -8,6 +8,7 @@ import {
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCard } from "./CheckpointCard";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
+import { CheckpointThread } from "./CheckpointThread";
 import { CuratorBadge } from "./CuratorBadge";
 import { VerdictChip } from "./VerdictChip";
 
@@ -122,6 +123,71 @@ export const AwaitingVerdict: StoryObj = {
 				curator: { id: "u1", name: "Marta Ilves", image: null },
 			}}
 			projectSlug="neon-drift"
+		/>
+	),
+};
+
+const devlog = (
+	id: string,
+	publishedAt: string,
+	content: string,
+	answer?: string,
+) => ({
+	id,
+	publishedAt,
+	content,
+	curatorFeedback: answer ?? null,
+	curatorFeedbackAt: answer ? "2026-09-08T06:00:00.000Z" : null,
+});
+
+/** Under way: what has happened, one line each, the bodies behind a chevron. */
+export const ThreadUnderWay: StoryObj = {
+	render: () => (
+		<CheckpointThread
+			checkpoint={{
+				...base,
+				goalAgreedAt: "2026-09-01T15:00:00.000Z",
+				midNote:
+					"Three of four outcomes have nothing claimed against them, and half the calendar is gone. What do you want to change?",
+				reports: [
+					devlog(
+						"r1",
+						"2026-09-07T10:00:00.000Z",
+						"Tide states\nTwo of three are in with placeholder art.",
+						"Art on state one moves the tide outcome. The save system is still untouched.",
+					),
+					devlog(
+						"r2",
+						"2026-09-13T10:00:00.000Z",
+						"A save bug we cannot reproduce",
+					),
+				],
+			}}
+		/>
+	),
+};
+
+/** Closed: the verdict is the newest entry, with the report under it. */
+export const ThreadClosed: StoryObj = {
+	render: () => (
+		<CheckpointThread
+			checkpoint={{
+				...base,
+				status: CheckpointStatus.Closed,
+				verdict: CheckpointVerdict.StageClosed,
+				verdictNote: "Outcomes delivered and the stage's requirements met.",
+				summary:
+					"The prototype exists and a stranger finished it. Three tide states are in with art; the trailer was cut on day 14 with the reason recorded.",
+				decidedAt: "2026-09-29T08:00:00.000Z",
+				goalAgreedAt: "2026-09-01T15:00:00.000Z",
+				reports: [
+					devlog(
+						"r1",
+						"2026-09-27T10:00:00.000Z",
+						"Two strangers finished it, 14 and 17 minutes",
+					),
+				],
+			}}
 		/>
 	),
 };

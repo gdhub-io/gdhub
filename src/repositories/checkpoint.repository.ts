@@ -3,7 +3,7 @@ import {
 	CheckpointItemKind,
 	CheckpointStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { checkpointProgress, dueDateFrom } from "@/lib/checkpoint-days";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -64,12 +64,31 @@ const checkpointSelect = {
 	items: { select: checkpointItemSelect, orderBy: { order: "asc" } },
 } as const;
 
+/**
+ * The detail payload also carries the checkpoint's devlogs and the curator's
+ * answer under each: the page is a thread, and a second request per post would
+ * make the thread cost one round trip a week.
+ */
+const checkpointDetailSelect = {
+	...checkpointSelect,
+	reports: {
+		orderBy: { publishedAt: "desc" },
+		select: {
+			id: true,
+			publishedAt: true,
+			content: true,
+			curatorFeedback: true,
+			curatorFeedbackAt: true,
+		},
+	},
+} as const;
+
 export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
 export const getCheckpoint = async (id: string) =>
 	prisma.projectCheckpoint.findUnique({
 		where: { id },
-		select: checkpointSelect,
+		select: checkpointDetailSelect,
 	});
 
 /** The one checkpoint a project may have on the go, `Draft` included. */
@@ -220,44 +239,12 @@ export const replaceCheckpointItems = async (
 		}),
 	]);
 
-/** Day 1 is `startedAt`; the 28th day is the checkpoint itself. */
-export const dueDateFrom = (startedAt: Date) => {
-	const due = new Date(startedAt);
-	due.setUTCDate(due.getUTCDate() + CHECKPOINT_DAYS - 1);
-
-	return due;
-};
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-const utcMidnight = (date: Date) =>
-	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-
-/**
- * Which of the 28 days a checkpoint is on, counted in UTC and on the server.
- *
- * Counted from midnight to midnight rather than from the hour it started, so a
- * checkpoint bought at 23:50 is not on day 2 ten minutes later. Computed here
- * and sent with the payload because a browser in another timezone would show a
- * different day number for the same checkpoint, and the deadline is the product.
- */
-export const checkpointDay = (startedAt: Date, now = new Date()) => {
-	const elapsed = (utcMidnight(now) - utcMidnight(startedAt)) / MS_PER_DAY;
-
-	return Math.min(Math.max(elapsed + 1, 1), CHECKPOINT_DAYS);
-};
-
-/** The day number and days left, or nulls for a checkpoint that has not started. */
-export const checkpointProgress = (
-	startedAt: Date | null,
-	now = new Date(),
-) => {
-	if (!startedAt) return { day: null, daysLeft: null };
-
-	const day = checkpointDay(startedAt, now);
-
-	return { day, daysLeft: CHECKPOINT_DAYS - day };
-};
+// Re-exported so the server keeps one import for everything checkpoint-shaped.
+export {
+	checkpointDay,
+	checkpointProgress,
+	dueDateFrom,
+} from "@/lib/checkpoint-days";
 
 /** Stamps the day count onto a checkpoint before it leaves the server. */
 export const withProgress = <T extends { startedAt: Date | null }>(
