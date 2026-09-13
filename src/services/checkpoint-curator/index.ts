@@ -56,7 +56,7 @@ class CheckpointCuratorService {
 		return (
 			process.env.CHECKPOINT_CURATOR_MODEL ||
 			process.env.OPENAI_API_MODEL ||
-			"gpt-4.1-mini"
+			"gpt-5.6-luna"
 		);
 	}
 
