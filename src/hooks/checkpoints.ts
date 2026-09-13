@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import type { CheckpointItemInput } from "@/schemas/checkpoint";
 import type {
 	CheckpointDto,
 	CheckpointListResponse,
@@ -30,6 +31,31 @@ export const useCheckpoints = (projectId?: string, page = 1) => {
 	});
 
 	return query;
+};
+
+export const useCheckpoint = (id?: string) =>
+	useQuery({
+		queryKey: ["checkpoint", id],
+		queryFn: async () =>
+			(await axios.get<CheckpointDto>(`/api/checkpoint/${id}`)).data,
+		enabled: !!id,
+	});
+
+/** One side of the goal card, or the sentence. Only a `Draft` accepts it. */
+export const useUpdateCheckpoint = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: {
+			goal?: string;
+			inputs?: CheckpointItemInput[];
+			outcomes?: CheckpointItemInput[];
+		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,
+		onSuccess: (checkpoint) => {
+			queryClient.setQueryData(["checkpoint", id], checkpoint);
+			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
+		},
+	});
 };
 
 export const useCreateCheckpoint = (projectId?: string) => {

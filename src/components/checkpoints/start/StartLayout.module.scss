@@ -1,0 +1,82 @@
+.flow {
+	display: flex;
+	flex-direction: column;
+}
+
+.content {
+	flex: 1;
+	// Without this a flex child refuses to shrink below its content and the
+	// overflow lands on the page instead of here.
+	min-height: 0;
+	overflow-y: auto;
+	padding-bottom: var(--gd-space-4);
+}
+
+.segment {
+	flex: 1;
+	min-width: 0;
+}
+
+.bar {
+	height: 4px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-color-border);
+
+	&[data-reached] {
+		background: var(--gd-color-accent);
+	}
+}
+
+.segmentLabel {
+	font-size: 13px;
+	color: var(--gd-color-text-tertiary);
+
+	&[data-current] {
+		color: var(--gd-color-text);
+		font-weight: 600;
+	}
+}
+
+.kicker {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.meta,
+.saved {
+	color: var(--gd-color-text-tertiary);
+	font-size: 13px;
+}
+
+.question {
+	margin: 0 !important;
+	font-size: 32px !important;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.5px;
+}
+
+.hint {
+	color: var(--gd-color-text-secondary);
+	font-size: 15px;
+}
+
+.answer {
+	// One question, room to answer it — the column does not run the page width.
+	max-width: 720px;
+}
+
+.foot {
+	// The way forward is the one control the step is about, so it sits on the
+	// edge of the screen and a long list scrolls under it.
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) 0;
+	border-top: 1px solid var(--gd-color-border);
+}

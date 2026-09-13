@@ -1,8 +1,7 @@
 "use client";
 
-import { IconArrowRight, IconTrash } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Progress, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { CheckpointStatus } from "@/config/prisma-enums";
@@ -20,10 +19,13 @@ export type CheckpointCardProps = {
 };
 
 /**
- * The one live item in the list, and the only one that takes a fill — everything
- * below it stays outlined. A draft and a running checkpoint are the same card
- * with a different call to action, because they are the same object at two
- * moments and splitting them would teach the reader two shapes for one thing.
+ * The one live item in the list, and the only one that takes a fill —
+ * everything below it stays outlined (frame `iSVBs`).
+ *
+ * Three bands with a hairline between them: what this checkpoint is, where it
+ * has got to, and the one thing to do about it. A draft and a checkpoint under
+ * way are the same card with a different foot: they are one object at two
+ * moments, and two shapes would teach the reader that they are two things.
  */
 export function CheckpointCard({
 	checkpoint,
@@ -36,81 +38,92 @@ export function CheckpointCard({
 
 	const dates =
 		checkpoint.startedAt && checkpoint.dueAt
-			? `${dayjs(checkpoint.startedAt).format("D MMM")} – ${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
+			? `${dayjs(checkpoint.startedAt).format("D MMM")}–${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
+	const href = isDraft
+		? `/user/project/${projectSlug}/checkpoints/new/inputs`
+		: `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
+
 	return (
-		<div className={styles.card}>
-			<Flex justify="space-between" align="flex-start" gap={16} wrap>
-				<div className={styles.identity}>
-					<Typography.Text className={styles.meta}>
+		<section className={styles.card}>
+			<header className={styles.head}>
+				<Flex gap={10} align="center" className={styles.identity}>
+					<Typography.Text className={styles.stage} ellipsis>
+						{checkpoint.stageName}
+					</Typography.Text>
+					<Typography.Text className={styles.number}>
 						{[
-							checkpoint.stageName,
 							t("checkpoints.number", "Checkpoint {number}", {
 								number: checkpoint.order,
 							}),
 							dates,
 						]
 							.filter(Boolean)
-							.join(" · ")}
+							.map((part) => `· ${part}`)
+							.join(" ")}
 					</Typography.Text>
-					<Typography.Paragraph className={styles.goal} ellipsis={{ rows: 3 }}>
-						{checkpoint.goal ||
-							t("checkpoints.goal.empty", "The goal is not written yet")}
-					</Typography.Paragraph>
-				</div>
-
-				<Flex vertical align="flex-end" gap={8}>
 					<CheckpointStatusSlot checkpoint={checkpoint} />
-					<CuratorBadge
-						kind={checkpoint.curatorKind}
-						curator={checkpoint.curator}
-					/>
 				</Flex>
-			</Flex>
-
-			{!isDraft && checkpoint.day !== null && (
-				<Progress
-					percent={(checkpoint.day / CHECKPOINT_DAYS) * 100}
-					showInfo={false}
-					size="small"
-					className={styles.track}
+				<CuratorBadge
+					kind={checkpoint.curatorKind}
+					curator={checkpoint.curator}
 				/>
-			)}
+			</header>
 
-			<Flex justify="space-between" align="center" gap={12} wrap>
-				{isDraft ? (
-					<Typography.Text type="secondary" className={styles.note}>
-						{t(
-							"checkpoints.draft.nothingCharged",
-							"Nothing has been charged and no days are counting.",
-						)}
-					</Typography.Text>
-				) : (
-					<span />
+			<div className={styles.body}>
+				<Typography.Paragraph className={styles.goal} ellipsis={{ rows: 3 }}>
+					{checkpoint.goal ||
+						t("checkpoints.goal.empty", "The goal is not written yet")}
+				</Typography.Paragraph>
+
+				{checkpoint.daysLeft !== null && (
+					<Flex vertical gap={8}>
+						<Typography.Text className={styles.counter}>
+							{t("checkpoints.status.daysLeft", "{count} days left", {
+								count: checkpoint.daysLeft,
+							})}
+						</Typography.Text>
+						<div className={styles.track}>
+							<div
+								className={styles.fill}
+								style={{
+									width: `${((checkpoint.day ?? 1) / CHECKPOINT_DAYS) * 100}%`,
+								}}
+							/>
+						</div>
+					</Flex>
 				)}
+			</div>
+
+			<footer className={styles.foot}>
+				<Typography.Text className={styles.note}>
+					{isDraft
+						? t(
+								"checkpoints.draft.nothingCharged",
+								"Nothing has been charged and no days are counting.",
+							)
+						: ""}
+				</Typography.Text>
 
 				<Flex gap={8}>
 					{isDraft && onDiscard && (
 						<Button
-							icon={<IconTrash size={16} />}
 							loading={discarding}
 							onClick={() => onDiscard(checkpoint.id)}
 						>
 							{t("checkpoints.draft.discard", "Discard")}
 						</Button>
 					)}
-					<Link
-						href={`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`}
-					>
-						<Button type="primary" icon={<IconArrowRight size={16} />}>
+					<Link href={href}>
+						<Button type="primary">
 							{isDraft
 								? t("checkpoints.continue", "Continue")
-								: t("checkpoints.open", "Open")}
+								: t("checkpoints.open", "Open checkpoint")}
 						</Button>
 					</Link>
 				</Flex>
-			</Flex>
-		</div>
+			</footer>
+		</section>
 	);
 }

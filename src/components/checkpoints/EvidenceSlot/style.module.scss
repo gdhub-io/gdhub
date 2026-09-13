@@ -1,0 +1,28 @@
+.slot,
+.picker {
+	display: inline-flex;
+	align-items: center;
+	flex: none;
+	gap: var(--gd-space-1);
+	height: 36px;
+	padding: 0 10px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-space-2);
+	color: var(--gd-color-text);
+}
+
+.slot[data-empty] {
+	color: var(--gd-color-text-tertiary);
+}
+
+.label {
+	// A raw URL has no break opportunity, so it is truncated, never wrapped.
+	max-width: 140px;
+	color: inherit;
+	font-size: 13px;
+}
+
+.picker {
+	width: 180px;
+	padding: 0 4px 0 10px;
+}

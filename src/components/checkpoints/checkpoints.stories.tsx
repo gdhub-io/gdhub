@@ -65,7 +65,7 @@ export const Curators: StoryObj = {
 	),
 };
 
-/** The three faces of the one status slot, plus the draft. */
+/** The day is a chip; the verdict and the waiting states are dots. */
 export const StatusSlot: StoryObj = {
 	render: () => (
 		<Flex gap={24}>

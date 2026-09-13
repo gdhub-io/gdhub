@@ -1,16 +1,30 @@
-.aiTile {
+.badge {
+	// A pill, so a person and the model sit in the same slot and can be compared
+	// at a glance wherever a checkpoint is titled.
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: 4px var(--gd-space-3) 4px 4px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-pill);
+	max-width: 240px;
+}
+
+.tile {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 22px;
-	height: 22px;
-	border-radius: var(--gd-radius-control);
-	background: var(--gd-color-accent-subtle);
-	color: var(--gd-color-accent);
+	flex: none;
+	width: 26px;
+	height: 26px;
+	border-radius: var(--gd-space-2);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text);
 }
 
 .name {
-	font-size: 13px;
 	// The name gives way; the kind beside it never does.
 	min-width: 0;
+	font-size: 13px;
+	font-weight: 600;
 }

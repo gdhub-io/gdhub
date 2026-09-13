@@ -1,24 +1,19 @@
 "use client";
 
-import { IconFlag, IconPlus } from "@tabler/icons-react";
+import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Skeleton, Tooltip, Typography } from "antd";
+import { App, Flex, Skeleton, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { useAccess } from "@/components/access/AccessProvider";
 import ModernTable from "@/components/ModernTable";
 import { EmptyState, SectionHeading } from "@/components/ui";
-import {
-	useCheckpoints,
-	useCreateCheckpoint,
-	useDiscardCheckpoint,
-} from "@/hooks/checkpoints";
+import { useCheckpoints, useDiscardCheckpoint } from "@/hooks/checkpoints";
 import { useCurrentProject } from "@/hooks/project";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCard } from "../CheckpointCard";
 import { CuratorBadge } from "../CuratorBadge";
+import { StartCheckpointButton } from "../StartCheckpointButton";
 import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
 
@@ -27,16 +22,11 @@ const PAGE_SIZE = 10;
 export function CheckpointsList() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
-	const router = useRouter();
-	const { project } = useCurrentProject();
-	const { can } = useAccess();
+	const { project, isLoading: projectLoading } = useCurrentProject();
 	const [page, setPage] = useState(1);
 
-	const { data, isLoading } = useCheckpoints(project?.id, page);
-	const createCheckpoint = useCreateCheckpoint(project?.id);
+	const { data, isPending } = useCheckpoints(project?.id, page);
 	const discardCheckpoint = useDiscardCheckpoint();
-
-	const mayCreate = can("project.checkpoints.create");
 
 	const columns: ColumnsType<CheckpointDto> = useMemo(
 		() => [
@@ -66,7 +56,7 @@ export function CheckpointsList() {
 				width: 150,
 				render: (_, row) =>
 					row.startedAt && row.dueAt
-						? `${dayjs(row.startedAt).format("D MMM")} – ${dayjs(row.dueAt).format("D MMM YY")}`
+						? `${dayjs(row.startedAt).format("D MMM")}–${dayjs(row.dueAt).format("D MMM YYYY")}`
 						: "—",
 			},
 			{
@@ -88,19 +78,6 @@ export function CheckpointsList() {
 		[t],
 	);
 
-	const startCheckpoint = async () => {
-		if (!project?.id) return;
-
-		try {
-			const checkpoint = await createCheckpoint.mutateAsync();
-			router.push(`/user/project/${project.slug}/checkpoints/${checkpoint.id}`);
-		} catch {
-			message.error(
-				t("checkpoints.start.failed", "The checkpoint could not be started"),
-			);
-		}
-	};
-
 	const discard = async (id: string) => {
 		try {
 			await discardCheckpoint.mutateAsync(id);
@@ -114,46 +91,13 @@ export function CheckpointsList() {
 		}
 	};
 
-	if (isLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
+	// `isPending` stays true while the query is disabled, so the empty state
+	// cannot flash before the project id has even arrived.
+	if (projectLoading || isPending) {
+		return <Skeleton active paragraph={{ rows: 6 }} />;
+	}
 
-	const blocker = data?.blocker;
-	const blockedUntil =
-		blocker?.reason === "checkpointOpen" && blocker.checkpoint.dueAt
-			? dayjs(blocker.checkpoint.dueAt).format("D MMMM")
-			: null;
-
-	const startButton = mayCreate ? (
-		<Tooltip
-			title={
-				blockedUntil
-					? t(
-							"checkpoints.start.disabled",
-							"One checkpoint at a time. This one ends {date}.",
-							{ date: blockedUntil },
-						)
-					: blocker?.reason === "noStage"
-						? t(
-								"checkpoints.start.noStage",
-								"The project is not on a workflow stage yet.",
-							)
-						: undefined
-			}
-		>
-			<Button
-				type="primary"
-				icon={<IconPlus size={16} />}
-				disabled={!data?.canCreate}
-				loading={createCheckpoint.isPending}
-				onClick={startCheckpoint}
-			>
-				{t("checkpoints.start", "Start a checkpoint")}
-			</Button>
-		</Tooltip>
-	) : null;
-
-	const hasNothing = !data?.current && data?.closed.total === 0;
-
-	if (hasNothing) {
+	if (!data?.current && data?.closed.total === 0) {
 		return (
 			<EmptyState
 				icon={IconFlag}
@@ -165,30 +109,38 @@ export function CheckpointsList() {
 					"checkpoints.empty.description",
 					"28 days, one goal, a curator, and a verdict that opens the next stage.",
 				)}
-				action={startButton}
+				action={
+					<StartCheckpointButton
+						projectId={project?.id}
+						projectSlug={project?.slug}
+					/>
+				}
 			/>
 		);
 	}
 
 	return (
 		<Flex vertical gap={32}>
-			{data?.current ? (
+			{data?.current && (
 				<CheckpointCard
 					checkpoint={data.current}
 					projectSlug={project?.slug ?? ""}
 					onDiscard={discard}
 					discarding={discardCheckpoint.isPending}
 				/>
-			) : (
-				<Flex justify="flex-end">{startButton}</Flex>
 			)}
 
 			{data && data.closed.total > 0 && (
 				<Flex vertical gap={16}>
-					<SectionHeading
-						level={4}
-						title={t("checkpoints.past.title", "Past checkpoints")}
-					/>
+					<Flex gap={8} align="center">
+						<SectionHeading
+							level={4}
+							title={t("checkpoints.past.title", "Past checkpoints")}
+						/>
+						<Typography.Text type="secondary">
+							{data.closed.total}
+						</Typography.Text>
+					</Flex>
 					<ModernTable<CheckpointDto>
 						density="compact"
 						rowKey="id"
@@ -201,6 +153,10 @@ export function CheckpointsList() {
 							total: data.closed.total,
 							onChange: setPage,
 							showSizeChanger: false,
+							showTotal: (total) =>
+								t("checkpoints.past.total", "{count} closed checkpoints", {
+									count: total,
+								}),
 						}}
 					/>
 				</Flex>

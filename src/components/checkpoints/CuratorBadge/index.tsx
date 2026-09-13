@@ -1,6 +1,6 @@
 import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Typography } from "antd";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
@@ -13,33 +13,27 @@ export type CuratorBadgeProps = {
 
 /**
  * Who ran the checkpoint. One component for both kinds, because a scout reading
- * a project has to be able to tell at a glance which stages a person closed and
- * which the model did — that comparison only works if they sit in the same slot.
+ * a project has to tell at a glance which stages a person closed and which the
+ * model did — and that comparison only works if they sit in the same slot.
  */
 export function CuratorBadge({ kind, curator, className }: CuratorBadgeProps) {
 	const { t } = useTranslate();
-
-	if (kind === CheckpointCuratorKind.AI) {
-		return (
-			<Flex align="center" gap={8} className={className}>
-				<span className={styles.aiTile}>
-					<IconSparkles size={14} stroke={1.6} />
-				</span>
-				<Typography.Text className={styles.name}>
-					{t("checkpoints.curator.ai", "AI curator")}
-				</Typography.Text>
-			</Flex>
-		);
-	}
+	const isAI = kind === CheckpointCuratorKind.AI;
 
 	return (
-		<Flex align="center" gap={8} className={className}>
-			<AppAvatar size={22} src={curator?.image ?? undefined}>
-				{curator?.name?.[0]}
-			</AppAvatar>
+		<span className={`${styles.badge}${className ? ` ${className}` : ""}`}>
+			{isAI ? (
+				<span className={styles.tile}>
+					<IconSparkles size={15} stroke={1.6} />
+				</span>
+			) : (
+				<AppAvatar size={26} src={curator?.image ?? undefined}>
+					{curator?.name?.[0]}
+				</AppAvatar>
+			)}
 			<Typography.Text className={styles.name} ellipsis>
-				{curator?.name}
+				{isAI ? t("checkpoints.curator.ai", "AI curator") : curator?.name}
 			</Typography.Text>
-		</Flex>
+		</span>
 	);
 }

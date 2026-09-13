@@ -3,6 +3,7 @@ import { StatusDot } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { VerdictChip } from "../VerdictChip";
+import styles from "./style.module.scss";
 
 export type CheckpointStatusSlotProps = {
 	checkpoint: Pick<CheckpointDto, "status" | "verdict" | "day">;
@@ -47,13 +48,14 @@ export function CheckpointStatusSlot({
 		);
 	}
 
+	// The day is a number, not a state, so it takes the chip rather than the dot
+	// the verdicts use. It also stands where the word "Active" would otherwise
+	// be, because it is the number the author came for.
 	return (
-		<StatusDot
-			tone="success"
-			label={t("checkpoints.status.day", "Day {day} of 28", {
+		<span className={`${styles.day}${className ? ` ${className}` : ""}`}>
+			{t("checkpoints.status.day", "Day {day} of 28", {
 				day: checkpoint.day ?? 1,
 			})}
-			className={className}
-		/>
+		</span>
 	);
 }
