@@ -5,34 +5,34 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Form, Input, Modal, message, Select, Spin } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
-import { TeamDocumentType } from "@/config/prisma-enums";
+import { ProjectArtifactType } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 
-const CreateDocumentModal = ({
+const CreateArtifactModal = ({
 	open,
 	onCreate = () => {},
 	onCancel = () => {},
-	teamId,
+	projectId,
 }: any) => {
 	const [form] = Form.useForm();
-	const selectedDocumentType = Form.useWatch("type", form);
+	const selectedArtifactType = Form.useWatch("type", form);
 	const { t } = useTranslate();
 
 	const {
-		mutateAsync: createDocument,
-		error: createDocumentError,
+		mutateAsync: createArtifact,
+		error: createArtifactError,
 		isPending: isCreateProcessing,
 	} = useMutation({
 		mutationFn: (data) =>
-			axios.post<Project>("/api/user/project/documents", data),
+			axios.post<Project>("/api/user/project/artifacts", data),
 	});
 
 	useEffect(() => {
-		const error = createDocumentError as any;
+		const error = createArtifactError as any;
 		if (error?.response?.data?.message) {
 			message.error(error.response?.data?.message);
 		}
-	}, [createDocumentError]);
+	}, [createArtifactError]);
 
 	const handleOk = async () => {
 		let data: any;
@@ -48,10 +48,10 @@ const CreateDocumentModal = ({
 
 		if (!data) return;
 
-		const document = await createDocument({ ...data, teamId });
-		gtmEventTrigger("document_create", {
-			projectId: document.data.id,
-			name: document.data.name,
+		const artifact = await createArtifact({ ...data, projectId });
+		gtmEventTrigger("artifact_create", {
+			projectId: artifact.data.id,
+			name: artifact.data.name,
 		});
 
 		form.resetFields();
@@ -64,15 +64,15 @@ const CreateDocumentModal = ({
 		onCancel();
 	};
 
-	const renderDocumentType = (type: string) => {
+	const defaultNameForType = (type: string) => {
 		switch (type) {
-			case TeamDocumentType.JDA:
+			case ProjectArtifactType.JDA:
 				return "Joint Development Agreement";
-			case TeamDocumentType.Concept:
+			case ProjectArtifactType.Concept:
 				return "Concept Document";
-			case TeamDocumentType.GDD:
+			case ProjectArtifactType.GDD:
 				return "Game Design Document";
-			case TeamDocumentType.NDA:
+			case ProjectArtifactType.NDA:
 				return "NDA";
 			default:
 				return "Other";
@@ -80,12 +80,12 @@ const CreateDocumentModal = ({
 	};
 
 	useEffect(() => {
-		if (selectedDocumentType === TeamDocumentType.Other) {
+		if (selectedArtifactType === ProjectArtifactType.Other) {
 			form.setFieldsValue({ name: "" });
-		} else if (selectedDocumentType) {
-			form.setFieldsValue({ name: renderDocumentType(selectedDocumentType) });
+		} else if (selectedArtifactType) {
+			form.setFieldsValue({ name: defaultNameForType(selectedArtifactType) });
 		}
-	}, [selectedDocumentType]);
+	}, [selectedArtifactType]);
 
 	return (
 		<Modal
@@ -131,18 +131,18 @@ const CreateDocumentModal = ({
 							options={[
 								{
 									label: "Joint Development Agreement",
-									value: TeamDocumentType.JDA,
+									value: ProjectArtifactType.JDA,
 								},
 								{
 									label: "Concept Document",
-									value: TeamDocumentType.Concept,
+									value: ProjectArtifactType.Concept,
 								},
 								{
 									label: "Game Design Document",
-									value: TeamDocumentType.GDD,
+									value: ProjectArtifactType.GDD,
 								},
-								{ label: "NDA", value: TeamDocumentType.NDA },
-								{ label: "Other", value: TeamDocumentType.Other },
+								{ label: "NDA", value: ProjectArtifactType.NDA },
+								{ label: "Other", value: ProjectArtifactType.Other },
 							]}
 						/>
 					</Form.Item>
@@ -151,11 +151,11 @@ const CreateDocumentModal = ({
 						name="name"
 						rules={[
 							{
-								required: selectedDocumentType === TeamDocumentType.Other,
+								required: selectedArtifactType === ProjectArtifactType.Other,
 							},
 						]}
 						wrapperCol={{ span: 24 }}
-						hidden={selectedDocumentType !== TeamDocumentType.Other}
+						hidden={selectedArtifactType !== ProjectArtifactType.Other}
 					>
 						<Input
 							placeholder={t(
@@ -203,4 +203,4 @@ const CreateDocumentModal = ({
 	);
 };
 
-export default CreateDocumentModal;
+export default CreateArtifactModal;

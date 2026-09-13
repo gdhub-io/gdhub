@@ -1001,7 +1001,7 @@ UI перестаёт решать вопросы доступа.
 | `/user/project/[slug]/devlog` | member¹ | `project.devlog.view`; создание — `project.devlog.create`, публикация — `project.devlog.publish` (admin) |
 | `/user/project/[slug]/team` | member | `project.members.view`; приглашение/исключение — `project.members.invite` / `.remove` (admin) |
 | `/user/project/[slug]/open-positions` | admin | `project.vacancies.manage`, отбор кандидатов — `project.vacancies.review` |
-| `/user/project/[slug]/documents` | member | `project.documents.view`; загрузка — `project.documents.manage` (admin) |
+| `/user/project/[slug]/documents` | member | `project.artifacts.view`; загрузка — `project.artifacts.manage` (admin) |
 | `/user/project/[slug]/settings/[[...item]]` | admin | `project.info.edit` |
 | └ `settings/danger` | **owner** | `project.lifecycle.archive` / `.delete` |
 

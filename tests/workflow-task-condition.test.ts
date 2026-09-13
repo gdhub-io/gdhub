@@ -10,7 +10,7 @@ vi.mock("@/services/prisma", () => ({
 		teamVacancy: { count: vi.fn() },
 		teamMember: { count: vi.fn() },
 		teamInvestor: { count: vi.fn() },
-		teamDocument: { count: vi.fn() },
+		projectArtifact: { count: vi.fn() },
 		adviceRequest: { count: vi.fn() },
 		projectEstimation: { count: vi.fn() },
 		equityAllocation: { count: vi.fn() },
@@ -116,14 +116,14 @@ describe("evaluateTaskCondition — count sources", () => {
 		});
 	});
 
-	it("documents: filters by document type", async () => {
-		vi.mocked(prisma.teamDocument.count).mockResolvedValue(2 as never);
+	it("artifacts: filters by artifact type", async () => {
+		vi.mocked(prisma.projectArtifact.count).mockResolvedValue(2 as never);
 		await evaluateTaskCondition(
-			{ source: "documents", min: 1, type: "GDD" as never },
+			{ source: "artifacts", min: 1, type: "GDD" as never },
 			ctx,
 		);
-		expect(prisma.teamDocument.count).toHaveBeenCalledWith({
-			where: { team: { projectId: "p1" }, type: "GDD" },
+		expect(prisma.projectArtifact.count).toHaveBeenCalledWith({
+			where: { projectId: "p1", type: "GDD" },
 		});
 	});
 

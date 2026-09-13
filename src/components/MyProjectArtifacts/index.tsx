@@ -1,4 +1,4 @@
-import type { TeamDocument, User } from "@gdhub-io/gdhub-prisma";
+import type { ProjectArtifact, User } from "@gdhub-io/gdhub-prisma";
 import { IconTrash } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -23,14 +23,14 @@ import { ProjectContext } from "@/contexts/ProjectContext";
 
 const { Text } = Typography;
 
-const CreateDocumentModal = dynamic(
-	() => import("@/components/modals/CreateDocumentModal"),
+const CreateArtifactModal = dynamic(
+	() => import("@/components/modals/CreateArtifactModal"),
 	{
 		ssr: false,
 	},
 );
 
-type TeamDocumentWithCreatedByUser = TeamDocument & {
+type ArtifactWithCreatedByUser = ProjectArtifact & {
 	createdByUser: User;
 };
 
@@ -53,35 +53,33 @@ const LinkPreviewText = ({ link }: { link: string }) => {
 	);
 };
 
-const MyProjectDocuments = () => {
+const MyProjectArtifacts = () => {
 	const { t } = useTranslate();
 	const contextProject = useContext(ProjectContext)?.contextProject;
 	const isProjectArchived =
 		!contextProject || !!contextProject.isProjectArchived;
-	const [showDocumentModal, setShowDocumentModal] = useState(false);
+	const [showArtifactModal, setShowArtifactModal] = useState(false);
 
 	const {
-		data: projectDocuments,
-		refetch: fetchMyProjectDocuments,
-		isLoading: isLoadingMyProjectDocuments,
+		data: projectArtifacts,
+		refetch: fetchMyProjectArtifacts,
+		isLoading: isLoadingMyProjectArtifacts,
 	} = useQuery({
-		queryKey: ["project-team-documents", contextProject?.team?.id],
+		queryKey: ["project-artifacts", contextProject?.id],
 		queryFn: () =>
-			axios.get("/api/user/project/documents", {
-				params: { teamId: contextProject?.team?.id },
+			axios.get("/api/user/project/artifacts", {
+				params: { projectId: contextProject?.id },
 			}),
-		enabled: !!contextProject?.team?.id,
+		enabled: !!contextProject?.id,
 		refetchOnWindowFocus: false,
 	});
 
-	const { mutateAsync: deleteDocument } = useMutation({
-		mutationFn: ({ id, teamId }: { id: string; teamId: string }) =>
-			axios.delete(`/api/user/project/documents/${id}`, {
-				params: { teamId },
-			}),
+	const { mutateAsync: deleteArtifact } = useMutation({
+		mutationFn: (id: string) =>
+			axios.delete(`/api/user/project/artifacts/${id}`),
 	});
 
-	const documentsColumns: ColumnsType<TeamDocumentWithCreatedByUser> = [
+	const artifactColumns: ColumnsType<ArtifactWithCreatedByUser> = [
 		{
 			title: t("project.documents.title", "Title"),
 			dataIndex: "name",
@@ -144,12 +142,7 @@ const MyProjectDocuments = () => {
 						title={t("You definitely want to delete the document?")}
 						okText={t("Yes", "Yes")}
 						cancelText={t("No", "No")}
-						onConfirm={() =>
-							handleDeleteDocument({
-								id: record.id,
-								teamId: contextProject?.team?.id,
-							})
-						}
+						onConfirm={() => handleDeleteArtifact(record.id)}
 					>
 						<Button type="text" danger>
 							<IconTrash />
@@ -160,29 +153,22 @@ const MyProjectDocuments = () => {
 		},
 	];
 
-	const handleDeleteDocument = async ({
-		id,
-		teamId,
-	}: {
-		id: string;
-		teamId?: string;
-	}) => {
-		if (!teamId) return;
+	const handleDeleteArtifact = async (id: string) => {
 		if (isProjectArchived) return;
 
-		await deleteDocument({ id, teamId });
-		fetchMyProjectDocuments();
+		await deleteArtifact(id);
+		fetchMyProjectArtifacts();
 
 		message.success(t("project.documents.documentDeleted", "Document deleted"));
 	};
 
-	const handleCreateDocument = () => {
-		setShowDocumentModal(false);
-		fetchMyProjectDocuments();
+	const handleCreateArtifact = () => {
+		setShowArtifactModal(false);
+		fetchMyProjectArtifacts();
 	};
 
-	const handleCancelCreateDocument = () => {
-		setShowDocumentModal(false);
+	const handleCancelCreateArtifact = () => {
+		setShowArtifactModal(false);
 	};
 
 	return (
@@ -190,19 +176,19 @@ const MyProjectDocuments = () => {
 			<Flex justify="space-between" align="center">
 				<Space align="center">
 					{!isProjectArchived && (
-						<Button onClick={() => setShowDocumentModal(true)}>
+						<Button onClick={() => setShowArtifactModal(true)}>
 							{t("project.documents.addDocument", "Add document")}
 						</Button>
 					)}
 				</Space>
 			</Flex>
 
-			{projectDocuments?.data.length > 0 ? (
+			{projectArtifacts?.data.length > 0 ? (
 				<ModernTable
-					loading={isLoadingMyProjectDocuments}
-					columns={documentsColumns.filter((column) => !column.hidden)}
-					dataSource={projectDocuments?.data?.map(
-						(m: TeamDocumentWithCreatedByUser) => ({
+					loading={isLoadingMyProjectArtifacts}
+					columns={artifactColumns.filter((column) => !column.hidden)}
+					dataSource={projectArtifacts?.data?.map(
+						(m: ArtifactWithCreatedByUser) => ({
 							...m,
 							key: m.id,
 						}),
@@ -219,16 +205,15 @@ const MyProjectDocuments = () => {
 			)}
 
 			{!isProjectArchived && (
-				<CreateDocumentModal
-					teamId={contextProject?.team?.id}
+				<CreateArtifactModal
 					projectId={contextProject?.id}
-					open={showDocumentModal}
-					onCancel={handleCancelCreateDocument}
-					onCreate={handleCreateDocument}
+					open={showArtifactModal}
+					onCancel={handleCancelCreateArtifact}
+					onCreate={handleCreateArtifact}
 				/>
 			)}
 		</>
 	);
 };
 
-export default MyProjectDocuments;
+export default MyProjectArtifacts;

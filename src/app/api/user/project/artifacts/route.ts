@@ -1,4 +1,4 @@
-import { TeamDocumentType } from "@gdhub-io/gdhub-prisma";
+import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -9,39 +9,38 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { projectOfTeam } from "@/lib/space-ids";
 import { prisma } from "@/services/prisma";
 
-const TeamIdQuerySchema = z.object({
-	teamId: z.string(),
+const ProjectIdQuerySchema = z.object({
+	projectId: z.string(),
 });
 
-const CreateTeamDocumentSchema = z.object({
-	teamId: z.string(),
-	type: z.enum(Object.values(TeamDocumentType) as [string, ...string[]]),
+const CreateArtifactSchema = z.object({
+	projectId: z.string(),
+	type: z.enum(Object.values(ProjectArtifactType) as [string, ...string[]]),
 	name: z.string(),
 	description: z.string().optional(),
 	link: z.string(),
 });
 
-type TeamIdQuery = z.infer<typeof TeamIdQuerySchema>;
-type CreateTeamDocumentBody = z.infer<typeof CreateTeamDocumentSchema>;
+type ProjectIdQuery = z.infer<typeof ProjectIdQuerySchema>;
+type CreateArtifactBody = z.infer<typeof CreateArtifactSchema>;
 
 export const GET = pipe(
 	withAuth({ mode: "user" }),
-	// Replaces withTeamGuard: reading documents stays open to the whole team.
+	// Replaces withTeamGuard: reading artifacts stays open to the whole team.
 	withSpaceGuard({
-		permission: "project.documents.view",
-		idFrom: projectOfTeam,
+		permission: "project.artifacts.view",
+		idFrom: "query.projectId",
 	}),
-	withValidation(TeamIdQuerySchema, "query"),
+	withValidation(ProjectIdQuerySchema, "query"),
 )(async (_req, _ctx, { user, body }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
-	const { teamId } = body as TeamIdQuery;
+	const { projectId } = body as ProjectIdQuery;
 
-	const documents = await prisma.teamDocument.findMany({
-		where: { teamId },
+	const artifacts = await prisma.projectArtifact.findMany({
+		where: { projectId },
 		orderBy: { updatedAt: "desc" },
 		include: {
 			createdByUser: {
@@ -53,7 +52,7 @@ export const GET = pipe(
 		},
 	});
 
-	return json(documents);
+	return json(artifacts);
 });
 
 export const POST = pipe(
@@ -61,26 +60,26 @@ export const POST = pipe(
 	// Narrower than withTeamGuard on purpose: uploading is a management action,
 	// so it belongs to the owner and admins, not to every team member.
 	withSpaceGuard({
-		permission: "project.documents.manage",
-		idFrom: projectOfTeam,
+		permission: "project.artifacts.manage",
+		idFrom: "body.projectId",
 	}),
-	withValidation(CreateTeamDocumentSchema),
+	withValidation(CreateArtifactSchema),
 )(async (_req, _ctx, { user, body }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
-	const { teamId, type, name, description, link } =
-		body as CreateTeamDocumentBody;
+	const { projectId, type, name, description, link } =
+		body as CreateArtifactBody;
 
-	const document = await prisma.teamDocument.create({
+	const artifact = await prisma.projectArtifact.create({
 		data: {
-			type: type as TeamDocumentType,
+			type: type as ProjectArtifactType,
 			name,
 			description,
 			link,
-			team: { connect: { id: teamId } },
+			project: { connect: { id: projectId } },
 			createdByUser: { connect: { id: currentUser.id } },
 		},
 	});
 
-	return json(document);
+	return json(artifact);
 });
