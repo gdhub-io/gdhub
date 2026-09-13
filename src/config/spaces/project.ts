@@ -21,12 +21,17 @@ export const projectSpace = defineSpace({
 	overrides: {
 		// Guests exist only by explicit invitation and only observe (§2.2).
 		[SpaceRole.Guest]: ["project.info.view", "project.devlog.view"],
+		// Buying a checkpoint spends money and puts the whole team under a
+		// deadline, and the goal card it is judged against is the author's
+		// statement of intent. Both stay with the owner — not with the admins,
+		// who manage everything else here.
+		[SpaceRole.Admin]: {
+			"project.checkpoints.create": false,
+			"project.checkpoints.manage": false,
+		},
 		[SpaceRole.Member]: {
 			// A team member sees their own shares, not the whole cap table.
 			"project.equity.view": "own",
-			// Starting a checkpoint spends money and commits the whole team to a
-			// deadline, so it sits with the owner and the admins even though
-			// `create` is a read-class action everywhere else.
 			"project.checkpoints.create": false,
 		},
 	},
