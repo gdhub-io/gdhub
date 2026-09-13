@@ -6,17 +6,13 @@ import { App, Button, Skeleton, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/ui";
-import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
-import {
-	useCheckpoints,
-	useDiscardCheckpoint,
-	useUpdateCheckpoint,
-} from "@/hooks/checkpoints";
-import { useCurrentProject } from "@/hooks/project";
+import { CheckpointItemKind } from "@/config/prisma-enums";
+import { useDiscardCheckpoint, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { useProjectArtifacts } from "@/hooks/project-artifacts";
 import { type GoalLine, GoalLines } from "./GoalLines";
 import { StartLayout, type StartStep } from "./StartLayout";
 import styles from "./StartStepPage.module.scss";
+import { useCheckpointDraft } from "./useDraft";
 
 export type StartStepPageProps = {
 	step: Extract<StartStep, "now" | "goal">;
@@ -31,11 +27,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const router = useRouter();
-	const { project, isLoading: projectLoading } = useCurrentProject();
-
-	const { data, isPending } = useCheckpoints(project?.id);
-	const draft =
-		data?.current?.status === CheckpointStatus.Draft ? data.current : null;
+	const { project, draft, loading, base } = useCheckpointDraft();
 
 	const { data: artifacts } = useProjectArtifacts(project?.id);
 	const update = useUpdateCheckpoint(draft?.id);
@@ -59,11 +51,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		);
 	}, [draft, kind]);
 
-	// `isPending` stays true while the query is disabled, so the empty state
-	// cannot flash before the project id has even arrived.
-	if (projectLoading || isPending) {
-		return <Skeleton active paragraph={{ rows: 6 }} />;
-	}
+	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
 	if (!draft) {
 		return (
@@ -75,12 +63,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
-					<Button
-						type="primary"
-						onClick={() =>
-							router.push(`/user/project/${project?.slug}/checkpoints`)
-						}
-					>
+					<Button type="primary" onClick={() => router.push(base)}>
 						{t("checkpoints.start.toList", "Back to checkpoints")}
 					</Button>
 				}
@@ -108,8 +91,6 @@ export function StartStepPage({ step }: StartStepPageProps) {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
 		}
 	};
-
-	const base = `/user/project/${project?.slug}/checkpoints`;
 
 	const cancel = async () => {
 		try {
@@ -153,15 +134,11 @@ export function StartStepPage({ step }: StartStepPageProps) {
 			onBack={isNow ? undefined : () => goTo(`${base}/new/inputs`)}
 			onCancel={cancel}
 			footNote={
-				// Steps 3 and 4 are drawn in the rail but not built (GDHUB-42, GDHUB-38).
-				// Saying so beats a forward button that reads as if the purchase were
-				// finished two steps early.
+				// Step 4 needs Paddle (GDHUB-38). Saying so beats a forward button
+				// that reads as if the purchase were finished early.
 				isNow ? undefined : (
 					<Typography.Text type="secondary" className={styles.pending}>
-						{t(
-							"checkpoints.start.stepsPending",
-							"Choosing a curator and paying are not open yet",
-						)}
+						{t("checkpoints.start.paymentPending", "Paying is not open yet")}
 					</Typography.Text>
 				)
 			}
@@ -169,11 +146,13 @@ export function StartStepPage({ step }: StartStepPageProps) {
 				<Button
 					type="primary"
 					loading={update.isPending}
-					onClick={() => goTo(isNow ? `${base}/new/outcomes` : base)}
+					onClick={() =>
+						goTo(isNow ? `${base}/new/outcomes` : `${base}/new/curator`)
+					}
 				>
 					{isNow
 						? t("checkpoints.start.next1", "Next — what will exist")
-						: t("checkpoints.start.saveDraft", "Save the draft")}
+						: t("checkpoints.start.next2", "Next — who curates")}
 				</Button>
 			}
 		>
@@ -201,7 +180,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 				<Typography.Paragraph type="secondary" style={{ marginTop: 16 }}>
 					{t(
 						"checkpoints.start.draftNote",
-						"Next you choose a curator and pay. The 28 days start once the curator has taken the checkpoint on, and they go through this list with you on day 1 — it is fixed after that, not at checkout.",
+						"The curator goes through this list with you on day 1 and cuts it to what 28 days actually hold. It is fixed after that, not at checkout.",
 					)}
 				</Typography.Paragraph>
 			)}
