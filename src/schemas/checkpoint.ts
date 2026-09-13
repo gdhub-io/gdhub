@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { CheckpointItemKind } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+} from "@/config/prisma-enums";
 
 /**
  * The goal card is written across four steps and saved on every one of them, so
@@ -30,6 +33,7 @@ export const CreateCheckpointSchema = z.object({
 export const UpdateCheckpointSchema = z
 	.object({
 		goal: z.string().trim().max(CHECKPOINT_GOAL_MAX),
+		curatorKind: z.nativeEnum(CheckpointCuratorKind),
 		/**
 		 * The whole side, replaced. A goal card is a short list edited as a list —
 		 * per-line patches would need ids the step pages do not carry, and the

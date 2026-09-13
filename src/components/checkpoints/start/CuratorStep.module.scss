@@ -1,0 +1,89 @@
+.option {
+	// A row, not a card: the two kinds are compared down one column, and the
+	// price has to sit in the same place on both (frame `vE1BQ`).
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	width: 100%;
+	max-width: 720px;
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+	text-align: left;
+	cursor: pointer;
+
+	&[data-chosen] {
+		border-color: var(--gd-color-accent);
+	}
+}
+
+.tile {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text);
+}
+
+.text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	flex: 1;
+	min-width: 0;
+}
+
+.name {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.description {
+	color: var(--gd-color-text-secondary);
+	font-size: 13px;
+}
+
+.right {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	flex: none;
+}
+
+.price {
+	font-size: 14px;
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	white-space: nowrap;
+}
+
+.picker {
+	max-width: 720px;
+	padding: var(--gd-space-4);
+	border: 1px dashed var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.pickerLabel {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.note {
+	max-width: 720px;
+	margin: var(--gd-space-4) 0 0 !important;
+	font-size: 13px;
+}
+
+.pending {
+	font-size: 13px;
+	text-align: right;
+}

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import type { CheckpointCuratorKind } from "@/config/prisma-enums";
 import type { CheckpointItemInput } from "@/schemas/checkpoint";
 import type {
 	CheckpointDto,
@@ -45,6 +46,7 @@ export const useUpdateCheckpoint = (id?: string) => {
 	return useMutation({
 		mutationFn: async (body: {
 			goal?: string;
+			curatorKind?: CheckpointCuratorKind;
 			inputs?: CheckpointItemInput[];
 			outcomes?: CheckpointItemInput[];
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,

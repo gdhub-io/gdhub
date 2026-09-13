@@ -60,7 +60,7 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const { goal, inputs, outcomes } = body as UpdateCheckpointBody;
+	const { goal, curatorKind, inputs, outcomes } = body as UpdateCheckpointBody;
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
@@ -72,8 +72,14 @@ export const PUT = pipe(
 		return apiError.badRequest("checkpointNotDraft");
 	}
 
-	if (goal !== undefined) {
-		await prisma.projectCheckpoint.update({ where: { id }, data: { goal } });
+	if (goal !== undefined || curatorKind !== undefined) {
+		await prisma.projectCheckpoint.update({
+			where: { id },
+			data: {
+				...(goal !== undefined && { goal }),
+				...(curatorKind && { curatorKind }),
+			},
+		});
 	}
 
 	if (inputs) {
