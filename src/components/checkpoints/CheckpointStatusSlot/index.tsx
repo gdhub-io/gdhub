@@ -1,6 +1,6 @@
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { StatusDot } from "@/components/ui";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { VerdictChip } from "../VerdictChip";
 

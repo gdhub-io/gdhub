@@ -1,8 +1,8 @@
-import { CheckpointCuratorKind } from "@gdhub-io/gdhub-prisma";
 import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 export type CuratorBadgeProps = {

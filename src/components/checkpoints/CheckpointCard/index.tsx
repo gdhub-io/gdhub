@@ -1,11 +1,11 @@
 "use client";
 
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { IconArrowRight, IconTrash } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Progress, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";

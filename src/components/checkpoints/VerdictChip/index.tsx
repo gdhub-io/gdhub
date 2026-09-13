@@ -1,6 +1,6 @@
-import { CheckpointVerdict } from "@gdhub-io/gdhub-prisma";
 import { useTranslate } from "@tolgee/react";
 import { StatusDot, type StatusTone } from "@/components/ui";
+import { CheckpointVerdict } from "@/config/prisma-enums";
 
 /**
  * `GoalMissed` is warning, not danger. Red belongs to destructive and failed

@@ -1,5 +1,5 @@
-import { CheckpointItemKind } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { CheckpointItemKind } from "@/config/prisma-enums";
 
 /**
  * The goal card is written across four steps and saved on every one of them, so

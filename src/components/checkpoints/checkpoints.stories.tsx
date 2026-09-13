@@ -1,10 +1,10 @@
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import { Flex } from "antd";
 import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 	CheckpointVerdict,
-} from "@gdhub-io/gdhub-prisma";
-import type { Meta, StoryObj } from "@storybook/nextjs";
-import { Flex } from "antd";
+} from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCard } from "./CheckpointCard";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
