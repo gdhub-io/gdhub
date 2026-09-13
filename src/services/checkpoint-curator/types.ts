@@ -1,0 +1,117 @@
+import type { CheckpointVerdict } from "@/config/prisma-enums";
+import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
+
+/**
+ * Inputs and results for the AI curator's four calls.
+ *
+ * Provider agnostic and free of server-only imports, so the checkpoint page can
+ * import the result types to render what the curator wrote. Everything the model
+ * is given here is something the platform could already show the author.
+ */
+
+export type CuratorLine = {
+	id: string;
+	text: string;
+	/** The wording bought, where the line has since been reworded. */
+	originalText?: string | null;
+	cut?: boolean;
+	/** Set when the line was added on day 14 rather than written on day 1. */
+	addedAt?: string | null;
+};
+
+export type CuratorGoalCard = {
+	goal: string;
+	inputs: CuratorLine[];
+	outcomes: CuratorLine[];
+};
+
+export type CuratorStage = {
+	name: string;
+	/** What the workflow template says this stage requires, task by task. */
+	requirements: string[];
+};
+
+export type CuratorOptions = {
+	/** Forwarded to the model so the author is answered in their own language. */
+	locale?: string;
+};
+
+/** Day 1: is this reachable in 28 days, and what is missing from the list. */
+export type GoalCheckInput = {
+	card: CuratorGoalCard;
+	stage: CuratorStage;
+};
+
+export type OutcomeConcern = {
+	/** The outcome this is about, echoed back from the card. */
+	itemId: string;
+	kind: "too_big" | "no_input" | "unclear";
+	/**
+	 * A smaller version of the line the author may take or ignore. The curator
+	 * offers it; it never rewrites the card, and no copy may say it decided.
+	 */
+	smaller?: string;
+};
+
+export type GoalCheckResult = {
+	reachable: boolean;
+	concerns: OutcomeConcern[];
+	/** Outcomes the stage requires that the card does not promise. */
+	missing: string[];
+	/** One paragraph the author reads, in their own language. */
+	note: string;
+};
+
+/** The day after a devlog: what it moves, what it leaves untouched. */
+export type DevlogAnswerInput = {
+	devlog: { publishedAt: string; content: string; hasVideo: boolean };
+	outcomes: CuratorLine[];
+};
+
+export type DevlogAnswerResult = {
+	/** What is written under the post. It never replaces the post. */
+	answer: string;
+	/** Outcome ids this devlog moves, and ones still untouched. */
+	moves: string[];
+	untouched: string[];
+};
+
+/** Day 14: the outcomes nothing has been claimed against, and how much is gone. */
+export type MidNoteInput = {
+	card: CuratorGoalCard;
+	/** Computed in code, never by the model — it is a fact, not a judgement. */
+	unproven: UnprovenOutcome[];
+	day: number;
+	devlogs: { publishedAt: string; content: string }[];
+};
+
+export type MidNoteResult = {
+	note: string;
+};
+
+export type CuratorArtifact = {
+	itemId: string;
+	type: string;
+	name: string | null;
+	description: string | null;
+	link: string;
+	readable: boolean;
+};
+
+/** Day 28: the report, and the verdict the guardrail then settles. */
+export type ReportInput = {
+	card: CuratorGoalCard;
+	stage: CuratorStage;
+	revision: { revisedAt: string; note: string | null } | null;
+	artifacts: CuratorArtifact[];
+	unproven: UnprovenOutcome[];
+	devlogs: { publishedAt: string; content: string }[];
+	/** Member by week: who confirmed they worked on it. */
+	pulses: { member: string; weeks: boolean[] }[];
+};
+
+export type ReportResult = {
+	summary: string;
+	verdict: CheckpointVerdict;
+	verdictNote: string;
+};

@@ -1,0 +1,363 @@
+import {
+	type ArtifactCheckStatus,
+	CheckpointItemKind,
+	CheckpointStatus,
+	type ProjectArtifactType,
+} from "@gdhub-io/gdhub-prisma";
+import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
+import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import type {
+	CuratorGoalCard,
+	CuratorLine,
+	CuratorOptions,
+	GoalCheckResult,
+} from "@/services/checkpoint-curator";
+import { checkpointCurator } from "@/services/checkpoint-curator";
+import { prisma } from "@/services/prisma";
+import { checkpointDay } from "./checkpoint.repository";
+
+/**
+ * The AI curator's four moments, each gathering its own facts and writing back
+ * what came of it.
+ *
+ * Every one is idempotent: the cron may fire twice on a day, a retry may land
+ * after a timeout, and none of it may produce two notes or two verdicts. What
+ * has already been written is the guard, not a lock.
+ *
+ * They do not know which day it is — GDHUB-35's cron decides that. They only
+ * refuse work that is already done.
+ */
+
+const curatorItemSelect = {
+	id: true,
+	kind: true,
+	text: true,
+	originalText: true,
+	cut: true,
+	addedAt: true,
+	acceptedNote: true,
+	artifact: {
+		select: {
+			type: true,
+			name: true,
+			description: true,
+			link: true,
+			checkStatus: true,
+		},
+	},
+} as const;
+
+type CuratorItem = {
+	id: string;
+	kind: CheckpointItemKind;
+	text: string;
+	originalText: string | null;
+	cut: boolean;
+	addedAt: Date | null;
+	acceptedNote: string | null;
+	artifact: {
+		type: ProjectArtifactType;
+		name: string | null;
+		description: string | null;
+		link: string;
+		checkStatus: ArtifactCheckStatus | null;
+	} | null;
+};
+
+const toLine = (item: CuratorItem): CuratorLine => ({
+	id: item.id,
+	text: item.text,
+	originalText: item.originalText,
+	cut: item.cut,
+	addedAt: item.addedAt?.toISOString() ?? null,
+});
+
+const toCard = (goal: string, items: CuratorItem[]): CuratorGoalCard => ({
+	goal,
+	inputs: items
+		.filter((item) => item.kind === CheckpointItemKind.Input)
+		.map(toLine),
+	outcomes: items
+		.filter((item) => item.kind === CheckpointItemKind.Outcome)
+		.map(toLine),
+});
+
+const toDevlog = (post: { publishedAt: Date; content: string }) => ({
+	publishedAt: post.publishedAt.toISOString().slice(0, 10),
+	content: post.content,
+});
+
+/** What the stage's template says it requires — the required tasks, by name. */
+const stageRequirements = async (stepId: string | null) => {
+	if (!stepId) return [];
+
+	const tasks = await prisma.projectWorkflowTask.findMany({
+		where: { stepId, required: true },
+		orderBy: { order: "asc" },
+		select: { name: true },
+	});
+
+	return tasks.flatMap((task) => (task.name ? [task.name] : []));
+};
+
+/**
+ * Day 1: read the card back and say what will not fit.
+ *
+ * Nothing is written. The concerns are what the author is shown while the card
+ * can still change, and once it is agreed they are history — the record keeps
+ * `originalText`, which is the part that still matters at the end.
+ */
+export const runGoalCheck = async (
+	checkpointId: string,
+	options: CuratorOptions = {},
+): Promise<GoalCheckResult | null> => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			goal: true,
+			stageName: true,
+			stepId: true,
+			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+		},
+	});
+
+	if (!checkpoint) return null;
+
+	return checkpointCurator.checkGoal(
+		{
+			card: toCard(checkpoint.goal, checkpoint.items as CuratorItem[]),
+			stage: {
+				name: checkpoint.stageName,
+				requirements: await stageRequirements(checkpoint.stepId),
+			},
+		},
+		options,
+	);
+};
+
+/**
+ * The answer under one devlog, written the day after it was posted.
+ *
+ * Returns null and writes nothing when the post already carries an answer, when
+ * it belongs to no checkpoint, or when the model failed — a devlog with no
+ * curator answer is a devlog, and the author loses nothing.
+ */
+export const answerDevlog = async (
+	reportId: string,
+	options: CuratorOptions = {},
+) => {
+	const report = await prisma.projectReport.findUnique({
+		where: { id: reportId },
+		select: {
+			content: true,
+			video: true,
+			publishedAt: true,
+			curatorFeedbackAt: true,
+			checkpoint: {
+				select: {
+					goal: true,
+					items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+				},
+			},
+		},
+	});
+
+	if (!report?.checkpoint || report.curatorFeedbackAt) return null;
+
+	const answer = await checkpointCurator.answerDevlog(
+		{
+			devlog: {
+				publishedAt: report.publishedAt.toISOString().slice(0, 10),
+				content: report.content,
+				hasVideo: !!report.video,
+			},
+			outcomes: toCard(
+				report.checkpoint.goal,
+				report.checkpoint.items as CuratorItem[],
+			).outcomes.filter((item) => !item.cut),
+		},
+		options,
+	);
+
+	if (!answer) return null;
+
+	await prisma.projectReport.update({
+		where: { id: reportId },
+		data: { curatorFeedback: answer.answer, curatorFeedbackAt: new Date() },
+	});
+
+	return answer;
+};
+
+/**
+ * Day 14: name the outcomes nothing has been claimed against and ask the author
+ * to decide. Which outcomes those are is computed here, not asked of the model.
+ */
+export const writeMidNote = async (
+	checkpointId: string,
+	options: CuratorOptions = {},
+) => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			goal: true,
+			midNote: true,
+			startedAt: true,
+			status: true,
+			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+			reports: {
+				orderBy: { publishedAt: "asc" },
+				select: { publishedAt: true, content: true },
+			},
+		},
+	});
+
+	if (
+		!checkpoint ||
+		checkpoint.midNote ||
+		checkpoint.status !== CheckpointStatus.Active ||
+		!checkpoint.startedAt
+	) {
+		return null;
+	}
+
+	const items = checkpoint.items as CuratorItem[];
+	const written = await checkpointCurator.writeMidNote(
+		{
+			card: toCard(checkpoint.goal, items),
+			unproven: unprovenOutcomes(items),
+			day: checkpointDay(checkpoint.startedAt),
+			devlogs: checkpoint.reports.map(toDevlog),
+		},
+		options,
+	);
+
+	if (!written) return null;
+
+	await prisma.projectCheckpoint.update({
+		where: { id: checkpointId },
+		data: { midNote: written.note },
+	});
+
+	return written;
+};
+
+/**
+ * Day 28: the report, the verdict, and the end of the checkpoint.
+ *
+ * Fails closed. A model that errors or answers nothing usable leaves the
+ * checkpoint in `Review` for the next run — closing one on a shrug would write a
+ * verdict nobody wrote and move a project's stage on it.
+ */
+export const closeCheckpoint = async (
+	checkpointId: string,
+	options: CuratorOptions = {},
+) => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			goal: true,
+			stageName: true,
+			stepId: true,
+			status: true,
+			verdict: true,
+			revisedAt: true,
+			revisedNote: true,
+			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+			reports: {
+				orderBy: { publishedAt: "asc" },
+				select: { publishedAt: true, content: true },
+			},
+			pulses: {
+				select: {
+					week: true,
+					confirmedAt: true,
+					teamMember: { select: { user: { select: { name: true } } } },
+				},
+			},
+		},
+	});
+
+	if (!checkpoint || checkpoint.verdict) return null;
+	if (
+		checkpoint.status !== CheckpointStatus.Active &&
+		checkpoint.status !== CheckpointStatus.Review
+	) {
+		return null;
+	}
+
+	const items = checkpoint.items as CuratorItem[];
+	const unproven = unprovenOutcomes(items);
+
+	const proposed = await checkpointCurator.writeReport(
+		{
+			card: toCard(checkpoint.goal, items),
+			stage: {
+				name: checkpoint.stageName,
+				requirements: await stageRequirements(checkpoint.stepId),
+			},
+			revision: checkpoint.revisedAt
+				? {
+						revisedAt: checkpoint.revisedAt.toISOString().slice(0, 10),
+						note: checkpoint.revisedNote,
+					}
+				: null,
+			artifacts: items.flatMap((item) =>
+				item.artifact
+					? [
+							{
+								itemId: item.id,
+								type: item.artifact.type,
+								name: item.artifact.name,
+								description: item.artifact.description,
+								link: item.artifact.link,
+								readable: item.artifact.checkStatus === "Readable",
+							},
+						]
+					: [],
+			),
+			unproven,
+			devlogs: checkpoint.reports.map(toDevlog),
+			pulses: pulseMatrix(checkpoint.pulses),
+		},
+		options,
+	);
+
+	if (!proposed) return null;
+
+	const settled = settleVerdict(items, proposed.verdict);
+
+	await prisma.projectCheckpoint.update({
+		where: { id: checkpointId },
+		data: {
+			status: CheckpointStatus.Closed,
+			summary: proposed.summary,
+			verdict: settled.verdict,
+			verdictNote: proposed.verdictNote,
+			decidedAt: new Date(),
+		},
+	});
+
+	return settled;
+};
+
+type PulseRow = {
+	week: number;
+	confirmedAt: Date | null;
+	teamMember: { user: { name: string | null } };
+};
+
+/** Member by week, in the shape the report reads: four booleans per person. */
+const pulseMatrix = (pulses: PulseRow[]) => {
+	const weeks = CHECKPOINT_DAYS / 7;
+	const byMember = new Map<string, boolean[]>();
+
+	for (const pulse of pulses) {
+		const member = pulse.teamMember.user.name ?? "Unnamed";
+		const row = byMember.get(member) ?? Array<boolean>(weeks).fill(false);
+		row[pulse.week - 1] = !!pulse.confirmedAt;
+		byMember.set(member, row);
+	}
+
+	return [...byMember].map(([member, weeks]) => ({ member, weeks }));
+};
