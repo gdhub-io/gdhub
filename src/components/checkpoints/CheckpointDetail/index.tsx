@@ -1,13 +1,15 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Collapse, Flex, Skeleton, Typography } from "antd";
-import { useParams } from "next/navigation";
-import { Error404 } from "@/components/Error404";
+import { Collapse, Flex, Typography } from "antd";
 import { CheckpointItemKind } from "@/config/prisma-enums";
-import { useCheckpoint } from "@/hooks/checkpoints";
+import type { CheckpointDto } from "@/types/checkpoints";
 import { GoalCard } from "../GoalCard";
 import styles from "./style.module.scss";
+
+export type CheckpointDetailProps = {
+	checkpoint: CheckpointDto;
+};
 
 /**
  * A checkpoint that has been paid for and is on its way to a verdict.
@@ -16,26 +18,13 @@ import styles from "./style.module.scss";
  * was left on. The action card, the pulse matrix and the thread arrive with the
  * cron and the AI curator, which is where their data comes from.
  */
-export function CheckpointDetail() {
+export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const { t } = useTranslate();
-	const params = useParams();
 
-	const {
-		data: checkpoint,
-		isLoading,
-		isError,
-	} = useCheckpoint(params?.id as string | undefined);
-
-	if (isLoading) return <Skeleton active paragraph={{ rows: 8 }} />;
-	if (isError || !checkpoint) return <Error404 />;
-
-	const claimed = checkpoint.items.filter(
-		(item) =>
-			item.kind === CheckpointItemKind.Outcome && !item.cut && item.artifact,
-	).length;
-	const owed = checkpoint.items.filter(
+	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
-	).length;
+	);
+	const claimed = outcomes.filter((item) => item.artifact).length;
 
 	return (
 		<Flex vertical gap={16}>
@@ -58,7 +47,7 @@ export function CheckpointDetail() {
 									{`· ${t(
 										"checkpoints.goal.claimed",
 										"{claimed} of {owed} outcomes claimed",
-										{ claimed, owed },
+										{ claimed, owed: outcomes.length },
 									)}`}
 								</Typography.Text>
 							</Flex>

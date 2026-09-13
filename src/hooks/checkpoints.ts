@@ -18,8 +18,8 @@ const listKey = (projectId?: string, page = 1) => [
  * What is on the go, what is behind, and whether another one can be started —
  * one request, because the tab shows all three at once.
  */
-export const useCheckpoints = (projectId?: string, page = 1) => {
-	const query = useQuery({
+export const useCheckpoints = (projectId?: string, page = 1) =>
+	useQuery({
 		queryKey: listKey(projectId, page),
 		queryFn: async () =>
 			(
@@ -29,9 +29,6 @@ export const useCheckpoints = (projectId?: string, page = 1) => {
 			).data,
 		enabled: !!projectId,
 	});
-
-	return query;
-};
 
 export const useCheckpoint = (id?: string) =>
 	useQuery({

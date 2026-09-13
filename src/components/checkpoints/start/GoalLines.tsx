@@ -19,7 +19,7 @@ export type GoalLine = {
 	artifact: CheckpointArtifactRef | null;
 };
 
-export const emptyLine = (): GoalLine => ({
+const emptyLine = (): GoalLine => ({
 	key: crypto.randomUUID(),
 	text: "",
 	artifact: null,

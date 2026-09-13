@@ -48,9 +48,6 @@ export function CheckpointStatusSlot({
 		);
 	}
 
-	// The day is a number, not a state, so it takes the chip rather than the dot
-	// the verdicts use. It also stands where the word "Active" would otherwise
-	// be, because it is the number the author came for.
 	return (
 		<span className={`${styles.day}${className ? ` ${className}` : ""}`}>
 			{t("checkpoints.status.day", "Day {day} of 28", {

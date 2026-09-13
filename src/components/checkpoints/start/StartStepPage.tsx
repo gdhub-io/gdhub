@@ -43,7 +43,6 @@ export function StartStepPage({ step }: StartStepPageProps) {
 	const kind =
 		step === "now" ? CheckpointItemKind.Input : CheckpointItemKind.Outcome;
 	const [lines, setLines] = useState<GoalLine[]>([]);
-	const [saved, setSaved] = useState(false);
 
 	useEffect(() => {
 		if (!draft) return;
@@ -88,7 +87,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		);
 	}
 
-	const persist = async () => {
+	const goTo = async (path: string) => {
 		const written = lines
 			.filter((line) => line.text.trim())
 			.map((line) => ({
@@ -97,17 +96,12 @@ export function StartStepPage({ step }: StartStepPageProps) {
 				artifactId: line.artifact?.id ?? null,
 			}));
 
-		await update.mutateAsync(
-			kind === CheckpointItemKind.Input
-				? { inputs: written }
-				: { outcomes: written },
-		);
-		setSaved(true);
-	};
-
-	const goTo = async (path: string) => {
 		try {
-			await persist();
+			await update.mutateAsync(
+				kind === CheckpointItemKind.Input
+					? { inputs: written }
+					: { outcomes: written },
+			);
 			router.push(path);
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
@@ -136,7 +130,6 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		<StartLayout
 			step={step}
 			stageName={draft.stageName}
-			saved={saved}
 			question={
 				isNow
 					? t("checkpoints.start.q1", "What exists today?")

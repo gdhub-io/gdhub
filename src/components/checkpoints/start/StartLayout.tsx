@@ -24,8 +24,6 @@ export type StartLayoutProps = {
 	question: string;
 	hint: string;
 	children: ReactNode;
-	/** Shown left of the forward button once the draft has been written to. */
-	saved?: boolean;
 	onBack?: () => void;
 	onCancel: () => void;
 	forward: ReactNode;
@@ -37,7 +35,6 @@ export function StartLayout({
 	question,
 	hint,
 	children,
-	saved,
 	onBack,
 	onCancel,
 	forward,
@@ -168,16 +165,7 @@ export function StartLayout({
 						{t("checkpoints.start.cancel", "Cancel")}
 					</Button>
 				</Flex>
-				<Flex gap={12} align="center">
-					{saved && (
-						// It reports the state of the thing the button is about to
-						// advance, so it stands beside it rather than up in the meta line.
-						<Typography.Text className={styles.saved}>
-							{t("checkpoints.draft.savedLabel", "Saved as a draft")}
-						</Typography.Text>
-					)}
-					{forward}
-				</Flex>
+				{forward}
 			</footer>
 		</div>
 	);
