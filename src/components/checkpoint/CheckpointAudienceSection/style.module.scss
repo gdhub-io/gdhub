@@ -1,0 +1,95 @@
+.layout {
+	display: grid;
+	gap: 28px;
+}
+
+.columns {
+	display: grid;
+	gap: 28px;
+}
+
+.column {
+	display: grid;
+	gap: 12px;
+	align-content: start;
+}
+
+.columnTitle {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.titleFor {
+	color: var(--gd-success-solid);
+}
+
+.titleNot {
+	color: var(--gd-danger-solid);
+}
+
+.list {
+	display: grid;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.item {
+	display: grid;
+	grid-template-columns: 18px minmax(0, 1fr);
+	gap: 8px;
+	align-items: start;
+	padding-block: 8px;
+	font-size: var(--gd-font-size-body-lg);
+	line-height: 1.5;
+	color: var(--gd-color-text);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+// Optical: the 18px box centres a hair above the cap height of the first line.
+.iconFor,
+.iconNot {
+	margin-top: 3px;
+}
+
+.iconFor {
+	color: var(--gd-success-solid);
+}
+
+.iconNot {
+	color: var(--gd-danger-solid);
+}
+
+@media screen and (min-width: 992px) {
+	.layout {
+		grid-template-columns: minmax(0, 1fr) 400px;
+		column-gap: 80px;
+		align-items: start;
+	}
+
+	// Heading on the right: the reader slows down where the page asks them to check.
+	.heading {
+		grid-area: 1 / 2;
+	}
+
+	.columns {
+		grid-area: 1 / 1;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 56px;
+	}
+
+	.column {
+		gap: 16px;
+	}
+
+	.item {
+		gap: 12px;
+		padding-block: 16px;
+	}
+}
