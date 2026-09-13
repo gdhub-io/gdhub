@@ -31,7 +31,7 @@ type UpdateArtifactBody = z.infer<typeof UpdateArtifactSchema>;
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({
-		permission: "project.documents.view",
+		permission: "project.artifacts.view",
 		idFrom: projectOfArtifact,
 	}),
 )(async (_req, ctx, { user }) => {
@@ -49,7 +49,7 @@ export const GET = pipe(
 export const PUT = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({
-		permission: "project.documents.manage",
+		permission: "project.artifacts.manage",
 		idFrom: projectOfArtifact,
 	}),
 	withValidation(UpdateArtifactSchema),
@@ -75,7 +75,7 @@ export const PUT = pipe(
 export const DELETE = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({
-		permission: "project.documents.manage",
+		permission: "project.artifacts.manage",
 		idFrom: projectOfArtifact,
 	}),
 )(async (_req, ctx, { user }) => {

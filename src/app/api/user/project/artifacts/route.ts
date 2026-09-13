@@ -30,7 +30,7 @@ export const GET = pipe(
 	withAuth({ mode: "user" }),
 	// Replaces withTeamGuard: reading artifacts stays open to the whole team.
 	withSpaceGuard({
-		permission: "project.documents.view",
+		permission: "project.artifacts.view",
 		idFrom: "query.projectId",
 	}),
 	withValidation(ProjectIdQuerySchema, "query"),
@@ -60,7 +60,7 @@ export const POST = pipe(
 	// Narrower than withTeamGuard on purpose: uploading is a management action,
 	// so it belongs to the owner and admins, not to every team member.
 	withSpaceGuard({
-		permission: "project.documents.manage",
+		permission: "project.artifacts.manage",
 		idFrom: "body.projectId",
 	}),
 	withValidation(CreateArtifactSchema),
