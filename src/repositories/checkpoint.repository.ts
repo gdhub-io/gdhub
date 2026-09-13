@@ -3,7 +3,7 @@ import {
 	CheckpointItemKind,
 	CheckpointStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { checkpointProgress, dueDateFrom } from "@/lib/checkpoint-days";
+import { checkpointProgress } from "@/lib/checkpoint-days";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -238,13 +238,6 @@ export const replaceCheckpointItems = async (
 			})),
 		}),
 	]);
-
-// Re-exported so the server keeps one import for everything checkpoint-shaped.
-export {
-	checkpointDay,
-	checkpointProgress,
-	dueDateFrom,
-} from "@/lib/checkpoint-days";
 
 /** Stamps the day count onto a checkpoint before it leaves the server. */
 export const withProgress = <T extends { startedAt: Date | null }>(

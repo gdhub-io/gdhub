@@ -1,9 +1,5 @@
-import {
-	type ArtifactCheckStatus,
-	CheckpointItemKind,
-	CheckpointStatus,
-	type ProjectArtifactType,
-} from "@gdhub-io/gdhub-prisma";
+import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type {
@@ -14,7 +10,6 @@ import type {
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { prisma } from "@/services/prisma";
-import { checkpointDay } from "./checkpoint.repository";
 
 /**
  * The AI curator's four moments, each gathering its own facts and writing back
@@ -47,24 +42,17 @@ const curatorItemSelect = {
 	},
 } as const;
 
-type CuratorItem = {
+/** Only what the goal card needs; the artifact fields are read off the row. */
+type CardItem = {
 	id: string;
 	kind: CheckpointItemKind;
 	text: string;
 	originalText: string | null;
 	cut: boolean;
 	addedAt: Date | null;
-	acceptedNote: string | null;
-	artifact: {
-		type: ProjectArtifactType;
-		name: string | null;
-		description: string | null;
-		link: string;
-		checkStatus: ArtifactCheckStatus | null;
-	} | null;
 };
 
-const toLine = (item: CuratorItem): CuratorLine => ({
+const toLine = (item: CardItem): CuratorLine => ({
 	id: item.id,
 	text: item.text,
 	originalText: item.originalText,
@@ -72,7 +60,7 @@ const toLine = (item: CuratorItem): CuratorLine => ({
 	addedAt: item.addedAt?.toISOString() ?? null,
 });
 
-const toCard = (goal: string, items: CuratorItem[]): CuratorGoalCard => ({
+const toCard = (goal: string, items: CardItem[]): CuratorGoalCard => ({
 	goal,
 	inputs: items
 		.filter((item) => item.kind === CheckpointItemKind.Input)
@@ -125,7 +113,7 @@ export const runGoalCheck = async (
 
 	return checkpointCurator.checkGoal(
 		{
-			card: toCard(checkpoint.goal, checkpoint.items as CuratorItem[]),
+			card: toCard(checkpoint.goal, checkpoint.items),
 			stage: {
 				name: checkpoint.stageName,
 				requirements: await stageRequirements(checkpoint.stepId),
@@ -173,7 +161,7 @@ export const answerDevlog = async (
 			},
 			outcomes: toCard(
 				report.checkpoint.goal,
-				report.checkpoint.items as CuratorItem[],
+				report.checkpoint.items,
 			).outcomes.filter((item) => !item.cut),
 		},
 		options,
@@ -221,7 +209,7 @@ export const writeMidNote = async (
 		return null;
 	}
 
-	const items = checkpoint.items as CuratorItem[];
+	const items = checkpoint.items;
 	const written = await checkpointCurator.writeMidNote(
 		{
 			card: toCard(checkpoint.goal, items),
@@ -286,7 +274,7 @@ export const closeCheckpoint = async (
 		return null;
 	}
 
-	const items = checkpoint.items as CuratorItem[];
+	const items = checkpoint.items;
 	const unproven = unprovenOutcomes(items);
 
 	const proposed = await checkpointCurator.writeReport(
@@ -326,6 +314,13 @@ export const closeCheckpoint = async (
 	if (!proposed) return null;
 
 	const settled = settleVerdict(items, proposed.verdict);
+
+	if (settled.overrode) {
+		// Worth knowing: the model read the same evidence and disagreed with it.
+		console.warn(
+			`[checkpoint-curator] guardrail overruled ${settled.overrode} on ${checkpointId}: ${settled.unproven.length} outcome(s) unproven`,
+		);
+	}
 
 	await prisma.projectCheckpoint.update({
 		where: { id: checkpointId },
