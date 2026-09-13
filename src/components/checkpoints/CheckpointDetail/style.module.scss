@@ -1,0 +1,13 @@
+.summary {
+	// Truncation inside the header row needs the parent to allow shrinking.
+	min-width: 0;
+}
+
+.claimed {
+	flex: none;
+	font-feature-settings: "tnum";
+}
+
+.note {
+	margin: 0;
+}

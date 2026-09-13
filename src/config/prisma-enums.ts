@@ -6,6 +6,10 @@ import type {
 	BlogPostStatus as BlogPostStatusType,
 	ChatRoomKind as ChatRoomKindType,
 	ChatRoomStatus as ChatRoomStatusType,
+	CheckpointCuratorKind as CheckpointCuratorKindType,
+	CheckpointItemKind as CheckpointItemKindType,
+	CheckpointStatus as CheckpointStatusType,
+	CheckpointVerdict as CheckpointVerdictType,
 	ContentViewSubject as ContentViewSubjectType,
 	CourseGroupStatus as CourseGroupStatusType,
 	CourseInvoiceStatus as CourseInvoiceStatusType,
@@ -123,6 +127,37 @@ export const ChatRoomStatus = {
 	Closed: "Closed",
 } as const satisfies Record<ChatRoomStatusType, ChatRoomStatusType>;
 export type ChatRoomStatus = ChatRoomStatusType;
+
+export const CheckpointCuratorKind = {
+	AI: "AI",
+	Human: "Human",
+} as const satisfies Record<
+	CheckpointCuratorKindType,
+	CheckpointCuratorKindType
+>;
+export type CheckpointCuratorKind = CheckpointCuratorKindType;
+
+export const CheckpointItemKind = {
+	Input: "Input",
+	Outcome: "Outcome",
+} as const satisfies Record<CheckpointItemKindType, CheckpointItemKindType>;
+export type CheckpointItemKind = CheckpointItemKindType;
+
+export const CheckpointStatus = {
+	Draft: "Draft",
+	Active: "Active",
+	Review: "Review",
+	Closed: "Closed",
+	Cancelled: "Cancelled",
+} as const satisfies Record<CheckpointStatusType, CheckpointStatusType>;
+export type CheckpointStatus = CheckpointStatusType;
+
+export const CheckpointVerdict = {
+	StageClosed: "StageClosed",
+	GoalMet: "GoalMet",
+	GoalMissed: "GoalMissed",
+} as const satisfies Record<CheckpointVerdictType, CheckpointVerdictType>;
+export type CheckpointVerdict = CheckpointVerdictType;
 
 export const ContentViewSubject = {
 	ProjectReport: "ProjectReport",

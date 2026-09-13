@@ -1,0 +1,9 @@
+.stageCell {
+	// Truncation inside a flex row needs the parent to allow shrinking.
+	min-width: 0;
+}
+
+.number {
+	flex: none;
+	font-feature-settings: "tnum";
+}

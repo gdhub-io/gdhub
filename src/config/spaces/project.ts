@@ -12,6 +12,7 @@ export const projectSpace = defineSpace({
 		lifecycle: ["archive", "delete"],
 		members: ["view", "invite", "remove"],
 		artifacts: ["view", "manage"],
+		checkpoints: ["view", "create", "manage"],
 		workflow: ["view", "edit"],
 		vacancies: ["view", "manage", "review"],
 		equity: ["view", "manage"],
@@ -20,7 +21,18 @@ export const projectSpace = defineSpace({
 	overrides: {
 		// Guests exist only by explicit invitation and only observe (§2.2).
 		[SpaceRole.Guest]: ["project.info.view", "project.devlog.view"],
-		// A team member sees their own shares, not the whole cap table.
-		[SpaceRole.Member]: { "project.equity.view": "own" },
+		// Buying a checkpoint spends money and puts the whole team under a
+		// deadline, and the goal card it is judged against is the author's
+		// statement of intent. Both stay with the owner — not with the admins,
+		// who manage everything else here.
+		[SpaceRole.Admin]: {
+			"project.checkpoints.create": false,
+			"project.checkpoints.manage": false,
+		},
+		[SpaceRole.Member]: {
+			// A team member sees their own shares, not the whole cap table.
+			"project.equity.view": "own",
+			"project.checkpoints.create": false,
+		},
 	},
 });
