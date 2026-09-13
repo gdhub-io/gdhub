@@ -19,7 +19,7 @@ vi.mock("@/lib/space-guard", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		project: { findFirst: (...a: unknown[]) => projectFindFirst(...a) },
-		teamDocument: { findMany: (...a: unknown[]) => documentFindMany(...a) },
+		projectArtifact: { findMany: (...a: unknown[]) => documentFindMany(...a) },
 		projectWorkflow: { findFirst: (...a: unknown[]) => workflowFindFirst(...a) },
 		projectReport: { findMany: (...a: unknown[]) => reportFindMany(...a) },
 		projectWorkflowStep: { findMany: (...a: unknown[]) => stepFindMany(...a) },

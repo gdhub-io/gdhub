@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import MyProjectDocuments from "@/components/MyProjectDocuments";
+import MyProjectArtifacts from "@/components/MyProjectArtifacts";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 
-export default function MyProjectDocumentsPage() {
+export default function MyProjectArtifactsPage() {
 	const { t } = useTranslate();
 
 	return (
@@ -15,7 +15,7 @@ export default function MyProjectDocumentsPage() {
 				"Links to project-specific documents accessible to you and your team",
 			)}
 		>
-			<MyProjectDocuments />
+			<MyProjectArtifacts />
 		</ProjectSpace>
 	);
 }

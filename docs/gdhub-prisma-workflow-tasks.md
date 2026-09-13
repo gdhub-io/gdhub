@@ -64,7 +64,7 @@ export type WorkflowTaskCondition =
   | { source: "vacancies"; min: number; scope?: "project" | "step"; status?: TeamVacancyStatus; directionId?: string }
   | { source: "team_members"; min: number; scope?: "project" | "step"; status?: TeamMemberStatus }
   | { source: "investors"; min: number }
-  | { source: "documents"; min: number; type?: TeamDocumentType }
+  | { source: "artifacts"; min: number; type?: ProjectArtifactType }
   | { source: "advice_requests"; min: number; status?: AdviceRequestStatus }
   | { source: "estimations"; min: number }
   | { source: "equity_allocations"; min: number }
@@ -120,17 +120,17 @@ tasks: {
 | Ideation | Describe your game idea in the project description | true | `{source:"project_fields", fields:["description"]}` |
 | Ideation | Define the core concept and genre | true | `{source:"project_fields", fields:["genre","setting"]}` |
 | Ideation | Post your first devlog about the idea | false | `{source:"devlog_posts", min:1}` |
-| Concepting | Prepare a concept document | true | `{source:"documents", min:1, type:"Concept"}` |
+| Concepting | Prepare a concept document | true | `{source:"artifacts", min:1, type:"Concept"}` |
 | Concepting | Add a GDD / concept link | true | `{source:"project_fields", fields:["conceptLink"]}` |
 | Concepting | Assemble your core team | false | `{source:"team_members", min:2, status:"Hired"}` |
 | Concepting | Set up initial equity allocations | false | `{source:"equity_allocations", min:1}` |
 | Prototyping | Publish a devlog about the prototype | true | `{source:"devlog_posts", min:1, scope:"step"}` |
 | Prototyping | Add a build/video link | true | `{source:"project_fields", fields:["videoLink"]}` |
 | Prototyping | Open a vacancy if you need help | false | `{source:"vacancies", min:1, status:"Published"}` |
-| Preparing a demo version | Upload a GDD document | true | `{source:"documents", min:1, type:"GDD"}` |
+| Preparing a demo version | Upload a GDD document | true | `{source:"artifacts", min:1, type:"GDD"}` |
 | Preparing a demo version | Add pitch deck | true | `{source:"project_fields", fields:["pitchdeckLink"]}` |
 | Taking and analyzing metrics | Collect community applause | false | `{source:"applause", min:10}` |
 | Taking and analyzing metrics | Request expert advice | false | `{source:"advice_requests", min:1}` |
 | Preparing a release version | Finalize equity allocations | true | `{source:"equity_allocations", min:2}` |
-| Preparing a release version | Sign the co-development agreement (JDA) | true | `{source:"documents", min:1, type:"JDA"}` |
+| Preparing a release version | Sign the co-development agreement (JDA) | true | `{source:"artifacts", min:1, type:"JDA"}` |
 | Support | Keep publishing devlogs | false | `{source:"devlog_posts", min:1, scope:"step"}` |
