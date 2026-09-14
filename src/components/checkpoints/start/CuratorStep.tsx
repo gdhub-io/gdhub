@@ -122,19 +122,13 @@ export function CuratorStep() {
 			)}
 			onBack={() => goTo(`${base}/new/outcomes`)}
 			onCancel={cancel}
-			footNote={
-				// Step 4 is drawn in the rail but needs Paddle (GDHUB-38).
-				<Typography.Text type="secondary" className={styles.pending}>
-					{t("checkpoints.start.paymentPending", "Paying is not open yet")}
-				</Typography.Text>
-			}
 			forward={
 				<Button
 					type="primary"
 					loading={update.isPending}
-					onClick={() => goTo(base)}
+					onClick={() => goTo(`${base}/new/pay`)}
 				>
-					{t("checkpoints.start.saveDraft", "Save the draft")}
+					{t("checkpoints.start.next3", "Next — summary")}
 				</Button>
 			}
 		>

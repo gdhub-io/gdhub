@@ -1,0 +1,89 @@
+.summary {
+	max-width: 720px;
+}
+
+.block {
+	padding-bottom: var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-subtle);
+
+	&:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+}
+
+.blockLabel {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.edit {
+	font-size: 13px;
+}
+
+.dot {
+	flex: none;
+	width: 4px;
+	height: 4px;
+	margin-top: 7px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-color-border-strong);
+}
+
+.price {
+	// The money and what it does not buy sit in one panel: the refusal has to be
+	// as easy to read as the total (frame `B2XH9`, `IDB5K`).
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	max-width: 720px;
+	margin-top: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.total {
+	font-size: 18px;
+	font-weight: 600;
+	font-feature-settings: "tnum";
+}
+
+.terms {
+	padding-top: var(--gd-space-4);
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
+.termsHead {
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.termIcon {
+	display: inline-flex;
+	flex: none;
+	margin-top: 2px;
+
+	&[data-tone="yes"] {
+		color: var(--gd-success-solid);
+	}
+
+	&[data-tone="no"],
+	&[data-tone="note"] {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.termText {
+	color: var(--gd-color-text-secondary);
+	font-size: 13px;
+}
+
+.pending {
+	font-size: 13px;
+	text-align: right;
+}

@@ -47,6 +47,7 @@ export const useUpdateCheckpoint = (id?: string) => {
 		mutationFn: async (body: {
 			goal?: string;
 			curatorKind?: CheckpointCuratorKind;
+			acceptedTerms?: boolean;
 			inputs?: CheckpointItemInput[];
 			outcomes?: CheckpointItemInput[];
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,

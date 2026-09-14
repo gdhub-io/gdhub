@@ -32,7 +32,12 @@ export function CuratorBadge({ kind, curator, className }: CuratorBadgeProps) {
 				</AppAvatar>
 			)}
 			<Typography.Text className={styles.name} ellipsis>
-				{isAI ? t("checkpoints.curator.ai", "AI curator") : curator?.name}
+				{isAI
+					? t("checkpoints.curator.ai", "AI curator")
+					: // A human checkpoint carries no name until someone takes it on, and an
+						// empty pill reads as a bug rather than as a waiting state.
+						(curator?.name ??
+						t("checkpoints.curator.unassigned", "Curator to be assigned"))}
 			</Typography.Text>
 		</span>
 	);

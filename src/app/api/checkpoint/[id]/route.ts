@@ -60,7 +60,8 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const { goal, curatorKind, inputs, outcomes } = body as UpdateCheckpointBody;
+	const { goal, curatorKind, acceptedTerms, inputs, outcomes } =
+		body as UpdateCheckpointBody;
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
@@ -72,12 +73,16 @@ export const PUT = pipe(
 		return apiError.badRequest("checkpointNotDraft");
 	}
 
-	if (goal !== undefined || curatorKind !== undefined) {
+	if (goal !== undefined || curatorKind || acceptedTerms !== undefined) {
 		await prisma.projectCheckpoint.update({
 			where: { id },
 			data: {
 				...(goal !== undefined && { goal }),
 				...(curatorKind && { curatorKind }),
+				// The moment it was accepted is the record; unticking withdraws it.
+				...(acceptedTerms !== undefined && {
+					acceptedTermsAt: acceptedTerms ? new Date() : null,
+				}),
 			},
 		});
 	}
