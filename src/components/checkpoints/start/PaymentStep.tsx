@@ -20,7 +20,11 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import { useDiscardCheckpoint, useUpdateCheckpoint } from "@/hooks/checkpoints";
+import {
+	useDiscardCheckpoint,
+	useGoalCheckResult,
+	useUpdateCheckpoint,
+} from "@/hooks/checkpoints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
@@ -43,6 +47,7 @@ export function PaymentStep() {
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
 	const { draft, loading } = useCheckpointDraft();
+	const { data: remark } = useGoalCheckResult(draft?.id);
 	const discard = useDiscardCheckpoint();
 	const update = useUpdateCheckpoint(draft?.id);
 
@@ -162,7 +167,31 @@ export function PaymentStep() {
 				{block(
 					t("checkpoints.pay.whatMustExist", "What must exist by day 28"),
 					"goal",
-					list(side(CheckpointItemKind.Outcome)),
+					<Flex vertical gap={8}>
+						{list(side(CheckpointItemKind.Outcome))}
+						{/* The curator's read, kept from the goal question: the last place
+						    it can still change anything is the moment before paying. */}
+						{!!remark && (!remark.reachable || remark.missing.length > 0) && (
+							<Flex vertical gap={4} className={styles.remark}>
+								<Typography.Text>{remark.note}</Typography.Text>
+								{remark.missing.map((line: string) => (
+									<Typography.Text key={line} type="secondary">
+										{t(
+											"checkpoints.goal.checkMissing",
+											"The stage also asks for: {line}",
+											{ line },
+										)}
+									</Typography.Text>
+								))}
+								<Typography.Text type="secondary">
+									{t(
+										"checkpoints.start.check.note",
+										"Checked by the AI curator · advice, not a gate",
+									)}
+								</Typography.Text>
+							</Flex>
+						)}
+					</Flex>,
 				)}
 
 				{block(

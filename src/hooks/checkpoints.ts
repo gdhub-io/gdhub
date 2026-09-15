@@ -107,16 +107,32 @@ export const useAttachEvidence = (id?: string) => {
 };
 
 /**
- * The AI curator reading the goal card against 28 days. Asked for, never
- * automatic: it is a model call, and it is advice rather than a gate.
+ * The AI curator reading the goal card against 28 days.
+ *
+ * Run on the way out of the goal question rather than from a button of its own:
+ * it is a model call, it is advice rather than a gate, and the moment it is
+ * worth hearing is the moment the author is about to move on. The answer is kept
+ * so the payment question can repeat the remark under what is being bought.
  */
 export const useGoalCheck = (id?: string) => {
+	const queryClient = useQueryClient();
+
 	return useMutation({
 		mutationFn: async () =>
 			(await axios.post<GoalCheckResult>(`/api/checkpoint/${id}/goal-check`))
 				.data,
+		onSuccess: (result) => queryClient.setQueryData(["goal-check", id], result),
 	});
 };
+
+/** What the last check said, while the purchase is still on this browser. */
+export const useGoalCheckResult = (id?: string) =>
+	useQuery<GoalCheckResult | null>({
+		queryKey: ["goal-check", id],
+		queryFn: () => null,
+		enabled: false,
+		initialData: null,
+	});
 
 /** Specialists who have said they take mentees, at an expert level. */
 export const useCheckpointCurators = () =>

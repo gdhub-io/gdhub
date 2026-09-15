@@ -2,7 +2,7 @@
 
 import { IconFlag, IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Input, Skeleton, Typography } from "antd";
+import { App, Button, Flex, Input, Modal, Skeleton, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointItemKind } from "@/config/prisma-enums";
@@ -13,6 +13,7 @@ import {
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { CHECKPOINT_GOAL_MAX } from "@/schemas/checkpoint";
+import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import { type GoalLine, GoalLines } from "./GoalLines";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
@@ -40,6 +41,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		step === "now" ? CheckpointItemKind.Input : CheckpointItemKind.Outcome;
 	const [lines, setLines] = useState<GoalLine[]>([]);
 	const [goal, setGoal] = useState("");
+	const [remark, setRemark] = useState<GoalCheckResult | null>(null);
 	const check = useGoalCheck(draft?.id);
 	const suggest = useSuggestLines(draft?.id);
 
@@ -93,6 +95,23 @@ export function StartStepPage({ step }: StartStepPageProps) {
 					? { inputs: written }
 					: { outcomes: written, goal: goal.trim() },
 			);
+			// Leaving the outcome list is the moment the curator's read is worth
+			// hearing: the card is saved, nothing is bought yet, and going back is
+			// one press. It is advice, so it can be argued with and walked past.
+			if (!isNow && next === "curator") {
+				try {
+					const result = await check.mutateAsync();
+
+					if (!result.reachable || result.missing.length > 0) {
+						setRemark(result);
+
+						return;
+					}
+				} catch {
+					// The curator being unreachable must not hold up a purchase.
+				}
+			}
+
 			go(next);
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
@@ -142,7 +161,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 			forward={
 				<Button
 					type="primary"
-					loading={update.isPending}
+					loading={update.isPending || check.isPending}
 					onClick={() => goTo(isNow ? "goal" : "curator")}
 				>
 					{isNow
@@ -247,49 +266,6 @@ export function StartStepPage({ step }: StartStepPageProps) {
 
 			{!isNow && (
 				<Flex vertical gap={16} style={{ marginTop: 24 }}>
-					{/* Asked for, not automatic: it costs a model call, and it is
-					    advice — the form stays usable whatever it says. */}
-					<Flex vertical gap={8} align="flex-start">
-						<Button
-							onClick={() => check.mutate()}
-							loading={check.isPending}
-							disabled={!goal.trim() || !lines.some((line) => line.text.trim())}
-						>
-							{t("checkpoints.goal.check", "Check it against 28 days")}
-						</Button>
-
-						{!!check.data && (
-							<Flex vertical gap={6}>
-								<Typography.Text strong>
-									{check.data.reachable
-										? t("checkpoints.goal.checkFits", "This fits 28 days")
-										: t(
-												"checkpoints.goal.checkTight",
-												"This looks like more than 28 days hold",
-											)}
-								</Typography.Text>
-								<Typography.Text type="secondary">
-									{check.data.note}
-								</Typography.Text>
-								{check.data.missing.map((line: string) => (
-									<Typography.Text key={line} type="secondary">
-										{t(
-											"checkpoints.goal.checkMissing",
-											"The stage also asks for: {line}",
-											{ line },
-										)}
-									</Typography.Text>
-								))}
-								<Typography.Text type="secondary">
-									{t(
-										"checkpoints.start.check.note",
-										"Checked by the AI curator · advice, not a gate",
-									)}
-								</Typography.Text>
-							</Flex>
-						)}
-					</Flex>
-
 					<Typography.Text type="secondary">
 						{t(
 							"checkpoints.start.draftNote",
@@ -298,6 +274,53 @@ export function StartStepPage({ step }: StartStepPageProps) {
 					</Typography.Text>
 				</Flex>
 			)}
+			<Modal
+				open={!!remark}
+				onCancel={() => setRemark(null)}
+				title={
+					remark?.reachable
+						? t("checkpoints.goal.remarkMissing", "The stage asks for more")
+						: t(
+								"checkpoints.goal.remarkTight",
+								"This looks like more than 28 days hold",
+							)
+				}
+				footer={
+					<Flex justify="flex-end" gap={8}>
+						<Button onClick={() => setRemark(null)}>
+							{t("checkpoints.goal.remarkEdit", "Go back and edit")}
+						</Button>
+						<Button
+							type="primary"
+							onClick={() => {
+								setRemark(null);
+								go("curator");
+							}}
+						>
+							{t("checkpoints.goal.remarkAnyway", "Go on anyway")}
+						</Button>
+					</Flex>
+				}
+			>
+				<Flex vertical gap={10}>
+					<Typography.Text>{remark?.note}</Typography.Text>
+					{remark?.missing.map((line: string) => (
+						<Typography.Text key={line} type="secondary">
+							{t(
+								"checkpoints.goal.checkMissing",
+								"The stage also asks for: {line}",
+								{ line },
+							)}
+						</Typography.Text>
+					))}
+					<Typography.Text type="secondary">
+						{t(
+							"checkpoints.start.check.note",
+							"Checked by the AI curator · advice, not a gate",
+						)}
+					</Typography.Text>
+				</Flex>
+			</Modal>
 		</StartLayout>
 	);
 }

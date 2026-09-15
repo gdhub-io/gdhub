@@ -87,3 +87,12 @@
 	font-size: 13px;
 	text-align: right;
 }
+
+// The curator's remark, quiet but not hidden: it is advice the author already
+// chose to walk past once, and this is the last moment it can change anything.
+.remark {
+	padding: var(--gd-space-3);
+	border-left: 2px solid var(--gd-warning-solid);
+	background: var(--gd-warning-tint);
+	border-radius: var(--gd-radius-chip);
+}
