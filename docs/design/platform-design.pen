@@ -200025,7 +200025,7 @@
                 {
                   "type": "frame",
                   "id": "n2V87",
-                  "name": "Row",
+                  "name": "Row — ghost",
                   "width": "fill_container",
                   "gap": 8,
                   "alignItems": "center",
@@ -200056,28 +200056,6 @@
                           "fontFamily": "$font",
                           "fontSize": 15,
                           "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "UKvys",
-                      "name": "Del",
-                      "width": 36,
-                      "height": 36,
-                      "cornerRadius": 8,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "zt2FJ",
-                          "name": "Ic",
-                          "width": 17,
-                          "height": 17,
-                          "icon": "trash-2",
-                          "library": "lucide",
-                          "fill": "$text-disabled"
                         }
                       ]
                     }
@@ -200394,385 +200372,6 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "UjhkK",
-                  "name": "List",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 8,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "b9tYX",
-                      "name": "Row",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "lzBMU",
-                          "name": "Input",
-                          "width": "fill_container",
-                          "height": 44,
-                          "fill": "$border",
-                          "cornerRadius": 10,
-                          "gap": 8,
-                          "padding": [
-                            0,
-                            14
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "c4CaC",
-                              "name": "V",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "A 15-minute build a stranger can finish without help",
-                              "fontFamily": "$font",
-                              "fontSize": 15,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "id": "B2oPh",
-                          "type": "ref",
-                          "ref": "vFBkk",
-                          "name": "Evidence",
-                          "descendants": {
-                            "Ngvzp": {
-                              "icon": "paperclip",
-                              "fill": "$text-tertiary"
-                            },
-                            "j4ozz": {
-                              "content": "Proof at the end",
-                              "fill": "$text-tertiary"
-                            }
-                          }
-                        },
-                        {
-                          "type": "frame",
-                          "id": "DDgVZ",
-                          "name": "Del",
-                          "width": 36,
-                          "height": 36,
-                          "cornerRadius": 8,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "c14Wl",
-                              "name": "Ic",
-                              "width": 17,
-                              "height": 17,
-                              "icon": "trash-2",
-                              "library": "lucide",
-                              "fill": "$error"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "f077Q",
-                      "name": "Row",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "hdz7V",
-                          "name": "Input",
-                          "width": "fill_container",
-                          "height": 44,
-                          "fill": "$border",
-                          "cornerRadius": 10,
-                          "gap": 8,
-                          "padding": [
-                            0,
-                            14
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "nHu0k",
-                              "name": "V",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Three tide states with art, not placeholders",
-                              "fontFamily": "$font",
-                              "fontSize": 15,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "id": "ewNr4",
-                          "type": "ref",
-                          "ref": "vFBkk",
-                          "name": "Evidence",
-                          "descendants": {
-                            "Ngvzp": {
-                              "icon": "paperclip",
-                              "fill": "$text-tertiary"
-                            },
-                            "j4ozz": {
-                              "content": "Proof at the end",
-                              "fill": "$text-tertiary"
-                            }
-                          }
-                        },
-                        {
-                          "type": "frame",
-                          "id": "ToOFi",
-                          "name": "Del",
-                          "width": 36,
-                          "height": 36,
-                          "cornerRadius": 8,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "XbFiD",
-                              "name": "Ic",
-                              "width": 17,
-                              "height": 17,
-                              "icon": "trash-2",
-                              "library": "lucide",
-                              "fill": "$error"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "AjspQ",
-                      "name": "Row",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "qg7al",
-                          "name": "Input",
-                          "width": "fill_container",
-                          "height": 44,
-                          "fill": "$border",
-                          "cornerRadius": 10,
-                          "gap": 8,
-                          "padding": [
-                            0,
-                            14
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "BWfd4",
-                              "name": "V",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "A save system that survives a crash",
-                              "fontFamily": "$font",
-                              "fontSize": 15,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "id": "m0KDuK",
-                          "type": "ref",
-                          "ref": "vFBkk",
-                          "name": "Evidence",
-                          "descendants": {
-                            "Ngvzp": {
-                              "icon": "paperclip",
-                              "fill": "$text-tertiary"
-                            },
-                            "j4ozz": {
-                              "content": "Proof at the end",
-                              "fill": "$text-tertiary"
-                            }
-                          }
-                        },
-                        {
-                          "type": "frame",
-                          "id": "FjV33",
-                          "name": "Del",
-                          "width": 36,
-                          "height": 36,
-                          "cornerRadius": 8,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "aYLmM",
-                              "name": "Ic",
-                              "width": 17,
-                              "height": 17,
-                              "icon": "trash-2",
-                              "library": "lucide",
-                              "fill": "$error"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "omJkE",
-                      "name": "Row",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "vC5vh",
-                          "name": "Input",
-                          "width": "fill_container",
-                          "height": 44,
-                          "fill": "$border",
-                          "cornerRadius": 10,
-                          "gap": 8,
-                          "padding": [
-                            0,
-                            14
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "BnRqv",
-                              "name": "V",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "A trailer cut from the prototype",
-                              "fontFamily": "$font",
-                              "fontSize": 15,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "id": "Ct0Gg",
-                          "type": "ref",
-                          "ref": "vFBkk",
-                          "name": "Evidence",
-                          "descendants": {
-                            "Ngvzp": {
-                              "icon": "paperclip",
-                              "fill": "$text-tertiary"
-                            },
-                            "j4ozz": {
-                              "content": "Proof at the end",
-                              "fill": "$text-tertiary"
-                            }
-                          }
-                        },
-                        {
-                          "type": "frame",
-                          "id": "S85xL",
-                          "name": "Del",
-                          "width": 36,
-                          "height": 36,
-                          "cornerRadius": 8,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "wSTCr",
-                              "name": "Ic",
-                              "width": 17,
-                              "height": 17,
-                              "icon": "trash-2",
-                              "library": "lucide",
-                              "fill": "$error"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "bvZ09",
-                      "name": "Row",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "qsih5",
-                          "name": "Input",
-                          "width": "fill_container",
-                          "height": 44,
-                          "fill": "$border",
-                          "cornerRadius": 10,
-                          "gap": 8,
-                          "padding": [
-                            0,
-                            14
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "lqwGg",
-                              "name": "V",
-                              "fill": "$text-tertiary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Add an outcome, then press Enter",
-                              "fontFamily": "$font",
-                              "fontSize": 15,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "hDBQO",
-                          "name": "Del",
-                          "width": 36,
-                          "height": 36,
-                          "cornerRadius": 8,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "FEsLF",
-                              "name": "Ic",
-                              "width": 17,
-                              "height": 17,
-                              "icon": "trash-2",
-                              "library": "lucide",
-                              "fill": "$text-disabled"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
                   "id": "S8eLi",
                   "name": "Goal",
                   "width": "fill_container",
@@ -200881,6 +200480,355 @@
                           "fontFamily": "$font",
                           "fontSize": 15,
                           "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Y0Dys",
+                  "name": "List head",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "L9qk1",
+                      "name": "T",
+                      "fill": "$text-primary",
+                      "content": "What it will have by day 28",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "y4Hk0z",
+                      "name": "Btn Suggest with AI",
+                      "height": 32,
+                      "cornerRadius": 8,
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "gOu0v",
+                          "name": "Ic",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "sparkles",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "byVn5",
+                          "name": "L",
+                          "fill": "$text-secondary",
+                          "content": "Suggest with AI",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "UjhkK",
+                  "name": "List",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "b9tYX",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "lzBMU",
+                          "name": "Input",
+                          "width": "fill_container",
+                          "height": 44,
+                          "fill": "$border",
+                          "cornerRadius": 10,
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "c4CaC",
+                              "name": "V",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A 15-minute build a stranger can finish without help",
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "DDgVZ",
+                          "name": "Del",
+                          "width": 36,
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "c14Wl",
+                              "name": "Ic",
+                              "width": 17,
+                              "height": 17,
+                              "icon": "trash-2",
+                              "library": "lucide",
+                              "fill": "$error"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "f077Q",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hdz7V",
+                          "name": "Input",
+                          "width": "fill_container",
+                          "height": 44,
+                          "fill": "$border",
+                          "cornerRadius": 10,
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nHu0k",
+                              "name": "V",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Three tide states with art, not placeholders",
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ToOFi",
+                          "name": "Del",
+                          "width": 36,
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "XbFiD",
+                              "name": "Ic",
+                              "width": 17,
+                              "height": 17,
+                              "icon": "trash-2",
+                              "library": "lucide",
+                              "fill": "$error"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "AjspQ",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qg7al",
+                          "name": "Input",
+                          "width": "fill_container",
+                          "height": 44,
+                          "fill": "$border",
+                          "cornerRadius": 10,
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "BWfd4",
+                              "name": "V",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A save system that survives a crash",
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FjV33",
+                          "name": "Del",
+                          "width": 36,
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "aYLmM",
+                              "name": "Ic",
+                              "width": 17,
+                              "height": 17,
+                              "icon": "trash-2",
+                              "library": "lucide",
+                              "fill": "$error"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "omJkE",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "vC5vh",
+                          "name": "Input",
+                          "width": "fill_container",
+                          "height": 44,
+                          "fill": "$border",
+                          "cornerRadius": 10,
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "BnRqv",
+                              "name": "V",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A trailer cut from the prototype",
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "S85xL",
+                          "name": "Del",
+                          "width": 36,
+                          "height": 36,
+                          "cornerRadius": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "wSTCr",
+                              "name": "Ic",
+                              "width": 17,
+                              "height": 17,
+                              "icon": "trash-2",
+                              "library": "lucide",
+                              "fill": "$error"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "bvZ09",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qsih5",
+                          "name": "Input",
+                          "width": "fill_container",
+                          "height": 44,
+                          "fill": "$border",
+                          "cornerRadius": 10,
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "lqwGg",
+                              "name": "V",
+                              "fill": "$text-tertiary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Add an outcome, then press Enter",
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     }
@@ -201535,118 +201483,6 @@
                       "fontSize": 11,
                       "fontWeight": "600",
                       "letterSpacing": 0.6
-                    },
-                    {
-                      "type": "frame",
-                      "id": "d206OA",
-                      "name": "Toolbar",
-                      "width": "fill_container",
-                      "gap": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "i6nSI",
-                          "name": "Segmented",
-                          "fill": "$border",
-                          "cornerRadius": 10,
-                          "gap": 4,
-                          "padding": 4,
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "XySP8",
-                              "name": "S",
-                              "fill": "$surface",
-                              "cornerRadius": 8,
-                              "padding": [
-                                7,
-                                12
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "AyJ0S",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "All levels",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "CBkVG",
-                              "name": "S",
-                              "cornerRadius": 8,
-                              "padding": [
-                                7,
-                                12
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "FyEUL",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Middle",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "xsM2o",
-                              "name": "S",
-                              "cornerRadius": 8,
-                              "padding": [
-                                7,
-                                12
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "C2PUG",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Experienced",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "iwKDp",
-                              "name": "S",
-                              "cornerRadius": 8,
-                              "padding": [
-                                7,
-                                12
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "SXA5a",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Expert",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
                     },
                     {
                       "type": "frame",
@@ -203202,7 +203038,7 @@
         {
           "type": "frame",
           "id": "L35oFG",
-          "name": "Landing header — Revised",
+          "name": "Landing header — platform bar",
           "width": 1440,
           "height": 96,
           "fill": "#0F0F0E",
@@ -203227,24 +203063,6 @@
                   "name": "GDHub logo",
                   "width": 112,
                   "height": 30
-                },
-                {
-                  "type": "rectangle",
-                  "id": "QqKT2",
-                  "name": "Divider",
-                  "fill": "#FFFFFF29",
-                  "width": 1,
-                  "height": 24
-                },
-                {
-                  "type": "text",
-                  "id": "PcjGt",
-                  "name": "Product name",
-                  "fill": "#FFFFFF",
-                  "content": "Checkpoint",
-                  "fontFamily": "Onest",
-                  "fontSize": 16,
-                  "fontWeight": "600"
                 }
               ]
             },
@@ -203258,9 +203076,9 @@
                 {
                   "type": "text",
                   "id": "HiBvK",
-                  "name": "How it works",
+                  "name": "Platform",
                   "fill": "#FFFFFFB3",
-                  "content": "How it works",
+                  "content": "Platform",
                   "fontFamily": "Onest",
                   "fontSize": 14,
                   "fontWeight": "500"
@@ -203268,9 +203086,9 @@
                 {
                   "type": "text",
                   "id": "GIFQ9",
-                  "name": "Curators & pricing",
+                  "name": "Checkpoint",
                   "fill": "#FFFFFFB3",
-                  "content": "Curators & pricing",
+                  "content": "Checkpoint",
                   "fontFamily": "Onest",
                   "fontSize": 14,
                   "fontWeight": "500"
@@ -203278,9 +203096,29 @@
                 {
                   "type": "text",
                   "id": "IALIO",
-                  "name": "FAQ",
+                  "name": "Video Games",
                   "fill": "#FFFFFFB3",
-                  "content": "FAQ",
+                  "content": "Video Games",
+                  "fontFamily": "Onest",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "szveA",
+                  "name": "Open positions",
+                  "fill": "#FFFFFFB3",
+                  "content": "🔥 Open positions",
+                  "fontFamily": "Onest",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "PA6iG",
+                  "name": "Events",
+                  "fill": "#FFFFFFB3",
+                  "content": "Events",
                   "fontFamily": "Onest",
                   "fontSize": 14,
                   "fontWeight": "500"
@@ -203290,7 +203128,7 @@
             {
               "type": "frame",
               "id": "bwJ1H",
-              "name": "Start a checkpoint",
+              "name": "Log in",
               "height": 40,
               "fill": "#F15541",
               "cornerRadius": 10,
@@ -203306,7 +203144,7 @@
                   "id": "UhmXA",
                   "name": "Header CTA label",
                   "fill": "#FFFFFF",
-                  "content": "Plan a Checkpoint",
+                  "content": "Log in",
                   "fontFamily": "Onest",
                   "fontSize": 14,
                   "fontWeight": "600"
@@ -203381,7 +203219,7 @@
                   "fill": "#FFFFFF",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Reach your next Checkpoint in 28 days.",
+                  "content": "Reach your next Checkpoint in 28 days",
                   "lineHeight": 1.02,
                   "fontFamily": "Onest",
                   "fontSize": 64,
@@ -203395,7 +203233,7 @@
                   "fill": "#FFFFFFB3",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Each cycle turns a realistic goal into saved progress. A curator reviews your builds, gameplay video, images, or documents — and the verdict becomes the starting point for the next cycle.",
+                  "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release. Over 28 days, the project team works with a curator to define a realistic goal, organize the work needed to achieve it, review progress, and adjust priorities when necessary.",
                   "lineHeight": 1.55,
                   "fontFamily": "Onest",
                   "fontSize": 18,
@@ -203411,13 +203249,13 @@
                     {
                       "type": "frame",
                       "id": "W5iCy",
-                      "name": "Start my checkpoint",
-                      "height": 48,
+                      "name": "Plan my next Checkpoint",
+                      "height": 64,
                       "fill": "#F15541",
                       "cornerRadius": 10,
                       "padding": [
                         0,
-                        24
+                        32
                       ],
                       "justifyContent": "center",
                       "alignItems": "center",
@@ -203429,58 +203267,8 @@
                           "fill": "#FFFFFF",
                           "content": "Plan my next Checkpoint",
                           "fontFamily": "Onest",
-                          "fontSize": 16,
+                          "fontSize": 20,
                           "fontWeight": "600"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "e8WAH",
-                      "name": "See a sample result",
-                      "height": 48,
-                      "fill": "#FFFFFF0A",
-                      "cornerRadius": 10,
-                      "stroke": "#0F0F0E00",
-                      "strokeWidth": 1,
-                      "strokeAlignment": "inner",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "nLMbd",
-                          "name": "Preview icon",
-                          "width": 18,
-                          "height": 18,
-                          "icon": "file-check",
-                          "library": "lucide",
-                          "fill": "#FFFFFFB3"
-                        },
-                        {
-                          "type": "text",
-                          "id": "EAqcw",
-                          "name": "Secondary label",
-                          "fill": "#FFFFFF",
-                          "content": "See what you receive",
-                          "fontFamily": "Onest",
-                          "fontSize": 16,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "icon",
-                          "id": "Q887m6",
-                          "name": "Arrow",
-                          "width": 16,
-                          "height": 16,
-                          "icon": "arrow-right",
-                          "library": "lucide",
-                          "fill": "#FFFFFF8A"
                         }
                       ]
                     }
@@ -203801,7 +203589,7 @@
                   "content": "A two-person action game team arrived with an unstable prototype and an open-ended combat rewrite.",
                   "lineHeight": 1.6,
                   "fontFamily": "Onest",
-                  "fontSize": 17,
+                  "fontSize": 18,
                   "fontWeight": "normal"
                 },
                 {
@@ -203850,7 +203638,7 @@
                           "content": "Two enemies, a boss, progression, and a polished combat loop",
                           "lineHeight": 1.5,
                           "fontFamily": "Onest",
-                          "fontSize": 15,
+                          "fontSize": 13,
                           "fontWeight": "500"
                         }
                       ]
@@ -203894,7 +203682,7 @@
                           "content": "With the curator: cut the boss and progression; finish one complete encounter",
                           "lineHeight": 1.5,
                           "fontFamily": "Onest",
-                          "fontSize": 15,
+                          "fontSize": 13,
                           "fontWeight": "500"
                         }
                       ]
@@ -203938,7 +203726,7 @@
                           "content": "Playable build, gameplay capture and final devlog",
                           "lineHeight": 1.5,
                           "fontFamily": "Onest",
-                          "fontSize": 15,
+                          "fontSize": 13,
                           "fontWeight": "500"
                         }
                       ]
@@ -203950,7 +203738,7 @@
             {
               "type": "frame",
               "id": "FjfjZ",
-              "name": "Result card with artifacts",
+              "name": "Result card",
               "width": "fill_container",
               "height": 520,
               "layout": "none",
@@ -204683,7 +204471,7 @@
           "id": "Fk3LN",
           "name": "Section — Choose your curator",
           "width": "fill_container",
-          "fill": "#FFFFFF",
+          "fill": "#FAFAF9",
           "layout": "vertical",
           "gap": 48,
           "padding": [
@@ -205175,7 +204963,7 @@
                           "lineHeight": 1.4,
                           "textAlign": "center",
                           "fontFamily": "Onest",
-                          "fontSize": 15,
+                          "fontSize": 13,
                           "fontWeight": "600"
                         },
                         {
@@ -205421,7 +205209,7 @@
                           "lineHeight": 1.4,
                           "textAlign": "center",
                           "fontFamily": "Onest",
-                          "fontSize": 15,
+                          "fontSize": 13,
                           "fontWeight": "600"
                         },
                         {
@@ -205496,15 +205284,6 @@
                       "fontWeight": "700"
                     }
                   ]
-                },
-                {
-                  "type": "frame",
-                  "id": "Xoaix",
-                  "name": "Become",
-                  "width": "fill_container",
-                  "height": "fit_content(47)",
-                  "justifyContent": "end",
-                  "alignItems": "center"
                 }
               ]
             },
@@ -205579,7 +205358,7 @@
                           "id": "s6h2B",
                           "name": "Experience",
                           "fill": "#1A1917",
-                          "content": "Systems & Level Design ",
+                          "content": "Systems & Level Design",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "600"
@@ -205596,102 +205375,6 @@
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "normal"
-                        },
-                        {
-                          "type": "rectangle",
-                          "id": "j2786",
-                          "name": "Divider",
-                          "fill": "#EBEAE8",
-                          "width": "fill_container",
-                          "height": 1
-                        },
-                        {
-                          "type": "text",
-                          "id": "lH696",
-                          "name": "Workflow label",
-                          "fill": "#9C9B97",
-                          "content": "BEST AT THESE STAGES",
-                          "fontFamily": "Onest",
-                          "fontSize": 11,
-                          "fontWeight": "600",
-                          "letterSpacing": 1.1
-                        },
-                        {
-                          "type": "frame",
-                          "id": "aAsRl",
-                          "name": "Workflow stages",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "M5xsW",
-                              "name": "Ideation",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "ucJ6w",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Ideation",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "R7bhwy",
-                              "name": "Concept",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "XrSkh",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Concept",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "F2m3Wi",
-                              "name": "Prototype",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "uq4iM",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Prototype",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            }
-                          ]
                         }
                       ]
                     }
@@ -205761,7 +205444,7 @@
                           "id": "ROy04",
                           "name": "Experience",
                           "fill": "#1A1917",
-                          "content": "Engine & Pipelines ",
+                          "content": "Engine & Pipelines",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "600"
@@ -205778,102 +205461,6 @@
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "normal"
-                        },
-                        {
-                          "type": "rectangle",
-                          "id": "TZyIo",
-                          "name": "Divider",
-                          "fill": "#EBEAE8",
-                          "width": "fill_container",
-                          "height": 1
-                        },
-                        {
-                          "type": "text",
-                          "id": "cgHw7",
-                          "name": "Workflow label",
-                          "fill": "#9C9B97",
-                          "content": "BEST AT THESE STAGES",
-                          "fontFamily": "Onest",
-                          "fontSize": 11,
-                          "fontWeight": "600",
-                          "letterSpacing": 1.1
-                        },
-                        {
-                          "type": "frame",
-                          "id": "vQXns",
-                          "name": "Workflow stages",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "N34UGN",
-                              "name": "Prototype",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "ndajI",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Prototype",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "vNdle",
-                              "name": "Demo",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "eNaIp",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Demo",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "w4qMu7",
-                              "name": "Production",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "xalP4",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Production",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            }
-                          ]
                         }
                       ]
                     }
@@ -205960,102 +205547,6 @@
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "normal"
-                        },
-                        {
-                          "type": "rectangle",
-                          "id": "ALN7x",
-                          "name": "Divider",
-                          "fill": "#EBEAE8",
-                          "width": "fill_container",
-                          "height": 1
-                        },
-                        {
-                          "type": "text",
-                          "id": "xmO3V",
-                          "name": "Workflow label",
-                          "fill": "#9C9B97",
-                          "content": "BEST AT THESE STAGES",
-                          "fontFamily": "Onest",
-                          "fontSize": 11,
-                          "fontWeight": "600",
-                          "letterSpacing": 1.1
-                        },
-                        {
-                          "type": "frame",
-                          "id": "s6a7TS",
-                          "name": "Workflow stages",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "B6QIff",
-                              "name": "Concept",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "eHKrF",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Concept",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "kdSZ8",
-                              "name": "Demo",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "bnLi4",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Demo",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "RoF79",
-                              "name": "Production",
-                              "fill": "#F5F4F2",
-                              "cornerRadius": 6,
-                              "padding": [
-                                4,
-                                8
-                              ],
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "AbbBk",
-                                  "name": "Stage",
-                                  "fill": "#1A1917",
-                                  "content": "Production",
-                                  "fontFamily": "Onest",
-                                  "fontSize": 11,
-                                  "fontWeight": "500"
-                                }
-                              ]
-                            }
-                          ]
                         }
                       ]
                     }
@@ -206306,7 +205797,7 @@
                           "fill": "#FFFFFF",
                           "content": "Middle",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         }
                       ]
@@ -206424,7 +205915,7 @@
                           "fill": "#FFFFFF",
                           "content": "Experienced",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         }
                       ]
@@ -206542,7 +206033,7 @@
                           "fill": "#FFFFFF",
                           "content": "Expert",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         }
                       ]
@@ -206692,7 +206183,7 @@
                       "content": "One lower fixed price, whatever the size of the team. Written feedback instead of calls, and the same verdict on the platform.",
                       "lineHeight": 1.55,
                       "fontFamily": "Onest",
-                      "fontSize": 15,
+                      "fontSize": 14,
                       "fontWeight": "normal"
                     }
                   ]
@@ -206739,7 +206230,7 @@
               "content": "For scale: Indie Game Academy runs a two-month program at $999–5,400, while CG Spectrum starts at $9,999. One human-curated 28-day cycle starts at $250; the AI curator is $19.",
               "lineHeight": 1.6,
               "fontFamily": "Onest",
-              "fontSize": 15,
+              "fontSize": 13,
               "fontWeight": "normal"
             },
             {
@@ -206753,7 +206244,7 @@
                 {
                   "type": "frame",
                   "id": "UYReS",
-                  "name": "Start my checkpoint",
+                  "name": "Plan my next Checkpoint",
                   "height": 48,
                   "fill": "#F15541",
                   "cornerRadius": 10,
@@ -207239,7 +206730,7 @@
                   "content": "Read the second column first. If one of those lines describes you, this is probably not the right program yet.",
                   "lineHeight": 1.6,
                   "fontFamily": "Onest",
-                  "fontSize": 17,
+                  "fontSize": 18,
                   "fontWeight": "normal"
                 }
               ]
@@ -207300,7 +206791,7 @@
                   "content": "The practical details about scope, curators, AI and what happens after day 28.",
                   "lineHeight": 1.6,
                   "fontFamily": "Onest",
-                  "fontSize": 16,
+                  "fontSize": 18,
                   "fontWeight": "normal"
                 }
               ]
@@ -207347,7 +206838,7 @@
                           "width": "fill_container",
                           "content": "What happens at the end of the 28 days?",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         },
                         {
@@ -207428,7 +206919,7 @@
                           "width": "fill_container",
                           "content": "What if I don’t finish?",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         },
                         {
@@ -207482,7 +206973,7 @@
                           "width": "fill_container",
                           "content": "My project is only an idea so far.",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         },
                         {
@@ -207536,7 +207027,7 @@
                           "width": "fill_container",
                           "content": "I work alone. Is that a problem?",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         },
                         {
@@ -207590,7 +207081,7 @@
                           "width": "fill_container",
                           "content": "What can the AI curator actually see?",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         },
                         {
@@ -207644,7 +207135,7 @@
                           "width": "fill_container",
                           "content": "What if my curator misses sessions?",
                           "fontFamily": "Onest",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         },
                         {
@@ -207749,7 +207240,7 @@
             {
               "type": "frame",
               "id": "Nk4gK",
-              "name": "Start my checkpoint",
+              "name": "Plan my next Checkpoint",
               "height": 48,
               "fill": "#F15541",
               "cornerRadius": 10,
@@ -207821,16 +207312,6 @@
                   "name": "GDHub logo",
                   "width": 92,
                   "height": 25
-                },
-                {
-                  "type": "text",
-                  "id": "Y6Kyo",
-                  "name": "Product",
-                  "fill": "#FFFFFF",
-                  "content": "Checkpoint",
-                  "fontFamily": "Onest",
-                  "fontSize": 14,
-                  "fontWeight": "600"
                 }
               ]
             },
@@ -207880,6 +207361,7 @@
               "type": "frame",
               "id": "g9dLq",
               "name": "Hero label",
+              "width": "fill_container",
               "layout": "vertical",
               "gap": 4,
               "children": [
@@ -207890,7 +207372,7 @@
                   "fill": "#FFFFFF",
                   "content": "Checkpoint",
                   "fontFamily": "Onest",
-                  "fontSize": 18,
+                  "fontSize": 22,
                   "fontWeight": "700"
                 },
                 {
@@ -207898,7 +207380,10 @@
                   "id": "Nc5tS",
                   "name": "Descriptor",
                   "fill": "#F57A67",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
                   "content": "A REPEATABLE 28-DAY PROGRAM FOR GAME DEVELOPERS",
+                  "lineHeight": 1.4,
                   "fontFamily": "Onest",
                   "fontSize": 11,
                   "fontWeight": "600",
@@ -207913,7 +207398,7 @@
               "fill": "#FFFFFF",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Reach your next Checkpoint in 28 days.",
+              "content": "Reach your next Checkpoint in 28 days",
               "lineHeight": 1.02,
               "fontFamily": "Onest",
               "fontSize": 42,
@@ -207927,10 +207412,10 @@
               "fill": "#FFFFFFB3",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Each cycle turns a realistic goal into saved progress. A curator reviews your builds, gameplay video, images, or documents — and the verdict becomes the start of the next cycle.",
+              "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release. Over 28 days, the project team works with a curator to define a realistic goal, organize the work needed to achieve it, review progress, and adjust priorities when necessary.",
               "lineHeight": 1.5,
               "fontFamily": "Onest",
-              "fontSize": 16,
+              "fontSize": 15,
               "fontWeight": "normal"
             },
             {
@@ -207944,7 +207429,7 @@
                 {
                   "type": "frame",
                   "id": "u2uoY",
-                  "name": "Primary CTA",
+                  "name": "Plan my next Checkpoint",
                   "width": "fill_container",
                   "height": 48,
                   "fill": "#F15541",
@@ -207961,48 +207446,6 @@
                       "fontFamily": "Onest",
                       "fontSize": 16,
                       "fontWeight": "600"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "mVJWp",
-                  "name": "Secondary CTA",
-                  "width": "fill_container",
-                  "height": 44,
-                  "gap": 8,
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "v4khII",
-                      "name": "Preview icon",
-                      "width": 17,
-                      "height": 17,
-                      "icon": "file-check",
-                      "library": "lucide",
-                      "fill": "#FFFFFFB3"
-                    },
-                    {
-                      "type": "text",
-                      "id": "K9JMD9",
-                      "name": "Label",
-                      "fill": "#FFFFFF",
-                      "content": "See what you receive",
-                      "fontFamily": "Onest",
-                      "fontSize": 15,
-                      "fontWeight": "500"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "Hz47B",
-                      "name": "Arrow",
-                      "width": 15,
-                      "height": 15,
-                      "icon": "arrow-right",
-                      "library": "lucide",
-                      "fill": "#FFFFFF8A"
                     }
                   ]
                 }
@@ -208992,7 +208435,7 @@
               "fill": "#5A5955",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Both options organize the work into sprints, deadlines, tasks and devlogs. Choose live judgement from an industry professional or a lower-cost written AI review.",
+              "content": "Both options give the project the same 28-day structure: sprints, deadlines, tasks, devlogs and activity signals. Choose live judgement from an industry professional or a lower-cost written AI review.",
               "lineHeight": 1.55,
               "fontFamily": "Onest",
               "fontSize": 15,
@@ -209029,30 +208472,6 @@
                       "fontFamily": "Onest",
                       "fontSize": 22,
                       "fontWeight": "700"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "IQaqw",
-                      "name": "EARLY ACCESS",
-                      "fill": "#F15541",
-                      "cornerRadius": 6,
-                      "padding": [
-                        4,
-                        8
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "ukA8H",
-                          "name": "Label",
-                          "fill": "#FFFFFF",
-                          "content": "EARLY ACCESS",
-                          "fontFamily": "Onest",
-                          "fontSize": 11,
-                          "fontWeight": "600",
-                          "letterSpacing": 0.6
-                        }
-                      ]
                     }
                   ]
                 },
@@ -209112,7 +208531,7 @@
                     {
                       "type": "frame",
                       "id": "QZqwo",
-                      "name": "Live sprint progress review",
+                      "name": "Sprint progress review",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -209134,7 +208553,7 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Live sprint progress review",
+                          "content": "Sprint progress review",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -209144,7 +208563,7 @@
                     {
                       "type": "frame",
                       "id": "quhEv",
-                      "name": "Judges how the game plays",
+                      "name": "Weekly tracking of team activity signals",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -209166,7 +208585,7 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Judges how the game plays",
+                          "content": "Weekly tracking of team activity signals",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -209176,7 +208595,7 @@
                     {
                       "type": "frame",
                       "id": "Ee5cJ",
-                      "name": "Tracks team activity",
+                      "name": "A professional with hands-on game industry experience",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -209198,7 +208617,39 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tracks team activity",
+                          "content": "A professional with hands-on game industry experience",
+                          "fontFamily": "Onest",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Fo2AI",
+                      "name": "A judgement of how the game plays",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "B8DIc",
+                          "name": "Check",
+                          "width": 17,
+                          "height": 17,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "#12854B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "rwHi5",
+                          "name": "Feature",
+                          "fill": "#1A1917",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "A professional with hands-on game industry experience",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -209351,7 +208802,7 @@
                     {
                       "type": "frame",
                       "id": "H61cl",
-                      "name": "Written sprint progress summary",
+                      "name": "Sprint progress review",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -209362,9 +208813,9 @@
                           "name": "Check",
                           "width": 17,
                           "height": 17,
-                          "icon": "check",
+                          "icon": "pen-line",
                           "library": "lucide",
-                          "fill": "#12854B"
+                          "fill": "#9C9B97"
                         },
                         {
                           "type": "text",
@@ -209373,7 +208824,7 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Written sprint progress summary",
+                          "content": "Sprint progress review",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -209383,7 +208834,7 @@
                     {
                       "type": "frame",
                       "id": "t4bnWS",
-                      "name": "Reads team activity signals",
+                      "name": "Weekly tracking of team activity signals",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -209405,7 +208856,7 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Reads team activity signals",
+                          "content": "Weekly tracking of team activity signals",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -209415,7 +208866,7 @@
                     {
                       "type": "frame",
                       "id": "fJ4Ty",
-                      "name": "Any team size",
+                      "name": "A professional with hands-on game industry experience",
                       "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
@@ -209426,9 +208877,9 @@
                           "name": "Check",
                           "width": 17,
                           "height": 17,
-                          "icon": "check",
+                          "icon": "minus",
                           "library": "lucide",
-                          "fill": "#12854B"
+                          "fill": "#C5C4C0"
                         },
                         {
                           "type": "text",
@@ -209437,7 +208888,39 @@
                           "fill": "#1A1917",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Any team size",
+                          "content": "A professional with hands-on game industry experience",
+                          "fontFamily": "Onest",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "C0Smi",
+                      "name": "A judgement of how the game plays",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "r8hHH2",
+                          "name": "Check",
+                          "width": 17,
+                          "height": 17,
+                          "icon": "minus",
+                          "library": "lucide",
+                          "fill": "#C5C4C0"
+                        },
+                        {
+                          "type": "text",
+                          "id": "xWD7g",
+                          "name": "Feature",
+                          "fill": "#1A1917",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "A professional with hands-on game industry experience",
                           "fontFamily": "Onest",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -209581,7 +209064,7 @@
                       "fill": "#1A1917",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Systems & Level Design · 12 years in games",
+                      "content": "Systems & Level Design",
                       "lineHeight": 1.4,
                       "fontFamily": "Onest",
                       "fontSize": 14,
@@ -209599,83 +209082,6 @@
                       "fontFamily": "Onest",
                       "fontSize": 14,
                       "fontWeight": "normal"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "YH2MH",
-                      "name": "Workflow stages",
-                      "gap": 8,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "RdVMI",
-                          "name": "Ideation",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "ChmsF",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Ideation",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "LPzci",
-                          "name": "Concept",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "WTZlL",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Concept",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "lW8i3",
-                          "name": "Prototype",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "xFa8x",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Prototype",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        }
-                      ]
                     }
                   ]
                 }
@@ -209747,7 +209153,7 @@
                       "fill": "#1A1917",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Engine & Pipelines · 10 years in games",
+                      "content": "Engine & Pipelines",
                       "lineHeight": 1.4,
                       "fontFamily": "Onest",
                       "fontSize": 14,
@@ -209765,83 +209171,6 @@
                       "fontFamily": "Onest",
                       "fontSize": 14,
                       "fontWeight": "normal"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "SfxfX",
-                      "name": "Workflow stages",
-                      "gap": 8,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "TzlC1",
-                          "name": "Prototype",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "m0RBdE",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Prototype",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "qnslZ",
-                          "name": "Demo",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "NSYbq",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Demo",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "E1oCmC",
-                          "name": "Production",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "cP2C9",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Production",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        }
-                      ]
                     }
                   ]
                 }
@@ -209913,7 +209242,7 @@
                       "fill": "#1A1917",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Visual Direction & 2D · 9 years in games",
+                      "content": "Visual Direction & 2D",
                       "lineHeight": 1.4,
                       "fontFamily": "Onest",
                       "fontSize": 14,
@@ -209931,83 +209260,6 @@
                       "fontFamily": "Onest",
                       "fontSize": 14,
                       "fontWeight": "normal"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "W0InC",
-                      "name": "Workflow stages",
-                      "gap": 8,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "Zq8qD",
-                          "name": "Concept",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "PkZAi",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Concept",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "QDa11",
-                          "name": "Demo",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "N3iyt",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Demo",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "WIcOI",
-                          "name": "Production",
-                          "fill": "#F5F4F2",
-                          "cornerRadius": 6,
-                          "padding": [
-                            4,
-                            8
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "dwUhw",
-                              "name": "Stage",
-                              "fill": "#1A1917",
-                              "content": "Production",
-                              "fontFamily": "Onest",
-                              "fontSize": 11,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        }
-                      ]
                     }
                   ]
                 }
@@ -210237,7 +209489,7 @@
                       "id": "y7OS7s",
                       "name": "Price",
                       "fill": "#FFFFFF",
-                      "content": "from $315",
+                      "content": "from $312",
                       "fontFamily": "Onest",
                       "fontSize": 15,
                       "fontWeight": "600"
@@ -223408,7 +222660,7 @@
       "id": "I4Zv4u",
       "x": 1385,
       "y": 54333,
-      "name": "Checkpoint — Prepare · the When step",
+      "name": "Checkpoint — Prepare · the Planning step",
       "clip": true,
       "width": 973,
       "fill": "$page-bg",
@@ -223426,7 +222678,7 @@
           "id": "q2bUAK",
           "name": "Caption",
           "fill": "$text-tertiary",
-          "content": "PREPARE · THE WHEN STEP — THE DAY THE 28 DAYS ARE MEANT TO START",
+          "content": "PREPARE · THE PLANNING STEP — THE DAY IT STARTS, AND WHAT THE TEAM HAS",
           "fontFamily": "$font",
           "fontSize": 11,
           "fontWeight": "600",
@@ -223556,7 +222808,7 @@
                       "id": "wLDz1",
                       "name": "L",
                       "fill": "$text-primary",
-                      "content": "When",
+                      "content": "Planning",
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "600"
@@ -223799,6 +223051,707 @@
               "lineHeight": 1.5,
               "fontFamily": "$font",
               "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ugm1u",
+          "name": "Team resource",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "IXp7s",
+              "name": "T",
+              "fill": "$text-primary",
+              "content": "What the team has for these 28 days",
+              "fontFamily": "$font",
+              "fontSize": 14,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "l371r",
+              "name": "Table",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 12,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IwkBs",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "height": 40,
+                  "fill": "$surface-sunken",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "i09E1",
+                      "name": "H",
+                      "width": "fill_container",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "sckfT",
+                          "name": "L",
+                          "fill": "$text-tertiary",
+                          "content": "WHO",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jOS68",
+                      "name": "H",
+                      "width": 140,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qpT2v",
+                          "name": "L",
+                          "fill": "$text-tertiary",
+                          "content": "HOURS A WEEK",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "OByx5",
+                      "name": "H",
+                      "width": 150,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vNT5N",
+                          "name": "L",
+                          "fill": "$text-tertiary",
+                          "content": "OVER THE 28 DAYS",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.5
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "oGB3r",
+                  "name": "Row — Marta Ilves",
+                  "width": "fill_container",
+                  "height": 56,
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "s73FO",
+                      "name": "Who",
+                      "width": "fill_container",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hlyz4",
+                          "name": "Avatar",
+                          "width": 28,
+                          "height": 28,
+                          "fill": "$dir-game-design",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "fmC4K",
+                              "name": "In",
+                              "fill": "$ink",
+                              "content": "MI",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MnGex",
+                          "name": "T",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "g92ht6",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "content": "Marta Ilves",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "KYGzz",
+                              "name": "R",
+                              "fill": "$text-tertiary",
+                              "content": "Author",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zIPKE",
+                      "name": "Week",
+                      "width": 140,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "FdOYu",
+                          "name": "Field",
+                          "width": 110,
+                          "height": 32,
+                          "fill": "$border",
+                          "cornerRadius": 8,
+                          "padding": [
+                            0,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DKSDY",
+                              "name": "V",
+                              "fill": "$text-primary",
+                              "content": "10–15",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Q1QaD",
+                      "name": "Run",
+                      "width": 150,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qMbrS",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "40–60",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "k5qcC",
+                  "name": "Row — Priya Raman",
+                  "width": "fill_container",
+                  "height": 56,
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "N8vkjj",
+                      "name": "Who",
+                      "width": "fill_container",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hJhf2",
+                          "name": "Avatar",
+                          "width": 28,
+                          "height": 28,
+                          "fill": "$dir-game-design",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "K1k9DV",
+                              "name": "In",
+                              "fill": "$ink",
+                              "content": "PR",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "DQ3FI",
+                          "name": "T",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Y7obQ0",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "content": "Priya Raman",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "tbhvB",
+                              "name": "R",
+                              "fill": "$text-tertiary",
+                              "content": "Programmer",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kv5Y0",
+                      "name": "Week",
+                      "width": 140,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "b0mraH",
+                          "name": "V",
+                          "fill": "$text-secondary",
+                          "content": "20",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "AwruE",
+                      "name": "Run",
+                      "width": 150,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "bgKFF",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "80",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xRjmT",
+                  "name": "Row — Tom Bauer",
+                  "width": "fill_container",
+                  "height": 56,
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qH2bR",
+                      "name": "Who",
+                      "width": "fill_container",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "jCMzS",
+                          "name": "Avatar",
+                          "width": 28,
+                          "height": 28,
+                          "fill": "$dir-game-design",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "XFpjb",
+                              "name": "In",
+                              "fill": "$ink",
+                              "content": "TB",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ZR10o",
+                          "name": "T",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "yqHl8",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "content": "Tom Bauer",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "qbdgX",
+                              "name": "R",
+                              "fill": "$text-tertiary",
+                              "content": "Artist",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cDTKf",
+                      "name": "Week",
+                      "width": 140,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ubJzF",
+                          "name": "V",
+                          "fill": "$text-secondary",
+                          "content": "8–12",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Yob0o",
+                      "name": "Run",
+                      "width": 150,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "EGtzN",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "32–48",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YUP09",
+                  "name": "Row — Lena Novak",
+                  "width": "fill_container",
+                  "height": 56,
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "uB3R7",
+                      "name": "Who",
+                      "width": "fill_container",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "N28quF",
+                          "name": "Avatar",
+                          "width": 28,
+                          "height": 28,
+                          "fill": "$dir-game-design",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "jxeBj",
+                              "name": "In",
+                              "fill": "$ink",
+                              "content": "LN",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WDU9d",
+                          "name": "T",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "cTkVu",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "content": "Lena Novak",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "e9YUEO",
+                              "name": "R",
+                              "fill": "$text-tertiary",
+                              "content": "Game designer",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zOVgz",
+                      "name": "Week",
+                      "width": 140,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jH3t2",
+                          "name": "V",
+                          "fill": "$text-secondary",
+                          "content": "5",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "v0CNmT",
+                      "name": "Run",
+                      "width": 150,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "rJaLd",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "20",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "l3H7e",
+                  "name": "Total",
+                  "width": "fill_container",
+                  "height": 52,
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MtYzb",
+                      "name": "L",
+                      "width": "fill_container",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "X0W6a",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "The team",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lNzI5",
+                      "name": "W",
+                      "width": 140,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "nvzTK",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "43–52",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "P2W9m",
+                      "name": "R",
+                      "width": 150,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "wuVU2",
+                          "name": "V",
+                          "fill": "$text-primary",
+                          "content": "172–208",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "vMCjP",
+              "name": "Note",
+              "fill": "$text-tertiary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Hours come from each member's own profile. Only the author's line is theirs to correct here.",
+              "lineHeight": 1.45,
+              "fontFamily": "$font",
+              "fontSize": 12,
               "fontWeight": "normal"
             }
           ]
