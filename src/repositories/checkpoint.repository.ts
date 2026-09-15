@@ -458,7 +458,16 @@ export const createDraftCheckpoint = async (projectId: string) => {
  * A missed or cut outcome comes across as a bare line, because it is exactly
  * what the project still does not have. The step people abandon is the empty one.
  */
-const carryForwardInputs = async (projectId: string) => {
+const carryForwardInputs = async (projectId: string) =>
+	(await lastClosedOutcomes(projectId)).map((item, index) => ({
+		kind: CheckpointItemKind.Input,
+		order: index + 1,
+		text: item.text,
+		artifactId: item.artifactId,
+	}));
+
+/** What the project's last closed checkpoint owed — which is what it has now. */
+export const lastClosedOutcomes = async (projectId: string) => {
 	const previous = await prisma.projectCheckpoint.findFirst({
 		where: { projectId, status: CheckpointStatus.Closed },
 		orderBy: { decidedAt: "desc" },
@@ -471,12 +480,7 @@ const carryForwardInputs = async (projectId: string) => {
 		},
 	});
 
-	return (previous?.items ?? []).map((item, index) => ({
-		kind: CheckpointItemKind.Input,
-		order: index + 1,
-		text: item.text,
-		artifactId: item.artifactId,
-	}));
+	return previous?.items ?? [];
 };
 
 /** Replaces one side of the goal card. Only a `Draft` may be rewritten this way. */

@@ -65,6 +65,27 @@ answers and the scope note; Terra for the day-28 report, which is the one call
 that carries a verdict, closes a stage and follows money. One cent per checkpoint
 to put the better model where the decision is.
 
+### The suggested lines, on demand
+
+`POST /api/checkpoint/[id]/suggest` proposes three to six lines for one side of
+the goal card while it is still a draft. **It is not in the table above**, because
+it is not part of a checkpoint: the author presses it, and may press it twice, or
+once, or never. Nothing is stored, so a press is always a fresh call.
+
+| Side asked for | Input | Output | Luna | Terra |
+|---|---|---|---|---|
+| Outcomes — goal, inputs, stage template | 598 | ~120 | $0.00027 | $0.0027 |
+| Inputs — project, stage, last checkpoint's outcomes | 620 | ~120 | $0.00027 | $0.0027 |
+
+The smallest call the curator makes, and the one with the least room to grow: the
+input is a short card and a stage template, and the output is capped at six lines
+of under 15 words. Its JSON schema is 85 of those tokens — a seventh of the
+prompt, for a schema that is one array of strings.
+
+**Pressed both buttons twice, it adds about a tenth of a cent on Luna** — a
+third of what the checkpoint's six scheduled calls cost. Rate-limiting it would
+be about the model's patience, not about money.
+
 ### What moves it
 
 The report is the only call whose input scales with the team's activity: it

@@ -12,8 +12,10 @@
 	font-size: 15px;
 }
 
-// Matches the height of the slot it turns into once an artifact is picked.
+// The line reads as one control: the slot stands as tall as the field it
+// belongs to, whether it is holding an artifact or asking for one.
 .attach {
 	flex: none;
-	height: 36px;
+	height: 44px;
+	border-radius: var(--gd-radius-control);
 }

@@ -108,3 +108,35 @@
 		border-top: 1px solid var(--gd-color-border-subtle);
 	}
 }
+
+.kinds {
+	// The two kinds are one decision, read side by side rather than as a list.
+	& > * {
+		flex: 1;
+		min-width: 0;
+	}
+}
+
+.personRow {
+	width: 100%;
+	min-width: 0;
+}
+
+.personText {
+	flex: 1;
+	min-width: 0;
+}
+
+.level {
+	margin: 0;
+	background: var(--gd-color-surface-sunken);
+	border-radius: var(--gd-radius-chip);
+	color: var(--gd-color-text-secondary);
+	font-size: 11px;
+	font-weight: 500;
+}
+
+.talent {
+	flex: none;
+	padding: 0;
+}

@@ -1,3 +1,4 @@
+import type { SkillLevel } from "@/config/prisma-enums";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 import { prisma } from "@/services/prisma";
 
@@ -65,18 +66,18 @@ export type CheckpointCurator = {
 	/** Speciality name — "Game Designer", "Technical Director". */
 	role: string;
 	specialization: string;
-	level: string;
+	level: SkillLevel;
 	summary: string;
 };
 
 export async function listCheckpointCurators(
-	limit = 20,
+	limit = 50,
 ): Promise<CheckpointCurator[]> {
+	// No level floor: the picker filters by level itself, and where the bar sits
+	// is the author's judgement — a Skillful curator at a lower rate is a real
+	// choice for a first checkpoint.
 	const specialities = await prisma.speciality.findMany({
-		where: {
-			level: { in: EXPERT_SKILL_LEVELS },
-			isOpenForMentoring: true,
-		},
+		where: { isOpenForMentoring: true },
 		orderBy: [{ isFeatured: "desc" }, { viewsCount: "desc" }],
 		take: limit,
 		select: {
@@ -103,7 +104,7 @@ export async function listCheckpointCurators(
 		image: speciality.user.image,
 		role: speciality.name,
 		specialization: speciality.specialization,
-		level: String(speciality.level),
+		level: speciality.level,
 		summary: speciality.summary ?? "",
 	}));
 }

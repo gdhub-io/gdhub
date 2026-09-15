@@ -1,21 +1,23 @@
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
+import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type {
 	CuratorGoalCard,
 	CuratorLine,
 	CuratorOptions,
 	GoalCheckResult,
+	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { prisma } from "@/services/prisma";
 
 /**
  * The AI curator's four moments, each gathering its own facts and writing back
- * what came of it.
+ * what came of it — and the suggestion the author asks for, which writes nothing.
  *
- * Every one is idempotent: the cron may fire twice on a day, a retry may land
+ * Every write here is idempotent: the cron may fire twice on a day, a retry may land
  * after a timeout, and none of it may produce two notes or two verdicts. What
  * has already been written is the guard, not a lock.
  *
@@ -118,6 +120,65 @@ export const runGoalCheck = async (
 				name: checkpoint.stageName,
 				requirements: await stageRequirements(checkpoint.stepId),
 			},
+		},
+		options,
+	);
+};
+
+/**
+ * Lines for one side of the card, for an author who does not know what to write.
+ *
+ * It suggests and nothing more: nothing is written, and which side is asked for
+ * decides what the model sees — outcomes are proposed against the goal and what
+ * the project already has, inputs against the project itself and what the last
+ * checkpoint left behind.
+ */
+export const suggestCardLines = async (
+	checkpointId: string,
+	kind: CheckpointItemKind,
+	options: CuratorOptions = {},
+): Promise<SuggestLinesResult | null> => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			goal: true,
+			projectId: true,
+			stageName: true,
+			stepId: true,
+			project: { select: { name: true, description: true } },
+			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+		},
+	});
+
+	if (!checkpoint) return null;
+
+	const stage = {
+		name: checkpoint.stageName,
+		requirements: await stageRequirements(checkpoint.stepId),
+	};
+
+	if (kind === CheckpointItemKind.Outcome) {
+		const card = toCard(checkpoint.goal, checkpoint.items);
+
+		return checkpointCurator.suggestLines(
+			{
+				kind: CheckpointItemKind.Outcome,
+				goal: card.goal,
+				inputs: card.inputs.map((item) => item.text),
+				stage,
+			},
+			options,
+		);
+	}
+
+	const previous = await lastClosedOutcomes(checkpoint.projectId);
+
+	return checkpointCurator.suggestLines(
+		{
+			kind: CheckpointItemKind.Input,
+			project: checkpoint.project,
+			stage,
+			previousOutcomes: previous.map((item) => item.text),
 		},
 		options,
 	);

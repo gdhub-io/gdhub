@@ -106,6 +106,14 @@ export const CheckpointEvidenceSchema = z.object({
 	itemIds: z.array(z.string().min(1)).min(1).max(CHECKPOINT_MAX_ITEMS_PER_KIND),
 });
 
+/**
+ * Which side of the card the author wants lines for. The curator proposes them
+ * and nothing is saved, so this is the whole request.
+ */
+export const CheckpointSuggestSchema = z.object({
+	kind: z.nativeEnum(CheckpointItemKind),
+});
+
 export const CheckpointListQuerySchema = z.object({
 	projectId: z.string(),
 	page: z.coerce.number().int().min(1).optional(),
@@ -119,3 +127,4 @@ export type CheckpointListQuery = z.infer<typeof CheckpointListQuerySchema>;
 export type CheckpointScopeChange = z.infer<typeof CheckpointScopeChangeSchema>;
 export type CheckpointScopeBody = z.infer<typeof CheckpointScopeSchema>;
 export type CheckpointEvidenceBody = z.infer<typeof CheckpointEvidenceSchema>;
+export type CheckpointSuggestBody = z.infer<typeof CheckpointSuggestSchema>;

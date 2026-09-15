@@ -1,10 +1,13 @@
 /**
  * The AI curator.
  *
- * Four calls, at most six per checkpoint: the day-1 goal check, an answer under
- * each of the first three devlogs, the day-14 note, and the day-28 report. The
- * fourth devlog's answer would land on day 28 beside the report, so it is folded
- * into the report instead.
+ * Four calls the checkpoint makes on its own, at most six per checkpoint: the
+ * day-1 goal check, an answer under each of the first three devlogs, the day-14
+ * note, and the day-28 report. The fourth devlog's answer would land on day 28
+ * beside the report, so it is folded into the report instead.
+ *
+ * A fifth is pressed by the author while the card is a draft — suggested lines
+ * for one side of it — and may be pressed twice or never.
  *
  * Shaped like `src/services/ai-validation`: typed in, typed out, prompts in
  * their own folder, a forced tool call, and nothing anywhere that parses prose.
@@ -37,6 +40,11 @@ import {
 	reportMessages,
 	reportSchema,
 } from "./prompts/report";
+import {
+	SUGGEST_LINES_FUNCTION_NAME,
+	suggestLinesMessages,
+	suggestLinesSchema,
+} from "./prompts/suggest-lines";
 import type {
 	CuratorOptions,
 	DevlogAnswerInput,
@@ -47,6 +55,8 @@ import type {
 	MidNoteResult,
 	ReportInput,
 	ReportResult,
+	SuggestLinesInput,
+	SuggestLinesResult,
 } from "./types";
 
 type Message = { role: "system" | "user"; content: string };
@@ -132,6 +142,15 @@ class CheckpointCuratorService {
 			REPORT_FUNCTION_NAME,
 			reportSchema(),
 			reportMessages(input, options.locale),
+		);
+	}
+
+	/** While the card is a draft: lines for one side of it, on demand. */
+	suggestLines(input: SuggestLinesInput, options: CuratorOptions = {}) {
+		return this.call<SuggestLinesResult>(
+			SUGGEST_LINES_FUNCTION_NAME,
+			suggestLinesSchema(input),
+			suggestLinesMessages(input, options.locale),
 		);
 	}
 }

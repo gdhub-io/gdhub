@@ -544,6 +544,7 @@
 			"aiLimit": "The AI curator reads links, screenshots and what you write. It does not run your build and it holds no calls — judging how a game feels to play is what a person is paid for.",
 			"aiName": "AI curator, in writing",
 			"aiPrice": "{currency}{price} fixed",
+			"allLevels": "All levels",
 			"humanDescription": "Five 45-minute calls with your team, plus everything written.",
 			"humanName": "A person, on five calls",
 			"humanPrice": "from {currency}{price}",
@@ -551,6 +552,7 @@
 			"pickerLabel": "Curators for this stage",
 			"pickerNote": "The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
 			"pickerPending": "Choosing your own curator is not open yet — the platform assigns one for the stage. The 28 days start when they take the checkpoint on, not when you pay; if they turn it down you pick another or get your money back.",
+			"talentCard": "Talent card",
 			"unassigned": "Curator to be assigned"
 		},
 		"devlog": {
@@ -618,15 +620,19 @@
 			"info": "Written on day 1 and agreed with the curator. It does not change for the rest of the checkpoint.",
 			"inputPlaceholder": "A concept document",
 			"inputs": "What the project had",
+			"inputsTitle": "What the project has today",
 			"label": "Goal",
 			"outcomePlaceholder": "A playable vertical slice",
 			"outcomes": "What it owes by day 28",
+			"outcomesTitle": "What it will have by day 28",
 			"placeholder": "Ship a playable prototype a stranger can finish in 15 minutes without help.",
 			"removeLine": "Remove the line",
 			"saveFailed": "Could not save",
 			"sentence": "The goal, in one sentence",
 			"sentenceHint": "One sentence the 28 days are judged against. The list below is how it is proven.",
-			"sideEmpty": "Nothing listed"
+			"sideEmpty": "Nothing listed",
+			"suggest": "Suggest with AI",
+			"suggestFailed": "The curator could not suggest anything just now"
 		},
 		"happened": {
 			"title": "What has happened"

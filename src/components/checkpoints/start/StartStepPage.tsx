@@ -193,37 +193,41 @@ export function StartStepPage({ step }: StartStepPageProps) {
 							)}
 				</Typography.Text>
 
-				{/* Not everyone knows what to promise. The curator proposes; the
-				    lines land in the form as a draft and are edited from there. */}
-				<Button
-					type="text"
-					icon={<IconSparkles size={16} stroke={1.6} />}
-					loading={suggest.isPending}
-					disabled={update.isPending || (!isNow && !goal.trim())}
-					onClick={async () => {
-						try {
-							const proposed = await suggest.mutateAsync(kind);
+				{/* Only where the author is promising something: on day 1 the input
+				    list is what the project already has, and nobody needs help
+				    remembering that. The curator proposes, the lines land in the form
+				    as a draft, and every one of them is edited or dropped from there. */}
+				{!isNow && (
+					<Button
+						type="text"
+						icon={<IconSparkles size={16} stroke={1.6} />}
+						loading={suggest.isPending}
+						disabled={update.isPending || (!isNow && !goal.trim())}
+						onClick={async () => {
+							try {
+								const proposed = await suggest.mutateAsync(kind);
 
-							setLines((was) => [
-								...was.filter((line) => line.text.trim()),
-								...proposed.map((text, index) => ({
-									key: `suggested-${Date.now()}-${index}`,
-									text,
-									artifact: null,
-								})),
-							]);
-						} catch {
-							message.error(
-								t(
-									"checkpoints.goal.suggestFailed",
-									"The curator could not suggest anything just now",
-								),
-							);
-						}
-					}}
-				>
-					{t("checkpoints.goal.suggest", "Suggest with AI")}
-				</Button>
+								setLines((was) => [
+									...was.filter((line) => line.text.trim()),
+									...proposed.map((text, index) => ({
+										key: `suggested-${Date.now()}-${index}`,
+										text,
+										artifact: null,
+									})),
+								]);
+							} catch {
+								message.error(
+									t(
+										"checkpoints.goal.suggestFailed",
+										"The curator could not suggest anything just now",
+									),
+								);
+							}
+						}}
+					>
+						{t("checkpoints.goal.suggest", "Suggest with AI")}
+					</Button>
+				)}
 			</Flex>
 
 			<GoalLines

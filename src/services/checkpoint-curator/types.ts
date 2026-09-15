@@ -118,3 +118,31 @@ export type ReportResult = {
 	verdict: CheckpointVerdict;
 	verdictNote: string;
 };
+
+/**
+ * On demand, while the card is a draft: lines for one side of it, for an author
+ * staring at an empty list. Nothing is stored — they edit them or throw them away.
+ *
+ * Which side is asked for decides what the model is shown, so the two are
+ * separate shapes rather than one with half its fields unused.
+ */
+export type SuggestLinesInput =
+	| {
+			kind: "Outcome";
+			/** What the author says the 28 days are for. May still be empty. */
+			goal: string;
+			/** The Input side as written so far: what the project has today. */
+			inputs: string[];
+			stage: CuratorStage;
+	  }
+	| {
+			kind: "Input";
+			project: { name: string; description: string | null };
+			stage: CuratorStage;
+			/** What the last closed checkpoint owed, which is what exists now. */
+			previousOutcomes: string[];
+	  };
+
+export type SuggestLinesResult = {
+	lines: string[];
+};

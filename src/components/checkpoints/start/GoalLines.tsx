@@ -111,6 +111,8 @@ export function GoalLines({
 
 							{/* One trailing control, as the frame draws it: the slot is what
 							    a line is proven by, and pressing it is how that changes. */}
+							{/* One trailing control, as the frame draws it: the slot is what a
+							    line is proven by, and pressing it is how that changes. */}
 							{!isGhost && withEvidence && (
 								<Tooltip
 									title={
@@ -119,26 +121,26 @@ export function GoalLines({
 													"checkpoints.evidence.change",
 													"Pick another artifact",
 												)
-											: t("checkpoints.evidence.attach", "Attach evidence")
+											: undefined
 									}
 								>
-									<button
-										type="button"
-										className={styles.slot}
+									<Button
+										className={styles.attach}
 										disabled={disabled}
+										icon={
+											line.artifact ? undefined : (
+												<IconPaperclip size={16} stroke={1.6} />
+											)
+										}
+										iconPosition="end"
 										onClick={() => setPicking(line.key)}
 									>
 										{line.artifact ? (
 											<EvidenceSlot artifact={line.artifact} />
 										) : (
-											<Flex align="center" gap={6} className={styles.empty}>
-												<span>
-													{t("checkpoints.evidence.attach", "Attach evidence")}
-												</span>
-												<IconPaperclip size={15} stroke={1.6} />
-											</Flex>
+											t("checkpoints.evidence.attach", "Attach evidence")
 										)}
-									</button>
+									</Button>
 								</Tooltip>
 							)}
 

@@ -1,9 +1,19 @@
 "use client";
 
 import { IconFlag, IconSparkles, IconUser } from "@tabler/icons-react";
-import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Radio, Skeleton, Typography } from "antd";
+import { T, useTranslate } from "@tolgee/react";
+import {
+	App,
+	Button,
+	Flex,
+	Radio,
+	Segmented,
+	Skeleton,
+	Tag,
+	Typography,
+} from "antd";
 import { useState } from "react";
+import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
 import { EmptyState } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
@@ -12,6 +22,7 @@ import {
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { SKILL_LEVEL_ORDER } from "@/helpers/speciality";
 import {
 	useCheckpointCurators,
 	useDiscardCheckpoint,
@@ -40,6 +51,8 @@ export function CuratorStep() {
 	const discard = useDiscardCheckpoint();
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
+	const [level, setLevel] = useState<string>("all");
+	const [preview, setPreview] = useState<string>();
 	const curators = useCheckpointCurators();
 
 	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
@@ -65,6 +78,14 @@ export function CuratorStep() {
 	// The draft is opened with the AI curator, so the stored value is the choice
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
+	// The filter offers the levels the list actually holds, in the platform's
+	// own order — a segment nobody falls into is a dead control.
+	const levels = SKILL_LEVEL_ORDER.filter((one) =>
+		curators.data?.some((curator) => curator.level === one),
+	);
+	const shown = (curators.data ?? []).filter(
+		(curator) => level === "all" || curator.level === level,
+	);
 	const chosenPerson = person ?? draft.curator?.id ?? null;
 
 	const goTo = async (next: StartStep) => {
@@ -144,7 +165,7 @@ export function CuratorStep() {
 				</Button>
 			}
 		>
-			<Flex vertical gap={12}>
+			<Flex gap={12} className={styles.kinds}>
 				{option(
 					CheckpointCuratorKind.AI,
 					IconSparkles,
@@ -171,35 +192,61 @@ export function CuratorStep() {
 						price: CHECKPOINT_HUMAN_PRICE_FROM,
 					}),
 				)}
+			</Flex>
 
+			<Flex vertical gap={12} style={{ marginTop: 16 }}>
 				{chosen === CheckpointCuratorKind.Human && (
 					<Flex vertical gap={8} className={styles.picker}>
 						<Typography.Text className={styles.pickerLabel}>
 							{t("checkpoints.curator.pickerLabel", "Curators for this stage")}
 						</Typography.Text>
 
+						{/* Two ranks, as the frame has it: the cards above choose what kind
+						    of curator runs it, this chooses which person — so the rows sit
+						    in one panel with hairlines, not as a second set of cards. */}
+						<Segmented
+							value={level}
+							onChange={(value) => setLevel(value as string)}
+							options={[
+								{
+									value: "all",
+									label: t("checkpoints.curator.allLevels", "All levels"),
+								},
+								...levels.map((one) => ({
+									value: one,
+									label: <T keyName={one} />,
+								})),
+							]}
+						/>
+
 						{curators.isLoading ? (
 							<Skeleton active paragraph={{ rows: 3 }} />
-						) : curators.data?.length ? (
+						) : shown.length ? (
 							<Radio.Group
 								value={chosenPerson}
 								onChange={(event) => setPerson(event.target.value)}
 								className={styles.people}
 							>
-								{curators.data.map((curator) => (
+								{shown.map((curator) => (
 									<Radio
 										key={curator.userId}
 										value={curator.userId}
 										className={styles.person}
 									>
-										<Flex gap={10} align="center">
-											<AppAvatar src={curator.image} size={32}>
+										<Flex gap={12} align="center" className={styles.personRow}>
+											<AppAvatar src={curator.image} size={40}>
 												{curator.name.slice(0, 1).toUpperCase()}
 											</AppAvatar>
-											<Flex vertical gap={1}>
-												<Typography.Text className={styles.name}>
-													{curator.name}
-												</Typography.Text>
+
+											<Flex vertical gap={2} className={styles.personText}>
+												<Flex gap={8} align="center" wrap>
+													<Typography.Text className={styles.name}>
+														{curator.name}
+													</Typography.Text>
+													<Tag bordered={false} className={styles.level}>
+														<T keyName={curator.level} />
+													</Tag>
+												</Flex>
 												<Typography.Text
 													type="secondary"
 													className={styles.description}
@@ -209,6 +256,20 @@ export function CuratorStep() {
 														.join(" · ")}
 												</Typography.Text>
 											</Flex>
+
+											{/* Choosing a curator and reading about one are different
+											    intentions, so the row carries both. */}
+											<Button
+												type="link"
+												className={styles.talent}
+												onClick={(event) => {
+													event.preventDefault();
+													event.stopPropagation();
+													setPreview(curator.specialityId);
+												}}
+											>
+												{t("checkpoints.curator.talentCard", "Talent card")}
+											</Button>
 										</Flex>
 									</Radio>
 								))}
@@ -231,6 +292,12 @@ export function CuratorStep() {
 					</Flex>
 				)}
 			</Flex>
+
+			<SpecialistPreviewModal
+				specialistId={preview}
+				open={!!preview}
+				onCancel={() => setPreview(undefined)}
+			/>
 
 			<Typography.Paragraph type="secondary" className={styles.note}>
 				{t(
