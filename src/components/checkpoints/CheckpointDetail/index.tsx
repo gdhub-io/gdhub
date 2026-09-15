@@ -1,17 +1,18 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Flex } from "antd";
+import { App, Flex } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { useCreateCheckpoint } from "@/hooks/checkpoints";
 import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoint-facts";
 import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointPath, type PathStepView } from "../CheckpointPath";
 import { CheckpointStepPanel } from "../CheckpointStepPanel";
-import { GoalCard } from "../GoalCard";
+import { InputsPanel } from "../InputsPanel";
 import { SprintPanel, type SprintTab } from "../SprintPanel";
 import { PreparePanel } from "../start/PreparePanel";
 import styles from "./style.module.scss";
@@ -39,6 +40,7 @@ const range = (from: string, to: string) => {
  */
 export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const { t } = useTranslate();
+	const { message } = App.useApp();
 	const router = useRouter();
 	const pathname = usePathname();
 	const search = useSearchParams();
@@ -73,6 +75,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	};
 
+	const create = useCreateCheckpoint(checkpoint.projectId);
 	const paid = checkpoint.status !== CheckpointStatus.Draft;
 	const base = pathname?.replace(/\/[^/]+$/, "") ?? "";
 
@@ -125,11 +128,28 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				selected={step}
 				onSelect={(key) => go({ step: key })}
 				next={{
-					disabled: !checkpoint.verdict,
+					disabled: !checkpoint.verdict || create.isPending,
 					reason: t(
 						"checkpoints.next.locked",
 						"Opens when the verdict is in. It takes you to the steps of a new checkpoint.",
 					),
+					// It buys the next checkpoint rather than continuing this one, so
+					// it lands on the new draft's first step and nothing is started.
+					onClick: checkpoint.verdict
+						? async () => {
+								try {
+									const next = await create.mutateAsync();
+									router.push(`${base}/${next.id}`);
+								} catch {
+									message.error(
+										t(
+											"checkpoints.start.failed",
+											"The checkpoint could not be started",
+										),
+									);
+								}
+							}
+						: undefined,
 				}}
 				footNote={
 					paid
@@ -146,7 +166,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 					(checkpoint.status === CheckpointStatus.Draft ? (
 						<PreparePanel base={base} />
 					) : (
-						<GoalCard items={checkpoint.items} />
+						<InputsPanel checkpoint={checkpoint} />
 					))}
 
 				{step === "checkpoint" && (

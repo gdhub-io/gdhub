@@ -1,0 +1,53 @@
+.card {
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+}
+
+.head {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-subtle);
+}
+
+.title {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.meta {
+	font-size: 12px;
+	font-feature-settings: "tnum";
+}
+
+.rows {
+	display: flex;
+	flex-direction: column;
+	padding: 0 var(--gd-space-4);
+}
+
+.row {
+	padding: var(--gd-space-3) 0;
+
+	& + .row {
+		border-top: 1px solid var(--gd-color-border-subtle);
+	}
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+.empty,
+.note {
+	display: block;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.empty {
+	padding: var(--gd-space-4);
+}

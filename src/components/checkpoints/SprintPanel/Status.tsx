@@ -1,9 +1,12 @@
 "use client";
 
 import { IconTargetArrow } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
+import { useState } from "react";
+import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
@@ -24,6 +27,8 @@ export type StatusProps = {
  */
 export function Status({ checkpoint, facts }: StatusProps) {
 	const { t } = useTranslate();
+	const queryClient = useQueryClient();
+	const [writing, setWriting] = useState(false);
 	const day = checkpoint.day ?? 0;
 	const devlogDue = devlogDayOf(facts.sprint.number);
 	const missing = facts.marks.asked - facts.marks.confirmed;
@@ -46,6 +51,11 @@ export function Status({ checkpoint, facts }: StatusProps) {
 			meta: t(
 				"checkpoints.devlog.meta",
 				"What got done, what is next, and what is in the way.",
+			),
+			actions: (
+				<Button type="primary" onClick={() => setWriting(true)}>
+					{t("checkpoints.devlog.write", "Write the devlog")}
+				</Button>
 			),
 		});
 	}
@@ -116,6 +126,18 @@ export function Status({ checkpoint, facts }: StatusProps) {
 	return (
 		<Flex vertical gap={16}>
 			<GoalStrip goal={checkpoint.goal} />
+
+			<DevLogPostModal
+				projectId={checkpoint.projectId}
+				open={writing}
+				onClose={() => setWriting(false)}
+				onSave={() => {
+					setWriting(false);
+					queryClient.invalidateQueries({
+						queryKey: ["checkpoint", checkpoint.id],
+					});
+				}}
+			/>
 
 			<AskPanel
 				title={t("checkpoints.asks.title", "What this sprint asks of you")}
