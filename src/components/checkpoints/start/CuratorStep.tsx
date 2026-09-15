@@ -7,11 +7,12 @@ import {
 	Button,
 	Flex,
 	Radio,
-	Segmented,
 	Skeleton,
+	Table,
 	Tag,
 	Typography,
 } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
 import { EmptyState } from "@/components/ui";
@@ -22,12 +23,12 @@ import {
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { SKILL_LEVEL_ORDER } from "@/helpers/speciality";
 import {
 	useCheckpointCurators,
 	useDiscardCheckpoint,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
+import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import styles from "./CuratorStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
@@ -51,7 +52,6 @@ export function CuratorStep() {
 	const discard = useDiscardCheckpoint();
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
-	const [level, setLevel] = useState<string>("all");
 	const [preview, setPreview] = useState<string>();
 	const curators = useCheckpointCurators();
 
@@ -78,14 +78,6 @@ export function CuratorStep() {
 	// The draft is opened with the AI curator, so the stored value is the choice
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
-	// The filter offers the levels the list actually holds, in the platform's
-	// own order — a segment nobody falls into is a dead control.
-	const levels = SKILL_LEVEL_ORDER.filter((one) =>
-		curators.data?.some((curator) => curator.level === one),
-	);
-	const shown = (curators.data ?? []).filter(
-		(curator) => level === "all" || curator.level === level,
-	);
 	const chosenPerson = person ?? draft.curator?.id ?? null;
 
 	const goTo = async (next: StartStep) => {
@@ -201,87 +193,94 @@ export function CuratorStep() {
 							{t("checkpoints.curator.pickerLabel", "Curators for this stage")}
 						</Typography.Text>
 
-						{/* Two ranks, as the frame has it: the cards above choose what kind
-						    of curator runs it, this chooses which person — so the rows sit
-						    in one panel with hairlines, not as a second set of cards. */}
-						<Segmented
-							value={level}
-							onChange={(value) => setLevel(value as string)}
-							options={[
-								{
-									value: "all",
-									label: t("checkpoints.curator.allLevels", "All levels"),
-								},
-								...levels.map((one) => ({
-									value: one,
-									label: <T keyName={one} />,
-								})),
-							]}
-						/>
-
-						{curators.isLoading ? (
-							<Skeleton active paragraph={{ rows: 3 }} />
-						) : shown.length ? (
-							<Radio.Group
-								value={chosenPerson}
-								onChange={(event) => setPerson(event.target.value)}
-								className={styles.people}
-							>
-								{shown.map((curator) => (
-									<Radio
-										key={curator.userId}
-										value={curator.userId}
-										className={styles.person}
-									>
-										<Flex gap={12} align="center" className={styles.personRow}>
-											<AppAvatar src={curator.image} size={40}>
-												{curator.name.slice(0, 1).toUpperCase()}
-											</AppAvatar>
-
-											<Flex vertical gap={2} className={styles.personText}>
-												<Flex gap={8} align="center" wrap>
-													<Typography.Text className={styles.name}>
-														{curator.name}
+						{/* A table without a head: the rows are the same five facts each
+						    time, and a header over three unlabelled columns would name
+						    nothing the eye does not already have. Pressing anywhere on a
+						    row picks it; the dot on the right is where the answer lands. */}
+						<Table<CheckpointCurator>
+							showHeader={false}
+							pagination={false}
+							loading={curators.isLoading}
+							rowKey="userId"
+							size="middle"
+							className={styles.people}
+							dataSource={curators.data ?? []}
+							onRow={(row: CheckpointCurator) => ({
+								onClick: () => setPerson(row.userId),
+							})}
+							locale={{
+								emptyText: t(
+									"checkpoints.curator.noneOpen",
+									"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
+								),
+							}}
+							columns={
+								[
+									{
+										key: "who",
+										render: (_: unknown, row: CheckpointCurator) => (
+											<Flex
+												gap={12}
+												align="center"
+												className={styles.personRow}
+											>
+												<AppAvatar src={row.image} size={40}>
+													{row.name.slice(0, 1).toUpperCase()}
+												</AppAvatar>
+												<Flex vertical gap={2} className={styles.personText}>
+													<Flex gap={8} align="center">
+														<Typography.Text className={styles.name}>
+															{row.name}
+														</Typography.Text>
+														<Tag bordered={false} className={styles.level}>
+															<T keyName={row.level} />
+														</Tag>
+													</Flex>
+													<Typography.Text
+														type="secondary"
+														className={styles.description}
+														ellipsis
+													>
+														{[row.role, row.specialization]
+															.filter(Boolean)
+															.join(" · ")}
 													</Typography.Text>
-													<Tag bordered={false} className={styles.level}>
-														<T keyName={curator.level} />
-													</Tag>
 												</Flex>
-												<Typography.Text
-													type="secondary"
-													className={styles.description}
-												>
-													{[curator.role, curator.specialization]
-														.filter(Boolean)
-														.join(" · ")}
-												</Typography.Text>
 											</Flex>
-
-											{/* Choosing a curator and reading about one are different
-											    intentions, so the row carries both. */}
+										),
+									},
+									{
+										key: "talent",
+										width: 120,
+										render: (_: unknown, row: CheckpointCurator) => (
+											// Choosing a curator and reading about one are different
+											// intentions, so the row carries both.
 											<Button
 												type="link"
 												className={styles.talent}
 												onClick={(event) => {
-													event.preventDefault();
 													event.stopPropagation();
-													setPreview(curator.specialityId);
+													setPreview(row.specialityId);
 												}}
 											>
 												{t("checkpoints.curator.talentCard", "Talent card")}
 											</Button>
-										</Flex>
-									</Radio>
-								))}
-							</Radio.Group>
-						) : (
-							<Typography.Text type="secondary">
-								{t(
-									"checkpoints.curator.noneOpen",
-									"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
-								)}
-							</Typography.Text>
-						)}
+										),
+									},
+									{
+										key: "pick",
+										width: 48,
+										align: "center",
+										render: (_: unknown, row: CheckpointCurator) => (
+											<Radio
+												checked={chosenPerson === row.userId}
+												onChange={() => setPerson(row.userId)}
+											/>
+										),
+									},
+								] satisfies ColumnsType<CheckpointCurator>
+							}
+						/>
 
 						<Typography.Text type="secondary">
 							{t(

@@ -20,6 +20,7 @@ import { dueDateFrom } from "@/lib/checkpoint-days";
 import { devlogDayOf, sprintRange } from "@/lib/checkpoint-sprints";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout } from "./StartLayout";
+import { TeamResource } from "./TeamResource";
 import { useCheckpointDraft } from "./useDraft";
 import styles from "./WhenStep.module.scss";
 
@@ -35,7 +36,7 @@ export function WhenStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
-	const { draft, loading } = useCheckpointDraft();
+	const { draft, project, loading } = useCheckpointDraft();
 	const update = useUpdateCheckpoint(draft?.id);
 
 	const [picked, setPicked] = useState<Dayjs | null>(null);
@@ -155,6 +156,8 @@ export function WhenStep() {
 						)}
 					</Typography.Text>
 				</div>
+
+				<TeamResource teamId={project?.team?.id} />
 
 				{!isAI && (
 					<Typography.Text type="secondary" className={styles.note}>

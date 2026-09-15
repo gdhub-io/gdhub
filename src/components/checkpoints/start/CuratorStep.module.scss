@@ -89,36 +89,30 @@
 }
 
 .people {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
+	// One panel with hairlines, the way the frame draws it — the outline belongs
+	// to the choice above, not to every row of this one.
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-card);
 	overflow: hidden;
-}
 
-// One panel, hairline dividers: the row selects a person, the cards above
-// select what kind of curator it is — two ranks, not one long list.
-.person {
-	width: 100%;
-	margin: 0;
-	padding: var(--gd-space-3) var(--gd-space-4);
-
-	& + .person {
-		border-top: 1px solid var(--gd-color-border-subtle);
+	:global(.ant-table) {
+		background: transparent;
 	}
-}
 
-.kinds {
-	// The two kinds are one decision, read side by side rather than as a list.
-	& > * {
-		flex: 1;
-		min-width: 0;
+	:global(.ant-table-tbody > tr > td) {
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	:global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+
+	:global(.ant-table-tbody > tr) {
+		cursor: pointer;
 	}
 }
 
 .personRow {
-	width: 100%;
 	min-width: 0;
 }
 
@@ -137,6 +131,5 @@
 }
 
 .talent {
-	flex: none;
 	padding: 0;
 }

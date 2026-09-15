@@ -829,7 +829,13 @@
 			"next": "To the payment",
 			"pick": "On a day I choose",
 			"runs": "Runs {from} – {to}",
-			"startsOn": "Starts on"
+			"startsOn": "Starts on",
+			"teamMember": "Who",
+			"teamNote": "Hours come from each member's own profile. Only your own line is yours to correct here.",
+			"teamRun": "Over the 28 days",
+			"teamTitle": "What the team has for these 28 days",
+			"teamTotal": "The team",
+			"teamWeek": "Hours a week"
 		}
 	},
 	"city": "City",

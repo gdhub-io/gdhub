@@ -1,0 +1,18 @@
+.table {
+	:global(.ant-table) {
+		background: transparent;
+	}
+}
+
+.role {
+	font-size: 12px;
+}
+
+.figure {
+	font-feature-settings: "tnum";
+}
+
+.note {
+	font-size: 12px;
+	line-height: 1.45;
+}
