@@ -163,8 +163,10 @@ step of the path.
 the matrix written out twice; hovering a cell now gives the name, the sprint, the day it was
 marked — or, when it is empty, a `Remind` button (`DJ9fJ`).
 
-**Evidence** is the artifacts bound to an outcome: kind tile, name, `Build · 240 MB · 13 Sep ·
-Priya Raman`, the line it proves, and the check result on the right. `Attach evidence` in the
+**Evidence** is the artifacts bound to an outcome: kind tile, name, `Build · 13 Sep · Priya
+Raman`, the line it proves, and the check result on the right. The frame draws a file size in
+that line; `ProjectArtifact` does not store one — most artifacts are links rather than
+uploads — so the built row carries the kind, the day and who added it. `Attach evidence` in the
 footer opens `IRJ2D`. The project's own tab stays **Artifacts** — the store; the sprint's tab
 is **Evidence** — what is bound to a line of the goal card.
 
@@ -649,18 +651,27 @@ carrying the stage, checkpoint number and project.
 ## 11. Open questions / assumptions
 
 1. **Start questions 1–3 are still the old full-page frames** (`W76sA5`, `pyT9o`, `vE1BQ`).
-   Their content is unchanged, but they have not been re-hosted inside the Prepare panel — that
-   is the next piece of drawing.
-2. **The four schema changes in §8** are unresolved and block parts of this: the per-sprint
-   review and the calls in particular.
-3. **Call scheduling is not designed** — the picker, the reschedule flow and the calendar
+   Their content is unchanged and is what the built Prepare panel renders; the frames have not
+   been redrawn inside the panel.
+2. **The goal card cannot be edited after payment yet.** `PUT /api/checkpoint/[id]` refuses
+   anything that is not a `Draft`, so the Inputs step is a record from the moment it is bought.
+   The standard fixes the card on call 1, not at checkout, so the lines should stay editable
+   until `goalAgreedAt` — that needs the endpoint to allow item edits on an `Active` checkpoint
+   and belongs with the calls (GDHUB-42).
+3. **`Remind` on a pulse cell is drawn but not wired.** Sending the ask is the cron and
+   notification work of GDHUB-35; the hover card shows the day it was marked or the absence,
+   and the button arrives with the sender behind it.
+4. **The four schema changes in §8** are unresolved and block parts of this: the per-sprint
+   review and the calls in particular. Until the first lands, Review reads the answer written
+   on the sprint's devlog.
+5. **Call scheduling is not designed** — the picker, the reschedule flow and the calendar
    invitation belong to the human-curator issue. The page assumes a time and a link arrive.
-4. **Team size for pricing is taken at purchase**; the roster is fixed for the checkpoint.
-5. **The AI curator's price is a placeholder.**
-6. **The artifact upload limit** is drawn as 200 MB / five minutes, unverified.
-7. **Page sizes** assumed 10 for past checkpoints, 25 for artifacts.
-8. **Timezone**: the day number and the sprint boundaries are computed server-side in one
-   fixed zone and returned with the payload. A sprint that shifts by a day in the client's
-   zone would move a devlog into the wrong sprint.
-9. **Responsive layouts were described, not drawn**, including the sidebar's collapse to a
-   `Segmented` below 1100.
+6. **Team size for pricing is taken at purchase**; the roster is fixed for the checkpoint.
+7. **The AI curator's price is a placeholder.**
+8. **The artifact upload limit** is drawn as 200 MB / five minutes, unverified.
+9. **Page sizes** assumed 10 for past checkpoints, 25 for artifacts.
+10. **Timezone**: the day number and the sprint boundaries are computed server-side in one
+    fixed zone and returned with the payload. A sprint that shifts by a day in the client's
+    zone would move a devlog into the wrong sprint.
+11. **Responsive layouts were described, not drawn**, including the sidebar's collapse to a
+    `Segmented` below 1100.
