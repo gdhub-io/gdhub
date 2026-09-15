@@ -614,6 +614,7 @@
 			"checkFits": "This fits 28 days",
 			"checkMissing": "The stage also asks for: {line}",
 			"checkTight": "This looks like more than 28 days hold",
+			"checking": "The curator is reading this against your 28 days…",
 			"claimed": "{claimed} of {owed} outcomes claimed",
 			"empty": "The goal is not written yet",
 			"ghostLine": "Add a line, then press Enter",

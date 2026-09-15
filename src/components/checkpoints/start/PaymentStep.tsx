@@ -22,7 +22,7 @@ import {
 } from "@/config/prisma-enums";
 import {
 	useDiscardCheckpoint,
-	useGoalCheckResult,
+	useGoalCheck,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
@@ -31,6 +31,7 @@ import { CuratorBadge } from "../CuratorBadge";
 import styles from "./PaymentStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
+import { useTeamHours } from "./teamHours";
 import { useCheckpointDraft } from "./useDraft";
 
 /**
@@ -46,8 +47,22 @@ export function PaymentStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
-	const { draft, loading } = useCheckpointDraft();
-	const { data: remark } = useGoalCheckResult(draft?.id);
+	const { draft, project, loading } = useCheckpointDraft();
+	const team = useTeamHours(project?.team?.id);
+	// What the curator is being asked about: the card, and the hours it has to be
+	// done in. Anything else changing — a curator picked, a date moved — is not a
+	// different question, so it does not cost another call.
+	const signature = draft
+		? [
+				draft.goal.trim(),
+				...draft.items.map((item) => `${item.kind}:${item.text}`),
+				team.hours.join("-"),
+			].join("|")
+		: undefined;
+	const { data: remark, isFetching: checking } = useGoalCheck(
+		draft?.id,
+		signature,
+	);
 	const discard = useDiscardCheckpoint();
 	const update = useUpdateCheckpoint(draft?.id);
 
@@ -171,6 +186,15 @@ export function PaymentStep() {
 						{list(side(CheckpointItemKind.Outcome))}
 						{/* The curator's read, kept from the goal question: the last place
 						    it can still change anything is the moment before paying. */}
+						{checking && (
+							<Typography.Text type="secondary" className={styles.checking}>
+								{t(
+									"checkpoints.goal.checking",
+									"The curator is reading this against your 28 days…",
+								)}
+							</Typography.Text>
+						)}
+
 						{!!remark && (!remark.reachable || remark.missing.length > 0) && (
 							<Flex vertical gap={4} className={styles.remark}>
 								<Typography.Text>{remark.note}</Typography.Text>

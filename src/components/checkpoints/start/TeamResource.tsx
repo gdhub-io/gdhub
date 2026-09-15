@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Flex, InputNumber, Table, Typography } from "antd";
 import axios from "axios";
@@ -9,18 +9,7 @@ import { useState } from "react";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import styles from "./TeamResource.module.scss";
-
-type TeamRow = {
-	id: string;
-	userId: string;
-	position: string | null;
-	speciality?: { name?: string | null } | null;
-	user: {
-		name: string | null;
-		image: string | null;
-		profile?: { timeForWork: number[] } | null;
-	};
-};
+import { type TeamHoursRow, useTeamHours } from "./teamHours";
 
 export type TeamResourceProps = {
 	teamId?: string;
@@ -42,16 +31,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 	const queryClient = useQueryClient();
 	const [mine, setMine] = useState<number[]>();
 
-	const { data, isLoading } = useQuery({
-		queryKey: ["user-project-team", teamId],
-		queryFn: async () =>
-			(
-				await axios.get<{ members: TeamRow[] }>("/api/user/project/team", {
-					params: { teamId },
-				})
-			).data,
-		enabled: !!teamId,
-	});
+	const { members, isLoading, statedFor } = useTeamHours(teamId);
 
 	const save = useMutation({
 		mutationFn: async (timeForWork: number[]) =>
@@ -64,13 +44,10 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save")),
 	});
 
-	const members = data?.members ?? [];
-
-	const hoursOf = (row: TeamRow) => {
+	const hoursOf = (row: TeamHoursRow) => {
 		const own = row.userId === session?.user?.id ? mine : undefined;
-		const stated = own ?? row.user.profile?.timeForWork ?? [];
 
-		return [stated[0] ?? 0, stated[1] ?? stated[0] ?? 0];
+		return own ? [own[0] ?? 0, own[1] ?? own[0] ?? 0] : statedFor(row);
 	};
 
 	const total = members.reduce(
@@ -91,7 +68,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 				{t("checkpoints.when.teamTitle", "What the team has for these 28 days")}
 			</Typography.Text>
 
-			<Table<TeamRow>
+			<Table<TeamHoursRow>
 				size="middle"
 				pagination={false}
 				loading={isLoading}
@@ -102,7 +79,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 					{
 						key: "who",
 						title: t("checkpoints.when.teamMember", "Who"),
-						render: (_: unknown, row: TeamRow) => (
+						render: (_: unknown, row: TeamHoursRow) => (
 							<Flex gap={10} align="center">
 								<AppAvatar src={row.user.image} size={28}>
 									{row.user.name?.slice(0, 1).toUpperCase()}
@@ -120,7 +97,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 						key: "week",
 						width: 220,
 						title: t("checkpoints.when.teamWeek", "Hours a week"),
-						render: (_: unknown, row: TeamRow) => {
+						render: (_: unknown, row: TeamHoursRow) => {
 							const [from, to] = hoursOf(row);
 
 							if (row.userId !== session?.user?.id)
@@ -162,7 +139,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 						width: 160,
 						align: "right",
 						title: t("checkpoints.when.teamRun", "Over the 28 days"),
-						render: (_: unknown, row: TeamRow) => {
+						render: (_: unknown, row: TeamHoursRow) => {
 							const [from, to] = hoursOf(row);
 
 							return (

@@ -107,31 +107,25 @@ export const useAttachEvidence = (id?: string) => {
 };
 
 /**
- * The AI curator reading the goal card against 28 days.
+ * The AI curator reading the goal card against the 28 days and the hours the
+ * team has.
  *
- * Run on the way out of the goal question rather than from a button of its own:
- * it is a model call, it is advice rather than a gate, and the moment it is
- * worth hearing is the moment the author is about to move on. The answer is kept
- * so the payment question can repeat the remark under what is being bought.
+ * Run when the payment question opens, not from a button: by then everything it
+ * judges — what exists, what is promised, who curates, how many hours the team
+ * put in — has been answered, and the remark lands where the author can still
+ * press Edit. `signature` is those same facts: change any of them and this is a
+ * different question, so it is asked again; come back without changing anything
+ * and the answer is the one already paid for.
  */
-export const useGoalCheck = (id?: string) => {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: async () =>
+export const useGoalCheck = (id?: string, signature?: string) =>
+	useQuery<GoalCheckResult | null>({
+		queryKey: ["goal-check", id, signature],
+		queryFn: async () =>
 			(await axios.post<GoalCheckResult>(`/api/checkpoint/${id}/goal-check`))
 				.data,
-		onSuccess: (result) => queryClient.setQueryData(["goal-check", id], result),
-	});
-};
-
-/** What the last check said, while the purchase is still on this browser. */
-export const useGoalCheckResult = (id?: string) =>
-	useQuery<GoalCheckResult | null>({
-		queryKey: ["goal-check", id],
-		queryFn: () => null,
-		enabled: false,
-		initialData: null,
+		enabled: !!id && !!signature,
+		staleTime: Number.POSITIVE_INFINITY,
+		retry: false,
 	});
 
 /** Specialists who have said they take mentees, at an expert level. */
