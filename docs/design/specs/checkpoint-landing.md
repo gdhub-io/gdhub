@@ -5,7 +5,7 @@ The public selling page for the Checkpoint program.
 **Design** — [platform-design.pen](../platform-design.pen): `Landing — Checkpoint ·
 Revised` (`eRLN0`, 1440) and `Landing — Checkpoint · Mobile` (`d2UFaN`, 390).
 **Code** — [src/app/(landing)/checkpoint/](../../../src/app/(landing)/checkpoint/) and
-[src/components/checkpoint/](../../../src/components/checkpoint/).
+[src/components/checkpoint-landing/](../../../src/components/checkpoint-landing/).
 **Copy** — [checkpoint-program.md](../../products/checkpoint/checkpoint-program.md) is the
 source of truth for what the author buys; [checkpoint-standard.md](../../checkpoint-standard.md)
 for prices, verdicts and guarantees.
@@ -15,9 +15,9 @@ for prices, verdicts and guarantees.
 | # | Component | What it does |
 |---|---|---|
 | 1 | `MainHeader` | The platform's own bar, as on every other public page, in a sticky `InverseBand`. |
-| 2 | `CheckpointHeroSection` | **What we offer.** Name, descriptor, headline, subhead, two actions, price note, artwork. |
+| 2 | `CheckpointHeroSection` | **What we offer.** Name, descriptor, headline, the opening paragraph of the program doc, one call to action, price note, artwork. |
 | 3 | `CheckpointProofSection` | Four facts on a light strip: sprints, reviews, next move, price. |
-| 4 | `CheckpointExampleSection` | **One checkpoint, whole.** The story column and the finished result card, with the artifacts overlapping it. |
+| 4 | `CheckpointExampleSection` | **One checkpoint, whole.** The story column and the finished result card. |
 | 5 | `CheckpointHowItWorksSection` | **The mechanic.** Three steps and the 28-day rail. |
 | 6 | `CheckpointCuratorChoiceSection` | **Which kind of curator.** Five rows of difference, as a three-column comparison on desktop and two cards on a phone. |
 | 7 | `CheckpointCuratorsSection` | **And who those people are.** Three curator cards, from the database. Takes itself off the page when there is nobody to show. |

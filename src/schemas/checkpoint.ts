@@ -47,6 +47,12 @@ export const UpdateCheckpointSchema = z
 		outcomes: z
 			.array(CheckpointItemInputSchema)
 			.max(CHECKPOINT_MAX_ITEMS_PER_KIND),
+		/**
+		 * The day the 28 days are meant to start, chosen on the When question and
+		 * written onto the draft. It is an intention until the checkpoint is paid
+		 * for — and, with a human curator, until they confirm they can run it.
+		 */
+		startedAt: z.coerce.date().nullable(),
 	})
 	.partial();
 

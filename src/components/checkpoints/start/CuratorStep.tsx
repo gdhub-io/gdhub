@@ -3,7 +3,6 @@
 import { IconFlag, IconSparkles, IconUser } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Radio, Skeleton, Typography } from "antd";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui";
 import {
@@ -14,7 +13,8 @@ import {
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { useDiscardCheckpoint, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import styles from "./CuratorStep.module.scss";
-import { StartLayout } from "./StartLayout";
+import { usePrepareNav } from "./PrepareNav";
+import { StartLayout, type StartStep } from "./StartLayout";
 import { useCheckpointDraft } from "./useDraft";
 
 /**
@@ -28,8 +28,8 @@ import { useCheckpointDraft } from "./useDraft";
 export function CuratorStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
-	const router = useRouter();
-	const { project, draft, loading, base } = useCheckpointDraft();
+	const { go, exit } = usePrepareNav();
+	const { project, draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
 	const discard = useDiscardCheckpoint();
@@ -47,7 +47,7 @@ export function CuratorStep() {
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
-					<Button type="primary" onClick={() => router.push(base)}>
+					<Button type="primary" onClick={exit}>
 						{t("checkpoints.start.toList", "Back to checkpoints")}
 					</Button>
 				}
@@ -59,10 +59,10 @@ export function CuratorStep() {
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
 
-	const goTo = async (path: string) => {
+	const goTo = async (next: StartStep) => {
 		try {
 			await update.mutateAsync({ curatorKind: chosen });
-			router.push(path);
+			go(next);
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
 		}
@@ -71,7 +71,7 @@ export function CuratorStep() {
 	const cancel = async () => {
 		try {
 			await discard.mutateAsync(draft.id);
-			router.push(base);
+			exit();
 		} catch {
 			message.error(
 				t(
@@ -114,19 +114,18 @@ export function CuratorStep() {
 	return (
 		<StartLayout
 			step="curator"
-			stageName={draft.stageName}
 			question={t("checkpoints.start.q3", "Who runs the 28 days?")}
 			hint={t(
 				"checkpoints.start.h3",
 				"Both walk the same five moments. A person says them on a call; the AI curator writes them.",
 			)}
-			onBack={() => goTo(`${base}/new/outcomes`)}
+			onBack={() => goTo("goal")}
 			onCancel={cancel}
 			forward={
 				<Button
 					type="primary"
 					loading={update.isPending}
-					onClick={() => goTo(`${base}/new/pay`)}
+					onClick={() => goTo("when")}
 				>
 					{t("checkpoints.start.next3", "Next — summary")}
 				</Button>

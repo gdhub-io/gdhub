@@ -9,8 +9,6 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Checkbox, Flex, Skeleton, Typography } from "antd";
 import dayjs from "dayjs";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
 import {
@@ -27,7 +25,8 @@ import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import styles from "./PaymentStep.module.scss";
-import { StartLayout } from "./StartLayout";
+import { usePrepareNav } from "./PrepareNav";
+import { StartLayout, type StartStep } from "./StartLayout";
 import { useCheckpointDraft } from "./useDraft";
 
 /**
@@ -42,8 +41,8 @@ import { useCheckpointDraft } from "./useDraft";
 export function PaymentStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
-	const router = useRouter();
-	const { draft, loading, base } = useCheckpointDraft();
+	const { go, exit } = usePrepareNav();
+	const { draft, loading } = useCheckpointDraft();
 	const discard = useDiscardCheckpoint();
 	const update = useUpdateCheckpoint(draft?.id);
 
@@ -59,7 +58,7 @@ export function PaymentStep() {
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
-					<Button type="primary" onClick={() => router.push(base)}>
+					<Button type="primary" onClick={exit}>
 						{t("checkpoints.start.toList", "Back to checkpoints")}
 					</Button>
 				}
@@ -70,7 +69,7 @@ export function PaymentStep() {
 	const cancel = async () => {
 		try {
 			await discard.mutateAsync(draft.id);
-			router.push(base);
+			exit();
 		} catch {
 			message.error(
 				t(
@@ -84,14 +83,14 @@ export function PaymentStep() {
 	const side = (kind: CheckpointItemKind) =>
 		draft.items.filter((item: CheckpointItemDto) => item.kind === kind);
 
-	const block = (label: string, editPath: string | null, body: ReactNode) => (
+	const block = (label: string, edit: StartStep | null, body: ReactNode) => (
 		<Flex vertical gap={8} className={styles.block}>
 			<Flex justify="space-between" align="baseline">
 				<Typography.Text className={styles.blockLabel}>{label}</Typography.Text>
-				{editPath && (
-					<Link href={editPath} className={styles.edit}>
+				{edit && (
+					<Button type="link" className={styles.edit} onClick={() => go(edit)}>
 						{t("checkpoints.pay.edit", "Edit")}
-					</Link>
+					</Button>
 				)}
 			</Flex>
 			{body}
@@ -119,13 +118,12 @@ export function PaymentStep() {
 	return (
 		<StartLayout
 			step="payment"
-			stageName={draft.stageName}
 			question={t("checkpoints.start.q4", "Ready to start?")}
 			hint={t(
 				"checkpoints.start.h4",
 				"Read it back before you pay. After this the goal card is fixed until day 14.",
 			)}
-			onBack={() => router.push(`${base}/new/curator`)}
+			onBack={() => go("when")}
 			onCancel={cancel}
 			footNote={
 				<Typography.Text type="secondary" className={styles.pending}>
@@ -157,19 +155,19 @@ export function PaymentStep() {
 
 				{block(
 					t("checkpoints.pay.whatExists", "What exists now"),
-					`${base}/new/inputs`,
+					"now",
 					list(side(CheckpointItemKind.Input)),
 				)}
 
 				{block(
 					t("checkpoints.pay.whatMustExist", "What must exist by day 28"),
-					`${base}/new/outcomes`,
+					"goal",
 					list(side(CheckpointItemKind.Outcome)),
 				)}
 
 				{block(
 					t("checkpoints.pay.curator", "Curator"),
-					`${base}/new/curator`,
+					"curator",
 					<CuratorBadge kind={draft.curatorKind} curator={draft.curator} />,
 				)}
 			</Flex>

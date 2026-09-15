@@ -3,13 +3,13 @@
 import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Skeleton, Typography } from "antd";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useDiscardCheckpoint, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { useProjectArtifacts } from "@/hooks/project-artifacts";
 import { type GoalLine, GoalLines } from "./GoalLines";
+import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
 import styles from "./StartStepPage.module.scss";
 import { useCheckpointDraft } from "./useDraft";
@@ -26,8 +26,8 @@ export type StartStepPageProps = {
 export function StartStepPage({ step }: StartStepPageProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
-	const router = useRouter();
-	const { project, draft, loading, base } = useCheckpointDraft();
+	const { go, exit } = usePrepareNav();
+	const { project, draft, loading } = useCheckpointDraft();
 
 	const { data: artifacts } = useProjectArtifacts(project?.id);
 	const update = useUpdateCheckpoint(draft?.id);
@@ -63,7 +63,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
-					<Button type="primary" onClick={() => router.push(base)}>
+					<Button type="primary" onClick={exit}>
 						{t("checkpoints.start.toList", "Back to checkpoints")}
 					</Button>
 				}
@@ -71,7 +71,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		);
 	}
 
-	const goTo = async (path: string) => {
+	const goTo = async (next: StartStep) => {
 		const written = lines
 			.filter((line) => line.text.trim())
 			.map((line) => ({
@@ -86,7 +86,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 					? { inputs: written }
 					: { outcomes: written },
 			);
-			router.push(path);
+			go(next);
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
 		}
@@ -95,7 +95,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 	const cancel = async () => {
 		try {
 			await discard.mutateAsync(draft.id);
-			router.push(base);
+			exit();
 		} catch {
 			message.error(
 				t(
@@ -111,7 +111,6 @@ export function StartStepPage({ step }: StartStepPageProps) {
 	return (
 		<StartLayout
 			step={step}
-			stageName={draft.stageName}
 			question={
 				isNow
 					? t("checkpoints.start.q1", "What exists today?")
@@ -131,24 +130,13 @@ export function StartStepPage({ step }: StartStepPageProps) {
 							"One line per thing that has to exist by the end. Each gets its proof attached as it lands.",
 						)
 			}
-			onBack={isNow ? undefined : () => goTo(`${base}/new/inputs`)}
+			onBack={isNow ? undefined : () => goTo("now")}
 			onCancel={cancel}
-			footNote={
-				// Step 4 needs Paddle (GDHUB-38). Saying so beats a forward button
-				// that reads as if the purchase were finished early.
-				isNow ? undefined : (
-					<Typography.Text type="secondary" className={styles.pending}>
-						{t("checkpoints.start.paymentPending", "Paying is not open yet")}
-					</Typography.Text>
-				)
-			}
 			forward={
 				<Button
 					type="primary"
 					loading={update.isPending}
-					onClick={() =>
-						goTo(isNow ? `${base}/new/outcomes` : `${base}/new/curator`)
-					}
+					onClick={() => goTo(isNow ? "goal" : "curator")}
 				>
 					{isNow
 						? t("checkpoints.start.next1", "Next — what will exist")

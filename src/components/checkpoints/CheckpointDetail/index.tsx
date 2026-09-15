@@ -5,6 +5,7 @@ import { Flex } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoint-facts";
 import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -12,6 +13,7 @@ import { CheckpointPath, type PathStepView } from "../CheckpointPath";
 import { CheckpointStepPanel } from "../CheckpointStepPanel";
 import { GoalCard } from "../GoalCard";
 import { SprintPanel, type SprintTab } from "../SprintPanel";
+import { PreparePanel } from "../start/PreparePanel";
 import styles from "./style.module.scss";
 
 export type CheckpointDetailProps = {
@@ -47,11 +49,14 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		[checkpoint, sprints],
 	);
 
-	const defaultStep = !checkpoint.startedAt
-		? "inputs"
-		: checkpoint.verdict
-			? "checkpoint"
-			: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number ?? 1}`;
+	// A draft that has already picked its start date is still on the first step:
+	// the status says whether it has been bought, the date does not.
+	const defaultStep =
+		checkpoint.status === CheckpointStatus.Draft
+			? "inputs"
+			: checkpoint.verdict
+				? "checkpoint"
+				: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number ?? 1}`;
 
 	const step = search?.get("step") ?? defaultStep;
 	const tab = (search?.get("tab") as SprintTab) ?? "status";
@@ -68,7 +73,8 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	};
 
-	const paid = !!checkpoint.startedAt;
+	const paid = checkpoint.status !== CheckpointStatus.Draft;
+	const base = pathname?.replace(/\/[^/]+$/, "") ?? "";
 
 	const steps: PathStepView[] = [
 		{
@@ -136,7 +142,12 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 			/>
 
 			<div className={styles.panel}>
-				{step === "inputs" && <GoalCard items={checkpoint.items} />}
+				{step === "inputs" &&
+					(checkpoint.status === CheckpointStatus.Draft ? (
+						<PreparePanel base={base} />
+					) : (
+						<GoalCard items={checkpoint.items} />
+					))}
 
 				{step === "checkpoint" && (
 					<CheckpointStepPanel checkpoint={checkpoint} />

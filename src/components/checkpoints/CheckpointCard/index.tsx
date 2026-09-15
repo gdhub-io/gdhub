@@ -41,9 +41,9 @@ export function CheckpointCard({
 			? `${dayjs(checkpoint.startedAt).format("D MMM")}–${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
-	const href = isDraft
-		? `/user/project/${projectSlug}/checkpoints/new/inputs`
-		: `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
+	// Draft or running, it is the same page — a draft simply opens on the step
+	// where it is still being bought.
+	const href = `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
 
 	return (
 		<section className={styles.card}>

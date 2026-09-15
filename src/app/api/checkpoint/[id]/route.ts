@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { dueDateFrom } from "@/lib/checkpoint-days";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
@@ -60,7 +61,7 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const { goal, curatorKind, acceptedTerms, inputs, outcomes } =
+	const { goal, curatorKind, acceptedTerms, inputs, outcomes, startedAt } =
 		body as UpdateCheckpointBody;
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
@@ -73,7 +74,12 @@ export const PUT = pipe(
 		return apiError.badRequest("checkpointNotDraft");
 	}
 
-	if (goal !== undefined || curatorKind || acceptedTerms !== undefined) {
+	if (
+		goal !== undefined ||
+		curatorKind ||
+		acceptedTerms !== undefined ||
+		startedAt !== undefined
+	) {
 		await prisma.projectCheckpoint.update({
 			where: { id },
 			data: {
@@ -82,6 +88,12 @@ export const PUT = pipe(
 				// The moment it was accepted is the record; unticking withdraws it.
 				...(acceptedTerms !== undefined && {
 					acceptedTermsAt: acceptedTerms ? new Date() : null,
+				}),
+				// The day the author picked. `dueAt` follows from it rather than
+				// being sent, so the two can never disagree by a day.
+				...(startedAt !== undefined && {
+					startedAt,
+					dueAt: startedAt ? dueDateFrom(startedAt) : null,
 				}),
 			},
 		});

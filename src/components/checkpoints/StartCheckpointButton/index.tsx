@@ -53,8 +53,8 @@ export function StartCheckpointButton({
 
 	const start = async () => {
 		try {
-			await createCheckpoint.mutateAsync();
-			router.push(`/user/project/${projectSlug}/checkpoints/new/inputs`);
+			const checkpoint = await createCheckpoint.mutateAsync();
+			router.push(`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`);
 		} catch {
 			message.error(
 				t("checkpoints.start.failed", "The checkpoint could not be started"),

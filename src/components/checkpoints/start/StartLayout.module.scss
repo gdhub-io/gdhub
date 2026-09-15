@@ -4,11 +4,6 @@
 }
 
 .content {
-	flex: 1;
-	// Without this a flex child refuses to shrink below its content and the
-	// overflow lands on the page instead of here.
-	min-height: 0;
-	overflow-y: auto;
 	padding-bottom: var(--gd-space-4);
 }
 
@@ -37,14 +32,6 @@
 	}
 }
 
-.kicker {
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.5px;
-	text-transform: uppercase;
-	color: var(--gd-color-text-tertiary);
-}
-
 .meta {
 	color: var(--gd-color-text-tertiary);
 	font-size: 13px;
@@ -52,7 +39,7 @@
 
 .question {
 	margin: 0 !important;
-	font-size: 32px !important;
+	font-size: 24px !important;
 	font-weight: 600;
 	line-height: 1.2;
 	letter-spacing: -0.5px;
@@ -69,8 +56,8 @@
 }
 
 .foot {
-	// The way forward is the one control the step is about, so it sits on the
-	// edge of the screen and a long list scrolls under it.
+	// The way forward is the one control the question is about, so it closes the
+	// panel rather than floating over it.
 	flex: none;
 	display: flex;
 	align-items: center;

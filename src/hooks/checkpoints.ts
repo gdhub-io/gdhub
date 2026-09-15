@@ -50,6 +50,8 @@ export const useUpdateCheckpoint = (id?: string) => {
 			acceptedTerms?: boolean;
 			inputs?: CheckpointItemInput[];
 			outcomes?: CheckpointItemInput[];
+			/** The day the 28 days are meant to start; null while it is not chosen. */
+			startedAt?: Date | null;
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,
 		onSuccess: (checkpoint) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
