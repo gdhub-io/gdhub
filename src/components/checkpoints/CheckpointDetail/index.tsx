@@ -144,10 +144,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				onSelect={(key) => go({ step: key })}
 				next={{
 					disabled: !checkpoint.verdict || create.isPending,
-					reason: t(
-						"checkpoints.next.locked",
-						"Opens when the verdict is in. It takes you to the steps of a new checkpoint.",
-					),
+					reason: t("checkpoints.next.locked", "Available after the verdict."),
 					// It buys the next checkpoint rather than continuing this one, so
 					// it lands on the new draft's first step and nothing is started.
 					onClick: checkpoint.verdict
@@ -169,10 +166,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				footNote={
 					paid
 						? null
-						: t(
-								"checkpoints.path.undated",
-								"The dates appear once it is paid and the day it starts is set.",
-							)
+						: t("checkpoints.path.undated", "Dates appear after payment.")
 				}
 			/>
 

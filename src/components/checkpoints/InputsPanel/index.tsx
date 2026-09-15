@@ -104,7 +104,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 							owner: t("checkpoints.asks.owner.curator", "Curator"),
 							meta: t(
 								"checkpoints.waiting.body",
-								"They confirm they can run it and set the day it starts. You are told the moment they answer, and nothing is charged again.",
+								"Your curator confirms the start date. You’ll be notified when they respond.",
 							),
 						},
 					]}
@@ -139,7 +139,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 						)
 					: t(
 							"checkpoints.outcomes.draftNote",
-							"A draft until call 1, which opens sprint 1. The curator fixes it there, and from then it is what the verdict is written against.",
+							"Editable until the goal call, then locked for the cycle.",
 						)}
 			</Typography.Text>
 		</Flex>

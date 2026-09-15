@@ -38,7 +38,7 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 				title={t("checkpoints.verdict.review", "The curator is writing it")}
 				description={t(
 					"checkpoints.verdict.reviewNote",
-					"The 28 days are over and the last devlog is in. Nothing is asked of you until the verdict lands.",
+					"Waiting for the curator’s verdict.",
 				)}
 			/>
 		) : (

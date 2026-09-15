@@ -118,10 +118,7 @@ export function ScopeModal({
 								"checkpoints.scope.keepNote",
 								"The outcome list stands. Say why, and the decision is recorded beside it.",
 							)
-						: t(
-								"checkpoints.scope.subtitle",
-								"Cut what will not land, reword what changed shape, add what you are ahead on. Nothing is deleted — the day-1 wording stays beside every change.",
-							)}
+						: t("checkpoints.scope.subtitle", "Update the scope on day 14.")}
 				</Typography.Text>
 
 				{mode === "change" && (
@@ -220,7 +217,7 @@ export function ScopeModal({
 					<Typography.Text type="secondary" className={styles.hint}>
 						{t(
 							"checkpoints.scope.note",
-							"Kept beside the original, never over it.",
+							"The original scope remains in the checkpoint history.",
 						)}
 					</Typography.Text>
 				</Flex>

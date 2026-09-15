@@ -128,12 +128,9 @@ export function StartStepPage({ step }: StartStepPageProps) {
 				isNow
 					? t(
 							"checkpoints.start.h1",
-							"Carried over from your last result card — correct it rather than retype it.",
+							"Review what carried over from the last checkpoint.",
 						)
-					: t(
-							"checkpoints.start.h2",
-							"One line per thing that has to exist by the end. Each gets its proof attached as it lands.",
-						)
+					: t("checkpoints.start.h2", "List what must exist by day 28.")
 			}
 			onBack={isNow ? undefined : () => goTo("now")}
 			onCancel={cancel}
@@ -249,7 +246,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 					<Typography.Text type="secondary">
 						{t(
 							"checkpoints.start.draftNote",
-							"The curator goes through this list with you on day 1 and cuts it to what 28 days actually hold. It is fixed after that, not at checkout.",
+							"You can revise this with the curator before the cycle starts.",
 						)}
 					</Typography.Text>
 				</Flex>

@@ -531,21 +531,21 @@
 			"titleCheckpoint": "What this checkpoint asks of you"
 		},
 		"cancel": {
-			"body": "Everything written on the three steps goes with it, and nothing on this page can bring it back.",
+			"body": "All three steps will be deleted permanently.",
 			"confirm": "Cancel the draft",
 			"keep": "Keep the draft",
-			"leaving": "Closing the tab or walking away does not cancel anything — the draft waits in the checkpoint list.",
+			"leaving": "Leaving this page keeps the draft.",
 			"title": "Cancel this draft?"
 		},
 		"continue": "Continue",
 		"curator": {
 			"ai": "AI curator",
-			"aiDescription": "Reads every devlog, answers in writing, writes the verdict on day 28.",
+			"aiDescription": "Written reviews and a day-28 verdict.",
 			"aiLimit": "The AI curator reads links, screenshots and what you write. It does not run your build and it holds no calls — judging how a game feels to play is what a person is paid for.",
 			"aiName": "AI curator, in writing",
 			"aiPrice": "{currency}{price} fixed",
 			"allLevels": "All levels",
-			"humanDescription": "Five 45-minute calls with your team, plus everything written.",
+			"humanDescription": "Five live calls, written reviews and a verdict.",
 			"humanName": "A person, on five calls",
 			"humanPrice": "from {currency}{price}",
 			"noneOpen": "Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
@@ -603,7 +603,7 @@
 			"whatItProves": "What it proves"
 		},
 		"forward": {
-			"locked": "It opens once everything above is answered.",
+			"locked": "Answer what is open and finish this sprint to open the next one.",
 			"openSprint": "Open sprint {n}",
 			"opensOn": "Sprint {n} opens on {date}.",
 			"ready": "Nothing is left in this sprint. Opening it moves you there.",
@@ -654,12 +654,12 @@
 		"name": "Checkpoint {n}",
 		"next": {
 			"cta": "Next checkpoint",
-			"locked": "Opens when the verdict is in. It takes you to the steps of a new checkpoint."
+			"locked": "Available after the verdict."
 		},
 		"number": "Checkpoint {number}",
 		"open": "Open checkpoint",
 		"outcomes": {
-			"draftNote": "A draft until call 1, which opens sprint 1. The curator fixes it there, and from then it is what the verdict is written against.",
+			"draftNote": "Editable until the goal call, then locked for the cycle.",
 			"title": "Outcomes"
 		},
 		"past": {
@@ -682,7 +682,7 @@
 			"label": "Path to checkpoint",
 			"prepare": "Prepare",
 			"sprint": "Sprint {n}",
-			"undated": "The dates appear once it is paid and the day it starts is set."
+			"undated": "Dates appear after payment."
 		},
 		"pay": {
 			"acceptedOn": "Accepted {date}",
@@ -753,8 +753,8 @@
 			"keep": "Leave the list as it is",
 			"keepNote": "The outcome list stands. Say why, and the decision is recorded beside it.",
 			"keepTitle": "Leave the list as it is",
-			"note": "Kept beside the original, never over it.",
-			"subtitle": "Cut what will not land, reword what changed shape, add what you are ahead on. Nothing is deleted — the day-1 wording stays beside every change.",
+			"note": "The original scope remains in the checkpoint history.",
+			"subtitle": "Update the scope on day 14.",
 			"why": "Why"
 		},
 		"signals": {
@@ -769,7 +769,7 @@
 				"waiting": "Waiting"
 			},
 			"marked": "Marked {date}",
-			"markedCount": "{done} of {total} marked the sprint",
+			"markedCount": "{done} of {total} marked this sprint.",
 			"missing": "A mark is missing",
 			"sprintShort": "S{n}",
 			"team": "TEAM",
@@ -779,11 +779,11 @@
 		"start.": "Start a checkpoint",
 		"start.check.note": "Checked by the AI curator · advice, not a gate",
 		"start.disabled": "One checkpoint at a time. This one ends {date}.",
-		"start.draftNote": "The curator goes through this list with you on day 1 and cuts it to what 28 days actually hold. It is fixed after that, not at checkout.",
+		"start.draftNote": "You can revise this with the curator before the cycle starts.",
 		"start.failed": "The checkpoint could not be started",
-		"start.h1": "Carried over from your last result card — correct it rather than retype it.",
-		"start.h2": "One line per thing that has to exist by the end. Each gets its proof attached as it lands.",
-		"start.h3": "Both walk the same five moments. A person says them on a call; the AI curator writes them.",
+		"start.h1": "Review what carried over from the last checkpoint.",
+		"start.h2": "List what must exist by day 28.",
+		"start.h3": "AI or a person — one role, two ways to run the cycle.",
 		"start.h4": "Read it back before you pay. After this the goal card is fixed until day 14.",
 		"start.next1": "Next — what will exist",
 		"start.next2": "Next — who curates",
@@ -813,20 +813,20 @@
 			"locked": "Written on day 28",
 			"lockedNote": "{done} of {total} outcomes has evidence against it so far.",
 			"review": "The curator is writing it",
-			"reviewNote": "The 28 days are over and the last devlog is in. Nothing is asked of you until the verdict lands.",
+			"reviewNote": "Waiting for the curator’s verdict.",
 			"stageClosed": "Stage closed",
 			"title": "The verdict"
 		},
 		"waiting": {
-			"body": "They confirm they can run it and set the day it starts. You are told the moment they answer, and nothing is charged again.",
+			"body": "Your curator confirms the start date. You’ll be notified when they respond.",
 			"curator": "The curator",
 			"title": "{name} has not taken these 28 days yet"
 		},
 		"when": {
-			"asap": "As soon as the curator takes it",
+			"asap": "As soon as the curator accepts it",
 			"asapAi": "As soon as it is paid",
-			"calendar": "Sprint 1 opens on {s1}, then {s2}, {s3} and {s4}. Devlogs fall on {d1}, {d2}, {d3} and {d4}, and the verdict is written by {verdict}.",
-			"curatorConfirms": "The curator confirms the day when they take the checkpoint. If they move it, every date above moves with it and you are told.",
+			"calendar": "Calls: {s1}, {s2}, {s3}, {s4} · Devlogs: {d1}, {d2}, {d3}, {d4} · Final review: {review} · Verdict by {verdict}.",
+			"curatorConfirms": "Project timezone: UTC+2. Your curator confirms the start date.",
 			"hint": "One day decides the whole calendar — the sprints, the devlogs and the verdict.",
 			"next": "To the payment",
 			"pick": "On a day I choose",
@@ -839,7 +839,7 @@
 			"teamTotal": "The team",
 			"teamTotalPart": "The team — {stated} of {members} stated",
 			"teamUnknown": "not stated",
-			"teamWeek": "Hours a week"
+			"teamWeek": "Hours / sprint"
 		}
 	},
 	"city": "City",

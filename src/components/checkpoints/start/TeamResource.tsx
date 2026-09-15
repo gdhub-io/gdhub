@@ -96,7 +96,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 					{
 						key: "week",
 						width: 220,
-						title: t("checkpoints.when.teamWeek", "Hours a week"),
+						title: t("checkpoints.when.teamWeek", "Hours / sprint"),
 						render: (_: unknown, row: TeamHoursRow) => {
 							const stated = hoursOf(row);
 							const [from, to] = stated ?? [0, 0];

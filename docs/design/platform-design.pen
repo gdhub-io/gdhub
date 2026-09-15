@@ -179238,8 +179238,8 @@
           "id": "v3xypZ",
           "name": "Dot",
           "fill": "$success",
-          "width": 7,
-          "height": 7
+          "width": 8,
+          "height": 8
         },
         {
           "type": "text",
@@ -179248,7 +179248,7 @@
           "fill": "$text-primary",
           "content": "Stage closed",
           "fontFamily": "$font",
-          "fontSize": 12,
+          "fontSize": 13,
           "fontWeight": "500"
         }
       ]
@@ -179260,7 +179260,7 @@
       "y": 50055,
       "name": "Curator badge",
       "reusable": true,
-      "fill": "#00000000",
+      "fill": "#FFFFFF",
       "cornerRadius": 999,
       "stroke": "$card-border",
       "strokeWidth": 1,
@@ -179829,7 +179829,7 @@
                       "id": "wfqaP",
                       "name": "Sub",
                       "fill": "$text-secondary",
-                      "content": "28 days on one project with a stated goal and a verdict at the end.",
+                      "content": "28-day project cycles.",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -179892,9 +179892,20 @@
               "width": "fill_container",
               "fill": "$surface",
               "cornerRadius": 16,
-              "stroke": "$card-border",
+              "stroke": "#C5C4C0",
               "strokeWidth": 1,
               "strokeAlignment": "inner",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#0F0F0E0D",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 24,
+                "spread": -8
+              },
               "layout": "vertical",
               "children": [
                 {
@@ -179902,6 +179913,7 @@
                   "id": "BQhvl",
                   "name": "Head",
                   "width": "fill_container",
+                  "fill": "#FAFAF9",
                   "stroke": "$border",
                   "strokeWidth": {
                     "bottom": 1
@@ -180232,7 +180244,7 @@
                                       "id": "Aogvq",
                                       "name": "L",
                                       "fill": "$text-tertiary",
-                                      "content": "Pulses this week",
+                                      "content": "Pulses this sprint",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -180430,7 +180442,7 @@
                       "id": "k886rR",
                       "name": "N",
                       "fill": "$text-tertiary",
-                      "content": "The day-14 scope note is waiting for you · the week-3 devlog is due on 20 Sep",
+                      "content": "Scope update pending · Sprint 3 devlog due 20 Sep",
                       "fontFamily": "$font",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -181472,29 +181484,15 @@
                       "name": "Text",
                       "width": 520,
                       "layout": "vertical",
-                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "be4f7",
                           "name": "H",
-                          "fill": "$text-primary",
+                          "fill": "#76756F",
                           "content": "Your first checkpoint starts here",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "600"
-                        },
-                        {
-                          "type": "text",
-                          "id": "Z5wtN",
-                          "name": "S",
-                          "fill": "$text-secondary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "28 days, one goal, a curator, and a verdict that opens the next stage.",
                           "lineHeight": 1.5,
-                          "textAlign": "center",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -182064,29 +182062,15 @@
                       "name": "Text",
                       "width": 520,
                       "layout": "vertical",
-                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "S9pjhE",
                           "name": "H",
-                          "fill": "$text-primary",
+                          "fill": "#76756F",
                           "content": "Checkpoints could not be loaded",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "600"
-                        },
-                        {
-                          "type": "text",
-                          "id": "GyWTJ",
-                          "name": "S",
-                          "fill": "$text-secondary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "The 28 days keep running — only this page failed.",
                           "lineHeight": 1.5,
-                          "textAlign": "center",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -182118,16 +182102,6 @@
                           "fontWeight": "500"
                         }
                       ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "Y0Cva",
-                      "name": "N",
-                      "fill": "$text-tertiary",
-                      "content": "Reference: CHECKPOINT_LIST_FAILED · 14 Sep 2026, 14:12 GMT+2",
-                      "fontFamily": "$font",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -184368,7 +184342,7 @@
                       "id": "Pl5Cb",
                       "name": "Sub",
                       "fill": "$text-secondary",
-                      "content": "What the project has to show, in the order the workflow went through. Was Documents.",
+                      "content": "Project builds, videos, images and documents.",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -184630,6 +184604,9 @@
               "width": "fill_container",
               "fill": "$surface",
               "cornerRadius": 12,
+              "stroke": "#DCDBD8",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
               "layout": "vertical",
               "children": [
                 {
@@ -185963,7 +185940,7 @@
                       "fill": "$error-on-tint",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "This link asks for a login, so nothing on the other side was read. Make it public, or paste a link that needs no account.",
+                      "content": "This link requires a login. Make it public or use another link.",
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "normal"
@@ -186981,7 +186958,7 @@
                       "id": "hmtCX",
                       "name": "Sub",
                       "fill": "$text-secondary",
-                      "content": "What the project has to show, in the order the workflow went through.",
+                      "content": "Project builds, videos, images and documents.",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -187035,10 +187012,7 @@
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 16,
-                  "padding": [
-                    64,
-                    48
-                  ],
+                  "padding": 48,
                   "alignItems": "center",
                   "children": [
                     {
@@ -187070,29 +187044,15 @@
                       "name": "T",
                       "width": 560,
                       "layout": "vertical",
-                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "FtQ1E",
                           "name": "H",
-                          "fill": "$text-primary",
-                          "content": "Nothing to show yet",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "600"
-                        },
-                        {
-                          "type": "text",
-                          "id": "fpx5t",
-                          "name": "S",
-                          "fill": "$text-secondary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "A checkpoint leaves one on day 26. You do not have to wait for a checkpoint.",
+                          "fill": "#76756F",
+                          "content": "Your first artifact will appear here.",
                           "lineHeight": 1.5,
-                          "textAlign": "center",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -187461,22 +187421,9 @@
                           "type": "text",
                           "id": "LFPJP",
                           "name": "H",
-                          "fill": "$text-primary",
+                          "fill": "#76756F",
                           "content": "Artifacts could not be loaded",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "600"
-                        },
-                        {
-                          "type": "text",
-                          "id": "jtysC",
-                          "name": "S",
-                          "fill": "$text-secondary",
-                          "textGrowth": "fixed-width",
-                          "width": 520,
-                          "content": "Nothing was deleted.",
                           "lineHeight": 1.5,
-                          "textAlign": "center",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -188501,7 +188448,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "A video is the only kind the platform can read without running anything.",
+                  "content": "Videos can be reviewed without running a build.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -188763,8 +188710,11 @@
                   "name": "Input",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "$border",
+                  "fill": "#FAFAF9",
                   "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "gap": 8,
                   "padding": [
                     0,
@@ -188950,8 +188900,11 @@
                   "name": "Input",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "$border",
+                  "fill": "#FAFAF9",
                   "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "gap": 8,
                   "padding": [
                     0,
@@ -189020,8 +188973,11 @@
                   "name": "Box",
                   "width": "fill_container",
                   "height": 88,
-                  "fill": "$border",
+                  "fill": "#FAFAF9",
                   "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "padding": 12,
                   "children": [
                     {
@@ -189031,7 +188987,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "What you are showing and what to look at. The curator reads this next to the video.",
+                      "content": "Add context for the curator.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 14,
@@ -189094,13 +189050,16 @@
             16,
             24
           ],
-          "justifyContent": "space_between",
+          "justifyContent": "end",
           "alignItems": "center",
           "children": [
             {
               "type": "text",
               "id": "W4a9MW",
+              "x": 24,
+              "y": 28.5,
               "name": "N",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "Nothing here is public until the project page is.",
               "fontFamily": "$font",
@@ -189449,7 +189408,7 @@
                       "id": "VZxQD",
                       "name": "Sub",
                       "fill": "$text-secondary",
-                      "content": "The checkpoints you run. One line each: how far in it is, when you next speak, and whether the team is still there.",
+                      "content": "Checkpoints assigned to you.",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -189668,9 +189627,9 @@
                   "id": "F7WRD",
                   "name": "Checkpoint — Hollow Tide",
                   "width": "fill_container",
-                  "fill": "$surface",
+                  "fill": "#FEF2F0",
                   "cornerRadius": 12,
-                  "stroke": "$card-border",
+                  "stroke": "#F15541",
                   "strokeWidth": 1,
                   "strokeAlignment": "inner",
                   "layout": "vertical",
@@ -189959,7 +189918,7 @@
                               "id": "UmpCj",
                               "name": "L",
                               "fill": "$text-secondary",
-                              "content": "2 quiet in week 4",
+                              "content": "2 quiet in sprint 4",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "normal"
@@ -189975,7 +189934,7 @@
                   "id": "NyrW7",
                   "name": "Checkpoint — Quiet Orbit",
                   "width": "fill_container",
-                  "fill": "#00000000",
+                  "fill": "#FFFFFF",
                   "cornerRadius": 12,
                   "stroke": "$card-border",
                   "strokeWidth": 1,
@@ -190256,7 +190215,7 @@
                   "id": "bcpl0",
                   "name": "Checkpoint — Tin Whistle Town",
                   "width": "fill_container",
-                  "fill": "#00000000",
+                  "fill": "#FFFFFF",
                   "cornerRadius": 12,
                   "stroke": "$card-border",
                   "strokeWidth": 1,
@@ -190829,10 +190788,7 @@
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 16,
-                  "padding": [
-                    64,
-                    48
-                  ],
+                  "padding": 48,
                   "alignItems": "center",
                   "children": [
                     {
@@ -190864,29 +190820,15 @@
                       "name": "T",
                       "width": 560,
                       "layout": "vertical",
-                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "U63qMf",
                           "name": "H",
-                          "fill": "$text-primary",
-                          "content": "No checkpoints yet",
-                          "fontFamily": "$font",
-                          "fontSize": 20,
-                          "fontWeight": "600"
-                        },
-                        {
-                          "type": "text",
-                          "id": "Otl7s",
-                          "name": "S",
-                          "fill": "$text-secondary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Authors pick a curator when they buy a checkpoint. Yours will land here.",
+                          "fill": "#76756F",
+                          "content": "Your first checkpoint will appear here.",
                           "lineHeight": 1.5,
-                          "textAlign": "center",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -190960,7 +190902,10 @@
                     {
                       "type": "text",
                       "id": "gvZVc",
+                      "x": 367,
+                      "y": 247,
                       "name": "N",
+                      "enabled": false,
                       "fill": "$text-tertiary",
                       "content": "An administrator can also assign you to a checkpoint, with no payment taken.",
                       "fontFamily": "$font",
@@ -191167,24 +191112,11 @@
                               "type": "text",
                               "id": "zNBua",
                               "name": "H",
-                              "fill": "$text-primary",
-                              "content": "Your checkpoints could not be loaded",
-                              "fontFamily": "$font",
-                              "fontSize": 16,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "O8HdS",
-                              "name": "S",
-                              "fill": "$text-secondary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "The 28 days keep running and the calls keep their dates. Nothing depends on this page being up.",
+                              "fill": "#76756F",
+                              "content": "Checkpoints could not be loaded",
                               "lineHeight": 1.5,
-                              "textAlign": "center",
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             },
                             {
@@ -191804,7 +191736,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Gets view rights and the right to write the result card, for this checkpoint only.",
+                  "content": "Can view this checkpoint and write its verdict.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -191857,7 +191789,7 @@
                       "fill": "$warning-on-tint",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "This is how a checkpoint is given away. Paddle is not called and the author is not charged.",
+                      "content": "No payment is taken.",
                       "lineHeight": 1.5,
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -191891,8 +191823,11 @@
                   "name": "In",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "$border",
+                  "fill": "#FAFAF9",
                   "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "gap": 8,
                   "padding": [
                     0,
@@ -191921,7 +191856,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Goes into the audit log entry beside your name and the checkpoint id. Required.",
+                  "content": "Required for the audit log.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -191946,13 +191881,16 @@
             16,
             24
           ],
-          "justifyContent": "space_between",
+          "justifyContent": "end",
           "alignItems": "center",
           "children": [
             {
               "type": "text",
               "id": "um0jv",
+              "x": 24,
+              "y": 28.5,
               "name": "N",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "The author and the new curator are both notified.",
               "fontFamily": "$font",
@@ -192112,7 +192050,7 @@
                       "fill": "$text-secondary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Deleting a step would pull the stage out from under an active checkpoint.",
+                      "content": "This step is used by an active checkpoint.",
                       "lineHeight": 1.5,
                       "fontFamily": "$font",
                       "fontSize": 14,
@@ -192292,7 +192230,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Wait for the verdict, or close the checkpoint from its own admin actions if it is stuck.",
+                  "content": "Wait for the verdict or open the checkpoint to resolve it.",
                   "lineHeight": 1.65,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -192305,8 +192243,11 @@
               "id": "WtFC8",
               "name": "Seeded",
               "width": "fill_container",
-              "fill": "$warning-tint",
+              "fill": "#FAFAF9",
               "cornerRadius": 10,
+              "stroke": "#DCDBD8",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
               "gap": 12,
               "padding": 14,
               "children": [
@@ -192318,7 +192259,7 @@
                   "height": 16,
                   "icon": "alert-triangle",
                   "library": "lucide",
-                  "fill": "$warning-on-tint"
+                  "fill": "#76756F"
                 },
                 {
                   "type": "frame",
@@ -192345,7 +192286,7 @@
                       "fill": "$warning-on-tint",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Removing “Close the stage with a checkpoint verdict” from a template ungates every project on it.",
+                      "content": "Removing this task unlocks the stage for every project using the template.",
                       "lineHeight": 1.5,
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -192372,13 +192313,16 @@
             16,
             24
           ],
-          "justifyContent": "space_between",
+          "justifyContent": "end",
           "alignItems": "center",
           "children": [
             {
               "type": "text",
               "id": "JhGME",
+              "x": 24,
+              "y": 28.5,
               "name": "N",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "Nothing was changed.",
               "fontFamily": "$font",
@@ -192480,13 +192424,42 @@
           "strokeAlignment": "inner",
           "gap": 12,
           "padding": [
-            16,
-            16,
-            0,
+            20,
             24
           ],
-          "justifyContent": "end",
+          "justifyContent": "space_between",
+          "alignItems": "center",
           "children": [
+            {
+              "type": "frame",
+              "id": "qJNXj",
+              "name": "Title",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bJnO2",
+                  "name": "Heading",
+                  "fill": "#1A1917",
+                  "content": "Write the devlog",
+                  "fontFamily": "Onest",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "AdZLJ",
+                  "name": "Context",
+                  "fill": "#76756F",
+                  "content": "Sprint 2 · Day 13 of 28",
+                  "fontFamily": "Onest",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
             {
               "type": "icon",
               "id": "WgeJA",
@@ -192573,7 +192546,7 @@
                       "fill": "$text-primary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "State one has art and it reads. The tide switch keeps the timing we blocked out in week one, so nothing had to be re-timed.",
+                      "content": "State one has art and it reads. The tide switch keeps the timing from sprint 1.",
                       "lineHeight": 1.55,
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -192833,7 +192806,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Today only — day 14 of 28. Cut what will not land, reword what changed shape, add what you are ahead on.",
+                  "content": "Update the scope on day 14.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -192862,6 +192835,97 @@
           "gap": 20,
           "padding": 24,
           "children": [
+            {
+              "type": "frame",
+              "id": "fh189",
+              "name": "Scope legend",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HuT0s",
+                  "name": "Unchanged",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "a4Z1NJ",
+                      "name": "Dot",
+                      "fill": "#C5C4C0",
+                      "width": 8,
+                      "height": 8
+                    },
+                    {
+                      "type": "text",
+                      "id": "P1sbq",
+                      "name": "Label",
+                      "fill": "#76756F",
+                      "content": "Unchanged",
+                      "fontFamily": "Onest",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "UmWUV",
+                  "name": "Comes off",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "K29QdR",
+                      "name": "Dot",
+                      "fill": "#B4690E",
+                      "width": 8,
+                      "height": 8
+                    },
+                    {
+                      "type": "text",
+                      "id": "DBkJQ",
+                      "name": "Label",
+                      "fill": "#76756F",
+                      "content": "Comes off",
+                      "fontFamily": "Onest",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xLKxr",
+                  "name": "New",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "a5wacz",
+                      "name": "Dot",
+                      "fill": "#12854B",
+                      "width": 8,
+                      "height": 8
+                    },
+                    {
+                      "type": "text",
+                      "id": "yKn99",
+                      "name": "Label",
+                      "fill": "#76756F",
+                      "content": "New",
+                      "fontFamily": "Onest",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
             {
               "type": "frame",
               "id": "uKMHP",
@@ -193586,17 +193650,20 @@
             16,
             24
           ],
-          "justifyContent": "space_between",
+          "justifyContent": "end",
           "alignItems": "center",
           "children": [
             {
               "type": "text",
               "id": "aPW0v",
+              "x": 24,
+              "y": 28.5,
               "name": "N",
+              "enabled": false,
               "fill": "$text-tertiary",
               "textGrowth": "fixed-width",
-              "width": "fill_container",
-              "content": "Kept beside the original, never over it.",
+              "width": "fill_container(299)",
+              "content": "The original scope remains in the checkpoint history.",
               "fontFamily": "$font",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -193726,7 +193793,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Optional. Internal — the curator never sees your comment.",
+                  "content": "Optional and private.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -193831,6 +193898,16 @@
                       "fill": "$text-disabled"
                     }
                   ]
+                },
+                {
+                  "type": "text",
+                  "id": "i5L8Y",
+                  "name": "Rating value",
+                  "fill": "#76756F",
+                  "content": "4 — Useful",
+                  "fontFamily": "Onest",
+                  "fontSize": 13,
+                  "fontWeight": "500"
                 }
               ]
             },
@@ -193879,8 +193956,11 @@
                   "name": "Area",
                   "width": "fill_container",
                   "height": 88,
-                  "fill": "$border",
+                  "fill": "#FAFAF9",
                   "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "padding": 12,
                   "children": [
                     {
@@ -193917,15 +193997,18 @@
             16,
             24
           ],
-          "justifyContent": "space_between",
+          "justifyContent": "end",
           "alignItems": "center",
           "children": [
             {
               "type": "text",
               "id": "PU1Bs",
+              "x": 24,
+              "y": 28.5,
               "name": "N",
+              "enabled": false,
               "fill": "$text-tertiary",
-              "content": "Nothing waits on this.",
+              "content": "Private feedback · optional",
               "fontFamily": "$font",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -194239,11 +194322,11 @@
             {
               "type": "frame",
               "id": "YjDna",
-              "x": 222,
+              "x": 107,
               "y": 208,
               "name": "Modal — Write the verdict",
               "clip": true,
-              "width": 820,
+              "width": 1050,
               "fill": "$surface",
               "cornerRadius": 16,
               "stroke": "$card-border",
@@ -194394,11 +194477,8 @@
                   "type": "frame",
                   "id": "oMLvT",
                   "name": "Body",
-                  "clip": true,
                   "width": "fill_container",
-                  "height": 1100,
-                  "layout": "vertical",
-                  "gap": 20,
+                  "gap": 24,
                   "padding": 24,
                   "children": [
                     {
@@ -194597,8 +194677,8 @@
                                       "type": "frame",
                                       "id": "u68xdG",
                                       "name": "Cut",
-                                      "gap": 8,
-                                      "alignItems": "center",
+                                      "layout": "vertical",
+                                      "gap": 3,
                                       "children": [
                                         {
                                           "type": "text",
@@ -194693,7 +194773,7 @@
                                   "id": "I0BOMr",
                                   "name": "Aside",
                                   "fill": "$text-tertiary",
-                                  "content": "4 of 4 · you answered weeks 1 and 3",
+                                  "content": "4 of 4 · you answered sprints 1 and 3",
                                   "fontFamily": "$font",
                                   "fontSize": 12,
                                   "fontWeight": "normal"
@@ -194735,7 +194815,7 @@
                                       "id": "mlzbe",
                                       "name": "L",
                                       "fill": "$text-primary",
-                                      "content": "W1",
+                                      "content": "S1",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "500"
@@ -194831,7 +194911,7 @@
                                       "id": "UgtEf",
                                       "name": "L",
                                       "fill": "$text-primary",
-                                      "content": "W2",
+                                      "content": "S2",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "500"
@@ -194905,7 +194985,7 @@
                                       "id": "xrIS6",
                                       "name": "L",
                                       "fill": "$text-primary",
-                                      "content": "W3",
+                                      "content": "S3",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "500"
@@ -195001,7 +195081,7 @@
                                       "id": "CAD0x",
                                       "name": "L",
                                       "fill": "$text-primary",
-                                      "content": "W4",
+                                      "content": "S4",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "500"
@@ -195235,7 +195315,7 @@
                                           "id": "UjZwn",
                                           "name": "L2",
                                           "fill": "$text-tertiary",
-                                          "content": "6 screenshots and an itch link also attached",
+                                          "content": "6 screenshots + itch.io link",
                                           "fontFamily": "$font",
                                           "fontSize": 13,
                                           "fontWeight": "normal"
@@ -196183,7 +196263,7 @@
                       "type": "frame",
                       "id": "Qy6cX",
                       "name": "Right",
-                      "width": "fill_container",
+                      "width": 360,
                       "layout": "vertical",
                       "gap": 16,
                       "children": [
@@ -196366,7 +196446,7 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "The outcome list is done, the stage needs more. A new checkpoint on the same stage, with a new goal.",
+                                          "content": "Outcomes are complete, but the stage stays open. Continue with a new checkpoint.",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,
@@ -196445,7 +196525,7 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "The outcome list is not done. A new checkpoint, with the inputs recomputed from what actually exists.",
+                                          "content": "Outcomes are incomplete. Continue with a new checkpoint.",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,
@@ -196561,7 +196641,7 @@
                                       "fill": "$text-secondary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Stage closed needs an artifact or a claimed outcome. This checkpoint has both.",
+                                      "content": "Stage closed is available because evidence is attached.",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 12,
@@ -198919,7 +198999,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "The four week columns are fixed at 72 and never shrink — they are the reading. The name column is the only elastic one: at page width eight long names fit, and in the curator's 820 drawer, drawn here, the name truncates and the role under it truncates first. Eight members is the maximum the standard allows, so the block never scrolls.",
+                  "content": "The four sprint columns are fixed at 72 and never shrink — they are the reading. The name column is the only elastic one: at page width eight long names fit, and in the curator's 820 drawer, drawn here, the name truncates and the role under it truncates first. Eight members is the maximum the standard allows, so the block never scrolls.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -199776,7 +199856,7 @@
                   "id": "lDTPG",
                   "name": "H",
                   "fill": "$text-secondary",
-                  "content": "Carried over from your last result card — correct it rather than retype it.",
+                  "content": "Review what carried over from the last checkpoint.",
                   "fontFamily": "$font",
                   "fontSize": 15,
                   "fontWeight": "normal"
@@ -200115,6 +200195,35 @@
             },
             {
               "type": "frame",
+              "id": "h97aw9",
+              "name": "Saved",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "lV0WL",
+                  "name": "Icon",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "#12854B"
+                },
+                {
+                  "type": "text",
+                  "id": "trQk7",
+                  "name": "Label",
+                  "fill": "#9C9B97",
+                  "content": "Saved as a draft",
+                  "fontFamily": "Onest",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "XrgDX",
               "name": "Btn Next — what will exist",
               "height": 40,
@@ -200151,10 +200260,384 @@
       "name": "Checkpoint — Start · 2 What will exist (/checkpoints/new/outcomes)",
       "clip": true,
       "width": 1265,
-      "height": 900,
+      "height": 999,
       "fill": "$page-bg",
       "layout": "vertical",
       "children": [
+        {
+          "type": "frame",
+          "id": "TJ4R1",
+          "name": "Space Header Bar",
+          "width": "fill_container",
+          "fill": "$surface",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "jeiBZ",
+              "name": "Top Bar",
+              "width": "fill_container",
+              "height": 64,
+              "padding": [
+                0,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "P294Qq",
+                  "name": "Breadcrumb",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "DztZY",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 96,
+                      "height": 26
+                    },
+                    {
+                      "type": "text",
+                      "id": "IEpez",
+                      "name": "Crumb",
+                      "fill": "$text-secondary",
+                      "content": "My projects",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yZcij",
+                      "name": "Sep",
+                      "fill": "$text-disabled",
+                      "content": "/",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "z3D1oD",
+                      "name": "Switcher",
+                      "cornerRadius": 10,
+                      "gap": 8,
+                      "padding": [
+                        4,
+                        8,
+                        4,
+                        4
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "g082KD",
+                          "name": "L",
+                          "fill": "$text-primary",
+                          "content": "Hollow Tide",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "SvHPp",
+                          "name": "Caret",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "chevrons-up-down",
+                          "library": "lucide",
+                          "fill": "$text-tertiary"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "X6v22N",
+                  "name": "Header Actions",
+                  "gap": 22,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "PdHmg",
+                      "name": "Documentation",
+                      "fill": "$text-primary",
+                      "content": "Documentation",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "LsmbI",
+                      "name": "Chat",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "message-circle",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "LEJjB",
+                      "name": "Bell",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "bell",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "MCmtU",
+                      "name": "Avatar",
+                      "fill": "$dir-management",
+                      "width": 34,
+                      "height": 34
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "WKKyQ",
+              "name": "Menu Tabs",
+              "width": "fill_container",
+              "gap": 4,
+              "padding": [
+                0,
+                32
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Uid1M",
+                  "name": "Tab Workflow",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "bvGWi",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Workflow",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "h5gthk",
+                  "name": "Tab Devlog",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "akplX",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Devlog",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "g5muf",
+                  "name": "Tab Open positions",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "z56JX",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Open positions",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "j6QQX",
+                  "name": "Tab Team",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Yrqsy",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Team",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A8aiWX",
+                  "name": "Tab Checkpoints",
+                  "fill": "$border",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wjVus",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Checkpoints",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "j5Wmo",
+                  "name": "Tab Artifacts",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "v7AtBQ",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Artifacts",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "w9E4p",
+                  "name": "Tab Settings",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "eMSyf",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Settings",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "As7yJ",
+                  "name": "Tab Public page",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zJ2xZ",
+                      "name": "Tab Label",
+                      "fill": "$brand-primary",
+                      "content": "Public page",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "RrAb1",
+                      "name": "Ext",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "external-link",
+                      "library": "lucide",
+                      "fill": "$brand-primary"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
         {
           "type": "frame",
           "id": "YBvvW",
@@ -200355,7 +200838,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "One line per thing that has to exist by the end. Each gets its proof attached as it lands.",
+                  "content": "List what must exist by day 28.",
                   "fontFamily": "$font",
                   "fontSize": 15,
                   "fontWeight": "normal"
@@ -200864,7 +201347,7 @@
                       "fill": "$text-secondary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "This is a draft. On day 1 your curator goes through it with you and cuts it to what 28 days actually hold — the card is fixed after that call, not now.",
+                      "content": "You can revise this with the curator before the cycle starts.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -201025,10 +201508,384 @@
       "name": "Checkpoint — Start · 3 Who curates (/checkpoints/new/curator)",
       "clip": true,
       "width": 1265,
-      "height": 1080,
+      "height": 1179,
       "fill": "$page-bg",
       "layout": "vertical",
       "children": [
+        {
+          "type": "frame",
+          "id": "NJySh",
+          "name": "Space Header Bar",
+          "width": "fill_container",
+          "fill": "$surface",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "IMmTB",
+              "name": "Top Bar",
+              "width": "fill_container",
+              "height": 64,
+              "padding": [
+                0,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "uJeue",
+                  "name": "Breadcrumb",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "Y2ZV8w",
+                      "type": "ref",
+                      "ref": "MDNum",
+                      "name": "Logo",
+                      "width": 96,
+                      "height": 26
+                    },
+                    {
+                      "type": "text",
+                      "id": "RVlpn",
+                      "name": "Crumb",
+                      "fill": "$text-secondary",
+                      "content": "My projects",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "UBbR1",
+                      "name": "Sep",
+                      "fill": "$text-disabled",
+                      "content": "/",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "nEeXO",
+                      "name": "Switcher",
+                      "cornerRadius": 10,
+                      "gap": 8,
+                      "padding": [
+                        4,
+                        8,
+                        4,
+                        4
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cXiJs",
+                          "name": "L",
+                          "fill": "$text-primary",
+                          "content": "Hollow Tide",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "a65Rjd",
+                          "name": "Caret",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "chevrons-up-down",
+                          "library": "lucide",
+                          "fill": "$text-tertiary"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fn6Sj",
+                  "name": "Header Actions",
+                  "gap": 22,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wkvAh",
+                      "name": "Documentation",
+                      "fill": "$text-primary",
+                      "content": "Documentation",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "W2lrA",
+                      "name": "Chat",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "message-circle",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "Q0fGg",
+                      "name": "Bell",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "bell",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "WseI6",
+                      "name": "Avatar",
+                      "fill": "$dir-management",
+                      "width": 34,
+                      "height": 34
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VB4Mp",
+              "name": "Menu Tabs",
+              "width": "fill_container",
+              "gap": 4,
+              "padding": [
+                0,
+                32
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bNySB",
+                  "name": "Tab Workflow",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Huc2J",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Workflow",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Y4mQmg",
+                  "name": "Tab Devlog",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JOnMR",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Devlog",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TaUsq",
+                  "name": "Tab Open positions",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zIt0z",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Open positions",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "q61HkP",
+                  "name": "Tab Team",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tgsZo",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Team",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A33j5",
+                  "name": "Tab Checkpoints",
+                  "fill": "$border",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "f2rbc",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Checkpoints",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iXg80",
+                  "name": "Tab Artifacts",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JDnol",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Artifacts",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cN4Vl",
+                  "name": "Tab Settings",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "cXNTJ",
+                      "name": "Tab Label",
+                      "fill": "$text-primary",
+                      "content": "Settings",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "MvvXY",
+                  "name": "Tab Public page",
+                  "fill": "#00000000",
+                  "cornerRadius": 8,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "u85fA",
+                      "name": "Tab Label",
+                      "fill": "$brand-primary",
+                      "content": "Public page",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "a69HTe",
+                      "name": "Ext",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "external-link",
+                      "library": "lucide",
+                      "fill": "$brand-primary"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
         {
           "type": "frame",
           "id": "IV5cP",
@@ -201221,6 +202078,16 @@
                   "fontSize": 32,
                   "fontWeight": "600",
                   "letterSpacing": -0.5
+                },
+                {
+                  "type": "text",
+                  "id": "auqc9",
+                  "name": "Helper",
+                  "fill": "#76756F",
+                  "content": "AI or a person — one role, two ways to run the cycle.",
+                  "fontFamily": "Onest",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -201308,7 +202175,7 @@
                                   "fill": "$text-secondary",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Reads every devlog, answers in writing, writes the verdict on day 28.",
+                                  "content": "Written reviews and a day-28 verdict.",
                                   "lineHeight": 1.45,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -201420,7 +202287,7 @@
                                   "fill": "$text-secondary",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Five 45-minute calls with your team, plus everything written.",
+                                  "content": "Five live calls, written reviews and a verdict.",
                                   "lineHeight": 1.45,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -202738,6 +203605,119 @@
               "fontWeight": "normal"
             }
           ]
+        },
+        {
+          "type": "frame",
+          "id": "NEnb1",
+          "name": "Generation failure",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "EUKwE",
+              "name": "Caption",
+              "fill": "#76756F",
+              "content": "IF GENERATION FAILS — RETRY OR WRITE IT MANUALLY",
+              "fontFamily": "Onest",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.6
+            },
+            {
+              "type": "frame",
+              "id": "RssoW",
+              "name": "Error card",
+              "width": "fill_container",
+              "fill": "#FEF2F0",
+              "cornerRadius": 10,
+              "stroke": "#F15541",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dv0kt",
+                  "name": "Message",
+                  "fill": "#1A1917",
+                  "content": "The goal sentence could not be generated. Your inputs and outcomes are safe.",
+                  "fontFamily": "Onest",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "WWVCn",
+                  "name": "Actions",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "i5DEo",
+                      "name": "Button — Try again",
+                      "height": 36,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 9,
+                      "stroke": "#DCDBD8",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "padding": [
+                        0,
+                        14
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "S6YCb",
+                          "name": "Label",
+                          "fill": "#1A1917",
+                          "content": "Try again",
+                          "fontFamily": "Onest",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Y4JPmS",
+                      "name": "Button — Write it manually",
+                      "height": 36,
+                      "fill": "#1A1917",
+                      "cornerRadius": 9,
+                      "stroke": "#1A1917",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "padding": [
+                        0,
+                        14
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "EYl7o",
+                          "name": "Label",
+                          "fill": "#FFFFFF",
+                          "content": "Write it manually",
+                          "fontFamily": "Onest",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -202817,7 +203797,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Everything written on the three steps goes with it, and nothing on this page can bring it back.",
+                  "content": "All three steps will be deleted permanently.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
                   "fontSize": 14,
@@ -202865,7 +203845,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Closing the tab or walking away does not cancel anything — the draft waits in the checkpoint list.",
+                  "content": "Leaving this page keeps the draft.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -202978,6 +203958,7 @@
       "y": 50197,
       "name": "Evidence slot",
       "reusable": true,
+      "width": 210,
       "height": 36,
       "cornerRadius": 8,
       "stroke": "$card-border",
@@ -203006,7 +203987,7 @@
           "name": "L",
           "fill": "$text-tertiary",
           "textGrowth": "fixed-width",
-          "width": 140,
+          "width": "fill_container",
           "content": "No evidence yet",
           "fontFamily": "$font",
           "fontSize": 13,
@@ -211977,7 +212958,7 @@
                                       "fill": "$text-secondary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "The curator's note came in today. Nothing on the outcome list changes until you choose.",
+                                      "content": "Curator note received. Choose whether to update the scope.",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 13,
@@ -212161,7 +213142,7 @@
                                       "fill": "$text-secondary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Lena Novak has not marked this sprint. Four of five have.",
+                                      "content": "4 of 5 marked this sprint.",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 13,
@@ -212236,7 +213217,7 @@
                               "fill": "$text-tertiary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Sprint 3 runs 15–21 Sep. It opens once the scope check is answered and this sprint is marked.",
+                              "content": "Answer the scope check and finish this sprint to open Sprint 3.",
                               "lineHeight": 1.45,
                               "fontFamily": "$font",
                               "fontSize": 12,
@@ -212698,6 +213679,7 @@
                   "x": 0,
                   "y": 440,
                   "name": "Tooltip — the locked button",
+                  "enabled": false,
                   "width": 264,
                   "fill": "$ink",
                   "cornerRadius": 8,
@@ -212724,7 +213706,7 @@
                       "fill": "$text-invert",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Opens when the verdict is in. It takes you to the four steps of a new checkpoint — and it is bought like any other.",
+                      "content": "Available after the verdict.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -215536,7 +216518,7 @@
                           "fill": "$text-primary",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "“Art on state one moves the outcome about three tide states, and the run this week claims the build outcome. The save bug is the thing to name on day 14 if it is still open.”",
+                          "content": "“Art moves the tide-states outcome forward. This sprint’s run supports the build outcome. Revisit the save bug on day 14.”",
                           "lineHeight": 1.55,
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -215571,7 +216553,10 @@
             {
               "type": "text",
               "id": "YopiR",
+              "x": 0,
+              "y": 0,
               "name": "Caption",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "STATUS TAB · SPRINT 2 ANSWERED — THE FORWARD BUTTON UNLOCKS",
               "fontFamily": "$font",
@@ -215858,7 +216843,7 @@
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "The devlog is in, the review is in, and five of five marked the sprint.",
+                              "content": "Devlog, review and all five pulse checks are complete.",
                               "lineHeight": 1.45,
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -215974,7 +216959,10 @@
             {
               "type": "text",
               "id": "DriKy",
+              "x": 0,
+              "y": 0,
               "name": "Caption",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "THE SAME STEP ONCE IT IS PAID — THE SETUP BECOMES THE INPUTS SUMMARY",
               "fontFamily": "$font",
@@ -216242,7 +217230,7 @@
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "They confirm they can run these 28 days and fix the start date — day 1 is call 1, so the day is theirs to set. You are told the moment they answer, and nothing is charged again.",
+                              "content": "Your curator confirms the start date. You’ll be notified when they respond.",
                               "lineHeight": 1.45,
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -216328,7 +217316,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Sprint 1 opens on the day the mentor sets, and it opens with call 1 — the goal. You are taken straight there.",
+                      "content": "Sprint 1 opens with the goal call.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 12,
@@ -216381,7 +217369,10 @@
             {
               "type": "text",
               "id": "YNE1q",
+              "x": 0,
+              "y": 331,
               "name": "Caption 2",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "THE SAME PANEL WITH THE AI CURATOR — NO CALL, SO THE DAY IS YOURS",
               "fontFamily": "$font",
@@ -216579,7 +217570,7 @@
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "The AI curator holds no calls, so nothing waits on anyone else. The 28 days run from the day you choose, and the goal card is fixed the moment they do.",
+                              "content": "Choose the start date. The goal card is then locked.",
                               "lineHeight": 1.45,
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -216665,7 +217656,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Sprint 1 runs 1–7 Sep. The AI curator holds no calls, so it opens on the devlog clock: the first one is due on day 6.",
+                      "content": "Sprint 1 runs 1–7 Sep. First devlog is due on day 6.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 12,
@@ -217310,7 +218301,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "A draft until call 1, which opens sprint 1. The mentor fixes it there, and from then it is what the verdict is written against.",
+                      "content": "Editable until the goal call, then locked for the cycle.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 12,
@@ -217774,7 +218765,10 @@
             {
               "type": "text",
               "id": "vQlhl",
+              "x": 0,
+              "y": 0,
               "name": "Caption",
+              "enabled": false,
               "fill": "$text-tertiary",
               "content": "INPUTS ONCE THE RUN IS UNDER WAY — WHAT WAS BOUGHT, AND WHAT IT IS PROVEN BY",
               "fontFamily": "$font",
@@ -218685,7 +219679,7 @@
                       "fill": "$text-secondary",
                       "textGrowth": "fixed-width",
                       "width": 420,
-                      "content": "The 28 days are over and the last devlog is in. Nothing is asked of you until the verdict lands.",
+                      "content": "Waiting for the curator’s verdict.",
                       "lineHeight": 1.5,
                       "textAlign": "center",
                       "fontFamily": "$font",
@@ -219590,7 +220584,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "It opens the four steps of a new checkpoint — inputs, outcomes, curator, payment — with these outcomes already filled in as its inputs: the proven lines with their artifacts, the rest as bare lines you can edit or drop.",
+                  "content": "Starts a new checkpoint with proven outcomes carried forward.",
                   "lineHeight": 1.55,
                   "fontFamily": "$font",
                   "fontSize": 14,
@@ -219701,7 +220695,7 @@
                   "fill": "$text-secondary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Pick something the team already uploaded, or add a new one — then say which outcome it proves.",
+                  "content": "Choose an artifact, then select the outcomes it proves.",
                   "lineHeight": 1.45,
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -219799,8 +220793,11 @@
               "name": "Search",
               "width": "fill_container",
               "height": 40,
-              "fill": "$border",
+              "fill": "#FAFAF9",
               "cornerRadius": 10,
+              "stroke": "#DCDBD8",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
               "gap": 8,
               "padding": [
                 0,
@@ -219837,8 +220834,8 @@
               "clip": true,
               "width": "fill_container",
               "fill": "$surface",
-              "cornerRadius": 12,
-              "stroke": "$card-border",
+              "cornerRadius": 10,
+              "stroke": "#DCDBD8",
               "strokeWidth": 1,
               "strokeAlignment": "inner",
               "layout": "vertical",
@@ -220447,8 +221444,11 @@
                   "name": "Area",
                   "width": "fill_container",
                   "height": 64,
-                  "fill": "$border",
+                  "fill": "#FAFAF9",
                   "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "padding": 12,
                   "children": [
                     {
@@ -220482,16 +221482,19 @@
             16,
             24
           ],
-          "justifyContent": "space_between",
+          "justifyContent": "end",
           "alignItems": "center",
           "children": [
             {
               "type": "text",
               "id": "Msnfs",
+              "x": 24,
+              "y": 28.5,
               "name": "N",
+              "enabled": false,
               "fill": "$text-tertiary",
               "textGrowth": "fixed-width",
-              "width": "fill_container",
+              "width": "fill_container(451)",
               "content": "One artifact can prove more than one outcome.",
               "fontFamily": "$font",
               "fontSize": 12,
@@ -221447,7 +222450,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "The dates appear once it is paid and the day it starts is set.",
+                      "content": "Dates appear after payment.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
                       "fontSize": 12,
@@ -222416,7 +223419,7 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Not the game itself. The team builds it; the curator holds the 28 days to the goal and cannot reach it for you.",
+                                          "content": "Your team does the work; the curator keeps the cycle on track.",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,
@@ -222448,7 +223451,7 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "No promise that the goal is met. A checkpoint where the work did not happen ends in “goal missed”.",
+                                          "content": "Results are not guaranteed. Incomplete work ends with a Goal missed verdict.",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,
@@ -222498,7 +223501,7 @@
                                       "fill": "$text-secondary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "I have read the checkpoint standard and accept it — including what is not guaranteed.",
+                                      "content": "I accept the checkpoint standard.",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 12,
@@ -222660,7 +223663,7 @@
       "id": "I4Zv4u",
       "x": 1385,
       "y": 54333,
-      "name": "Checkpoint — Prepare · the Planning step",
+      "name": "Checkpoint — Prepare · the When step",
       "clip": true,
       "width": 973,
       "fill": "$page-bg",
@@ -222676,9 +223679,12 @@
         {
           "type": "text",
           "id": "q2bUAK",
+          "x": 46,
+          "y": 28,
           "name": "Caption",
+          "enabled": false,
           "fill": "$text-tertiary",
-          "content": "PREPARE · THE PLANNING STEP — THE DAY IT STARTS, AND WHAT THE TEAM HAS",
+          "content": "PREPARE · THE WHEN STEP — THE DAY IT STARTS, AND WHAT THE TEAM HAS",
           "fontFamily": "$font",
           "fontSize": 11,
           "fontWeight": "600",
@@ -222789,7 +223795,7 @@
                 {
                   "type": "frame",
                   "id": "F6da4",
-                  "name": "Seg Curator",
+                  "name": "Seg When",
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 6,
@@ -222808,7 +223814,7 @@
                       "id": "wLDz1",
                       "name": "L",
                       "fill": "$text-primary",
-                      "content": "Planning",
+                      "content": "When",
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "600"
@@ -222911,7 +223917,7 @@
                   "id": "kWkon",
                   "name": "L",
                   "fill": "$text-secondary",
-                  "content": "As soon as the mentor takes it",
+                  "content": "As soon as the curator accepts it",
                   "fontFamily": "$font",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -223047,7 +224053,7 @@
               "fill": "$text-secondary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Sprint 1 opens with call 1 on 1 Sep, then 8, 15 and 22 Sep. Devlogs fall on 6, 13, 20 and 27 Sep, the shared gathering on 28 Sep, and the verdict is written by 30 Sep.",
+              "content": "Calls: 1, 8, 15, 22 Sep · Devlogs: 6, 13, 20, 27 Sep · Final review: 28 Sep · Verdict by 30 Sep.",
               "lineHeight": 1.5,
               "fontFamily": "$font",
               "fontSize": 13,
@@ -223131,7 +224137,7 @@
                           "id": "qpT2v",
                           "name": "L",
                           "fill": "$text-tertiary",
-                          "content": "HOURS A WEEK",
+                          "content": "HOURS / SPRINT",
                           "fontFamily": "$font",
                           "fontSize": 11,
                           "fontWeight": "600",
@@ -223744,10 +224750,13 @@
             {
               "type": "text",
               "id": "vMCjP",
+              "x": 0,
+              "y": 350,
               "name": "Note",
+              "enabled": false,
               "fill": "$text-tertiary",
               "textGrowth": "fixed-width",
-              "width": "fill_container",
+              "width": "fill_container(881)",
               "content": "Hours come from each member's own profile. Only the author's line is theirs to correct here.",
               "lineHeight": 1.45,
               "fontFamily": "$font",
@@ -223763,7 +224772,7 @@
           "fill": "$text-tertiary",
           "textGrowth": "fixed-width",
           "width": "fill_container",
-          "content": "Iris Halden confirms the day when they take the checkpoint. If they move it, every date above moves with it and you are told.",
+          "content": "Project timezone: UTC+2. Your curator confirms the start date.",
           "lineHeight": 1.5,
           "fontFamily": "$font",
           "fontSize": 13,

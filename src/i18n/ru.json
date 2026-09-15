@@ -837,6 +837,8 @@
 			"teamRun": "За 28 дней",
 			"teamTitle": "Что у команды на эти 28 дней",
 			"teamTotal": "Команда",
+			"teamTotalPart": "Команда — {stated} из {members} заявила",
+			"teamUnknown": "не указано",
 			"teamWeek": "Часов в неделю"
 		}
 	},

@@ -141,7 +141,7 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 			glyph: "done",
 			title: t(
 				"checkpoints.signals.markedCount",
-				"{done} of {total} marked the sprint",
+				"{done} of {total} marked this sprint.",
 				{
 					done: facts.marks.confirmed,
 					total: facts.marks.asked,
@@ -167,7 +167,7 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 		note: open.length
 			? t(
 					"checkpoints.forward.locked",
-					"It opens once everything above is answered.",
+					"Answer what is open and finish this sprint to open the next one.",
 				)
 			: next && !nextStarted
 				? t("checkpoints.forward.opensOn", "Sprint {n} opens on {date}.", {

@@ -69,13 +69,13 @@ export function StartLayout({
 					<span>
 						{t(
 							"checkpoints.cancel.body",
-							"Everything written on the three steps goes with it, and nothing on this page can bring it back.",
+							"All three steps will be deleted permanently.",
 						)}
 					</span>
 					<Typography.Text type="secondary">
 						{t(
 							"checkpoints.cancel.leaving",
-							"Closing the tab or walking away does not cancel anything — the draft waits in the checkpoint list.",
+							"Leaving this page keeps the draft.",
 						)}
 					</Typography.Text>
 				</Flex>

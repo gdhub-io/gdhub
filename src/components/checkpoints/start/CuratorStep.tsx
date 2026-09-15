@@ -143,7 +143,7 @@ export function CuratorStep() {
 			question={t("checkpoints.start.q3", "Who runs the 28 days?")}
 			hint={t(
 				"checkpoints.start.h3",
-				"Both walk the same five moments. A person says them on a call; the AI curator writes them.",
+				"AI or a person — one role, two ways to run the cycle.",
 			)}
 			onBack={() => goTo("goal")}
 			onCancel={cancel}
@@ -164,7 +164,7 @@ export function CuratorStep() {
 					t("checkpoints.curator.aiName", "AI curator, in writing"),
 					t(
 						"checkpoints.curator.aiDescription",
-						"Reads every devlog, answers in writing, writes the verdict on day 28.",
+						"Written reviews and a day-28 verdict.",
 					),
 					t("checkpoints.curator.aiPrice", "{currency}{price} fixed", {
 						currency: CHECKPOINT_PRICE_CURRENCY,
@@ -177,7 +177,7 @@ export function CuratorStep() {
 					t("checkpoints.curator.humanName", "A person, on five calls"),
 					t(
 						"checkpoints.curator.humanDescription",
-						"Five 45-minute calls with your team, plus everything written.",
+						"Five live calls, written reviews and a verdict.",
 					),
 					t("checkpoints.curator.humanPrice", "from {currency}{price}", {
 						currency: CHECKPOINT_PRICE_CURRENCY,

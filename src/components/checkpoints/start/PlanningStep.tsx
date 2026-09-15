@@ -104,7 +104,10 @@ export function PlanningStep() {
 							value: "soon",
 							label: isAI
 								? t("checkpoints.when.asapAi", "As soon as it is paid")
-								: t("checkpoints.when.asap", "As soon as the curator takes it"),
+								: t(
+										"checkpoints.when.asap",
+										"As soon as the curator accepts it",
+									),
 						},
 						{
 							value: "day",
@@ -139,7 +142,7 @@ export function PlanningStep() {
 					<Typography.Text type="secondary" className={styles.calendarBody}>
 						{t(
 							"checkpoints.when.calendar",
-							"Sprint 1 opens on {s1}, then {s2}, {s3} and {s4}. Devlogs fall on {d1}, {d2}, {d3} and {d4}, and the verdict is written by {verdict}.",
+							"Calls: {s1}, {s2}, {s3}, {s4} · Devlogs: {d1}, {d2}, {d3}, {d4} · Final review: {review} · Verdict by {verdict}.",
 							{
 								s1: dayjs.utc(sprintRange(start, 1).from).format("D MMM"),
 								s2: dayjs.utc(sprintRange(start, 2).from).format("D MMM"),
@@ -149,6 +152,7 @@ export function PlanningStep() {
 								d2: devlogs[1].format("D MMM"),
 								d3: devlogs[2].format("D MMM"),
 								d4: devlogs[3].format("D MMM"),
+								review: dayjs.utc(dueDateFrom(start)).format("D MMM"),
 								verdict: dayjs
 									.utc(dueDateFrom(start))
 									.add(2, "day")
@@ -164,7 +168,7 @@ export function PlanningStep() {
 					<Typography.Text type="secondary" className={styles.note}>
 						{t(
 							"checkpoints.when.curatorConfirms",
-							"The curator confirms the day when they take the checkpoint. If they move it, every date above moves with it and you are told.",
+							"Project timezone: UTC+2. Your curator confirms the start date.",
 						)}
 					</Typography.Text>
 				)}
