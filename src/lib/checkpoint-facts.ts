@@ -1,5 +1,6 @@
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { devlogDayOf } from "@/lib/checkpoint-sprints";
+import { CHECKPOINT_SCOPE_DAY } from "@/schemas/checkpoint";
 import type {
 	CheckpointDevlogDto,
 	CheckpointDto,
@@ -60,9 +61,9 @@ export const sprintFactsOf = (
 	);
 	const provedIds = new Set(proved.flatMap((item) => item.itemIds));
 
-	const scopeDay = 14;
 	const carriesScopeNote =
-		scopeDay >= sprint.firstDay && scopeDay <= sprint.lastDay;
+		CHECKPOINT_SCOPE_DAY >= sprint.firstDay &&
+		CHECKPOINT_SCOPE_DAY <= sprint.lastDay;
 
 	return {
 		sprint,

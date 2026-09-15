@@ -14,6 +14,7 @@ import { devlogDayOf } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { AskPanel, type AskRow } from "../AskPanel";
 import { GoalStrip } from "../GoalStrip";
+import { ScopeModal } from "../ScopeModal";
 import styles from "./style.module.scss";
 
 export type StatusProps = {
@@ -29,6 +30,7 @@ export function Status({ checkpoint, facts }: StatusProps) {
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 	const [writing, setWriting] = useState(false);
+	const [scope, setScope] = useState<"change" | "keep" | null>(null);
 	const day = checkpoint.day ?? 0;
 	const devlogDue = devlogDayOf(facts.sprint.number);
 	const missing = facts.marks.asked - facts.marks.confirmed;
@@ -69,6 +71,16 @@ export function Status({ checkpoint, facts }: StatusProps) {
 			due: t("checkpoints.asks.dueToday", "due today"),
 			dueUrgent: true,
 			meta: facts.scopeNote,
+			actions: (
+				<>
+					<Button type="primary" onClick={() => setScope("change")}>
+						{t("checkpoints.scope.cta", "Change the outcomes")}
+					</Button>
+					<Button onClick={() => setScope("keep")}>
+						{t("checkpoints.scope.keep", "Leave the list as it is")}
+					</Button>
+				</>
+			),
 		});
 	}
 
@@ -126,6 +138,13 @@ export function Status({ checkpoint, facts }: StatusProps) {
 	return (
 		<Flex vertical gap={16}>
 			<GoalStrip goal={checkpoint.goal} />
+
+			<ScopeModal
+				open={!!scope}
+				mode={scope ?? "change"}
+				checkpoint={checkpoint}
+				onClose={() => setScope(null)}
+			/>
 
 			<DevLogPostModal
 				projectId={checkpoint.projectId}

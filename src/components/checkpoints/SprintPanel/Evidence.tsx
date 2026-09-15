@@ -2,11 +2,13 @@
 
 import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
+import { useState } from "react";
+import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
-import { ArtifactCheckStatus } from "@/config/prisma-enums";
+import { ArtifactCheckStatus, CheckpointStatus } from "@/config/prisma-enums";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
@@ -23,6 +25,12 @@ export type EvidenceProps = {
  */
 export function Evidence({ checkpoint, facts }: EvidenceProps) {
 	const { t } = useTranslate();
+	const [attaching, setAttaching] = useState(false);
+
+	// Once the verdict is written the card is the record, not a form.
+	const canAttach =
+		checkpoint.status === CheckpointStatus.Active ||
+		checkpoint.status === CheckpointStatus.Draft;
 
 	const check = (status: string | null) => {
 		if (status === ArtifactCheckStatus.Readable)
@@ -47,16 +55,37 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 		};
 	};
 
+	const attachButton = (
+		<Button
+			icon={<IconPaperclip size={16} stroke={1.6} />}
+			onClick={() => setAttaching(true)}
+		>
+			{t("checkpoints.evidence.attach", "Attach evidence")}
+		</Button>
+	);
+
+	const modal = (
+		<AttachEvidenceModal
+			open={attaching}
+			checkpoint={checkpoint}
+			onClose={() => setAttaching(false)}
+		/>
+	);
+
 	if (!facts.proved.length)
 		return (
-			<EmptyState
-				icon={IconPaperclip}
-				title={t("checkpoints.evidence.empty", "No evidence yet")}
-				description={t(
-					"checkpoints.evidence.emptyNote",
-					"Attach what proves an outcome as it lands, rather than on the last day.",
-				)}
-			/>
+			<>
+				<EmptyState
+					icon={IconPaperclip}
+					title={t("checkpoints.evidence.empty", "No evidence yet")}
+					description={t(
+						"checkpoints.evidence.emptyNote",
+						"Attach what proves an outcome as it lands, rather than on the last day.",
+					)}
+					action={canAttach ? attachButton : undefined}
+				/>
+				{canAttach && modal}
+			</>
 		);
 
 	return (
@@ -120,6 +149,13 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 					);
 				})}
 			</div>
+
+			{canAttach && (
+				<div className={styles.cardFoot}>
+					{attachButton}
+					{modal}
+				</div>
+			)}
 		</div>
 	);
 }

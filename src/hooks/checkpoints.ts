@@ -3,7 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import type { CheckpointCuratorKind } from "@/config/prisma-enums";
-import type { CheckpointItemInput } from "@/schemas/checkpoint";
+import type {
+	CheckpointEvidenceBody,
+	CheckpointItemInput,
+	CheckpointScopeBody,
+} from "@/schemas/checkpoint";
 import type {
 	CheckpointDto,
 	CheckpointListResponse,
@@ -53,6 +57,39 @@ export const useUpdateCheckpoint = (id?: string) => {
 			/** The day the 28 days are meant to start; null while it is not chosen. */
 			startedAt?: Date | null;
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,
+		onSuccess: (checkpoint) => {
+			queryClient.setQueryData(["checkpoint", id], checkpoint);
+			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
+		},
+	});
+};
+
+/**
+ * The day-14 answer: cut, reword, add — or none of the three and a reason why
+ * the list stands. It lands once, so the whole change is one request.
+ */
+export const useChangeScope = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: CheckpointScopeBody) =>
+			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/scope`, body))
+				.data,
+		onSuccess: (checkpoint) => {
+			queryClient.setQueryData(["checkpoint", id], checkpoint);
+			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
+		},
+	});
+};
+
+/** Bind an artifact to the outcomes it proves, or let one go with `artifactId: null`. */
+export const useAttachEvidence = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: CheckpointEvidenceBody) =>
+			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/evidence`, body))
+				.data,
 		onSuccess: (checkpoint) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
 			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });

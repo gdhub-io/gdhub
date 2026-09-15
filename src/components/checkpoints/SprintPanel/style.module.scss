@@ -32,6 +32,12 @@
 	font-feature-settings: "tnum";
 }
 
+// The footer band is a hairline away from the rows, never a fill.
+.cardFoot {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
 .rows {
 	display: flex;
 	flex-direction: column;

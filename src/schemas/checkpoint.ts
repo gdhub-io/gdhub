@@ -56,6 +56,51 @@ export const UpdateCheckpointSchema = z
 	})
 	.partial();
 
+/** The one line saying why the scope changed, kept on the checkpoint. */
+export const CHECKPOINT_REVISION_NOTE_MAX = 500;
+
+/** The day the curator's note asks the author to settle the outcome list. */
+export const CHECKPOINT_SCOPE_DAY = 14;
+
+/**
+ * One line of the day-14 change: cut it, reword it, or both. Nothing here
+ * deletes a line — a dropped outcome stays on the card, struck through.
+ */
+export const CheckpointScopeChangeSchema = z
+	.object({
+		itemId: z.string().min(1),
+		cut: z.boolean().optional(),
+		text: itemText.optional(),
+	})
+	.refine((change) => change.cut !== undefined || change.text !== undefined, {
+		message: "A change must cut the line or reword it",
+	});
+
+export const CheckpointScopeSchema = z.object({
+	note: z.string().trim().min(1).max(CHECKPOINT_REVISION_NOTE_MAX),
+	/** Empty when the author keeps the list and only states the decision. */
+	changes: z
+		.array(CheckpointScopeChangeSchema)
+		.max(CHECKPOINT_MAX_ITEMS_PER_KIND)
+		.default([]),
+	added: z
+		.array(z.object({ text: itemText }))
+		.max(CHECKPOINT_MAX_ITEMS_PER_KIND)
+		.default([]),
+});
+
+/**
+ * Binding an artifact to the outcomes it proves, or letting one go.
+ *
+ * A list rather than a field: one artifact commonly proves more than one line,
+ * and the link lives on the line. Sent on its own rather than as part of the
+ * goal card, because replacing the card would take the day-14 record with it.
+ */
+export const CheckpointEvidenceSchema = z.object({
+	artifactId: z.string().min(1).nullable(),
+	itemIds: z.array(z.string().min(1)).min(1).max(CHECKPOINT_MAX_ITEMS_PER_KIND),
+});
+
 export const CheckpointListQuerySchema = z.object({
 	projectId: z.string(),
 	page: z.coerce.number().int().min(1).optional(),
@@ -66,3 +111,6 @@ export type CheckpointItemInput = z.infer<typeof CheckpointItemInputSchema>;
 export type CreateCheckpointBody = z.infer<typeof CreateCheckpointSchema>;
 export type UpdateCheckpointBody = z.infer<typeof UpdateCheckpointSchema>;
 export type CheckpointListQuery = z.infer<typeof CheckpointListQuerySchema>;
+export type CheckpointScopeChange = z.infer<typeof CheckpointScopeChangeSchema>;
+export type CheckpointScopeBody = z.infer<typeof CheckpointScopeSchema>;
+export type CheckpointEvidenceBody = z.infer<typeof CheckpointEvidenceSchema>;

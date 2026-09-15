@@ -12,6 +12,7 @@ import { CheckpointCard } from "./CheckpointCard";
 import { CheckpointPath } from "./CheckpointPath";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
 import { CuratorBadge } from "./CuratorBadge";
+import { Signals } from "./SprintPanel/Signals";
 import { VerdictChip } from "./VerdictChip";
 
 const startedAt = "2026-09-01T09:00:00.000Z";
@@ -259,6 +260,87 @@ export const AsksNothingOpen: StoryObj = {
 					meta: "The devlog is in, the review is in, and five of five marked the sprint.",
 				},
 			]}
+		/>
+	),
+};
+
+const sprints = [1, 2, 3, 4].map((number) => ({
+	number,
+	from: `2026-09-${String((number - 1) * 7 + 1).padStart(2, "0")}T00:00:00.000Z`,
+	to: `2026-09-${String(number * 7).padStart(2, "0")}T00:00:00.000Z`,
+	firstDay: (number - 1) * 7 + 1,
+	lastDay: number * 7,
+	devlogDay: number * 7 - 1,
+	state: (number < 2 ? "done" : number === 2 ? "current" : "ahead") as
+		| "done"
+		| "current"
+		| "ahead",
+}));
+
+/** Every face the matrix has, including the blank one that is not a miss. */
+export const TeamSignals: StoryObj = {
+	render: () => (
+		<Signals
+			sprint={sprints[1]}
+			checkpoint={{
+				...base,
+				sprints,
+				pulses: [
+					{
+						memberId: "m1",
+						userId: "u1",
+						name: "Marta Ilves",
+						image: null,
+						role: "Author",
+						joinedAt: null,
+						leftAt: null,
+						cells: ["confirmed", "confirmed", "notAsked", "notAsked"].map(
+							(state, index) => ({
+								sprint: index + 1,
+								state: state as "confirmed" | "notAsked",
+								confirmedAt:
+									state === "confirmed" ? "2026-09-10T00:00:00.000Z" : null,
+								source: "app",
+							}),
+						),
+					},
+					{
+						memberId: "m2",
+						userId: "u2",
+						name: "Lena Novak",
+						image: null,
+						role: "Game designer",
+						joinedAt: null,
+						leftAt: null,
+						cells: ["missed", "waiting", "notAsked", "notAsked"].map(
+							(state, index) => ({
+								sprint: index + 1,
+								state: state as "missed" | "waiting" | "notAsked",
+								confirmedAt: null,
+								source: null,
+							}),
+						),
+					},
+					{
+						memberId: "m3",
+						userId: "u3",
+						name: "Owen Marsh",
+						image: null,
+						role: "QA",
+						joinedAt: "2026-09-08T00:00:00.000Z",
+						leftAt: null,
+						cells: ["notOnTeam", "confirmed", "notAsked", "notAsked"].map(
+							(state, index) => ({
+								sprint: index + 1,
+								state: state as "notOnTeam" | "confirmed" | "notAsked",
+								confirmedAt:
+									state === "confirmed" ? "2026-09-12T00:00:00.000Z" : null,
+								source: "devlog",
+							}),
+						),
+					},
+				],
+			}}
 		/>
 	),
 };
