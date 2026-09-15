@@ -141,12 +141,18 @@ AI** button: an author who does not know what to promise gets three to six lines
 curator, in the form, to edit or throw away. Nothing is suggested on the input question — day
 one's list is what the project already has, and nobody needs help remembering that.
 
-**The curator's read happens on the way out, not on a button of its own.** Pressing Next on the
-goal question saves the card and asks the AI curator whether it fits 28 days. If it does,
-nothing interrupts. If it does not, a modal carries the remark with two answers — *go back and
-edit* or *go on anyway* — and the same remark is repeated on the payment question under what is
-being bought, because that is the last moment it can still change anything. It never blocks: a
-curator that cannot be reached must not hold up a purchase.
+**The curator's read happens when the price is on screen.** Not on a button of its own, and not
+on the way out of the goal question: by the time the payment question opens, everything the
+read depends on has been answered — what exists, what is promised, who curates, and how many
+hours the team put in on the Planning question — so that is where it is asked and where the
+remark belongs. It appears under *What must exist by day 28*, beside the `Edit` link that goes
+back and changes it.
+
+**It is asked again only when the question changed.** The answer is cached against the goal, the
+outcome and input lines, and the team's hours; edit any of them and the next visit costs a new
+call, come back without touching anything and it does not. It never blocks either: a curator
+that cannot be reached must not hold up a purchase, and the remark is advice — the author can
+read it and pay anyway.
 
 **The curator picker is a table without a head** (`ak7v2`): everyone who has turned
 `Speciality.isOpenForMentoring` on, one row each — avatar, name, level, speciality, a **Talent
