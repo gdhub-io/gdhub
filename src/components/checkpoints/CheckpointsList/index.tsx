@@ -31,15 +31,25 @@ export function CheckpointsList() {
 	const columns: ColumnsType<CheckpointDto> = useMemo(
 		() => [
 			{
+				// The number runs through the project, not through the stage, so it
+				// names the row on its own and the stage is context beside it.
 				title: t("checkpoints.past.column.checkpoint", "Checkpoint"),
 				key: "checkpoint",
+				width: 120,
+				render: (_, row) => (
+					<Typography.Text className={styles.number}>
+						{t("checkpoints.name", "Checkpoint {n}", { n: row.order })}
+					</Typography.Text>
+				),
+			},
+			{
+				title: t("checkpoints.past.column.stage", "Stage"),
+				key: "stage",
 				width: 220,
 				render: (_, row) => (
-					// The stage gives way; the number never does.
-					<Flex gap={4} className={styles.stageCell}>
-						<Typography.Text ellipsis>{row.stageName}</Typography.Text>
-						<Typography.Text type="secondary" className={styles.number}>
-							{`· ${row.order}`}
+					<Flex className={styles.stageCell}>
+						<Typography.Text type="secondary" ellipsis>
+							{row.stageName}
 						</Typography.Text>
 					</Flex>
 				),
@@ -146,7 +156,7 @@ export function CheckpointsList() {
 						rowKey="id"
 						columns={columns}
 						dataSource={data.closed.rows}
-						scroll={{ x: 900 }}
+						scroll={{ x: 1000 }}
 						pagination={{
 							current: page,
 							pageSize: PAGE_SIZE,

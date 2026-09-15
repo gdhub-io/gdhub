@@ -49,16 +49,15 @@ export function CheckpointCard({
 		<section className={styles.card}>
 			<header className={styles.head}>
 				<Flex gap={10} align="center" className={styles.identity}>
-					<Typography.Text className={styles.stage} ellipsis>
-						{checkpoint.stageName}
+					{/* The number names it, the stage is context: numbering runs
+					    through the project rather than restarting inside a stage. */}
+					<Typography.Text className={styles.stage}>
+						{t("checkpoints.number", "Checkpoint {number}", {
+							number: checkpoint.order,
+						})}
 					</Typography.Text>
-					<Typography.Text className={styles.number}>
-						{[
-							t("checkpoints.number", "Checkpoint {number}", {
-								number: checkpoint.order,
-							}),
-							dates,
-						]
+					<Typography.Text className={styles.number} ellipsis>
+						{[checkpoint.stageName, dates]
 							.filter(Boolean)
 							.map((part) => `· ${part}`)
 							.join(" ")}
