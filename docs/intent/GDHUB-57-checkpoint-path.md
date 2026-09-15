@@ -82,6 +82,9 @@ project for, plus two post-payment screens, for a thing that is one draft.
 - **The advisor and admin screens.** They keep working as they are; only the meta line's word
   order changes.
 - **The artifacts page** (GDHUB-39) and the artifact check (GDHUB-56).
+- **Taking the money** (GDHUB-38). The payment question reads back what is being bought and
+  takes the tick; the checkout behind it is that issue, and it will be **Stripe** — starting in
+  its sandbox — rather than the Paddle the vacancy listings use.
 - **Cron, pulse emails and devlog reminders** (GDHUB-35), beyond reading what they wrote.
 - **Redrawing start questions 1–3 in Pencil.** Their content is correct and is rehosted as it is.
 - **The scout space history** (GDHUB-44).
@@ -95,5 +98,5 @@ project for, plus two post-payment screens, for a thing that is one draft.
   question it was left at, and the old route redirects there.
 - **Where does the goal strip read from before the goal is agreed?** Assumed: the same
   `goal` field, shown as a draft with its lines still editable until `goalAgreedAt`.
-- **Does anything still need `/checkpoints/new`?** Assumed: only as a redirect, kept for one
-  release so links in e-mails already sent do not break.
+- **Does anything still need `/checkpoints/new`?** Answered: no. The routes are deleted
+  outright — the feature has never shipped, so there are no links in the wild to keep alive.

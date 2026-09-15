@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
-const checkpointUpdate = vi.fn();
+const checkpointUpdateMany = vi.fn();
 const itemUpdate = vi.fn();
 const itemCreateMany = vi.fn();
 const getCheckpoint = vi.fn();
@@ -26,7 +26,9 @@ const tx = {
 		update: (...args: unknown[]) => itemUpdate(...args),
 		createMany: (...args: unknown[]) => itemCreateMany(...args),
 	},
-	projectCheckpoint: { update: (...args: unknown[]) => checkpointUpdate(...args) },
+	projectCheckpoint: {
+		updateMany: (...args: unknown[]) => checkpointUpdateMany(...args),
+	},
 };
 
 vi.mock("@/services/prisma", () => ({
@@ -88,7 +90,7 @@ beforeEach(() => {
 	checkpointFindUnique.mockResolvedValue(checkpoint());
 	itemUpdate.mockResolvedValue({});
 	itemCreateMany.mockResolvedValue({ count: 1 });
-	checkpointUpdate.mockResolvedValue({});
+	checkpointUpdateMany.mockResolvedValue({ count: 1 });
 	getCheckpoint.mockResolvedValue({ id: "cp1", startedAt: startedAt() });
 });
 
@@ -104,9 +106,9 @@ describe("POST /api/checkpoint/[id]/scope", () => {
 			where: { id: "out1" },
 			data: { text: "two tide states", originalText: "outcome 1" },
 		});
-		expect(checkpointUpdate).toHaveBeenCalledWith(
+		expect(checkpointUpdateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: { id: "cp1" },
+				where: { id: "cp1", revisedAt: null },
 				data: expect.objectContaining({
 					revisedNote: "Two tide states, not three",
 				}),
@@ -180,7 +182,7 @@ describe("POST /api/checkpoint/[id]/scope", () => {
 			error: "itemNotOutcome",
 		});
 		expect(itemUpdate).not.toHaveBeenCalled();
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses an id from another checkpoint", async () => {
@@ -218,9 +220,21 @@ describe("POST /api/checkpoint/[id]/scope", () => {
 		expect(response.status).toBe(200);
 		expect(itemUpdate).not.toHaveBeenCalled();
 		expect(itemCreateMany).not.toHaveBeenCalled();
-		expect(checkpointUpdate).toHaveBeenCalledWith({
-			where: { id: "cp1" },
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "cp1", revisedAt: null },
 			data: { revisedAt: expect.any(Date), revisedNote: "The list stands" },
+		});
+	});
+
+	it("refuses a second submission that raced the first", async () => {
+		// Both read an unrevised checkpoint; only one claims the stamp.
+		checkpointUpdateMany.mockResolvedValue({ count: 0 });
+
+		const response = await post({ note: "Late by a moment", changes: [] });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "checkpointAlreadyRevised",
 		});
 	});
 

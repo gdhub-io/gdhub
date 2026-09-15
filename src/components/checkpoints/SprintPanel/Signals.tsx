@@ -93,7 +93,7 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 								})}
 							</span>
 							<span className={styles.colDates}>
-								{`${dayjs(item.from).format("D")}–${dayjs(item.to).format("D MMM")}`}
+								{`${dayjs.utc(item.from).format("D")}–${dayjs.utc(item.to).format("D MMM")}`}
 							</span>
 						</span>
 					))}

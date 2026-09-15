@@ -1,6 +1,6 @@
 "use client";
 
-import { IconTargetArrow } from "@tabler/icons-react";
+import { IconLock, IconTargetArrow } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Typography } from "antd";
@@ -20,13 +20,14 @@ import styles from "./style.module.scss";
 export type StatusProps = {
 	checkpoint: CheckpointDto;
 	facts: SprintFacts;
+	onGo: (step: string) => void;
 };
 
 /**
  * What the sprint still wants, what has already happened in it, and what it
  * proved — in that order, each fact in exactly one of the three.
  */
-export function Status({ checkpoint, facts }: StatusProps) {
+export function Status({ checkpoint, facts, onGo }: StatusProps) {
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 	const [writing, setWriting] = useState(false);
@@ -37,7 +38,9 @@ export function Status({ checkpoint, facts }: StatusProps) {
 
 	const open: AskRow[] = [];
 
-	if (!facts.devlog && facts.sprint.state !== "ahead") {
+	// Only the sprint under way can still be answered: a devlog written now lands
+	// in today's sprint, so asking for a past one is an ask that never closes.
+	if (!facts.devlog && facts.sprint.state === "current") {
 		open.push({
 			key: "devlog",
 			glyph: day >= devlogDue ? "open" : "todo",
@@ -100,6 +103,18 @@ export function Status({ checkpoint, facts }: StatusProps) {
 
 	const happened: AskRow[] = [];
 
+	if (!facts.devlog && facts.sprint.state === "done") {
+		happened.push({
+			key: "no-devlog",
+			glyph: "todo",
+			title: t("checkpoints.devlog.missing", "No devlog was written"),
+			meta: t(
+				"checkpoints.devlog.missingNote",
+				"Silence is part of the record; the verdict reads it as it is.",
+			),
+		});
+	}
+
 	if (facts.devlog) {
 		happened.push({
 			key: "devlog",
@@ -125,7 +140,7 @@ export function Status({ checkpoint, facts }: StatusProps) {
 			key: "marks",
 			glyph: "done",
 			title: t(
-				"checkpoints.signals.marked",
+				"checkpoints.signals.markedCount",
 				"{done} of {total} marked the sprint",
 				{
 					done: facts.marks.confirmed,
@@ -134,6 +149,36 @@ export function Status({ checkpoint, facts }: StatusProps) {
 			),
 		});
 	}
+
+	const next = (checkpoint.sprints ?? []).find(
+		(sprint) => sprint.number === facts.sprint.number + 1,
+	);
+	const nextStarted = !!next && next.state !== "ahead";
+	const forward = {
+		step: next ? `sprint-${next.number}` : "checkpoint",
+		label: next
+			? t("checkpoints.forward.openSprint", "Open sprint {n}", {
+					n: next.number,
+				})
+			: t("checkpoints.forward.toCheckpoint", "To the checkpoint"),
+		// Locked for two different reasons, and it says which: work still open
+		// here, or a sprint that has not begun yet.
+		disabled: open.length > 0 || (!!next && !nextStarted),
+		note: open.length
+			? t(
+					"checkpoints.forward.locked",
+					"It opens once everything above is answered.",
+				)
+			: next && !nextStarted
+				? t("checkpoints.forward.opensOn", "Sprint {n} opens on {date}.", {
+						n: next.number,
+						date: dayjs.utc(next.from).format("D MMM"),
+					})
+				: t(
+						"checkpoints.forward.ready",
+						"Nothing is left in this sprint. Opening it moves you there.",
+					),
+	};
 
 	return (
 		<Flex vertical gap={16}>
@@ -170,6 +215,19 @@ export function Status({ checkpoint, facts }: StatusProps) {
 						: t("checkpoints.asks.none", "nothing open")
 				}
 				countDone={!open.length}
+				footer={{
+					note: forward.note,
+					action: (
+						<Button
+							type={forward.disabled ? "default" : "primary"}
+							disabled={forward.disabled}
+							icon={forward.disabled ? <IconLock size={14} /> : undefined}
+							onClick={() => onGo(forward.step)}
+						>
+							{forward.label}
+						</Button>
+					),
+				}}
 				rows={
 					open.length
 						? open

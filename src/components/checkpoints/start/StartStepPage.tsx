@@ -11,7 +11,6 @@ import { useProjectArtifacts } from "@/hooks/project-artifacts";
 import { type GoalLine, GoalLines } from "./GoalLines";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
-import styles from "./StartStepPage.module.scss";
 import { useCheckpointDraft } from "./useDraft";
 
 export type StartStepPageProps = {

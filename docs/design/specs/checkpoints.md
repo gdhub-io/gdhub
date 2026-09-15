@@ -620,6 +620,11 @@ screen where the author decides.
 **Receipts are not designed here.** They exist at `/user/settings/payments`
 (`src/components/PaymentsList`). The payment question links to it in one line.
 
+**The checkout is Stripe**, in its sandbox first — not the Paddle that paid vacancy listings
+go through. Nothing on these screens depends on which it is: the question reads back what is
+being bought, takes the tick, and hands over. The provider shows up in the `Payment` row and
+in the webhook that flips the checkpoint to `Active`.
+
 **The one change that screen needs:** its Description column renders
 `payableType === "VACANCY" ? "Vacancy listing" : r.payableType`, so a checkpoint payment would
 read `CHECKPOINT`. Give it the same treatment — a label (`Checkpoint`) and the secondary line

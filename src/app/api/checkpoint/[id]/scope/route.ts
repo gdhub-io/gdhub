@@ -122,38 +122,54 @@ export const POST = pipe(
 	const firstNewOrder =
 		outcomes.reduce((max, item) => Math.max(max, item.order), 0) + 1;
 
-	await prisma.$transaction(async (tx) => {
-		for (const { item, change } of updates) {
-			await tx.checkpointItem.update({
-				where: { id: item.id },
-				data: {
-					...(change.cut !== undefined && { cut: change.cut }),
-					...(change.text !== undefined && {
-						text: change.text,
-						// Written once: a second rewording must not erase day 1.
-						...(item.originalText === null && { originalText: item.text }),
-					}),
-				},
+	try {
+		await prisma.$transaction(async (tx) => {
+			// The stamp goes first and only onto a checkpoint still unrevised: two
+			// submissions racing each other would otherwise both pass the read above
+			// and write their added lines twice.
+			const claimed = await tx.projectCheckpoint.updateMany({
+				where: { id, revisedAt: null },
+				data: { revisedAt: now, revisedNote: note },
 			});
-		}
 
-		if (added.length > 0) {
-			await tx.checkpointItem.createMany({
-				data: added.map((line, index) => ({
-					checkpointId: id,
-					kind: CheckpointItemKind.Outcome,
-					order: firstNewOrder + index,
-					text: line.text,
-					addedAt: now,
-				})),
-			});
-		}
+			if (claimed.count === 0) throw new Error("checkpointAlreadyRevised");
 
-		await tx.projectCheckpoint.update({
-			where: { id },
-			data: { revisedAt: now, revisedNote: note },
+			for (const { item, change } of updates) {
+				await tx.checkpointItem.update({
+					where: { id: item.id },
+					data: {
+						...(change.cut !== undefined && { cut: change.cut }),
+						...(change.text !== undefined && {
+							text: change.text,
+							// Written once: a second rewording must not erase day 1.
+							...(item.originalText === null && { originalText: item.text }),
+						}),
+					},
+				});
+			}
+
+			if (added.length > 0) {
+				await tx.checkpointItem.createMany({
+					data: added.map((line, index) => ({
+						checkpointId: id,
+						kind: CheckpointItemKind.Outcome,
+						order: firstNewOrder + index,
+						text: line.text,
+						addedAt: now,
+					})),
+				});
+			}
 		});
-	});
+	} catch (error) {
+		if (
+			error instanceof Error &&
+			error.message === "checkpointAlreadyRevised"
+		) {
+			return apiError.badRequest("checkpointAlreadyRevised");
+		}
+
+		throw error;
+	}
 
 	return json(withProgress(await getCheckpoint(id)));
 });

@@ -21,10 +21,15 @@ export type CheckpointDetailProps = {
 	checkpoint: CheckpointDto;
 };
 
-/** "1–7 Sep", and "28 Sep – 4 Oct" when the sprint crosses a month. */
+/**
+ * "1–7 Sep", and "28 Sep – 4 Oct" when the sprint crosses a month.
+ *
+ * Read in UTC: the boundaries are UTC midnights, and a browser west of it would
+ * otherwise print the day before — on the one surface where the dates are shown.
+ */
 const range = (from: string, to: string) => {
-	const start = dayjs(from);
-	const end = dayjs(to);
+	const start = dayjs.utc(from);
+	const end = dayjs.utc(to);
 
 	return start.month() === end.month()
 		? `${start.format("D")}–${end.format("D MMM")}`
@@ -56,11 +61,19 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const defaultStep =
 		checkpoint.status === CheckpointStatus.Draft
 			? "inputs"
-			: checkpoint.verdict
-				? "checkpoint"
-				: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number ?? 1}`;
+			: checkpoint.verdict ||
+					!sprints.some((sprint) => sprint.state === "current")
+				? // No current sprint means the 28 days are spent: the verdict, written
+					// or being written, is the only thing left to look at.
+					"checkpoint"
+				: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number}`;
 
-	const step = search?.get("step") ?? defaultStep;
+	const asked = search?.get("step");
+	const known =
+		asked === "inputs" ||
+		asked === "checkpoint" ||
+		(!!asked && /^sprint-[1-4]$/.test(asked));
+	const step = known && asked ? asked : defaultStep;
 	const tab = (search?.get("tab") as SprintTab) ?? "status";
 
 	const go = (next: { step?: string; tab?: string }) => {
@@ -114,7 +127,9 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		{
 			key: "checkpoint",
 			label: t("checkpoints.path.checkpoint", "Checkpoint"),
-			meta: checkpoint.dueAt ? dayjs(checkpoint.dueAt).format("D MMM") : null,
+			meta: checkpoint.dueAt
+				? dayjs.utc(checkpoint.dueAt).format("D MMM")
+				: null,
 			glyph: checkpoint.verdict ? "done" : "locked",
 		},
 	];
@@ -179,6 +194,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 						facts={selected}
 						tab={tab}
 						onTab={(next) => go({ tab: next })}
+						onGo={(next) => go({ step: next })}
 					/>
 				)}
 			</div>

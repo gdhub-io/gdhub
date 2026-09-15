@@ -228,9 +228,12 @@ export const ProjectSpace = ({
 			<Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
 				<Flex gap={12} align="center">
 					{!!backHref && (
-						<Link href={backHref} aria-label={t("common.back", "Back")}>
-							<Button icon={<IconArrowLeft size={18} />} />
-						</Link>
+						<Button
+							href={backHref}
+							aria-label={t("common.back", "Back")}
+							icon={<IconArrowLeft size={18} />}
+							style={{ width: 36, height: 36 }}
+						/>
 					)}
 					<Space orientation="vertical" size={0}>
 						{!!title && <Title style={{ margin: 0 }}>{title}</Title>}

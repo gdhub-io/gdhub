@@ -31,6 +31,7 @@ import { CheckpointItemKind, ProjectArtifactType } from "@/config/prisma-enums";
 import { useAttachEvidence } from "@/hooks/checkpoints";
 import { useProjectArtifacts } from "@/hooks/project-artifacts";
 import type { CheckpointArtifactRef, CheckpointDto } from "@/types/checkpoints";
+import { useArtifactTypeLabel } from "../artifactType";
 import styles from "./style.module.scss";
 
 /**
@@ -68,10 +69,6 @@ export type AttachEvidenceModalProps = {
  * Frame `IRJ2D`. One artifact, then the outcomes it proves — a list of
  * checkboxes rather than one choice, because a build can settle three lines at
  * once and asking for three attachments would only say the same thing slower.
- *
- * There is no evidence endpoint: the link is `CheckpointItem.artifactId`, so
- * attaching rewrites the outcome side of the goal card with the ticked lines
- * carrying the chosen artifact and every other line keeping what it had.
  */
 export function AttachEvidenceModal({
 	open,
@@ -79,6 +76,7 @@ export function AttachEvidenceModal({
 	onClose,
 }: AttachEvidenceModalProps) {
 	const { t } = useTranslate();
+	const typeLabel = useArtifactTypeLabel();
 	const { message } = App.useApp();
 	const queryClient = useQueryClient();
 
@@ -92,30 +90,6 @@ export function AttachEvidenceModal({
 	const attaching = useAttachEvidence(checkpoint.id);
 
 	const artifacts: PickableArtifact[] = data ?? [];
-
-	// Written out rather than mapped: the Tolgee extractor only sees literals.
-	const typeLabel = (type: ProjectArtifactType) => {
-		switch (type) {
-			case ProjectArtifactType.GameplayVideo:
-				return t("artifacts.type.gameplayVideo", "Gameplay video");
-			case ProjectArtifactType.PrototypeVideo:
-				return t("artifacts.type.prototypeVideo", "Prototype video");
-			case ProjectArtifactType.ExecutableBuild:
-				return t("artifacts.type.build", "Build");
-			case ProjectArtifactType.Art:
-				return t("artifacts.type.art", "Art");
-			case ProjectArtifactType.JDA:
-				return t("artifacts.type.jda", "Agreement");
-			case ProjectArtifactType.NDA:
-				return t("artifacts.type.nda", "NDA");
-			case ProjectArtifactType.Concept:
-				return t("artifacts.type.concept", "Concept document");
-			case ProjectArtifactType.GDD:
-				return t("artifacts.type.gdd", "Game design document");
-			default:
-				return t("artifacts.type.other", "Other");
-		}
-	};
 
 	const query = search.trim().toLowerCase();
 	const matched = query

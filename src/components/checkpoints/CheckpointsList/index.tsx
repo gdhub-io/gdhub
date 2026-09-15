@@ -38,7 +38,9 @@ export function CheckpointsList() {
 				width: 120,
 				render: (_, row) => (
 					<Typography.Text className={styles.number}>
-						{t("checkpoints.name", "Checkpoint {n}", { n: row.order })}
+						{t("checkpoints.number", "Checkpoint {number}", {
+							number: row.order,
+						})}
 					</Typography.Text>
 				),
 			},

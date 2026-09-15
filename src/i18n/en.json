@@ -553,6 +553,8 @@
 		},
 		"devlog": {
 			"meta": "What got done, what is next, and what is in the way.",
+			"missing": "No devlog was written",
+			"missingNote": "Silence is part of the record; the verdict reads it as it is.",
 			"published": "Devlog published",
 			"write": "Write the devlog"
 		},
@@ -578,6 +580,7 @@
 			"empty": "No evidence yet",
 			"emptyNote": "Attach what proves an outcome as it lands, rather than on the last day.",
 			"failed": "The evidence could not be attached",
+			"landed": "Landed in this sprint",
 			"later": "Proof at the end",
 			"multi": "One artifact can prove more than one outcome.",
 			"noArtifacts": "No artifacts yet",
@@ -590,6 +593,13 @@
 			"proves": "Proves: {outcome}",
 			"search": "Search the project's artifacts",
 			"whatItProves": "What it proves"
+		},
+		"forward": {
+			"locked": "It opens once everything above is answered.",
+			"openSprint": "Open sprint {n}",
+			"opensOn": "Sprint {n} opens on {date}.",
+			"ready": "Nothing is left in this sprint. Opening it moves you there.",
+			"toCheckpoint": "To the checkpoint"
 		},
 		"goal": {
 			"claimed": "{claimed} of {owed} outcomes claimed",
@@ -734,6 +744,7 @@
 				"waiting": "Waiting"
 			},
 			"marked": "Marked {date}",
+			"markedCount": "{done} of {total} marked the sprint",
 			"missing": "A mark is missing",
 			"sprintShort": "S{n}",
 			"team": "TEAM",

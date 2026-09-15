@@ -95,7 +95,9 @@ export const sprintNeedsYou = (facts: SprintFacts, day: number | null) => {
 
 	const devlogDue = devlogDayOf(facts.sprint.number);
 
+	// A past sprint is not asking for anything: its devlog day is gone and a post
+	// written today would be filed under today's sprint.
 	return (
-		!facts.devlog && facts.sprint.state !== "ahead" && (day ?? 0) >= devlogDue
+		!facts.devlog && facts.sprint.state === "current" && (day ?? 0) >= devlogDue
 	);
 };

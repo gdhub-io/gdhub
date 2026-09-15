@@ -21,6 +21,5 @@ export const useCheckpointDraft = () => {
 		loading: projectLoading || isPending,
 		draft:
 			data?.current?.status === CheckpointStatus.Draft ? data.current : null,
-		base: `/user/project/${project?.slug}/checkpoints`,
 	};
 };

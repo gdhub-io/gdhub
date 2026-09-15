@@ -3,6 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Flex } from "antd";
 import dayjs from "dayjs";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
 import { CuratorBadge } from "./CuratorBadge";
@@ -31,7 +32,8 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 	const day = checkpoint.day
 		? t("checkpoints.status.day", "Day {day} of 28", { day: checkpoint.day })
 		: null;
-	const restates = !checkpoint.verdict && checkpoint.status === "Active";
+	const restates =
+		!checkpoint.verdict && checkpoint.status === CheckpointStatus.Active;
 
 	return {
 		title: t("checkpoints.number", "Checkpoint {number}", {

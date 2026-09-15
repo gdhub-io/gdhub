@@ -17,6 +17,8 @@ export type SprintPanelProps = {
 	facts: SprintFacts;
 	tab: SprintTab;
 	onTab: (tab: SprintTab) => void;
+	/** Moving on: the footer of the ask panel opens the next step of the path. */
+	onGo: (step: string) => void;
 };
 
 /**
@@ -30,6 +32,7 @@ export function SprintPanel({
 	facts,
 	tab,
 	onTab,
+	onGo,
 }: SprintPanelProps) {
 	const { t } = useTranslate();
 
@@ -48,7 +51,9 @@ export function SprintPanel({
 				{
 					key: "status",
 					label: label(t("checkpoints.tab.status", "Status")),
-					children: <Status checkpoint={checkpoint} facts={facts} />,
+					children: (
+						<Status checkpoint={checkpoint} facts={facts} onGo={onGo} />
+					),
 				},
 				{
 					key: "signals",

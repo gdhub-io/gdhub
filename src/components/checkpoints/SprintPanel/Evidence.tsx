@@ -11,6 +11,7 @@ import { StatusDot } from "@/components/ui/StatusDot";
 import { ArtifactCheckStatus, CheckpointStatus } from "@/config/prisma-enums";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { useArtifactTypeLabel } from "../artifactType";
 import styles from "./style.module.scss";
 
 export type EvidenceProps = {
@@ -25,6 +26,7 @@ export type EvidenceProps = {
  */
 export function Evidence({ checkpoint, facts }: EvidenceProps) {
 	const { t } = useTranslate();
+	const typeLabel = useArtifactTypeLabel();
 	const [attaching, setAttaching] = useState(false);
 
 	// Once the verdict is written the card is the record, not a form.
@@ -97,7 +99,7 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 				className={styles.cardHead}
 			>
 				<Typography.Text className={styles.cardTitle}>
-					{t("checkpoints.evidence.attached", "Attached this sprint")}
+					{t("checkpoints.evidence.landed", "Landed in this sprint")}
 				</Typography.Text>
 				<Typography.Text type="secondary" className={styles.cardMeta}>
 					{facts.proved.length}
@@ -124,7 +126,7 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 								</Typography.Text>
 								<Typography.Text type="secondary" className={styles.rowMeta}>
 									{[
-										item.artifact.type,
+										typeLabel(item.artifact.type),
 										dayjs(item.addedAt).format("D MMM"),
 										item.addedBy?.name,
 									]
