@@ -1,8 +1,11 @@
 "use client";
 
-import { IconTrash } from "@tabler/icons-react";
+import { IconPaperclip, IconTrash } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Input } from "antd";
+import { Button, Flex, Input, Tooltip } from "antd";
+import { useState } from "react";
+import { PickArtifactModal } from "@/components/checkpoints/PickArtifactModal";
+import { useCurrentProject } from "@/hooks/project";
 import { CHECKPOINT_ITEM_TEXT_MAX } from "@/schemas/checkpoint";
 import type { CheckpointArtifactRef } from "@/types/checkpoints";
 import { EvidenceSlot } from "../EvidenceSlot";
@@ -27,11 +30,20 @@ const emptyLine = (): GoalLine => ({
 
 export type GoalLinesProps = {
 	lines: GoalLine[];
-	artifacts: CheckpointArtifactRef[];
+	/**
+	 * The store as the step already loaded it. The picker reads the same query
+	 * itself, so nothing is passed down any more — it stays only because the
+	 * caller still hands it over.
+	 */
+
 	onChange: (lines: GoalLine[]) => void;
 	placeholder: string;
 	/** What an empty evidence slot says on this step. */
-	emptyEvidenceLabel?: string;
+	/**
+	 * Only the input side carries evidence: an outcome is proven at the end of
+	 * the 28 days, so on day 1 there is nothing to attach to it.
+	 */
+	withEvidence?: boolean;
 	disabled?: boolean;
 };
 
@@ -44,13 +56,17 @@ export type GoalLinesProps = {
  */
 export function GoalLines({
 	lines,
-	artifacts,
 	onChange,
 	placeholder,
-	emptyEvidenceLabel,
+	withEvidence,
 	disabled,
 }: GoalLinesProps) {
 	const { t } = useTranslate();
+	const { project } = useCurrentProject();
+	// The line whose evidence is being picked, by key: an index would move under
+	// the modal the moment a row above it is deleted.
+	const [picking, setPicking] = useState<string>();
+
 	const rows = [...lines, emptyLine()];
 
 	const write = (index: number, patch: Partial<GoalLine>) => {
@@ -63,60 +79,101 @@ export function GoalLines({
 		onChange(next.filter((row) => row.text.trim() || row.artifact));
 	};
 
+	const writeByKey = (key: string, patch: Partial<GoalLine>) => {
+		const index = rows.findIndex((row) => row.key === key);
+		if (index >= 0) write(index, patch);
+	};
+
 	return (
-		<Flex vertical gap={8}>
-			{rows.map((line, index) => {
-				const isGhost = index === rows.length - 1;
+		<>
+			<Flex vertical gap={8}>
+				{rows.map((line, index) => {
+					const isGhost = index === rows.length - 1;
 
-				return (
-					<Flex key={line.key} gap={8} align="center" className={styles.row}>
-						<Input
-							className={styles.input}
-							value={line.text}
-							maxLength={CHECKPOINT_ITEM_TEXT_MAX}
-							variant="filled"
-							disabled={disabled}
-							placeholder={
-								isGhost
-									? t(
-											"checkpoints.goal.ghostLine",
-											"Add a line, then press Enter",
-										)
-									: placeholder
-							}
-							onChange={(event) => write(index, { text: event.target.value })}
-						/>
-
-						{!isGhost && (
-							<EvidenceSlot
-								artifact={line.artifact}
-								options={artifacts}
-								emptyLabel={emptyEvidenceLabel}
+					return (
+						<Flex key={line.key} gap={8} align="center" className={styles.row}>
+							<Input
+								className={styles.input}
+								value={line.text}
+								maxLength={CHECKPOINT_ITEM_TEXT_MAX}
+								variant="filled"
 								disabled={disabled}
-								onChange={(artifactId) =>
-									write(index, {
-										artifact:
-											artifacts.find(
-												(candidate) => candidate.id === artifactId,
-											) ?? null,
-									})
+								placeholder={
+									isGhost
+										? t(
+												"checkpoints.goal.ghostLine",
+												"Add a line, then press Enter",
+											)
+										: placeholder
 								}
+								onChange={(event) => write(index, { text: event.target.value })}
 							/>
-						)}
 
-						<Button
-							type="text"
-							danger={!isGhost}
-							disabled={isGhost || disabled}
-							icon={<IconTrash size={17} />}
-							aria-label={t("checkpoints.goal.removeLine", "Remove the line")}
-							onClick={() =>
-								onChange(lines.filter((_, position) => position !== index))
-							}
-						/>
-					</Flex>
-				);
-			})}
-		</Flex>
+							{/* One trailing control, as the frame draws it: the slot is what
+							    a line is proven by, and pressing it is how that changes. */}
+							{!isGhost && withEvidence && (
+								<Tooltip
+									title={
+										line.artifact
+											? t(
+													"checkpoints.evidence.change",
+													"Pick another artifact",
+												)
+											: t("checkpoints.evidence.attach", "Attach evidence")
+									}
+								>
+									<button
+										type="button"
+										className={styles.slot}
+										disabled={disabled}
+										onClick={() => setPicking(line.key)}
+									>
+										{line.artifact ? (
+											<EvidenceSlot artifact={line.artifact} />
+										) : (
+											<Flex align="center" gap={6} className={styles.empty}>
+												<span>
+													{t("checkpoints.evidence.attach", "Attach evidence")}
+												</span>
+												<IconPaperclip size={15} stroke={1.6} />
+											</Flex>
+										)}
+									</button>
+								</Tooltip>
+							)}
+
+							{/* The ghost row is one control: nothing to prove, nothing to delete. */}
+							{!isGhost && (
+								<Button
+									type="text"
+									danger
+									disabled={disabled}
+									icon={<IconTrash size={17} />}
+									aria-label={t(
+										"checkpoints.goal.removeLine",
+										"Remove the line",
+									)}
+									onClick={() =>
+										onChange(lines.filter((_, position) => position !== index))
+									}
+								/>
+							)}
+						</Flex>
+					);
+				})}
+			</Flex>
+
+			{!!project?.id && (
+				<PickArtifactModal
+					open={!!picking}
+					projectId={project.id}
+					canDetach={!!lines.find((line) => line.key === picking)?.artifact}
+					onClose={() => setPicking(undefined)}
+					onPick={(artifact) =>
+						picking && writeByKey(picking, { artifact: artifact ?? null })
+					}
+				/>
+			)}
+		</>
 	);
 }

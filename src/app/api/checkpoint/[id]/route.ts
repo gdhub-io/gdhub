@@ -61,8 +61,15 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const { goal, curatorKind, acceptedTerms, inputs, outcomes, startedAt } =
-		body as UpdateCheckpointBody;
+	const {
+		goal,
+		curatorKind,
+		curatorId,
+		acceptedTerms,
+		inputs,
+		outcomes,
+		startedAt,
+	} = body as UpdateCheckpointBody;
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
@@ -74,9 +81,21 @@ export const PUT = pipe(
 		return apiError.badRequest("checkpointNotDraft");
 	}
 
+	// A checkpoint is given to someone who said they take mentees; the switch is
+	// theirs to flip, so it is read here rather than trusted from the browser.
+	if (curatorId) {
+		const open = await prisma.speciality.findFirst({
+			where: { userId: curatorId, isOpenForMentoring: true },
+			select: { id: true },
+		});
+
+		if (!open) return apiError.badRequest("curatorNotOpenForMentoring");
+	}
+
 	if (
 		goal !== undefined ||
 		curatorKind ||
+		curatorId !== undefined ||
 		acceptedTerms !== undefined ||
 		startedAt !== undefined
 	) {
@@ -85,6 +104,7 @@ export const PUT = pipe(
 			data: {
 				...(goal !== undefined && { goal }),
 				...(curatorKind && { curatorKind }),
+				...(curatorId !== undefined && { curatorId }),
 				// The moment it was accepted is the record; unticking withdraws it.
 				...(acceptedTerms !== undefined && {
 					acceptedTermsAt: acceptedTerms ? new Date() : null,

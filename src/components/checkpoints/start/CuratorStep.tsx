@@ -5,13 +5,18 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Radio, Skeleton, Typography } from "antd";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_HUMAN_PRICE_FROM,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { useDiscardCheckpoint, useUpdateCheckpoint } from "@/hooks/checkpoints";
+import {
+	useCheckpointCurators,
+	useDiscardCheckpoint,
+	useUpdateCheckpoint,
+} from "@/hooks/checkpoints";
 import styles from "./CuratorStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
@@ -34,6 +39,8 @@ export function CuratorStep() {
 	const update = useUpdateCheckpoint(draft?.id);
 	const discard = useDiscardCheckpoint();
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
+	const [person, setPerson] = useState<string | null>(null);
+	const curators = useCheckpointCurators();
 
 	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
@@ -58,10 +65,16 @@ export function CuratorStep() {
 	// The draft is opened with the AI curator, so the stored value is the choice
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
+	const chosenPerson = person ?? draft.curator?.id ?? null;
 
 	const goTo = async (next: StartStep) => {
 		try {
-			await update.mutateAsync({ curatorKind: chosen });
+			await update.mutateAsync({
+				curatorKind: chosen,
+				// The AI curator is nobody in particular, so choosing it lets the
+				// person go rather than leaving a stale name on the draft.
+				curatorId: chosen === CheckpointCuratorKind.AI ? null : chosenPerson,
+			});
 			go(next);
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
@@ -164,10 +177,55 @@ export function CuratorStep() {
 						<Typography.Text className={styles.pickerLabel}>
 							{t("checkpoints.curator.pickerLabel", "Curators for this stage")}
 						</Typography.Text>
+
+						{curators.isLoading ? (
+							<Skeleton active paragraph={{ rows: 3 }} />
+						) : curators.data?.length ? (
+							<Radio.Group
+								value={chosenPerson}
+								onChange={(event) => setPerson(event.target.value)}
+								className={styles.people}
+							>
+								{curators.data.map((curator) => (
+									<Radio
+										key={curator.userId}
+										value={curator.userId}
+										className={styles.person}
+									>
+										<Flex gap={10} align="center">
+											<AppAvatar src={curator.image} size={32}>
+												{curator.name.slice(0, 1).toUpperCase()}
+											</AppAvatar>
+											<Flex vertical gap={1}>
+												<Typography.Text className={styles.name}>
+													{curator.name}
+												</Typography.Text>
+												<Typography.Text
+													type="secondary"
+													className={styles.description}
+												>
+													{[curator.role, curator.specialization]
+														.filter(Boolean)
+														.join(" · ")}
+												</Typography.Text>
+											</Flex>
+										</Flex>
+									</Radio>
+								))}
+							</Radio.Group>
+						) : (
+							<Typography.Text type="secondary">
+								{t(
+									"checkpoints.curator.noneOpen",
+									"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
+								)}
+							</Typography.Text>
+						)}
+
 						<Typography.Text type="secondary">
 							{t(
-								"checkpoints.curator.pickerPending",
-								"Choosing your own curator is not open yet — the platform assigns one for the stage. The 28 days start when they take the checkpoint on, not when you pay; if they turn it down you pick another or get your money back.",
+								"checkpoints.curator.pickerNote",
+								"The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
 							)}
 						</Typography.Text>
 					</Flex>

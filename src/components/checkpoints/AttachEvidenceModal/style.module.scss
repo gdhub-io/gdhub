@@ -1,57 +1,5 @@
-.body {
-	padding: var(--gd-space-2) 0 var(--gd-space-1);
-}
-
-// The store can be long; the picker scrolls and the rest of the modal does not.
-.list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-2);
-	max-height: 260px;
-	overflow-y: auto;
-	padding-right: var(--gd-space-1);
-}
-
-.row {
-	display: flex;
-	align-items: center;
-	width: 100%;
-	margin: 0;
-	padding: var(--gd-space-2) var(--gd-space-3);
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-control);
-
-	// The label's text span, which antd leaves at its intrinsic width.
-	> span:last-child {
-		flex: 1;
-		min-width: 0;
-		padding-inline: var(--gd-space-2) 0;
-	}
-}
-
-// The accent marks the chosen row and never fills it.
-.row:global(.ant-radio-wrapper-checked) {
-	border-color: var(--gd-color-accent);
-	background: var(--gd-color-accent-subtle);
-}
-
-.rowBody {
-	min-width: 0;
-}
-
-.rowName {
-	font-size: 14px;
-	line-height: 1.45;
-}
-
-.rowMeta {
-	font-size: 12px;
-	line-height: 1.45;
-}
-
-.noMatch,
-.noOutcomes {
-	font-size: 13px;
+.proves {
+	margin-top: var(--gd-space-4);
 }
 
 .label {
@@ -72,6 +20,10 @@
 	margin: 0;
 	font-size: 14px;
 	line-height: 1.45;
+}
+
+.noOutcomes {
+	font-size: 13px;
 }
 
 .footerNote {

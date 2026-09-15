@@ -34,6 +34,11 @@ export const UpdateCheckpointSchema = z
 	.object({
 		goal: z.string().trim().max(CHECKPOINT_GOAL_MAX),
 		curatorKind: z.nativeEnum(CheckpointCuratorKind),
+		/**
+		 * The person who will run it. Null for the AI curator, and only ever a
+		 * specialist who has said they take mentees — the route checks.
+		 */
+		curatorId: z.string().min(1).nullable(),
 		/** Ticking the box on step 4; untick before paying and it is withdrawn. */
 		acceptedTerms: z.boolean(),
 		/**

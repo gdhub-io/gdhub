@@ -2,8 +2,18 @@
 	width: 100%;
 }
 
+// The field takes whatever the trailing controls leave — all of it on the ghost
+// row, which carries none, so both rows start on the same left edge.
 .input {
+	flex: 1;
+	min-width: 0;
 	height: 44px;
 	border-radius: var(--gd-radius-control);
 	font-size: 15px;
+}
+
+// Matches the height of the slot it turns into once an artifact is picked.
+.attach {
+	flex: none;
+	height: 36px;
 }

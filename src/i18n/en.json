@@ -547,7 +547,9 @@
 			"humanDescription": "Five 45-minute calls with your team, plus everything written.",
 			"humanName": "A person, on five calls",
 			"humanPrice": "from {currency}{price}",
+			"noneOpen": "Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
 			"pickerLabel": "Curators for this stage",
+			"pickerNote": "The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
 			"pickerPending": "Choosing your own curator is not open yet — the platform assigns one for the stage. The 28 days start when they take the checkpoint on, not when you pay; if they turn it down you pick another or get your money back.",
 			"unassigned": "Curator to be assigned"
 		},
@@ -576,7 +578,10 @@
 			"addTitle": "Add it to the project",
 			"attach": "Attach evidence",
 			"attached": "Attached this sprint",
+			"change": "Pick another artifact",
+			"choose": "Choose",
 			"confirm": "Attach",
+			"detach": "Detach it",
 			"empty": "No evidence yet",
 			"emptyNote": "Attach what proves an outcome as it lands, rather than on the last day.",
 			"failed": "The evidence could not be attached",
@@ -590,6 +595,7 @@
 			"none": "Nothing attached",
 			"notDelivered": "Nothing was attached",
 			"pick": "From this project",
+			"pickTitle": "Pick an artifact",
 			"proves": "Proves: {outcome}",
 			"search": "Search the project's artifacts",
 			"whatItProves": "What it proves"
@@ -602,6 +608,10 @@
 			"toCheckpoint": "To the checkpoint"
 		},
 		"goal": {
+			"check": "Check it against 28 days",
+			"checkFits": "This fits 28 days",
+			"checkMissing": "The stage also asks for: {line}",
+			"checkTight": "This looks like more than 28 days hold",
 			"claimed": "{claimed} of {owed} outcomes claimed",
 			"empty": "The goal is not written yet",
 			"ghostLine": "Add a line, then press Enter",
@@ -611,8 +621,11 @@
 			"label": "Goal",
 			"outcomePlaceholder": "A playable vertical slice",
 			"outcomes": "What it owes by day 28",
+			"placeholder": "Ship a playable prototype a stranger can finish in 15 minutes without help.",
 			"removeLine": "Remove the line",
 			"saveFailed": "Could not save",
+			"sentence": "The goal, in one sentence",
+			"sentenceHint": "One sentence the 28 days are judged against. The list below is how it is proven.",
 			"sideEmpty": "Nothing listed"
 		},
 		"happened": {
@@ -751,6 +764,8 @@
 			"title": "Team signals"
 		},
 		"start": "Start a checkpoint",
+		"start.": "Start a checkpoint",
+		"start.check.note": "Checked by the AI curator · advice, not a gate",
 		"start.disabled": "One checkpoint at a time. This one ends {date}.",
 		"start.draftNote": "The curator goes through this list with you on day 1 and cuts it to what 28 days actually hold. It is fixed after that, not at checkout.",
 		"start.failed": "The checkpoint could not be started",

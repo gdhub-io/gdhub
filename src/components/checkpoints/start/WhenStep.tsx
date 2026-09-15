@@ -58,17 +58,20 @@ export function WhenStep() {
 	}
 
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
-	const chosen = picked ?? (draft.startedAt ? dayjs(draft.startedAt) : dayjs());
-	const start = chosen.toDate();
+	const chosen =
+		picked ?? (draft.startedAt ? dayjs.utc(draft.startedAt) : dayjs());
+	// The day is a day, not an instant: the server counts the 28 days from UTC
+	// midnight, so a local midnight would start the checkpoint a day early east
+	// of it and this preview would contradict the sidebar it produces.
+	const day = chosen.format("YYYY-MM-DD");
+	const start = dayjs.utc(day).toDate();
 	const devlogs = [1, 2, 3, 4].map((sprint) =>
-		dayjs(start).add(devlogDayOf(sprint) - 1, "day"),
+		dayjs.utc(start).add(devlogDayOf(sprint) - 1, "day"),
 	);
 
 	const save = async () => {
 		try {
-			await update.mutateAsync({
-				startedAt: mode === "day" ? chosen.startOf("day").toDate() : null,
-			});
+			await update.mutateAsync({ startedAt: mode === "day" ? day : null });
 			go("payment");
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
@@ -127,8 +130,8 @@ export function WhenStep() {
 				<div className={styles.calendar}>
 					<Typography.Text className={styles.calendarTitle}>
 						{t("checkpoints.when.runs", "Runs {from} – {to}", {
-							from: chosen.format("D MMM"),
-							to: dayjs(dueDateFrom(start)).format("D MMM YYYY"),
+							from: dayjs.utc(start).format("D MMM"),
+							to: dayjs.utc(dueDateFrom(start)).format("D MMM YYYY"),
 						})}
 					</Typography.Text>
 					<Typography.Text type="secondary" className={styles.calendarBody}>
@@ -136,15 +139,16 @@ export function WhenStep() {
 							"checkpoints.when.calendar",
 							"Sprint 1 opens on {s1}, then {s2}, {s3} and {s4}. Devlogs fall on {d1}, {d2}, {d3} and {d4}, and the verdict is written by {verdict}.",
 							{
-								s1: dayjs(sprintRange(start, 1).from).format("D MMM"),
-								s2: dayjs(sprintRange(start, 2).from).format("D MMM"),
-								s3: dayjs(sprintRange(start, 3).from).format("D MMM"),
-								s4: dayjs(sprintRange(start, 4).from).format("D MMM"),
+								s1: dayjs.utc(sprintRange(start, 1).from).format("D MMM"),
+								s2: dayjs.utc(sprintRange(start, 2).from).format("D MMM"),
+								s3: dayjs.utc(sprintRange(start, 3).from).format("D MMM"),
+								s4: dayjs.utc(sprintRange(start, 4).from).format("D MMM"),
 								d1: devlogs[0].format("D MMM"),
 								d2: devlogs[1].format("D MMM"),
 								d3: devlogs[2].format("D MMM"),
 								d4: devlogs[3].format("D MMM"),
-								verdict: dayjs(dueDateFrom(start))
+								verdict: dayjs
+									.utc(dueDateFrom(start))
 									.add(2, "day")
 									.format("D MMM"),
 							},

@@ -87,3 +87,24 @@
 	font-size: 13px;
 	text-align: right;
 }
+
+.people {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+}
+
+// One panel, hairline dividers: the row selects a person, the cards above
+// select what kind of curator it is — two ranks, not one long list.
+.person {
+	width: 100%;
+	margin: 0;
+	padding: var(--gd-space-3) var(--gd-space-4);
+
+	& + .person {
+		border-top: 1px solid var(--gd-color-border-subtle);
+	}
+}

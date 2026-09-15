@@ -2,12 +2,17 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import type { CheckpointCuratorKind } from "@/config/prisma-enums";
+import type {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+} from "@/config/prisma-enums";
+import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type {
 	CheckpointEvidenceBody,
 	CheckpointItemInput,
 	CheckpointScopeBody,
 } from "@/schemas/checkpoint";
+import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import type {
 	CheckpointDto,
 	CheckpointListResponse,
@@ -51,11 +56,15 @@ export const useUpdateCheckpoint = (id?: string) => {
 		mutationFn: async (body: {
 			goal?: string;
 			curatorKind?: CheckpointCuratorKind;
+			curatorId?: string | null;
 			acceptedTerms?: boolean;
 			inputs?: CheckpointItemInput[];
 			outcomes?: CheckpointItemInput[];
-			/** The day the 28 days are meant to start; null while it is not chosen. */
-			startedAt?: Date | null;
+			/**
+			 * The day the 28 days are meant to start, as `YYYY-MM-DD`: a day rather
+			 * than an instant, so the server's UTC midnight is what gets stored.
+			 */
+			startedAt?: string | null;
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,
 		onSuccess: (checkpoint) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
@@ -96,6 +105,41 @@ export const useAttachEvidence = (id?: string) => {
 		},
 	});
 };
+
+/**
+ * The AI curator reading the goal card against 28 days. Asked for, never
+ * automatic: it is a model call, and it is advice rather than a gate.
+ */
+export const useGoalCheck = (id?: string) => {
+	return useMutation({
+		mutationFn: async () =>
+			(await axios.post<GoalCheckResult>(`/api/checkpoint/${id}/goal-check`))
+				.data,
+	});
+};
+
+/** Specialists who have said they take mentees, at an expert level. */
+export const useCheckpointCurators = () =>
+	useQuery({
+		queryKey: ["checkpoint-curators"],
+		queryFn: async () =>
+			(await axios.get<CheckpointCurator[]>("/api/checkpoint/curators")).data,
+	});
+
+/**
+ * The curator proposing the lines of the goal card, for an author who does not
+ * know what to write. It suggests into the form; nothing is saved until the
+ * author leaves the question, and every line is theirs to edit or drop.
+ */
+export const useSuggestLines = (id?: string) =>
+	useMutation({
+		mutationFn: async (kind: CheckpointItemKind) =>
+			(
+				await axios.post<{ lines: string[] }>(`/api/checkpoint/${id}/suggest`, {
+					kind,
+				})
+			).data.lines,
+	});
 
 export const useCreateCheckpoint = (projectId?: string) => {
 	const queryClient = useQueryClient();
