@@ -25,14 +25,22 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 			? `${dayjs(checkpoint.startedAt).format("D MMM")} – ${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
+	// The day count belongs here and nowhere else on the page, so the status slot
+	// only appears when it has something else to say — a verdict, or the wait for
+	// one — rather than repeating the number beside it.
+	const day = checkpoint.day
+		? t("checkpoints.status.day", "Day {day} of 28", { day: checkpoint.day })
+		: null;
+	const restates = !checkpoint.verdict && checkpoint.status === "Active";
+
 	return {
 		title: t("checkpoints.number", "Checkpoint {number}", {
 			number: checkpoint.order,
 		}),
-		description: [checkpoint.stageName, dates].filter(Boolean).join(" · "),
+		description: [dates, checkpoint.stageName, day].filter(Boolean).join(" · "),
 		actions: (
 			<Flex vertical align="flex-end" gap={8}>
-				<CheckpointStatusSlot checkpoint={checkpoint} />
+				{!restates && <CheckpointStatusSlot checkpoint={checkpoint} />}
 				<CuratorBadge
 					kind={checkpoint.curatorKind}
 					curator={checkpoint.curator}

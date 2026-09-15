@@ -1,8 +1,8 @@
 "use client";
 
-import { IconExternalLink } from "@tabler/icons-react";
+import { IconArrowLeft, IconExternalLink } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Grid, Space, Typography } from "antd";
+import { Button, Flex, Grid, Space, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -36,11 +36,14 @@ export const ProjectSpace = ({
 	description,
 	children,
 	actions,
+	backHref,
 }: {
 	title?: string;
 	description?: string;
 	children: ReactNode;
 	actions?: ReactNode;
+	/** A page one level below a tab — the hero gains the way back to it. */
+	backHref?: string;
 }) => {
 	const { t } = useTranslate();
 	const params = useParams<{ slug?: string }>();
@@ -223,10 +226,17 @@ export const ProjectSpace = ({
 				</div>
 			)}
 			<Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
-				<Space orientation="vertical" size={0}>
-					{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
-					{!!description && <Text type="secondary">{description}</Text>}
-				</Space>
+				<Flex gap={12} align="center">
+					{!!backHref && (
+						<Link href={backHref} aria-label={t("common.back", "Back")}>
+							<Button icon={<IconArrowLeft size={18} />} />
+						</Link>
+					)}
+					<Space orientation="vertical" size={0}>
+						{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+						{!!description && <Text type="secondary">{description}</Text>}
+					</Space>
+				</Flex>
 				{actions}
 			</Flex>
 

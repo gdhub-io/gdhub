@@ -1,9 +1,10 @@
-.summary {
-	// Truncation inside the header row needs the parent to allow shrinking.
-	min-width: 0;
+.split {
+	// The sidebar is fixed; the panel is the only elastic column, so a long goal
+	// or a long outcome truncates instead of squeezing the path.
+	width: 100%;
 }
 
-.claimed {
-	flex: none;
-	font-feature-settings: "tnum";
+.panel {
+	flex: 1;
+	min-width: 0;
 }

@@ -1,0 +1,184 @@
+.tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.tabCount {
+	color: var(--gd-color-text-tertiary);
+	font-size: 12px;
+	font-feature-settings: "tnum";
+}
+
+.card {
+	background: var(--gd-color-surface);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+}
+
+.cardHead {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-subtle);
+}
+
+.cardTitle {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.cardMeta {
+	font-size: 12px;
+	font-feature-settings: "tnum";
+}
+
+.rows {
+	display: flex;
+	flex-direction: column;
+	padding: 0 var(--gd-space-4);
+}
+
+.row {
+	padding: var(--gd-space-3) 0;
+
+	& + .row {
+		border-top: 1px solid var(--gd-color-border-subtle);
+	}
+}
+
+.rowBody {
+	min-width: 0;
+}
+
+.rowText {
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+.rowMeta,
+.proves {
+	font-size: 12px;
+	line-height: 1.45;
+}
+
+.proof {
+	flex: none;
+	color: var(--gd-success-solid);
+	font-size: 13px;
+}
+
+.prose {
+	padding: var(--gd-space-4);
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+// The matrix: sprint columns are fixed so they never shrink, and the name column
+// is the only elastic one — a long name truncates before a column collapses.
+.matrix {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: var(--gd-space-4);
+}
+
+.matrixHead {
+	padding-bottom: var(--gd-space-2);
+}
+
+.matrixRow {
+	padding: 6px 0;
+}
+
+.person {
+	flex: 1;
+	min-width: 0;
+	color: var(--gd-color-text-tertiary);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.6px;
+}
+
+.personText {
+	min-width: 0;
+}
+
+.personName {
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: 0;
+}
+
+.personRole {
+	font-size: 12px;
+	font-weight: 400;
+	letter-spacing: 0;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	width: 72px;
+	flex: none;
+}
+
+.colName {
+	color: var(--gd-color-text-tertiary);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.4px;
+}
+
+.colDates {
+	color: var(--gd-color-text-tertiary);
+	font-size: 11px;
+	font-feature-settings: "tnum";
+}
+
+.colCurrent .colName {
+	color: var(--gd-color-text);
+}
+
+.cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--gd-radius-chip);
+	border: 1px solid transparent;
+}
+
+.confirmed {
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.waiting {
+	border-color: var(--gd-color-border-strong);
+}
+
+.missed {
+	background: var(--gd-color-border-strong);
+}
+
+.notAsked {
+	border-color: var(--gd-color-border-subtle);
+}
+
+.notOnTeam {
+	background: none;
+}
+
+.waitingDot {
+	width: 7px;
+	height: 7px;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-color-border-strong);
+}
+
+.cellCurrent {
+	box-shadow: 0 0 0 1px var(--gd-color-accent);
+}

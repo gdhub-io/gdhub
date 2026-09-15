@@ -5,12 +5,16 @@ import {
 	CheckpointStatus,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
+import { sprintOfDate } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { AskPanel } from "./AskPanel";
 import { CheckpointCard } from "./CheckpointCard";
+import { CheckpointPath } from "./CheckpointPath";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
-import { CheckpointThread } from "./CheckpointThread";
 import { CuratorBadge } from "./CuratorBadge";
 import { VerdictChip } from "./VerdictChip";
+
+const startedAt = "2026-09-01T09:00:00.000Z";
 
 const base: CheckpointDto = {
 	id: "cp1",
@@ -22,7 +26,7 @@ const base: CheckpointDto = {
 	goal: "A playable vertical slice with two tide states and one boss encounter.",
 	curatorKind: CheckpointCuratorKind.AI,
 	curator: null,
-	startedAt: "2026-09-01T09:00:00.000Z",
+	startedAt,
 	dueAt: "2026-09-28T09:00:00.000Z",
 	goalAgreedAt: "2026-09-01T15:00:00.000Z",
 	revisedAt: null,
@@ -138,56 +142,123 @@ const devlog = (
 	content,
 	curatorFeedback: answer ?? null,
 	curatorFeedbackAt: answer ? "2026-09-08T06:00:00.000Z" : null,
+	sprint: sprintOfDate(new Date(startedAt), new Date(publishedAt)),
 });
 
-/** Under way: what has happened, one line each, the bodies behind a chevron. */
-export const ThreadUnderWay: StoryObj = {
+/** The path, mid-checkpoint: sprint 2 is where the author lives today. */
+export const Path: StoryObj = {
 	render: () => (
-		<CheckpointThread
-			checkpoint={{
-				...base,
-				goalAgreedAt: "2026-09-01T15:00:00.000Z",
-				midNote:
-					"Three of four outcomes have nothing claimed against them, and half the calendar is gone. What do you want to change?",
-				reports: [
-					devlog(
-						"r1",
-						"2026-09-07T10:00:00.000Z",
-						"Tide states\nTwo of three are in with placeholder art.",
-						"Art on state one moves the tide outcome. The save system is still untouched.",
-					),
-					devlog(
-						"r2",
-						"2026-09-13T10:00:00.000Z",
-						"A save bug we cannot reproduce",
-					),
-				],
-			}}
+		<CheckpointPath
+			selected="sprint-2"
+			onSelect={() => {}}
+			next={{ disabled: true, reason: "Opens when the verdict is in." }}
+			steps={[
+				{
+					key: "inputs",
+					label: "Inputs",
+					meta: "what was bought",
+					glyph: "start",
+				},
+				{ key: "sprint-1", label: "Sprint 1", meta: "1–7 Sep", glyph: "done" },
+				{
+					key: "sprint-2",
+					label: "Sprint 2",
+					meta: "8–14 Sep",
+					glyph: "current",
+					needsYou: true,
+				},
+				{
+					key: "sprint-3",
+					label: "Sprint 3",
+					meta: "15–21 Sep",
+					glyph: "ahead",
+				},
+				{
+					key: "sprint-4",
+					label: "Sprint 4",
+					meta: "22–28 Sep",
+					glyph: "ahead",
+				},
+				{
+					key: "checkpoint",
+					label: "Checkpoint",
+					meta: "28 Sep",
+					glyph: "locked",
+				},
+			]}
 		/>
 	),
 };
 
-/** Closed: the verdict is the newest entry, with the report under it. */
-export const ThreadClosed: StoryObj = {
+/** Before it is paid for: every step after the first is undated and grey. */
+export const PathBeforePayment: StoryObj = {
 	render: () => (
-		<CheckpointThread
-			checkpoint={{
-				...base,
-				status: CheckpointStatus.Closed,
-				verdict: CheckpointVerdict.StageClosed,
-				verdictNote: "Outcomes delivered and the stage's requirements met.",
-				summary:
-					"The prototype exists and a stranger finished it. Three tide states are in with art; the trailer was cut on day 14 with the reason recorded.",
-				decidedAt: "2026-09-29T08:00:00.000Z",
-				goalAgreedAt: "2026-09-01T15:00:00.000Z",
-				reports: [
-					devlog(
-						"r1",
-						"2026-09-27T10:00:00.000Z",
-						"Two strangers finished it, 14 and 17 minutes",
-					),
-				],
-			}}
+		<CheckpointPath
+			selected="inputs"
+			onSelect={() => {}}
+			footNote="The dates appear once it is paid and the day it starts is set."
+			steps={[
+				{
+					key: "inputs",
+					label: "Prepare",
+					meta: "buying the 28 days",
+					glyph: "current",
+				},
+				{ key: "sprint-1", label: "Sprint 1", glyph: "ahead" },
+				{ key: "sprint-2", label: "Sprint 2", glyph: "ahead" },
+				{ key: "sprint-3", label: "Sprint 3", glyph: "ahead" },
+				{ key: "sprint-4", label: "Sprint 4", glyph: "ahead" },
+				{ key: "checkpoint", label: "Checkpoint", glyph: "locked" },
+			]}
+		/>
+	),
+};
+
+/** What a sprint still asks, and who it waits on. */
+export const Asks: StoryObj = {
+	render: () => (
+		<AskPanel
+			title="What this sprint asks of you"
+			info="Everything still open in this sprint, and who it waits on."
+			count="2 open"
+			rows={[
+				{
+					key: "scope",
+					glyph: "open",
+					title: "Check the scope",
+					owner: "You",
+					due: "due today",
+					dueUrgent: true,
+					meta: "Three of four outcomes have nothing claimed against them.",
+				},
+				{
+					key: "marks",
+					glyph: "todo",
+					title: "A mark is missing",
+					owner: "Team",
+					due: "4 of 5",
+					meta: "Lena Novak",
+				},
+			]}
+		/>
+	),
+};
+
+/** Answered: the head turns green and the forward button unlocks. */
+export const AsksNothingOpen: StoryObj = {
+	render: () => (
+		<AskPanel
+			title="What this sprint asks of you"
+			count="nothing open"
+			countDone
+			rows={[
+				{
+					key: "none",
+					glyph: "done",
+					title: "Nothing is waiting on anyone",
+					meta: "The devlog is in, the review is in, and five of five marked the sprint.",
+				},
+			]}
 		/>
 	),
 };
