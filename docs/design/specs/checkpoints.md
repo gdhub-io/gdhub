@@ -124,10 +124,37 @@ separate route the author leaves the page for.
 Everything after it is grey and undated until payment, with one line under the sidebar
 saying why: *the dates appear once it is paid and the day it starts is set*.
 
-**The When step** (`I4Zv4u`) is new. The author picks one day and is shown the whole calendar
-it produces — which days the sprints open on, when each devlog is due, the gathering, the
-verdict — because that single date decides 28 days of obligations. With a human mentor the
-step says plainly that the mentor confirms the day and everything moves with it.
+**The Planning step** (`I4Zv4u`) is new. The author picks one day and is shown the whole
+calendar it produces — which days the sprints open on, when each devlog is due, the gathering,
+the verdict — because that single date decides 28 days of obligations. With a human curator the
+step says plainly that they confirm the day and everything moves with it.
+
+Under the date sits **what the team has to spend on it**: a row per member with the hours a
+week they stated in their own profile (`Profile.timeForWork`, a range), the same figure over
+the four sprints, and the team's total. Only the author's own line is editable there —
+correcting somebody else's availability from a purchase screen would be putting words in their
+mouth. It is the one place the 28 days are weighed against the hours that exist.
+
+**The goal sentence leads its question, and the list details it.** "The goal, in one sentence"
+sits above the outcome list, not under it, and the list carries a heading and a **Suggest with
+AI** button: an author who does not know what to promise gets three to six lines from the
+curator, in the form, to edit or throw away. Nothing is suggested on the input question — day
+one's list is what the project already has, and nobody needs help remembering that.
+
+**The curator's read happens on the way out, not on a button of its own.** Pressing Next on the
+goal question saves the card and asks the AI curator whether it fits 28 days. If it does,
+nothing interrupts. If it does not, a modal carries the remark with two answers — *go back and
+edit* or *go on anyway* — and the same remark is repeated on the payment question under what is
+being bought, because that is the last moment it can still change anything. It never blocks: a
+curator that cannot be reached must not hold up a purchase.
+
+**The curator picker is a table without a head** (`ak7v2`): everyone who has turned
+`Speciality.isOpenForMentoring` on, one row each — avatar, name, level, speciality, a **Talent
+card** link that opens `SpecialistPreviewModal`, and the radio at the right end of the row.
+Pressing anywhere on the row picks it. The frame draws an hourly rate and a record — *14
+checkpoints · 9 closed a stage · 4.6 from 22 ratings* — and neither exists in the data yet:
+there is no curator record, and no rate on a speciality. The row shows what is there and the
+rest arrives with GDHUB-42 rather than being invented.
 
 **The price is one number.** `Price · $475`, then what the curator does and does not do, the
 standard checkbox, and `Pay and start`. The hours-by-rate line and the platform's share came
@@ -328,6 +355,7 @@ No literal colour ships from these frames.
 | Radii | chip 6 · control 10 · card 12 · pill 999 |
 | Statuses | dot 7 + word 12/500, no fill. Tone lives in the dot |
 | Control heights | 40 default and in the panel footer · 36 in cards and ask rows · 32 in dense rows, segmented and pagination |
+| Fields | Every input, number, select, date picker and text area is antd's `variant="filled"`. An outlined field on a page of filled ones reads as a different form. |
 | Type | 24/600 page title · 20/600 modal title · 18/600 step title · 14/600 card head · 14 body · 13 dense and meta lines · 12 tertiary meta · 11/600 `ls .5` caption and table head |
 
 Numbers carry `font-feature-settings: "tnum"`.
@@ -465,7 +493,7 @@ feedback are gone; what replaces them is below.
 | `checkpoints.prepare.step.now` | Now |
 | `checkpoints.prepare.step.goal` | Goal |
 | `checkpoints.prepare.step.curator` | Curator |
-| `checkpoints.prepare.step.when` | When |
+| `checkpoints.prepare.step.planning` | Planning |
 | `checkpoints.prepare.step.payment` | Payment |
 | `checkpoints.prepare.stepOf` | Step {n} of 5 |
 | `checkpoints.prepare.savedDraft` | Saved as a draft |
