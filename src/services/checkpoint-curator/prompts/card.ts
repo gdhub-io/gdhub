@@ -1,5 +1,10 @@
 import { stripIndents } from "common-tags";
-import type { CuratorGoalCard, CuratorLine, CuratorStage } from "../types";
+import type {
+	CuratorGoalCard,
+	CuratorLine,
+	CuratorStage,
+	CuratorTeam,
+} from "../types";
 
 /**
  * The goal card as the model sees it, and the line every prompt opens with.
@@ -30,6 +35,30 @@ export const renderCard = (card: CuratorGoalCard) => stripIndents`
 	What it owes by day 28:
 	${card.outcomes.map(line).join("\n") || "- (nothing listed)"}
 `;
+
+/**
+ * The team's stated time. Silence is rendered as silence: a team that stated
+ * nothing must read as unknown hours, not as a team with none.
+ */
+export const renderTeam = (team: CuratorTeam) => {
+	const people = `${team.members} ${team.members === 1 ? "person" : "people"}`;
+
+	if (!team.hoursPerWeek || !team.hoursPerRun) {
+		return `The team: ${people}. Nobody stated their hours, so the time available is unknown — which is not the same as none.`;
+	}
+
+	const silent = team.members - team.stated;
+
+	return [
+		`The team: ${people}, ${team.stated} of whom stated their hours.`,
+		`Stated time: ${team.hoursPerWeek.from}–${team.hoursPerWeek.to} hours a week between them, so ${team.hoursPerRun.from}–${team.hoursPerRun.to} hours over the 28 days.`,
+		silent
+			? `The other ${silent} stated nothing and are not in that total.`
+			: "",
+	]
+		.filter(Boolean)
+		.join(" ");
+};
 
 export const renderStage = (stage: CuratorStage) => stripIndents`
 	Workflow stage: ${stage.name}

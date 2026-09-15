@@ -1,6 +1,8 @@
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
+import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type {
@@ -108,10 +110,28 @@ export const runGoalCheck = async (
 			stageName: true,
 			stepId: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+			project: {
+				select: {
+					team: {
+						select: {
+							members: {
+								where: { status: { in: TEAM_ROSTER_STATUSES } },
+								select: {
+									user: {
+										select: { profile: { select: { timeForWork: true } } },
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	});
 
 	if (!checkpoint) return null;
+
+	const members = checkpoint.project?.team?.members ?? [];
 
 	return checkpointCurator.checkGoal(
 		{
@@ -120,6 +140,11 @@ export const runGoalCheck = async (
 				name: checkpoint.stageName,
 				requirements: await stageRequirements(checkpoint.stepId),
 			},
+			team: teamCapacity(
+				members.map((member) => ({
+					timeForWork: member.user.profile?.timeForWork,
+				})),
+			),
 		},
 		options,
 	);

@@ -36,10 +36,30 @@ export type CuratorOptions = {
 	locale?: string;
 };
 
+export type CuratorHours = { from: number; to: number };
+
+/**
+ * The hours the team says it has, summed over the roster.
+ *
+ * `stated` is what makes the totals readable: five members and two statements
+ * is not the same claim as five members and five. Both ranges are null when
+ * nobody stated anything — unknown time, never zero.
+ */
+export type CuratorTeam = {
+	members: number;
+	/** How many of them stated any hours at all. */
+	stated: number;
+	hoursPerWeek: CuratorHours | null;
+	/** The same sum over the four sprints of the run. */
+	hoursPerRun: CuratorHours | null;
+};
+
 /** Day 1: is this reachable in 28 days, and what is missing from the list. */
 export type GoalCheckInput = {
 	card: CuratorGoalCard;
 	stage: CuratorStage;
+	/** What the promise is weighed against: the time the team actually has. */
+	team: CuratorTeam;
 };
 
 /**

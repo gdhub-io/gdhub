@@ -37,17 +37,20 @@ export const useTeamHours = (teamId?: string) => {
 
 	const members = data?.members ?? [];
 
-	const statedFor = (row: TeamHoursRow) => {
+	/** Null where the member has said nothing: unknown is not zero. */
+	const statedFor = (row: TeamHoursRow): [number, number] | null => {
 		const stated = row.user.profile?.timeForWork ?? [];
 
-		return [stated[0] ?? 0, stated[1] ?? stated[0] ?? 0] as [number, number];
+		if (!stated.length) return null;
+
+		return [stated[0] ?? 0, stated[1] ?? stated[0] ?? 0];
 	};
 
 	const hours = members.reduce<[number, number]>(
 		(sum, row) => {
-			const [from, to] = statedFor(row);
+			const stated = statedFor(row);
 
-			return [sum[0] + from, sum[1] + to];
+			return stated ? [sum[0] + stated[0], sum[1] + stated[1]] : sum;
 		},
 		[0, 0],
 	);
@@ -56,6 +59,8 @@ export const useTeamHours = (teamId?: string) => {
 		members,
 		isLoading,
 		statedFor,
+		/** How many of them answered — "5 members, 2 of whom stated" is its own fact. */
+		stated: members.filter((row) => statedFor(row)).length,
 		/** Hours a week, summed across the team. */
 		hours,
 		/** The same over the four sprints. */

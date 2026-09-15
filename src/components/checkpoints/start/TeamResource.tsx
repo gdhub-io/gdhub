@@ -31,7 +31,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 	const queryClient = useQueryClient();
 	const [mine, setMine] = useState<number[]>();
 
-	const { members, isLoading, statedFor } = useTeamHours(teamId);
+	const { members, isLoading, statedFor, stated } = useTeamHours(teamId);
 
 	const save = useMutation({
 		mutationFn: async (timeForWork: number[]) =>
@@ -44,7 +44,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save")),
 	});
 
-	const hoursOf = (row: TeamHoursRow) => {
+	const hoursOf = (row: TeamHoursRow): [number, number] | null => {
 		const own = row.userId === session?.user?.id ? mine : undefined;
 
 		return own ? [own[0] ?? 0, own[1] ?? own[0] ?? 0] : statedFor(row);
@@ -52,9 +52,9 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 
 	const total = members.reduce(
 		(sum, row) => {
-			const [from, to] = hoursOf(row);
+			const stated = hoursOf(row);
 
-			return [sum[0] + from, sum[1] + to];
+			return stated ? [sum[0] + stated[0], sum[1] + stated[1]] : sum;
 		},
 		[0, 0],
 	);
@@ -98,12 +98,18 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 						width: 220,
 						title: t("checkpoints.when.teamWeek", "Hours a week"),
 						render: (_: unknown, row: TeamHoursRow) => {
-							const [from, to] = hoursOf(row);
+							const stated = hoursOf(row);
+							const [from, to] = stated ?? [0, 0];
 
 							if (row.userId !== session?.user?.id)
 								return (
-									<Typography.Text className={styles.figure}>
-										{span(from, to)}
+									<Typography.Text
+										className={styles.figure}
+										type={stated ? undefined : "secondary"}
+									>
+										{stated
+											? span(from, to)
+											: t("checkpoints.when.teamUnknown", "not stated")}
 									</Typography.Text>
 								);
 
@@ -140,14 +146,19 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 						align: "right",
 						title: t("checkpoints.when.teamRun", "Over the 28 days"),
 						render: (_: unknown, row: TeamHoursRow) => {
-							const [from, to] = hoursOf(row);
+							const stated = hoursOf(row);
 
 							return (
-								<Typography.Text className={styles.figure}>
-									{span(
-										from * SPRINTS_PER_CHECKPOINT,
-										to * SPRINTS_PER_CHECKPOINT,
-									)}
+								<Typography.Text
+									className={styles.figure}
+									type={stated ? undefined : "secondary"}
+								>
+									{stated
+										? span(
+												stated[0] * SPRINTS_PER_CHECKPOINT,
+												stated[1] * SPRINTS_PER_CHECKPOINT,
+											)
+										: "—"}
 								</Typography.Text>
 							);
 						},
@@ -157,7 +168,13 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 					<Table.Summary.Row>
 						<Table.Summary.Cell index={0}>
 							<Typography.Text strong>
-								{t("checkpoints.when.teamTotal", "The team")}
+								{stated === members.length
+									? t("checkpoints.when.teamTotal", "The team")
+									: t(
+											"checkpoints.when.teamTotalPart",
+											"The team — {stated} of {members} stated",
+											{ stated, members: members.length },
+										)}
 							</Typography.Text>
 						</Table.Summary.Cell>
 						<Table.Summary.Cell index={1}>

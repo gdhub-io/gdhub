@@ -1,6 +1,12 @@
 import { stripIndents } from "common-tags";
 import type { GoalCheckInput } from "../types";
-import { CURATOR_STANCE, localeLine, renderCard, renderStage } from "./card";
+import {
+	CURATOR_STANCE,
+	localeLine,
+	renderCard,
+	renderStage,
+	renderTeam,
+} from "./card";
 
 /**
  * Day 1, consultation 1: is this reachable in 28 days (§6).
@@ -9,6 +15,9 @@ import { CURATOR_STANCE, localeLine, renderCard, renderStage } from "./card";
  * into the outcome list, and 28 days later fails at something that was never 28
  * days of work. This call is what stops that — by naming what does not fit and
  * offering a smaller version of each, never by rewriting the list.
+ *
+ * "Does not fit" is measured against the team's own stated hours, which is the
+ * one number that turns a scope opinion into an argument the author can check.
  */
 
 export const GOAL_CHECK_FUNCTION_NAME = "report_goal_check";
@@ -19,7 +28,7 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 		reachable: {
 			type: "boolean",
 			description:
-				"true if this outcome list is plausible for a small team in 28 days",
+				"true if this outcome list is plausible in 28 days for a team with the hours stated below",
 		},
 		notes: {
 			type: "array",
@@ -50,7 +59,7 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 		note: {
 			type: "string",
 			description:
-				"One short paragraph the author reads. Say what stands out; do not repeat the list back.",
+				"One short paragraph the author reads. Say what stands out; do not repeat the list back. Where the list outruns the hours the team has, say so and name those hours.",
 		},
 	},
 	required: ["reachable", "notes", "missing", "note"],
@@ -63,8 +72,16 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${CURATOR_STANCE}
 
 			This is day 1. The card is still a draft and the author can change it.
-			Judge only whether it fits 28 days of work for a small indie team, and
-			whether the stage's own requirements are covered.
+			Judge only whether it fits 28 days of work for this team, with the
+			hours it has, and whether the stage's own requirements are covered.
+
+			The hours are what the members themselves stated they have per week,
+			summed and carried over the 28 days. Weigh the list against them and
+			say plainly where the promise outruns the time, naming the hours it
+			has — never a rate of work you made up, and never a task-by-task
+			estimate in hours. Where nobody has stated their hours, say the time
+			available is unknown and judge the list on its own; unknown hours are
+			not zero hours, and must never make everything unreachable.
 
 			The author reads you and then edits their own tasks, so write to be
 			read rather than to be parsed. Offer a smaller wording where a task is
@@ -81,6 +98,8 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${renderCard(input.card)}
 
 			${renderStage(input.stage)}
+
+			${renderTeam(input.team)}
 
 			Answer via the ${GOAL_CHECK_FUNCTION_NAME} function.
 		`,

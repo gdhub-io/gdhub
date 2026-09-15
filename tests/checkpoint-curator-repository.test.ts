@@ -1,12 +1,17 @@
+import { readFileSync } from "node:fs";
 import {
 	CheckpointItemKind,
 	CheckpointStatus,
 	CheckpointVerdict,
+	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
+import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import {
 	answerDevlog,
 	closeCheckpoint,
+	runGoalCheck,
 	writeMidNote,
 } from "@/repositories/checkpoint-curator.repository";
 import { checkpointCurator } from "@/services/checkpoint-curator";
@@ -67,6 +72,119 @@ const running = (over: Record<string, unknown> = {}) => ({
 	reports: [],
 	pulses: [],
 	...over,
+});
+
+describe("runGoalCheck", () => {
+	const member = (timeForWork: number[] | null) => ({
+		user: { profile: timeForWork ? { timeForWork } : null },
+	});
+
+	const draft = (members: ReturnType<typeof member>[]) => ({
+		goal: "A playable vertical slice",
+		stageName: "Prototyping",
+		stepId: "step-1",
+		items: [outcome("o1")],
+		project: { team: { members } },
+	});
+
+	const checked = { reachable: true, notes: [], missing: [], note: "n" };
+
+	it("hands the model the team's hours, weekly and over the whole run", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20]), member([5, 8])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				team: {
+					members: 2,
+					stated: 2,
+					hoursPerWeek: { from: 15, to: 28 },
+					hoursPerRun: {
+						from: 15 * SPRINTS_PER_CHECKPOINT,
+						to: 28 * SPRINTS_PER_CHECKPOINT,
+					},
+				},
+			}),
+			{},
+		);
+	});
+
+	it("does not read a member who stated nothing as a member with no hours", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20]), member([]), member(null)]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				team: expect.objectContaining({
+					members: 3,
+					stated: 1,
+					hoursPerWeek: { from: 10, to: 20 },
+				}),
+			}),
+			{},
+		);
+	});
+
+	it("leaves the hours unknown when the whole team stated nothing", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([]), member(null)]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				team: expect.objectContaining({
+					members: 2,
+					hoursPerWeek: null,
+					hoursPerRun: null,
+				}),
+			}),
+			{},
+		);
+	});
+
+	it("counts the roster the team page counts, and no one else", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.findUnique).mock.calls[0];
+		const select = (args as Record<string, any>).select;
+
+		expect(select.project.select.team.select.members.where).toEqual({
+			status: { in: TEAM_ROSTER_STATUSES },
+		});
+		expect(TEAM_ROSTER_STATUSES).toEqual([
+			TeamMemberStatus.Founder,
+			TeamMemberStatus.Hired,
+			TeamMemberStatus.Fired,
+		]);
+		// The team page is where that definition comes from; a second list there
+		// would let the two drift apart without either test failing.
+		expect(
+			readFileSync("src/app/api/user/project/team/route.ts", "utf8"),
+		).toContain("TEAM_ROSTER_STATUSES");
+	});
+
+	it("asks nothing of the model for a checkpoint that is not there", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(null);
+
+		await expect(runGoalCheck("cp1")).resolves.toBeNull();
+		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+	});
 });
 
 describe("answerDevlog", () => {

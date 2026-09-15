@@ -38,22 +38,30 @@ answer folds into the report, so it costs nothing extra.
 
 Measured against a representative checkpoint: a four-outcome goal card, a
 four-task stage template, devlogs of ~250 words, five members in the pulse
-matrix, two artifacts attached.
+matrix, two artifacts attached, four of the five members having stated the hours
+a week they have.
 
 | Call | Times | Input each | Output each | Input total | Output total |
 |---|---|---|---|---|---|
-| Day 1 — goal check | 1 | 782 | ~300 | 782 | 300 |
+| Day 1 — goal check | 1 | 967 | ~300 | 967 | 300 |
 | Devlog answer | 3 | 926 | ~120 | 2 778 | 360 |
 | Day 14 — scope note | 1 | 895 | ~170 | 895 | 170 |
 | Day 28 — report | 1 | 1 714 | ~480 | 1 714 | 480 |
-| **Total** | **6** | | | **6 169** | **1 310** |
+| **Total** | **6** | | | **6 354** | **1 310** |
 
 | Model | Input | Output | **Per checkpoint** |
 |---|---|---|---|
-| `gpt-5.6-luna` | $0.0012 | $0.0016 | **$0.0028** |
-| `gpt-5.6-terra` | $0.0123 | $0.0157 | **$0.0281** |
-| `gpt-5.6-sol` | $0.0308 | $0.0393 | **$0.0701** |
-| **Luna, report on Terra** | | | **$0.0110** |
+| `gpt-5.6-luna` | $0.0013 | $0.0016 | **$0.0028** |
+| `gpt-5.6-terra` | $0.0127 | $0.0157 | **$0.0284** |
+| `gpt-5.6-sol` | $0.0318 | $0.0393 | **$0.0711** |
+| **Luna, report on Terra** | | | **$0.0111** |
+
+The goal check grew from 782 to 967 tokens when it started weighing the card
+against the team's stated hours: 109 for the paragraph telling it how to use
+them (including what unknown hours mean), 54 for the hours themselves, 22 for
+the two schema descriptions that changed. The team block is 27 tokens where
+nobody stated anything, so the case that carries no information also costs the
+least.
 
 **A third of a cent on Luna, seven cents on Sol.** Against a checkpoint priced
 from a curator's hourly rate, the model is not a cost centre — it is rounding.
@@ -94,6 +102,9 @@ carries every devlog of the 28 days. Four devlogs of 250 words are ~1 600 of its
 writing 1 000-word devlogs quadruples that one call to ~6 000 input tokens, which
 on Terra is $0.012 instead of $0.003.
 
+The goal check does not scale with the team: the hours reach it summed, as two
+sentences, whether the team is two people or twenty.
+
 **Prompt caching is not worth chasing.** The prefix every prompt shares is the
 ~250-token curator stance, and at six calls spread over 28 days there is nothing
 to amortise. Cache writes cost 1.25×, so switching it on would cost more than it
@@ -106,8 +117,8 @@ per outcome — adds output, not input.
 
 | | Input | Output | Luna | Luna + Terra report |
 |---|---|---|---|---|
-| Now | 6 169 | 1 310 | $0.0028 | $0.0110 |
-| Per-item reviews | ~6 900 | ~2 140 | **$0.0039** | **$0.0140** |
+| Now | 6 354 | 1 310 | $0.0028 | $0.0111 |
+| Per-item reviews | ~7 100 | ~2 140 | **$0.0040** | **$0.0141** |
 
 Still under two cents. The design decision is not a cost decision, and should not
 be argued as one.
@@ -140,8 +151,8 @@ many. It should never be skipped to save anything, because it saves nothing.
 | Volume | Cost |
 |---|---|
 | 100 checkpoints, Luna | $0.28 |
-| 100 checkpoints, Luna + Terra report | $1.10 |
-| 100 checkpoints, Sol throughout | $7.01 |
+| 100 checkpoints, Luna + Terra report | $1.11 |
+| 100 checkpoints, Sol throughout | $7.11 |
 | 1 000 onboarding validations | $0.23 |
 | 1 000 CVs parsed | $0.94 |
 

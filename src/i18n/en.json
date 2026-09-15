@@ -837,6 +837,8 @@
 			"teamRun": "Over the 28 days",
 			"teamTitle": "What the team has for these 28 days",
 			"teamTotal": "The team",
+			"teamTotalPart": "The team — {stated} of {members} stated",
+			"teamUnknown": "not stated",
 			"teamWeek": "Hours a week"
 		}
 	},
