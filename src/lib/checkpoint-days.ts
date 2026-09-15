@@ -21,6 +21,9 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const utcMidnight = (date: Date) =>
 	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
 
+/** The same midnight as a date, for arithmetic that returns days rather than counts. */
+export const utcStartOfDay = (date: Date) => new Date(utcMidnight(date));
+
 /**
  * Which of the 28 days a checkpoint is on, counted in UTC.
  *
