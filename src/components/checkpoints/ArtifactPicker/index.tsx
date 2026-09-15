@@ -152,6 +152,7 @@ export function ArtifactPicker({
 		return (
 			<>
 				<Input
+					variant="filled"
 					allowClear
 					value={search}
 					onChange={(event) => setSearch(event.target.value)}

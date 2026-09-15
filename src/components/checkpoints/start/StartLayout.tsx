@@ -22,7 +22,7 @@ export const START_STEPS = [
 	"now",
 	"goal",
 	"curator",
-	"when",
+	"planning",
 	"payment",
 ] as const;
 
@@ -57,7 +57,7 @@ export function StartLayout({
 		now: t("checkpoints.prepare.step.now", "Now"),
 		goal: t("checkpoints.prepare.step.goal", "Goal"),
 		curator: t("checkpoints.prepare.step.curator", "Curator"),
-		when: t("checkpoints.prepare.step.when", "When"),
+		planning: t("checkpoints.prepare.step.planning", "Planning"),
 		payment: t("checkpoints.prepare.step.payment", "Payment"),
 	};
 

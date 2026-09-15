@@ -709,6 +709,7 @@
 				"goal": "Goal",
 				"now": "Now",
 				"payment": "Payment",
+				"planning": "Planning",
 				"when": "When"
 			},
 			"stepOf": "Step {step} of {total}"

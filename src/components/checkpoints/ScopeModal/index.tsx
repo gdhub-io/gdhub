@@ -132,6 +132,7 @@ export function ScopeModal({
 							return (
 								<Flex key={item.id} gap={8} align="center">
 									<Input
+										variant="filled"
 										value={text[item.id] ?? item.text}
 										disabled={isCut}
 										maxLength={CHECKPOINT_ITEM_TEXT_MAX}
@@ -174,6 +175,7 @@ export function ScopeModal({
 						{added.map((line, index) => (
 							<Flex key={`added-${index + 1}`} gap={8} align="center">
 								<Input
+									variant="filled"
 									value={line}
 									autoFocus
 									maxLength={CHECKPOINT_ITEM_TEXT_MAX}
@@ -209,6 +211,7 @@ export function ScopeModal({
 				<Flex vertical gap={6}>
 					<Typography.Text>{t("checkpoints.scope.why", "Why")}</Typography.Text>
 					<Input.TextArea
+						variant="filled"
 						value={note}
 						rows={3}
 						maxLength={CHECKPOINT_REVISION_NOTE_MAX}

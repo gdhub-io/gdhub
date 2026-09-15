@@ -135,6 +135,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 							return (
 								<Flex gap={6} align="center">
 									<InputNumber
+										variant="filled"
 										min={0}
 										max={80}
 										value={from}
@@ -144,6 +145,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 									/>
 									<span>–</span>
 									<InputNumber
+										variant="filled"
 										min={0}
 										max={80}
 										value={to}

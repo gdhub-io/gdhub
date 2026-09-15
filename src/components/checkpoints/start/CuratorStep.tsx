@@ -151,7 +151,7 @@ export function CuratorStep() {
 				<Button
 					type="primary"
 					loading={update.isPending}
-					onClick={() => goTo("when")}
+					onClick={() => goTo("planning")}
 				>
 					{t("checkpoints.start.next3", "Next — summary")}
 				</Button>

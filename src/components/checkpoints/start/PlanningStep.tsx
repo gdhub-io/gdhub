@@ -18,21 +18,21 @@ import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { devlogDayOf, sprintRange } from "@/lib/checkpoint-sprints";
+import styles from "./PlanningStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout } from "./StartLayout";
 import { TeamResource } from "./TeamResource";
 import { useCheckpointDraft } from "./useDraft";
-import styles from "./WhenStep.module.scss";
 
 /**
- * The day the 28 days start — the question the flow never asked.
+ * Planning: the day the 28 days start, and what the team has to spend on them.
  *
  * One date decides four sprints, four devlogs and a verdict, so the answer is
  * shown back as the calendar it produces rather than left as a field. With a
  * human curator the day is a request: they confirm it when they take the
  * checkpoint, and everything below moves with it.
  */
-export function WhenStep() {
+export function PlanningStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
@@ -81,7 +81,7 @@ export function WhenStep() {
 
 	return (
 		<StartLayout
-			step="when"
+			step="planning"
 			question={t("checkpoints.prepare.q4", "When do you want to start?")}
 			hint={t(
 				"checkpoints.when.hint",
@@ -119,6 +119,7 @@ export function WhenStep() {
 							{t("checkpoints.when.startsOn", "Starts on")}
 						</Typography.Text>
 						<DatePicker
+							variant="filled"
 							value={chosen}
 							onChange={setPicked}
 							allowClear={false}

@@ -4,10 +4,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { CuratorStep } from "./CuratorStep";
 import { PaymentStep } from "./PaymentStep";
+import { PlanningStep } from "./PlanningStep";
 import { PrepareNavProvider } from "./PrepareNav";
 import { START_STEPS, type StartStep } from "./StartLayout";
 import { StartStepPage } from "./StartStepPage";
-import { WhenStep } from "./WhenStep";
 
 export type PreparePanelProps = {
 	/** Where Cancel and "no draft" land: the project's checkpoint list. */
@@ -47,7 +47,7 @@ export function PreparePanel({ base }: PreparePanelProps) {
 		<PrepareNavProvider value={nav}>
 			{(step === "now" || step === "goal") && <StartStepPage step={step} />}
 			{step === "curator" && <CuratorStep />}
-			{step === "when" && <WhenStep />}
+			{step === "planning" && <PlanningStep />}
 			{step === "payment" && <PaymentStep />}
 		</PrepareNavProvider>
 	);

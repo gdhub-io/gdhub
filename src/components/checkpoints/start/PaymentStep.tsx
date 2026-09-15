@@ -128,7 +128,7 @@ export function PaymentStep() {
 				"checkpoints.start.h4",
 				"Read it back before you pay. After this the goal card is fixed until day 14.",
 			)}
-			onBack={() => go("when")}
+			onBack={() => go("planning")}
 			onCancel={cancel}
 			footNote={
 				<Typography.Text type="secondary" className={styles.pending}>

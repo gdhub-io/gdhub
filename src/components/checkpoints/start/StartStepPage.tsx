@@ -178,6 +178,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 						{t("checkpoints.goal.sentence", "The goal, in one sentence")}
 					</Typography.Text>
 					<Input.TextArea
+						variant="filled"
 						value={goal}
 						rows={2}
 						maxLength={CHECKPOINT_GOAL_MAX}
