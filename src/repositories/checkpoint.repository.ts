@@ -5,6 +5,7 @@ import {
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { checkpointProgress, utcStartOfDay } from "@/lib/checkpoint-days";
+import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
 	currentSprint,
 	devlogDayOf,
@@ -350,16 +351,56 @@ export const getCheckpoint = async (id: string) => {
 	return row ? toCheckpointDetail(row) : null;
 };
 
+/**
+ * The one on the go carries its three signals; the closed rows below it do not,
+ * so the reports, pulses and team are read only for this one checkpoint.
+ */
+const currentCheckpointSelect = {
+	...checkpointSelect,
+	reports: { select: { publishedAt: true } },
+	pulses: { select: { week: true, confirmedAt: true } },
+	project: {
+		select: {
+			team: {
+				select: {
+					members: {
+						where: CONFIRMED_STATUS,
+						select: { startedAt: true, finishedAt: true },
+					},
+				},
+			},
+		},
+	},
+} as const;
+
 /** The one checkpoint a project may have on the go, `Draft` included. */
-export const getUnfinishedCheckpoint = async (projectId: string) =>
-	prisma.projectCheckpoint.findFirst({
+export const getUnfinishedCheckpoint = async (projectId: string) => {
+	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
 			projectId,
 			status: { in: [CheckpointStatus.Draft, ...OPEN_STATUSES] },
 		},
 		orderBy: { createdAt: "desc" },
-		select: checkpointSelect,
+		select: currentCheckpointSelect,
 	});
+
+	if (!row) return null;
+
+	const { reports, pulses, project, ...checkpoint } = row;
+
+	return {
+		...checkpoint,
+		signals: checkpointSignals({
+			startedAt: checkpoint.startedAt,
+			reports,
+			pulses,
+			members: project.team?.members ?? [],
+			outcomes: checkpoint.items
+				.filter((item) => item.kind === CheckpointItemKind.Outcome)
+				.map((item) => ({ cut: item.cut, hasArtifact: !!item.artifact })),
+		}),
+	};
+};
 
 /**
  * Why a project cannot start another checkpoint, or null when it can.

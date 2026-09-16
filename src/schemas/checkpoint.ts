@@ -67,6 +67,9 @@ export const CHECKPOINT_REVISION_NOTE_MAX = 500;
 /** The day the curator's note asks the author to settle the outcome list. */
 export const CHECKPOINT_SCOPE_DAY = 14;
 
+/** The day the author is reminded of outcomes with nothing attached to them. */
+export const CHECKPOINT_EVIDENCE_DAY = 26;
+
 /**
  * One line of the day-14 change: cut it, reword it, or both. Nothing here
  * deletes a line — a dropped outcome stays on the card, struck through.

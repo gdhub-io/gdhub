@@ -135,6 +135,8 @@ export type CheckpointDto = {
 	sprints?: CheckpointSprintDto[];
 	pulses?: CheckpointPulseRowDto[];
 	evidence?: CheckpointEvidenceDto[];
+	/** The list's current row only, and null while it is still a draft. */
+	signals?: CheckpointSignalsDto | null;
 	/** Counted in UTC on the server — see `checkpointProgress`. */
 	day: number | null;
 	daysLeft: number | null;
@@ -153,6 +155,13 @@ export type CheckpointBlocker =
 			};
 	  }
 	| { reason: "noStage" };
+
+/** The three counts the card under way shows — see `checkpointSignals`. */
+export type CheckpointSignalsDto = {
+	devlogs: { done: number; total: number };
+	pulses: { done: number; total: number };
+	evidence: { done: number; total: number };
+};
 
 export type CheckpointListResponse = {
 	/** The one on the go — `Draft`, `Active` or `Review`. */

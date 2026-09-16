@@ -773,7 +773,11 @@
 			"why": "Why"
 		},
 		"signals": {
+			"artifacts": "Artifacts",
+			"askedFor": "Asked for since day {day}",
+			"askedOn": "Asked for on day {day}",
 			"confirmedOf": "{done} of {total}",
+			"devlogs": "Devlogs",
 			"empty": "No one has been asked yet",
 			"emptyNote": "Every member is asked once a sprint, and work already published answers for them.",
 			"info": "One press per person per sprint. Hover a cell for the day it was marked.",
@@ -786,6 +790,9 @@
 			"marked": "Marked {date}",
 			"markedCount": "{done} of {total} marked this sprint.",
 			"missing": "A mark is missing",
+			"noneAttached": "Not attached",
+			"of": "{done} of {total}",
+			"pulsesThisSprint": "Pulses this sprint",
 			"sprintShort": "S{n}",
 			"team": "TEAM",
 			"title": "Team signals"

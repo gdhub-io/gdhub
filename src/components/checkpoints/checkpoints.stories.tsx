@@ -106,7 +106,38 @@ export const StatusSlot: StoryObj = {
 };
 
 export const RunningCard: StoryObj = {
-	render: () => <CheckpointCard checkpoint={base} projectSlug="neon-drift" />,
+	render: () => (
+		<CheckpointCard
+			checkpoint={{
+				...base,
+				signals: {
+					devlogs: { done: 2, total: 4 },
+					pulses: { done: 2, total: 5 },
+					evidence: { done: 0, total: 3 },
+				},
+			}}
+			projectSlug="neon-drift"
+		/>
+	),
+};
+
+/** Late in the run, with everything answered and the evidence in. */
+export const RunningCardComplete: StoryObj = {
+	render: () => (
+		<CheckpointCard
+			checkpoint={{
+				...base,
+				day: 27,
+				daysLeft: 1,
+				signals: {
+					devlogs: { done: 4, total: 4 },
+					pulses: { done: 5, total: 5 },
+					evidence: { done: 3, total: 3 },
+				},
+			}}
+			projectSlug="neon-drift"
+		/>
+	),
 };
 
 /** Nothing charged, no days counting, and the sentence naming what is left. */

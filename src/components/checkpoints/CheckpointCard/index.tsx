@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { CheckpointSignals } from "../CheckpointSignals";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";
 import { CuratorBadge } from "../CuratorBadge";
 import styles from "./style.module.scss";
@@ -83,6 +84,13 @@ export function CheckpointCard({
 							/>
 						</div>
 					</Flex>
+				)}
+
+				{!!checkpoint.signals && (
+					<CheckpointSignals
+						signals={checkpoint.signals}
+						day={checkpoint.day}
+					/>
 				)}
 			</div>
 
