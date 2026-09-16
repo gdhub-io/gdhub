@@ -8,10 +8,11 @@ import { prisma } from "@/services/prisma";
 /**
  * Consultation 1: the curator reads the goal card back before the card is fixed.
  *
- * A `POST` because it spends a model call, and nothing is stored — the concerns
- * are what the author is shown while the list can still change. Only a `Draft`:
- * once the 28 days are running the card is what the verdict is measured against,
- * and asking whether it fits then would only be cruel.
+ * A `POST` because it may spend a model call and writes what came back. The read
+ * is kept on the checkpoint and handed straight back while the plan behind it is
+ * unchanged, so opening this step twice costs one call. Only a `Draft`: once the
+ * 28 days are running the card is what the verdict is measured against, and
+ * asking whether it fits then would only be cruel.
  */
 export const POST = pipe(
 	withAuth({ mode: "user" }),

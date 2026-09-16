@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
@@ -93,10 +94,25 @@ const stageRequirements = async (stepId: string | null) => {
 };
 
 /**
+ * What a stored read answers: everything the model is given and nothing else.
+ * A card edited back to what it was hashes the same and costs no second call.
+ */
+export const goalCheckHash = (input: {
+	card: CuratorGoalCard;
+	stage: { name: string; requirements: string[] };
+	team: unknown;
+}) => createHash("sha256").update(JSON.stringify(input)).digest("hex");
+
+/**
  * Day 1: read the card back and say what will not fit.
  *
- * Nothing is written. The concerns are what the author is shown while the card
- * can still change, and once it is agreed they are history — the record keeps
+ * The read is kept on the checkpoint and returned again while the plan behind it
+ * is unchanged: the payment step is the only caller and would otherwise spend a
+ * model call on every load. One read, overwritten — what is wanted later is what
+ * the author paid against, not every version they passed through.
+ *
+ * The card itself is not written. The concerns are what the author is shown while
+ * it can still change, and once it is agreed they are history — the record keeps
  * `originalText`, which is the part that still matters at the end.
  */
 export const runGoalCheck = async (
@@ -109,6 +125,8 @@ export const runGoalCheck = async (
 			goal: true,
 			stageName: true,
 			stepId: true,
+			goalCheck: true,
+			goalCheckHash: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			project: {
 				select: {
@@ -133,21 +151,34 @@ export const runGoalCheck = async (
 
 	const members = checkpoint.project?.team?.members ?? [];
 
-	return checkpointCurator.checkGoal(
-		{
-			card: toCard(checkpoint.goal, checkpoint.items),
-			stage: {
-				name: checkpoint.stageName,
-				requirements: await stageRequirements(checkpoint.stepId),
-			},
-			team: teamCapacity(
-				members.map((member) => ({
-					timeForWork: member.user.profile?.timeForWork,
-				})),
-			),
+	const input = {
+		card: toCard(checkpoint.goal, checkpoint.items),
+		stage: {
+			name: checkpoint.stageName,
+			requirements: await stageRequirements(checkpoint.stepId),
 		},
-		options,
-	);
+		team: teamCapacity(
+			members.map((member) => ({
+				timeForWork: member.user.profile?.timeForWork,
+			})),
+		),
+	};
+
+	const hash = goalCheckHash(input);
+
+	if (checkpoint.goalCheck && checkpoint.goalCheckHash === hash) {
+		return checkpoint.goalCheck;
+	}
+
+	const result = await checkpointCurator.checkGoal(input, options);
+	if (!result) return null;
+
+	await prisma.projectCheckpoint.update({
+		where: { id: checkpointId },
+		data: { goalCheck: result, goalCheckHash: hash },
+	});
+
+	return result;
 };
 
 /**

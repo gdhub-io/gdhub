@@ -79,12 +79,18 @@ describe("runGoalCheck", () => {
 		user: { profile: timeForWork ? { timeForWork } : null },
 	});
 
-	const draft = (members: ReturnType<typeof member>[]) => ({
+	const draft = (
+		members: ReturnType<typeof member>[],
+		kept: { goalCheck?: unknown; goalCheckHash?: string | null } = {},
+	) => ({
 		goal: "A playable vertical slice",
 		stageName: "Prototyping",
 		stepId: "step-1",
+		goalCheck: null,
+		goalCheckHash: null,
 		items: [outcome("o1")],
 		project: { team: { members } },
+		...kept,
 	});
 
 	const checked = { reachable: true, notes: [], missing: [], note: "n" };
@@ -177,6 +183,81 @@ describe("runGoalCheck", () => {
 		expect(
 			readFileSync("src/app/api/user/project/team/route.ts", "utf8"),
 		).toContain("TEAM_ROSTER_STATUSES");
+	});
+
+	// The payment step is the only caller and opens on every load, so a read that
+	// is not kept is a model call each time.
+	it("keeps the read it just made, under the hash of what it asked", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const data = (args as Record<string, any>).data;
+
+		expect(data.goalCheck).toEqual(checked);
+		expect(data.goalCheckHash).toEqual(expect.any(String));
+	});
+
+	it("does not ask again while the plan behind the read is unchanged", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const hash = (args as Record<string, any>).data.goalCheckHash;
+		vi.clearAllMocks();
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])], {
+				goalCheck: checked,
+				goalCheckHash: hash,
+			}) as never,
+		);
+
+		await expect(runGoalCheck("cp1")).resolves.toEqual(checked);
+		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	// The hours reach the model, so they are part of the question: a team that
+	// restated them must not be answered from the card alone.
+	it("asks again when the team's hours moved under a kept read", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const hash = (args as Record<string, any>).data.goalCheckHash;
+		vi.clearAllMocks();
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([30, 40])], {
+				goalCheck: checked,
+				goalCheckHash: hash,
+			}) as never,
+		);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalled();
+	});
+
+	it("keeps nothing when the model fails", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(null as never);
+
+		await expect(runGoalCheck("cp1")).resolves.toBeNull();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
 	});
 
 	it("asks nothing of the model for a checkpoint that is not there", async () => {

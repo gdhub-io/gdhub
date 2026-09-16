@@ -40,7 +40,7 @@
         "@editorjs/table": "^2.4.5",
         "@firebase/app": "^0.14.6",
         "@firebase/messaging": "^0.12.23",
-        "@gdhub-io/gdhub-prisma": "2.0.0-beta.55",
+        "@gdhub-io/gdhub-prisma": "2.0.0-beta.56",
         "@gdhub-io/gdhub-typesense": "^1.0.6",
         "@hello-pangea/dnd": "^18.0.1",
         "@langchain/langgraph-sdk": "^0.1.6",
@@ -790,7 +790,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.12", "", {}, "sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww=="],
 
-    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.55", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.55/c1b3726ac2e4c163c59a367efc845f66afe3bd66", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-HHVoPwprCaoTyGJsxkL6RAYzehi3Dgkt4Pf1v2Kqtqat5ECkaPAiax87tgnV4ieoIGZcsneMwXc32XTysQiU0w=="],
+    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.56", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.56/7b63ec393b4930db61424fac73b74e58bf9b4dfe", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-6m+lm8jF6b70u8dNTTCVRNwmsw5/4MiiKCOtx0cuhZnToa25e9jse+19eBWxxNx+UeDiJxD/pfs6vU5+uBfamw=="],
 
     "@gdhub-io/gdhub-typesense": ["@gdhub-io/gdhub-typesense@1.0.6", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.6/2825e41b4b51a61291221e549d82c396059e4ab1", { "dependencies": { "dayjs": "^1.11.13", "typesense": "^1.8.2", "typesense-instantsearch-adapter": "^2.8.0" } }, "sha512-jxhOwbHh0dtcAsemld5XPjODMqcjuipJjJx5nxM2z2qCKa/TGUw95j3Z78oOOlexksj0MSVqSNUluJpp9o+Rug=="],
 

@@ -22,7 +22,7 @@ import {
 	Typography,
 } from "antd";
 import dayjs from "dayjs";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { EmptyState } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
@@ -58,6 +58,30 @@ import { useCheckpointDraft } from "./useDraft";
  * place the author can read what they are and are not buying, and the only place
  * it can be refused.
  */
+/**
+ * True only once the read has been running long enough to be worth saying so.
+ *
+ * A kept read comes back from the database in tens of milliseconds, and flashing
+ * "Reading your plan" for that long reads as a glitch; a real model call takes
+ * seconds and has to announce itself.
+ */
+const useSlowRead = (running: boolean) => {
+	const [slow, setSlow] = useState(false);
+
+	useEffect(() => {
+		if (!running) {
+			setSlow(false);
+			return;
+		}
+
+		const timer = setTimeout(() => setSlow(true), 400);
+
+		return () => clearTimeout(timer);
+	}, [running]);
+
+	return slow;
+};
+
 export function PaymentStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
@@ -74,10 +98,11 @@ export function PaymentStep() {
 				team.hours.join("-"),
 			].join("|")
 		: undefined;
-	const { data: remark, isLoading: checking } = useGoalCheck(
+	const { data: remark, isLoading: reading } = useGoalCheck(
 		draft?.id,
 		signature,
 	);
+	const checking = useSlowRead(reading);
 	const update = useUpdateCheckpoint(draft?.id);
 	const curators = useCheckpointCurators();
 
@@ -216,9 +241,10 @@ export function PaymentStep() {
 					}
 				: null;
 
-	// Paying while the read is still running would buy a plan nobody has looked
-	// at yet; the sentence beside the button says which of the two is holding it.
-	const payHeldBy = checking
+	// Paying while the read is still running would buy a plan nobody has looked at
+	// yet — held on the request itself, not on whether it was slow enough to show.
+	// The sentence beside the button says which of the two is holding it.
+	const payHeldBy = reading
 		? t("checkpoints.pay.waitForCheck", "Wait for the plan to be read")
 		: checkoutClosed;
 

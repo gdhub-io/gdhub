@@ -79,7 +79,7 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.14.6",
 		"@firebase/messaging": "^0.12.23",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.55",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.56",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@hello-pangea/dnd": "^18.0.1",
 		"@langchain/langgraph-sdk": "^0.1.6",
