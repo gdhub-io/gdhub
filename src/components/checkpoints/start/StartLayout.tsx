@@ -32,6 +32,8 @@ export type StartLayoutProps = {
 	step: StartStep;
 	/** One line under the bars saying what this question is for. */
 	hint: string;
+	/** Sits above the hint: what the author has to read before the step's own words. */
+	notice?: ReactNode;
 	children: ReactNode;
 	/** Sits between the buttons and `Saved as a draft`. */
 	footNote?: ReactNode;
@@ -43,6 +45,7 @@ export type StartLayoutProps = {
 export function StartLayout({
 	step,
 	hint,
+	notice,
 	children,
 	footNote,
 	onBack,
@@ -81,6 +84,8 @@ export function StartLayout({
 						</Flex>
 					))}
 				</Flex>
+
+				{notice}
 
 				<Typography.Text className={styles.hint}>{hint}</Typography.Text>
 

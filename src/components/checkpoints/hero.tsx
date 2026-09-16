@@ -51,10 +51,14 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 		actions: (
 			<Flex vertical align="flex-end" gap={8}>
 				{!restates && <CheckpointStatusSlot checkpoint={checkpoint} />}
-				<CuratorBadge
-					kind={checkpoint.curatorKind}
-					curator={checkpoint.curator}
-				/>
+				{/* A draft's curator is still being chosen and has accepted nothing;
+				    showing them in the header would read as settled. */}
+				{!isDraft && (
+					<CuratorBadge
+						kind={checkpoint.curatorKind}
+						curator={checkpoint.curator}
+					/>
+				)}
 			</Flex>
 		),
 	};

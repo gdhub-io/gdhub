@@ -3,6 +3,7 @@
 import {
 	IconAlertTriangle,
 	IconCheck,
+	IconCircleCheck,
 	IconFlag,
 	IconInfoCircle,
 	IconLock,
@@ -16,6 +17,7 @@ import {
 	Checkbox,
 	Flex,
 	Skeleton,
+	Spin,
 	Tooltip,
 	Typography,
 } from "antd";
@@ -71,7 +73,10 @@ export function PaymentStep() {
 				team.hours.join("-"),
 			].join("|")
 		: undefined;
-	const { data: remark } = useGoalCheck(draft?.id, signature);
+	const { data: remark, isLoading: checking } = useGoalCheck(
+		draft?.id,
+		signature,
+	);
 	const update = useUpdateCheckpoint(draft?.id);
 	const curators = useCheckpointCurators();
 
@@ -166,9 +171,63 @@ export function PaymentStep() {
 				}),
 	].join(" · ");
 
-	// Advice, never a gate: the author can read it and pay anyway. There is no
-	// positive state in the design, so a plan that reads fine says nothing.
+	// Advice on the plan, never a verdict on it: the author can read the warning
+	// and pay anyway. It speaks in all three states — a silent block would be
+	// read as "nothing to say" exactly when it has not looked yet.
 	const atRisk = !!remark && (!remark.reachable || remark.missing.length > 0);
+	const read = checking
+		? {
+				tone: "info" as const,
+				icon: <Spin size="small" />,
+				title: t("checkpoints.pay.checkingTitle", "Reading your plan"),
+				body: t(
+					"checkpoints.pay.checkingBody",
+					"The outcomes you wrote are being weighed against the hours the team has.",
+				),
+			}
+		: atRisk
+			? {
+					tone: "warning" as const,
+					icon: <IconAlertTriangle size={20} stroke={1.6} />,
+					title: t(
+						"checkpoints.pay.riskTitle",
+						"Your 28-day plan may be at risk",
+					),
+					body: t(
+						"checkpoints.pay.riskBody",
+						"The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
+					),
+					action: (
+						<Button
+							className={styles.suggestionAction}
+							onClick={() => go("goal")}
+						>
+							{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
+						</Button>
+					),
+				}
+			: remark
+				? {
+						tone: "success" as const,
+						icon: <IconCircleCheck size={20} stroke={1.6} />,
+						title: t(
+							"checkpoints.pay.okTitle",
+							"Your 28-day plan looks reachable",
+						),
+						body:
+							remark.note ||
+							t(
+								"checkpoints.pay.okBody",
+								"The outcomes fit the hours the team stated. Nothing here is a promise that they land — only that the plan is not asking for more days than there are.",
+							),
+					}
+				: null;
+
+	// Paying while the read is still running would buy a plan nobody has looked
+	// at yet; the sentence beside the button says which of the two is holding it.
+	const payHeldBy = checking
+		? t("checkpoints.pay.waitForCheck", "Wait for the plan to be read")
+		: checkoutClosed;
 
 	return (
 		<StartLayout
@@ -177,39 +236,32 @@ export function PaymentStep() {
 				"checkpoints.prepare.h4",
 				"Review your choices, complete payment, and start working toward your next Checkpoint.",
 			)}
+			notice={
+				read && (
+					<Flex
+						gap={16}
+						align="flex-start"
+						className={styles.suggestion}
+						data-tone={read.tone}
+					>
+						<span className={styles.suggestionIcon}>{read.icon}</span>
+						<Flex vertical gap={4} className={styles.suggestionText}>
+							<Typography.Text className={styles.suggestionLabel}>
+								{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
+							</Typography.Text>
+							<Typography.Text className={styles.suggestionTitle}>
+								{read.title}
+							</Typography.Text>
+							<Typography.Text className={styles.suggestionBody}>
+								{read.body}
+							</Typography.Text>
+						</Flex>
+						{"action" in read && read.action}
+					</Flex>
+				)
+			}
 			onBack={() => go("planning")}
 		>
-			{atRisk && (
-				<Flex gap={16} align="flex-start" className={styles.suggestion}>
-					<span className={styles.suggestionIcon}>
-						<IconAlertTriangle size={20} stroke={1.6} />
-					</span>
-					<Flex vertical gap={4} className={styles.suggestionText}>
-						<Typography.Text className={styles.suggestionLabel}>
-							{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
-						</Typography.Text>
-						<Typography.Text className={styles.suggestionTitle}>
-							{t(
-								"checkpoints.pay.riskTitle",
-								"Your 28-day plan may be at risk",
-							)}
-						</Typography.Text>
-						<Typography.Text className={styles.suggestionBody}>
-							{t(
-								"checkpoints.pay.riskBody",
-								"The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
-							)}
-						</Typography.Text>
-					</Flex>
-					<Button
-						className={styles.suggestionAction}
-						onClick={() => go("goal")}
-					>
-						{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
-					</Button>
-				</Flex>
-			)}
-
 			<Flex vertical gap={24} className={styles.summary}>
 				{block(
 					t("checkpoints.pay.runsIn", "Runs in"),
@@ -348,7 +400,7 @@ export function PaymentStep() {
 				{/* The action of the whole purchase sits with the sum it commits.
 				    Stripe checkout lands with GDHUB-38. */}
 				<Flex gap={12} align="center">
-					<Tooltip title={checkoutClosed}>
+					<Tooltip title={payHeldBy}>
 						<Button
 							type="primary"
 							disabled
@@ -358,7 +410,7 @@ export function PaymentStep() {
 						</Button>
 					</Tooltip>
 					<Typography.Text type="secondary" className={styles.pending}>
-						{checkoutClosed}
+						{payHeldBy}
 					</Typography.Text>
 				</Flex>
 			</Card>

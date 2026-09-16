@@ -8,7 +8,6 @@ import {
 	DatePicker,
 	Flex,
 	Input,
-	Segmented,
 	Skeleton,
 	Typography,
 } from "antd";
@@ -16,7 +15,6 @@ import dayjs, { type Dayjs } from "dayjs";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui";
-import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import styles from "./PlanningStep.module.scss";
@@ -30,7 +28,9 @@ import { useCheckpointDraft } from "./useDraft";
 const DAY_FORMAT = "D MMM YYYY";
 
 /**
- * Planning: the day the 28 days start, and what the team has to spend on them.
+ * Planning: the day the author would like the 28 days to start, and what the
+ * team has to spend on them. The day is a wish rather than a promise — a human
+ * curator has to accept the checkpoint before it runs.
  *
  * One date decides the whole run, so the finish is shown beside it rather than
  * left for the author to count out — and both are UTC days, because the server
@@ -45,7 +45,6 @@ export function PlanningStep() {
 	const update = useUpdateCheckpoint(draft?.id);
 
 	const [picked, setPicked] = useState<Dayjs | null>(null);
-	const [mode, setMode] = useState<"soon" | "day">("soon");
 	const [mine, setMine] = useState<number[]>();
 	const { data: session } = useSession();
 	const { members, statedFor } = useTeamHours(project?.team?.id);
@@ -69,7 +68,6 @@ export function PlanningStep() {
 		);
 	}
 
-	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
 	const chosen =
 		picked ?? (draft.startedAt ? dayjs.utc(draft.startedAt) : dayjs());
 	const day = chosen.format("YYYY-MM-DD");
@@ -84,7 +82,7 @@ export function PlanningStep() {
 
 	const save = async () => {
 		try {
-			await update.mutateAsync({ startedAt: mode === "day" ? day : null });
+			await update.mutateAsync({ startedAt: day });
 			go("payment");
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
@@ -96,16 +94,14 @@ export function PlanningStep() {
 			step="planning"
 			hint={t(
 				"checkpoints.when.hint",
-				"Set the start date and confirm how much time the team has for this cycle.",
+				"Say when you would like the 28 days to begin and confirm how much time the team has for them.",
 			)}
 			onBack={() => go("curator")}
 			forward={
 				<Button
 					type="primary"
 					loading={update.isPending}
-					disabled={
-						(mode === "day" && !picked && !draft.startedAt) || !hasAuthorHours
-					}
+					disabled={!hasAuthorHours}
 					onClick={save}
 				>
 					{t("checkpoints.when.next", "Next — payment")}
@@ -113,35 +109,10 @@ export function PlanningStep() {
 			}
 		>
 			<Flex vertical gap={24}>
-				<div>
-					<Typography.Text className={styles.label}>
-						{t("checkpoints.when.timing", "Start timing")}
-					</Typography.Text>
-					<Segmented
-						value={mode}
-						onChange={(value) => setMode(value as typeof mode)}
-						options={[
-							{
-								value: "soon",
-								label: isAI
-									? t("checkpoints.when.asapAi", "As soon as it is paid")
-									: t(
-											"checkpoints.when.asap",
-											"As soon as the curator accepts it",
-										),
-							},
-							{
-								value: "day",
-								label: t("checkpoints.when.pick", "On a day I choose"),
-							},
-						]}
-					/>
-				</div>
-
 				<Flex gap={16}>
 					<div className={styles.field}>
 						<Typography.Text className={styles.label}>
-							{t("checkpoints.when.startDate", "Start date")}
+							{t("checkpoints.when.startDate", "Preferred start date")}
 						</Typography.Text>
 						<DatePicker
 							variant="filled"
@@ -150,12 +121,7 @@ export function PlanningStep() {
 							allowClear={false}
 							className={styles.control}
 							disabledDate={(date) => date.isBefore(dayjs(), "day")}
-							// Naming a day is choosing one: leaving the switch on "as soon as
-							// it is accepted" would throw the date away on save.
-							onChange={(value) => {
-								setPicked(value);
-								setMode("day");
-							}}
+							onChange={setPicked}
 						/>
 					</div>
 
@@ -181,15 +147,6 @@ export function PlanningStep() {
 						</Typography.Text>
 					</div>
 				</Flex>
-
-				{/* The timezone is the design's figure, not the project's: nothing on
-				    `Project` carries one yet. */}
-				<Typography.Text type="secondary" className={styles.note}>
-					{t(
-						"checkpoints.when.timezoneNote",
-						"Project timezone: UTC+2 · Your curator confirms the final date.",
-					)}
-				</Typography.Text>
 
 				<div>
 					<Typography.Text className={styles.label}>

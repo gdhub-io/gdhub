@@ -5,10 +5,20 @@
 // The curator's read, quiet but not hidden: it is advice the author already
 // chose to walk past once, and this is the last moment it can change anything.
 .suggestion {
-	margin-bottom: var(--gd-space-6);
 	padding: var(--gd-space-4);
 	border-radius: var(--gd-radius-card);
-	background: var(--gd-warning-tint);
+
+	&[data-tone="warning"] {
+		background: var(--gd-warning-tint);
+	}
+
+	&[data-tone="success"] {
+		background: var(--gd-success-tint);
+	}
+
+	&[data-tone="info"] {
+		background: var(--gd-info-tint);
+	}
 }
 
 .suggestionIcon {
@@ -16,7 +26,18 @@
 	flex: none;
 	// The glyph's box is taller than its ink, so it rides high without this.
 	margin-top: 2px;
-	color: var(--gd-warning-solid);
+
+	[data-tone="warning"] & {
+		color: var(--gd-warning-solid);
+	}
+
+	[data-tone="success"] & {
+		color: var(--gd-success-solid);
+	}
+
+	[data-tone="info"] & {
+		color: var(--gd-info-solid);
+	}
 }
 
 .suggestionText {
@@ -29,7 +50,18 @@
 	font-weight: 600;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--gd-warning-on-tint);
+
+	[data-tone="warning"] & {
+		color: var(--gd-warning-on-tint);
+	}
+
+	[data-tone="success"] & {
+		color: var(--gd-success-on-tint);
+	}
+
+	[data-tone="info"] & {
+		color: var(--gd-info-on-tint);
+	}
 }
 
 // The way out of the warning keeps its line whatever the copy does.
