@@ -195,6 +195,9 @@ export function CuratorStep() {
 								onRow={(row: CheckpointCurator) => ({
 									onClick: () => setPerson(row.userId),
 								})}
+								rowClassName={(row: CheckpointCurator) =>
+									chosenPerson === row.userId ? styles.chosen : ""
+								}
 								locale={{
 									emptyText: t(
 										"checkpoints.curator.noneOpen",
@@ -285,13 +288,6 @@ export function CuratorStep() {
 								}
 							/>
 						</div>
-
-						<Typography.Text type="secondary" className={styles.note}>
-							{t(
-								"checkpoints.curator.pickerNote",
-								"The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
-							)}
-						</Typography.Text>
 					</Flex>
 				) : (
 					<Flex vertical gap={12}>

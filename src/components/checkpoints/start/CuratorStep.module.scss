@@ -70,6 +70,12 @@
 	:global(.ant-table-tbody > tr) {
 		cursor: pointer;
 	}
+
+	// The picked row is tinted, hover included: the answer must stay visible
+	// while the pointer wanders over the others.
+	:global(.ant-table-tbody) > tr.chosen > :global(.ant-table-cell) {
+		background: var(--gd-color-accent-subtle);
+	}
 }
 
 .person {

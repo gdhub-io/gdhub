@@ -55,9 +55,9 @@ export async function getFeaturedCurators(
  *
  * `Speciality.isOpenForMentoring` is the switch a specialist flips themselves;
  * `CURATOR_LEVELS` is the floor the checkpoint sets, and it is not the author's
- * to lower. There is no curator record yet, so a row is a speciality with its
- * user on it, and the rate and the record of past checkpoints arrive with
- * GDHUB-42.
+ * to lower; the author themselves is never on the list. There is no curator
+ * record yet, so a row is a speciality with its user on it, and the rate and the
+ * record of past checkpoints arrive with GDHUB-42.
  */
 export type CheckpointCurator = {
 	userId: string;
@@ -72,12 +72,16 @@ export type CheckpointCurator = {
 };
 
 export async function listCheckpointCurators(
+	viewerId: string,
 	limit = 50,
 ): Promise<CheckpointCurator[]> {
 	const specialities = await prisma.speciality.findMany({
 		where: {
 			isOpenForMentoring: true,
 			level: { in: CURATOR_LEVELS },
+			// A curator buying a checkpoint for their own project cannot be its
+			// curator: the point of the 28 days is judgement from outside.
+			userId: { not: viewerId },
 		},
 		orderBy: [{ isFeatured: "desc" }, { viewsCount: "desc" }],
 		take: limit,
