@@ -159,7 +159,7 @@
 		"@storybook/addon-docs": "^10",
 		"@storybook/nextjs": "^10",
 		"@svgr/webpack": "^6.3.1",
-		"@tanstack/react-query-devtools": "^5.100.11",
+		"@tanstack/react-query-devtools": "^5.102.8",
 		"@tolgee/cli": "^2.14.0",
 		"@types/common-tags": "^1.8.4",
 		"@types/cookie": "^0.5.1",
