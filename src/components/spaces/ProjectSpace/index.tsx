@@ -228,12 +228,15 @@ export const ProjectSpace = ({
 			<Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
 				<Flex gap={12} align="center">
 					{!!backHref && (
-						<Button
-							href={backHref}
-							aria-label={t("common.back", "Back")}
-							icon={<IconArrowLeft size={18} />}
-							style={{ width: 36, height: 36 }}
-						/>
+						<Link href={backHref}>
+							{/* The same way back the protected pages draw: a text button on
+							    the left of the title, at the control size antd already is. */}
+							<Button
+								type="text"
+								aria-label={t("common.back", "Back")}
+								icon={<IconArrowLeft />}
+							/>
+						</Link>
 					)}
 					<Space orientation="vertical" size={0}>
 						{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
