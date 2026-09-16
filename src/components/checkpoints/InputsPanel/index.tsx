@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import {
 	CheckpointCuratorKind,
@@ -40,19 +40,16 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 		items: CheckpointItemDto[],
 		empty: string,
 	) => (
-		<div className={styles.card}>
-			<Flex
-				align="center"
-				justify="space-between"
-				gap={12}
-				className={styles.head}
-			>
-				<Typography.Text className={styles.title}>{title}</Typography.Text>
+		<Card
+			size="small"
+			styles={{ body: { padding: 0 } }}
+			title={<span className={styles.title}>{title}</span>}
+			extra={
 				<Typography.Text type="secondary" className={styles.meta}>
 					{meta}
 				</Typography.Text>
-			</Flex>
-
+			}
+		>
 			{items.length ? (
 				<div className={styles.rows}>
 					{items.map((item) => (
@@ -73,7 +70,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 					{empty}
 				</Typography.Text>
 			)}
-		</div>
+		</Card>
 	);
 
 	const outcomes = side(CheckpointItemKind.Outcome);

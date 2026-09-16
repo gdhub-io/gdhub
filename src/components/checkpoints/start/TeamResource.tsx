@@ -80,7 +80,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 						key: "who",
 						title: t("checkpoints.when.teamMember", "Who"),
 						render: (_: unknown, row: TeamHoursRow) => (
-							<Flex gap={10} align="center">
+							<Flex gap={12} align="center">
 								<AppAvatar src={row.user.image} size={28}>
 									{row.user.name?.slice(0, 1).toUpperCase()}
 								</AppAvatar>
@@ -116,7 +116,7 @@ export function TeamResource({ teamId }: TeamResourceProps) {
 							// The author's own line is editable here: they are the one
 							// deciding whether these 28 days are worth buying.
 							return (
-								<Flex gap={6} align="center">
+								<Flex gap={8} align="center">
 									<InputNumber
 										variant="filled"
 										min={0}

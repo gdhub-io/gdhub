@@ -53,7 +53,7 @@ export function AskPanel({
 			size="small"
 			styles={{ body: { padding: 0 } }}
 			title={
-				<Flex gap={6} align="center">
+				<Flex gap={8} align="center">
 					<span className={styles.title}>{title}</span>
 					{!!info && (
 						<Tooltip title={info}>

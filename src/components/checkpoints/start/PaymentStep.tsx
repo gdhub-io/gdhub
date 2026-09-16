@@ -7,7 +7,7 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Checkbox, Flex, Skeleton, Typography } from "antd";
+import { App, Button, Card, Checkbox, Flex, Skeleton, Typography } from "antd";
 import dayjs from "dayjs";
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
@@ -123,9 +123,9 @@ export function PaymentStep() {
 				{t("checkpoints.goal.sideEmpty", "Nothing listed")}
 			</Typography.Text>
 		) : (
-			<Flex vertical gap={6}>
+			<Flex vertical gap={8}>
 				{items.map((item) => (
-					<Flex key={item.id} gap={10} align="baseline">
+					<Flex key={item.id} gap={8} align="baseline">
 						<span className={styles.dot} />
 						<Typography.Text>{item.text}</Typography.Text>
 					</Flex>
@@ -225,7 +225,7 @@ export function PaymentStep() {
 				)}
 			</Flex>
 
-			<div className={styles.price}>
+			<Card className={styles.price}>
 				{isAI ? (
 					<Flex justify="space-between" className={styles.total}>
 						<Typography.Text>
@@ -250,7 +250,7 @@ export function PaymentStep() {
 					</Flex>
 				)}
 
-				<Flex vertical gap={10} className={styles.terms}>
+				<Flex vertical gap={8} className={styles.terms}>
 					<Typography.Text className={styles.termsHead}>
 						{t("checkpoints.pay.whatYouGet", "What the curator does")}
 					</Typography.Text>
@@ -282,7 +282,7 @@ export function PaymentStep() {
 					].map(({ Icon, tone, text }) => (
 						<Flex key={tone} gap={8} align="flex-start">
 							<span className={styles.termIcon} data-tone={tone}>
-								<Icon size={15} stroke={1.8} />
+								<Icon size={16} stroke={1.8} />
 							</span>
 							<Typography.Text className={styles.termText}>
 								{text}
@@ -317,7 +317,7 @@ export function PaymentStep() {
 						})}
 					</Typography.Text>
 				)}
-			</div>
+			</Card>
 		</StartLayout>
 	);
 }

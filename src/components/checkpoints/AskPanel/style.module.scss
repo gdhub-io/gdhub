@@ -1,5 +1,5 @@
 .title {
-	font-size: 14px;
+	font-size: var(--gd-font-size-body);
 	font-weight: 600;
 }
 
@@ -10,7 +10,7 @@
 
 .count {
 	color: var(--gd-color-text-tertiary);
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 	font-weight: 400;
 	font-feature-settings: "tnum";
 }
@@ -27,8 +27,8 @@
 
 .row {
 	display: flex;
-	gap: 10px;
-	padding: 14px 0;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-3) 0;
 
 	& + .row {
 		border-top: 1px solid var(--gd-color-border-subtle);
@@ -41,6 +41,7 @@
 	justify-content: center;
 	width: 20px;
 	height: 20px;
+	// Centred on the cap height of the title beside it, not on its line box.
 	margin-top: 1px;
 	flex: none;
 	border: 1px solid var(--gd-color-border-strong);
@@ -58,8 +59,8 @@
 }
 
 .dot {
-	width: 7px;
-	height: 7px;
+	width: var(--gd-space-2);
+	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
 	background: var(--gd-color-accent);
 }
@@ -69,7 +70,7 @@
 }
 
 .name {
-	font-size: 14px;
+	font-size: var(--gd-font-size-body);
 	font-weight: 500;
 }
 
@@ -78,7 +79,7 @@
 	background: var(--gd-color-surface-sunken);
 	border-radius: var(--gd-radius-chip);
 	color: var(--gd-color-text-secondary);
-	font-size: 11px;
+	font-size: var(--gd-font-size-label);
 	font-weight: 500;
 }
 
@@ -88,7 +89,7 @@
 
 .due {
 	color: var(--gd-color-text-tertiary);
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 	white-space: nowrap;
 }
 
@@ -98,8 +99,8 @@
 }
 
 .meta {
-	font-size: 13px;
-	line-height: 1.45;
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-ui);
 }
 
 .footer {
@@ -108,6 +109,6 @@
 }
 
 .note {
-	font-size: 12px;
-	line-height: 1.45;
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
 }

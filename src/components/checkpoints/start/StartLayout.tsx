@@ -89,10 +89,10 @@ export function StartLayout({
 	return (
 		<div className={styles.flow}>
 			<Flex vertical gap={32} className={styles.content}>
-				<Flex vertical gap={10}>
-					<Flex gap={10}>
+				<Flex vertical gap={12}>
+					<Flex gap={12}>
 						{START_STEPS.map((candidate, position) => (
-							<Flex vertical gap={6} key={candidate} className={styles.segment}>
+							<Flex vertical gap={8} key={candidate} className={styles.segment}>
 								<span
 									className={styles.bar}
 									data-reached={position <= index || undefined}
@@ -114,7 +114,7 @@ export function StartLayout({
 					</Typography.Text>
 				</Flex>
 
-				<Flex vertical gap={10}>
+				<Flex vertical gap={12}>
 					<Typography.Title level={1} className={styles.question}>
 						{question}
 					</Typography.Title>

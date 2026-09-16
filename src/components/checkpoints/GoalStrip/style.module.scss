@@ -1,13 +1,3 @@
-.strip {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	padding: var(--gd-space-3) var(--gd-space-4);
-	background: var(--gd-color-surface);
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-card);
-}
-
 .icon {
 	flex: none;
 	color: var(--gd-color-text-tertiary);
@@ -15,12 +5,12 @@
 
 .label {
 	flex: none;
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	font-weight: 600;
 }
 
 .text {
 	flex: 1;
 	min-width: 0;
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }

@@ -46,7 +46,7 @@ export function CuratorStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
-	const { project, draft, loading } = useCheckpointDraft();
+	const { draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
 	const discard = useDiscardCheckpoint();
@@ -227,7 +227,7 @@ export function CuratorStep() {
 												<AppAvatar src={row.image} size={40}>
 													{row.name.slice(0, 1).toUpperCase()}
 												</AppAvatar>
-												<Flex vertical gap={2} className={styles.personText}>
+												<Flex vertical gap={4} className={styles.personText}>
 													<Flex gap={8} align="center">
 														<Typography.Text className={styles.name}>
 															{row.name}

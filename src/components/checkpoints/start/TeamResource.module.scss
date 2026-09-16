@@ -5,7 +5,7 @@
 }
 
 .role {
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 }
 
 .figure {
@@ -13,6 +13,6 @@
 }
 
 .note {
-	font-size: 12px;
-	line-height: 1.45;
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
 }

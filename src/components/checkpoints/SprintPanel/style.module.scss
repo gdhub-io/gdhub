@@ -1,34 +1,22 @@
 .tab {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: var(--gd-space-2);
 }
 
 .tabCount {
 	color: var(--gd-color-text-tertiary);
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 	font-feature-settings: "tnum";
 }
 
-.card {
-	background: var(--gd-color-surface);
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-card);
-	overflow: hidden;
-}
-
-.cardHead {
-	padding: var(--gd-space-3) var(--gd-space-4);
-	border-bottom: 1px solid var(--gd-color-border-subtle);
-}
-
 .cardTitle {
-	font-size: 14px;
+	font-size: var(--gd-font-size-body);
 	font-weight: 600;
 }
 
 .cardMeta {
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 	font-feature-settings: "tnum";
 }
 
@@ -57,26 +45,26 @@
 }
 
 .rowText {
-	font-size: 14px;
-	line-height: 1.45;
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-ui);
 }
 
 .rowMeta,
 .proves {
-	font-size: 12px;
-	line-height: 1.45;
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
 }
 
 .proof {
 	flex: none;
 	color: var(--gd-success-solid);
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .prose {
 	padding: var(--gd-space-4);
-	font-size: 14px;
-	line-height: 1.55;
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-relaxed);
 }
 
 // The matrix: sprint columns are fixed so they never shrink, and the name column
@@ -84,7 +72,7 @@
 .matrix {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--gd-space-1);
 	padding: var(--gd-space-4);
 }
 
@@ -93,16 +81,16 @@
 }
 
 .matrixRow {
-	padding: 6px 0;
+	padding: var(--gd-space-2) 0;
 }
 
 .person {
 	flex: 1;
 	min-width: 0;
 	color: var(--gd-color-text-tertiary);
-	font-size: 11px;
+	font-size: var(--gd-font-size-label);
 	font-weight: 600;
-	letter-spacing: 0.6px;
+	letter-spacing: 0.06em;
 }
 
 .personText {
@@ -110,13 +98,13 @@
 }
 
 .personName {
-	font-size: 14px;
+	font-size: var(--gd-font-size-body);
 	font-weight: 500;
 	letter-spacing: 0;
 }
 
 .personRole {
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 	font-weight: 400;
 	letter-spacing: 0;
 }
@@ -125,21 +113,21 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2px;
+	gap: var(--gd-space-1);
 	width: 72px;
 	flex: none;
 }
 
 .colName {
 	color: var(--gd-color-text-tertiary);
-	font-size: 11px;
+	font-size: var(--gd-font-size-label);
 	font-weight: 600;
-	letter-spacing: 0.4px;
+	letter-spacing: 0.06em;
 }
 
 .colDates {
 	color: var(--gd-color-text-tertiary);
-	font-size: 11px;
+	font-size: var(--gd-font-size-label);
 	font-feature-settings: "tnum";
 }
 
@@ -179,8 +167,8 @@
 }
 
 .waitingDot {
-	width: 7px;
-	height: 7px;
+	width: var(--gd-space-2);
+	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
 	background: var(--gd-color-border-strong);
 }

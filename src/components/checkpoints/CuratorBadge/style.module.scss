@@ -25,6 +25,6 @@
 .name {
 	// The name gives way; the kind beside it never does.
 	min-width: 0;
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	font-weight: 600;
 }

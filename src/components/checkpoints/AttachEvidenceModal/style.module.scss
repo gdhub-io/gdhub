@@ -5,7 +5,7 @@
 .label {
 	display: block;
 	margin-bottom: var(--gd-space-2);
-	font-size: 14px;
+	font-size: var(--gd-font-size-body);
 	font-weight: 600;
 }
 
@@ -18,15 +18,15 @@
 .outcome {
 	align-items: flex-start;
 	margin: 0;
-	font-size: 14px;
-	line-height: 1.45;
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-ui);
 }
 
 .noOutcomes {
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .footerNote {
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 	text-align: left;
 }

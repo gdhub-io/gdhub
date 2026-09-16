@@ -48,7 +48,7 @@ export function CheckpointCard({
 	return (
 		<section className={styles.card}>
 			<header className={styles.head}>
-				<Flex gap={10} align="center" className={styles.identity}>
+				<Flex gap={12} align="center" className={styles.identity}>
 					{/* The number names it, the stage is context: numbering runs
 					    through the project rather than restarting inside a stage. */}
 					<Typography.Text className={styles.stage}>

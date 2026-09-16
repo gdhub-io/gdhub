@@ -3,7 +3,7 @@
 import { IconLock, IconTargetArrow } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Typography } from "antd";
+import { Button, Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
@@ -251,16 +251,15 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 				/>
 			)}
 
-			<div className={styles.card}>
-				<Flex
-					align="center"
-					justify="space-between"
-					gap={12}
-					className={styles.cardHead}
-				>
-					<Typography.Text className={styles.cardTitle}>
+			<Card
+				size="small"
+				styles={{ body: { padding: 0 } }}
+				title={
+					<span className={styles.cardTitle}>
 						{t("checkpoints.proved.title", "What this sprint proved")}
-					</Typography.Text>
+					</span>
+				}
+				extra={
 					<Typography.Text type="secondary" className={styles.cardMeta}>
 						{t("checkpoints.proved.count", "{count} of {total} outcomes", {
 							count: facts.outcomesProved.length,
@@ -269,8 +268,8 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 							).length,
 						})}
 					</Typography.Text>
-				</Flex>
-
+				}
+			>
 				{facts.outcomesProved.length ? (
 					<div className={styles.rows}>
 						{facts.outcomesProved.map((item) => (
@@ -300,7 +299,7 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 						)}
 					/>
 				)}
-			</div>
+			</Card>
 		</Flex>
 	);
 }

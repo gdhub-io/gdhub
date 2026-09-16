@@ -94,6 +94,7 @@ export function GoalLines({
 						<Flex key={line.key} gap={8} align="center" className={styles.row}>
 							<Input
 								className={styles.input}
+								size="large"
 								value={line.text}
 								maxLength={CHECKPOINT_ITEM_TEXT_MAX}
 								variant="filled"
@@ -109,8 +110,6 @@ export function GoalLines({
 								onChange={(event) => write(index, { text: event.target.value })}
 							/>
 
-							{/* One trailing control, as the frame draws it: the slot is what
-							    a line is proven by, and pressing it is how that changes. */}
 							{/* One trailing control, as the frame draws it: the slot is what a
 							    line is proven by, and pressing it is how that changes. */}
 							{!isGhost && withEvidence && (
@@ -126,6 +125,7 @@ export function GoalLines({
 								>
 									<Button
 										className={styles.attach}
+										size="large"
 										disabled={disabled}
 										icon={
 											line.artifact ? undefined : (
@@ -149,8 +149,9 @@ export function GoalLines({
 								<Button
 									type="text"
 									danger
+									size="large"
 									disabled={disabled}
-									icon={<IconTrash size={17} />}
+									icon={<IconTrash size={16} />}
 									aria-label={t(
 										"checkpoints.goal.removeLine",
 										"Remove the line",

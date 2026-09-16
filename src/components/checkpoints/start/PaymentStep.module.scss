@@ -13,42 +13,43 @@
 }
 
 .blockLabel {
-	font-size: 11px;
+	font-size: var(--gd-font-size-label);
 	font-weight: 600;
-	letter-spacing: 0.5px;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
 	color: var(--gd-color-text-tertiary);
 }
 
 .edit {
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .dot {
 	flex: none;
-	width: 4px;
-	height: 4px;
+	width: var(--gd-space-1);
+	height: var(--gd-space-1);
+	// Optically centred on the first line of the term beside it; half a line
+	// height would sit visibly low against a 4px dot.
 	margin-top: 7px;
 	border-radius: var(--gd-radius-pill);
 	background: var(--gd-color-border-strong);
 }
 
+// The money and what it does not buy sit in one panel: the refusal has to be as
+// easy to read as the total (frame `B2XH9`, `IDB5K`).
 .price {
-	// The money and what it does not buy sit in one panel: the refusal has to be
-	// as easy to read as the total (frame `B2XH9`, `IDB5K`).
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-4);
 	max-width: 720px;
 	margin-top: var(--gd-space-6);
-	padding: var(--gd-space-6);
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
+
+	:global(.ant-card-body) {
+		display: flex;
+		flex-direction: column;
+		gap: var(--gd-space-4);
+	}
 }
 
 .total {
-	font-size: 18px;
+	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
 	font-feature-settings: "tnum";
 }
@@ -59,13 +60,14 @@
 }
 
 .termsHead {
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	font-weight: 600;
 }
 
 .termIcon {
 	display: inline-flex;
 	flex: none;
+	// The glyph's box is taller than its ink, so it rides high without this.
 	margin-top: 2px;
 
 	&[data-tone="yes"] {
@@ -80,11 +82,11 @@
 
 .termText {
 	color: var(--gd-color-text-secondary);
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .pending {
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	text-align: right;
 }
 
@@ -98,5 +100,5 @@
 }
 
 .checking {
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 }

@@ -5,7 +5,6 @@ import {
 	CheckpointStatus,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
-import { sprintOfDate } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { AskPanel } from "./AskPanel";
 import { CheckpointCard } from "./CheckpointCard";
@@ -131,20 +130,6 @@ export const AwaitingVerdict: StoryObj = {
 		/>
 	),
 };
-
-const devlog = (
-	id: string,
-	publishedAt: string,
-	content: string,
-	answer?: string,
-) => ({
-	id,
-	publishedAt,
-	content,
-	curatorFeedback: answer ?? null,
-	curatorFeedbackAt: answer ? "2026-09-08T06:00:00.000Z" : null,
-	sprint: sprintOfDate(new Date(startedAt), new Date(publishedAt)),
-});
 
 /** The path, mid-checkpoint: sprint 2 is where the author lives today. */
 export const Path: StoryObj = {

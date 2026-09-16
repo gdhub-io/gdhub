@@ -5,6 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import {
 	App,
 	Button,
+	Card,
 	DatePicker,
 	Flex,
 	Segmented,
@@ -95,7 +96,7 @@ export function PlanningStep() {
 				</Button>
 			}
 		>
-			<Flex vertical gap={20}>
+			<Flex vertical gap={24}>
 				<Segmented
 					value={mode}
 					onChange={(value) => setMode(value as typeof mode)}
@@ -117,7 +118,7 @@ export function PlanningStep() {
 				/>
 
 				{mode === "day" && (
-					<Flex vertical gap={6}>
+					<Flex vertical gap={8}>
 						<Typography.Text>
 							{t("checkpoints.when.startsOn", "Starts on")}
 						</Typography.Text>
@@ -132,35 +133,37 @@ export function PlanningStep() {
 					</Flex>
 				)}
 
-				<div className={styles.calendar}>
-					<Typography.Text className={styles.calendarTitle}>
-						{t("checkpoints.when.runs", "Runs {from} – {to}", {
-							from: dayjs.utc(start).format("D MMM"),
-							to: dayjs.utc(dueDateFrom(start)).format("D MMM YYYY"),
-						})}
-					</Typography.Text>
-					<Typography.Text type="secondary" className={styles.calendarBody}>
-						{t(
-							"checkpoints.when.calendar",
-							"Calls: {s1}, {s2}, {s3}, {s4} · Devlogs: {d1}, {d2}, {d3}, {d4} · Final review: {review} · Verdict by {verdict}.",
-							{
-								s1: dayjs.utc(sprintRange(start, 1).from).format("D MMM"),
-								s2: dayjs.utc(sprintRange(start, 2).from).format("D MMM"),
-								s3: dayjs.utc(sprintRange(start, 3).from).format("D MMM"),
-								s4: dayjs.utc(sprintRange(start, 4).from).format("D MMM"),
-								d1: devlogs[0].format("D MMM"),
-								d2: devlogs[1].format("D MMM"),
-								d3: devlogs[2].format("D MMM"),
-								d4: devlogs[3].format("D MMM"),
-								review: dayjs.utc(dueDateFrom(start)).format("D MMM"),
-								verdict: dayjs
-									.utc(dueDateFrom(start))
-									.add(2, "day")
-									.format("D MMM"),
-							},
-						)}
-					</Typography.Text>
-				</div>
+				<Card size="small">
+					<Flex vertical gap={8}>
+						<Typography.Text className={styles.calendarTitle}>
+							{t("checkpoints.when.runs", "Runs {from} – {to}", {
+								from: dayjs.utc(start).format("D MMM"),
+								to: dayjs.utc(dueDateFrom(start)).format("D MMM YYYY"),
+							})}
+						</Typography.Text>
+						<Typography.Text type="secondary" className={styles.calendarBody}>
+							{t(
+								"checkpoints.when.calendar",
+								"Calls: {s1}, {s2}, {s3}, {s4} · Devlogs: {d1}, {d2}, {d3}, {d4} · Final review: {review} · Verdict by {verdict}.",
+								{
+									s1: dayjs.utc(sprintRange(start, 1).from).format("D MMM"),
+									s2: dayjs.utc(sprintRange(start, 2).from).format("D MMM"),
+									s3: dayjs.utc(sprintRange(start, 3).from).format("D MMM"),
+									s4: dayjs.utc(sprintRange(start, 4).from).format("D MMM"),
+									d1: devlogs[0].format("D MMM"),
+									d2: devlogs[1].format("D MMM"),
+									d3: devlogs[2].format("D MMM"),
+									d4: devlogs[3].format("D MMM"),
+									review: dayjs.utc(dueDateFrom(start)).format("D MMM"),
+									verdict: dayjs
+										.utc(dueDateFrom(start))
+										.add(2, "day")
+										.format("D MMM"),
+								},
+							)}
+						</Typography.Text>
+					</Flex>
+				</Card>
 
 				<TeamResource teamId={project?.team?.id} />
 

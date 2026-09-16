@@ -2,7 +2,7 @@
 
 import { IconCheck, IconUsers } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Tooltip, Typography } from "antd";
+import { Card, Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -56,24 +56,23 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 		);
 
 	return (
-		<div className={styles.card}>
-			<Flex
-				align="center"
-				justify="space-between"
-				gap={12}
-				className={styles.cardHead}
-			>
-				<Typography.Text className={styles.cardTitle}>
+		<Card
+			size="small"
+			styles={{ body: { padding: 0 } }}
+			title={
+				<span className={styles.cardTitle}>
 					{t("checkpoints.signals.title", "Team signals")}
-				</Typography.Text>
+				</span>
+			}
+			extra={
 				<Typography.Text type="secondary" className={styles.cardMeta}>
 					{t(
 						"checkpoints.signals.info",
 						"One press per person per sprint. Hover a cell for the day it was marked.",
 					)}
 				</Typography.Text>
-			</Flex>
-
+			}
+		>
 			<div className={styles.matrix}>
 				<Flex gap={8} align="center" className={styles.matrixHead}>
 					<span className={styles.person}>
@@ -106,11 +105,11 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 						align="center"
 						className={styles.matrixRow}
 					>
-						<Flex gap={10} align="center" className={styles.person}>
+						<Flex gap={12} align="center" className={styles.person}>
 							<AppAvatar src={row.image} size={28}>
 								{row.name?.slice(0, 1).toUpperCase()}
 							</AppAvatar>
-							<Flex vertical gap={1} className={styles.personText}>
+							<Flex vertical gap={4} className={styles.personText}>
 								<Typography.Text className={styles.personName} ellipsis>
 									{row.name}
 								</Typography.Text>
@@ -151,6 +150,6 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 					</Flex>
 				))}
 			</div>
-		</div>
+		</Card>
 	);
 }

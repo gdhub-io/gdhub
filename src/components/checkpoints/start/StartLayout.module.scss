@@ -23,7 +23,7 @@
 }
 
 .segmentLabel {
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-tertiary);
 
 	&[data-current] {
@@ -34,20 +34,20 @@
 
 .meta {
 	color: var(--gd-color-text-tertiary);
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .question {
 	margin: 0 !important;
-	font-size: 24px !important;
+	font-size: var(--gd-font-size-h2) !important;
 	font-weight: 600;
-	line-height: 1.2;
-	letter-spacing: -0.5px;
+	line-height: var(--gd-line-height-heading);
+	letter-spacing: -0.02em;
 }
 
 .hint {
 	color: var(--gd-color-text-secondary);
-	font-size: 15px;
+	font-size: var(--gd-font-size-body-lg);
 }
 
 .answer {

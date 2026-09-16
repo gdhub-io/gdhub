@@ -137,7 +137,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const selected = facts.find((one) => `sprint-${one.sprint.number}` === step);
 
 	return (
-		<Flex gap={20} align="flex-start" className={styles.split}>
+		<Flex gap={24} align="flex-start" className={styles.split}>
 			<CheckpointPath
 				steps={steps}
 				selected={step}

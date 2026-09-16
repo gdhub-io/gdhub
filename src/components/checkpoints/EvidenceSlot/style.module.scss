@@ -19,7 +19,7 @@
 	// A raw URL has no break opportunity, so it is truncated, never wrapped.
 	max-width: 140px;
 	color: inherit;
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .picker {

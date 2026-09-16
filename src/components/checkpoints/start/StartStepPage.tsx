@@ -30,7 +30,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
-	const { project, draft, loading } = useCheckpointDraft();
+	const { draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
 	const discard = useDiscardCheckpoint();
@@ -149,7 +149,7 @@ export function StartStepPage({ step }: StartStepPageProps) {
 			{/* The sentence first, the list under it: an author says what they want
 			    and then details it, not the other way round. */}
 			{!isNow && (
-				<Flex vertical gap={6} style={{ marginBottom: 24 }}>
+				<Flex vertical gap={8} style={{ marginBottom: 24 }}>
 					<Typography.Text strong>
 						{t("checkpoints.goal.sentence", "The goal, in one sentence")}
 					</Typography.Text>

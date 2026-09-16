@@ -15,7 +15,7 @@
 }
 
 .head {
-	padding: 14px var(--gd-space-6);
+	padding: var(--gd-space-3) var(--gd-space-6);
 	border-bottom: 1px solid var(--gd-color-border-subtle);
 }
 
@@ -29,13 +29,13 @@
 }
 
 .stage {
-	font-size: 14px;
+	font-size: var(--gd-font-size-body);
 	font-weight: 600;
 }
 
 .number {
 	color: var(--gd-color-text-tertiary);
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	font-feature-settings: "tnum";
 	white-space: nowrap;
 }
@@ -49,20 +49,20 @@
 
 .goal {
 	margin: 0 !important;
-	font-size: 20px;
+	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
-	line-height: 1.35;
-	letter-spacing: -0.2px;
+	line-height: var(--gd-line-height-heading);
+	letter-spacing: -0.02em;
 }
 
 .counter {
 	color: var(--gd-color-text-tertiary);
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	font-feature-settings: "tnum";
 }
 
 .track {
-	height: 6px;
+	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
 	background: var(--gd-color-border);
 	overflow: hidden;
@@ -76,5 +76,5 @@
 
 .note {
 	color: var(--gd-color-text-tertiary);
-	font-size: 12px;
+	font-size: var(--gd-font-size-caption);
 }

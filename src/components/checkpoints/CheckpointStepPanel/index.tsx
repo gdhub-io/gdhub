@@ -2,7 +2,7 @@
 
 import { IconHourglass, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
@@ -56,16 +56,15 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 
 	return (
 		<Flex vertical gap={16}>
-			<div className={styles.card}>
-				<Flex
-					align="center"
-					justify="space-between"
-					gap={12}
-					className={styles.head}
-				>
-					<Typography.Text className={styles.title}>
+			<Card
+				size="small"
+				styles={{ body: { padding: 0 } }}
+				title={
+					<span className={styles.title}>
 						{t("checkpoints.verdict.title", "The verdict")}
-					</Typography.Text>
+					</span>
+				}
+				extra={
 					<Flex gap={12} align="center">
 						{!!checkpoint.decidedAt && (
 							<Typography.Text type="secondary" className={styles.meta}>
@@ -74,19 +73,22 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 						)}
 						<VerdictChip verdict={checkpoint.verdict} />
 					</Flex>
-				</Flex>
+				}
+			>
 				{!!checkpoint.verdictNote && (
 					<div className={styles.prose}>{checkpoint.verdictNote}</div>
 				)}
-			</div>
+			</Card>
 
-			<div className={styles.card}>
-				<Flex align="center" className={styles.head}>
-					<Typography.Text className={styles.title}>
+			<Card
+				size="small"
+				styles={{ body: { padding: 0 } }}
+				title={
+					<span className={styles.title}>
 						{t("checkpoints.result.title", "The result card")}
-					</Typography.Text>
-				</Flex>
-
+					</span>
+				}
+			>
 				<div className={styles.table}>
 					<Flex gap={16} className={styles.columns}>
 						<span className={styles.colWide}>
@@ -138,7 +140,7 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 						</Flex>
 					))}
 				</div>
-			</div>
+			</Card>
 		</Flex>
 	);
 }

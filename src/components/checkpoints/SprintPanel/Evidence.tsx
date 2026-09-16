@@ -2,7 +2,7 @@
 
 import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Typography } from "antd";
+import { Button, Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
@@ -91,21 +91,20 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 		);
 
 	return (
-		<div className={styles.card}>
-			<Flex
-				align="center"
-				justify="space-between"
-				gap={12}
-				className={styles.cardHead}
-			>
-				<Typography.Text className={styles.cardTitle}>
+		<Card
+			size="small"
+			styles={{ body: { padding: 0 } }}
+			title={
+				<span className={styles.cardTitle}>
 					{t("checkpoints.evidence.landed", "Landed in this sprint")}
-				</Typography.Text>
+				</span>
+			}
+			extra={
 				<Typography.Text type="secondary" className={styles.cardMeta}>
 					{facts.proved.length}
 				</Typography.Text>
-			</Flex>
-
+			}
+		>
 			<div className={styles.rows}>
 				{facts.proved.map((item) => {
 					const status = check(item.artifact.checkStatus);
@@ -120,7 +119,7 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 							align="center"
 							className={styles.row}
 						>
-							<Flex vertical gap={2} flex={1} className={styles.rowBody}>
+							<Flex vertical gap={4} flex={1} className={styles.rowBody}>
 								<Typography.Text className={styles.rowText}>
 									{item.artifact.name ?? item.artifact.link}
 								</Typography.Text>
@@ -158,6 +157,6 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 					{modal}
 				</div>
 			)}
-		</div>
+		</Card>
 	);
 }

@@ -2,7 +2,7 @@
 
 import { IconMessage2 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
@@ -35,46 +35,46 @@ export function Review({ facts }: ReviewProps) {
 	return (
 		<Flex vertical gap={16}>
 			{!!facts.review && (
-				<div className={styles.card}>
-					<Flex
-						align="center"
-						justify="space-between"
-						gap={12}
-						className={styles.cardHead}
-					>
-						<Typography.Text className={styles.cardTitle}>
+				<Card
+					size="small"
+					styles={{ body: { padding: 0 } }}
+					title={
+						<span className={styles.cardTitle}>
 							{t(
 								"checkpoints.review.title",
 								"The curator's review of the sprint",
 							)}
-						</Typography.Text>
-						{!!facts.review.at && (
+						</span>
+					}
+					extra={
+						!!facts.review.at && (
 							<Typography.Text type="secondary" className={styles.cardMeta}>
 								{dayjs(facts.review.at).format("D MMM")}
 							</Typography.Text>
-						)}
-					</Flex>
+						)
+					}
+				>
 					<div className={styles.prose}>{facts.review.text}</div>
-				</div>
+				</Card>
 			)}
 
 			{!!facts.scopeNote && (
-				<div className={styles.card}>
-					<Flex
-						align="center"
-						justify="space-between"
-						gap={12}
-						className={styles.cardHead}
-					>
-						<Typography.Text className={styles.cardTitle}>
+				<Card
+					size="small"
+					styles={{ body: { padding: 0 } }}
+					title={
+						<span className={styles.cardTitle}>
 							{t("checkpoints.midnote.title", "Day 14 — the scope note")}
-						</Typography.Text>
+						</span>
+					}
+					extra={
 						<Typography.Text type="secondary" className={styles.cardMeta}>
 							{t("checkpoints.midnote.open", "open")}
 						</Typography.Text>
-					</Flex>
+					}
+				>
 					<div className={styles.prose}>{facts.scopeNote}</div>
-				</div>
+				</Card>
 			)}
 		</Flex>
 	);

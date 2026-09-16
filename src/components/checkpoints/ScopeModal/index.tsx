@@ -205,7 +205,7 @@ export function ScopeModal({
 					</Flex>
 				)}
 
-				<Flex vertical gap={6}>
+				<Flex vertical gap={8}>
 					<Typography.Text>{t("checkpoints.scope.why", "Why")}</Typography.Text>
 					<Input.TextArea
 						variant="filled"

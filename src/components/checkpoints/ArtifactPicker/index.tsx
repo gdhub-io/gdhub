@@ -192,7 +192,7 @@ export function ArtifactPicker({
 								>
 									<Flex align="center" gap={12}>
 										<IconTile icon={artifactIcon(artifact.type)} size="sm" />
-										<Flex vertical gap={2} className={styles.rowBody}>
+										<Flex vertical gap={4} className={styles.rowBody}>
 											<Typography.Text className={styles.rowName} ellipsis>
 												{artifactName(artifact)}
 											</Typography.Text>
