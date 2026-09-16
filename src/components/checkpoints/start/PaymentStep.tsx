@@ -197,14 +197,6 @@ export function PaymentStep() {
 						"checkpoints.pay.riskBody",
 						"The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
 					),
-					action: (
-						<Button
-							className={styles.suggestionAction}
-							onClick={() => go("goal")}
-						>
-							{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
-						</Button>
-					),
 				}
 			: remark
 				? {
@@ -256,7 +248,14 @@ export function PaymentStep() {
 								{read.body}
 							</Typography.Text>
 						</Flex>
-						{"action" in read && read.action}
+						{read.tone === "warning" && (
+							<Button
+								className={styles.suggestionAction}
+								onClick={() => go("goal")}
+							>
+								{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
+							</Button>
+						)}
 					</Flex>
 				)
 			}

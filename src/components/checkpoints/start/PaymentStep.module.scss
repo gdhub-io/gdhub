@@ -7,17 +7,26 @@
 .suggestion {
 	padding: var(--gd-space-4);
 	border-radius: var(--gd-radius-card);
+	background: var(--tone-tint);
 
+	// One tone per state, bound once here: the icon and the label read it back
+	// rather than repeating the three-way choice each.
 	&[data-tone="warning"] {
-		background: var(--gd-warning-tint);
+		--tone-tint: var(--gd-warning-tint);
+		--tone-solid: var(--gd-warning-solid);
+		--tone-ink: var(--gd-warning-on-tint);
 	}
 
 	&[data-tone="success"] {
-		background: var(--gd-success-tint);
+		--tone-tint: var(--gd-success-tint);
+		--tone-solid: var(--gd-success-solid);
+		--tone-ink: var(--gd-success-on-tint);
 	}
 
 	&[data-tone="info"] {
-		background: var(--gd-info-tint);
+		--tone-tint: var(--gd-info-tint);
+		--tone-solid: var(--gd-info-solid);
+		--tone-ink: var(--gd-info-on-tint);
 	}
 }
 
@@ -26,18 +35,7 @@
 	flex: none;
 	// The glyph's box is taller than its ink, so it rides high without this.
 	margin-top: 2px;
-
-	[data-tone="warning"] & {
-		color: var(--gd-warning-solid);
-	}
-
-	[data-tone="success"] & {
-		color: var(--gd-success-solid);
-	}
-
-	[data-tone="info"] & {
-		color: var(--gd-info-solid);
-	}
+	color: var(--tone-solid);
 }
 
 .suggestionText {
@@ -50,18 +48,7 @@
 	font-weight: 600;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-
-	[data-tone="warning"] & {
-		color: var(--gd-warning-on-tint);
-	}
-
-	[data-tone="success"] & {
-		color: var(--gd-success-on-tint);
-	}
-
-	[data-tone="info"] & {
-		color: var(--gd-info-on-tint);
-	}
+	color: var(--tone-ink);
 }
 
 // The way out of the warning keeps its line whatever the copy does.
