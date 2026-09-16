@@ -1,4 +1,4 @@
-import type { SkillLevel } from "@/config/prisma-enums";
+import { CURATOR_LEVELS, type CuratorLevel } from "@/config/checkpoint-pricing";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 import { prisma } from "@/services/prisma";
 
@@ -54,9 +54,10 @@ export async function getFeaturedCurators(
  * The people a checkpoint can actually be given to.
  *
  * `Speciality.isOpenForMentoring` is the switch a specialist flips themselves;
- * expert levels are the floor the checkpoint standard sets for a curator. There
- * is no curator record yet, so a row is a speciality with its user on it, and
- * the rate and the record of past checkpoints arrive with GDHUB-42.
+ * `CURATOR_LEVELS` is the floor the checkpoint sets, and it is not the author's
+ * to lower. There is no curator record yet, so a row is a speciality with its
+ * user on it, and the rate and the record of past checkpoints arrive with
+ * GDHUB-42.
  */
 export type CheckpointCurator = {
 	userId: string;
@@ -66,18 +67,18 @@ export type CheckpointCurator = {
 	/** Speciality name — "Game Designer", "Technical Director". */
 	role: string;
 	specialization: string;
-	level: SkillLevel;
+	level: CuratorLevel;
 	summary: string;
 };
 
 export async function listCheckpointCurators(
 	limit = 50,
 ): Promise<CheckpointCurator[]> {
-	// No level floor: the picker filters by level itself, and where the bar sits
-	// is the author's judgement — a Skillful curator at a lower rate is a real
-	// choice for a first checkpoint.
 	const specialities = await prisma.speciality.findMany({
-		where: { isOpenForMentoring: true },
+		where: {
+			isOpenForMentoring: true,
+			level: { in: CURATOR_LEVELS },
+		},
 		orderBy: [{ isFeatured: "desc" }, { viewsCount: "desc" }],
 		take: limit,
 		select: {
@@ -104,7 +105,9 @@ export async function listCheckpointCurators(
 		image: speciality.user.image,
 		role: speciality.name,
 		specialization: speciality.specialization,
-		level: speciality.level,
+		// The `where` above is what narrows it: a level with no price is never
+		// selected, so it can never reach this row.
+		level: speciality.level as CuratorLevel,
 		summary: speciality.summary ?? "",
 	}));
 }
