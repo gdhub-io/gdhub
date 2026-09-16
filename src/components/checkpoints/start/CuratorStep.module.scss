@@ -1,11 +1,23 @@
+/** A field label: 14/600, eight pixels off the control it names — the same rule StartLayout uses. */
+.label {
+	display: block;
+	margin-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
 .option {
-	// A row, not a card: the two kinds are compared down one column, and the
-	// price has to sit in the same place on both (frame `vE1BQ`).
+	// Two cards side by side, equal width and equal height: the pair is compared
+	// across, so the description of one cannot sit lower than the other's.
 	display: flex;
-	align-items: center;
-	gap: var(--gd-space-4);
-	width: 100%;
-	max-width: 720px;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	flex: 1;
+	min-width: 0;
+	// The frame draws 103. A floor rather than a height, so a longer description
+	// grows both cards instead of spilling out of one.
+	min-height: 104px;
 	padding: var(--gd-space-4);
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
@@ -18,85 +30,33 @@
 	}
 }
 
-.tile {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	flex: none;
-	width: 40px;
-	height: 40px;
-	border-radius: var(--gd-radius-control);
-	background: var(--gd-color-surface-sunken);
-	color: var(--gd-color-text);
-}
-
-.text {
+.optionHead {
 	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-1);
-	flex: 1;
-	min-width: 0;
+	align-items: center;
+	justify-content: space-between;
 }
 
-.name {
+.optionName {
 	font-size: var(--gd-font-size-body-lg);
 	font-weight: 600;
 }
 
-.description {
+.optionDescription {
 	color: var(--gd-color-text-secondary);
 	font-size: var(--gd-font-size-body-sm);
-}
-
-.right {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-3);
-	flex: none;
-}
-
-.price {
-	font-size: var(--gd-font-size-body);
-	font-weight: 600;
-	font-feature-settings: "tnum";
-	white-space: nowrap;
-}
-
-.picker {
-	max-width: 720px;
-	padding: var(--gd-space-4);
-	border: 1px dashed var(--gd-color-border);
-	border-radius: var(--gd-radius-panel);
-}
-
-.pickerLabel {
-	font-size: var(--gd-font-size-label);
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	color: var(--gd-color-text-tertiary);
-}
-
-.note {
-	max-width: 720px;
-	margin: var(--gd-space-4) 0 0 !important;
-	font-size: var(--gd-font-size-body-sm);
-}
-
-.pending {
-	font-size: var(--gd-font-size-body-sm);
-	text-align: right;
+	line-height: var(--gd-line-height-body);
 }
 
 .people {
 	// One panel with hairlines, the way the frame draws it — the outline belongs
-	// to the choice above, not to every row of this one.
+	// to the list, not to every row of it.
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-card);
 	overflow: hidden;
 
+	// The list is a white panel on the page's own grey, the way the frame draws it.
 	:global(.ant-table) {
-		background: transparent;
+		background: var(--gd-color-surface);
 	}
 
 	:global(.ant-table-tbody > tr > td) {
@@ -112,13 +72,17 @@
 	}
 }
 
-.personRow {
+.person {
 	min-width: 0;
 }
 
 .personText {
 	flex: 1;
 	min-width: 0;
+}
+
+.name {
+	font-weight: 600;
 }
 
 .level {
@@ -130,6 +94,49 @@
 	font-weight: 500;
 }
 
+.specialisations {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.price {
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	white-space: nowrap;
+}
+
+.priceUnit {
+	font-size: var(--gd-font-size-body-sm);
+}
+
 .talent {
+	width: var(--gd-control-height-sm);
+	height: var(--gd-control-height-sm);
 	padding: 0;
+}
+
+.fixed {
+	// Small: the panel says one figure, so it takes the width of the figure and
+	// not the width of the question above it.
+	width: fit-content;
+	min-width: 240px;
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.fixedLabel {
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text-secondary);
+}
+
+.fixedAmount {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	line-height: var(--gd-line-height-heading);
+}
+
+.note {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
 }

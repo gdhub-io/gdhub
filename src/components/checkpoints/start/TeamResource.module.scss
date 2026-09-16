@@ -1,6 +1,31 @@
+// One outlined panel with hairlines: the table carries no fill of its own, the
+// way the frame draws it — the page ground shows through the rows.
 .table {
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+
 	:global(.ant-table) {
 		background: transparent;
+	}
+
+	:global(.ant-table-thead > tr > th) {
+		background: transparent;
+		border-bottom: 1px solid var(--gd-color-border);
+	}
+
+	:global(.ant-table-tbody > tr > td) {
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	// The team's line is a total, not another member: it is ruled off from them.
+	:global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+
+	:global(.ant-table-summary > tr > td) {
+		background: transparent;
+		border-top: 1px solid var(--gd-color-border);
 	}
 }
 
@@ -12,7 +37,11 @@
 	font-feature-settings: "tnum";
 }
 
-.note {
-	font-size: var(--gd-font-size-caption);
-	line-height: var(--gd-line-height-ui);
+.inputLabel {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.hours {
+	width: 72px;
+	font-feature-settings: "tnum";
 }

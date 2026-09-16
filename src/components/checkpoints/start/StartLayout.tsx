@@ -1,17 +1,17 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
+import clsx from "clsx";
 import type { ReactNode } from "react";
 import styles from "./StartLayout.module.scss";
 
 /**
- * The shell every question of the purchase shares (frame `Checkpoint — Page ·
- * Prepare`).
+ * The shell every question of the purchase shares — frames `W76sA5` … `tmP5M`.
  *
- * Five segments and "Step N of 5" across the top, one question, room to answer
- * it, and a footer bar. No question repeats what an earlier one asked —
- * everything is shown back on the payment question instead.
+ * Five bars across the top say where the purchase has got to, and nothing else
+ * does: the step's name is already under the bar it belongs to, so the panel
+ * never repeats it, and the count is the bars themselves rather than a sentence.
  *
  * It lives inside the checkpoint page's panel, so it takes the height its
  * content needs; the full-viewport variant is gone with the routes it belonged
@@ -30,24 +30,22 @@ export type StartStep = (typeof START_STEPS)[number];
 
 export type StartLayoutProps = {
 	step: StartStep;
-	question: string;
+	/** One line under the bars saying what this question is for. */
 	hint: string;
 	children: ReactNode;
-	/** Sits left of the forward button, qualifying what it does. */
+	/** Sits between the buttons and `Saved as a draft`. */
 	footNote?: ReactNode;
 	onBack?: () => void;
-	onCancel: () => void;
-	forward: ReactNode;
+	/** The way on. Payment has none — its action is in the price card. */
+	forward?: ReactNode;
 };
 
 export function StartLayout({
 	step,
-	question,
 	hint,
 	children,
 	footNote,
 	onBack,
-	onCancel,
 	forward,
 }: StartLayoutProps) {
 	const { t } = useTranslate();
@@ -61,65 +59,30 @@ export function StartLayout({
 		payment: t("checkpoints.prepare.step.payment", "Payment"),
 	};
 
-	const confirmCancel = () =>
-		Modal.confirm({
-			title: t("checkpoints.cancel.title", "Cancel this draft?"),
-			content: (
-				<Flex vertical gap={8}>
-					<span>
-						{t(
-							"checkpoints.cancel.body",
-							"All three steps will be deleted permanently.",
-						)}
-					</span>
-					<Typography.Text type="secondary">
-						{t(
-							"checkpoints.cancel.leaving",
-							"Leaving this page keeps the draft.",
-						)}
-					</Typography.Text>
-				</Flex>
-			),
-			okText: t("checkpoints.cancel.confirm", "Cancel the draft"),
-			cancelText: t("checkpoints.cancel.keep", "Keep the draft"),
-			okButtonProps: { danger: true, type: "primary" },
-			onOk: onCancel,
-		});
-
 	return (
 		<div className={styles.flow}>
-			<Flex vertical gap={32} className={styles.content}>
-				<Flex vertical gap={12}>
-					<Flex gap={12}>
-						{START_STEPS.map((candidate, position) => (
-							<Flex vertical gap={8} key={candidate} className={styles.segment}>
-								<span
-									className={styles.bar}
-									data-reached={position <= index || undefined}
-								/>
-								<Typography.Text
-									className={styles.segmentLabel}
-									data-current={position === index || undefined}
-								>
-									{labels[candidate]}
-								</Typography.Text>
-							</Flex>
-						))}
-					</Flex>
-					<Typography.Text className={styles.meta}>
-						{t("checkpoints.prepare.stepOf", "Step {step} of {total}", {
-							step: index + 1,
-							total: START_STEPS.length,
-						})}
-					</Typography.Text>
+			<Flex vertical gap={24} className={styles.content}>
+				<Flex gap={12}>
+					{START_STEPS.map((candidate, position) => (
+						<Flex vertical gap={8} key={candidate} className={styles.segment}>
+							<span
+								className={clsx(
+									styles.bar,
+									position < index && styles.barDone,
+									position === index && styles.barCurrent,
+								)}
+							/>
+							<Typography.Text
+								className={styles.segmentLabel}
+								data-current={position === index || undefined}
+							>
+								{labels[candidate]}
+							</Typography.Text>
+						</Flex>
+					))}
 				</Flex>
 
-				<Flex vertical gap={12}>
-					<Typography.Title level={1} className={styles.question}>
-						{question}
-					</Typography.Title>
-					<Typography.Text className={styles.hint}>{hint}</Typography.Text>
-				</Flex>
+				<Typography.Text className={styles.hint}>{hint}</Typography.Text>
 
 				<div className={styles.answer}>{children}</div>
 			</Flex>
@@ -131,13 +94,13 @@ export function StartLayout({
 							{t("checkpoints.prepare.back", "Back")}
 						</Button>
 					)}
-					<Button onClick={confirmCancel}>
-						{t("checkpoints.prepare.cancel", "Cancel")}
-					</Button>
+					{forward}
 				</Flex>
 				<Flex gap={12} align="center">
 					{footNote}
-					{forward}
+					<Typography.Text className={styles.saved}>
+						{t("checkpoints.prepare.saved", "Saved as a draft")}
+					</Typography.Text>
 				</Flex>
 			</footer>
 		</div>

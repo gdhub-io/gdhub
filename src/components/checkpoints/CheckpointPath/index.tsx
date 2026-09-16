@@ -24,6 +24,7 @@ export type CheckpointPathProps = {
 	/** The way out of this checkpoint and into the next one, once there is a verdict. */
 	next?: { disabled: boolean; reason?: string; onClick?: () => void };
 	footNote?: string | null;
+	className?: string;
 };
 
 /**
@@ -40,12 +41,13 @@ export function CheckpointPath({
 	onSelect,
 	next,
 	footNote,
+	className,
 }: CheckpointPathProps) {
 	const { t } = useTranslate();
 
 	return (
 		<nav
-			className={styles.path}
+			className={clsx(styles.path, className)}
 			aria-label={t("checkpoints.path.label", "Path to checkpoint")}
 		>
 			<Typography.Text className={styles.label}>

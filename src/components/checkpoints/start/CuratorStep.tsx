@@ -1,6 +1,7 @@
 "use client";
 
-import { IconFlag, IconSparkles, IconUser } from "@tabler/icons-react";
+import type { Icon } from "@tabler/icons-react";
+import { IconFlag, IconId, IconSparkles, IconUser } from "@tabler/icons-react";
 import { T, useTranslate } from "@tolgee/react";
 import {
 	App,
@@ -10,12 +11,13 @@ import {
 	Skeleton,
 	Table,
 	Tag,
+	Tooltip,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
-import { EmptyState } from "@/components/ui";
+import { EmptyState, IconTile } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CHECKPOINT_AI_PRICE,
@@ -25,7 +27,6 @@ import {
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import {
 	useCheckpointCurators,
-	useDiscardCheckpoint,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
@@ -37,10 +38,9 @@ import { useCheckpointDraft } from "./useDraft";
 /**
  * Step 3: who runs the 28 days (frame `vE1BQ`).
  *
- * Two kinds in one slot, priced, so the choice is made on what it costs and what
- * it buys rather than on which is the default. Picking a person from the list of
- * curators for the stage arrives with GDHUB-42, which is where the curator
- * registry — level, rate, record, rating — comes from.
+ * The kind is chosen first and it decides what follows: a person brings the list
+ * of experts to pick from, the AI curator brings one fixed price. Neither card
+ * carries a price any more — the difference between them is what they do.
  */
 export function CuratorStep() {
 	const { t } = useTranslate();
@@ -49,7 +49,6 @@ export function CuratorStep() {
 	const { draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
-	const discard = useDiscardCheckpoint();
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
 	const [preview, setPreview] = useState<string>();
@@ -61,14 +60,17 @@ export function CuratorStep() {
 		return (
 			<EmptyState
 				icon={IconFlag}
-				title={t("checkpoints.start.noDraft", "There is no draft to continue")}
+				title={t(
+					"checkpoints.prepare.noDraft",
+					"There is no draft to continue",
+				)}
 				description={t(
-					"checkpoints.start.noDraftHint",
+					"checkpoints.prepare.noDraftHint",
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.start.toList", "Back to checkpoints")}
+						{t("checkpoints.prepare.toList", "Back to checkpoints")}
 					</Button>
 				}
 			/>
@@ -79,6 +81,8 @@ export function CuratorStep() {
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
 	const chosenPerson = person ?? draft.curator?.id ?? null;
+	const talentCard = t("checkpoints.curator.talentCard", "Talent card");
+	const perCycle = t("checkpoints.curator.perCycle", "per cycle");
 
 	const goTo = async (next: StartStep) => {
 		try {
@@ -94,26 +98,11 @@ export function CuratorStep() {
 		}
 	};
 
-	const cancel = async () => {
-		try {
-			await discard.mutateAsync(draft.id);
-			exit();
-		} catch {
-			message.error(
-				t(
-					"checkpoints.draft.discardFailed",
-					"The draft could not be discarded",
-				),
-			);
-		}
-	};
-
 	const option = (
 		value: CheckpointCuratorKind,
-		Icon: typeof IconSparkles,
+		icon: Icon,
 		name: string,
 		description: string,
-		price: string,
 	) => (
 		<button
 			type="button"
@@ -121,171 +110,229 @@ export function CuratorStep() {
 			data-chosen={chosen === value || undefined}
 			onClick={() => setKind(value)}
 		>
-			<span className={styles.tile}>
-				<Icon size={18} stroke={1.6} />
-			</span>
-			<span className={styles.text}>
-				<Typography.Text className={styles.name}>{name}</Typography.Text>
-				<Typography.Text className={styles.description}>
-					{description}
-				</Typography.Text>
-			</span>
-			<span className={styles.right}>
-				<Typography.Text className={styles.price}>{price}</Typography.Text>
+			<span className={styles.optionHead}>
+				<IconTile icon={icon} size="sm" />
 				<Radio checked={chosen === value} />
 			</span>
+			<Typography.Text className={styles.optionName}>{name}</Typography.Text>
+			<Typography.Text className={styles.optionDescription}>
+				{description}
+			</Typography.Text>
 		</button>
 	);
 
 	return (
 		<StartLayout
 			step="curator"
-			question={t("checkpoints.start.q3", "Who runs the 28 days?")}
 			hint={t(
-				"checkpoints.start.h3",
-				"AI or a person — one role, two ways to run the cycle.",
+				"checkpoints.prepare.h3",
+				"Choose who you want to take this journey with.",
 			)}
 			onBack={() => goTo("goal")}
-			onCancel={cancel}
 			forward={
 				<Button
 					type="primary"
 					loading={update.isPending}
+					// A human curator is only chosen once somebody is actually picked.
+					// "Nothing chosen at all" cannot be blocked here: a draft is created
+					// with `curatorKind: AI`, so it is indistinguishable from the author
+					// having picked the AI curator until the schema records the choice.
+					disabled={chosen === CheckpointCuratorKind.Human && !chosenPerson}
 					onClick={() => goTo("planning")}
 				>
-					{t("checkpoints.start.next3", "Next — summary")}
+					{t("checkpoints.prepare.next3", "Next — planning")}
 				</Button>
 			}
 		>
-			<Flex gap={12} className={styles.kinds}>
-				{option(
-					CheckpointCuratorKind.AI,
-					IconSparkles,
-					t("checkpoints.curator.aiName", "AI curator, in writing"),
-					t(
-						"checkpoints.curator.aiDescription",
-						"Written reviews and a day-28 verdict.",
-					),
-					t("checkpoints.curator.aiPrice", "{currency}{price} fixed", {
-						currency: CHECKPOINT_PRICE_CURRENCY,
-						price: CHECKPOINT_AI_PRICE,
-					}),
-				)}
-				{option(
-					CheckpointCuratorKind.Human,
-					IconUser,
-					t("checkpoints.curator.humanName", "A person, on five calls"),
-					t(
-						"checkpoints.curator.humanDescription",
-						"Five live calls, written reviews and a verdict.",
-					),
-					t("checkpoints.curator.humanPrice", "from {currency}{price}", {
-						currency: CHECKPOINT_PRICE_CURRENCY,
-						price: CHECKPOINT_HUMAN_PRICE_FROM,
-					}),
-				)}
-			</Flex>
+			<Flex vertical gap={24}>
+				<div>
+					<Typography.Text className={styles.label}>
+						{t("checkpoints.curator.typeLabel", "Curator type")}
+					</Typography.Text>
+					<Flex gap={12}>
+						{option(
+							CheckpointCuratorKind.Human,
+							IconUser,
+							t("checkpoints.curator.expert", "Industry expert"),
+							t(
+								"checkpoints.curator.expertDescription",
+								"Live calls, written reviews and a verdict.",
+							),
+						)}
+						{option(
+							CheckpointCuratorKind.AI,
+							IconSparkles,
+							t("checkpoints.curator.ai", "AI curator"),
+							t(
+								"checkpoints.curator.aiDescription",
+								"Written reviews and a day-28 verdict.",
+							),
+						)}
+					</Flex>
+				</div>
 
-			<Flex vertical gap={12} style={{ marginTop: 16 }}>
-				{chosen === CheckpointCuratorKind.Human && (
-					<Flex vertical gap={8} className={styles.picker}>
-						<Typography.Text className={styles.pickerLabel}>
-							{t("checkpoints.curator.pickerLabel", "Curators for this stage")}
-						</Typography.Text>
+				{chosen === CheckpointCuratorKind.Human ? (
+					<Flex vertical gap={12}>
+						<div>
+							<Typography.Text className={styles.label}>
+								{t("checkpoints.curator.expertsLabel", "Industry experts")}
+							</Typography.Text>
 
-						{/* A table without a head: the rows are the same five facts each
-						    time, and a header over three unlabelled columns would name
-						    nothing the eye does not already have. Pressing anywhere on a
-						    row picks it; the dot on the right is where the answer lands. */}
-						<Table<CheckpointCurator>
-							showHeader={false}
-							pagination={false}
-							loading={curators.isLoading}
-							rowKey="userId"
-							size="middle"
-							className={styles.people}
-							dataSource={curators.data ?? []}
-							onRow={(row: CheckpointCurator) => ({
-								onClick: () => setPerson(row.userId),
-							})}
-							locale={{
-								emptyText: t(
-									"checkpoints.curator.noneOpen",
-									"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
-								),
-							}}
-							columns={
-								[
-									{
-										key: "who",
-										render: (_: unknown, row: CheckpointCurator) => (
-											<Flex
-												gap={12}
-												align="center"
-												className={styles.personRow}
-											>
-												<AppAvatar src={row.image} size={40}>
-													{row.name.slice(0, 1).toUpperCase()}
-												</AppAvatar>
-												<Flex vertical gap={4} className={styles.personText}>
-													<Flex gap={8} align="center">
-														<Typography.Text className={styles.name}>
-															{row.name}
+							{/* A table without a head: the rows are the same few facts each
+							    time, and a header over unlabelled columns would name nothing
+							    the eye does not already have. Pressing anywhere on a row picks
+							    it; the radio on the right is where the answer lands. */}
+							<Table<CheckpointCurator>
+								showHeader={false}
+								pagination={false}
+								// Without it the name column grows with the longest summary and
+								// pushes the price, the talent card and the radio past the edge.
+								tableLayout="fixed"
+								loading={curators.isLoading}
+								rowKey="userId"
+								size="middle"
+								className={styles.people}
+								dataSource={curators.data ?? []}
+								onRow={(row: CheckpointCurator) => ({
+									onClick: () => setPerson(row.userId),
+								})}
+								locale={{
+									emptyText: t(
+										"checkpoints.curator.noneOpen",
+										"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
+									),
+								}}
+								columns={
+									[
+										{
+											key: "who",
+											render: (_: unknown, row: CheckpointCurator) => (
+												<Flex gap={12} align="center" className={styles.person}>
+													<AppAvatar src={row.image} size={40}>
+														{row.name.slice(0, 1).toUpperCase()}
+													</AppAvatar>
+													<Flex vertical gap={4} className={styles.personText}>
+														<Flex gap={8} align="center">
+															<Typography.Text className={styles.name}>
+																{row.name}
+															</Typography.Text>
+															<Tag bordered={false} className={styles.level}>
+																<T keyName={row.level} />
+															</Tag>
+														</Flex>
+														<Typography.Text
+															type="secondary"
+															className={styles.specialisations}
+															ellipsis
+														>
+															{[row.role, row.specialization]
+																.filter(Boolean)
+																.join(" · ")}
 														</Typography.Text>
-														<Tag bordered={false} className={styles.level}>
-															<T keyName={row.level} />
-														</Tag>
 													</Flex>
+												</Flex>
+											),
+										},
+										{
+											key: "price",
+											width: 128,
+											align: "right",
+											// A curator carries no rate of their own yet, so every row
+											// shows the platform floor until GDHUB-42 gives them one.
+											render: () => (
+												<Flex vertical align="flex-end">
+													<Typography.Text className={styles.price}>
+														{t(
+															"checkpoints.curator.humanPrice",
+															"from {currency}{price}",
+															{
+																currency: CHECKPOINT_PRICE_CURRENCY,
+																price: CHECKPOINT_HUMAN_PRICE_FROM,
+															},
+														)}
+													</Typography.Text>
 													<Typography.Text
 														type="secondary"
-														className={styles.description}
-														ellipsis
+														className={styles.priceUnit}
 													>
-														{[row.role, row.specialization]
-															.filter(Boolean)
-															.join(" · ")}
+														{perCycle}
 													</Typography.Text>
 												</Flex>
-											</Flex>
-										),
-									},
-									{
-										key: "talent",
-										width: 120,
-										render: (_: unknown, row: CheckpointCurator) => (
-											// Choosing a curator and reading about one are different
-											// intentions, so the row carries both.
-											<Button
-												type="link"
-												className={styles.talent}
-												onClick={(event) => {
-													event.stopPropagation();
-													setPreview(row.specialityId);
-												}}
-											>
-												{t("checkpoints.curator.talentCard", "Talent card")}
-											</Button>
-										),
-									},
-									{
-										key: "pick",
-										width: 48,
-										align: "center",
-										render: (_: unknown, row: CheckpointCurator) => (
-											<Radio
-												checked={chosenPerson === row.userId}
-												onChange={() => setPerson(row.userId)}
-											/>
-										),
-									},
-								] satisfies ColumnsType<CheckpointCurator>
-							}
-						/>
+											),
+										},
+										{
+											key: "talent",
+											width: 64,
+											align: "center",
+											render: (_: unknown, row: CheckpointCurator) => (
+												// Choosing a curator and reading about one are different
+												// intentions, so the row carries both.
+												<Tooltip title={talentCard}>
+													<Button
+														type="text"
+														aria-label={talentCard}
+														className={styles.talent}
+														icon={<IconId size={18} stroke={1.6} />}
+														onClick={(event) => {
+															event.stopPropagation();
+															setPreview(row.specialityId);
+														}}
+													/>
+												</Tooltip>
+											),
+										},
+										{
+											key: "pick",
+											width: 48,
+											align: "center",
+											render: (_: unknown, row: CheckpointCurator) => (
+												<Radio
+													checked={chosenPerson === row.userId}
+													onChange={() => setPerson(row.userId)}
+												/>
+											),
+										},
+									] satisfies ColumnsType<CheckpointCurator>
+								}
+							/>
+						</div>
 
-						<Typography.Text type="secondary">
+						<Typography.Text type="secondary" className={styles.note}>
 							{t(
 								"checkpoints.curator.pickerNote",
 								"The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
+							)}
+						</Typography.Text>
+					</Flex>
+				) : (
+					<Flex vertical gap={12}>
+						<Flex vertical gap={4} className={styles.fixed}>
+							<Typography.Text className={styles.fixedLabel}>
+								{t(
+									"checkpoints.curator.fixedPrice",
+									"Fixed price for AI curator",
+								)}
+							</Typography.Text>
+							<Flex gap={8} align="baseline">
+								<Typography.Text className={styles.fixedAmount}>
+									{t("checkpoints.curator.amount", "{currency}{price}", {
+										currency: CHECKPOINT_PRICE_CURRENCY,
+										price: CHECKPOINT_AI_PRICE,
+									})}
+								</Typography.Text>
+								<Typography.Text type="secondary" className={styles.priceUnit}>
+									{perCycle}
+								</Typography.Text>
+							</Flex>
+							<Typography.Text type="secondary" className={styles.priceUnit}>
+								{t("checkpoints.curator.vat", "+ VAT")}
+							</Typography.Text>
+						</Flex>
+
+						<Typography.Text type="secondary" className={styles.note}>
+							{t(
+								"checkpoints.curator.aiLimit",
+								"The AI curator reads links, screenshots and what you write. It does not run your build and it holds no calls — judging how a game feels to play is what a person is paid for.",
 							)}
 						</Typography.Text>
 					</Flex>
@@ -293,17 +340,11 @@ export function CuratorStep() {
 			</Flex>
 
 			<SpecialistPreviewModal
+				withOffer={false}
 				specialistId={preview}
 				open={!!preview}
 				onCancel={() => setPreview(undefined)}
 			/>
-
-			<Typography.Paragraph type="secondary" className={styles.note}>
-				{t(
-					"checkpoints.curator.aiLimit",
-					"The AI curator reads links, screenshots and what you write. It does not run your build and it holds no calls — judging how a game feels to play is what a person is paid for.",
-				)}
-			</Typography.Paragraph>
 		</StartLayout>
 	);
 }

@@ -1,37 +1,41 @@
 "use client";
 
-import { IconFlag } from "@tabler/icons-react";
+import { IconCalendar, IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	App,
 	Button,
-	Card,
 	DatePicker,
 	Flex,
+	Input,
 	Segmented,
 	Skeleton,
 	Typography,
 } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { dueDateFrom } from "@/lib/checkpoint-days";
-import { devlogDayOf, sprintRange } from "@/lib/checkpoint-sprints";
 import styles from "./PlanningStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout } from "./StartLayout";
 import { TeamResource } from "./TeamResource";
+import { useTeamHours } from "./teamHours";
 import { useCheckpointDraft } from "./useDraft";
+
+/** Both ends of the run are days, so they are written the way a day is read. */
+const DAY_FORMAT = "D MMM YYYY";
 
 /**
  * Planning: the day the 28 days start, and what the team has to spend on them.
  *
- * One date decides four sprints, four devlogs and a verdict, so the answer is
- * shown back as the calendar it produces rather than left as a field. With a
- * human curator the day is a request: they confirm it when they take the
- * checkpoint, and everything below moves with it.
+ * One date decides the whole run, so the finish is shown beside it rather than
+ * left for the author to count out — and both are UTC days, because the server
+ * counts from UTC midnight and a local one would start the checkpoint a day
+ * early east of it.
  */
 export function PlanningStep() {
 	const { t } = useTranslate();
@@ -42,6 +46,9 @@ export function PlanningStep() {
 
 	const [picked, setPicked] = useState<Dayjs | null>(null);
 	const [mode, setMode] = useState<"soon" | "day">("soon");
+	const [mine, setMine] = useState<number[]>();
+	const { data: session } = useSession();
+	const { members, statedFor } = useTeamHours(project?.team?.id);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 5 }} />;
 
@@ -49,10 +56,13 @@ export function PlanningStep() {
 		return (
 			<EmptyState
 				icon={IconFlag}
-				title={t("checkpoints.start.noDraft", "There is no draft to continue")}
+				title={t(
+					"checkpoints.prepare.noDraft",
+					"There is no draft to continue",
+				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.start.toList", "Back to checkpoints")}
+						{t("checkpoints.prepare.toList", "Back to checkpoints")}
 					</Button>
 				}
 			/>
@@ -62,14 +72,15 @@ export function PlanningStep() {
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
 	const chosen =
 		picked ?? (draft.startedAt ? dayjs.utc(draft.startedAt) : dayjs());
-	// The day is a day, not an instant: the server counts the 28 days from UTC
-	// midnight, so a local midnight would start the checkpoint a day early east
-	// of it and this preview would contradict the sidebar it produces.
 	const day = chosen.format("YYYY-MM-DD");
 	const start = dayjs.utc(day).toDate();
-	const devlogs = [1, 2, 3, 4].map((sprint) =>
-		dayjs.utc(start).add(devlogDayOf(sprint) - 1, "day"),
-	);
+	const finish = dayjs.utc(dueDateFrom(start));
+
+	// The author is the one person whose hours the purchase cannot do without: a
+	// cycle nobody has time for is the thing the checkpoint is meant to prevent.
+	const author = members.find((row) => row.userId === session?.user?.id);
+	const authorHours = mine ?? (author ? statedFor(author) : null);
+	const hasAuthorHours = !!authorHours && authorHours[1] > 0;
 
 	const save = async () => {
 		try {
@@ -83,98 +94,113 @@ export function PlanningStep() {
 	return (
 		<StartLayout
 			step="planning"
-			question={t("checkpoints.prepare.q4", "When do you want to start?")}
 			hint={t(
 				"checkpoints.when.hint",
-				"One day decides the whole calendar — the sprints, the devlogs and the verdict.",
+				"Set the start date and confirm how much time the team has for this cycle.",
 			)}
 			onBack={() => go("curator")}
-			onCancel={exit}
 			forward={
-				<Button type="primary" loading={update.isPending} onClick={save}>
-					{t("checkpoints.when.next", "To the payment")}
+				<Button
+					type="primary"
+					loading={update.isPending}
+					disabled={
+						(mode === "day" && !picked && !draft.startedAt) || !hasAuthorHours
+					}
+					onClick={save}
+				>
+					{t("checkpoints.when.next", "Next — payment")}
 				</Button>
 			}
 		>
 			<Flex vertical gap={24}>
-				<Segmented
-					value={mode}
-					onChange={(value) => setMode(value as typeof mode)}
-					options={[
-						{
-							value: "soon",
-							label: isAI
-								? t("checkpoints.when.asapAi", "As soon as it is paid")
-								: t(
-										"checkpoints.when.asap",
-										"As soon as the curator accepts it",
-									),
-						},
-						{
-							value: "day",
-							label: t("checkpoints.when.pick", "On a day I choose"),
-						},
-					]}
-				/>
+				<div>
+					<Typography.Text className={styles.label}>
+						{t("checkpoints.when.timing", "Start timing")}
+					</Typography.Text>
+					<Segmented
+						value={mode}
+						onChange={(value) => setMode(value as typeof mode)}
+						options={[
+							{
+								value: "soon",
+								label: isAI
+									? t("checkpoints.when.asapAi", "As soon as it is paid")
+									: t(
+											"checkpoints.when.asap",
+											"As soon as the curator accepts it",
+										),
+							},
+							{
+								value: "day",
+								label: t("checkpoints.when.pick", "On a day I choose"),
+							},
+						]}
+					/>
+				</div>
 
-				{mode === "day" && (
-					<Flex vertical gap={8}>
-						<Typography.Text>
-							{t("checkpoints.when.startsOn", "Starts on")}
+				<Flex gap={16}>
+					<div className={styles.field}>
+						<Typography.Text className={styles.label}>
+							{t("checkpoints.when.startDate", "Start date")}
 						</Typography.Text>
 						<DatePicker
 							variant="filled"
 							value={chosen}
-							onChange={setPicked}
+							format={DAY_FORMAT}
 							allowClear={false}
-							className={styles.picker}
+							className={styles.control}
 							disabledDate={(date) => date.isBefore(dayjs(), "day")}
+							// Naming a day is choosing one: leaving the switch on "as soon as
+							// it is accepted" would throw the date away on save.
+							onChange={(value) => {
+								setPicked(value);
+								setMode("day");
+							}}
 						/>
-					</Flex>
-				)}
+					</div>
 
-				<Card size="small">
-					<Flex vertical gap={8}>
-						<Typography.Text className={styles.calendarTitle}>
-							{t("checkpoints.when.runs", "Runs {from} – {to}", {
-								from: dayjs.utc(start).format("D MMM"),
-								to: dayjs.utc(dueDateFrom(start)).format("D MMM YYYY"),
-							})}
+					<div className={styles.field}>
+						<Typography.Text className={styles.label}>
+							{t("checkpoints.when.finishDate", "Finish date")}
 						</Typography.Text>
-						<Typography.Text type="secondary" className={styles.calendarBody}>
-							{t(
-								"checkpoints.when.calendar",
-								"Calls: {s1}, {s2}, {s3}, {s4} · Devlogs: {d1}, {d2}, {d3}, {d4} · Final review: {review} · Verdict by {verdict}.",
-								{
-									s1: dayjs.utc(sprintRange(start, 1).from).format("D MMM"),
-									s2: dayjs.utc(sprintRange(start, 2).from).format("D MMM"),
-									s3: dayjs.utc(sprintRange(start, 3).from).format("D MMM"),
-									s4: dayjs.utc(sprintRange(start, 4).from).format("D MMM"),
-									d1: devlogs[0].format("D MMM"),
-									d2: devlogs[1].format("D MMM"),
-									d3: devlogs[2].format("D MMM"),
-									d4: devlogs[3].format("D MMM"),
-									review: dayjs.utc(dueDateFrom(start)).format("D MMM"),
-									verdict: dayjs
-										.utc(dueDateFrom(start))
-										.add(2, "day")
-										.format("D MMM"),
-								},
-							)}
+						<Input
+							readOnly
+							variant="filled"
+							className={`${styles.control} ${styles.readonly}`}
+							value={finish.format(DAY_FORMAT)}
+							suffix={
+								<IconCalendar
+									size={16}
+									stroke={1.6}
+									className={styles.suffixIcon}
+								/>
+							}
+						/>
+						<Typography.Text type="secondary" className={styles.fieldNote}>
+							{t("checkpoints.when.finishAuto", "Calculated automatically")}
 						</Typography.Text>
-					</Flex>
-				</Card>
+					</div>
+				</Flex>
 
-				<TeamResource teamId={project?.team?.id} />
+				{/* The timezone is the design's figure, not the project's: nothing on
+				    `Project` carries one yet. */}
+				<Typography.Text type="secondary" className={styles.note}>
+					{t(
+						"checkpoints.when.timezoneNote",
+						"Project timezone: UTC+2 · Your curator confirms the final date.",
+					)}
+				</Typography.Text>
 
-				{!isAI && (
-					<Typography.Text type="secondary" className={styles.note}>
-						{t(
-							"checkpoints.when.curatorConfirms",
-							"Project timezone: UTC+2. Your curator confirms the start date.",
-						)}
+				<div>
+					<Typography.Text className={styles.label}>
+						{t("checkpoints.when.capacity", "Team capacity")}
 					</Typography.Text>
-				)}
+					<TeamResource
+						teamId={project?.team?.id}
+						mine={mine}
+						onMine={setMine}
+					/>
+				</div>
 			</Flex>
 		</StartLayout>
 	);

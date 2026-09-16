@@ -137,8 +137,9 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const selected = facts.find((one) => `sprint-${one.sprint.number}` === step);
 
 	return (
-		<Flex gap={24} align="flex-start" className={styles.split}>
+		<Flex align="stretch" className={styles.split}>
 			<CheckpointPath
+				className={styles.sidebar}
 				steps={steps}
 				selected={step}
 				onSelect={(key) => go({ step: key })}
@@ -155,7 +156,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 								} catch {
 									message.error(
 										t(
-											"checkpoints.start.failed",
+											"checkpoints.prepare.failed",
 											"The checkpoint could not be started",
 										),
 									);

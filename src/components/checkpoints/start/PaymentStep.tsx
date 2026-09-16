@@ -1,13 +1,24 @@
 "use client";
 
 import {
+	IconAlertTriangle,
 	IconCheck,
 	IconFlag,
 	IconInfoCircle,
+	IconLock,
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Card, Checkbox, Flex, Skeleton, Typography } from "antd";
+import {
+	App,
+	Button,
+	Card,
+	Checkbox,
+	Flex,
+	Skeleton,
+	Tooltip,
+	Typography,
+} from "antd";
 import dayjs from "dayjs";
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
@@ -20,11 +31,9 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import {
-	useDiscardCheckpoint,
-	useGoalCheck,
-	useUpdateCheckpoint,
-} from "@/hooks/checkpoints";
+import { useGoalCheck, useUpdateCheckpoint } from "@/hooks/checkpoints";
+import { teamCapacity } from "@/lib/checkpoint-capacity";
+import { dueDateFrom } from "@/lib/checkpoint-days";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
@@ -35,8 +44,7 @@ import { useTeamHours } from "./teamHours";
 import { useCheckpointDraft } from "./useDraft";
 
 /**
- * Step 4: everything read back, what it costs, and what it does not promise
- * (frame `B2XH9`).
+ * Step 5: everything read back, what it costs, and what it does not promise.
  *
  * The terms are on this screen and nowhere else. Money is shown once, before it
  * is spent, and the checkpoint never mentions it again — so this is the only
@@ -59,11 +67,7 @@ export function PaymentStep() {
 				team.hours.join("-"),
 			].join("|")
 		: undefined;
-	const { data: remark, isFetching: checking } = useGoalCheck(
-		draft?.id,
-		signature,
-	);
-	const discard = useDiscardCheckpoint();
+	const { data: remark } = useGoalCheck(draft?.id, signature);
 	const update = useUpdateCheckpoint(draft?.id);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
@@ -72,33 +76,22 @@ export function PaymentStep() {
 		return (
 			<EmptyState
 				icon={IconFlag}
-				title={t("checkpoints.start.noDraft", "There is no draft to continue")}
+				title={t(
+					"checkpoints.prepare.noDraft",
+					"There is no draft to continue",
+				)}
 				description={t(
-					"checkpoints.start.noDraftHint",
+					"checkpoints.prepare.noDraftHint",
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.start.toList", "Back to checkpoints")}
+						{t("checkpoints.prepare.toList", "Back to checkpoints")}
 					</Button>
 				}
 			/>
 		);
 	}
-
-	const cancel = async () => {
-		try {
-			await discard.mutateAsync(draft.id);
-			exit();
-		} catch {
-			message.error(
-				t(
-					"checkpoints.draft.discardFailed",
-					"The draft could not be discarded",
-				),
-			);
-		}
-	};
 
 	const side = (kind: CheckpointItemKind) =>
 		draft.items.filter((item: CheckpointItemDto) => item.kind === kind);
@@ -134,43 +127,110 @@ export function PaymentStep() {
 		);
 
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
+	// A person's price has no source yet: `Speciality` carries no rate, so the
+	// floor from the curator step stands in until GDHUB-42 gives curators one.
+	const price = isAI ? CHECKPOINT_AI_PRICE : CHECKPOINT_HUMAN_PRICE_FROM;
+	const checkoutClosed = t(
+		"checkpoints.prepare.payPending",
+		"Checkout is not open yet",
+	);
+
+	const capacity = teamCapacity(
+		team.members.map((row) => ({ timeForWork: team.statedFor(row) })),
+	);
+	const span = (hours: { from: number; to: number }) =>
+		hours.from === hours.to ? `${hours.from}` : `${hours.from}–${hours.to}`;
+
+	const runsIn = [
+		draft.stageName,
+		t("checkpoints.number", "Checkpoint {number}", { number: draft.order }),
+		draft.startedAt
+			? t("checkpoints.when.runs", "Runs {from} – {to}", {
+					from: dayjs.utc(draft.startedAt).format("D MMM"),
+					to: dayjs
+						.utc(dueDateFrom(new Date(draft.startedAt)))
+						.format("D MMM YYYY"),
+				})
+			: t("checkpoints.pay.days", "{count} days from the start", {
+					count: CHECKPOINT_DAYS,
+				}),
+	].join(" · ");
+
+	// Advice, never a gate: the author can read it and pay anyway. There is no
+	// positive state in the design, so a plan that reads fine says nothing.
+	const atRisk = !!remark && (!remark.reachable || remark.missing.length > 0);
 
 	return (
 		<StartLayout
 			step="payment"
-			question={t("checkpoints.start.q4", "Ready to start?")}
 			hint={t(
-				"checkpoints.start.h4",
-				"Read it back before you pay. After this the goal card is fixed until day 14.",
+				"checkpoints.prepare.h4",
+				"Review your choices, complete payment, and start working toward your next Checkpoint.",
 			)}
 			onBack={() => go("planning")}
-			onCancel={cancel}
-			footNote={
-				<Typography.Text type="secondary" className={styles.pending}>
-					{t("checkpoints.start.payPending", "Checkout is not open yet")}
-				</Typography.Text>
-			}
-			forward={
-				<Button type="primary" disabled>
-					{t("checkpoints.pay.payAndStart", "Pay and start")}
-				</Button>
-			}
 		>
+			{atRisk && (
+				<Flex gap={16} align="flex-start" className={styles.suggestion}>
+					<span className={styles.suggestionIcon}>
+						<IconAlertTriangle size={20} stroke={1.6} />
+					</span>
+					<Flex vertical gap={4} className={styles.suggestionText}>
+						<Typography.Text className={styles.suggestionLabel}>
+							{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
+						</Typography.Text>
+						<Typography.Text className={styles.suggestionTitle}>
+							{t(
+								"checkpoints.pay.riskTitle",
+								"Your 28-day plan may be at risk",
+							)}
+						</Typography.Text>
+						<Typography.Text className={styles.suggestionBody}>
+							{t(
+								"checkpoints.pay.riskBody",
+								"The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
+							)}
+						</Typography.Text>
+					</Flex>
+					<Button
+						className={styles.suggestionAction}
+						onClick={() => go("goal")}
+					>
+						{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
+					</Button>
+				</Flex>
+			)}
+
 			<Flex vertical gap={24} className={styles.summary}>
 				{block(
 					t("checkpoints.pay.runsIn", "Runs in"),
-					null,
-					<Typography.Text>
-						{[
-							draft.stageName,
-							t("checkpoints.number", "Checkpoint {number}", {
-								number: draft.order,
-							}),
-							t("checkpoints.pay.days", "{count} days from the start", {
-								count: CHECKPOINT_DAYS,
-							}),
-						].join(" · ")}
+					"planning",
+					<Typography.Text>{runsIn}</Typography.Text>,
+				)}
+
+				{block(
+					t("checkpoints.pay.capacity", "Team capacity"),
+					"planning",
+					<Typography.Text className={styles.figure}>
+						{capacity.hoursPerWeek && capacity.hoursPerRun
+							? t(
+									"checkpoints.pay.capacityHours",
+									"{week} hours per sprint · {run} hours over 28 days",
+									{
+										week: span(capacity.hoursPerWeek),
+										run: span(capacity.hoursPerRun),
+									},
+								)
+							: t(
+									"checkpoints.pay.capacityUnknown",
+									"Nobody has stated their hours yet",
+								)}
 					</Typography.Text>,
+				)}
+
+				{block(
+					t("checkpoints.pay.goal", "The goal"),
+					"goal",
+					<Typography.Text>{draft.goal}</Typography.Text>,
 				)}
 
 				{block(
@@ -182,40 +242,7 @@ export function PaymentStep() {
 				{block(
 					t("checkpoints.pay.whatMustExist", "What must exist by day 28"),
 					"goal",
-					<Flex vertical gap={8}>
-						{list(side(CheckpointItemKind.Outcome))}
-						{/* The curator's read, kept from the goal question: the last place
-						    it can still change anything is the moment before paying. */}
-						{checking && (
-							<Typography.Text type="secondary" className={styles.checking}>
-								{t(
-									"checkpoints.goal.checking",
-									"The curator is reading this against your 28 days…",
-								)}
-							</Typography.Text>
-						)}
-
-						{!!remark && (!remark.reachable || remark.missing.length > 0) && (
-							<Flex vertical gap={4} className={styles.remark}>
-								<Typography.Text>{remark.note}</Typography.Text>
-								{remark.missing.map((line: string) => (
-									<Typography.Text key={line} type="secondary">
-										{t(
-											"checkpoints.goal.checkMissing",
-											"The stage also asks for: {line}",
-											{ line },
-										)}
-									</Typography.Text>
-								))}
-								<Typography.Text type="secondary">
-									{t(
-										"checkpoints.start.check.note",
-										"Checked by the AI curator · advice, not a gate",
-									)}
-								</Typography.Text>
-							</Flex>
-						)}
-					</Flex>,
+					list(side(CheckpointItemKind.Outcome)),
 				)}
 
 				{block(
@@ -226,29 +253,27 @@ export function PaymentStep() {
 			</Flex>
 
 			<Card className={styles.price}>
-				{isAI ? (
-					<Flex justify="space-between" className={styles.total}>
-						<Typography.Text>
-							{t("checkpoints.curator.aiName", "AI curator, in writing")}
-						</Typography.Text>
-						<Typography.Text>{`${CHECKPOINT_PRICE_CURRENCY}${CHECKPOINT_AI_PRICE}`}</Typography.Text>
-					</Flex>
-				) : (
-					<Flex vertical gap={8}>
-						<Flex justify="space-between" className={styles.total}>
-							<Typography.Text>
+				<Flex vertical gap={4}>
+					<Typography.Text className={styles.blockLabel}>
+						{t("checkpoints.pay.priceLabel", "Price")}
+					</Typography.Text>
+					<Flex gap={8} align="baseline">
+						{!isAI && (
+							<Typography.Text type="secondary">
 								{t("checkpoints.pay.fromPrice", "From")}
 							</Typography.Text>
-							<Typography.Text>{`${CHECKPOINT_PRICE_CURRENCY}${CHECKPOINT_HUMAN_PRICE_FROM}`}</Typography.Text>
-						</Flex>
+						)}
+						<Typography.Text className={styles.total}>
+							{`${CHECKPOINT_PRICE_CURRENCY}${price}`}
+						</Typography.Text>
 						<Typography.Text type="secondary">
-							{t(
-								"checkpoints.pay.humanPriceNote",
-								"The price is their hourly rate against the hours a checkpoint takes — 7.5 for you plus half an hour for each of the team — and the platform's 40%. It is settled once a curator takes this on.",
-							)}
+							{t("checkpoints.pay.perCycle", "per cycle")}
 						</Typography.Text>
 					</Flex>
-				)}
+					<Typography.Text type="secondary" className={styles.vat}>
+						{t("checkpoints.pay.vat", "+ VAT")}
+					</Typography.Text>
+				</Flex>
 
 				<Flex vertical gap={8} className={styles.terms}>
 					<Typography.Text className={styles.termsHead}>
@@ -317,6 +342,23 @@ export function PaymentStep() {
 						})}
 					</Typography.Text>
 				)}
+
+				{/* The action of the whole purchase sits with the sum it commits.
+				    Stripe checkout lands with GDHUB-38. */}
+				<Flex gap={12} align="center">
+					<Tooltip title={checkoutClosed}>
+						<Button
+							type="primary"
+							disabled
+							icon={<IconLock size={16} stroke={1.6} />}
+						>
+							{t("checkpoints.pay.payAndStart", "Pay and start")}
+						</Button>
+					</Tooltip>
+					<Typography.Text type="secondary" className={styles.pending}>
+						{checkoutClosed}
+					</Typography.Text>
+				</Flex>
 			</Card>
 		</StartLayout>
 	);

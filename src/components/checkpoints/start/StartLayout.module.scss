@@ -12,19 +12,25 @@
 	min-width: 0;
 }
 
+// Three states, because "done" and "here" are different news: the bar behind you
+// is ink, the one you are on is the accent, the ones ahead are a rule.
 .bar {
-	height: 4px;
+	height: var(--gd-space-1);
 	border-radius: var(--gd-radius-pill);
 	background: var(--gd-color-border);
+}
 
-	&[data-reached] {
-		background: var(--gd-color-accent);
-	}
+.barDone {
+	background: var(--gd-color-text);
+}
+
+.barCurrent {
+	background: var(--gd-color-accent);
 }
 
 .segmentLabel {
 	font-size: var(--gd-font-size-body-sm);
-	color: var(--gd-color-text-tertiary);
+	color: var(--gd-color-text-secondary);
 
 	&[data-current] {
 		color: var(--gd-color-text);
@@ -32,27 +38,20 @@
 	}
 }
 
-.meta {
-	color: var(--gd-color-text-tertiary);
-	font-size: var(--gd-font-size-body-sm);
-}
-
-.question {
-	margin: 0 !important;
-	font-size: var(--gd-font-size-h2) !important;
-	font-weight: 600;
-	line-height: var(--gd-line-height-heading);
-	letter-spacing: -0.02em;
-}
-
 .hint {
 	color: var(--gd-color-text-secondary);
 	font-size: var(--gd-font-size-body-lg);
 }
 
+.saved {
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+}
+
 .answer {
-	// One question, room to answer it — the column does not run the page width.
-	max-width: 720px;
+	// The frame gives the answer the whole panel: the bars above it already say
+	// how wide the column is, and a narrower one leaves a gutter beside them.
+	width: 100%;
 }
 
 .foot {
@@ -63,6 +62,15 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--gd-space-3);
-	padding: var(--gd-space-4) 0;
+	padding: var(--gd-space-4) 0 0;
 	border-top: 1px solid var(--gd-color-border);
+}
+
+/** A field label: 14/600, eight pixels off the control it names. */
+.label {
+	display: block;
+	margin-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
 }

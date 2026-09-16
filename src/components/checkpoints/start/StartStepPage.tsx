@@ -6,15 +6,12 @@ import { App, Button, Flex, Input, Skeleton, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointItemKind } from "@/config/prisma-enums";
-import {
-	useDiscardCheckpoint,
-	useSuggestLines,
-	useUpdateCheckpoint,
-} from "@/hooks/checkpoints";
+import { useSuggestLines, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { CHECKPOINT_GOAL_MAX } from "@/schemas/checkpoint";
 import { type GoalLine, GoalLines } from "./GoalLines";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
+import styles from "./StartStepPage.module.scss";
 import { useCheckpointDraft } from "./useDraft";
 
 export type StartStepPageProps = {
@@ -33,7 +30,6 @@ export function StartStepPage({ step }: StartStepPageProps) {
 	const { draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
-	const discard = useDiscardCheckpoint();
 
 	const kind =
 		step === "now" ? CheckpointItemKind.Input : CheckpointItemKind.Outcome;
@@ -62,14 +58,17 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		return (
 			<EmptyState
 				icon={IconFlag}
-				title={t("checkpoints.start.noDraft", "There is no draft to continue")}
+				title={t(
+					"checkpoints.prepare.noDraft",
+					"There is no draft to continue",
+				)}
 				description={t(
-					"checkpoints.start.noDraftHint",
+					"checkpoints.prepare.noDraftHint",
 					"Start a checkpoint from the list and the goal card opens here.",
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.start.toList", "Back to checkpoints")}
+						{t("checkpoints.prepare.toList", "Back to checkpoints")}
 					</Button>
 				}
 			/>
@@ -97,159 +96,136 @@ export function StartStepPage({ step }: StartStepPageProps) {
 		}
 	};
 
-	const cancel = async () => {
-		try {
-			await discard.mutateAsync(draft.id);
-			exit();
-		} catch {
-			message.error(
-				t(
-					"checkpoints.draft.discardFailed",
-					"The draft could not be discarded",
-				),
-			);
-		}
-	};
-
 	const isNow = step === "now";
 
 	return (
 		<StartLayout
 			step={step}
-			question={
-				isNow
-					? t("checkpoints.start.q1", "What exists today?")
-					: t(
-							"checkpoints.start.q2",
-							"Where do you want the project to be in 28 days?",
-						)
-			}
 			hint={
 				isNow
 					? t(
-							"checkpoints.start.h1",
+							"checkpoints.prepare.h1",
 							"Review what carried over from the last checkpoint.",
 						)
-					: t("checkpoints.start.h2", "List what must exist by day 28.")
+					: t(
+							"checkpoints.prepare.h2",
+							"Define the goal and outcomes that must exist by day 28.",
+						)
 			}
 			onBack={isNow ? undefined : () => goTo("now")}
-			onCancel={cancel}
 			forward={
 				<Button
 					type="primary"
 					loading={update.isPending || suggest.isPending}
+					// Every question has to be answered before the next one opens: the
+					// card is what the curator is paid to judge, and a blank side of it
+					// is not something anyone can be held to.
+					disabled={
+						!lines.some((line) => line.text.trim()) || (!isNow && !goal.trim())
+					}
 					onClick={() => goTo(isNow ? "goal" : "curator")}
 				>
 					{isNow
-						? t("checkpoints.start.next1", "Next — what will exist")
-						: t("checkpoints.start.next2", "Next — who curates")}
+						? t("checkpoints.prepare.next1", "Next — goal")
+						: t("checkpoints.prepare.next2", "Next — curator")}
 				</Button>
 			}
 		>
 			{/* The sentence first, the list under it: an author says what they want
 			    and then details it, not the other way round. */}
 			{!isNow && (
-				<Flex vertical gap={8} style={{ marginBottom: 24 }}>
-					<Typography.Text strong>
+				<div className={styles.block}>
+					<Typography.Text className={styles.label}>
 						{t("checkpoints.goal.sentence", "The goal, in one sentence")}
 					</Typography.Text>
 					<Input.TextArea
 						variant="filled"
 						value={goal}
-						rows={2}
 						maxLength={CHECKPOINT_GOAL_MAX}
+						showCount
+						rows={4}
 						disabled={update.isPending}
+						className={styles.goalField}
 						placeholder={t(
 							"checkpoints.goal.placeholder",
 							"Ship a playable prototype a stranger can finish in 15 minutes without help.",
 						)}
 						onChange={(event) => setGoal(event.target.value)}
 					/>
-					<Typography.Text type="secondary">
-						{t(
-							"checkpoints.goal.sentenceHint",
-							"One sentence the 28 days are judged against. The list below is how it is proven.",
-						)}
-					</Typography.Text>
-				</Flex>
+				</div>
 			)}
 
-			<Flex
-				align="center"
-				justify="space-between"
-				gap={12}
-				style={{ marginBottom: 8 }}
-			>
-				<Typography.Text strong>
-					{isNow
-						? t("checkpoints.goal.inputsTitle", "What the project has today")
-						: t(
-								"checkpoints.goal.outcomesTitle",
-								"What it will have by day 28",
-							)}
-				</Typography.Text>
+			<div className={styles.block}>
+				<Flex align="center" justify="space-between" gap={12}>
+					<Typography.Text className={styles.label}>
+						{isNow
+							? t("checkpoints.goal.inputsTitle", "What exists today")
+							: t(
+									"checkpoints.goal.outcomesTitle",
+									"What it will have by day 28",
+								)}
+					</Typography.Text>
 
-				{/* Only where the author is promising something: on day 1 the input
-				    list is what the project already has, and nobody needs help
-				    remembering that. The curator proposes, the lines land in the form
-				    as a draft, and every one of them is edited or dropped from there. */}
-				{!isNow && (
-					<Button
-						type="text"
-						icon={<IconSparkles size={16} stroke={1.6} />}
-						loading={suggest.isPending}
-						disabled={update.isPending || (!isNow && !goal.trim())}
-						onClick={async () => {
-							try {
-								const proposed = await suggest.mutateAsync(kind);
+					{/* Only where the author is promising something: on day 1 the input
+					    list is what the project already has, and nobody needs help
+					    remembering that. The curator proposes, the lines land in the form
+					    as a draft, and every one of them is edited or dropped from there. */}
+					{!isNow && (
+						<Button
+							icon={<IconSparkles size={16} stroke={1.6} />}
+							className={styles.suggest}
+							loading={suggest.isPending}
+							disabled={update.isPending || !goal.trim()}
+							onClick={async () => {
+								try {
+									const proposed = await suggest.mutateAsync(kind);
 
-								setLines((was) => [
-									...was.filter((line) => line.text.trim()),
-									...proposed.map((text, index) => ({
-										key: `suggested-${Date.now()}-${index}`,
-										text,
-										artifact: null,
-									})),
-								]);
-							} catch {
-								message.error(
-									t(
-										"checkpoints.goal.suggestFailed",
-										"The curator could not suggest anything just now",
-									),
-								);
-							}
-						}}
-					>
-						{t("checkpoints.goal.suggest", "Suggest with AI")}
-					</Button>
-				)}
-			</Flex>
+									setLines((was) => [
+										...was.filter((line) => line.text.trim()),
+										...proposed.map((text, index) => ({
+											key: `suggested-${Date.now()}-${index}`,
+											text,
+											artifact: null,
+										})),
+									]);
+								} catch {
+									message.error(
+										t(
+											"checkpoints.goal.suggestFailed",
+											"The curator could not suggest anything just now",
+										),
+									);
+								}
+							}}
+						>
+							{t("checkpoints.goal.suggest", "Suggest with AI")}
+						</Button>
+					)}
+				</Flex>
 
-			<GoalLines
-				lines={lines}
-				onChange={setLines}
-				disabled={update.isPending}
-				placeholder={
-					isNow
-						? t("checkpoints.goal.inputPlaceholder", "A concept document")
-						: t(
-								"checkpoints.goal.outcomePlaceholder",
-								"A playable vertical slice",
-							)
-				}
-				withEvidence={isNow}
-			/>
+				<GoalLines
+					lines={lines}
+					onChange={setLines}
+					disabled={update.isPending}
+					placeholder={
+						isNow
+							? t("checkpoints.goal.inputPlaceholder", "A concept document")
+							: t(
+									"checkpoints.goal.outcomePlaceholder",
+									"A playable vertical slice",
+								)
+					}
+					withEvidence={isNow}
+				/>
+			</div>
 
 			{!isNow && (
-				<Flex vertical gap={16} style={{ marginTop: 24 }}>
-					<Typography.Text type="secondary">
-						{t(
-							"checkpoints.start.draftNote",
-							"You can revise this with the curator before the cycle starts.",
-						)}
-					</Typography.Text>
-				</Flex>
+				<Typography.Text type="secondary" className={styles.note}>
+					{t(
+						"checkpoints.prepare.draftNote",
+						"You can revise this with the curator before the cycle starts.",
+					)}
+				</Typography.Text>
 			)}
 		</StartLayout>
 	);

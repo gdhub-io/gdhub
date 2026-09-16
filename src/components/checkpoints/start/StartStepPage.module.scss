@@ -1,0 +1,34 @@
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+
+	& + .block {
+		margin-top: var(--gd-space-6);
+	}
+}
+
+.label {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+}
+
+// Tall enough to hold the sentence and the second line it usually needs. The
+// rule reaches the textarea rather than the counter's wrapper, which is what the
+// class lands on.
+.goalField textarea {
+	min-height: 120px;
+}
+
+// Transparent with an outline: it offers help beside the label it belongs to,
+// and a filled button there would compete with the way forward.
+.suggest {
+	background: transparent;
+}
+
+.note {
+	display: block;
+	margin-top: var(--gd-space-6);
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+}

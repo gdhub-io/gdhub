@@ -35,11 +35,19 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 	const restates =
 		!checkpoint.verdict && checkpoint.status === CheckpointStatus.Active;
 
+	// A draft is not "Checkpoint 3" yet in the reader's head — it is the thing
+	// being set up, and the line under it says how far that has got.
+	const isDraft = checkpoint.status === CheckpointStatus.Draft;
+
 	return {
-		title: t("checkpoints.number", "Checkpoint {number}", {
-			number: checkpoint.order,
-		}),
-		description: [dates, checkpoint.stageName, day].filter(Boolean).join(" · "),
+		title: isDraft
+			? t("checkpoints.draft.pageTitle", "Checkpoint draft")
+			: t("checkpoints.number", "Checkpoint {number}", {
+					number: checkpoint.order,
+				}),
+		description: isDraft
+			? t("checkpoints.draft.pageSub", "Prepare · Setup incomplete")
+			: [dates, checkpoint.stageName, day].filter(Boolean).join(" · "),
 		actions: (
 			<Flex vertical align="flex-end" gap={8}>
 				{!restates && <CheckpointStatusSlot checkpoint={checkpoint} />}

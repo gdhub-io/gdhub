@@ -38,6 +38,11 @@ export type EvidenceSlotProps = {
 	/** What an empty slot says. Step 2 owes proof; step 1 may have none. */
 	emptyLabel?: string;
 	disabled?: boolean;
+	/**
+	 * Icon and name with no chrome of its own, for a slot that sits inside a
+	 * control which already owns the border and the press.
+	 */
+	plain?: boolean;
 };
 
 const artifactLabel = (artifact: CheckpointArtifactRef) =>
@@ -57,10 +62,24 @@ export function EvidenceSlot({
 	onChange,
 	emptyLabel,
 	disabled,
+	plain,
 }: EvidenceSlotProps) {
 	const { t } = useTranslate();
 	const empty =
 		emptyLabel ?? t("checkpoints.evidence.attach", "Attach evidence");
+
+	if (plain) {
+		const Icon = artifact ? ICON[artifact.type] : IconPaperclip;
+
+		return (
+			<span className={styles.plain}>
+				<Icon size={14} stroke={1.6} />
+				<Typography.Text className={styles.label} ellipsis>
+					{artifact ? artifactLabel(artifact) : empty}
+				</Typography.Text>
+			</span>
+		);
+	}
 
 	if (!options || !onChange) {
 		if (!artifact) {

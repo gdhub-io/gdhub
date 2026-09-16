@@ -41,13 +41,13 @@ export function StartCheckpointButton({
 
 	const reason = blockedUntil
 		? t(
-				"checkpoints.start.disabled",
+				"checkpoints.prepare.disabled",
 				"One checkpoint at a time. This one ends {date}.",
 				{ date: blockedUntil },
 			)
 		: blocker?.reason === "noStage"
 			? t(
-					"checkpoints.start.noStage",
+					"checkpoints.prepare.noStage",
 					"The project is not on a workflow stage yet.",
 				)
 			: undefined;
@@ -58,7 +58,7 @@ export function StartCheckpointButton({
 			router.push(`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`);
 		} catch {
 			message.error(
-				t("checkpoints.start.failed", "The checkpoint could not be started"),
+				t("checkpoints.prepare.failed", "The checkpoint could not be started"),
 			);
 		}
 	};

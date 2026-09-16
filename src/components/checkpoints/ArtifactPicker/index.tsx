@@ -12,15 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import {
-	Button,
-	Flex,
-	Input,
-	Radio,
-	Segmented,
-	Skeleton,
-	Typography,
-} from "antd";
+import { Button, Flex, Input, Radio, Skeleton, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
@@ -69,8 +61,10 @@ export type ArtifactPickerProps = {
 };
 
 /**
- * One artifact out of the project's store, or a new one — the two faces of
- * frame `IRJ2D`.
+ * One artifact out of the project's store — frame `IRJ2D`.
+ *
+ * Adding one is a button beside the search rather than a second face: the other
+ * face was a screen whose only content was a button to open a dialog.
  *
  * It hands back the artifact rather than its id: a caller that renders the
  * choice as a slot needs the name and the type, and looking them up again from
@@ -84,7 +78,6 @@ export function ArtifactPicker({
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 
-	const [face, setFace] = useState<"pick" | "add">("pick");
 	const [search, setSearch] = useState("");
 	const [addOpen, setAddOpen] = useState(false);
 
@@ -141,9 +134,9 @@ export function ArtifactPicker({
 						<Button
 							type="primary"
 							icon={<IconPlus size={16} stroke={2} />}
-							onClick={() => setFace("add")}
+							onClick={() => setAddOpen(true)}
 						>
-							{t("checkpoints.evidence.add", "Add a new one")}
+							{t("checkpoints.evidence.add", "Add new")}
 						</Button>
 					}
 				/>
@@ -151,17 +144,25 @@ export function ArtifactPicker({
 
 		return (
 			<>
-				<Input
-					variant="filled"
-					allowClear
-					value={search}
-					onChange={(event) => setSearch(event.target.value)}
-					prefix={<IconSearch size={16} stroke={1.6} />}
-					placeholder={t(
-						"checkpoints.evidence.search",
-						"Search the project's artifacts",
-					)}
-				/>
+				<Flex gap={8}>
+					<Input
+						variant="filled"
+						allowClear
+						value={search}
+						onChange={(event) => setSearch(event.target.value)}
+						prefix={<IconSearch size={16} stroke={1.6} />}
+						placeholder={t(
+							"checkpoints.evidence.search",
+							"Search the project's artifacts",
+						)}
+					/>
+					<Button
+						icon={<IconPlus size={16} stroke={2} />}
+						onClick={() => setAddOpen(true)}
+					>
+						{t("checkpoints.evidence.add", "Add new")}
+					</Button>
+				</Flex>
 
 				{matched.length ? (
 					<Radio.Group
@@ -222,49 +223,17 @@ export function ArtifactPicker({
 
 	return (
 		<Flex vertical gap={16} className={styles.picker}>
-			<Segmented
-				block
-				value={face}
-				onChange={(next) => setFace(next as "pick" | "add")}
-				options={[
-					{
-						value: "pick",
-						label: t("checkpoints.evidence.pick", "From this project"),
-					},
-					{
-						value: "add",
-						label: t("checkpoints.evidence.add", "Add a new one"),
-					},
-				]}
-			/>
-
-			{face === "pick" ? (
-				store()
-			) : (
-				<EmptyState
-					size="compact"
-					icon={IconPlus}
-					title={t("checkpoints.evidence.addTitle", "Add it to the project")}
-					description={t(
-						"checkpoints.evidence.addNote",
-						"Artifacts live with the project, not with the checkpoint. Add it once and pick it here.",
-					)}
-					action={
-						<Button type="primary" onClick={() => setAddOpen(true)}>
-							{t("checkpoints.evidence.addCta", "Add artifact")}
-						</Button>
-					}
-				/>
-			)}
+			{store()}
 
 			<CreateArtifactModal
 				open={addOpen}
 				projectId={projectId}
 				onCancel={() => setAddOpen(false)}
-				onCreate={() => {
+				// The search lands on what was just added, so the one row on screen is
+				// the one the author came here to attach.
+				onCreate={(created: { name?: string | null }) => {
 					setAddOpen(false);
-					setFace("pick");
-					setSearch("");
+					setSearch(created?.name ?? "");
 					queryClient.invalidateQueries({
 						queryKey: ["project-artifacts", projectId],
 					});

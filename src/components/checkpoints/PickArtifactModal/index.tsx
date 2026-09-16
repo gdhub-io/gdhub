@@ -2,7 +2,7 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Modal } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	ArtifactPicker,
 	type PickableArtifact,
@@ -13,6 +13,8 @@ export type PickArtifactModalProps = {
 	projectId: string;
 	/** The chosen artifact, or nothing when the line is being let go of. */
 	onPick: (artifact: PickableArtifact | undefined) => void;
+	/** The artifact the line already holds, so the picker opens on it. */
+	value?: string;
 	/** The line already has one: offer to take it off rather than replace it. */
 	canDetach?: boolean;
 	onClose: () => void;
@@ -30,20 +32,32 @@ export function PickArtifactModal({
 	open,
 	projectId,
 	onPick,
+	value,
 	canDetach,
 	onClose,
 }: PickArtifactModalProps) {
 	const { t } = useTranslate();
-	const [artifact, setArtifact] = useState<PickableArtifact>();
+	const [picked, setPicked] = useState<PickableArtifact>();
+	const [selected, setSelected] = useState<string>();
+
+	// Opening shows what the line already holds, so `Choose` is an agreement with
+	// what is on screen rather than a dead button until something is clicked.
+	useEffect(() => {
+		if (open) {
+			setSelected(value);
+			setPicked(undefined);
+		}
+	}, [open, value]);
 
 	const close = () => {
-		setArtifact(undefined);
+		setPicked(undefined);
 		onClose();
 	};
 
+	// Nothing new was chosen: the line keeps what it had, and there is nothing to
+	// write back.
 	const choose = () => {
-		if (!artifact) return;
-		onPick(artifact);
+		if (picked) onPick(picked);
 		close();
 	};
 
@@ -55,29 +69,38 @@ export function PickArtifactModal({
 			onCancel={close}
 			title={t("checkpoints.evidence.pickTitle", "Pick an artifact")}
 			footer={
-				<Flex justify="flex-end" gap={8}>
-					{canDetach && (
-						<Button
-							danger
-							onClick={() => {
-								onPick(undefined);
-								close();
-							}}
-						>
-							{t("checkpoints.evidence.detach", "Detach it")}
+				// Taking the evidence off is not a step on the way to choosing, so it
+				// sits apart from the pair that is.
+				<Flex justify="space-between" gap={8}>
+					<div>
+						{canDetach && (
+							<Button
+								danger
+								onClick={() => {
+									onPick(undefined);
+									close();
+								}}
+							>
+								{t("checkpoints.evidence.detach", "Detach it")}
+							</Button>
+						)}
+					</div>
+					<Flex gap={8}>
+						<Button onClick={close}>{t("common.cancel", "Cancel")}</Button>
+						<Button type="primary" disabled={!selected} onClick={choose}>
+							{t("checkpoints.evidence.choose", "Choose")}
 						</Button>
-					)}
-					<Button onClick={close}>{t("common.cancel", "Cancel")}</Button>
-					<Button type="primary" disabled={!artifact} onClick={choose}>
-						{t("checkpoints.evidence.choose", "Choose")}
-					</Button>
+					</Flex>
 				</Flex>
 			}
 		>
 			<ArtifactPicker
 				projectId={projectId}
-				value={artifact?.id}
-				onChange={setArtifact}
+				value={selected}
+				onChange={(artifact) => {
+					setPicked(artifact);
+					setSelected(artifact?.id);
+				}}
 			/>
 		</Modal>
 	);

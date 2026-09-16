@@ -14,7 +14,7 @@
 export const CHECKPOINT_PRICE_CURRENCY = "$";
 
 /** The AI curator has one price and it does not move with the team. */
-export const CHECKPOINT_AI_PRICE = 89;
+export const CHECKPOINT_AI_PRICE = 19;
 
 /** The cheapest a person can come to: Middle level, author with no team. */
 export const CHECKPOINT_HUMAN_PRICE_FROM = 250;

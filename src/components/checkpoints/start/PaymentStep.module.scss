@@ -1,5 +1,51 @@
 .summary {
-	max-width: 720px;
+	width: 100%;
+}
+
+// The curator's read, quiet but not hidden: it is advice the author already
+// chose to walk past once, and this is the last moment it can change anything.
+.suggestion {
+	margin-bottom: var(--gd-space-6);
+	padding: var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-warning-tint);
+}
+
+.suggestionIcon {
+	display: inline-flex;
+	flex: none;
+	// The glyph's box is taller than its ink, so it rides high without this.
+	margin-top: 2px;
+	color: var(--gd-warning-solid);
+}
+
+.suggestionText {
+	flex: 1;
+	min-width: 0;
+}
+
+.suggestionLabel {
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--gd-warning-on-tint);
+}
+
+// The way out of the warning keeps its line whatever the copy does.
+.suggestionAction {
+	flex: none;
+}
+
+.suggestionTitle {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.suggestionBody {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
 }
 
 .block {
@@ -24,6 +70,10 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
+.figure {
+	font-feature-settings: "tnum";
+}
+
 .dot {
 	flex: none;
 	width: var(--gd-space-1);
@@ -35,10 +85,9 @@
 	background: var(--gd-color-border-strong);
 }
 
-// The money and what it does not buy sit in one panel: the refusal has to be as
-// easy to read as the total (frame `B2XH9`, `IDB5K`).
+// The money, what it does not buy and the button that commits it sit in one
+// panel: the refusal has to be as easy to read as the total.
 .price {
-	max-width: 720px;
 	margin-top: var(--gd-space-6);
 
 	:global(.ant-card-body) {
@@ -49,9 +98,13 @@
 }
 
 .total {
-	font-size: var(--gd-font-size-h3);
+	font-size: var(--gd-font-size-h2);
 	font-weight: 600;
 	font-feature-settings: "tnum";
+}
+
+.vat {
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .terms {
@@ -87,18 +140,4 @@
 
 .pending {
 	font-size: var(--gd-font-size-body-sm);
-	text-align: right;
-}
-
-// The curator's remark, quiet but not hidden: it is advice the author already
-// chose to walk past once, and this is the last moment it can change anything.
-.remark {
-	padding: var(--gd-space-3);
-	border-left: 2px solid var(--gd-warning-solid);
-	background: var(--gd-warning-tint);
-	border-radius: var(--gd-radius-chip);
-}
-
-.checking {
-	font-size: var(--gd-font-size-caption);
 }

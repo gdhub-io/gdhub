@@ -94,7 +94,6 @@ export function GoalLines({
 						<Flex key={line.key} gap={8} align="center" className={styles.row}>
 							<Input
 								className={styles.input}
-								size="large"
 								value={line.text}
 								maxLength={CHECKPOINT_ITEM_TEXT_MAX}
 								variant="filled"
@@ -123,9 +122,11 @@ export function GoalLines({
 											: undefined
 									}
 								>
+									{/* One control, not a chip inside a button: the row's press
+									    changes the evidence, and a link inside it would open the
+									    artifact instead of doing what the row is for. */}
 									<Button
 										className={styles.attach}
-										size="large"
 										disabled={disabled}
 										icon={
 											line.artifact ? undefined : (
@@ -136,7 +137,7 @@ export function GoalLines({
 										onClick={() => setPicking(line.key)}
 									>
 										{line.artifact ? (
-											<EvidenceSlot artifact={line.artifact} />
+											<EvidenceSlot artifact={line.artifact} plain />
 										) : (
 											t("checkpoints.evidence.attach", "Attach evidence")
 										)}
@@ -149,7 +150,6 @@ export function GoalLines({
 								<Button
 									type="text"
 									danger
-									size="large"
 									disabled={disabled}
 									icon={<IconTrash size={16} />}
 									aria-label={t(
@@ -170,6 +170,7 @@ export function GoalLines({
 				<PickArtifactModal
 					open={!!picking}
 					projectId={project.id}
+					value={lines.find((line) => line.key === picking)?.artifact?.id}
 					canDetach={!!lines.find((line) => line.key === picking)?.artifact}
 					onClose={() => setPicking(undefined)}
 					onPick={(artifact) =>

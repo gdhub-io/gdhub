@@ -50,7 +50,7 @@ export function SprintPanel({
 			items={[
 				{
 					key: "status",
-					label: label(t("checkpoints.tab.status", "Status")),
+					label: label(t("checkpoints.sprintTab.status", "Status")),
 					children: (
 						<Status checkpoint={checkpoint} facts={facts} onGo={onGo} />
 					),
@@ -58,7 +58,7 @@ export function SprintPanel({
 				{
 					key: "signals",
 					label: label(
-						t("checkpoints.tab.signals", "Signals"),
+						t("checkpoints.sprintTab.signals", "Signals"),
 						facts.marks.asked
 							? `${facts.marks.confirmed}/${facts.marks.asked}`
 							: undefined,
@@ -68,14 +68,14 @@ export function SprintPanel({
 				{
 					key: "evidence",
 					label: label(
-						t("checkpoints.tab.evidence", "Evidence"),
+						t("checkpoints.sprintTab.evidence", "Evidence"),
 						facts.proved.length ? String(facts.proved.length) : undefined,
 					),
 					children: <Evidence checkpoint={checkpoint} facts={facts} />,
 				},
 				{
 					key: "review",
-					label: label(t("checkpoints.tab.review", "Review")),
+					label: label(t("checkpoints.sprintTab.review", "Review")),
 					children: <Review facts={facts} />,
 				},
 			]}

@@ -56,7 +56,7 @@ const CreateArtifactModal = ({
 
 		form.resetFields();
 
-		onCreate();
+		onCreate(artifact.data);
 	};
 
 	const handleCancel = () => {

@@ -14,7 +14,7 @@ import {
 export const CHECKPOINT_DAYS = 28;
 
 export const CHECKPOINT_ITEM_TEXT_MAX = 200;
-export const CHECKPOINT_GOAL_MAX = 300;
+export const CHECKPOINT_GOAL_MAX = 500;
 export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
 
 const itemText = z.string().trim().min(1).max(CHECKPOINT_ITEM_TEXT_MAX);
