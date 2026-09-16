@@ -1,14 +1,14 @@
+import { SkillLevel } from "@/config/prisma-enums";
+
 /**
- * What the two kinds of curator cost, for the choice on start step 3.
+ * What a checkpoint costs, in one place so it can be changed in one place.
  *
- * These are the headline figures the step shows, not the charge. A person's
- * price is `checkpoint hours × their hourly rate + the platform's 40%`, and the
- * hours grow with the team — 7.5 for the author plus 0.5 each — so the step can
- * only say "from". The real number is computed against the chosen curator and
- * the team at the payment step.
+ * A person's price follows their level, which is the only thing the platform
+ * knows about how expensive they are: `Speciality` carries no rate of its own
+ * (GDHUB-42). The figures come from frame `eFLO0`, and the day a curator does
+ * carry a rate, this table becomes its fallback rather than the answer.
  *
- * Sources: `docs/checkpoint-standard.md` §8 for the human floor (a Middle
- * curator, author alone), frame `vE1BQ` for the AI price.
+ * Nothing here is charged yet — Stripe checkout is GDHUB-38.
  */
 
 export const CHECKPOINT_PRICE_CURRENCY = "$";
@@ -16,5 +16,17 @@ export const CHECKPOINT_PRICE_CURRENCY = "$";
 /** The AI curator has one price and it does not move with the team. */
 export const CHECKPOINT_AI_PRICE = 19;
 
-/** The cheapest a person can come to: Middle level, author with no team. */
-export const CHECKPOINT_HUMAN_PRICE_FROM = 250;
+/**
+ * Below `Skillful` the floor holds: a curator is never sold for less than the
+ * cheapest a person can be, however junior the profile says they are.
+ */
+const CURATOR_PRICE: Record<SkillLevel, number> = {
+	[SkillLevel.Novice]: 250,
+	[SkillLevel.Beginner]: 250,
+	[SkillLevel.Skillful]: 250,
+	[SkillLevel.Experienced]: 312,
+	[SkillLevel.Expert]: 375,
+};
+
+/** What this curator costs for the 28 days. */
+export const curatorPrice = (level: SkillLevel) => CURATOR_PRICE[level];

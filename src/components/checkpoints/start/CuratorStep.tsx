@@ -21,8 +21,8 @@ import { EmptyState, IconTile } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_HUMAN_PRICE_FROM,
 	CHECKPOINT_PRICE_CURRENCY,
+	curatorPrice,
 } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import {
@@ -82,7 +82,6 @@ export function CuratorStep() {
 	const chosen = kind ?? draft.curatorKind;
 	const chosenPerson = person ?? draft.curator?.id ?? null;
 	const talentCard = t("checkpoints.curator.talentCard", "Talent card");
-	const perCycle = t("checkpoints.curator.perCycle", "per cycle");
 
 	const goTo = async (next: StartStep) => {
 		try {
@@ -237,27 +236,17 @@ export function CuratorStep() {
 											key: "price",
 											width: 128,
 											align: "right",
-											// A curator carries no rate of their own yet, so every row
-											// shows the platform floor until GDHUB-42 gives them one.
-											render: () => (
-												<Flex vertical align="flex-end">
-													<Typography.Text className={styles.price}>
-														{t(
-															"checkpoints.curator.humanPrice",
-															"from {currency}{price}",
-															{
-																currency: CHECKPOINT_PRICE_CURRENCY,
-																price: CHECKPOINT_HUMAN_PRICE_FROM,
-															},
-														)}
-													</Typography.Text>
-													<Typography.Text
-														type="secondary"
-														className={styles.priceUnit}
-													>
-														{perCycle}
-													</Typography.Text>
-												</Flex>
+											render: (_: unknown, row: CheckpointCurator) => (
+												<Typography.Text className={styles.price}>
+													{t(
+														"checkpoints.curator.amount",
+														"{currency}{price}",
+														{
+															currency: CHECKPOINT_PRICE_CURRENCY,
+															price: curatorPrice(row.level),
+														},
+													)}
+												</Typography.Text>
 											),
 										},
 										{
@@ -313,18 +302,13 @@ export function CuratorStep() {
 									"Fixed price for AI curator",
 								)}
 							</Typography.Text>
-							<Flex gap={8} align="baseline">
-								<Typography.Text className={styles.fixedAmount}>
-									{t("checkpoints.curator.amount", "{currency}{price}", {
-										currency: CHECKPOINT_PRICE_CURRENCY,
-										price: CHECKPOINT_AI_PRICE,
-									})}
-								</Typography.Text>
-								<Typography.Text type="secondary" className={styles.priceUnit}>
-									{perCycle}
-								</Typography.Text>
-							</Flex>
-							<Typography.Text type="secondary" className={styles.priceUnit}>
+							<Typography.Text className={styles.fixedAmount}>
+								{t("checkpoints.curator.amount", "{currency}{price}", {
+									currency: CHECKPOINT_PRICE_CURRENCY,
+									price: CHECKPOINT_AI_PRICE,
+								})}
+							</Typography.Text>
+							<Typography.Text type="secondary" className={styles.vat}>
 								{t("checkpoints.curator.vat", "+ VAT")}
 							</Typography.Text>
 						</Flex>

@@ -24,14 +24,18 @@ import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_HUMAN_PRICE_FROM,
 	CHECKPOINT_PRICE_CURRENCY,
+	curatorPrice,
 } from "@/config/checkpoint-pricing";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import { useGoalCheck, useUpdateCheckpoint } from "@/hooks/checkpoints";
+import {
+	useCheckpointCurators,
+	useGoalCheck,
+	useUpdateCheckpoint,
+} from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
@@ -69,6 +73,7 @@ export function PaymentStep() {
 		: undefined;
 	const { data: remark } = useGoalCheck(draft?.id, signature);
 	const update = useUpdateCheckpoint(draft?.id);
+	const curators = useCheckpointCurators();
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -127,9 +132,14 @@ export function PaymentStep() {
 		);
 
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
-	// A person's price has no source yet: `Speciality` carries no rate, so the
-	// floor from the curator step stands in until GDHUB-42 gives curators one.
-	const price = isAI ? CHECKPOINT_AI_PRICE : CHECKPOINT_HUMAN_PRICE_FROM;
+	// The price follows the chosen curator's level, and the level only exists on
+	// the list the previous step already loaded — the checkpoint itself keeps no
+	// record of what was agreed until GDHUB-42 puts one there.
+	const chosen = curators.data?.find(
+		(curator) => curator.userId === draft.curator?.id,
+	);
+	const price =
+		isAI || !chosen ? CHECKPOINT_AI_PRICE : curatorPrice(chosen.level);
 	const checkoutClosed = t(
 		"checkpoints.prepare.payPending",
 		"Checkout is not open yet",
@@ -258,16 +268,8 @@ export function PaymentStep() {
 						{t("checkpoints.pay.priceLabel", "Price")}
 					</Typography.Text>
 					<Flex gap={8} align="baseline">
-						{!isAI && (
-							<Typography.Text type="secondary">
-								{t("checkpoints.pay.fromPrice", "From")}
-							</Typography.Text>
-						)}
 						<Typography.Text className={styles.total}>
 							{`${CHECKPOINT_PRICE_CURRENCY}${price}`}
-						</Typography.Text>
-						<Typography.Text type="secondary">
-							{t("checkpoints.pay.perCycle", "per cycle")}
 						</Typography.Text>
 					</Flex>
 					<Typography.Text type="secondary" className={styles.vat}>
