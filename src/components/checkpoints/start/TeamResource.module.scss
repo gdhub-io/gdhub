@@ -1,21 +1,48 @@
-// One outlined panel with hairlines: the table carries no fill of its own, the
-// way the frame draws it — the page ground shows through the rows.
+// One outlined panel with hairlines, frame `l371r`: nothing inside carries a
+// fill except the head, so the page ground shows through every row — including
+// the total, which antd would otherwise paint white.
 .table {
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-card);
 	overflow: hidden;
 
-	:global(.ant-table) {
+	:global(.ant-table),
+	:global(.ant-table-summary) {
 		background: transparent;
 	}
 
+	// 16 at the panel's edges and 8 either side between columns — the frame's
+	// [0,16] padding with its gap of 16.
+	:global(.ant-table-thead > tr > th),
+	:global(.ant-table-tbody > tr > td),
+	:global(.ant-table-summary > tr > td) {
+		padding: 0 var(--gd-space-2);
+
+		&:first-child {
+			padding-left: var(--gd-space-4);
+		}
+
+		&:last-child {
+			padding-right: var(--gd-space-4);
+		}
+	}
+
+	// The head's fill matches the page ground it sits on: what marks it out is
+	// the label, not a band.
 	:global(.ant-table-thead > tr > th) {
-		background: transparent;
-		border-bottom: 1px solid var(--gd-color-border);
+		height: 40px;
+		background: var(--gd-color-surface-sunken);
+		border-bottom: none;
+		font-size: var(--gd-font-size-label);
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		color: var(--gd-color-text-tertiary);
 	}
 
 	:global(.ant-table-tbody > tr > td) {
-		border-bottom: 1px solid var(--gd-color-border-subtle);
+		height: 56px;
+		border-bottom: 1px solid var(--gd-color-border);
 	}
 
 	// The team's line is a total, not another member: it is ruled off from them.
@@ -24,24 +51,31 @@
 	}
 
 	:global(.ant-table-summary > tr > td) {
-		background: transparent;
+		height: 52px;
 		border-top: 1px solid var(--gd-color-border);
 	}
 }
 
+.who {
+	font-size: var(--gd-font-size-body);
+}
+
 .role {
 	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
 }
 
 .figure {
+	font-size: var(--gd-font-size-body-sm);
 	font-feature-settings: "tnum";
 }
 
-.inputLabel {
-	font-size: var(--gd-font-size-body-sm);
+.total {
+	font-size: var(--gd-font-size-body);
+	font-feature-settings: "tnum";
 }
 
 .hours {
-	width: 72px;
+	width: 52px;
 	font-feature-settings: "tnum";
 }

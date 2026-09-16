@@ -64,6 +64,15 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 
 	const unknown = t("checkpoints.when.teamUnknown", "not stated");
 
+	// Hours a sprint are what was stated; the run is what follows from it. The
+	// frame gives the first the secondary ink and keeps full weight for the
+	// second, so the eye lands on the figure the purchase is judged against.
+	const week = (text: string) => (
+		<Typography.Text type="secondary" className={styles.figure}>
+			{text}
+		</Typography.Text>
+	);
+
 	return (
 		<Table<TeamHoursRow>
 			size="middle"
@@ -77,12 +86,14 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 					key: "who",
 					title: t("checkpoints.when.teamMember", "Who"),
 					render: (_: unknown, row: TeamHoursRow) => (
-						<Flex gap={12} align="center">
+						<Flex gap={10} align="center">
 							<AppAvatar src={row.user.image} size={28}>
 								{row.user.name?.slice(0, 1).toUpperCase()}
 							</AppAvatar>
-							<Flex vertical gap={0}>
-								<Typography.Text>{row.user.name}</Typography.Text>
+							<Flex vertical gap={1}>
+								<Typography.Text className={styles.who}>
+									{row.user.name}
+								</Typography.Text>
 								<Typography.Text type="secondary" className={styles.role}>
 									{row.speciality?.name ?? row.position}
 								</Typography.Text>
@@ -92,7 +103,7 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 				},
 				{
 					key: "week",
-					width: 240,
+					width: 140,
 					align: "right",
 					title: t("checkpoints.when.teamWeek", "Hours / sprint"),
 					render: (_: unknown, row: TeamHoursRow) => {
@@ -100,22 +111,12 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 						const [from, to] = stated ?? [0, 0];
 
 						if (row.userId !== session?.user?.id)
-							return (
-								<Typography.Text
-									className={styles.figure}
-									type={stated ? undefined : "secondary"}
-								>
-									{stated ? span(from, to) : unknown}
-								</Typography.Text>
-							);
+							return week(stated ? span(from, to) : unknown);
 
 						// The author's own line is editable here: they are the one
 						// deciding whether these 28 days are worth buying.
 						return (
-							<Flex gap={8} align="center" justify="flex-end">
-								<Typography.Text type="secondary" className={styles.inputLabel}>
-									{t("checkpoints.when.teamFrom", "From")}
-								</Typography.Text>
+							<Flex gap={6} align="center" justify="flex-end">
 								<InputNumber
 									variant="filled"
 									min={0}
@@ -126,9 +127,6 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 									onChange={(value) => onMine?.([value ?? 0, to])}
 									onBlur={() => save.mutate([from, to])}
 								/>
-								<Typography.Text type="secondary" className={styles.inputLabel}>
-									{t("checkpoints.when.teamTo", "To")}
-								</Typography.Text>
 								<InputNumber
 									variant="filled"
 									min={0}
@@ -145,7 +143,7 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 				},
 				{
 					key: "run",
-					width: 180,
+					width: 150,
 					align: "right",
 					title: t("checkpoints.when.teamRun", "Over the 28 days"),
 					render: (_: unknown, row: TeamHoursRow) => {
@@ -166,7 +164,7 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 			summary={() => (
 				<Table.Summary.Row>
 					<Table.Summary.Cell index={0}>
-						<Typography.Text strong>
+						<Typography.Text strong className={styles.total}>
 							{total.stated === total.members
 								? t("checkpoints.when.teamTotal", "The team")
 								: t(
@@ -177,14 +175,14 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 						</Typography.Text>
 					</Table.Summary.Cell>
 					<Table.Summary.Cell index={1} align="right">
-						<Typography.Text strong className={styles.figure}>
+						<Typography.Text strong className={styles.total}>
 							{total.hoursPerWeek
 								? span(total.hoursPerWeek.from, total.hoursPerWeek.to)
 								: "—"}
 						</Typography.Text>
 					</Table.Summary.Cell>
 					<Table.Summary.Cell index={2} align="right">
-						<Typography.Text strong className={styles.figure}>
+						<Typography.Text strong className={styles.total}>
 							{total.hoursPerRun
 								? span(total.hoursPerRun.from, total.hoursPerRun.to)
 								: "—"}
