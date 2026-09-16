@@ -78,32 +78,6 @@
 	}
 }
 
-.person {
-	min-width: 0;
-}
-
-.personText {
-	flex: 1;
-	min-width: 0;
-}
-
-.name {
-	font-weight: 600;
-}
-
-.level {
-	margin: 0;
-	background: var(--gd-color-surface-sunken);
-	border-radius: var(--gd-radius-chip);
-	color: var(--gd-color-text-secondary);
-	font-size: var(--gd-font-size-label);
-	font-weight: 500;
-}
-
-.specialisations {
-	font-size: var(--gd-font-size-body-sm);
-}
-
 .price {
 	font-weight: 600;
 	font-feature-settings: "tnum";

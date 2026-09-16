@@ -43,6 +43,7 @@ import { dueDateFrom } from "@/lib/checkpoint-days";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
+import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
@@ -309,7 +310,16 @@ export function PaymentStep() {
 				{block(
 					t("checkpoints.pay.curator", "Curator"),
 					"curator",
-					<CuratorBadge kind={draft.curatorKind} curator={draft.curator} />,
+					// The person is shown back as the line they were picked from, so
+					// the answer reads the same on both screens. A badge stays for the
+					// AI, and for a person the picker no longer lists.
+					chosen ? (
+						<div className={styles.curator}>
+							<CuratorRow curator={chosen} />
+						</div>
+					) : (
+						<CuratorBadge kind={draft.curatorKind} curator={draft.curator} />
+					),
 				)}
 			</Flex>
 
@@ -384,7 +394,7 @@ export function PaymentStep() {
 				>
 					{t(
 						"checkpoints.pay.agree",
-						"I have read the checkpoint standard and accept it — including what is not guaranteed.",
+						"I have read the checkpoint agreement and accept it — including what is not guaranteed.",
 					)}
 				</Checkbox>
 

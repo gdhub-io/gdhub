@@ -30,6 +30,7 @@ import {
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
+import { CuratorRow } from "./CuratorRow";
 import styles from "./CuratorStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
@@ -209,30 +210,7 @@ export function CuratorStep() {
 										{
 											key: "who",
 											render: (_: unknown, row: CheckpointCurator) => (
-												<Flex gap={12} align="center" className={styles.person}>
-													<AppAvatar src={row.image} size={40}>
-														{row.name.slice(0, 1).toUpperCase()}
-													</AppAvatar>
-													<Flex vertical gap={4} className={styles.personText}>
-														<Flex gap={8} align="center">
-															<Typography.Text className={styles.name}>
-																{row.name}
-															</Typography.Text>
-															<Tag bordered={false} className={styles.level}>
-																<T keyName={row.level} />
-															</Tag>
-														</Flex>
-														<Typography.Text
-															type="secondary"
-															className={styles.specialisations}
-															ellipsis
-														>
-															{[row.role, row.specialization]
-																.filter(Boolean)
-																.join(" · ")}
-														</Typography.Text>
-													</Flex>
-												</Flex>
+												<CuratorRow curator={row} />
 											),
 										},
 										{

@@ -160,3 +160,12 @@
 .pending {
 	font-size: var(--gd-font-size-body-sm);
 }
+
+// The chosen curator sits in the same outlined panel the picker draws around
+// its list, frame `ZLEmV` — one row of it.
+.curator {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}

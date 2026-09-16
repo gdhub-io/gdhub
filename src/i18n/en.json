@@ -712,7 +712,7 @@
 		"pay": {
 			"acceptedOn": "Accepted {date}",
 			"adjustGoal": "Adjust the goal",
-			"agree": "I have read the checkpoint standard and accept it — including what is not guaranteed.",
+			"agree": "I have read the checkpoint agreement and accept it — including what is not guaranteed.",
 			"aiSuggestion": "AI suggestion",
 			"capacity": "Team capacity",
 			"capacityHours": "{week} hours per sprint · {run} hours over 28 days",
