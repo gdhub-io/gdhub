@@ -155,7 +155,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
-		"@playwright/test": "^1.62.1",
+		"@playwright/test": "^1.63.0",
 		"@storybook/addon-docs": "^10",
 		"@storybook/nextjs": "^10",
 		"@svgr/webpack": "^6.3.1",
