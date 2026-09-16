@@ -10,7 +10,7 @@
 .foot {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-end;
 	gap: var(--gd-space-3);
 }
 
@@ -72,9 +72,4 @@
 	height: 100%;
 	border-radius: var(--gd-radius-pill);
 	background: var(--gd-color-accent);
-}
-
-.note {
-	color: var(--gd-color-text-tertiary);
-	font-size: var(--gd-font-size-caption);
 }

@@ -569,8 +569,13 @@
 			"nothingCharged": "Nothing has been charged and no days are counting."
 		},
 		"empty": {
+			"cta": "Plan my first checkpoint",
 			"description": "28 days, one goal, a curator, and a verdict that opens the next stage.",
 			"title": "Your first checkpoint starts here"
+		},
+		"error": {
+			"retry": "Try again",
+			"title": "Checkpoints could not be loaded"
 		},
 		"evidence": {
 			"accepted": "Counted by the curator",

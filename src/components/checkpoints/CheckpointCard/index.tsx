@@ -96,15 +96,6 @@ export function CheckpointCard({
 			</div>
 
 			<footer className={styles.foot}>
-				<Typography.Text className={styles.note}>
-					{isDraft
-						? t(
-								"checkpoints.draft.nothingCharged",
-								"Nothing has been charged and no days are counting.",
-							)
-						: ""}
-				</Typography.Text>
-
 				<Flex gap={8}>
 					{isDraft && onDiscard && (
 						<Button

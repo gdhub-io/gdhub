@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { Flex } from "antd";
+import { IconAlertTriangle, IconFlag } from "@tabler/icons-react";
+import { Button, Flex } from "antd";
+import { EmptyState } from "@/components/ui";
 import {
 	ArtifactCheckStatus,
 	CheckpointCuratorKind,
@@ -15,6 +17,7 @@ import { CheckpointCard } from "./CheckpointCard";
 import { CheckpointPath } from "./CheckpointPath";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
 import { CheckpointStepPanel } from "./CheckpointStepPanel";
+import { CheckpointsSkeleton } from "./CheckpointsSkeleton";
 import { CuratorBadge } from "./CuratorBadge";
 import { GoalStrip } from "./GoalStrip";
 import { InputsPanel } from "./InputsPanel";
@@ -503,4 +506,31 @@ export const SprintReview: StoryObj = {
 
 export const SprintReviewEmpty: StoryObj = {
 	render: () => <Review facts={sprintFactsOf(withItems, sprints[1])} />,
+};
+
+/** The three states of the tab before there is anything to read — frames `zAqpb`, `O0tgre`, `J0pS4h`. */
+export const ListLoading: StoryObj = {
+	render: () => <CheckpointsSkeleton />,
+};
+
+export const ListEmpty: StoryObj = {
+	render: () => (
+		<EmptyState
+			icon={IconFlag}
+			description="Your first checkpoint starts here"
+			action={<Button type="primary">Plan my first checkpoint</Button>}
+		/>
+	),
+};
+
+export const ListFailed: StoryObj = {
+	render: () => (
+		<EmptyState
+			icon={IconAlertTriangle}
+			tint="var(--gd-danger-tint)"
+			ink="var(--gd-danger-solid)"
+			description="Checkpoints could not be loaded"
+			action={<Button type="primary">Try again</Button>}
+		/>
+	),
 };

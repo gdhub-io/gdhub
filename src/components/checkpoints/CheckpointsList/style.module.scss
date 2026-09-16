@@ -7,3 +7,10 @@
 	flex: none;
 	font-feature-settings: "tnum";
 }
+
+// The failed list keeps the outline the loaded one would have had, so the tab
+// does not lose its shape when the request does.
+.error {
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+}

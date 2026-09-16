@@ -179898,6 +179898,7 @@
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
+                "enabled": false,
                 "color": "#0F0F0E0D",
                 "offset": {
                   "x": 0,
@@ -179914,10 +179915,8 @@
                   "name": "Head",
                   "width": "fill_container",
                   "fill": "#FAFAF9",
-                  "stroke": "$border",
-                  "strokeWidth": {
-                    "bottom": 1
-                  },
+                  "stroke": "#c5c4c0",
+                  "strokeWidth": 1,
                   "strokeAlignment": "inner",
                   "gap": 12,
                   "padding": [
@@ -223663,7 +223662,7 @@
       "id": "I4Zv4u",
       "x": 1385,
       "y": 54333,
-      "name": "Checkpoint — Prepare · the When step",
+      "name": "Checkpoint — Prepare · the Planning step",
       "clip": true,
       "width": 973,
       "fill": "$page-bg",
@@ -223684,7 +223683,7 @@
           "name": "Caption",
           "enabled": false,
           "fill": "$text-tertiary",
-          "content": "PREPARE · THE WHEN STEP — THE DAY IT STARTS, AND WHAT THE TEAM HAS",
+          "content": "PREPARE · THE PLANNING STEP — THE DAY IT STARTS, AND WHAT THE TEAM HAS",
           "fontFamily": "$font",
           "fontSize": 11,
           "fontWeight": "600",
@@ -223795,7 +223794,7 @@
                 {
                   "type": "frame",
                   "id": "F6da4",
-                  "name": "Seg When",
+                  "name": "Seg Planning",
                   "width": "fill_container",
                   "layout": "vertical",
                   "gap": 6,
@@ -223814,7 +223813,7 @@
                       "id": "wLDz1",
                       "name": "L",
                       "fill": "$text-primary",
-                      "content": "When",
+                      "content": "Planning",
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "600"

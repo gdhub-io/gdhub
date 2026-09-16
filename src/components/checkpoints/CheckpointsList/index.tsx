@@ -1,8 +1,8 @@
 "use client";
 
-import { IconFlag } from "@tabler/icons-react";
+import { IconAlertTriangle, IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Flex, Skeleton, Typography } from "antd";
+import { App, Button, Flex, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
@@ -12,6 +12,7 @@ import { useCheckpoints, useDiscardCheckpoint } from "@/hooks/checkpoints";
 import { useCurrentProject } from "@/hooks/project";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCard } from "../CheckpointCard";
+import { CheckpointsSkeleton } from "../CheckpointsSkeleton";
 import { CuratorBadge } from "../CuratorBadge";
 import { StartCheckpointButton } from "../StartCheckpointButton";
 import { VerdictChip } from "../VerdictChip";
@@ -25,7 +26,10 @@ export function CheckpointsList() {
 	const { project, isLoading: projectLoading } = useCurrentProject();
 	const [page, setPage] = useState(1);
 
-	const { data, isPending } = useCheckpoints(project?.id, page);
+	const { data, isPending, isError, refetch, isFetching } = useCheckpoints(
+		project?.id,
+		page,
+	);
 	const discardCheckpoint = useDiscardCheckpoint();
 
 	const columns: ColumnsType<CheckpointDto> = useMemo(
@@ -106,20 +110,43 @@ export function CheckpointsList() {
 	// `isPending` stays true while the query is disabled, so the empty state
 	// cannot flash before the project id has even arrived.
 	if (projectLoading || isPending) {
-		return <Skeleton active paragraph={{ rows: 6 }} />;
+		return <CheckpointsSkeleton />;
+	}
+
+	// The page head stays as it is and only the list becomes one panel: the tab
+	// is still navigable, and the one thing that failed says so (frame `O0tgre`).
+	if (isError) {
+		return (
+			<div className={styles.error}>
+				<EmptyState
+					icon={IconAlertTriangle}
+					tint="var(--gd-danger-tint)"
+					ink="var(--gd-danger-solid)"
+					description={t(
+						"checkpoints.error.title",
+						"Checkpoints could not be loaded",
+					)}
+					action={
+						<Button
+							type="primary"
+							loading={isFetching}
+							onClick={() => refetch()}
+						>
+							{t("checkpoints.error.retry", "Try again")}
+						</Button>
+					}
+				/>
+			</div>
+		);
 	}
 
 	if (!data?.current && data?.closed.total === 0) {
 		return (
 			<EmptyState
 				icon={IconFlag}
-				title={t(
+				description={t(
 					"checkpoints.empty.title",
 					"Your first checkpoint starts here",
-				)}
-				description={t(
-					"checkpoints.empty.description",
-					"28 days, one goal, a curator, and a verdict that opens the next stage.",
 				)}
 				action={
 					<StartCheckpointButton
