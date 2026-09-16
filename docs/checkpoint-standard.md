@@ -26,7 +26,7 @@ moving and leaves the choice to the author.
 |---|---|
 | **Author** | Buys the checkpoint, answers for the project, brings the team to calls, publishes devlogs. |
 | **Team** | Up to eight people besides the author. Does the work and writes into the devlog. Author and up to four others attend a call. |
-| **Curator** | Runs the checkpoint: five consultations, reading devlogs, the verdict. A person has a level and an hourly rate and decides for themselves how many projects to take. |
+| **Curator** | Runs the checkpoint: five consultations, reading devlogs, the verdict. A person has a level and an hourly rate and decides for themselves how many projects to take. Only someone who worked on a game that reached release may curate, and only at the stage they have taken a project through; the platform checks this by hand. |
 | **Platform** | Runs the shared gathering, issues certificates, keeps the records, replaces a curator who drops out. |
 
 ## 3. Calendar
@@ -152,7 +152,7 @@ inside a checkpoint: 28 days always end in a verdict.
 
 ## 8. Price
 
-Price = checkpoint hours × the curator's hourly rate + the platform's 40%.
+Price = checkpoint hours × the curator's hourly rate + the platform's 25%.
 
 Checkpoint hours: 7.5 for the author plus 0.5 for each member of the team. Those
 hours cover five consultations of 45 minutes, reading and answering four devlogs,
@@ -160,12 +160,12 @@ the goal and result cards, and the gathering.
 
 | Curator level | Rate | Author alone | Plus 2 | Plus 4 | Plus 7 |
 |---|---|---|---|---|---|
-| Middle | 20 | 250 | 283 | 317 | 367 |
-| Experienced | 25 | 312 | 354 | 396 | 458 |
-| Expert | 30 | 375 | 425 | 475 | 550 |
+| Experienced | 30 | 300 | 340 | 380 | 440 |
+| Expert | 45 | 450 | 510 | 570 | 660 |
 
 There is no regional price. The author picks the level of curator their budget
-allows. The AI curator has its own, lower, fixed price.
+allows. The AI curator has its own, far lower, fixed price and is the way in for
+a project that cannot carry a person's rate.
 
 **In the price:** five consultations, written answers to four devlogs, a place at
 the gathering, the result card and verdict, and a record of the checkpoint on every

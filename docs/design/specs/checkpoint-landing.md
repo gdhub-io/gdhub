@@ -96,8 +96,8 @@ for prices, verdicts and guarantees.
   sunken. The code follows the mobile frame so the two bands separate.
 - **No badge on the Industry curator column.** The frames carry "MOST CHOSEN" on desktop
   and "EARLY ACCESS" on mobile; neither is true yet, so the column carries none.
-- **`from $312` for Experienced on a phone**, where the mobile frame says `from $315`. The
-  standard and the desktop matrix both say $312.
+- **`from $300` for Experienced on a phone.** The frame drew `from $315` against the old
+  rates; the standard and the desktop matrix both say $300.
 - **The curator cards carry no artwork of their own.** The concept-artifacts overlay on the
   result card and the journey art in the cycle band both came out of the frames, so the
   page ships two pictures: the hero and the closing road.

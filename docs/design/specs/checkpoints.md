@@ -162,7 +162,7 @@ checkpoints · 9 closed a stage · 4.6 from 22 ratings* — and neither exists i
 there is no curator record, and no rate on a speciality. The row shows what is there and the
 rest arrives with GDHUB-42 rather than being invented.
 
-**The price is one number.** `Price · $475`, then what the curator does and does not do, the
+**The price is one number.** `Price · $300`, then what the curator does and does not do, the
 standard checkbox, and `Pay and start`. The hours-by-rate line and the platform's share came
 off: they belong in the contract and the receipt, not on the screen where the decision is made.
 

@@ -8,9 +8,9 @@ import { SkillLevel } from "@/config/prisma-enums";
 import { EXPERT_MIN_LEVEL, meetsSkillLevel } from "@/helpers/speciality";
 
 describe("curator pricing", () => {
-	it("prices each level as the frame does", () => {
-		expect(curatorPrice(SkillLevel.Expert)).toBe(375);
-		expect(curatorPrice(SkillLevel.Experienced)).toBe(312);
+	it("prices each level at its rate for the solo author's hours", () => {
+		expect(curatorPrice(SkillLevel.Expert)).toBe(450);
+		expect(curatorPrice(SkillLevel.Experienced)).toBe(300);
 	});
 
 	// The list and the price table are the same table: a level nobody may be

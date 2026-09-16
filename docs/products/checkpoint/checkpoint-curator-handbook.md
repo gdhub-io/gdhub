@@ -31,7 +31,7 @@ for what did not happen.
 | **Calls** | Four of 45 minutes, plus the season's shared gathering |
 | **Writing** | An answer to each of the four devlogs, the goal card and the result card |
 | **Hard deadline** | The verdict on the platform by day 30 |
-| **Your rate** | Set by your level; the platform adds its fee on top |
+| **Your rate** | $30 an hour at Experienced, $45 at Expert — $225 and $338 for a solo author's checkpoint. The platform adds 25% on top, which the author pays |
 
 ### Four principles
 

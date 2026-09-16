@@ -9,10 +9,15 @@ import type { SkillLevel } from "@/config/prisma-enums";
  * The bar happens to sit where `EXPERT_MIN_LEVEL` does today, but it is the
  * checkpoint's own rule, not the platform's mentoring one.
  *
- * The figures come from frame `eFLO0`. A person carries no rate of their own
- * yet (GDHUB-42), so their level is the only thing the platform knows about
- * what they cost; the day they do, this table becomes the fallback rather than
- * the answer. Nothing here is charged — Stripe checkout is GDHUB-38.
+ * A figure is the curator's hourly rate times the checkpoint's hours plus the
+ * platform's 25%, at the solo author's 7.5 hours; `docs/checkpoint-standard.md`
+ * has the table for larger teams. Only someone who worked on a released game may
+ * curate, which is checked by hand until there is a curator record.
+ *
+ * A person carries no rate of their own yet (GDHUB-42), so their level is the
+ * only thing the platform knows about what they cost; the day they do, this
+ * table becomes the fallback rather than the answer. Nothing here is charged —
+ * Stripe checkout is GDHUB-38.
  */
 
 export const CHECKPOINT_PRICE_CURRENCY = "$";
@@ -21,8 +26,8 @@ export const CHECKPOINT_PRICE_CURRENCY = "$";
 export const CHECKPOINT_AI_PRICE = 19;
 
 const CURATOR_PRICE = {
-	Experienced: 312,
-	Expert: 375,
+	Experienced: 300,
+	Expert: 450,
 } as const satisfies Partial<Record<SkillLevel, number>>;
 
 export type CuratorLevel = keyof typeof CURATOR_PRICE;
