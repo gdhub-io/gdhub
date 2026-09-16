@@ -1,16 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Flex } from "antd";
 import {
+	ArtifactCheckStatus,
 	CheckpointCuratorKind,
+	CheckpointItemKind,
 	CheckpointStatus,
 	CheckpointVerdict,
+	ProjectArtifactType,
 } from "@/config/prisma-enums";
-import type { CheckpointDto } from "@/types/checkpoints";
+import { sprintFactsOf } from "@/lib/checkpoint-facts";
+import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { AskPanel } from "./AskPanel";
 import { CheckpointCard } from "./CheckpointCard";
 import { CheckpointPath } from "./CheckpointPath";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
+import { CheckpointStepPanel } from "./CheckpointStepPanel";
 import { CuratorBadge } from "./CuratorBadge";
+import { GoalStrip } from "./GoalStrip";
+import { InputsPanel } from "./InputsPanel";
+import { Evidence } from "./SprintPanel/Evidence";
+import { Review } from "./SprintPanel/Review";
 import { Signals } from "./SprintPanel/Signals";
 import { VerdictChip } from "./VerdictChip";
 
@@ -328,4 +337,170 @@ export const TeamSignals: StoryObj = {
 			}}
 		/>
 	),
+};
+
+const artifact = {
+	id: "a1",
+	name: "Tide prototype build 14",
+	type: ProjectArtifactType.ExecutableBuild,
+	link: "https://example.com/build-14",
+	checkStatus: ArtifactCheckStatus.Readable,
+};
+
+const items: CheckpointItemDto[] = [
+	{
+		id: "i1",
+		kind: CheckpointItemKind.Input,
+		order: 1,
+		text: "A grey-box level with one tide cycle.",
+		originalText: null,
+		cut: false,
+		addedAt: null,
+		note: null,
+		acceptedNote: null,
+		artifact: null,
+	},
+	{
+		id: "o1",
+		kind: CheckpointItemKind.Outcome,
+		order: 1,
+		text: "Two tide states the player can read without a tutorial.",
+		originalText: null,
+		cut: false,
+		addedAt: null,
+		note: null,
+		acceptedNote: null,
+		artifact,
+	},
+	{
+		id: "o2",
+		kind: CheckpointItemKind.Outcome,
+		order: 2,
+		text: "One boss encounter, start to finish.",
+		originalText: "One boss encounter with two phases.",
+		cut: false,
+		addedAt: null,
+		note: null,
+		acceptedNote: null,
+		artifact: null,
+	},
+	{
+		id: "o3",
+		kind: CheckpointItemKind.Outcome,
+		order: 3,
+		text: "A second playable character.",
+		originalText: null,
+		cut: true,
+		addedAt: null,
+		note: null,
+		acceptedNote: null,
+		artifact: null,
+	},
+];
+
+const withItems: CheckpointDto = { ...base, items, sprints };
+
+export const Goal: StoryObj = {
+	render: () => <GoalStrip goal={base.goal} />,
+};
+
+export const Inputs: StoryObj = {
+	render: () => <InputsPanel checkpoint={withItems} />,
+};
+
+/** Bought, and the curator has not taken the 28 days yet — nothing listed either side. */
+export const InputsBeforeTheCuratorAnswers: StoryObj = {
+	render: () => (
+		<InputsPanel
+			checkpoint={{
+				...base,
+				items: [],
+				curatorKind: CheckpointCuratorKind.Human,
+				curator: { id: "u1", name: "Marta Ilves", image: null },
+				startedAt: null,
+			}}
+		/>
+	),
+};
+
+export const Verdict: StoryObj = {
+	render: () => (
+		<CheckpointStepPanel
+			checkpoint={{
+				...withItems,
+				status: CheckpointStatus.Closed,
+				verdict: CheckpointVerdict.GoalMet,
+				verdictNote:
+					"The slice reads. Tides are legible in under a minute of play, and the boss holds its shape end to end.",
+				decidedAt: "2026-09-30T09:00:00.000Z",
+			}}
+		/>
+	),
+};
+
+/** Day 28 has not come: the count is the only thing there is to say. */
+export const VerdictLocked: StoryObj = {
+	render: () => <CheckpointStepPanel checkpoint={withItems} />,
+};
+
+export const VerdictBeingWritten: StoryObj = {
+	render: () => (
+		<CheckpointStepPanel
+			checkpoint={{ ...withItems, status: CheckpointStatus.Review }}
+		/>
+	),
+};
+
+const evidenced: CheckpointDto = {
+	...withItems,
+	evidence: [
+		{
+			artifact,
+			addedAt: "2026-09-11T09:00:00.000Z",
+			addedBy: { id: "u1", name: "Marta Ilves", image: null },
+			itemIds: ["o1"],
+			sprint: 2,
+		},
+	],
+};
+
+export const SprintEvidence: StoryObj = {
+	render: () => (
+		<Evidence
+			checkpoint={evidenced}
+			facts={sprintFactsOf(evidenced, sprints[1])}
+		/>
+	),
+};
+
+export const SprintEvidenceEmpty: StoryObj = {
+	render: () => (
+		<Evidence
+			checkpoint={withItems}
+			facts={sprintFactsOf(withItems, sprints[1])}
+		/>
+	),
+};
+
+const reviewed: CheckpointDto = {
+	...withItems,
+	reports: [
+		{
+			id: "d1",
+			publishedAt: "2026-09-13T09:00:00.000Z",
+			content: "Tides are in. The boss is blocked on the second phase.",
+			curatorFeedback:
+				"The tide read is the win of the sprint. Cut the second phase before it eats sprint 3 — one phase finished beats two unfinished.",
+			curatorFeedbackAt: "2026-09-14T09:00:00.000Z",
+			sprint: 2,
+		},
+	],
+};
+
+export const SprintReview: StoryObj = {
+	render: () => <Review facts={sprintFactsOf(reviewed, sprints[1])} />,
+};
+
+export const SprintReviewEmpty: StoryObj = {
+	render: () => <Review facts={sprintFactsOf(withItems, sprints[1])} />,
 };
