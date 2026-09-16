@@ -19,6 +19,7 @@ import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
 import { CheckpointStepPanel } from "./CheckpointStepPanel";
 import { CheckpointsSkeleton } from "./CheckpointsSkeleton";
 import { CuratorBadge } from "./CuratorBadge";
+import { DraftCard } from "./DraftCard";
 import { GoalStrip } from "./GoalStrip";
 import { InputsPanel } from "./InputsPanel";
 import { Evidence } from "./SprintPanel/Evidence";
@@ -108,16 +109,34 @@ export const RunningCard: StoryObj = {
 	render: () => <CheckpointCard checkpoint={base} projectSlug="neon-drift" />,
 };
 
-/** Nothing charged, no days counting, and a way back into the flow. */
-export const DraftCard: StoryObj = {
+/** Nothing charged, no days counting, and the sentence naming what is left. */
+export const Draft: StoryObj = {
 	render: () => (
-		<CheckpointCard
+		<DraftCard
 			checkpoint={{
 				...base,
 				status: CheckpointStatus.Draft,
 				goal: "",
+				curatorKind: CheckpointCuratorKind.Human,
 				startedAt: null,
 				dueAt: null,
+				day: null,
+				daysLeft: null,
+			}}
+			projectSlug="neon-drift"
+			onDiscard={() => {}}
+		/>
+	),
+};
+
+/** Everything answered; only the payment stands between it and day 1. */
+export const DraftReadyToPay: StoryObj = {
+	render: () => (
+		<DraftCard
+			checkpoint={{
+				...base,
+				status: CheckpointStatus.Draft,
+				items,
 				day: null,
 				daysLeft: null,
 			}}

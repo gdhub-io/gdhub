@@ -70,7 +70,7 @@ describe("getCreationBlocker", () => {
 describe("createDraftCheckpoint", () => {
 	const currentStep = { id: "step-3", name: "Prototyping" };
 
-	it("snapshots the stage name and numbers the checkpoint within that stage", async () => {
+	it("snapshots the stage name and numbers it through the whole project", async () => {
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
 			currentStep,
 		} as never);
@@ -80,6 +80,9 @@ describe("createDraftCheckpoint", () => {
 
 		await createDraftCheckpoint("p1");
 
+		expect(prisma.projectCheckpoint.count).toHaveBeenCalledWith({
+			where: { projectId: "p1" },
+		});
 		expect(prisma.projectCheckpoint.create).toHaveBeenCalledWith(
 			expect.objectContaining({
 				data: expect.objectContaining({

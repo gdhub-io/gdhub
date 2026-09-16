@@ -27,8 +27,8 @@ import type {
  * Reading and creating checkpoints for a project.
  *
  * The rules that cannot be expressed in the schema live here: one checkpoint at
- * a time per project, the stage it belongs to, and the number it carries within
- * that stage.
+ * a time per project, the stage it belongs to, and the number it carries through
+ * the project.
  */
 
 /** A checkpoint that has not reached its verdict yet. */
@@ -432,16 +432,17 @@ export const createDraftCheckpoint = async (projectId: string) => {
 	const step = workflow?.currentStep;
 	if (!step) throw new Error("Project is not on a workflow stage");
 
-	const onStage = await prisma.projectCheckpoint.count({
-		where: { stepId: step.id },
-	});
+	// The number runs through the project, not through the stage: a reader tells
+	// checkpoints apart by it, and restarting at 1 on every stage would put two
+	// "Checkpoint 1" rows in the same list.
+	const before = await prisma.projectCheckpoint.count({ where: { projectId } });
 
 	return prisma.projectCheckpoint.create({
 		data: {
 			projectId,
 			stepId: step.id,
 			stageName: step.name,
-			order: onStage + 1,
+			order: before + 1,
 			curatorKind: CheckpointCuratorKind.AI,
 			status: CheckpointStatus.Draft,
 			goal: "",

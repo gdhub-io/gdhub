@@ -563,10 +563,20 @@
 			"write": "Write the devlog"
 		},
 		"draft": {
+			"add": "Add {pieces}.",
 			"chip": "Draft",
-			"discard": "Discard",
+			"continue": "Continue setup",
+			"discard": "Discard draft",
 			"discardFailed": "The draft could not be discarded",
-			"nothingCharged": "Nothing has been charged and no days are counting."
+			"missing": {
+				"curator": "curator",
+				"goal": "a goal",
+				"startDate": "start date"
+			},
+			"more": "More",
+			"nothingCharged": "Nothing has been charged and no days are counting.",
+			"readyToPay": "Everything is answered — only the payment is left.",
+			"title": "Checkpoint"
 		},
 		"empty": {
 			"cta": "Plan my first checkpoint",

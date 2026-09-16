@@ -4,7 +4,6 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { CheckpointStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";
@@ -14,35 +13,27 @@ import styles from "./style.module.scss";
 export type CheckpointCardProps = {
 	checkpoint: CheckpointDto;
 	projectSlug: string;
-	onDiscard?: (id: string) => void;
-	discarding?: boolean;
 };
 
 /**
- * The one live item in the list, and the only one that takes a fill —
- * everything below it stays outlined (frame `iSVBs`).
+ * The checkpoint under way — frame `qfMkz`.
  *
  * Three bands with a hairline between them: what this checkpoint is, where it
- * has got to, and the one thing to do about it. A draft and a checkpoint under
- * way are the same card with a different foot: they are one object at two
- * moments, and two shapes would teach the reader that they are two things.
+ * has got to, and the one thing to do about it. A draft is `DraftCard` instead:
+ * it has no goal to quote and no day to count, so the same shape would be a card
+ * of empty fields.
  */
 export function CheckpointCard({
 	checkpoint,
 	projectSlug,
-	onDiscard,
-	discarding,
 }: CheckpointCardProps) {
 	const { t } = useTranslate();
-	const isDraft = checkpoint.status === CheckpointStatus.Draft;
 
 	const dates =
 		checkpoint.startedAt && checkpoint.dueAt
 			? `${dayjs(checkpoint.startedAt).format("D MMM")}–${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
-	// Draft or running, it is the same page — a draft simply opens on the step
-	// where it is still being bought.
 	const href = `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
 
 	return (
@@ -96,23 +87,11 @@ export function CheckpointCard({
 			</div>
 
 			<footer className={styles.foot}>
-				<Flex gap={8}>
-					{isDraft && onDiscard && (
-						<Button
-							loading={discarding}
-							onClick={() => onDiscard(checkpoint.id)}
-						>
-							{t("checkpoints.draft.discard", "Discard")}
-						</Button>
-					)}
-					<Link href={href}>
-						<Button type="primary">
-							{isDraft
-								? t("checkpoints.continue", "Continue")
-								: t("checkpoints.open", "Open checkpoint")}
-						</Button>
-					</Link>
-				</Flex>
+				<Link href={href}>
+					<Button type="primary">
+						{t("checkpoints.open", "Open checkpoint")}
+					</Button>
+				</Link>
 			</footer>
 		</section>
 	);

@@ -38,6 +38,8 @@ export function CheckpointStatusSlot({
 		);
 	}
 
+	// A status is a dot and a word, never a filled pill — the day is the one
+	// exception, because it is a figure rather than a state.
 	if (checkpoint.status === CheckpointStatus.Draft) {
 		return (
 			<StatusDot
@@ -49,7 +51,7 @@ export function CheckpointStatusSlot({
 	}
 
 	return (
-		<span className={`${styles.day}${className ? ` ${className}` : ""}`}>
+		<span className={`${styles.chip}${className ? ` ${className}` : ""}`}>
 			{t("checkpoints.status.day", "Day {day} of 28", {
 				day: checkpoint.day ?? 1,
 			})}

@@ -8,12 +8,14 @@ import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { EmptyState, SectionHeading } from "@/components/ui";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { useCheckpoints, useDiscardCheckpoint } from "@/hooks/checkpoints";
 import { useCurrentProject } from "@/hooks/project";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCard } from "../CheckpointCard";
 import { CheckpointsSkeleton } from "../CheckpointsSkeleton";
 import { CuratorBadge } from "../CuratorBadge";
+import { DraftCard } from "../DraftCard";
 import { StartCheckpointButton } from "../StartCheckpointButton";
 import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
@@ -160,14 +162,20 @@ export function CheckpointsList() {
 
 	return (
 		<Flex vertical gap={32}>
-			{data?.current && (
-				<CheckpointCard
-					checkpoint={data.current}
-					projectSlug={project?.slug ?? ""}
-					onDiscard={discard}
-					discarding={discardCheckpoint.isPending}
-				/>
-			)}
+			{data?.current &&
+				(data.current.status === CheckpointStatus.Draft ? (
+					<DraftCard
+						checkpoint={data.current}
+						projectSlug={project?.slug ?? ""}
+						onDiscard={discard}
+						discarding={discardCheckpoint.isPending}
+					/>
+				) : (
+					<CheckpointCard
+						checkpoint={data.current}
+						projectSlug={project?.slug ?? ""}
+					/>
+				))}
 
 			{data && data.closed.total > 0 && (
 				<Flex vertical gap={16}>
