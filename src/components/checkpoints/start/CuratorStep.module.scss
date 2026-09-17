@@ -47,52 +47,12 @@
 	line-height: var(--gd-line-height-body);
 }
 
-.people {
-	// One panel with hairlines, the way the frame draws it — the outline belongs
-	// to the list, not to every row of it.
-	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-card);
-	overflow: hidden;
 
-	// The list is a white panel on the page's own grey, the way the frame draws it.
-	:global(.ant-table) {
-		background: var(--gd-color-surface);
-	}
-
-	:global(.ant-table-tbody > tr > td) {
-		border-bottom: 1px solid var(--gd-color-border-subtle);
-	}
-
-	:global(.ant-table-tbody > tr:last-child > td) {
-		border-bottom: none;
-	}
-
-	:global(.ant-table-tbody > tr) {
-		cursor: pointer;
-	}
-
-	// The picked row is tinted, hover included: the answer must stay visible
-	// while the pointer wanders over the others.
-	:global(.ant-table-tbody) > tr.chosen > :global(.ant-table-cell) {
-		background: var(--gd-color-accent-subtle);
-	}
-}
-
-.price {
-	font-weight: 600;
-	font-feature-settings: "tnum";
-	white-space: nowrap;
-}
 
 .vat {
 	font-size: var(--gd-font-size-body-sm);
 }
 
-.talent {
-	width: var(--gd-control-height-sm);
-	height: var(--gd-control-height-sm);
-	padding: 0;
-}
 
 .fixed {
 	// Small: the panel says one figure, so it takes the width of the figure and

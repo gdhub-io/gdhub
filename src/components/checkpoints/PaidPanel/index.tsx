@@ -119,24 +119,13 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			    receipt is theirs; the wait is somebody else's move. Holding both in
 			    one paragraph made the second read as a condition of the first. */}
 			<Card className={styles.block} data-tone="paid">
-				<Flex gap={14} align="flex-start">
+				<Flex gap={14}>
 					<IconTile icon={IconCheck} />
 					<Flex vertical gap={4} className={styles.text}>
 						<Typography.Text className={styles.title}>
 							{settling
 								? t("checkpoints.paid.starting", "Payment received — starting")
 								: t("checkpoints.paid.received", "Payment received")}
-						</Typography.Text>
-						<Typography.Text type="secondary" className={styles.body}>
-							{settling
-								? t(
-										"checkpoints.paid.settling",
-										"This settles on its own in a few seconds. Nothing else is needed from you.",
-									)
-								: t(
-										"checkpoints.paid.receivedBody",
-										"The purchase is complete and the receipt is yours to keep.",
-									)}
 						</Typography.Text>
 					</Flex>
 

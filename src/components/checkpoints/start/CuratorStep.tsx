@@ -1,37 +1,23 @@
 "use client";
 
 import type { Icon } from "@tabler/icons-react";
-import { IconFlag, IconId, IconSparkles, IconUser } from "@tabler/icons-react";
-import { T, useTranslate } from "@tolgee/react";
-import {
-	App,
-	Button,
-	Flex,
-	Radio,
-	Skeleton,
-	Table,
-	Tag,
-	Tooltip,
-	Typography,
-} from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { IconFlag, IconSparkles, IconUser } from "@tabler/icons-react";
+import { useTranslate } from "@tolgee/react";
+import { App, Button, Flex, Radio, Skeleton, Typography } from "antd";
 import { useState } from "react";
 import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
 import { EmptyState, IconTile } from "@/components/ui";
-import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
-	curatorPrice,
 } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import {
 	useCheckpointCurators,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
-import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
-import { CuratorRow } from "./CuratorRow";
 import styles from "./CuratorStep.module.scss";
+import { CuratorTable } from "./CuratorTable";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
 import { useCheckpointDraft } from "./useDraft";
@@ -53,7 +39,7 @@ export function CuratorStep() {
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
 	const [preview, setPreview] = useState<string>();
-	const curators = useCheckpointCurators();
+	const _curators = useCheckpointCurators();
 
 	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
@@ -82,7 +68,7 @@ export function CuratorStep() {
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
 	const chosenPerson = person ?? draft.curator?.id ?? null;
-	const talentCard = t("checkpoints.curator.talentCard", "Talent card");
+	const _talentCard = t("checkpoints.curator.talentCard", "Talent card");
 
 	const goTo = async (next: StartStep) => {
 		try {
@@ -178,93 +164,7 @@ export function CuratorStep() {
 								{t("checkpoints.curator.expertsLabel", "Industry experts")}
 							</Typography.Text>
 
-							{/* A table without a head: the rows are the same few facts each
-							    time, and a header over unlabelled columns would name nothing
-							    the eye does not already have. Pressing anywhere on a row picks
-							    it; the radio on the right is where the answer lands. */}
-							<Table<CheckpointCurator>
-								showHeader={false}
-								pagination={false}
-								// Without it the name column grows with the longest summary and
-								// pushes the price, the talent card and the radio past the edge.
-								tableLayout="fixed"
-								loading={curators.isLoading}
-								rowKey="userId"
-								size="middle"
-								className={styles.people}
-								dataSource={curators.data ?? []}
-								onRow={(row: CheckpointCurator) => ({
-									onClick: () => setPerson(row.userId),
-								})}
-								rowClassName={(row: CheckpointCurator) =>
-									chosenPerson === row.userId ? styles.chosen : ""
-								}
-								locale={{
-									emptyText: t(
-										"checkpoints.curator.noneOpen",
-										"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
-									),
-								}}
-								columns={
-									[
-										{
-											key: "who",
-											render: (_: unknown, row: CheckpointCurator) => (
-												<CuratorRow curator={row} />
-											),
-										},
-										{
-											key: "price",
-											width: 128,
-											align: "right",
-											render: (_: unknown, row: CheckpointCurator) => (
-												<Typography.Text className={styles.price}>
-													{t(
-														"checkpoints.curator.amount",
-														"{currency}{price}",
-														{
-															currency: CHECKPOINT_PRICE_CURRENCY,
-															price: curatorPrice(row.level),
-														},
-													)}
-												</Typography.Text>
-											),
-										},
-										{
-											key: "talent",
-											width: 64,
-											align: "center",
-											render: (_: unknown, row: CheckpointCurator) => (
-												// Choosing a curator and reading about one are different
-												// intentions, so the row carries both.
-												<Tooltip title={talentCard}>
-													<Button
-														type="text"
-														aria-label={talentCard}
-														className={styles.talent}
-														icon={<IconId size={18} stroke={1.6} />}
-														onClick={(event) => {
-															event.stopPropagation();
-															setPreview(row.specialityId);
-														}}
-													/>
-												</Tooltip>
-											),
-										},
-										{
-											key: "pick",
-											width: 48,
-											align: "center",
-											render: (_: unknown, row: CheckpointCurator) => (
-												<Radio
-													checked={chosenPerson === row.userId}
-													onChange={() => setPerson(row.userId)}
-												/>
-											),
-										},
-									] satisfies ColumnsType<CheckpointCurator>
-								}
-							/>
+							<CuratorTable value={chosenPerson} onChange={setPerson} />
 						</div>
 					</Flex>
 				) : (
