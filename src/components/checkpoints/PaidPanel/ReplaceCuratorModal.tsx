@@ -10,6 +10,8 @@ import styles from "./style.module.scss";
 
 export type ReplaceCuratorModalProps = {
 	checkpointId: string;
+	/** Whoever holds it now — they are not on the list of replacements. */
+	currentCuratorId?: string | null;
 	open: boolean;
 	onClose: () => void;
 };
@@ -26,6 +28,7 @@ export type ReplaceCuratorModalProps = {
  */
 export function ReplaceCuratorModal({
 	checkpointId,
+	currentCuratorId,
 	open,
 	onClose,
 }: ReplaceCuratorModalProps) {
@@ -66,7 +69,11 @@ export function ReplaceCuratorModal({
 					)}
 				</Typography.Text>
 
-				<CuratorTable value={picked} onChange={setPicked} />
+				<CuratorTable
+					value={picked}
+					onChange={setPicked}
+					exclude={currentCuratorId}
+				/>
 			</Flex>
 		</Modal>
 	);

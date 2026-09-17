@@ -19,6 +19,11 @@ export type CuratorTableProps = {
 	/** The curator picked so far, by user id. */
 	value?: string | null;
 	onChange: (userId: string) => void;
+	/**
+	 * Left out of the list. Set when replacing a curator: the one being replaced
+	 * is not an answer to that question.
+	 */
+	exclude?: string | null;
 };
 
 /**
@@ -34,12 +39,13 @@ export type CuratorTableProps = {
  * have. Pressing anywhere on a row picks it; the radio on the right is where
  * the answer lands.
  */
-export function CuratorTable({ value, onChange }: CuratorTableProps) {
+export function CuratorTable({ value, onChange, exclude }: CuratorTableProps) {
 	const { t } = useTranslate();
 	const curators = useCheckpointCurators();
 	const [preview, setPreview] = useState<string>();
 
 	const talentCard = t("checkpoints.curator.talentCard", "Talent card");
+	const rows = (curators.data ?? []).filter((row) => row.userId !== exclude);
 
 	return (
 		<>
@@ -53,7 +59,7 @@ export function CuratorTable({ value, onChange }: CuratorTableProps) {
 				rowKey="userId"
 				size="middle"
 				className={styles.people}
-				dataSource={curators.data ?? []}
+				dataSource={rows}
 				onRow={(row: CheckpointCurator) => ({
 					onClick: () => onChange(row.userId),
 				})}
