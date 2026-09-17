@@ -39,6 +39,11 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 	// being set up, and the line under it says how far that has got.
 	const isDraft = checkpoint.status === CheckpointStatus.Draft;
 
+	// Prepare, whether it is still being filled in or already paid for and
+	// waiting: until the 28 days run, the curator is a choice rather than a fact.
+	const preparing =
+		isDraft || checkpoint.status === CheckpointStatus.AwaitingCurator;
+
 	return {
 		title: isDraft
 			? t("checkpoints.draft.pageTitle", "Checkpoint draft")
@@ -51,9 +56,10 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 		actions: (
 			<Flex vertical align="flex-end" gap={8}>
 				{!restates && <CheckpointStatusSlot checkpoint={checkpoint} />}
-				{/* A draft's curator is still being chosen and has accepted nothing;
-				    showing them in the header would read as settled. */}
-				{!isDraft && (
+				{/* Through Prepare the curator has accepted nothing — they are being
+				    chosen, or being waited on — and a badge in the header reads as
+				    settled. The status slot beside it is what says where it stands. */}
+				{!preparing && (
 					<CuratorBadge
 						kind={checkpoint.curatorKind}
 						curator={checkpoint.curator}

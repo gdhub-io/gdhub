@@ -119,7 +119,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			    receipt is theirs; the wait is somebody else's move. Holding both in
 			    one paragraph made the second read as a condition of the first. */}
 			<Card className={styles.block} data-tone="paid">
-				<Flex gap={14}>
+				<Flex gap={14} align="center">
 					<IconTile icon={IconCheck} />
 					<Flex vertical gap={4} className={styles.text}>
 						<Typography.Text className={styles.title}>
