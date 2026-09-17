@@ -3,7 +3,7 @@
 import type { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Table, type TableProps, Typography } from "antd";
+import { App, Button, Table, type TableProps, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -49,6 +49,7 @@ function formatAmount(amountMinor: number, currency: string) {
 
 export default function PaymentsList() {
 	const { t } = useTranslate();
+	const { message } = App.useApp();
 	const [invoiceLoadingId, setInvoiceLoadingId] = useState<string>();
 
 	const { data, isLoading } = useQuery({
@@ -57,15 +58,27 @@ export default function PaymentsList() {
 		refetchOnWindowFocus: false,
 	});
 
+	// Two providers, two receipts. Paddle's hangs off the vacancy that was paid
+	// for; Stripe's off the payment row itself, and both are fetched when asked
+	// rather than stored — the document is theirs, not ours.
 	const openInvoice = async (payment: UserPayment) => {
-		if (payment.payableType !== "VACANCY") return;
 		setInvoiceLoadingId(payment.id);
 		try {
-			const res = await axios.get<{ url: string }>(
-				"/api/user/project/vacancy/payment/invoice",
-				{ params: { vacancyId: payment.payableId } },
-			);
+			const res =
+				payment.payableType === "VACANCY"
+					? await axios.get<{ url: string }>(
+							"/api/user/project/vacancy/payment/invoice",
+							{ params: { vacancyId: payment.payableId } },
+						)
+					: await axios.get<{ url: string }>("/api/user/payment/receipt", {
+							params: { paymentId: payment.id },
+						});
+
 			if (res.data?.url) window.open(res.data.url, "_blank", "noopener");
+		} catch {
+			message.error(
+				t("settings.payments.receiptFailed", "The receipt could not be opened"),
+			);
 		} finally {
 			setInvoiceLoadingId(undefined);
 		}

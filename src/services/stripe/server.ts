@@ -86,3 +86,25 @@ export const stripeEvent = (rawBody: string, signature: string | null) => {
 		return null;
 	}
 };
+
+/**
+ * The receipt Stripe hosts for a completed checkout, or null when there is none
+ * yet. One-off payments carry it on the charge rather than as an invoice, so the
+ * session is expanded down to it.
+ *
+ * The URL is Stripe's own and stays valid, but it is fetched on demand rather
+ * than stored: what a receipt says is their record, not ours.
+ */
+export const getCheckoutReceiptUrl = async (sessionId: string) => {
+	const session = await stripe().checkout.sessions.retrieve(sessionId, {
+		expand: ["payment_intent.latest_charge"],
+	});
+
+	const intent = session.payment_intent;
+	if (!intent || typeof intent === "string") return null;
+
+	const charge = intent.latest_charge;
+	if (!charge || typeof charge === "string") return null;
+
+	return charge.receipt_url ?? null;
+};

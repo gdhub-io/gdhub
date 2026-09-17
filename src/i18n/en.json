@@ -2784,6 +2784,7 @@
 			},
 			"download": "Download",
 			"empty": "No payments yet",
+			"receiptFailed": "The receipt could not be opened",
 			"subtitle": "Your payment history across the platform.",
 			"title": "Payments",
 			"vacancyFee": "Vacancy listing"
