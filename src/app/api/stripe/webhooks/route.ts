@@ -93,7 +93,8 @@ const recordRefund = async (
 };
 
 /**
- * Stripe's side of a checkpoint purchase, and the only thing that may start one.
+ * Stripe's side of a checkpoint purchase, and the only thing that may put one in
+ * the queue.
  *
  * Two rules hold this together. The signature is checked before anything is
  * read, so a POST from anywhere else is noise; and every event is written to
@@ -164,11 +165,12 @@ export async function POST(request: NextRequest) {
 
 	if (!checkpoint) return NextResponse.json({ received: true });
 
+	// Authorised, not charged: `PROCESSING` is money held on the card, and it
+	// becomes `COMPLETED` when a curator accepts and it is captured.
 	await prisma.payment.update({
 		where: { id: payment.id },
 		data: {
-			status: PaymentStatus.COMPLETED,
-			completedAt: new Date(),
+			status: PaymentStatus.PROCESSING,
 			providerTransactionId: session.id,
 			providerCustomerId:
 				typeof session.customer === "string" ? session.customer : null,

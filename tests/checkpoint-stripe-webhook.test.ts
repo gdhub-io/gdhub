@@ -113,9 +113,10 @@ describe("the Stripe webhook", () => {
 				}),
 			}),
 		);
+		// Authorised, not charged: the money is taken when a curator accepts.
 		expect(prisma.payment.update).toHaveBeenCalledWith(
 			expect.objectContaining({
-				data: expect.objectContaining({ status: PaymentStatus.COMPLETED }),
+				data: expect.objectContaining({ status: PaymentStatus.PROCESSING }),
 			}),
 		);
 	});

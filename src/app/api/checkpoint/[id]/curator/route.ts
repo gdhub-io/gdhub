@@ -1,4 +1,8 @@
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	CheckpointStatus,
+	PayableType,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -10,6 +14,7 @@ import {
 } from "@/lib/api-handlers";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { prisma } from "@/services/prisma";
+import { captureCheckout, releaseCheckout } from "@/services/stripe/server";
 
 const AnswerSchema = z.object({ accept: z.boolean() });
 
@@ -30,9 +35,10 @@ const startsOn = (wanted: Date | null) => {
  * curating, so the right to answer comes from being the person named on the
  * checkpoint and from nothing else.
  *
- * Accepting is what starts the 28 days — payment only put the checkpoint in the
- * queue. Declining hands it back to the author with the curator cleared; the
- * money stays paid and the refund, if the author wants one, is an admin action.
+ * Accepting is what starts the 28 days, and it is also the moment the author is
+ * charged: buying the checkpoint only held the money on their card. Declining
+ * lets that hold go — free, and with nothing to refund, because nothing ever
+ * moved.
  */
 export const POST = pipe(
 	withAuth({ mode: "user" }),
@@ -56,6 +62,32 @@ export const POST = pipe(
 	// it must not restart a checkpoint that is already running.
 	if (checkpoint.status !== CheckpointStatus.AwaitingCurator) {
 		return apiError.badRequest("checkpointNotAwaiting");
+	}
+
+	// The held money is taken on the way in and let go on the way out. Either
+	// way the row is written after Stripe has agreed, never before.
+	const held = await prisma.payment.findFirst({
+		where: {
+			payableType: PayableType.CHECKPOINT,
+			payableId: id,
+			status: PaymentStatus.PROCESSING,
+		},
+		select: { id: true, providerTransactionId: true },
+	});
+
+	if (held?.providerTransactionId) {
+		const settled = accept
+			? await captureCheckout(held.providerTransactionId)
+			: await releaseCheckout(held.providerTransactionId);
+
+		if (!settled) return apiError.internal("paymentNotSettled");
+
+		await prisma.payment.update({
+			where: { id: held.id },
+			data: accept
+				? { status: PaymentStatus.COMPLETED, completedAt: new Date() }
+				: { status: PaymentStatus.CANCELED },
+		});
 	}
 
 	const startedAt = startsOn(checkpoint.startedAt);

@@ -51,6 +51,10 @@ export const createCheckpointCheckout = async (input: CheckpointCheckout) =>
 				},
 			},
 		],
+		// The card is authorised, not charged. Capture happens when a curator
+		// takes the checkpoint on; until then the money is the author's and
+		// letting go of it costs nobody anything.
+		payment_intent_data: { capture_method: "manual" },
 		// What the webhook has to find its way back by. `client_reference_id`
 		// survives in the dashboard where a human can read it; the metadata is
 		// what the handler actually reads.
@@ -140,4 +144,37 @@ export const sessionOfPaymentIntent = async (intentId: string) => {
 	});
 
 	return sessions.data[0]?.id ?? null;
+};
+
+/** The payment intent behind a checkout, or null when the session never made one. */
+const intentOfSession = async (sessionId: string) => {
+	const session = await stripe().checkout.sessions.retrieve(sessionId);
+
+	return typeof session.payment_intent === "string"
+		? session.payment_intent
+		: (session.payment_intent?.id ?? null);
+};
+
+/**
+ * Takes the money that was authorised. This is the moment the author is
+ * actually charged, and it is the curator accepting that causes it.
+ */
+export const captureCheckout = async (sessionId: string) => {
+	const intent = await intentOfSession(sessionId);
+
+	return intent ? stripe().paymentIntents.capture(intent) : null;
+};
+
+/**
+ * Lets an authorisation go. Free, and there is nothing to refund: the money
+ * never left the author's card.
+ *
+ * Stripe refuses to cancel an intent it has already captured, so the caller
+ * decides which of the two it wants by the state of its own row rather than by
+ * trying this first.
+ */
+export const releaseCheckout = async (sessionId: string) => {
+	const intent = await intentOfSession(sessionId);
+
+	return intent ? stripe().paymentIntents.cancel(intent) : null;
 };

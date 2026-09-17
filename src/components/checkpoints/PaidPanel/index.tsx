@@ -49,6 +49,10 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const cancel = useCancelCheckpoint(checkpoint.id, checkpoint.projectId);
 
 	const settling = checkpoint.status === CheckpointStatus.Draft;
+	// The money is held on the card and not yet taken: it becomes a charge when
+	// the curator accepts, and saying "paid" before that is a lie the author
+	// finds out about when the hold drops off.
+	const held = checkpoint.status === CheckpointStatus.AwaitingCurator;
 
 	useEffect(() => {
 		if (!settling) return;
@@ -89,7 +93,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			title: t("checkpoints.paid.cancelTitle", "Cancel this checkpoint?"),
 			content: t(
 				"checkpoints.paid.cancelNote",
-				"The payment is returned and the checkpoint closes. What you wrote for it is kept, but it cannot be reopened.",
+				"The reservation is let go, nothing is charged, and the checkpoint is deleted along with what you wrote for it.",
 			),
 			okText: t("checkpoints.paid.cancelOk", "Cancel and refund"),
 			okButtonProps: { danger: true },
@@ -130,11 +134,15 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 						<Typography.Text className={styles.title}>
 							{settling
 								? t("checkpoints.paid.starting", "Payment received — starting")
-								: t("checkpoints.paid.received", "Payment received")}
+								: held
+									? t("checkpoints.paid.held", "The money is reserved")
+									: t("checkpoints.paid.received", "Payment received")}
 						</Typography.Text>
 					</Flex>
 
-					{checkpoint.paymentId && (
+					{/* A receipt exists once the money has moved; a reservation has
+					    nothing to show for itself yet. */}
+					{checkpoint.paymentId && !held && (
 						<Button
 							icon={<IconReceipt size={16} stroke={1.6} />}
 							loading={fetching}
@@ -201,7 +209,9 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 						loading={cancel.isPending}
 						onClick={askToCancel}
 					>
-						{t("checkpoints.paid.cancel", "Cancel and refund")}
+						{held
+							? t("checkpoints.paid.cancelHold", "Cancel and release the money")
+							: t("checkpoints.paid.cancel", "Cancel and refund")}
 					</Button>
 				</Flex>
 			)}
