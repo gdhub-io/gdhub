@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
 const checkpointUpdate = vi.fn();
+const checkpointDelete = vi.fn();
 const paymentFindFirst = vi.fn();
 const paymentUpdate = vi.fn();
 const refundCreate = vi.fn();
@@ -24,6 +25,7 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
+			delete: (...a: unknown[]) => checkpointDelete(...a),
 		},
 		payment: {
 			findFirst: (...a: unknown[]) => paymentFindFirst(...a),
@@ -65,6 +67,7 @@ beforeEach(() => {
 		status: CheckpointStatus.AwaitingCurator,
 	});
 	checkpointUpdate.mockResolvedValue({});
+	checkpointDelete.mockResolvedValue({});
 	paymentFindFirst.mockResolvedValue(paid);
 	refundCheckout.mockResolvedValue({ id: "re_1", amount: 45000, currency: "usd" });
 	transaction.mockResolvedValue([]);
@@ -77,11 +80,9 @@ describe("cancelling a checkpoint", () => {
 		expect(response.status).toBe(200);
 		await expect(response.json()).resolves.toEqual({ refunded: true });
 		expect(refundCheckout).toHaveBeenCalledWith("cs_1");
-		expect(checkpointUpdate).toHaveBeenCalledWith(
-			expect.objectContaining({
-				data: { status: CheckpointStatus.Cancelled },
-			}),
-		);
+		// Deleted rather than kept as Cancelled: it never ran, and a row saying a
+		// purchase was undone is noise in the project's history.
+		expect(checkpointDelete).toHaveBeenCalledWith({ where: { id: "cp1" } });
 	});
 
 	// A row saying REFUNDED that Stripe never agreed to would be a lie in our
@@ -91,7 +92,7 @@ describe("cancelling a checkpoint", () => {
 
 		expect((await post()).status).toBe(500);
 		expect(transaction).not.toHaveBeenCalled();
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointDelete).not.toHaveBeenCalled();
 	});
 
 	it("closes an unpaid draft without going near Stripe", async () => {
@@ -100,7 +101,7 @@ describe("cancelling a checkpoint", () => {
 
 		await expect((await post()).json()).resolves.toEqual({ refunded: false });
 		expect(refundCheckout).not.toHaveBeenCalled();
-		expect(checkpointUpdate).toHaveBeenCalled();
+		expect(checkpointDelete).toHaveBeenCalled();
 	});
 
 	// Once the 28 days run a curator has spent time on them, so what is owed

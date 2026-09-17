@@ -11,6 +11,7 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button, Card, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
@@ -43,6 +44,8 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const queryClient = useQueryClient();
 	const [fetching, setFetching] = useState(false);
 	const [replacing, setReplacing] = useState(false);
+	const router = useRouter();
+	const pathname = usePathname();
 	const cancel = useCancelCheckpoint(checkpoint.id, checkpoint.projectId);
 
 	const settling = checkpoint.status === CheckpointStatus.Draft;
@@ -94,6 +97,8 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			onOk: async () => {
 				try {
 					await cancel.mutateAsync();
+					// The checkpoint no longer exists, so neither does this page.
+					router.push(pathname?.replace(/\/[^/]+$/, "") ?? "");
 				} catch {
 					message.error(
 						t(

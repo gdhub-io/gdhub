@@ -25,7 +25,11 @@ const CANCELLABLE: CheckpointStatus[] = [
  *
  * The refund is asked of Stripe first and written down second: a row saying
  * `REFUNDED` that Stripe never agreed to would be a lie in our own records.
- * A draft with no payment just closes.
+ *
+ * The checkpoint is then deleted rather than kept as `Cancelled`: it never ran,
+ * there is nothing to look back at, and a row in the project's history saying a
+ * purchase was undone is noise. The payment and its refund stay — the money
+ * moved, and that is the part worth keeping.
  */
 export const POST = pipe(
 	withAuth({ mode: "user" }),
@@ -82,10 +86,7 @@ export const POST = pipe(
 		]);
 	}
 
-	await prisma.projectCheckpoint.update({
-		where: { id },
-		data: { status: CheckpointStatus.Cancelled },
-	});
+	await prisma.projectCheckpoint.delete({ where: { id } });
 
 	return json({ refunded: !!payment });
 });

@@ -2810,6 +2810,7 @@
 			},
 			"download": "Download",
 			"empty": "No payments yet",
+			"gone": "No longer exists",
 			"receiptFailed": "The receipt could not be opened",
 			"subtitle": "Your payment history across the platform.",
 			"title": "Payments",

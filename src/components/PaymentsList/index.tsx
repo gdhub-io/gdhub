@@ -112,9 +112,16 @@ export default function PaymentsList() {
 							? `${described(r.payableType)} ${r.number}`
 							: described(r.payableType)}
 					</Text>
-					{(r.title || r.projectName) && (
+					{r.title || r.projectName ? (
 						<Text type="secondary" style={{ fontSize: 12 }}>
 							{[r.title, r.projectName].filter(Boolean).join(" · ")}
+						</Text>
+					) : (
+						// A cancelled checkpoint is deleted, and its payment outlives it.
+						// An empty line under the label reads as a bug rather than as a
+						// purchase that was undone.
+						<Text type="secondary" style={{ fontSize: 12 }}>
+							{t("settings.payments.gone", "No longer exists")}
 						</Text>
 					)}
 				</div>

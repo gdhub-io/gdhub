@@ -126,3 +126,18 @@ export const refundCheckout = async (sessionId: string) => {
 
 	return stripe().refunds.create({ payment_intent: intent });
 };
+
+/**
+ * The checkout session a payment intent belongs to.
+ *
+ * `Payment.providerTransactionId` holds the session id, but refund and dispute
+ * events arrive carrying the charge, so the way back has to be asked for.
+ */
+export const sessionOfPaymentIntent = async (intentId: string) => {
+	const sessions = await stripe().checkout.sessions.list({
+		payment_intent: intentId,
+		limit: 1,
+	});
+
+	return sessions.data[0]?.id ?? null;
+};
