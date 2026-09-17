@@ -1,10 +1,6 @@
 "use client";
 
-import {
-	IconClockHour4,
-	IconHourglassHigh,
-	IconReceipt,
-} from "@tabler/icons-react";
+import { IconCheck, IconHourglassHigh, IconReceipt } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Card, Flex, Typography } from "antd";
@@ -83,60 +79,81 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			: null;
 
 	return (
-		<Card className={styles.panel}>
-			<Flex gap={16} align="flex-start">
-				<IconTile icon={settling ? IconHourglassHigh : IconClockHour4} />
-				<Flex vertical gap={8} className={styles.text}>
-					<Typography.Text className={styles.title}>
-						{settling
-							? t("checkpoints.paid.starting", "Payment received — starting")
-							: t(
-									"checkpoints.paid.awaiting",
-									"Waiting for the curator to take it on",
-								)}
-					</Typography.Text>
-
-					<Typography.Text type="secondary" className={styles.body}>
-						{settling
-							? t(
-									"checkpoints.paid.settling",
-									"This settles on its own in a few seconds. Nothing else is needed from you.",
-								)
-							: t(
-									"checkpoints.paid.awaitingBody",
-									"The 28 days begin when they accept, not when you pay. If they turn it down you pick another curator and nothing is charged again.",
-								)}
-					</Typography.Text>
-
-					{!settling && (
-						<Flex gap={12} align="center" wrap>
-							<CuratorBadge
-								kind={checkpoint.curatorKind}
-								curator={checkpoint.curator}
-							/>
-							{dates && (
-								<Typography.Text type="secondary" className={styles.dates}>
-									{t("checkpoints.paid.planned", "Planned for {dates}", {
-										dates,
-									})}
-								</Typography.Text>
-							)}
-						</Flex>
-					)}
+		<Flex vertical gap={16}>
+			{/* Two facts, two blocks — frame `P8Tfn`. The money is settled and the
+			    receipt is theirs; the wait is somebody else's move. Holding both in
+			    one paragraph made the second read as a condition of the first. */}
+			<Card className={styles.block} data-tone="paid">
+				<Flex gap={14} align="flex-start">
+					<IconTile icon={IconCheck} />
+					<Flex vertical gap={4} className={styles.text}>
+						<Typography.Text className={styles.title}>
+							{settling
+								? t("checkpoints.paid.starting", "Payment received — starting")
+								: t("checkpoints.paid.received", "Payment received")}
+						</Typography.Text>
+						<Typography.Text type="secondary" className={styles.body}>
+							{settling
+								? t(
+										"checkpoints.paid.settling",
+										"This settles on its own in a few seconds. Nothing else is needed from you.",
+									)
+								: t(
+										"checkpoints.paid.receivedBody",
+										"The purchase is complete and the receipt is yours to keep.",
+									)}
+						</Typography.Text>
+					</Flex>
 
 					{checkpoint.paymentId && (
-						<Flex>
-							<Button
-								icon={<IconReceipt size={16} stroke={1.6} />}
-								loading={fetching}
-								onClick={openReceipt}
-							>
-								{t("checkpoints.paid.receipt", "Receipt")}
-							</Button>
-						</Flex>
+						<Button
+							icon={<IconReceipt size={16} stroke={1.6} />}
+							loading={fetching}
+							onClick={openReceipt}
+						>
+							{t("checkpoints.paid.receipt", "Receipt")}
+						</Button>
 					)}
 				</Flex>
-			</Flex>
-		</Card>
+			</Card>
+
+			{!settling && (
+				<Card className={styles.block}>
+					<Flex gap={14} align="flex-start">
+						<IconTile icon={IconHourglassHigh} />
+						<Flex vertical gap={10} className={styles.text}>
+							<Flex vertical gap={4}>
+								<Typography.Text className={styles.title}>
+									{t(
+										"checkpoints.paid.awaiting",
+										"Waiting for the curator to take it on",
+									)}
+								</Typography.Text>
+								<Typography.Text type="secondary" className={styles.body}>
+									{t(
+										"checkpoints.paid.awaitingBody",
+										"The 28 days begin when they accept, not when you pay. If they turn it down you pick another curator and nothing is charged again.",
+									)}
+								</Typography.Text>
+							</Flex>
+
+							<Flex gap={12} align="center" wrap>
+								<CuratorBadge
+									kind={checkpoint.curatorKind}
+									curator={checkpoint.curator}
+								/>
+								{dates && (
+									<Typography.Text type="secondary" className={styles.dates}>
+										{t("checkpoints.paid.planned", "Planned for {dates}", {
+											dates,
+										})}
+									</Typography.Text>
+								)}
+							</Flex>
+						</Flex>
+					</Flex>
+				</Card>
+			)}
+		</Flex>
 	);
 }

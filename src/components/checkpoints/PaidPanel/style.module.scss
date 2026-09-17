@@ -1,5 +1,13 @@
-.panel {
+// Two blocks rather than one card: what was paid and who is being waited on are
+// separate facts, and the frame `P8Tfn` draws them apart.
+.block {
 	width: 100%;
+
+	// Settled money reads as settled: the one green thing on the page.
+	&[data-tone="paid"] {
+		border-color: var(--gd-success-solid);
+		background: var(--gd-success-tint);
+	}
 }
 
 .text {

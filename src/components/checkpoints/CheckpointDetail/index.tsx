@@ -125,18 +125,23 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				key: `sprint-${number}`,
 				label: t("checkpoints.path.sprint", "Sprint {n}", { n: number }),
 				meta: sprint ? range(sprint.from, sprint.to) : null,
-				glyph: !sprint
-					? ("ahead" as const)
-					: sprint.state === "done"
-						? ("done" as const)
-						: sprint.state === "current"
-							? ("current" as const)
-							: ("ahead" as const),
-				needsYou: sprintFacts
-					? sprintNeedsYou(sprintFacts, checkpoint.day)
-					: false,
-				// Until somebody has taken the 28 days on there is no day one, so
-				// the sprints hold nothing to open.
+				// A sprint can only read as current once the 28 days are running. The
+				// dates exist before that — the author picked them — and drawing the
+				// first sprint in the accent against them claims a run that has not
+				// started.
+				glyph: waiting
+					? ("locked" as const)
+					: !sprint
+						? ("ahead" as const)
+						: sprint.state === "done"
+							? ("done" as const)
+							: sprint.state === "current"
+								? ("current" as const)
+								: ("ahead" as const),
+				needsYou:
+					!waiting && sprintFacts
+						? sprintNeedsYou(sprintFacts, checkpoint.day)
+						: false,
 				disabled: waiting,
 			};
 		}),

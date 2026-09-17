@@ -33,7 +33,16 @@ import type {
  */
 
 /** A checkpoint that has not reached its verdict yet. */
-const OPEN_STATUSES = [CheckpointStatus.Active, CheckpointStatus.Review];
+/**
+ * A checkpoint that is under way. `AwaitingCurator` belongs here and not with
+ * the drafts: it has been paid for, it is the project's one checkpoint on the
+ * go, and a second one may not be started beside it.
+ */
+const OPEN_STATUSES = [
+	CheckpointStatus.AwaitingCurator,
+	CheckpointStatus.Active,
+	CheckpointStatus.Review,
+];
 
 const checkpointItemSelect = {
 	id: true,

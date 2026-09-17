@@ -38,7 +38,10 @@ describe("getCreationBlocker", () => {
 		expect(prisma.projectWorkflow.findUnique).not.toHaveBeenCalled();
 	});
 
-	it("counts only Active and Review as open — a draft is the attempt itself", async () => {
+	// A draft is the attempt itself and does not block. A checkpoint waiting on
+	// its curator does: it is paid for, and a second one beside it would be two
+	// live purchases on one project.
+	it("counts a paid checkpoint as open, and a draft as not", async () => {
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
 			currentStepId: "step-3",
@@ -49,7 +52,13 @@ describe("getCreationBlocker", () => {
 			expect.objectContaining({
 				where: {
 					projectId: "p1",
-					status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+					status: {
+						in: [
+							CheckpointStatus.AwaitingCurator,
+							CheckpointStatus.Active,
+							CheckpointStatus.Review,
+						],
+					},
 				},
 			}),
 		);
