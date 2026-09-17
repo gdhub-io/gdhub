@@ -60,7 +60,7 @@ export function PreparePanel({ base, paid }: PreparePanelProps) {
 					"checkpoints.paid.hint",
 					"The checkpoint is bought. What is left is not yours to do.",
 				)}
-				saved={t("checkpoints.paid.foot", "Nothing left to do here")}
+				saved={null}
 			>
 				<PaidPanel checkpoint={paid} />
 			</StartLayout>

@@ -39,9 +39,10 @@ export type StartLayoutProps = {
 	footNote?: ReactNode;
 	/**
 	 * What the foot says about the state of the purchase. Defaults to the draft
-	 * note; a bought checkpoint is no longer a draft and must not claim to be.
+	 * note; `null` leaves the corner empty, which is what a bought checkpoint
+	 * needs — it is no longer a draft and has nothing to report there.
 	 */
-	saved?: string;
+	saved?: string | null;
 	onBack?: () => void;
 	/** The way on. Payment has none — its action is in the price card. */
 	forward?: ReactNode;
@@ -109,9 +110,11 @@ export function StartLayout({
 				</Flex>
 				<Flex gap={12} align="center">
 					{footNote}
-					<Typography.Text className={styles.saved}>
-						{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
-					</Typography.Text>
+					{saved !== null && (
+						<Typography.Text className={styles.saved}>
+							{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
+						</Typography.Text>
+					)}
 				</Flex>
 			</footer>
 		</div>
