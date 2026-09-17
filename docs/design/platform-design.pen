@@ -199972,7 +199972,7 @@
                                   "id": "tLM2T",
                                   "name": "Input",
                                   "width": "fill_container",
-                                  "height": 44,
+                                  "height": 40,
                                   "fill": "$border",
                                   "cornerRadius": 10,
                                   "gap": 8,
@@ -200049,7 +200049,7 @@
                                   "id": "E8k63b",
                                   "name": "Input",
                                   "width": "fill_container",
-                                  "height": 44,
+                                  "height": 40,
                                   "fill": "$border",
                                   "cornerRadius": 10,
                                   "gap": 8,
@@ -200126,7 +200126,7 @@
                                   "id": "JqDjk",
                                   "name": "Input",
                                   "width": "fill_container",
-                                  "height": 44,
+                                  "height": 40,
                                   "fill": "$border",
                                   "cornerRadius": 10,
                                   "gap": 8,
@@ -200203,7 +200203,7 @@
                                   "id": "ALyNa",
                                   "name": "Input",
                                   "width": "fill_container",
-                                  "height": 44,
+                                  "height": 40,
                                   "fill": "$border",
                                   "cornerRadius": 10,
                                   "gap": 8,
@@ -201580,7 +201580,7 @@
                                       "id": "lzBMU",
                                       "name": "Input",
                                       "width": "fill_container",
-                                      "height": 44,
+                                      "height": 40,
                                       "fill": "$border",
                                       "cornerRadius": 10,
                                       "gap": 8,
@@ -201641,7 +201641,7 @@
                                       "id": "hdz7V",
                                       "name": "Input",
                                       "width": "fill_container",
-                                      "height": 44,
+                                      "height": 40,
                                       "fill": "$border",
                                       "cornerRadius": 10,
                                       "gap": 8,
@@ -201702,7 +201702,7 @@
                                       "id": "qg7al",
                                       "name": "Input",
                                       "width": "fill_container",
-                                      "height": 44,
+                                      "height": 40,
                                       "fill": "$border",
                                       "cornerRadius": 10,
                                       "gap": 8,
@@ -201763,7 +201763,7 @@
                                       "id": "vC5vh",
                                       "name": "Input",
                                       "width": "fill_container",
-                                      "height": 44,
+                                      "height": 40,
                                       "fill": "$border",
                                       "cornerRadius": 10,
                                       "gap": 8,
@@ -201824,7 +201824,7 @@
                                       "id": "qsih5",
                                       "name": "Input",
                                       "width": "fill_container",
-                                      "height": 44,
+                                      "height": 40,
                                       "fill": "$border",
                                       "cornerRadius": 10,
                                       "gap": 8,
@@ -203142,7 +203142,7 @@
                                               "id": "p8G7e",
                                               "name": "Tile",
                                               "width": 44,
-                                              "height": 44,
+                                              "height": 48,
                                               "fill": "$surface",
                                               "cornerRadius": 10,
                                               "justifyContent": "center",
@@ -203246,7 +203246,7 @@
                                               "id": "oIo7s",
                                               "name": "Tile",
                                               "width": 44,
-                                              "height": 44,
+                                              "height": 48,
                                               "fill": "$border",
                                               "cornerRadius": 10,
                                               "justifyContent": "center",
@@ -204361,7 +204361,7 @@
       "name": "Evidence slot",
       "reusable": true,
       "width": 210,
-      "height": 36,
+      "height": 40,
       "cornerRadius": 8,
       "stroke": "$card-border",
       "strokeWidth": 1,
@@ -221133,99 +221133,91 @@
           "children": [
             {
               "type": "frame",
-              "id": "XaeC7",
-              "name": "Segmented",
-              "fill": "$border",
-              "cornerRadius": 10,
-              "gap": 4,
-              "padding": 4,
+              "id": "i6bRP0",
+              "name": "Search row",
+              "width": "fill_container",
+              "gap": 8,
               "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "r34CJ",
-                  "name": "S",
-                  "fill": "$surface",
-                  "cornerRadius": 8,
+                  "id": "YdCgr",
+                  "name": "Search",
+                  "width": "fill_container",
+                  "height": 40,
+                  "fill": "#FAFAF9",
+                  "cornerRadius": 10,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
                   "padding": [
-                    7,
+                    0,
                     12
                   ],
+                  "alignItems": "center",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "Tx99x",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "content": "From this project",
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "600"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "XYZmZ",
-                  "name": "S",
-                  "fill": "#00000000",
-                  "cornerRadius": 8,
-                  "padding": [
-                    7,
-                    12
-                  ],
-                  "children": [
+                      "type": "icon",
+                      "id": "pErzD",
+                      "name": "Ic",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "search",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
                     {
                       "type": "text",
-                      "id": "iMjbI",
+                      "id": "K8sWc",
                       "name": "L",
-                      "fill": "$text-secondary",
-                      "content": "Add a new one",
+                      "fill": "$text-tertiary",
+                      "content": "Search the project's artifacts",
                       "fontFamily": "$font",
-                      "fontSize": 13,
+                      "fontSize": 14,
                       "fontWeight": "normal"
                     }
                   ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "YdCgr",
-              "name": "Search",
-              "width": "fill_container",
-              "height": 40,
-              "fill": "#FAFAF9",
-              "cornerRadius": 10,
-              "stroke": "#DCDBD8",
-              "strokeWidth": 1,
-              "strokeAlignment": "inner",
-              "gap": 8,
-              "padding": [
-                0,
-                12
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "pErzD",
-                  "name": "Ic",
-                  "width": 16,
-                  "height": 16,
-                  "icon": "search",
-                  "library": "lucide",
-                  "fill": "$text-tertiary"
                 },
                 {
-                  "type": "text",
-                  "id": "K8sWc",
-                  "name": "L",
-                  "fill": "$text-tertiary",
-                  "content": "Search the project's artifacts",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "GmYIH",
+                  "name": "Button — Add new",
+                  "height": 40,
+                  "fill": "$surface",
+                  "cornerRadius": 10,
+                  "stroke": "$border-strong",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "lM2Pf",
+                      "name": "Ic",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "plus",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "VAwgf",
+                      "name": "Label",
+                      "fill": "$text-primary",
+                      "content": "Add new",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
                 }
               ]
             },
@@ -223868,34 +223860,203 @@
                                     {
                                       "type": "frame",
                                       "id": "ZLEmV",
-                                      "name": "C",
-                                      "gap": 10,
+                                      "name": "List — the chosen curator",
+                                      "clip": true,
+                                      "width": "fill_container",
+                                      "fill": "#FFFFFF",
+                                      "cornerRadius": 12,
+                                      "stroke": "#DCDBD8",
+                                      "strokeWidth": 1,
+                                      "strokeAlignment": "inner",
+                                      "layout": "vertical",
                                       "alignItems": "center",
                                       "children": [
                                         {
-                                          "id": "neApM",
-                                          "type": "ref",
-                                          "ref": "BYVEs",
+                                          "type": "frame",
+                                          "id": "Gbgrl",
                                           "name": "Curator — Marta Ilves",
-                                          "descendants": {
-                                            "ow4Me": {
-                                              "enabled": false
+                                          "width": "fill_container",
+                                          "fill": "#00000000",
+                                          "stroke": "#00000000",
+                                          "strokeAlignment": "inner",
+                                          "gap": 14,
+                                          "padding": 16,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "frame",
+                                              "id": "IsR24",
+                                              "name": "Avatar",
+                                              "width": 40,
+                                              "height": 40,
+                                              "fill": "$dir-game-design",
+                                              "cornerRadius": 999,
+                                              "justifyContent": "center",
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "h0n7x",
+                                                  "name": "In",
+                                                  "fill": "$ink",
+                                                  "content": "MI",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 15,
+                                                  "fontWeight": "600"
+                                                }
+                                              ]
                                             },
-                                            "KJMCW": {
-                                              "enabled": true,
-                                              "fill": "$dir-game-design"
+                                            {
+                                              "type": "frame",
+                                              "id": "ED5Le",
+                                              "name": "T",
+                                              "width": "fill_container",
+                                              "layout": "vertical",
+                                              "gap": 6,
+                                              "children": [
+                                                {
+                                                  "type": "frame",
+                                                  "id": "DT9i6",
+                                                  "name": "Top",
+                                                  "gap": 8,
+                                                  "alignItems": "center",
+                                                  "children": [
+                                                    {
+                                                      "type": "text",
+                                                      "id": "tX2I7",
+                                                      "name": "N",
+                                                      "fill": "$text-primary",
+                                                      "content": "Marta Ilves",
+                                                      "fontFamily": "$font",
+                                                      "fontSize": 16,
+                                                      "fontWeight": "600"
+                                                    },
+                                                    {
+                                                      "type": "frame",
+                                                      "id": "pdnln",
+                                                      "name": "Chip",
+                                                      "fill": "$surface-sunken",
+                                                      "cornerRadius": 6,
+                                                      "stroke": "#00000000",
+                                                      "padding": [
+                                                        3,
+                                                        8
+                                                      ],
+                                                      "alignItems": "center",
+                                                      "children": [
+                                                        {
+                                                          "type": "text",
+                                                          "id": "IYS6j",
+                                                          "name": "L",
+                                                          "fill": "$text-primary",
+                                                          "content": "Expert",
+                                                          "fontFamily": "$font",
+                                                          "fontSize": 12,
+                                                          "fontWeight": "500"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "type": "frame",
+                                                  "id": "U7NVo6",
+                                                  "name": "M",
+                                                  "width": "fill_container",
+                                                  "gap": 10,
+                                                  "alignItems": "center",
+                                                  "children": [
+                                                    {
+                                                      "type": "frame",
+                                                      "id": "E52UZ",
+                                                      "name": "Tags",
+                                                      "width": "fill_container",
+                                                      "gap": 6,
+                                                      "alignItems": "center",
+                                                      "children": [
+                                                        {
+                                                          "type": "frame",
+                                                          "id": "UyCDo",
+                                                          "name": "Chip",
+                                                          "fill": "$surface-sunken",
+                                                          "cornerRadius": 6,
+                                                          "stroke": "#00000000",
+                                                          "padding": [
+                                                            3,
+                                                            8
+                                                          ],
+                                                          "alignItems": "center",
+                                                          "children": [
+                                                            {
+                                                              "type": "text",
+                                                              "id": "R6URE",
+                                                              "name": "L",
+                                                              "fill": "$text-primary",
+                                                              "content": "Game design",
+                                                              "fontFamily": "$font",
+                                                              "fontSize": 12,
+                                                              "fontWeight": "500"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "type": "frame",
+                                                          "id": "sEBpG",
+                                                          "name": "Chip",
+                                                          "fill": "$surface-sunken",
+                                                          "cornerRadius": 6,
+                                                          "stroke": "#00000000",
+                                                          "padding": [
+                                                            3,
+                                                            8
+                                                          ],
+                                                          "alignItems": "center",
+                                                          "children": [
+                                                            {
+                                                              "type": "text",
+                                                              "id": "drEya",
+                                                              "name": "L",
+                                                              "fill": "$text-primary",
+                                                              "content": "Production",
+                                                              "fontFamily": "$font",
+                                                              "fontSize": 12,
+                                                              "fontWeight": "500"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
                                             },
-                                            "BCwyj": {
-                                              "content": "MI"
-                                            },
-                                            "UpgrK": {
-                                              "content": "Marta Ilves"
-                                            },
-                                            "ff5NY": {
-                                              "enabled": true,
-                                              "content": "Expert "
+                                            {
+                                              "type": "frame",
+                                              "id": "m8qBm4",
+                                              "name": "Button — Open talent card",
+                                              "width": 32,
+                                              "height": 32,
+                                              "fill": "#00000000",
+                                              "cornerRadius": 8,
+                                              "stroke": "#DCDBD8",
+                                              "strokeWidth": 1,
+                                              "strokeAlignment": "inner",
+                                              "justifyContent": "center",
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "icon",
+                                                  "id": "R2Frdd",
+                                                  "name": "Talent card",
+                                                  "width": 17,
+                                                  "height": 17,
+                                                  "icon": "contact",
+                                                  "library": "lucide",
+                                                  "fill": "#76756F"
+                                                }
+                                              ]
                                             }
-                                          }
+                                          ]
                                         }
                                       ]
                                     }
@@ -224115,7 +224276,7 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "I accept the checkpoint standard.",
+                                          "content": "I accept the checkpoint agreement.",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,
