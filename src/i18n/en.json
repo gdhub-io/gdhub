@@ -691,7 +691,9 @@
 			"awaiting": "Waiting for the curator to take it on",
 			"awaitingBody": "The 28 days begin when they accept, not when you pay. If they turn it down you pick another curator and nothing is charged again.",
 			"dates": "{from} – {to}",
+			"hint": "The checkpoint is bought. What is left is not yours to do.",
 			"planned": "Planned for {dates}",
+			"receipt": "Receipt",
 			"settling": "This settles on its own in a few seconds. Nothing else is needed from you.",
 			"starting": "Payment received — starting"
 		},
@@ -715,7 +717,8 @@
 			"label": "Path to checkpoint",
 			"prepare": "Prepare",
 			"sprint": "Sprint {n}",
-			"undated": "Dates appear after payment."
+			"undated": "Dates appear after payment.",
+			"waiting": "paid, waiting"
 		},
 		"pay": {
 			"acceptFirst": "Accept the agreement to pay",

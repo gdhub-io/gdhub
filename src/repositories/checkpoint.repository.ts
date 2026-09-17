@@ -76,6 +76,7 @@ const checkpointSelect = {
 	verdictNote: true,
 	decidedAt: true,
 	acceptedTermsAt: true,
+	paymentId: true,
 	createdAt: true,
 	updatedAt: true,
 	curator: { select: { id: true, name: true, image: true } },

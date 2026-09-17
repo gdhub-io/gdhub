@@ -69,12 +69,21 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 					"checkpoint"
 				: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number}`;
 
+	// Two ways to be past paying and short of day one: back from Stripe before
+	// the webhook landed, and waiting on the person asked to curate it. The
+	// return from Stripe is a hint that the panel should wait — never a claim
+	// that anything was paid, which only the status can say.
+	const waiting =
+		checkpoint.status === CheckpointStatus.AwaitingCurator ||
+		(checkpoint.status === CheckpointStatus.Draft &&
+			search?.get("paid") === "1");
+
 	const asked = search?.get("step");
 	const known =
 		asked === "inputs" ||
 		asked === "checkpoint" ||
 		(!!asked && /^sprint-[1-4]$/.test(asked));
-	const step = known && asked ? asked : defaultStep;
+	const step = waiting ? "inputs" : known && asked ? asked : defaultStep;
 	const tab = (search?.get("tab") as SprintTab) ?? "status";
 
 	const go = (next: { step?: string; tab?: string }) => {
@@ -89,15 +98,6 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	};
 
-	// Two ways to be past paying and short of day one: back from Stripe before
-	// the webhook landed, and waiting on the person asked to curate it. The
-	// return from Stripe is a hint that the panel should wait — never a claim
-	// that anything was paid, which only the status can say.
-	const waiting =
-		checkpoint.status === CheckpointStatus.AwaitingCurator ||
-		(checkpoint.status === CheckpointStatus.Draft &&
-			search?.get("paid") === "1");
-
 	const create = useCreateCheckpoint(checkpoint.projectId);
 	const paid = checkpoint.status !== CheckpointStatus.Draft;
 	const base = pathname?.replace(/\/[^/]+$/, "") ?? "";
@@ -105,12 +105,15 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const steps: PathStepView[] = [
 		{
 			key: "inputs",
-			label: paid
-				? t("checkpoints.path.inputs", "Inputs")
-				: t("checkpoints.path.prepare", "Prepare"),
-			meta: paid
-				? t("checkpoints.path.bought", "what was bought")
-				: t("checkpoints.path.buying", "buying the 28 days"),
+			label:
+				paid && !waiting
+					? t("checkpoints.path.inputs", "Inputs")
+					: t("checkpoints.path.prepare", "Prepare"),
+			meta: waiting
+				? t("checkpoints.path.waiting", "paid, waiting")
+				: paid
+					? t("checkpoints.path.bought", "what was bought")
+					: t("checkpoints.path.buying", "buying the 28 days"),
 			glyph: "start",
 		},
 		...Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) => {
@@ -132,10 +135,14 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				needsYou: sprintFacts
 					? sprintNeedsYou(sprintFacts, checkpoint.day)
 					: false,
+				// Until somebody has taken the 28 days on there is no day one, so
+				// the sprints hold nothing to open.
+				disabled: waiting,
 			};
 		}),
 		{
 			key: "checkpoint",
+			disabled: waiting,
 			label: t("checkpoints.path.checkpoint", "Checkpoint"),
 			meta: checkpoint.dueAt
 				? dayjs.utc(checkpoint.dueAt).format("D MMM")
@@ -184,7 +191,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 			<div className={styles.panel}>
 				{step === "inputs" &&
 					(waiting ? (
-						<PaidPanel checkpoint={checkpoint} />
+						<PreparePanel base={base} paid={checkpoint} />
 					) : checkpoint.status === CheckpointStatus.Draft ? (
 						<PreparePanel base={base} />
 					) : (

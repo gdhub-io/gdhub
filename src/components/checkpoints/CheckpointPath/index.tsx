@@ -15,6 +15,8 @@ export type PathStepView = {
 	glyph: PathGlyph;
 	/** A dot at the edge: this step wants something from the author. */
 	needsYou?: boolean;
+	/** Nothing to look at yet — the sprints before a curator has accepted. */
+	disabled?: boolean;
 };
 
 export type CheckpointPathProps = {
@@ -58,6 +60,7 @@ export function CheckpointPath({
 				<button
 					key={step.key}
 					type="button"
+					disabled={step.disabled}
 					aria-current={step.key === selected}
 					className={clsx(
 						styles.step,

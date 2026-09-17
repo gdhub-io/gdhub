@@ -126,6 +126,8 @@ export type CheckpointDto = {
 	verdictNote: string | null;
 	decidedAt: string | null;
 	acceptedTermsAt: string | null;
+	/** Set once a payment completed; what the receipt is fetched by. */
+	paymentId: string | null;
 	createdAt: string;
 	updatedAt: string;
 	items: CheckpointItemDto[];

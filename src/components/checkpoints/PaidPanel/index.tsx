@@ -1,11 +1,16 @@
 "use client";
 
-import { IconClockHour4, IconHourglassHigh } from "@tabler/icons-react";
+import {
+	IconClockHour4,
+	IconHourglassHigh,
+	IconReceipt,
+} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Card, Flex, Typography } from "antd";
+import { App, Button, Card, Flex, Typography } from "antd";
+import axios from "axios";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -31,7 +36,9 @@ export type PaidPanelProps = { checkpoint: CheckpointDto };
  */
 export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const { t } = useTranslate();
+	const { message } = App.useApp();
 	const queryClient = useQueryClient();
+	const [fetching, setFetching] = useState(false);
 
 	const settling = checkpoint.status === CheckpointStatus.Draft;
 
@@ -46,6 +53,26 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 
 		return () => clearInterval(timer);
 	}, [settling, queryClient, checkpoint.projectId]);
+
+	// The receipt is Stripe's own page, fetched when asked rather than stored.
+	const openReceipt = async () => {
+		if (!checkpoint.paymentId) return;
+
+		setFetching(true);
+		try {
+			const { data } = await axios.get<{ url: string }>(
+				"/api/user/payment/receipt",
+				{ params: { paymentId: checkpoint.paymentId } },
+			);
+			if (data?.url) window.open(data.url, "_blank", "noopener");
+		} catch {
+			message.error(
+				t("settings.payments.receiptFailed", "The receipt could not be opened"),
+			);
+		} finally {
+			setFetching(false);
+		}
+	};
 
 	const dates =
 		checkpoint.startedAt && checkpoint.dueAt
@@ -94,6 +121,18 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 									})}
 								</Typography.Text>
 							)}
+						</Flex>
+					)}
+
+					{checkpoint.paymentId && (
+						<Flex>
+							<Button
+								icon={<IconReceipt size={16} stroke={1.6} />}
+								loading={fetching}
+								onClick={openReceipt}
+							>
+								{t("checkpoints.paid.receipt", "Receipt")}
+							</Button>
 						</Flex>
 					)}
 				</Flex>

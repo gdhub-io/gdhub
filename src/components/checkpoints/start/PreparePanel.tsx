@@ -1,17 +1,25 @@
 "use client";
 
+import { useTranslate } from "@tolgee/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import type { CheckpointDto } from "@/types/checkpoints";
+import { PaidPanel } from "../PaidPanel";
 import { CuratorStep } from "./CuratorStep";
 import { PaymentStep } from "./PaymentStep";
 import { PlanningStep } from "./PlanningStep";
 import { PrepareNavProvider } from "./PrepareNav";
-import { START_STEPS, type StartStep } from "./StartLayout";
+import { START_STEPS, StartLayout, type StartStep } from "./StartLayout";
 import { StartStepPage } from "./StartStepPage";
 
 export type PreparePanelProps = {
 	/** Where Cancel and "no draft" land: the project's checkpoint list. */
 	base: string;
+	/**
+	 * Set once the checkpoint has been paid for. The five questions are answered
+	 * and the step stays open on the last of them, showing what paying did.
+	 */
+	paid?: CheckpointDto;
 };
 
 /**
@@ -21,7 +29,8 @@ export type PreparePanelProps = {
  * one step now, and which question is open is a query parameter, so Back works
  * and a refresh lands on the same question.
  */
-export function PreparePanel({ base }: PreparePanelProps) {
+export function PreparePanel({ base, paid }: PreparePanelProps) {
+	const { t } = useTranslate();
 	const router = useRouter();
 	const pathname = usePathname();
 	const search = useSearchParams();
@@ -42,6 +51,20 @@ export function PreparePanel({ base }: PreparePanelProps) {
 		}),
 		[base, pathname, router, search],
 	);
+
+	if (paid) {
+		return (
+			<StartLayout
+				step="payment"
+				hint={t(
+					"checkpoints.paid.hint",
+					"The checkpoint is bought. What is left is not yours to do.",
+				)}
+			>
+				<PaidPanel checkpoint={paid} />
+			</StartLayout>
+		);
+	}
 
 	return (
 		<PrepareNavProvider value={nav}>
