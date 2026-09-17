@@ -4,6 +4,7 @@ import { IconDotsVertical, IconTrash } from "@tabler/icons-react";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { Button, Dropdown, Flex, Typography } from "antd";
 import Link from "next/link";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { type DraftPiece, draftMissing } from "@/lib/checkpoint-draft";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";
@@ -17,12 +18,16 @@ export type DraftCardProps = {
 };
 
 /**
- * A checkpoint still being bought — frame `NYbvl`.
+ * A checkpoint that has not started — frame `NYbvl`.
  *
- * It is deliberately not the running card with empty fields: there is no goal to
- * quote and no day to count, so the card carries the one sentence that says what
- * is left and the one button that goes back to it. Discarding is in the menu
- * because it is the rare half of the pair, and a draft is meant to be finished.
+ * Two of those: one still being bought, one bought and waiting for the person
+ * who has to run it. Neither is the running card with empty fields — there is no
+ * goal to quote and no day to count — so the card carries the one sentence that
+ * says where it stands and the one button that goes there.
+ *
+ * Discarding is in the menu because it is the rare half of the pair, and it is
+ * offered for a draft only: money has changed hands by the time a checkpoint is
+ * waiting, and giving it back is a decision made on the checkpoint's own page.
  */
 export function DraftCard({
 	checkpoint,
@@ -39,6 +44,7 @@ export function DraftCard({
 		startDate: t("checkpoints.draft.missing.startDate", "start date"),
 	};
 
+	const waiting = checkpoint.status === CheckpointStatus.AwaitingCurator;
 	const missing = draftMissing(checkpoint);
 	// "a goal, curator and start date" — the conjunction and the commas are the
 	// language's, not ours.
@@ -60,45 +66,54 @@ export function DraftCard({
 					<CheckpointStatusSlot checkpoint={checkpoint} />
 				</Flex>
 
-				<Dropdown
-					trigger={["click"]}
-					menu={{
-						items: [
-							{
-								key: "discard",
-								danger: true,
-								icon: <IconTrash size={16} stroke={1.6} />,
-								label: t("checkpoints.draft.discard", "Discard draft"),
-								disabled: discarding,
-							},
-						],
-						onClick: () => onDiscard(checkpoint.id),
-					}}
-				>
-					<Button
-						type="text"
-						loading={discarding}
-						icon={<IconDotsVertical size={18} stroke={1.6} />}
-						aria-label={t("checkpoints.draft.more", "More")}
-					/>
-				</Dropdown>
+				{!waiting && (
+					<Dropdown
+						trigger={["click"]}
+						menu={{
+							items: [
+								{
+									key: "discard",
+									danger: true,
+									icon: <IconTrash size={16} stroke={1.6} />,
+									label: t("checkpoints.draft.discard", "Discard draft"),
+									disabled: discarding,
+								},
+							],
+							onClick: () => onDiscard(checkpoint.id),
+						}}
+					>
+						<Button
+							type="text"
+							loading={discarding}
+							icon={<IconDotsVertical size={18} stroke={1.6} />}
+							aria-label={t("checkpoints.draft.more", "More")}
+						/>
+					</Dropdown>
+				)}
 			</header>
 
 			<div className={styles.body}>
 				<Typography.Text type="secondary" className={styles.missing}>
-					{missing.length
-						? t("checkpoints.draft.add", "Add {pieces}.", { pieces })
-						: t(
-								"checkpoints.draft.readyToPay",
-								"Everything is answered — only the payment is left.",
-							)}
+					{waiting
+						? t(
+								"checkpoints.card.awaiting",
+								"Paid. The 28 days start when the curator takes it on.",
+							)
+						: missing.length
+							? t("checkpoints.draft.add", "Add {pieces}.", { pieces })
+							: t(
+									"checkpoints.draft.readyToPay",
+									"Everything is answered — only the payment is left.",
+								)}
 				</Typography.Text>
 
 				<Link
 					href={`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`}
 				>
 					<Button type="primary">
-						{t("checkpoints.draft.continue", "Continue setup")}
+						{waiting
+							? t("checkpoints.open", "Open checkpoint")
+							: t("checkpoints.draft.continue", "Continue setup")}
 					</Button>
 				</Link>
 			</div>

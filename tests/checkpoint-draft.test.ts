@@ -132,6 +132,33 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		expect(checkpointUpdate.mock.calls[0][0].data.status).toBeUndefined();
 	});
 
+	// The way out of a curator who declined or went quiet. Everything else about
+	// a paid checkpoint is settled, so only this one field may move.
+	it("lets a waiting checkpoint be handed to somebody else", async () => {
+		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
+		paymentCount.mockResolvedValue(1);
+
+		const response = await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(response.status).toBe(200);
+		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+			status: "AwaitingCurator",
+			curatorId: "u9",
+		});
+	});
+
+	it("refuses to rewrite anything else on a waiting checkpoint", async () => {
+		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
+
+		const response = await put({ goal: "Something else entirely" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "checkpointNotDraft",
+		});
+		expect(checkpointUpdate).not.toHaveBeenCalled();
+	});
+
 	it("lets the person go when the AI curator is chosen", async () => {
 		await put({ curatorKind: "AI", curatorId: null });
 

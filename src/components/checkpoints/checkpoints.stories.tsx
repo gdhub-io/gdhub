@@ -178,6 +178,24 @@ export const DraftReadyToPay: StoryObj = {
 	),
 };
 
+/** Bought, and the person asked to run it has not answered — frame `NYbvl`. */
+export const AwaitingCurator: StoryObj = {
+	render: () => (
+		<DraftCard
+			checkpoint={{
+				...base,
+				status: CheckpointStatus.AwaitingCurator,
+				paymentId: "pay_1",
+				items,
+				day: null,
+				daysLeft: null,
+			}}
+			projectSlug="neon-drift"
+			onDiscard={() => {}}
+		/>
+	),
+};
+
 export const AwaitingVerdict: StoryObj = {
 	render: () => (
 		<CheckpointCard

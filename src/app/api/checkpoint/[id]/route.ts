@@ -82,9 +82,24 @@ export const PUT = pipe(
 	});
 
 	if (!checkpoint) return apiError.notFound();
-	if (checkpoint.status !== CheckpointStatus.Draft) {
-		return apiError.badRequest("checkpointNotDraft");
-	}
+
+	// A draft is the author's to rewrite. A checkpoint that is paid for and
+	// waiting is not — except for who runs it: a curator can decline, or sit on
+	// it, and naming somebody else is the only way out that does not cost the
+	// author their money.
+	const onlyTheCurator =
+		curatorId !== undefined &&
+		goal === undefined &&
+		acceptedTerms === undefined &&
+		startedAt === undefined &&
+		!inputs &&
+		!outcomes;
+
+	const mayEdit =
+		checkpoint.status === CheckpointStatus.Draft ||
+		(checkpoint.status === CheckpointStatus.AwaitingCurator && onlyTheCurator);
+
+	if (!mayEdit) return apiError.badRequest("checkpointNotDraft");
 
 	// A checkpoint is given to someone who said they take mentees; the switch is
 	// theirs to flip, so it is read here rather than trusted from the browser.

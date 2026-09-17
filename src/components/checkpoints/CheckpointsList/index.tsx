@@ -163,7 +163,10 @@ export function CheckpointsList() {
 	return (
 		<Flex vertical gap={32}>
 			{data?.current &&
-				(data.current.status === CheckpointStatus.Draft ? (
+				// A checkpoint that has not started gets the compact card, whether it
+				// is still being filled in or paid for and waiting.
+				(data.current.status === CheckpointStatus.Draft ||
+				data.current.status === CheckpointStatus.AwaitingCurator ? (
 					<DraftCard
 						checkpoint={data.current}
 						projectSlug={project?.slug ?? ""}
