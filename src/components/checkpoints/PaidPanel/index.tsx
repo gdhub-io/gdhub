@@ -1,16 +1,23 @@
 "use client";
 
-import { IconCheck, IconHourglassHigh, IconReceipt } from "@tabler/icons-react";
+import {
+	IconCheck,
+	IconHourglassHigh,
+	IconReceipt,
+	IconUserX,
+} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Card, Flex, Typography } from "antd";
+import { App, Button, Card, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { useCancelCheckpoint } from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
+import { ReplaceCuratorModal } from "./ReplaceCuratorModal";
 import styles from "./style.module.scss";
 
 /** How often the page asks again while it waits for Stripe to call us. */
@@ -35,6 +42,8 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const { message } = App.useApp();
 	const queryClient = useQueryClient();
 	const [fetching, setFetching] = useState(false);
+	const [replacing, setReplacing] = useState(false);
+	const cancel = useCancelCheckpoint(checkpoint.id, checkpoint.projectId);
 
 	const settling = checkpoint.status === CheckpointStatus.Draft;
 
@@ -69,6 +78,32 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			setFetching(false);
 		}
 	};
+
+	// Cancelling takes the money back and closes the checkpoint, so it asks
+	// first: the confirm is the only place a filled red button is allowed.
+	const askToCancel = () =>
+		Modal.confirm({
+			title: t("checkpoints.paid.cancelTitle", "Cancel this checkpoint?"),
+			content: t(
+				"checkpoints.paid.cancelNote",
+				"The payment is returned and the checkpoint closes. What you wrote for it is kept, but it cannot be reopened.",
+			),
+			okText: t("checkpoints.paid.cancelOk", "Cancel and refund"),
+			okButtonProps: { danger: true },
+			cancelText: t("checkpoints.paid.cancelKeep", "Keep it"),
+			onOk: async () => {
+				try {
+					await cancel.mutateAsync();
+				} catch {
+					message.error(
+						t(
+							"checkpoints.paid.cancelFailed",
+							"The checkpoint was not cancelled",
+						),
+					);
+				}
+			},
+		});
 
 	const dates =
 		checkpoint.startedAt && checkpoint.dueAt
@@ -118,42 +153,70 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			</Card>
 
 			{!settling && (
-				<Card className={styles.block}>
-					<Flex gap={14} align="flex-start">
-						<IconTile icon={IconHourglassHigh} />
-						<Flex vertical gap={10} className={styles.text}>
-							<Flex vertical gap={4}>
-								<Typography.Text className={styles.title}>
-									{t(
-										"checkpoints.paid.awaiting",
-										"Waiting for the curator to take it on",
-									)}
-								</Typography.Text>
-								<Typography.Text type="secondary" className={styles.body}>
-									{t(
-										"checkpoints.paid.awaitingBody",
-										"The 28 days begin when they accept, not when you pay. If they turn it down you pick another curator and nothing is charged again.",
-									)}
-								</Typography.Text>
-							</Flex>
-
-							<Flex gap={12} align="center" wrap>
-								<CuratorBadge
-									kind={checkpoint.curatorKind}
-									curator={checkpoint.curator}
-								/>
-								{dates && (
-									<Typography.Text type="secondary" className={styles.dates}>
-										{t("checkpoints.paid.planned", "Planned for {dates}", {
-											dates,
-										})}
-									</Typography.Text>
+				<Flex
+					vertical
+					gap={14}
+					align="center"
+					className={styles.waiting}
+					data-testid="awaiting-curator"
+				>
+					<IconTile icon={IconHourglassHigh} />
+					<Flex vertical gap={12} align="center" className={styles.waitingText}>
+						<Flex vertical gap={4} align="center">
+							<Typography.Text className={styles.title}>
+								{t(
+									"checkpoints.paid.awaiting",
+									"Waiting for the curator to take it on",
 								)}
-							</Flex>
+							</Typography.Text>
+							{dates && (
+								<Typography.Text type="secondary" className={styles.dates}>
+									{t("checkpoints.paid.planned", "Planned for {dates}", {
+										dates,
+									})}
+								</Typography.Text>
+							)}
+						</Flex>
+
+						{/* The way out of a curator who is not answering sits beside them
+						    rather than in the open: it is rarely what the author wants. */}
+						<Flex gap={10} align="center" wrap justify="center">
+							<CuratorBadge
+								kind={checkpoint.curatorKind}
+								curator={checkpoint.curator}
+							/>
+							<Button
+								type="link"
+								size="small"
+								className={styles.quiet}
+								onClick={() => setReplacing(true)}
+							>
+								{t("checkpoints.paid.replace", "Replace the curator")}
+							</Button>
 						</Flex>
 					</Flex>
-				</Card>
+				</Flex>
 			)}
+
+			{!settling && (
+				<Flex justify="center">
+					<Button
+						type="link"
+						size="small"
+						className={styles.quiet}
+						loading={cancel.isPending}
+						onClick={askToCancel}
+					>
+						{t("checkpoints.paid.cancel", "Cancel and refund")}
+					</Button>
+				</Flex>
+			)}
+
+			<ReplaceCuratorModal
+				checkpointId={checkpoint.id}
+				open={replacing}
+				onClose={() => setReplacing(false)}
+			/>
 		</Flex>
 	);
 }

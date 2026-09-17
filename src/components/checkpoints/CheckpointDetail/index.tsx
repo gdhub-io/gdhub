@@ -76,7 +76,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const waiting =
 		checkpoint.status === CheckpointStatus.AwaitingCurator ||
 		(checkpoint.status === CheckpointStatus.Draft &&
-			search?.get("paid") === "1");
+			(!!checkpoint.paymentId || search?.get("paid") === "1"));
 
 	const asked = search?.get("step");
 	const known =

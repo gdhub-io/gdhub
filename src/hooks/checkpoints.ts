@@ -120,6 +120,26 @@ export const useCheckpointCheckout = (id?: string) =>
 	});
 
 /**
+ * Calling a checkpoint off before it starts, with the money back if any was
+ * taken. Refused once the 28 days run.
+ */
+export const useCancelCheckpoint = (id?: string, projectId?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async () =>
+			(await axios.post<{ refunded: boolean }>(`/api/checkpoint/${id}/cancel`))
+				.data,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["checkpoint", id] });
+			queryClient.invalidateQueries({
+				queryKey: ["project-checkpoints", projectId],
+			});
+		},
+	});
+};
+
+/**
  * The AI curator reading the goal card against the 28 days and the hours the
  * team has.
  *

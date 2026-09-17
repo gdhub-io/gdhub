@@ -35,8 +35,13 @@ export type StartLayoutProps = {
 	/** Sits above the hint: what the author has to read before the step's own words. */
 	notice?: ReactNode;
 	children: ReactNode;
-	/** Sits between the buttons and `Saved as a draft`. */
+	/** Sits between the buttons and the standing note. */
 	footNote?: ReactNode;
+	/**
+	 * What the foot says about the state of the purchase. Defaults to the draft
+	 * note; a bought checkpoint is no longer a draft and must not claim to be.
+	 */
+	saved?: string;
 	onBack?: () => void;
 	/** The way on. Payment has none — its action is in the price card. */
 	forward?: ReactNode;
@@ -48,6 +53,7 @@ export function StartLayout({
 	notice,
 	children,
 	footNote,
+	saved,
 	onBack,
 	forward,
 }: StartLayoutProps) {
@@ -104,7 +110,7 @@ export function StartLayout({
 				<Flex gap={12} align="center">
 					{footNote}
 					<Typography.Text className={styles.saved}>
-						{t("checkpoints.prepare.saved", "Saved as a draft")}
+						{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
 					</Typography.Text>
 				</Flex>
 			</footer>

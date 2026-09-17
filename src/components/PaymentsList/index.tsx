@@ -21,6 +21,7 @@ type UserPayment = {
 	createdAt: string;
 	completedAt: string | null;
 	hasInvoice: boolean;
+	number: number | null;
 	title: string | null;
 	projectName: string | null;
 };
@@ -106,7 +107,11 @@ export default function PaymentsList() {
 			key: "description",
 			render: (_v, r) => (
 				<div style={{ display: "flex", flexDirection: "column" }}>
-					<Text>{described(r.payableType)}</Text>
+					<Text>
+						{r.number
+							? `${described(r.payableType)} ${r.number}`
+							: described(r.payableType)}
+					</Text>
 					{(r.title || r.projectName) && (
 						<Text type="secondary" style={{ fontSize: 12 }}>
 							{[r.title, r.projectName].filter(Boolean).join(" · ")}

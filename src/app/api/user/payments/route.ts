@@ -72,9 +72,9 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 			// A receipt is only retrievable once Paddle has settled the transaction.
 			hasInvoice:
 				p.status === PaymentStatus.COMPLETED && !!p.providerTransactionId,
-			title:
-				vacancy?.title ??
-				(checkpoint ? `${checkpoint.stageName} · ${checkpoint.order}` : null),
+			title: vacancy?.title ?? checkpoint?.stageName ?? null,
+			/** The checkpoint's number, shown beside the word rather than under it. */
+			number: checkpoint?.order ?? null,
 			projectName:
 				vacancy?.team?.project?.name ?? checkpoint?.project?.name ?? null,
 		};

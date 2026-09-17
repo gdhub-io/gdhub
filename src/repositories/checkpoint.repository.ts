@@ -445,13 +445,26 @@ export const getCreationBlocker = async (projectId: string) => {
 	return null;
 };
 
+/**
+ * Every checkpoint of the project except the one on the go.
+ *
+ * Filtering by `Closed` and `Cancelled` alone hid anything that was neither:
+ * a project that ended up with two unfinished checkpoints — which it could,
+ * before a paid one counted as open — showed the newest and lost the other,
+ * payment and all. Excluding the current row instead means nothing can fall
+ * between the two lists.
+ */
 export const listClosedCheckpoints = async (
 	projectId: string,
-	{ page = 1, limit = 10 }: { page?: number; limit?: number } = {},
+	{
+		page = 1,
+		limit = 10,
+		exceptId,
+	}: { page?: number; limit?: number; exceptId?: string } = {},
 ) => {
 	const where = {
 		projectId,
-		status: { in: [CheckpointStatus.Closed, CheckpointStatus.Cancelled] },
+		...(exceptId ? { id: { not: exceptId } } : {}),
 	};
 
 	const [rows, total] = await Promise.all([
@@ -555,9 +568,29 @@ export const replaceCheckpointItems = async (
 	]);
 
 /** Stamps the day count onto a checkpoint before it leaves the server. */
-export const withProgress = <T extends { startedAt: Date | null }>(
+/**
+ * The day counter, and only where it is true.
+ *
+ * `startedAt` exists from the moment the author picks a date, so counting from
+ * it alone would put a paid checkpoint on "day 1 of 28" while it is still
+ * waiting for the person who has to run those days.
+ */
+export const withProgress = <
+	T extends { startedAt: Date | null; status: CheckpointStatus },
+>(
 	checkpoint: T | null,
-) =>
-	checkpoint
-		? { ...checkpoint, ...checkpointProgress(checkpoint.startedAt) }
-		: null;
+) => {
+	if (!checkpoint) return null;
+
+	const running =
+		checkpoint.status === CheckpointStatus.Active ||
+		checkpoint.status === CheckpointStatus.Review ||
+		checkpoint.status === CheckpointStatus.Closed;
+
+	return {
+		...checkpoint,
+		...(running
+			? checkpointProgress(checkpoint.startedAt)
+			: { day: null, daysLeft: null }),
+	};
+};

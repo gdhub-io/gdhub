@@ -4,6 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointSignals } from "../CheckpointSignals";
@@ -37,6 +38,11 @@ export function CheckpointCard({
 
 	const href = `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
 
+	// Nothing has run yet, so the signals would all read zero and the day
+	// counter would count from a date nobody has agreed to: the card says what
+	// it is and waits with the author.
+	const waiting = checkpoint.status === CheckpointStatus.AwaitingCurator;
+
 	return (
 		<section className={styles.card}>
 			<header className={styles.head}>
@@ -68,7 +74,16 @@ export function CheckpointCard({
 						t("checkpoints.goal.empty", "The goal is not written yet")}
 				</Typography.Paragraph>
 
-				{checkpoint.daysLeft !== null && (
+				{waiting && (
+					<Typography.Text type="secondary" className={styles.counter}>
+						{t(
+							"checkpoints.card.awaiting",
+							"Paid. The 28 days start when the curator takes it on.",
+						)}
+					</Typography.Text>
+				)}
+
+				{!waiting && checkpoint.daysLeft !== null && (
 					<Flex vertical gap={8}>
 						<Typography.Text className={styles.counter}>
 							{t("checkpoints.status.daysLeft", "{count} days left", {
@@ -86,7 +101,7 @@ export function CheckpointCard({
 					</Flex>
 				)}
 
-				{!!checkpoint.signals && (
+				{!waiting && !!checkpoint.signals && (
 					<CheckpointSignals
 						signals={checkpoint.signals}
 						day={checkpoint.day}

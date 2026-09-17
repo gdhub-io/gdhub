@@ -28,3 +28,24 @@
 .dates {
 	font-size: var(--gd-font-size-body-sm);
 }
+
+// The wait is not a card: nothing has happened that needs a surface of its own,
+// and the frame `dvMPy` draws it as centred text on the panel.
+.waiting {
+	padding: var(--gd-space-8) var(--gd-space-4);
+	text-align: center;
+}
+
+.waitingText {
+	max-width: 420px;
+}
+
+// Present, findable, and not competing with anything: replacing a curator or
+// calling the checkpoint off is rarely what the author came to do.
+.quiet {
+	height: auto;
+	padding: 0;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+}

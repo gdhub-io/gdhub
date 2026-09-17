@@ -108,3 +108,21 @@ export const getCheckoutReceiptUrl = async (sessionId: string) => {
 
 	return charge.receipt_url ?? null;
 };
+
+/**
+ * Refunds a completed checkout in full, or null when the session never charged.
+ *
+ * Stripe is the record of what was returned, so nothing is decided here: the
+ * caller writes its own row only once this comes back.
+ */
+export const refundCheckout = async (sessionId: string) => {
+	const session = await stripe().checkout.sessions.retrieve(sessionId);
+	const intent =
+		typeof session.payment_intent === "string"
+			? session.payment_intent
+			: session.payment_intent?.id;
+
+	if (!intent) return null;
+
+	return stripe().refunds.create({ payment_intent: intent });
+};

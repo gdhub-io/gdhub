@@ -85,7 +85,7 @@ export function CheckpointsList() {
 					row.verdict ? <VerdictChip verdict={row.verdict} /> : "—",
 			},
 			{
-				title: t("checkpoints.past.column.decidedBy", "Decided by"),
+				title: t("checkpoints.past.column.curator", "Curator"),
 				key: "decidedBy",
 				width: 180,
 				render: (_, row) => (
