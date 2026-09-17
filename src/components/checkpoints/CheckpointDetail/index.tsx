@@ -57,17 +57,25 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		[checkpoint, sprints],
 	);
 
-	// A draft that has already picked its start date is still on the first step:
-	// the status says whether it has been bought, the date does not.
-	const defaultStep =
-		checkpoint.status === CheckpointStatus.Draft
-			? "inputs"
-			: checkpoint.verdict ||
-					!sprints.some((sprint) => sprint.state === "current")
-				? // No current sprint means the 28 days are spent: the verdict, written
-					// or being written, is the only thing left to look at.
-					"checkpoint"
-				: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number}`;
+	// Nothing below Prepare exists until the 28 days run: a draft has no day one
+	// either, and a sprint that opens onto empty tabs reads as a broken page
+	// rather than as one that has not started.
+	const started =
+		checkpoint.status !== CheckpointStatus.Draft &&
+		checkpoint.status !== CheckpointStatus.AwaitingCurator;
+
+	// A checkpoint that has not started opens on Prepare, whatever its dates say:
+	// the status decides that, and the date the author picked does not. Without
+	// this a paid checkpoint whose chosen day has passed would open onto sprint 1,
+	// which is locked.
+	const defaultStep = !started
+		? "inputs"
+		: checkpoint.verdict ||
+				!sprints.some((sprint) => sprint.state === "current")
+			? // No current sprint means the 28 days are spent: the verdict, written
+				// or being written, is the only thing left to look at.
+				"checkpoint"
+			: `sprint-${sprints.find((sprint) => sprint.state === "current")?.number}`;
 
 	// Two ways to be past paying and short of day one: back from Stripe before
 	// the webhook landed, and waiting on the person asked to curate it. The
@@ -83,7 +91,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 		asked === "inputs" ||
 		asked === "checkpoint" ||
 		(!!asked && /^sprint-[1-4]$/.test(asked));
-	const step = waiting ? "inputs" : known && asked ? asked : defaultStep;
+	const step = started && known && asked ? asked : defaultStep;
 	const tab = (search?.get("tab") as SprintTab) ?? "status";
 
 	const go = (next: { step?: string; tab?: string }) => {
@@ -129,7 +137,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				// dates exist before that — the author picked them — and drawing the
 				// first sprint in the accent against them claims a run that has not
 				// started.
-				glyph: waiting
+				glyph: !started
 					? ("locked" as const)
 					: !sprint
 						? ("ahead" as const)
@@ -139,15 +147,15 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 								? ("current" as const)
 								: ("ahead" as const),
 				needsYou:
-					!waiting && sprintFacts
+					started && sprintFacts
 						? sprintNeedsYou(sprintFacts, checkpoint.day)
 						: false,
-				disabled: waiting,
+				disabled: !started,
 			};
 		}),
 		{
 			key: "checkpoint",
-			disabled: waiting,
+			disabled: !started,
 			label: t("checkpoints.path.checkpoint", "Checkpoint"),
 			meta: checkpoint.dueAt
 				? dayjs.utc(checkpoint.dueAt).format("D MMM")
