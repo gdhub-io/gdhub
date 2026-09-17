@@ -14,3 +14,16 @@
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
 }
+
+// The whole row opens the checkpoint, so it points at itself: the chevron is
+// the only thing saying so, and it stays quiet until the row is under the
+// pointer.
+.past {
+	:global(.ant-table-tbody > tr) {
+		cursor: pointer;
+	}
+}
+
+.openHint {
+	color: var(--gd-color-text-tertiary);
+}

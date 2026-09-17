@@ -1,10 +1,15 @@
 "use client";
 
-import { IconAlertTriangle, IconFlag } from "@tabler/icons-react";
+import {
+	IconAlertTriangle,
+	IconChevronRight,
+	IconFlag,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { EmptyState, SectionHeading } from "@/components/ui";
@@ -24,6 +29,7 @@ const PAGE_SIZE = 10;
 
 export function CheckpointsList() {
 	const { t } = useTranslate();
+	const router = useRouter();
 	const { message } = App.useApp();
 	const { project, isLoading: projectLoading } = useCurrentProject();
 	const [page, setPage] = useState(1);
@@ -90,6 +96,20 @@ export function CheckpointsList() {
 				width: 180,
 				render: (_, row) => (
 					<CuratorBadge kind={row.curatorKind} curator={row.curator} />
+				),
+			},
+			{
+				// The row is a link and says so: a table of past runs that opens
+				// nothing looks like a record rather than a way in.
+				key: "open",
+				width: 48,
+				align: "center",
+				render: () => (
+					<IconChevronRight
+						size={18}
+						stroke={1.6}
+						className={styles.openHint}
+					/>
 				),
 			},
 		],
@@ -182,20 +202,22 @@ export function CheckpointsList() {
 
 			{data && data.closed.total > 0 && (
 				<Flex vertical gap={16}>
-					<Flex gap={8} align="center">
-						<SectionHeading
-							level={4}
-							title={t("checkpoints.past.title", "Past checkpoints")}
-						/>
-						<Typography.Text type="secondary">
-							{data.closed.total}
-						</Typography.Text>
-					</Flex>
+					<SectionHeading
+						level={4}
+						title={t("checkpoints.past.title", "Past checkpoints")}
+					/>
 					<ModernTable<CheckpointDto>
 						density="compact"
 						rowKey="id"
 						columns={columns}
 						dataSource={data.closed.rows}
+						className={styles.past}
+						onRow={(row) => ({
+							onClick: () =>
+								router.push(
+									`/user/project/${project?.slug ?? ""}/checkpoints/${row.id}`,
+								),
+						})}
 						scroll={{ x: 1000 }}
 						pagination={{
 							current: page,
