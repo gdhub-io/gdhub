@@ -99,10 +99,12 @@ export function PaymentStep() {
 				team.hours.join("-"),
 			].join("|")
 		: undefined;
-	const { data: remark, isLoading: reading } = useGoalCheck(
-		draft?.id,
-		signature,
-	);
+	const {
+		data: remark,
+		isLoading: reading,
+		isError: readFailed,
+		refetch: readAgain,
+	} = useGoalCheck(draft?.id, signature);
 	const checking = useSlowRead(reading);
 	const update = useUpdateCheckpoint(draft?.id);
 	const checkout = useCheckpointCheckout(draft?.id);
@@ -209,8 +211,9 @@ export function PaymentStep() {
 	].join(" · ");
 
 	// Advice on the plan, never a verdict on it: the author can read the warning
-	// and pay anyway. It speaks in all three states — a silent block would be
-	// read as "nothing to say" exactly when it has not looked yet.
+	// and pay anyway. Every outcome of the read has a face, including the ones
+	// that say nothing about the plan: a block that appears and then vanishes
+	// leaves the author wondering what it decided.
 	const atRisk = !!remark && (!remark.reachable || remark.missing.length > 0);
 	const read = checking
 		? {
@@ -235,22 +238,35 @@ export function PaymentStep() {
 						"The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
 					),
 				}
-			: remark
+			: readFailed || (!reading && !remark)
 				? {
-						tone: "success" as const,
-						icon: <IconCircleCheck size={20} stroke={1.6} />,
+						tone: "neutral" as const,
+						icon: <IconAlertTriangle size={20} stroke={1.6} />,
 						title: t(
-							"checkpoints.pay.okTitle",
-							"Your 28-day plan looks reachable",
+							"checkpoints.pay.readFailedTitle",
+							"The plan could not be read",
 						),
-						body:
-							remark.note ||
-							t(
-								"checkpoints.pay.okBody",
-								"The outcomes fit the hours the team stated. Nothing here is a promise that they land — only that the plan is not asking for more days than there are.",
-							),
+						body: t(
+							"checkpoints.pay.readFailedBody",
+							"Nothing is wrong with your checkpoint — the curator's read did not come back. You can pay without it, or ask again.",
+						),
 					}
-				: null;
+				: remark
+					? {
+							tone: "success" as const,
+							icon: <IconCircleCheck size={20} stroke={1.6} />,
+							title: t(
+								"checkpoints.pay.okTitle",
+								"Your 28-day plan looks reachable",
+							),
+							body:
+								remark.note ||
+								t(
+									"checkpoints.pay.okBody",
+									"The outcomes fit the hours the team stated. Nothing here is a promise that they land — only that the plan is not asking for more days than there are.",
+								),
+						}
+					: null;
 
 	// Paying while the read is still running would buy a plan nobody has looked at
 	// yet — held on the request itself, not on whether it was slow enough to show.
@@ -294,6 +310,14 @@ export function PaymentStep() {
 								onClick={() => go("goal")}
 							>
 								{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
+							</Button>
+						)}
+						{read.tone === "neutral" && (
+							<Button
+								className={styles.suggestionAction}
+								onClick={() => readAgain()}
+							>
+								{t("checkpoints.pay.readAgain", "Ask again")}
 							</Button>
 						)}
 					</Flex>

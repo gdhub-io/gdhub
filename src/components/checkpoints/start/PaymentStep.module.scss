@@ -28,6 +28,14 @@
 		--tone-solid: var(--gd-info-solid);
 		--tone-ink: var(--gd-info-on-tint);
 	}
+
+	// The read that said nothing: a state of the panel, not of the plan, so it
+	// carries no colour of its own.
+	&[data-tone="neutral"] {
+		--tone-tint: var(--gd-color-surface-sunken);
+		--tone-solid: var(--gd-color-text-secondary);
+		--tone-ink: var(--gd-color-text-secondary);
+	}
 }
 
 .suggestionIcon {
