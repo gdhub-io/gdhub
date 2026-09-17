@@ -1,0 +1,88 @@
+import Stripe from "stripe";
+import { env } from "@/helpers/env";
+
+/**
+ * Stripe, for checkpoints only — vacancy listings go through Paddle and both
+ * providers stay. Server-side: the secret key is here, so nothing in this file
+ * may be imported from a client component.
+ *
+ * The client is built on first use rather than at import, so a build without the
+ * key set does not fail at module load.
+ */
+let client: Stripe | null = null;
+
+const stripe = () => {
+	client ??= new Stripe(env("STRIPE_SECRET_KEY"));
+
+	return client;
+};
+
+export type CheckpointCheckout = {
+	/** Our own `Payment` row, handed back by the webhook as the only link. */
+	paymentId: string;
+	checkpointId: string;
+	/** Minor units, the way `Payment.amount` stores it. */
+	amount: number;
+	currency: string;
+	name: string;
+	description: string;
+	customerEmail?: string;
+	successUrl: string;
+	cancelUrl: string;
+};
+
+/**
+ * One checkout for one checkpoint.
+ *
+ * The price is built inline rather than pulled from a Stripe catalogue: it comes
+ * from the curator's level and the size of the team, so there is no fixed set of
+ * prices to keep in sync over there.
+ */
+export const createCheckpointCheckout = async (input: CheckpointCheckout) =>
+	stripe().checkout.sessions.create({
+		mode: "payment",
+		line_items: [
+			{
+				quantity: 1,
+				price_data: {
+					currency: input.currency.toLowerCase(),
+					unit_amount: input.amount,
+					product_data: { name: input.name, description: input.description },
+				},
+			},
+		],
+		// What the webhook has to find its way back by. `client_reference_id`
+		// survives in the dashboard where a human can read it; the metadata is
+		// what the handler actually reads.
+		client_reference_id: input.checkpointId,
+		metadata: {
+			paymentId: input.paymentId,
+			checkpointId: input.checkpointId,
+		},
+		customer_email: input.customerEmail,
+		success_url: input.successUrl,
+		cancel_url: input.cancelUrl,
+	});
+
+/**
+ * The event, or null when the signature does not hold.
+ *
+ * Unlike the Paddle handler this never skips verification outside production: a
+ * webhook nobody checks is a way to start a paid checkpoint for free, and
+ * `stripe listen` prints a signing secret for local work anyway.
+ */
+export const stripeEvent = (rawBody: string, signature: string | null) => {
+	if (!signature) return null;
+
+	try {
+		return stripe().webhooks.constructEvent(
+			rawBody,
+			signature,
+			env("STRIPE_WEBHOOK_SECRET"),
+		);
+	} catch (error) {
+		console.warn("[stripe.webhook] signature rejected:", error);
+
+		return null;
+	}
+};

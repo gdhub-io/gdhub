@@ -71,6 +71,17 @@ export default function PaymentsList() {
 		}
 	};
 
+	// What was bought, in words. Without this a checkpoint reads as the enum
+	// value itself — `CHECKPOINT` — in the middle of a receipts table.
+	const described = (payable: PayableType) => {
+		if (payable === "VACANCY")
+			return t("settings.payments.vacancyFee", "Vacancy listing");
+		if (payable === "CHECKPOINT")
+			return t("settings.payments.checkpoint", "Checkpoint");
+
+		return payable;
+	};
+
 	const columns: TableProps<UserPayment>["columns"] = [
 		{
 			title: t("settings.payments.column.date", "Date"),
@@ -82,11 +93,7 @@ export default function PaymentsList() {
 			key: "description",
 			render: (_v, r) => (
 				<div style={{ display: "flex", flexDirection: "column" }}>
-					<Text>
-						{r.payableType === "VACANCY"
-							? t("settings.payments.vacancyFee", "Vacancy listing")
-							: r.payableType}
-					</Text>
+					<Text>{described(r.payableType)}</Text>
 					{(r.title || r.projectName) && (
 						<Text type="secondary" style={{ fontSize: 12 }}>
 							{[r.title, r.projectName].filter(Boolean).join(" · ")}

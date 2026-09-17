@@ -1,0 +1,96 @@
+import {
+	PayableType,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
+import { env } from "@/helpers/env";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfCheckpoint } from "@/lib/space-ids";
+import { checkpointCheckout } from "@/repositories/checkpoint-payment";
+import { prisma } from "@/services/prisma";
+import { createCheckpointCheckout } from "@/services/stripe/server";
+
+/**
+ * Opens the checkout for a checkpoint and hands back the URL to send the author
+ * to. It starts nothing: the checkpoint leaves `Draft` on the webhook and on
+ * nothing else, so an abandoned checkout costs a `PENDING` row and no more.
+ *
+ * The return addresses are built here rather than accepted from the caller — a
+ * checkout that redirects wherever it is told is an open redirect with a payment
+ * attached to it.
+ */
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.checkpoints.manage",
+		idFrom: projectOfCheckpoint,
+	}),
+)(async (_req, ctx, { user }) => {
+	const payer = user as SessionUser | undefined;
+	if (!payer) return apiError.unauthorized();
+
+	const { id } = (await ctx.params) as { id: string };
+
+	const quote = await checkpointCheckout(id);
+
+	if (!quote.ok) {
+		return quote.reason === "notFound"
+			? apiError.notFound()
+			: apiError.badRequest(quote.reason);
+	}
+
+	const base = env("NEXT_PUBLIC_APP_URL", "http://localhost:3000");
+	const page = `${base}/user/project/${quote.checkpoint.project.slug}/checkpoints/${id}`;
+
+	// A checkout left open keeps its row PENDING forever and would sit beside the
+	// new one in the author's receipts. Only one attempt is live at a time.
+	await prisma.payment.updateMany({
+		where: {
+			payableType: PayableType.CHECKPOINT,
+			payableId: id,
+			status: PaymentStatus.PENDING,
+		},
+		data: { status: PaymentStatus.CANCELED },
+	});
+
+	const payment = await prisma.payment.create({
+		data: {
+			amount: quote.amount,
+			currency: quote.currency,
+			status: PaymentStatus.PENDING,
+			payableType: PayableType.CHECKPOINT,
+			payableId: id,
+			payerId: payer.id,
+			provider: PaymentProvider.STRIPE,
+		},
+		select: { id: true },
+	});
+
+	const session = await createCheckpointCheckout({
+		paymentId: payment.id,
+		checkpointId: id,
+		amount: quote.amount,
+		currency: quote.currency,
+		name: quote.name,
+		description: quote.description,
+		customerEmail: payer.email ?? undefined,
+		successUrl: `${page}?paid=1`,
+		cancelUrl: `${page}?step=payment`,
+	});
+
+	if (!session.url) return apiError.internal("checkoutUnavailable");
+
+	await prisma.payment.update({
+		where: { id: payment.id },
+		data: { providerTransactionId: session.id },
+	});
+
+	return json({ url: session.url });
+});

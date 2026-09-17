@@ -1,0 +1,22 @@
+.panel {
+	width: 100%;
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.body {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+}
+
+.dates {
+	font-size: var(--gd-font-size-body-sm);
+}

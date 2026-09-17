@@ -154,6 +154,7 @@ export type CheckpointItemKind = CheckpointItemKindType;
 
 export const CheckpointStatus = {
 	Draft: "Draft",
+	AwaitingCurator: "AwaitingCurator",
 	Active: "Active",
 	Review: "Review",
 	Closed: "Closed",
@@ -327,6 +328,7 @@ export type PayableType = PayableTypeType;
 
 export const PaymentProvider = {
 	PADDLE: "PADDLE",
+	STRIPE: "STRIPE",
 } as const satisfies Record<PaymentProviderType, PaymentProviderType>;
 export type PaymentProvider = PaymentProviderType;
 

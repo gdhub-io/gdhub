@@ -107,6 +107,19 @@ export const useAttachEvidence = (id?: string) => {
 };
 
 /**
+ * Opens Stripe Checkout for a draft and hands back where to send the author.
+ *
+ * It starts nothing. The checkpoint leaves `Draft` when Stripe calls the
+ * webhook, so an author who closes the tab has spent nothing and still has
+ * their draft.
+ */
+export const useCheckpointCheckout = (id?: string) =>
+	useMutation({
+		mutationFn: async () =>
+			(await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`)).data,
+	});
+
+/**
  * The AI curator reading the goal card against the 28 days and the hours the
  * team has.
  *

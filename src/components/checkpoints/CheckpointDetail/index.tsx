@@ -13,6 +13,7 @@ import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointPath, type PathStepView } from "../CheckpointPath";
 import { CheckpointStepPanel } from "../CheckpointStepPanel";
 import { InputsPanel } from "../InputsPanel";
+import { PaidPanel } from "../PaidPanel";
 import { SprintPanel, type SprintTab } from "../SprintPanel";
 import { PreparePanel } from "../start/PreparePanel";
 import styles from "./style.module.scss";
@@ -87,6 +88,15 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	};
+
+	// Two ways to be past paying and short of day one: back from Stripe before
+	// the webhook landed, and waiting on the person asked to curate it. The
+	// return from Stripe is a hint that the panel should wait — never a claim
+	// that anything was paid, which only the status can say.
+	const waiting =
+		checkpoint.status === CheckpointStatus.AwaitingCurator ||
+		(checkpoint.status === CheckpointStatus.Draft &&
+			search?.get("paid") === "1");
 
 	const create = useCreateCheckpoint(checkpoint.projectId);
 	const paid = checkpoint.status !== CheckpointStatus.Draft;
@@ -173,7 +183,9 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 
 			<div className={styles.panel}>
 				{step === "inputs" &&
-					(checkpoint.status === CheckpointStatus.Draft ? (
+					(waiting ? (
+						<PaidPanel checkpoint={checkpoint} />
+					) : checkpoint.status === CheckpointStatus.Draft ? (
 						<PreparePanel base={base} />
 					) : (
 						<InputsPanel checkpoint={checkpoint} />

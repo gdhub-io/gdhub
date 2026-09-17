@@ -687,6 +687,14 @@
 			"draftNote": "Editable until the goal call, then locked for the cycle.",
 			"title": "Outcomes"
 		},
+		"paid": {
+			"awaiting": "Waiting for the curator to take it on",
+			"awaitingBody": "The 28 days begin when they accept, not when you pay. If they turn it down you pick another curator and nothing is charged again.",
+			"dates": "{from} – {to}",
+			"planned": "Planned for {dates}",
+			"settling": "This settles on its own in a few seconds. Nothing else is needed from you.",
+			"starting": "Payment received — starting"
+		},
 		"past": {
 			"column": {
 				"checkpoint": "Checkpoint",
@@ -710,6 +718,7 @@
 			"undated": "Dates appear after payment."
 		},
 		"pay": {
+			"acceptFirst": "Accept the agreement to pay",
 			"acceptedOn": "Accepted {date}",
 			"adjustGoal": "Adjust the goal",
 			"agree": "I have read the checkpoint agreement and accept it — including what is not guaranteed.",
@@ -719,6 +728,7 @@
 			"capacityUnknown": "Nobody has stated their hours yet",
 			"checkingBody": "The outcomes you wrote are being weighed against the hours the team has.",
 			"checkingTitle": "Reading your plan",
+			"checkoutFailed": "Could not open the checkout",
 			"curator": "Curator",
 			"days": "{count} days from the start",
 			"edit": "Edit",
@@ -868,6 +878,7 @@
 		"start.q4": "Ready to start?",
 		"start.toList": "Back to checkpoints",
 		"status": {
+			"awaitingCurator": "Waiting for the curator",
 			"awaitingVerdict": "Awaiting verdict",
 			"day": "Day {day} of 28",
 			"daysLeft": "{count} days left"
@@ -2763,6 +2774,7 @@
 	"select": "Select",
 	"settings": {
 		"payments": {
+			"checkpoint": "Checkpoint",
 			"column": {
 				"amount": "Amount",
 				"date": "Date",

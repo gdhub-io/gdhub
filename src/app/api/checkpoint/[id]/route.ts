@@ -1,4 +1,8 @@
-import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+	CheckpointStatus,
+} from "@gdhub-io/gdhub-prisma";
 import {
 	apiError,
 	json,
@@ -15,6 +19,7 @@ import {
 	replaceCheckpointItems,
 	withProgress,
 } from "@/repositories/checkpoint.repository";
+import { isCheckpointPaid } from "@/repositories/checkpoint-payment";
 import {
 	type UpdateCheckpointBody,
 	UpdateCheckpointSchema,
@@ -92,6 +97,15 @@ export const PUT = pipe(
 		if (!open) return apiError.badRequest("curatorNotOpenForMentoring");
 	}
 
+	// A curator who declined leaves a paid checkpoint back in Draft. Naming
+	// someone else sends it to them rather than asking the author to pay again.
+	const rehomed =
+		(curatorId !== undefined || curatorKind) && (await isCheckpointPaid(id))
+			? curatorKind === CheckpointCuratorKind.AI
+				? CheckpointStatus.Active
+				: CheckpointStatus.AwaitingCurator
+			: null;
+
 	if (
 		goal !== undefined ||
 		curatorKind ||
@@ -102,6 +116,7 @@ export const PUT = pipe(
 		await prisma.projectCheckpoint.update({
 			where: { id },
 			data: {
+				...(rehomed && { status: rehomed }),
 				...(goal !== undefined && { goal }),
 				...(curatorKind && { curatorKind }),
 				...(curatorId !== undefined && { curatorId }),

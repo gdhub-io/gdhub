@@ -5,6 +5,7 @@ const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
 const checkpointUpdate = vi.fn();
 const specialityFindFirst = vi.fn();
+const paymentCount = vi.fn();
 const getCheckpoint = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
@@ -30,6 +31,9 @@ vi.mock("@/services/prisma", () => ({
 		speciality: {
 			findFirst: (...args: unknown[]) => specialityFindFirst(...args),
 		},
+		payment: {
+			count: (...args: unknown[]) => paymentCount(...args),
+		},
 	},
 }));
 
@@ -54,6 +58,7 @@ beforeEach(() => {
 	checkpointFindUnique.mockResolvedValue({ status: "Draft" });
 	checkpointUpdate.mockResolvedValue({});
 	specialityFindFirst.mockResolvedValue({ id: "sp1" });
+	paymentCount.mockResolvedValue(0);
 	getCheckpoint.mockResolvedValue({ id: "cp1" });
 });
 
@@ -105,6 +110,26 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 			curatorKind: "Human",
 			curatorId: "u9",
 		});
+	});
+
+	// A curator who declined leaves the checkpoint paid for and back in Draft.
+	// Naming someone else hands it to them; asking the author to pay twice for
+	// the same 28 days is the bug this guards.
+	it("sends a paid checkpoint to the curator picked next, unpaid again", async () => {
+		paymentCount.mockResolvedValue(1);
+
+		await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+			status: "AwaitingCurator",
+			curatorId: "u9",
+		});
+	});
+
+	it("leaves an unpaid draft a draft when its curator changes", async () => {
+		await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(checkpointUpdate.mock.calls[0][0].data.status).toBeUndefined();
 	});
 
 	it("lets the person go when the AI curator is chosen", async () => {

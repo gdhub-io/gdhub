@@ -34,6 +34,7 @@ import {
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import {
+	useCheckpointCheckout,
 	useCheckpointCurators,
 	useGoalCheck,
 	useUpdateCheckpoint,
@@ -104,6 +105,7 @@ export function PaymentStep() {
 	);
 	const checking = useSlowRead(reading);
 	const update = useUpdateCheckpoint(draft?.id);
+	const checkout = useCheckpointCheckout(draft?.id);
 	const curators = useCheckpointCurators();
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
@@ -171,10 +173,19 @@ export function PaymentStep() {
 	);
 	const price =
 		isAI || !chosen ? CHECKPOINT_AI_PRICE : curatorPrice(chosen.level);
-	const checkoutClosed = t(
-		"checkpoints.prepare.payPending",
-		"Checkout is not open yet",
-	);
+
+	// Stripe hosts the payment, so leaving the app is the last thing this step
+	// does; what comes back is a webhook, not this tab.
+	const pay = async () => {
+		try {
+			const { url } = await checkout.mutateAsync();
+			window.location.href = url;
+		} catch {
+			message.error(
+				t("checkpoints.pay.checkoutFailed", "Could not open the checkout"),
+			);
+		}
+	};
 
 	const capacity = teamCapacity(
 		team.members.map((row) => ({ timeForWork: team.statedFor(row) })),
@@ -243,10 +254,12 @@ export function PaymentStep() {
 
 	// Paying while the read is still running would buy a plan nobody has looked at
 	// yet — held on the request itself, not on whether it was slow enough to show.
-	// The sentence beside the button says which of the two is holding it.
+	// The sentence beside the button says what is holding it, or nothing at all.
 	const payHeldBy = reading
 		? t("checkpoints.pay.waitForCheck", "Wait for the plan to be read")
-		: checkoutClosed;
+		: draft.acceptedTermsAt
+			? null
+			: t("checkpoints.pay.acceptFirst", "Accept the agreement to pay");
 
 	return (
 		<StartLayout
@@ -359,9 +372,6 @@ export function PaymentStep() {
 							{`${CHECKPOINT_PRICE_CURRENCY}${price}`}
 						</Typography.Text>
 					</Flex>
-					<Typography.Text type="secondary" className={styles.vat}>
-						{t("checkpoints.pay.vat", "+ VAT")}
-					</Typography.Text>
 				</Flex>
 
 				<Flex vertical gap={8} className={styles.terms}>
@@ -432,21 +442,24 @@ export function PaymentStep() {
 					</Typography.Text>
 				)}
 
-				{/* The action of the whole purchase sits with the sum it commits.
-				    Stripe checkout lands with GDHUB-38. */}
+				{/* The action of the whole purchase sits with the sum it commits. */}
 				<Flex gap={12} align="center">
 					<Tooltip title={payHeldBy}>
 						<Button
 							type="primary"
-							disabled
+							loading={checkout.isPending}
+							disabled={!!payHeldBy}
 							icon={<IconLock size={16} stroke={1.6} />}
+							onClick={pay}
 						>
 							{t("checkpoints.pay.payAndStart", "Pay and start")}
 						</Button>
 					</Tooltip>
-					<Typography.Text type="secondary" className={styles.pending}>
-						{payHeldBy}
-					</Typography.Text>
+					{payHeldBy && (
+						<Typography.Text type="secondary" className={styles.pending}>
+							{payHeldBy}
+						</Typography.Text>
+					)}
 				</Flex>
 			</Card>
 		</StartLayout>

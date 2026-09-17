@@ -38,6 +38,21 @@ export function CheckpointStatusSlot({
 		);
 	}
 
+	// Paid for, and the person asked to run it has not answered. Saying "Day 1"
+	// here would claim the 28 days had started when nobody has taken them on.
+	if (checkpoint.status === CheckpointStatus.AwaitingCurator) {
+		return (
+			<StatusDot
+				tone="info"
+				label={t(
+					"checkpoints.status.awaitingCurator",
+					"Waiting for the curator",
+				)}
+				className={className}
+			/>
+		);
+	}
+
 	// A status is a dot and a word, never a filled pill — the day is the one
 	// exception, because it is a figure rather than a state.
 	if (checkpoint.status === CheckpointStatus.Draft) {
