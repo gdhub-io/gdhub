@@ -200,8 +200,9 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
 - **Markup is antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
   `Typography` — if antd ships it, use it. Hand-rolled markup needs a bespoke
   design behind it and a note naming the frame; layout itself is still CSS.
-- **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
-  Never `Read`/`Edit`/`Grep` a `.pen` file directly.
+- **Design files (`*.pen`) are JSON and may be read directly** — grepping one is often
+  the quickest way to a number or a frame id. **Edit them only through the Pencil MCP
+  tools**: a hand-edited file is how the canvas gets corrupted.
 
 ## Changing the database schema
 

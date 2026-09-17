@@ -46,7 +46,12 @@ export const POST = pipe(
 			: apiError.badRequest(quote.reason);
 	}
 
-	const base = env("NEXT_PUBLIC_APP_URL", "http://localhost:3000");
+	// A missing app URL would send a paying author to localhost, so NextAuth's
+	// own URL stands in: it is required everywhere this runs.
+	const base = env(
+		"NEXT_PUBLIC_APP_URL",
+		env("NEXTAUTH_URL", "http://localhost:3000"),
+	);
 	const page = `${base}/user/project/${quote.checkpoint.project.slug}/checkpoints/${id}`;
 
 	// A checkout left open keeps its row PENDING forever and would sit beside the
