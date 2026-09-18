@@ -14,6 +14,8 @@ import styles from "./style.module.scss";
 export type CheckpointCardProps = {
 	checkpoint: CheckpointDto;
 	projectSlug: string;
+	/** Where Open leads. Defaults to the author's page inside the project. */
+	href?: string;
 };
 
 /**
@@ -27,6 +29,7 @@ export type CheckpointCardProps = {
 export function CheckpointCard({
 	checkpoint,
 	projectSlug,
+	href,
 }: CheckpointCardProps) {
 	const { t } = useTranslate();
 
@@ -35,7 +38,8 @@ export function CheckpointCard({
 			? `${dayjs(checkpoint.startedAt).format("D MMM")}–${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
-	const href = `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
+	const opensAt =
+		href ?? `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
 
 	return (
 		<section className={styles.card}>
@@ -95,7 +99,7 @@ export function CheckpointCard({
 			</div>
 
 			<footer className={styles.foot}>
-				<Link href={href}>
+				<Link href={opensAt}>
 					<Button type="primary">
 						{t("checkpoints.open", "Open checkpoint")}
 					</Button>

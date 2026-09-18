@@ -50,11 +50,11 @@ describe("an advisor's checkpoints", () => {
 
 		const board = await listAdvisorCheckpoints("u1");
 
-		expect(board.asked.map((one) => one.id)).toEqual(["a"]);
+		expect(board.asked.map((one) => one?.id)).toEqual(["a"]);
 		// Awaiting a verdict is still the curator's to finish, so it sits with
 		// the running ones rather than with the decided.
-		expect(board.running.map((one) => one.id)).toEqual(["b", "c"]);
-		expect(board.closed.map((one) => one.id)).toEqual(["d"]);
+		expect(board.running.map((one) => one?.id)).toEqual(["b", "c"]);
+		expect(board.closed.map((one) => one?.id)).toEqual(["d"]);
 	});
 
 	// The date exists from the moment the author picks it, so counting from it
@@ -67,7 +67,7 @@ describe("an advisor's checkpoints", () => {
 
 		const board = await listAdvisorCheckpoints("u1");
 
-		expect(board.asked[0].day).toBeNull();
-		expect(board.running[0].day).not.toBeNull();
+		expect(board.asked[0]?.day).toBeNull();
+		expect(board.running[0]?.day).not.toBeNull();
 	});
 });

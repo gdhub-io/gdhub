@@ -4,10 +4,11 @@ import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Skeleton, Typography } from "antd";
 import { AdvisorCheckpointCard } from "@/components/advisor/AdvisorCheckpointCard";
+import { CheckpointCard } from "@/components/checkpoints/CheckpointCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { EmptyState, SectionHeading } from "@/components/ui";
 import { useAdvisorCheckpoints } from "@/hooks/checkpoints";
-import type { AdvisorCheckpoint } from "@/repositories/advisor-checkpoints";
+import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 /**
@@ -23,19 +24,28 @@ export function AdvisorCheckpointsClient() {
 
 	const section = (
 		title: string,
-		rows: AdvisorCheckpoint[],
+		rows: AdvisorCheckpointDto[],
 		answerable?: boolean,
 	) =>
 		rows.length > 0 && (
 			<Flex vertical gap={12}>
 				<SectionHeading level={4} title={title} />
-				{rows.map((row) => (
-					<AdvisorCheckpointCard
-						key={row.id}
-						checkpoint={row}
-						answerable={answerable}
-					/>
-				))}
+				{rows.map((row) =>
+					// Waiting on an answer, the card is the curator's own: it carries
+					// the two buttons and nothing else does. Everything else is the
+					// card the author sees, so a checkpoint reads the same on both
+					// sides of it.
+					answerable ? (
+						<AdvisorCheckpointCard key={row.id} checkpoint={row} answerable />
+					) : (
+						<CheckpointCard
+							key={row.id}
+							checkpoint={row}
+							projectSlug={row.project.slug}
+							href={`/advisor/checkpoints/${row.id}`}
+						/>
+					),
+				)}
 			</Flex>
 		);
 

@@ -65,7 +65,8 @@ const checkpointItemSelect = {
 	},
 } as const;
 
-const checkpointSelect = {
+/** Everything a checkpoint row needs to be drawn, wherever it is drawn. */
+export const checkpointSelect = {
 	id: true,
 	projectId: true,
 	stepId: true,

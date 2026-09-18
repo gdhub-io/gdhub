@@ -20,6 +20,13 @@ import styles from "./style.module.scss";
 
 export type CheckpointDetailProps = {
 	checkpoint: CheckpointDto;
+	/**
+	 * Who is looking. The author owns the checkpoint and answers for it; the
+	 * curator runs it and may write only their review. A curator never sees the
+	 * five questions of the purchase — they were answered before it reached them,
+	 * and the answers are what Inputs already shows.
+	 */
+	viewer?: "author" | "curator";
 };
 
 /**
@@ -44,7 +51,11 @@ const range = (from: string, to: string) => {
  * The step and the tab live in the query string so a sprint can be linked to and
  * survives a refresh; nothing about the page is remembered anywhere else.
  */
-export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
+export function CheckpointDetail({
+	checkpoint,
+	viewer = "author",
+}: CheckpointDetailProps) {
+	const curating = viewer === "curator";
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const router = useRouter();
@@ -179,6 +190,8 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				selected={step}
 				onSelect={(key) => go({ step: key })}
 				next={{
+					// Buying the next checkpoint is the author's move alone.
+					hidden: curating,
 					disabled: !checkpoint.verdict || create.isPending,
 					reason: t("checkpoints.next.locked", "Available after the verdict."),
 					// It buys the next checkpoint rather than continuing this one, so
@@ -208,7 +221,11 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 
 			<div className={styles.panel}>
 				{step === "inputs" &&
-					(waiting ? (
+					(curating ? (
+						// What was bought, not how: the curator needs the goal, the
+						// lists and the days, and none of the questions behind them.
+						<InputsPanel checkpoint={checkpoint} />
+					) : waiting ? (
 						<PreparePanel base={base} paid={checkpoint} />
 					) : checkpoint.status === CheckpointStatus.Draft ? (
 						<PreparePanel base={base} />
@@ -223,6 +240,7 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 				{!!selected && (
 					<SprintPanel
 						checkpoint={checkpoint}
+						writable={curating}
 						facts={selected}
 						tab={tab}
 						onTab={(next) => go({ tab: next })}

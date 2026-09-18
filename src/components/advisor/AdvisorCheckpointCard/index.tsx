@@ -8,12 +8,12 @@ import Link from "next/link";
 import { IconTile } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { useAnswerCheckpoint } from "@/hooks/checkpoints";
-import type { AdvisorCheckpoint } from "@/repositories/advisor-checkpoints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 export type AdvisorCheckpointCardProps = {
-	checkpoint: AdvisorCheckpoint;
+	checkpoint: AdvisorCheckpointDto;
 	/** Only the group waiting on an answer carries the two buttons. */
 	answerable?: boolean;
 };

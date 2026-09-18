@@ -24,7 +24,13 @@ export type CheckpointPathProps = {
 	selected: string;
 	onSelect: (key: string) => void;
 	/** The way out of this checkpoint and into the next one, once there is a verdict. */
-	next?: { disabled: boolean; reason?: string; onClick?: () => void };
+	next?: {
+		disabled: boolean;
+		reason?: string;
+		onClick?: () => void;
+		/** Left out entirely for a viewer whose move it is not. */
+		hidden?: boolean;
+	};
 	footNote?: string | null;
 	className?: string;
 };
@@ -84,7 +90,7 @@ export function CheckpointPath({
 				</button>
 			))}
 
-			{next && (
+			{next && !next.hidden && (
 				<div className={styles.next}>
 					<Tooltip title={next.disabled ? next.reason : undefined}>
 						<Button

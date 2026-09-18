@@ -146,6 +146,15 @@ export type CheckpointDto = {
 	daysLeft: number | null;
 };
 
+/**
+ * A checkpoint as the curator sees it: the same row the author gets, plus the
+ * project it belongs to — they run several at once, across projects they are
+ * not a member of.
+ */
+export type AdvisorCheckpointDto = CheckpointDto & {
+	project: { name: string; slug: string };
+};
+
 /** Why another checkpoint cannot be started, or null when one can. */
 export type CheckpointBlocker =
 	| {

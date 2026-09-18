@@ -446,6 +446,7 @@
 			"closed": "Closed",
 			"decline": "Turn down",
 			"empty": "Nothing has been handed to you yet. An author picks a curator when they buy a checkpoint.",
+			"missing": "This checkpoint is not one of yours.",
 			"running": "Under way",
 			"subtitle": "Checkpoints assigned to you.",
 			"title": "Checkpoints"
@@ -845,7 +846,12 @@
 			"empty": "No review yet",
 			"emptyNote": "The curator writes one for every sprint, after its devlog.",
 			"in": "The review for the sprint is in",
-			"title": "The curator's review of the sprint"
+			"noDevlog": "There is no devlog for this sprint yet, and a review is written under one.",
+			"placeholder": "What moved, what is in the way, what you would do next.",
+			"publish": "Publish the review",
+			"saveFailed": "The review was not saved",
+			"title": "The curator's review of the sprint",
+			"write": "Your review of this sprint"
 		},
 		"scope": {
 			"add": "Add an outcome",

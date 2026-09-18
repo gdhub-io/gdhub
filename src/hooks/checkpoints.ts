@@ -6,7 +6,6 @@ import type {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import type { AdvisorCheckpoint } from "@/repositories/advisor-checkpoints";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type {
 	CheckpointEvidenceBody,
@@ -15,6 +14,7 @@ import type {
 } from "@/schemas/checkpoint";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import type {
+	AdvisorCheckpointDto,
 	CheckpointDto,
 	CheckpointListResponse,
 } from "@/types/checkpoints";
@@ -140,6 +140,38 @@ export const useAnswerCheckpoint = (id?: string) => {
 	});
 };
 
+/** One of them, opened. Null for a checkpoint this curator does not run. */
+export const useAdvisorCheckpoint = (id?: string) =>
+	useQuery({
+		queryKey: ["advisor-checkpoint", id],
+		queryFn: async () =>
+			(await axios.get<AdvisorCheckpointDto>(`/api/advisor/checkpoints/${id}`))
+				.data,
+		enabled: !!id,
+	});
+
+/**
+ * The curator writing their review of a sprint. It lands on that sprint's
+ * devlog, which is where a review lives until the schema holds one of its own.
+ */
+export const useWriteReview = (checkpointId?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: { devlogId: string; text: string }) =>
+			(
+				await axios.post(
+					`/api/advisor/checkpoints/${checkpointId}/review`,
+					body,
+				)
+			).data,
+		onSuccess: () =>
+			queryClient.invalidateQueries({
+				queryKey: ["advisor-checkpoint", checkpointId],
+			}),
+	});
+};
+
 /** The checkpoints handed to the signed-in curator, in three groups. */
 export const useAdvisorCheckpoints = () =>
 	useQuery({
@@ -147,9 +179,9 @@ export const useAdvisorCheckpoints = () =>
 		queryFn: async () =>
 			(
 				await axios.get<{
-					asked: AdvisorCheckpoint[];
-					running: AdvisorCheckpoint[];
-					closed: AdvisorCheckpoint[];
+					asked: AdvisorCheckpointDto[];
+					running: AdvisorCheckpointDto[];
+					closed: AdvisorCheckpointDto[];
 				}>("/api/advisor/checkpoints")
 			).data,
 	});
