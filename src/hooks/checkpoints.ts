@@ -182,6 +182,7 @@ export const useAdvisorCheckpoints = () =>
 					asked: AdvisorCheckpointDto[];
 					running: AdvisorCheckpointDto[];
 					closed: AdvisorCheckpointDto[];
+					declined: AdvisorCheckpointDto[];
 				}>("/api/advisor/checkpoints")
 			).data,
 	});

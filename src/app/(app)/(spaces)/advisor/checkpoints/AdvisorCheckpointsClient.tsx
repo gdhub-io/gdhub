@@ -53,7 +53,8 @@ export function AdvisorCheckpointsClient() {
 		!isPending &&
 		!data?.asked.length &&
 		!data?.running.length &&
-		!data?.closed.length;
+		!data?.closed.length &&
+		!data?.declined.length;
 
 	return (
 		<div className="layout-background">
@@ -91,6 +92,10 @@ export function AdvisorCheckpointsClient() {
 					{section(
 						t("advisor.checkpoints.closed", "Closed"),
 						data?.closed ?? [],
+					)}
+					{section(
+						t("advisor.checkpoints.declined", "You could not take these"),
+						data?.declined ?? [],
 					)}
 				</Flex>
 

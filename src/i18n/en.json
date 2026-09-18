@@ -445,6 +445,7 @@
 			"asked": "Waiting for your answer",
 			"closed": "Closed",
 			"decline": "Turn down",
+			"declined": "You could not take these",
 			"empty": "Nothing has been handed to you yet. An author picks a curator when they buy a checkpoint.",
 			"missing": "This checkpoint is not one of yours.",
 			"running": "Under way",
