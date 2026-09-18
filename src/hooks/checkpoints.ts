@@ -6,6 +6,7 @@ import type {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
+import type { AdvisorCheckpoint } from "@/repositories/advisor-checkpoints";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type {
 	CheckpointEvidenceBody,
@@ -117,6 +118,40 @@ export const useCheckpointCheckout = (id?: string) =>
 	useMutation({
 		mutationFn: async () =>
 			(await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`)).data,
+	});
+
+/**
+ * The curator's answer to a checkpoint handed to them. Accepting captures the
+ * money that was held and starts the 28 days; turning it down releases it.
+ */
+export const useAnswerCheckpoint = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (accept: boolean) =>
+			(
+				await axios.post<{ accepted: boolean }>(
+					`/api/checkpoint/${id}/curator`,
+					{ accept },
+				)
+			).data,
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoints"] }),
+	});
+};
+
+/** The checkpoints handed to the signed-in curator, in three groups. */
+export const useAdvisorCheckpoints = () =>
+	useQuery({
+		queryKey: ["advisor-checkpoints"],
+		queryFn: async () =>
+			(
+				await axios.get<{
+					asked: AdvisorCheckpoint[];
+					running: AdvisorCheckpoint[];
+					closed: AdvisorCheckpoint[];
+				}>("/api/advisor/checkpoints")
+			).data,
 	});
 
 /**

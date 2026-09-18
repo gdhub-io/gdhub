@@ -30,10 +30,9 @@ const MENU_ITEMS: {
 		name: "Requests",
 	},
 	{
-		key: "/advisor/reviews",
-		permission: "advisor.reviews.view",
-		name: "Reviews",
-		planned: true,
+		key: "/advisor/checkpoints",
+		permission: "advisor.checkpoints.view",
+		name: "Checkpoints",
 	},
 	{
 		key: "/advisor/settings",

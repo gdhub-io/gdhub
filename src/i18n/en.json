@@ -437,6 +437,20 @@
 	"Your vote has been counted": "Your vote has been counted",
 	"Youtube": "Youtube",
 	"actual vacancies": "actual vacancies",
+	"advisor": {
+		"checkpoints": {
+			"accept": "Take it on",
+			"answerFailed": "The answer was not saved",
+			"answerNote": "An author's money is held until you answer, and released after three days without one.",
+			"asked": "Waiting for your answer",
+			"closed": "Closed",
+			"decline": "Turn down",
+			"empty": "Nothing has been handed to you yet. An author picks a curator when they buy a checkpoint.",
+			"running": "Under way",
+			"subtitle": "Checkpoints assigned to you.",
+			"title": "Checkpoints"
+		}
+	},
 	"agreeWithTermsAndPrivacy": "By joining, you agree to our Terms of Service and Privacy Policy",
 	"agreeWithTermsAndPrivacy.error": "To register for the service you must agree with the specified documents",
 	"app": {
