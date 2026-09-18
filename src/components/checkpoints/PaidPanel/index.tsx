@@ -110,7 +110,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 
 	return (
 		<Flex vertical gap={16}>
-			<MoneyNotice checkpoint={checkpoint} />
+			<MoneyNotice checkpoint={checkpoint} starting={settling} />
 
 			{!settling && (
 				<Flex

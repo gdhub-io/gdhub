@@ -3,10 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
-import {
-	CheckpointCuratorKind,
-	CheckpointItemKind,
-} from "@/config/prisma-enums";
+import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { EvidenceSlot } from "../EvidenceSlot";
 import { MoneyNotice } from "../MoneyNotice";
@@ -29,10 +26,6 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 
 	const side = (kind: CheckpointItemKind) =>
 		checkpoint.items.filter((item) => item.kind === kind);
-
-	const waitingOnCurator =
-		checkpoint.curatorKind === CheckpointCuratorKind.Human &&
-		!checkpoint.startedAt;
 
 	const card = (
 		title: string,
@@ -78,7 +71,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 
 	return (
 		<Flex vertical gap={16}>
-			{waitingOnCurator && <MoneyNotice checkpoint={checkpoint} />}
+			<MoneyNotice checkpoint={checkpoint} />
 
 			{card(
 				t("checkpoints.inputs.existed", "What existed on day 1"),

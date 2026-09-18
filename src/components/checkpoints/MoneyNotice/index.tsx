@@ -10,7 +10,14 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
-export type MoneyNoticeProps = { checkpoint: CheckpointDto };
+export type MoneyNoticeProps = {
+	checkpoint: CheckpointDto;
+	/**
+	 * Back from the checkout before the webhook landed. Only the payment step
+	 * knows that — from its own URL — and it is not a state of the checkpoint.
+	 */
+	starting?: boolean;
+};
 
 /**
  * Where the money for this checkpoint has got to — frame `SwaKm`.
@@ -20,15 +27,11 @@ export type MoneyNoticeProps = { checkpoint: CheckpointDto };
  * to the author's money, which is why it lives here rather than being redrawn
  * wherever a page needs to mention it.
  */
-export function MoneyNotice({ checkpoint }: MoneyNoticeProps) {
+export function MoneyNotice({ checkpoint, starting }: MoneyNoticeProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [fetching, setFetching] = useState(false);
 
-	const settling =
-		checkpoint.status === CheckpointStatus.Draft &&
-		!checkpoint.paymentId &&
-		!checkpoint.curatorDeclinedAt;
 	const held = checkpoint.status === CheckpointStatus.AwaitingCurator;
 	const declined =
 		checkpoint.status === CheckpointStatus.Draft &&
@@ -56,6 +59,10 @@ export function MoneyNotice({ checkpoint }: MoneyNoticeProps) {
 		}
 	};
 
+	// A draft nobody has bought has nothing to say about money, and a block
+	// saying nothing is worse than no block.
+	if (!checkpoint.paymentId && !held && !declined && !starting) return null;
+
 	const money = declined
 		? {
 				tone: "released" as const,
@@ -70,7 +77,7 @@ export function MoneyNotice({ checkpoint }: MoneyNoticeProps) {
 				tone: "paid" as const,
 				icon: IconCheck,
 				ink: "var(--gd-success-solid)",
-				title: settling
+				title: starting
 					? t("checkpoints.paid.starting", "Payment received — starting")
 					: held
 						? t("checkpoints.paid.held", "The money is reserved")
