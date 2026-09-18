@@ -67,6 +67,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 					status: CheckpointStatus.Draft,
 					curatorId: null,
 					curatorDeclinedAt: new Date(),
+					paymentId: null,
 				},
 			});
 

@@ -702,7 +702,7 @@
 			"cancelTitle": "Cancel this checkpoint?",
 			"dates": "{from} – {to}",
 			"declined": "The curator turned this checkpoint down",
-			"declinedBody": "Nothing was charged. Pick someone else and the money is held again until they answer.",
+			"declinedBody": "Nothing was charged — the reservation went back. Pick someone else and buy the checkpoint for them.",
 			"foot": "Nothing left to do here",
 			"held": "The money is reserved",
 			"hint": "The checkpoint is bought. What is left is not yours to do.",

@@ -51,6 +51,7 @@ const base: CheckpointDto = {
 	verdictNote: null,
 	decidedAt: null,
 	acceptedTermsAt: "2026-09-01T08:55:00.000Z",
+	curatorDeclinedAt: null,
 	paymentId: null,
 	createdAt: "2026-09-01T08:40:00.000Z",
 	updatedAt: "2026-09-14T09:00:00.000Z",
@@ -204,7 +205,8 @@ export const CuratorDeclined: StoryObj = {
 			checkpoint={{
 				...base,
 				status: CheckpointStatus.Draft,
-				paymentId: "pay_1",
+				curatorDeclinedAt: "2026-09-18T09:00:00.000Z",
+				paymentId: null,
 				curator: null,
 				items,
 				day: null,

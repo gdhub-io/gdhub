@@ -105,6 +105,9 @@ export const POST = pipe(
 					status: CheckpointStatus.Draft,
 					curatorDeclinedAt: new Date(),
 					curatorId: null,
+					// The hold is gone, so the checkpoint is unpaid again: the author
+					// picks somebody else and buys it for them.
+					paymentId: null,
 				},
 	});
 

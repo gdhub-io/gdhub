@@ -58,7 +58,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	// reaches that is a curator handing it back.
 	const declined =
 		checkpoint.status === CheckpointStatus.Draft &&
-		!!checkpoint.paymentId &&
+		!!checkpoint.curatorDeclinedAt &&
 		!checkpoint.curator;
 
 	useEffect(() => {
@@ -134,37 +134,42 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			{/* Two facts, two blocks — frame `P8Tfn`. The money is settled and the
 			    receipt is theirs; the wait is somebody else's move. Holding both in
 			    one paragraph made the second read as a condition of the first. */}
-			<Card className={styles.block} data-tone="paid">
-				<Flex gap={8} align="center">
-					<IconTile
-						icon={IconCheck}
-						size="xs"
-						tint="var(--gd-color-surface)"
-						ink="var(--gd-success-solid)"
-					/>
-					<Flex vertical gap={4} className={styles.text}>
-						<Typography.Text className={styles.title}>
-							{settling
-								? t("checkpoints.paid.starting", "Payment received — starting")
-								: held
-									? t("checkpoints.paid.held", "The money is reserved")
-									: t("checkpoints.paid.received", "Payment received")}
-						</Typography.Text>
-					</Flex>
+			{!declined && (
+				<Card className={styles.block} data-tone="paid">
+					<Flex gap={8} align="center">
+						<IconTile
+							icon={IconCheck}
+							size="xs"
+							tint="var(--gd-color-surface)"
+							ink="var(--gd-success-solid)"
+						/>
+						<Flex vertical gap={4} className={styles.text}>
+							<Typography.Text className={styles.title}>
+								{settling
+									? t(
+											"checkpoints.paid.starting",
+											"Payment received — starting",
+										)
+									: held
+										? t("checkpoints.paid.held", "The money is reserved")
+										: t("checkpoints.paid.received", "Payment received")}
+							</Typography.Text>
+						</Flex>
 
-					{/* A receipt exists once the money has moved; a reservation has
+						{/* A receipt exists once the money has moved; a reservation has
 					    nothing to show for itself yet. */}
-					{checkpoint.paymentId && !held && (
-						<Button
-							icon={<IconReceipt size={16} stroke={1.6} />}
-							loading={fetching}
-							onClick={openReceipt}
-						>
-							{t("checkpoints.paid.receipt", "Receipt")}
-						</Button>
-					)}
-				</Flex>
-			</Card>
+						{checkpoint.paymentId && !held && (
+							<Button
+								icon={<IconReceipt size={16} stroke={1.6} />}
+								loading={fetching}
+								onClick={openReceipt}
+							>
+								{t("checkpoints.paid.receipt", "Receipt")}
+							</Button>
+						)}
+					</Flex>
+				</Card>
+			)}
 
 			{!settling && (
 				<Flex
@@ -192,7 +197,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 								{declined
 									? t(
 											"checkpoints.paid.declinedBody",
-											"Nothing was charged. Pick someone else and the money is held again until they answer.",
+											"Nothing was charged — the reservation went back. Pick someone else and buy the checkpoint for them.",
 										)
 									: dates &&
 										t("checkpoints.paid.planned", "Planned for {dates}", {

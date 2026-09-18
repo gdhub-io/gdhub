@@ -84,7 +84,12 @@ export function CheckpointDetail({ checkpoint }: CheckpointDetailProps) {
 	const waiting =
 		checkpoint.status === CheckpointStatus.AwaitingCurator ||
 		(checkpoint.status === CheckpointStatus.Draft &&
-			(!!checkpoint.paymentId || search?.get("paid") === "1"));
+			(!!checkpoint.paymentId ||
+				// A curator who said no leaves a draft with no money on it: the
+				// hold went back. The page still has to say that happened before it
+				// becomes an ordinary draft again.
+				(!!checkpoint.curatorDeclinedAt && !checkpoint.curator) ||
+				search?.get("paid") === "1"));
 
 	const asked = search?.get("step");
 	const known =
