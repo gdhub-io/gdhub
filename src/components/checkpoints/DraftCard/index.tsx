@@ -45,6 +45,9 @@ export function DraftCard({
 	};
 
 	const waiting = checkpoint.status === CheckpointStatus.AwaitingCurator;
+	// An expert who could not take it leaves the draft short of a curator, but
+	// "Add curator" reads as though nobody was ever picked.
+	const declined = !!checkpoint.curatorDeclinedAt && !checkpoint.curator;
 	const missing = draftMissing(checkpoint);
 	// "a goal, curator and start date" — the conjunction and the commas are the
 	// language's, not ours.
@@ -99,12 +102,17 @@ export function DraftCard({
 								"checkpoints.card.awaiting",
 								"Paid. The 28 days start when the curator takes it on.",
 							)
-						: missing.length
-							? t("checkpoints.draft.add", "Add {pieces}.", { pieces })
-							: t(
-									"checkpoints.draft.readyToPay",
-									"Everything is answered — only the payment is left.",
-								)}
+						: declined
+							? t(
+									"checkpoints.draft.pickAnother",
+									"Select another expert for these 28 days.",
+								)
+							: missing.length
+								? t("checkpoints.draft.add", "Add {pieces}.", { pieces })
+								: t(
+										"checkpoints.draft.readyToPay",
+										"Everything is answered — only the payment is left.",
+									)}
 				</Typography.Text>
 
 				<Link
@@ -113,7 +121,9 @@ export function DraftCard({
 					<Button type="primary">
 						{waiting
 							? t("checkpoints.open", "Open checkpoint")
-							: t("checkpoints.draft.continue", "Continue setup")}
+							: declined
+								? t("checkpoints.draft.selectOther", "Select other curator")
+								: t("checkpoints.draft.continue", "Continue setup")}
 					</Button>
 				</Link>
 			</div>

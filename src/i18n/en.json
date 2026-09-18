@@ -605,7 +605,9 @@
 			"nothingCharged": "Nothing has been charged and no days are counting.",
 			"pageSub": "Prepare · Setup incomplete",
 			"pageTitle": "Checkpoint draft",
+			"pickAnother": "Select another expert for these 28 days.",
 			"readyToPay": "Everything is answered — only the payment is left.",
+			"selectOther": "Select other curator",
 			"title": "Checkpoint"
 		},
 		"empty": {
