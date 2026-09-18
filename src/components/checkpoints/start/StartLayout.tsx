@@ -31,7 +31,7 @@ export type StartStep = (typeof START_STEPS)[number];
 export type StartLayoutProps = {
 	step: StartStep;
 	/** One line under the bars saying what this question is for. */
-	hint: string;
+	hint?: string;
 	/** Sits above the hint: what the author has to read before the step's own words. */
 	notice?: ReactNode;
 	children: ReactNode;
@@ -94,7 +94,9 @@ export function StartLayout({
 
 				{notice}
 
-				<Typography.Text className={styles.hint}>{hint}</Typography.Text>
+				{!!hint && (
+					<Typography.Text className={styles.hint}>{hint}</Typography.Text>
+				)}
 
 				<div className={styles.answer}>{children}</div>
 			</Flex>

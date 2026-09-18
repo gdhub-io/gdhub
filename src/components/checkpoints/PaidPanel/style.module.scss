@@ -14,6 +14,12 @@
 		border-color: var(--gd-success-solid);
 		background: var(--gd-success-tint);
 	}
+
+	// Money that went back is not bad news and not good news: it is the state
+	// of the account, said plainly.
+	&[data-tone="released"] {
+		background: var(--gd-color-surface-sunken);
+	}
 }
 
 .text {

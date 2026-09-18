@@ -54,14 +54,7 @@ export function PreparePanel({ base, paid }: PreparePanelProps) {
 
 	if (paid) {
 		return (
-			<StartLayout
-				step="payment"
-				hint={t(
-					"checkpoints.paid.hint",
-					"The checkpoint is bought. What is left is not yours to do.",
-				)}
-				saved={null}
-			>
+			<StartLayout step="payment" saved={null}>
 				<PaidPanel checkpoint={paid} />
 			</StartLayout>
 		);

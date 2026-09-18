@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	IconArrowBackUp,
 	IconCheck,
 	IconHourglassHigh,
 	IconReceipt,
@@ -134,47 +135,59 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 				})
 			: null;
 
+	const money = declined
+		? {
+				tone: "released" as const,
+				icon: IconArrowBackUp,
+				ink: "var(--gd-color-text-secondary)",
+				title: t(
+					"checkpoints.paid.released",
+					"The reservation was let go — nothing was charged",
+				),
+			}
+		: {
+				tone: "paid" as const,
+				icon: IconCheck,
+				ink: "var(--gd-success-solid)",
+				title: settling
+					? t("checkpoints.paid.starting", "Payment received — starting")
+					: held
+						? t("checkpoints.paid.held", "The money is reserved")
+						: t("checkpoints.paid.received", "Payment received"),
+			};
+
 	return (
 		<Flex vertical gap={16}>
-			{/* Two facts, two blocks — frame `P8Tfn`. The money is settled and the
-			    receipt is theirs; the wait is somebody else's move. Holding both in
-			    one paragraph made the second read as a condition of the first. */}
-			{!declined && (
-				<Card className={styles.block} data-tone="paid">
-					<Flex gap={8} align="center">
-						<IconTile
-							icon={IconCheck}
-							size="xs"
-							tint="var(--gd-color-surface)"
-							ink="var(--gd-success-solid)"
-						/>
-						<Flex vertical gap={4} className={styles.text}>
-							<Typography.Text className={styles.title}>
-								{settling
-									? t(
-											"checkpoints.paid.starting",
-											"Payment received — starting",
-										)
-									: held
-										? t("checkpoints.paid.held", "The money is reserved")
-										: t("checkpoints.paid.received", "Payment received")}
-							</Typography.Text>
-						</Flex>
-
-						{/* A receipt exists once the money has moved; a reservation has
-					    nothing to show for itself yet. */}
-						{checkpoint.paymentId && !held && (
-							<Button
-								icon={<IconReceipt size={16} stroke={1.6} />}
-								loading={fetching}
-								onClick={openReceipt}
-							>
-								{t("checkpoints.paid.receipt", "Receipt")}
-							</Button>
-						)}
+			{/* One block for the money, wherever it has got to — frame `SwaKm`.
+			    Held, taken, or let go are three readings of the same fact, and a
+			    second block would make them look like two subjects. */}
+			<Card className={styles.block} data-tone={money.tone}>
+				<Flex gap={8} align="center">
+					<IconTile
+						icon={money.icon}
+						size="xs"
+						tint="var(--gd-color-surface)"
+						ink={money.ink}
+					/>
+					<Flex vertical gap={4} className={styles.text}>
+						<Typography.Text className={styles.title}>
+							{money.title}
+						</Typography.Text>
 					</Flex>
-				</Card>
-			)}
+
+					{/* A receipt exists once the money has moved; a reservation and a
+					    released hold have nothing to show for themselves. */}
+					{checkpoint.paymentId && !held && !declined && (
+						<Button
+							icon={<IconReceipt size={16} stroke={1.6} />}
+							loading={fetching}
+							onClick={openReceipt}
+						>
+							{t("checkpoints.paid.receipt", "Receipt")}
+						</Button>
+					)}
+				</Flex>
+			</Card>
 
 			{!settling && (
 				<Flex
@@ -202,7 +215,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 								{declined
 									? t(
 											"checkpoints.paid.declinedBody",
-											"Nothing was charged. Pick another expert and the checkpoint goes to them instead.",
+											"Pick another expert and the checkpoint goes to them instead.",
 										)
 									: dates &&
 										t("checkpoints.paid.planned", "Planned for {dates}", {
