@@ -13,7 +13,6 @@ import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointPath, type PathStepView } from "../CheckpointPath";
 import { CheckpointStepPanel } from "../CheckpointStepPanel";
 import { InputsPanel } from "../InputsPanel";
-import { PaidPanel } from "../PaidPanel";
 import { SprintPanel, type SprintTab } from "../SprintPanel";
 import { PreparePanel } from "../start/PreparePanel";
 import styles from "./style.module.scss";

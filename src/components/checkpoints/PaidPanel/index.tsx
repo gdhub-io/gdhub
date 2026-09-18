@@ -1,16 +1,9 @@
 "use client";
 
-import {
-	IconArrowBackUp,
-	IconCheck,
-	IconHourglassHigh,
-	IconReceipt,
-	IconUserX,
-} from "@tabler/icons-react";
+import { IconHourglassHigh, IconUserX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Card, Flex, Modal, Typography } from "antd";
-import axios from "axios";
+import { App, Button, Flex, Modal, Typography } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,6 +12,7 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
+import { MoneyNotice } from "../MoneyNotice";
 import { ReplaceCuratorModal } from "./ReplaceCuratorModal";
 import styles from "./style.module.scss";
 
@@ -43,7 +37,6 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const queryClient = useQueryClient();
-	const [fetching, setFetching] = useState(false);
 	const [replacing, setReplacing] = useState(false);
 	const router = useRouter();
 	const pathname = usePathname();
@@ -78,26 +71,6 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 
 		return () => clearInterval(timer);
 	}, [settling, queryClient, checkpoint.projectId]);
-
-	// The receipt is Stripe's own page, fetched when asked rather than stored.
-	const openReceipt = async () => {
-		if (!checkpoint.paymentId) return;
-
-		setFetching(true);
-		try {
-			const { data } = await axios.get<{ url: string }>(
-				"/api/user/payment/receipt",
-				{ params: { paymentId: checkpoint.paymentId } },
-			);
-			if (data?.url) window.open(data.url, "_blank", "noopener");
-		} catch {
-			message.error(
-				t("settings.payments.receiptFailed", "The receipt could not be opened"),
-			);
-		} finally {
-			setFetching(false);
-		}
-	};
 
 	// Cancelling takes the money back and closes the checkpoint, so it asks
 	// first: the confirm is the only place a filled red button is allowed.
@@ -135,59 +108,9 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 				})
 			: null;
 
-	const money = declined
-		? {
-				tone: "released" as const,
-				icon: IconArrowBackUp,
-				ink: "var(--gd-color-text-secondary)",
-				title: t(
-					"checkpoints.paid.released",
-					"The reservation was let go — nothing was charged",
-				),
-			}
-		: {
-				tone: "paid" as const,
-				icon: IconCheck,
-				ink: "var(--gd-success-solid)",
-				title: settling
-					? t("checkpoints.paid.starting", "Payment received — starting")
-					: held
-						? t("checkpoints.paid.held", "The money is reserved")
-						: t("checkpoints.paid.received", "Payment received"),
-			};
-
 	return (
 		<Flex vertical gap={16}>
-			{/* One block for the money, wherever it has got to — frame `SwaKm`.
-			    Held, taken, or let go are three readings of the same fact, and a
-			    second block would make them look like two subjects. */}
-			<Card className={styles.block} data-tone={money.tone}>
-				<Flex gap={8} align="center">
-					<IconTile
-						icon={money.icon}
-						size="xs"
-						tint="var(--gd-color-surface)"
-						ink={money.ink}
-					/>
-					<Flex vertical gap={4} className={styles.text}>
-						<Typography.Text className={styles.title}>
-							{money.title}
-						</Typography.Text>
-					</Flex>
-
-					{/* A receipt exists once the money has moved; a reservation and a
-					    released hold have nothing to show for themselves. */}
-					{checkpoint.paymentId && !held && !declined && (
-						<Button
-							icon={<IconReceipt size={16} stroke={1.6} />}
-							loading={fetching}
-							onClick={openReceipt}
-						>
-							{t("checkpoints.paid.receipt", "Receipt")}
-						</Button>
-					)}
-				</Flex>
-			</Card>
+			<MoneyNotice checkpoint={checkpoint} />
 
 			{!settling && (
 				<Flex

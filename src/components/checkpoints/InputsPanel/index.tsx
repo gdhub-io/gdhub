@@ -8,8 +8,8 @@ import {
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
-import { AskPanel } from "../AskPanel";
 import { EvidenceSlot } from "../EvidenceSlot";
+import { MoneyNotice } from "../MoneyNotice";
 import styles from "./style.module.scss";
 
 export type InputsPanelProps = {
@@ -78,35 +78,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 
 	return (
 		<Flex vertical gap={16}>
-			{waitingOnCurator && (
-				<AskPanel
-					title={t(
-						"checkpoints.asks.titleCheckpoint",
-						"What this checkpoint asks of you",
-					)}
-					count={t("checkpoints.asks.open", "{count} open", { count: 1 })}
-					rows={[
-						{
-							key: "curator",
-							glyph: "todo",
-							title: t(
-								"checkpoints.waiting.title",
-								"{name} has not taken these 28 days yet",
-								{
-									name:
-										checkpoint.curator?.name ??
-										t("checkpoints.waiting.curator", "The curator"),
-								},
-							),
-							owner: t("checkpoints.asks.owner.curator", "Curator"),
-							meta: t(
-								"checkpoints.waiting.body",
-								"Your curator confirms the start date. You’ll be notified when they respond.",
-							),
-						},
-					]}
-				/>
-			)}
+			{waitingOnCurator && <MoneyNotice checkpoint={checkpoint} />}
 
 			{card(
 				t("checkpoints.inputs.existed", "What existed on day 1"),

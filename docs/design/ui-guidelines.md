@@ -132,7 +132,15 @@ belongs to a token.
    there because `--gd-color-border` repeated down a list reads as a grid. The
    last row carries none. A long list ends with a full-width text `Load more`,
    or antd pagination when there is a real page count — never both.
-   The reference frame is `DS · 11 Tables`.
+
+   **A table is either a card or nothing at all.** Inside a panel it drops the
+   fill and the radius and keeps only its hairlines: a white card on a white
+   panel is a box in a box, and the head's band needs a surface to sit on.
+
+   **Paging sits outside the table**, under it on the page's own ground, aligned
+   right. It is a control over the list rather than a row of it, and a pager
+   boxed inside the card reads as more data. Both surfaces are drawn in
+   `DS · 11 Tables`, which is the reference frame.
 
 ## Spacing and shape
 
