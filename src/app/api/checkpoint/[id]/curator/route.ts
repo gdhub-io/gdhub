@@ -13,8 +13,9 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { dueDateFrom } from "@/lib/checkpoint-days";
+import { returnCheckpointMoney } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
-import { captureCheckout, releaseCheckout } from "@/services/stripe/server";
+import { captureCheckout } from "@/services/stripe/server";
 
 const AnswerSchema = z.object({ accept: z.boolean() });
 
@@ -64,8 +65,9 @@ export const POST = pipe(
 		return apiError.badRequest("checkpointNotAwaiting");
 	}
 
-	// The held money is taken on the way in and let go on the way out. Either
-	// way the row is written after Stripe has agreed, never before.
+	// Accepting takes the money that is held. Turning it down gives it back —
+	// released if it is still only held, refunded if it was already captured,
+	// which is what a checkpoint bought before holds existed still carries.
 	const held = await prisma.payment.findFirst({
 		where: {
 			payableType: PayableType.CHECKPOINT,
@@ -75,19 +77,23 @@ export const POST = pipe(
 		select: { id: true, providerTransactionId: true },
 	});
 
-	if (held?.providerTransactionId) {
-		const settled = accept
-			? await captureCheckout(held.providerTransactionId)
-			: await releaseCheckout(held.providerTransactionId);
+	if (accept) {
+		if (held?.providerTransactionId) {
+			const captured = await captureCheckout(held.providerTransactionId);
 
-		if (!settled) return apiError.internal("paymentNotSettled");
+			if (!captured) return apiError.internal("paymentNotSettled");
 
-		await prisma.payment.update({
-			where: { id: held.id },
-			data: accept
-				? { status: PaymentStatus.COMPLETED, completedAt: new Date() }
-				: { status: PaymentStatus.CANCELED },
-		});
+			await prisma.payment.update({
+				where: { id: held.id },
+				data: { status: PaymentStatus.COMPLETED, completedAt: new Date() },
+			});
+		}
+	} else {
+		const returned = await returnCheckpointMoney(id, "curatorDeclined");
+
+		// Money the author paid must not be left behind a checkpoint nobody is
+		// running: better to refuse the decline than to lose track of it.
+		if (!returned && held) return apiError.internal("paymentNotSettled");
 	}
 
 	const startedAt = startsOn(checkpoint.startedAt);

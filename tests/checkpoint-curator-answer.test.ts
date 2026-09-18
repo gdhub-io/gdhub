@@ -8,7 +8,7 @@ const checkpointUpdate = vi.fn();
 const paymentFindFirst = vi.fn();
 const paymentUpdate = vi.fn();
 const captureCheckout = vi.fn();
-const releaseCheckout = vi.fn();
+const returnMoney = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
@@ -27,7 +27,10 @@ vi.mock("@/services/prisma", () => ({
 
 vi.mock("@/services/stripe/server", () => ({
 	captureCheckout: (...a: unknown[]) => captureCheckout(...a),
-	releaseCheckout: (...a: unknown[]) => releaseCheckout(...a),
+}));
+
+vi.mock("@/repositories/checkpoint-payment", () => ({
+	returnCheckpointMoney: (...a: unknown[]) => returnMoney(...a),
 }));
 
 const curator = { id: "u9", roles: ["Member"], onboardingDone: true };
@@ -60,7 +63,7 @@ beforeEach(() => {
 	});
 	paymentUpdate.mockResolvedValue({});
 	captureCheckout.mockResolvedValue({ id: "pi_1", status: "succeeded" });
-	releaseCheckout.mockResolvedValue({ id: "pi_1", status: "canceled" });
+	returnMoney.mockResolvedValue({ released: true, refunded: false });
 });
 
 describe("a curator answering", () => {
@@ -82,14 +85,13 @@ describe("a curator answering", () => {
 		);
 	});
 
-	it("lets the hold go when they turn it down, with nothing to refund", async () => {
+	// Held or already captured, the author gets it back the right way — the
+	// repository decides which, and the answer waits for it either way.
+	it("gives the money back when they turn it down", async () => {
 		await answer(false);
 
-		expect(releaseCheckout).toHaveBeenCalledWith("cs_1");
+		expect(returnMoney).toHaveBeenCalledWith("cp1", "curatorDeclined");
 		expect(captureCheckout).not.toHaveBeenCalled();
-		expect(paymentUpdate).toHaveBeenCalledWith(
-			expect.objectContaining({ data: { status: PaymentStatus.CANCELED } }),
-		);
 		expect(checkpointUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({
 				data: expect.objectContaining({
@@ -101,6 +103,15 @@ describe("a curator answering", () => {
 				}),
 			}),
 		);
+	});
+
+	// A decline that could not return the money would leave the author paying
+	// for a checkpoint nobody runs.
+	it("refuses the decline when the money cannot be given back", async () => {
+		returnMoney.mockResolvedValue(null);
+
+		expect((await answer(false)).status).toBe(500);
+		expect(checkpointUpdate).not.toHaveBeenCalled();
 	});
 
 	// The checkpoint must not start on a capture that failed: the 28 days would

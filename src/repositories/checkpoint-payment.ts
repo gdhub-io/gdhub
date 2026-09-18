@@ -11,6 +11,7 @@ import {
 	curatorPrice,
 } from "@/config/checkpoint-pricing";
 import { prisma } from "@/services/prisma";
+import { refundCheckout, releaseCheckout } from "@/services/stripe/server";
 
 /** Prices are written in whole units; Stripe and `Payment.amount` want minor ones. */
 const MINOR = 100;
@@ -111,4 +112,71 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			? `${checkpoint.stageName} · 28 days with the AI curator`
 			: `${checkpoint.stageName} · 28 days with ${checkpoint.curator?.name ?? "a curator"}`,
 	};
+};
+
+/**
+ * Gives the author their money back, whichever way it is still sitting.
+ *
+ * A hold is released and costs nothing; a payment that was already captured is
+ * refunded, fee and all. Both are asked of Stripe first and written down only
+ * once it agrees — a row claiming money went back when it did not is worse than
+ * no row at all.
+ *
+ * Returns what happened, or null when there was nothing to give back.
+ */
+export const returnCheckpointMoney = async (
+	checkpointId: string,
+	reason: string,
+) => {
+	const payment = await prisma.payment.findFirst({
+		where: {
+			payableType: PayableType.CHECKPOINT,
+			payableId: checkpointId,
+			status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
+		},
+		select: {
+			id: true,
+			amount: true,
+			currency: true,
+			status: true,
+			providerTransactionId: true,
+		},
+	});
+
+	if (!payment?.providerTransactionId) return null;
+
+	if (payment.status === PaymentStatus.PROCESSING) {
+		const released = await releaseCheckout(payment.providerTransactionId);
+
+		if (!released) return null;
+
+		await prisma.payment.update({
+			where: { id: payment.id },
+			data: { status: PaymentStatus.CANCELED },
+		});
+
+		return { released: true, refunded: false };
+	}
+
+	const refund = await refundCheckout(payment.providerTransactionId);
+
+	if (!refund) return null;
+
+	await prisma.$transaction([
+		prisma.refund.create({
+			data: {
+				paymentId: payment.id,
+				amount: refund.amount ?? payment.amount,
+				currency: (refund.currency ?? payment.currency).toUpperCase(),
+				reason,
+				providerRefundId: refund.id,
+			},
+		}),
+		prisma.payment.update({
+			where: { id: payment.id },
+			data: { status: PaymentStatus.REFUNDED },
+		}),
+	]);
+
+	return { released: false, refunded: true };
 };
