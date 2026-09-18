@@ -14,7 +14,7 @@ how they are handed to a curator, and when the two disagree the standard wins.
 
 A checkpoint is 28 days of work on one stage of one project. The author buys it, does the
 work and publishes the devlogs. **You run it:** you make the goal reachable on day 1,
-answer every devlog in writing, say on day 14 what is not going to fit, and write the
+answer every devlog in writing, say on day 15 what is not going to fit, and write the
 verdict by day 30.
 
 You are not hired to make the game. No code, no art, no line-by-line review, no
@@ -28,7 +28,7 @@ for what did not happen.
 | | |
 |---|---|
 | **Your time** | About 7.5 hours per checkpoint for a solo author, plus 0.5 for each member of the team — two to three hours a week |
-| **Calls** | Four of 45 minutes, plus the season's shared gathering |
+| **Calls** | Five of 45 minutes: one opening each sprint, and one deciding the checkpoint |
 | **Writing** | An answer to each of the four devlogs, the goal card and the result card |
 | **Hard deadline** | The verdict on the platform by day 30 |
 | **Your rate** | $30 an hour at Experienced, $45 at Expert — $225 and $338 for a solo author's checkpoint. The platform adds 25% on top, which the author pays |
@@ -42,7 +42,7 @@ makes them state a problem out loud is worth more than advice they did not ask f
 screenshot, a playtest note is. Every outcome on the goal card has an artifact slot; keep
 pointing at the empty ones.
 
-**Cut early, cut once.** Scope that will not fit is cut on day 1 and adjusted on day 14 —
+**Cut early, cut once.** Scope that will not fit is cut on day 1 and adjusted on day 15 —
 not in the last week, when there is no time left to act on it.
 
 **Written beats spoken.** A call is gone the moment it ends. The team acts on what they
@@ -55,15 +55,15 @@ can re-read: your devlog answers, the goal card, the result card.
 | Day | Your move |
 |---|---|
 | before | Read what the author wrote about the project and what already exists, then take the checkpoint. |
-| **1** | **Consultation 1 — the goal.** Cut what the author bought down to what 28 days hold, then fix the card. |
-| 6 | Devlog for week one. Read it before the call and answer it in writing. |
-| **7** | **Consultation 2 — risks.** Name what is already in the way and what to do about it while three weeks remain. |
-| 13 | Devlog for week two. |
-| **14** | **Consultation 3 — scope.** Say plainly what is not going to fit and what to cut. The only day the card changes. |
-| 20 | Devlog for week three. |
-| **21** | **Consultation 4 — the run-in.** Settle what has to be ready, and push for artifacts as they land. |
-| 27 | Devlog for week four. |
-| **28** | **Shared gathering — consultation 5.** Every team of the season speaks in turn; you answer each of your own out loud. The verdict is not announced here. |
+| **1** | **Call 1 — the goal**, opening sprint 1. Cut what the author bought down to what 28 days hold, then fix the card. |
+| 7 | Devlog for sprint 1. Read it before the call and answer it in writing. |
+| **8** | **Call 2 — risks**, opening sprint 2. Name what is already in the way and what to do about it while three sprints remain. |
+| 14 | Devlog for sprint 2. |
+| **15** | **Call 3 — scope**, opening sprint 3. Say plainly what is not going to fit and what to cut. The only day the card changes. |
+| 21 | Devlog for sprint 3. |
+| **22** | **Call 4 — the run-in**, opening sprint 4. Settle what has to be ready, and push for artifacts as they land. |
+| 27 | Devlog for sprint 4. |
+| **28** | **Call 5 — the result.** The checkpoint is reached or it is not; say which out loud, with the reason, before you write it down. |
 | **by 30** | **The verdict.** Write the result card and publish it. |
 
 A call runs 45 minutes and opens with the author saying how it is going, ten minutes at
@@ -89,9 +89,9 @@ Come with a hypothesis about the goal, not with a blank page.
 
 ---
 
-## How to run each consultation
+## How to run each call
 
-### Consultation 1 — the goal (day 1)
+### Call 1 — the goal (day 1)
 
 **Purpose:** turn what the author bought into a goal that can be reached in 28 days and
 proved with artifacts.
@@ -101,7 +101,7 @@ proved with artifacts.
   first-time author who wrote "a finished game" leaves with a slice, a loop, one level.
 - **20-35** Together you write the outcome list: 3-5 lines, each with the artifact that
   will prove it.
-- **35-45** Agree what happens in week one and when the devlog lands.
+- **35-45** Agree what happens in sprint 1 and when the devlog lands.
 
 **Output:** the goal card — what exists now with its proof, what must exist at the end
 with an empty slot per line, the goal in one sentence. What was bought stays readable
@@ -116,7 +116,7 @@ longer than expected before?
 writing "missed" on day 30; letting "polish", "improve", "refactor" onto the card, since
 none of them can be proved; a goal that rests entirely on someone who is not on the call.
 
-### Consultation 2 — risks (day 7)
+### Call 2 — risks (day 8)
 
 **Purpose:** name what is already in the way while three weeks remain to act.
 
@@ -134,10 +134,10 @@ waiting on that is not in your hands? · If only one line lands this week, which
 be? · What did you learn this week that you did not know on day 1?
 
 **Traps:** letting the call become a status report you already read; solving the problem
-for them instead of making them choose; changing the card — that is day 14's job, and
+for them instead of making them choose; changing the card — that is day 15's job, and
 moving it early costs the team the deadline they were working against.
 
-### Consultation 3 — scope (day 14)
+### Call 3 — scope (day 15)
 
 **Purpose:** say plainly what is not going to fit, and change the card so the goal can
 still be reached. This is the day you are paid for.
@@ -147,7 +147,7 @@ still be reached. This is the day you are paid for.
   against the artifacts actually uploaded.
 - **25-40** The change. A line may come off, be reworded into the smaller promise it has
   become, or be added when the team is ahead.
-- **40-45** What has to be true by day 21 for the last week to be about finishing rather
+- **40-45** What has to be true by day 22 for the last sprint to be about finishing rather
   than starting.
 
 **Output:** the adjusted outcome list, every change recorded beside the day-1 wording,
@@ -161,7 +161,7 @@ it become something smaller? · What is left on this one — hours, or days?
 14 becomes a failed verdict on day 30; rewriting the card yourself instead of making the
 team choose; adding scope out of optimism.
 
-### Consultation 4 — the run-in (day 21)
+### Call 4 — the run-in (day 22)
 
 **Purpose:** make sure the last week ends with artifacts attached, not with work still
 open.
@@ -169,7 +169,7 @@ open.
 - **0-10** The author shows the state of the work.
 - **10-25** Go down the card: for each outcome, what is missing and what will prove it.
 - **25-35** Agree the finishing order and what gets dropped if time runs out.
-- **35-45** What the team will show and say at the gathering; everything is due by day 26.
+- **35-45** What the team will show on day 28; everything is due by day 26.
 
 **Output:** your written answer to devlog #3 and a finishing plan the team can follow
 without you.
@@ -180,9 +180,9 @@ do we show instead? · Who uploads what, and when?
 
 **Traps:** letting the team spend the last week on something new; accepting "it's
 basically done" without the artifact; discovering on day 27 that nothing has been
-uploaded since day 14.
+uploaded since day 15.
 
-### Consultation 5 — the shared gathering (day 28)
+### Call 5 — the result (day 28)
 
 Every team of the season speaks in turn: what the goal was, what got done, what had to be
 cut. Answer each of your own teams out loud — briefly, and in front of the season. Do not
@@ -211,17 +211,17 @@ then you are running blind.
 
 ## Writing the verdict
 
-By day 30, on the platform, separately from the gathering. It is discussed on the first
+By day 30, on the platform, after the call that said it out loud. It is discussed on the first
 call of the next checkpoint, where it becomes the starting position.
 
 **Three outcomes:** goal met and stage closed · goal met, stage open · goal missed. Every
 verdict leads to a new checkpoint.
 
 **The result card says:** what of the list is done and what proves it · what was cut on
-day 14 and why · the verdict and the reasoning, in a few sentences the author can act on
+day 15 and why · the verdict and the reasoning, in a few sentences the author can act on
 · what the next checkpoint should start from.
 
-**How to judge:** against the card as it stood after day 14, and against nothing else —
+**How to judge:** against the card as it stood after day 15, and against nothing else —
 not effort, not sympathy, not the goal the author started with. What is not attached is
 not done, with one exception: you may count an outcome no artifact covers — playtest
 notes, a conversation with a publisher, something shown live on the call — and write one
@@ -264,14 +264,14 @@ What the platform never does: agree the goal, decide what to cut, or write the v
 not chase twice; the rules below cover the rest.
 
 **The goal was too big and you both knew it on day 1.** Then it is your error, not
-theirs. Cut on day 14 and say in the verdict that the goal was cut, not failed.
+theirs. Cut on day 15 and say in the verdict that the goal was cut, not failed.
 
 **The project pivots mid-checkpoint.** New direction, old card. Do not rewrite the card
-outside day 14. Record what happened and judge the original outcomes; the new direction
+outside day 15. Record what happened and judge the original outcomes; the new direction
 is the next checkpoint's goal.
 
 **Nothing is uploaded but the team says everything is done.** Ask for the artifact on the
-call, not in writing afterwards. If it will not exist by day 26, say plainly on day 21
+call, not in writing afterwards. If it will not exist by day 26, say plainly on day 22
 how the verdict will read.
 
 **The work is good and the goal is still missed.** Both can be true. Write both: the
@@ -287,10 +287,10 @@ verdict is missed, and the reasoning says what was achieved and what to start fr
 |---|---|
 | **Devlog before the call** | No devlog 24 hours before a call and the call moves once per checkpoint. The second time it is gone and is not returned. |
 | **Moving a call** | Either side may move one call per checkpoint, with at least 12 hours' notice. |
-| **The goal is agreed, then binding** | What the author wrote when buying is a draft; consultation 1 turns it into the card the verdict is measured against. Cutting it there is you doing your job, not a failure. |
-| **After that it changes once** | Only on consultation 3, and every change is recorded with the day-1 wording kept beside it. |
+| **The goal is agreed, then binding** | What the author wrote when buying is a draft; call 1 turns it into the card the verdict is measured against. Cutting it there is you doing your job, not a failure. |
+| **After that it changes once** | Only on call 3, and every change is recorded with the day-1 wording kept beside it. |
 | **What is not attached is not done** | An outcome with nothing against it on day 28 counts as missed — unless you count it yourself and write why. |
-| **Silence is not a verdict** | No verdict by day 30 and an administrator closes the checkpoint; money for consultations that did not happen goes back. |
+| **Silence is not a verdict** | No verdict by day 30 and an administrator closes the checkpoint; money for calls that did not happen goes back. |
 | **A curator who disappears** | Two missed calls in a row and the platform replaces you inside the checkpoint and returns the money for what did not happen. |
 | **An author who disappears** | Two missed calls in a row with no devlogs and the checkpoint closes as goal missed. No refund. |
 | **Who is on the call** | The author and up to four of the team. The rest read your written answer to the devlog. The call stays 45 minutes whatever the size of the team. |
@@ -307,7 +307,7 @@ verdict is missed, and the reasoning says what was achieved and what to start fr
 
 - Doing the work — code, art, text — or line-by-line code review
 - Marketing the game, introductions to publishers, legal advice
-- Consultations beyond the five, or the whole team on a call when it is larger than five
+- Calls beyond the five, or the whole team on a call when it is larger than five
 - Promising the goal is met
 
 ---

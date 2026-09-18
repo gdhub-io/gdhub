@@ -16,8 +16,8 @@ import type {
 
 const line = (item: CuratorLine) => {
 	const marks = [
-		item.cut ? "CUT on day 14, no longer owed" : null,
-		item.addedAt ? "added on day 14" : null,
+		item.cut ? "CUT on day 15, no longer owed" : null,
+		item.addedAt ? "added on day 15" : null,
 		item.originalText
 			? `reworded, day 1 wording: "${item.originalText}"`
 			: null,

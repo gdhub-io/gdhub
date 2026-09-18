@@ -15,10 +15,10 @@ export type GoalCardProps = {
 /**
  * The goal card as the record: what the project had, what it owes, and what
  * proves each line. Read-only — once the 28 days are running the card is what
- * the verdict is measured against, and the only way it moves is the day-14
+ * the verdict is measured against, and the only way it moves is the day-15
  * scope change.
  *
- * A line cut on day 14 keeps its text, is struck through, and is never counted
+ * A line cut on day 15 keeps its text, is struck through, and is never counted
  * as missing evidence.
  */
 export function GoalCard({ items }: GoalCardProps) {

@@ -21,7 +21,7 @@ export const reportSchema = () => ({
 		summary: {
 			type: "string",
 			description:
-				"The report the author reads. What was promised, what changed on day 14 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 300 words.",
+				"The report the author reads. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 300 words.",
 		},
 		verdict: {
 			type: "string",
@@ -78,7 +78,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			${
 				input.revision
 					? `Day-14 scope change on ${input.revision.revisedAt}: ${input.revision.note ?? "(no reason given)"}`
-					: "No day-14 scope change."
+					: "No day-15 scope change."
 			}
 
 			Evidence attached, outcome by outcome:

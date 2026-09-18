@@ -691,7 +691,7 @@
 		},
 		"midnote": {
 			"open": "open",
-			"title": "Day 14 — the scope note"
+			"title": "Day 15 — the scope note"
 		},
 		"name": "Checkpoint {n}",
 		"next": {
@@ -831,13 +831,13 @@
 			"title": "What this sprint proved"
 		},
 		"result": {
-			"added": "Added on day 14",
+			"added": "Added on day 15",
 			"column": {
 				"came": "WHAT CAME OF IT",
 				"changed": "WHAT CHANGED",
 				"planned": "PLANNED ON DAY 1"
 			},
-			"cut": "Cut on day 14",
+			"cut": "Cut on day 15",
 			"reworded": "Reworded — {text}",
 			"title": "The result card"
 		},
@@ -863,7 +863,7 @@
 			"keepNote": "The outcome list stands. Say why, and the decision is recorded beside it.",
 			"keepTitle": "Leave the list as it is",
 			"note": "The original scope remains in the checkpoint history.",
-			"subtitle": "Update the scope on day 14.",
+			"subtitle": "Update the scope on day 15.",
 			"why": "Why"
 		},
 		"signals": {

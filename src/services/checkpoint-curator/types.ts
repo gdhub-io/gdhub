@@ -15,7 +15,7 @@ export type CuratorLine = {
 	/** The wording bought, where the line has since been reworded. */
 	originalText?: string | null;
 	cut?: boolean;
-	/** Set when the line was added on day 14 rather than written on day 1. */
+	/** Set when the line was added on day 15 rather than written on day 1. */
 	addedAt?: string | null;
 };
 

@@ -114,13 +114,13 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 
 							<Typography.Text className={styles.col}>
 								{item.cut
-									? t("checkpoints.result.cut", "Cut on day 14")
+									? t("checkpoints.result.cut", "Cut on day 15")
 									: item.originalText
 										? t("checkpoints.result.reworded", "Reworded — {text}", {
 												text: item.text,
 											})
 										: item.addedAt
-											? t("checkpoints.result.added", "Added on day 14")
+											? t("checkpoints.result.added", "Added on day 15")
 											: "—"}
 							</Typography.Text>
 

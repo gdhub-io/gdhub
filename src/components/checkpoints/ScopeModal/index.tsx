@@ -22,7 +22,7 @@ export type ScopeModalProps = {
 };
 
 /**
- * The day-14 answer — frame `Modal — Change the scope (day 14)`.
+ * The day-15 answer — frame `Modal — Change the scope (day 15)`.
  *
  * Deleting a line is not offered. A smaller promise is recorded as a rewording
  * and a dropped one as a cut, both keeping the day-1 wording beside them, so a
@@ -118,7 +118,7 @@ export function ScopeModal({
 								"checkpoints.scope.keepNote",
 								"The outcome list stands. Say why, and the decision is recorded beside it.",
 							)
-						: t("checkpoints.scope.subtitle", "Update the scope on day 14.")}
+						: t("checkpoints.scope.subtitle", "Update the scope on day 15.")}
 				</Typography.Text>
 
 				{mode === "change" && (
