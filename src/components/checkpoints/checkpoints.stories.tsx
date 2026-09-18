@@ -22,6 +22,7 @@ import { CuratorBadge } from "./CuratorBadge";
 import { DraftCard } from "./DraftCard";
 import { GoalStrip } from "./GoalStrip";
 import { InputsPanel } from "./InputsPanel";
+import { PaidPanel } from "./PaidPanel";
 import { Evidence } from "./SprintPanel/Evidence";
 import { Review } from "./SprintPanel/Review";
 import { Signals } from "./SprintPanel/Signals";
@@ -192,6 +193,23 @@ export const AwaitingCurator: StoryObj = {
 			}}
 			projectSlug="neon-drift"
 			onDiscard={() => {}}
+		/>
+	),
+};
+
+/** Paid for, and the curator handed it back — frames `qIt2j` and `Ct1UR`. */
+export const CuratorDeclined: StoryObj = {
+	render: () => (
+		<PaidPanel
+			checkpoint={{
+				...base,
+				status: CheckpointStatus.Draft,
+				paymentId: "pay_1",
+				curator: null,
+				items,
+				day: null,
+				daysLeft: null,
+			}}
 		/>
 	),
 };

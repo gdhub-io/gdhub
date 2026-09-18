@@ -48,11 +48,18 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const pathname = usePathname();
 	const cancel = useCancelCheckpoint(checkpoint.id, checkpoint.projectId);
 
-	const settling = checkpoint.status === CheckpointStatus.Draft;
+	const settling =
+		checkpoint.status === CheckpointStatus.Draft && !checkpoint.paymentId;
 	// The money is held on the card and not yet taken: it becomes a charge when
 	// the curator accepts, and saying "paid" before that is a lie the author
 	// finds out about when the hold drops off.
 	const held = checkpoint.status === CheckpointStatus.AwaitingCurator;
+	// Paid for, a draft again and carrying nobody: the only way a checkpoint
+	// reaches that is a curator handing it back.
+	const declined =
+		checkpoint.status === CheckpointStatus.Draft &&
+		!!checkpoint.paymentId &&
+		!checkpoint.curator;
 
 	useEffect(() => {
 		if (!settling) return;
@@ -128,8 +135,13 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			    receipt is theirs; the wait is somebody else's move. Holding both in
 			    one paragraph made the second read as a condition of the first. */}
 			<Card className={styles.block} data-tone="paid">
-				<Flex gap={14} align="center">
-					<IconTile icon={IconCheck} />
+				<Flex gap={8} align="center">
+					<IconTile
+						icon={IconCheck}
+						size="xs"
+						tint="var(--gd-color-surface)"
+						ink="var(--gd-success-solid)"
+					/>
 					<Flex vertical gap={4} className={styles.text}>
 						<Typography.Text className={styles.title}>
 							{settling
@@ -162,40 +174,56 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 					className={styles.waiting}
 					data-testid="awaiting-curator"
 				>
-					<IconTile icon={IconHourglassHigh} />
+					<IconTile icon={declined ? IconUserX : IconHourglassHigh} />
 					<Flex vertical gap={12} align="center" className={styles.waitingText}>
 						<Flex vertical gap={4} align="center">
 							<Typography.Text className={styles.title}>
-								{t(
-									"checkpoints.paid.awaiting",
-									"Waiting for the curator to take it on",
-								)}
+								{declined
+									? t(
+											"checkpoints.paid.declined",
+											"The curator turned this checkpoint down",
+										)
+									: t(
+											"checkpoints.paid.awaiting",
+											"Waiting for the curator to take it on",
+										)}
 							</Typography.Text>
-							{dates && (
-								<Typography.Text type="secondary" className={styles.dates}>
-									{t("checkpoints.paid.planned", "Planned for {dates}", {
-										dates,
-									})}
-								</Typography.Text>
-							)}
+							<Typography.Text type="secondary" className={styles.dates}>
+								{declined
+									? t(
+											"checkpoints.paid.declinedBody",
+											"Nothing was charged. Pick someone else and the money is held again until they answer.",
+										)
+									: dates &&
+										t("checkpoints.paid.planned", "Planned for {dates}", {
+											dates,
+										})}
+							</Typography.Text>
 						</Flex>
 
-						{/* The way out of a curator who is not answering sits beside them
-						    rather than in the open: it is rarely what the author wants. */}
-						<Flex gap={10} align="center" wrap justify="center">
-							<CuratorBadge
-								kind={checkpoint.curatorKind}
-								curator={checkpoint.curator}
-							/>
-							<Button
-								type="link"
-								size="small"
-								className={styles.quiet}
-								onClick={() => setReplacing(true)}
-							>
-								{t("checkpoints.paid.replace", "Replace the curator")}
+						{/* Waiting, the way out sits quietly beside the curator — it is
+						    rarely what the author wants. Declined, it is the only thing
+						    left to do, so it is the button. */}
+						{declined ? (
+							<Button type="primary" onClick={() => setReplacing(true)}>
+								{t("checkpoints.paid.pickAnother", "Pick another curator")}
 							</Button>
-						</Flex>
+						) : (
+							<Flex gap={10} align="center" wrap justify="center">
+								<CuratorBadge
+									kind={checkpoint.curatorKind}
+									curator={checkpoint.curator}
+								/>
+								<Button
+									type="link"
+									size="small"
+									className={styles.quiet}
+									onClick={() => setReplacing(true)}
+								>
+									{t("checkpoints.paid.replace", "Replace the curator")}
+								</Button>
+							</Flex>
+						)}
 					</Flex>
 				</Flex>
 			)}

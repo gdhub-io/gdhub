@@ -3,6 +3,8 @@ import { getWorkDirection } from "@/components/DirectionBadge";
 import styles from "./style.module.scss";
 
 const SIZES = {
+	// For a block that is one line tall, where `sm` would set the height itself.
+	xs: { box: 24, radius: 10, icon: 18 },
 	sm: { box: 32, radius: 10, icon: 16 },
 	md: { box: 40, radius: 12, icon: 19 },
 	lg: { box: 56, radius: 16, icon: 26 },

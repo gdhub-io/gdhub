@@ -3,6 +3,12 @@
 .block {
 	width: 100%;
 
+	// One line tall, the way frame `SwaKm` draws it: the block states a fact and
+	// carries the one button that follows from it.
+	:global(.ant-card-body) {
+		padding: var(--gd-space-2);
+	}
+
 	// Settled money reads as settled: the one green thing on the page.
 	&[data-tone="paid"] {
 		border-color: var(--gd-success-solid);
