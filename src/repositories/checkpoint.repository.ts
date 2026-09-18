@@ -87,6 +87,7 @@ export const checkpointSelect = {
 	decidedAt: true,
 	acceptedTermsAt: true,
 	curatorDeclinedAt: true,
+	declinedCuratorIds: true,
 	paymentId: true,
 	createdAt: true,
 	updatedAt: true,

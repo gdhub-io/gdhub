@@ -58,16 +58,28 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 
 			// Back to the author, with the curator cleared: the same place a
 			// decline leaves it, so there is one way out and not two.
-			await prisma.projectCheckpoint.updateMany({
+			// Silence is an answer too: the expert who never replied is marked
+			// unavailable like one who said so, and for the same reason.
+			const waiting = await prisma.projectCheckpoint.findFirst({
 				where: {
 					id: payment.payableId,
 					status: CheckpointStatus.AwaitingCurator,
 				},
+				select: { curatorId: true },
+			});
+
+			if (!waiting) continue;
+
+			await prisma.projectCheckpoint.update({
+				where: { id: payment.payableId },
 				data: {
 					status: CheckpointStatus.Draft,
 					curatorId: null,
 					curatorDeclinedAt: new Date(),
 					paymentId: null,
+					...(waiting.curatorId && {
+						declinedCuratorIds: { push: waiting.curatorId },
+					}),
 				},
 			});
 

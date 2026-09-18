@@ -270,6 +270,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 			<ReplaceCuratorModal
 				checkpointId={checkpoint.id}
 				currentCuratorId={checkpoint.curator?.id}
+				unavailable={checkpoint.declinedCuratorIds}
 				open={replacing}
 				onClose={() => setReplacing(false)}
 			/>

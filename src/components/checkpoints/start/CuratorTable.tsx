@@ -24,6 +24,11 @@ export type CuratorTableProps = {
 	 * is not an answer to that question.
 	 */
 	exclude?: string | null;
+	/**
+	 * Experts who could not take this checkpoint. They stay on the list, greyed
+	 * and unpickable: one who vanishes is one the author tries to pick again.
+	 */
+	unavailable?: string[];
 };
 
 /**
@@ -39,13 +44,20 @@ export type CuratorTableProps = {
  * have. Pressing anywhere on a row picks it; the radio on the right is where
  * the answer lands.
  */
-export function CuratorTable({ value, onChange, exclude }: CuratorTableProps) {
+export function CuratorTable({
+	value,
+	onChange,
+	exclude,
+	unavailable,
+}: CuratorTableProps) {
 	const { t } = useTranslate();
 	const curators = useCheckpointCurators();
 	const [preview, setPreview] = useState<string>();
 
 	const talentCard = t("checkpoints.curator.talentCard", "Talent card");
 	const rows = (curators.data ?? []).filter((row) => row.userId !== exclude);
+	const cannot = (row: CheckpointCurator) =>
+		!!unavailable?.includes(row.userId);
 
 	return (
 		<>
@@ -61,10 +73,14 @@ export function CuratorTable({ value, onChange, exclude }: CuratorTableProps) {
 				className={styles.people}
 				dataSource={rows}
 				onRow={(row: CheckpointCurator) => ({
-					onClick: () => onChange(row.userId),
+					onClick: () => !cannot(row) && onChange(row.userId),
 				})}
 				rowClassName={(row: CheckpointCurator) =>
-					value === row.userId ? styles.chosen : ""
+					cannot(row)
+						? styles.unavailable
+						: value === row.userId
+							? styles.chosen
+							: ""
 				}
 				locale={{
 					emptyText: t(
@@ -116,14 +132,19 @@ export function CuratorTable({ value, onChange, exclude }: CuratorTableProps) {
 						},
 						{
 							key: "pick",
-							width: 48,
+							width: 96,
 							align: "center",
-							render: (_: unknown, row: CheckpointCurator) => (
-								<Radio
-									checked={value === row.userId}
-									onChange={() => onChange(row.userId)}
-								/>
-							),
+							render: (_: unknown, row: CheckpointCurator) =>
+								cannot(row) ? (
+									<Typography.Text className={styles.away}>
+										{t("checkpoints.curator.unavailable", "Unavailable")}
+									</Typography.Text>
+								) : (
+									<Radio
+										checked={value === row.userId}
+										onChange={() => onChange(row.userId)}
+									/>
+								),
 						},
 					] satisfies ColumnsType<CheckpointCurator>
 				}

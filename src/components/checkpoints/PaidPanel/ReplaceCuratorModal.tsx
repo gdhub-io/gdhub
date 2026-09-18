@@ -12,6 +12,8 @@ export type ReplaceCuratorModalProps = {
 	checkpointId: string;
 	/** Whoever holds it now — they are not on the list of replacements. */
 	currentCuratorId?: string | null;
+	/** Everyone who already said they could not: shown, but not pickable. */
+	unavailable?: string[];
 	open: boolean;
 	onClose: () => void;
 };
@@ -29,6 +31,7 @@ export type ReplaceCuratorModalProps = {
 export function ReplaceCuratorModal({
 	checkpointId,
 	currentCuratorId,
+	unavailable,
 	open,
 	onClose,
 }: ReplaceCuratorModalProps) {
@@ -73,6 +76,7 @@ export function ReplaceCuratorModal({
 					value={picked}
 					onChange={setPicked}
 					exclude={currentCuratorId}
+					unavailable={unavailable}
 				/>
 			</Flex>
 		</Modal>

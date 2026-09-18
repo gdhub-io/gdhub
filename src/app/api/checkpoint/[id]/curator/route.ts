@@ -105,6 +105,9 @@ export const POST = pipe(
 					status: CheckpointStatus.Draft,
 					curatorDeclinedAt: new Date(),
 					curatorId: null,
+					// Kept so the picker can show them as unavailable: an expert who
+					// disappears from the list is one the author picks again.
+					declinedCuratorIds: { push: curator.id },
 					// The hold is gone, so the checkpoint is unpaid again: the author
 					// picks somebody else and buys it for them.
 					paymentId: null,

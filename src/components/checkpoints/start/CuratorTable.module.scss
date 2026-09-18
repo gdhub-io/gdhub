@@ -40,3 +40,20 @@
 	height: var(--gd-control-height-sm);
 	padding: 0;
 }
+
+// An expert who could not take this checkpoint: still readable, and plainly
+// not an answer to the question. Greyed rather than removed — a row that
+// disappears is one the author tries to pick again.
+.unavailable {
+	> :global(.ant-table-cell) {
+		opacity: 0.55;
+	}
+
+	cursor: default;
+}
+
+.away {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+	white-space: nowrap;
+}

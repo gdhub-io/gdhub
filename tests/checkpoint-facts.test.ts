@@ -46,6 +46,7 @@ const checkpoint = (over: Partial<CheckpointDto> = {}): CheckpointDto => ({
 	stageName: "Prototyping",
 	order: 2,
 	status: CheckpointStatus.Active,
+	declinedCuratorIds: [],
 	curatorDeclinedAt: null,
 	paymentId: null,
 	goal: "A playable slice",

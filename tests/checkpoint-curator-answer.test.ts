@@ -95,6 +95,9 @@ describe("a curator answering", () => {
 				data: expect.objectContaining({
 					status: CheckpointStatus.Draft,
 					curatorId: null,
+					// Remembered, so the picker can grey them out rather than losing
+					// them — a row that disappears is one the author picks again.
+					declinedCuratorIds: { push: "u9" },
 				}),
 			}),
 		);
