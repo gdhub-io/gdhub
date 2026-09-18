@@ -48,8 +48,13 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 	const pathname = usePathname();
 	const cancel = useCancelCheckpoint(checkpoint.id, checkpoint.projectId);
 
+	// The few seconds between Stripe returning the author and the webhook landing.
+	// A decline looks identical by status and payment — both are a draft with no
+	// money on it — so the refusal is what tells them apart.
 	const settling =
-		checkpoint.status === CheckpointStatus.Draft && !checkpoint.paymentId;
+		checkpoint.status === CheckpointStatus.Draft &&
+		!checkpoint.paymentId &&
+		!checkpoint.curatorDeclinedAt;
 	// The money is held on the card and not yet taken: it becomes a charge when
 	// the curator accepts, and saying "paid" before that is a lie the author
 	// finds out about when the hold drops off.
@@ -186,7 +191,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 								{declined
 									? t(
 											"checkpoints.paid.declined",
-											"The curator turned this checkpoint down",
+											"This expert cannot take it on right now",
 										)
 									: t(
 											"checkpoints.paid.awaiting",
@@ -197,7 +202,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 								{declined
 									? t(
 											"checkpoints.paid.declinedBody",
-											"Nothing was charged — the reservation went back. Pick someone else and buy the checkpoint for them.",
+											"Nothing was charged. Pick another expert and the checkpoint goes to them instead.",
 										)
 									: dates &&
 										t("checkpoints.paid.planned", "Planned for {dates}", {

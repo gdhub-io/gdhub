@@ -36,8 +36,13 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 		!checkpoint.verdict && checkpoint.status === CheckpointStatus.Active;
 
 	// A draft is not "Checkpoint 3" yet in the reader's head — it is the thing
-	// being set up, and the line under it says how far that has got.
-	const isDraft = checkpoint.status === CheckpointStatus.Draft;
+	// being set up, and the line under it says how far that has got. Once it has
+	// been bought it is that checkpoint for good, even if a curator handed it
+	// back and the status is a draft again.
+	const isDraft =
+		checkpoint.status === CheckpointStatus.Draft &&
+		!checkpoint.paymentId &&
+		!checkpoint.curatorDeclinedAt;
 
 	// Prepare, whether it is still being filled in or already paid for and
 	// waiting: until the 28 days run, the curator is a choice rather than a fact.

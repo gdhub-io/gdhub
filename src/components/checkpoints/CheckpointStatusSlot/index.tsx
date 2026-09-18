@@ -6,7 +6,10 @@ import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
 
 export type CheckpointStatusSlotProps = {
-	checkpoint: Pick<CheckpointDto, "status" | "verdict" | "day">;
+	checkpoint: Pick<
+		CheckpointDto,
+		"status" | "verdict" | "day" | "curatorDeclinedAt" | "curator"
+	>;
 	className?: string;
 };
 
@@ -48,6 +51,22 @@ export function CheckpointStatusSlot({
 					"checkpoints.status.awaitingCurator",
 					"Waiting for the curator",
 				)}
+				className={className}
+			/>
+		);
+	}
+
+	// A draft again, but not a fresh one: somebody was asked and said no, and
+	// "Draft" would hide the one fact the author has to act on.
+	if (
+		checkpoint.status === CheckpointStatus.Draft &&
+		checkpoint.curatorDeclinedAt &&
+		!checkpoint.curator
+	) {
+		return (
+			<StatusDot
+				tone="warning"
+				label={t("checkpoints.status.declined", "Expert unavailable")}
 				className={className}
 			/>
 		);
