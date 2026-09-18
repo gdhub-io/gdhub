@@ -3,6 +3,7 @@
 import { IconDotsVertical, IconTrash } from "@tabler/icons-react";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { Button, Dropdown, Flex, Typography } from "antd";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { type DraftPiece, draftMissing } from "@/lib/checkpoint-draft";
@@ -48,6 +49,13 @@ export function DraftCard({
 	// An expert who could not take it leaves the draft short of a curator, but
 	// "Add curator" reads as though nobody was ever picked.
 	const declined = !!checkpoint.curatorDeclinedAt && !checkpoint.curator;
+
+	// The dates the author picked: what the next expert is being asked to take,
+	// and the thing they will answer against.
+	const dates =
+		checkpoint.startedAt && checkpoint.dueAt
+			? `${dayjs(checkpoint.startedAt).format("D MMM")} – ${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
+			: null;
 	const missing = draftMissing(checkpoint);
 	// "a goal, curator and start date" — the conjunction and the commas are the
 	// language's, not ours.
@@ -103,10 +111,16 @@ export function DraftCard({
 								"Paid. The 28 days start when the curator takes it on.",
 							)
 						: declined
-							? t(
-									"checkpoints.draft.pickAnother",
-									"Select another expert for these 28 days.",
-								)
+							? dates
+								? t(
+										"checkpoints.draft.pickAnotherDated",
+										"Select another expert ({dates}).",
+										{ dates },
+									)
+								: t(
+										"checkpoints.draft.pickAnother",
+										"Select another expert for this checkpoint.",
+									)
 							: missing.length
 								? t("checkpoints.draft.add", "Add {pieces}.", { pieces })
 								: t(
