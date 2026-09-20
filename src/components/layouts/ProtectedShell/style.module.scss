@@ -175,3 +175,9 @@
 	font-weight: 500;
 	color: var(--gd-color-text);
 }
+
+/* Dev-only account switcher: the fixture list is longer than the viewport. */
+.switchAccountPopup :global(.ant-menu) {
+	max-height: calc(100vh - 160px);
+	overflow-y: auto;
+}
