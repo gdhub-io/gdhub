@@ -158,3 +158,9 @@ wrong, say so in a sentence and build the rest.
 - Flex truncation needs `min-width: 0` on the parent.
 - `globals.scss` sets `svg { display: block }` — centring an icon needs a flex
   wrapper, not `align`.
+- **In Pencil, a text node ignores `width` unless `textGrowth: "fixed-width"` is
+  set.** It silently falls back to fit-content, so a table head built from bare
+  text labels drifts away from a body built from real columns, and the frame
+  looks right in the node tree. Build a column as a frame with an explicit width
+  and put the content inside it, then assemble head and body from that same
+  column — one head, not one per table.

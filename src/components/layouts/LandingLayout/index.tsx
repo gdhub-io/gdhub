@@ -203,7 +203,6 @@ export const LandingLayout = ({ children }: any) => {
 						<Space orientation="vertical" size={32} style={{ width: "100%" }}>
 							<Menu
 								items={headerMenu}
-								theme="dark"
 								onSelect={() => setOpenMobileMenu(false)}
 							/>
 
