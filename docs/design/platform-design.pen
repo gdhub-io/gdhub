@@ -176940,19 +176940,6 @@
               "fontSize": 28,
               "fontWeight": "700",
               "letterSpacing": -0.5
-            },
-            {
-              "type": "text",
-              "id": "mdYlm",
-              "name": "Note",
-              "fill": "$text-secondary",
-              "textGrowth": "fixed-width",
-              "width": 900,
-              "content": "A table in a space is a white card: radius 8, clipped, no outer border. The head is a 44 band on $bg-subtle with uppercase 11/600 labels; rows are 56 tall and separated by $border-subtle, the lightest hairline in the system — the last row has none. Cells are padded 16 and hold one line each.",
-              "lineHeight": 1.5,
-              "fontFamily": "$font",
-              "fontSize": 13,
-              "fontWeight": "normal"
             }
           ]
         },
@@ -177943,19 +177930,6 @@
                   "fontSize": 11,
                   "fontWeight": "700",
                   "letterSpacing": 0.6
-                },
-                {
-                  "type": "text",
-                  "id": "nQ20a",
-                  "name": "Note",
-                  "fill": "$text-secondary",
-                  "textGrowth": "fixed-width",
-                  "width": 900,
-                  "content": "A long list ends with a full-width Load more (a text button, 16 under the table). Tables that carry a real page count use antd pagination instead — never both. Either way it sits outside the table, on the page, never as a row inside it.",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font",
-                  "fontSize": 13,
-                  "fontWeight": "normal"
                 }
               ]
             },
@@ -178009,19 +177983,6 @@
                   "fontSize": 11,
                   "fontWeight": "600",
                   "letterSpacing": 0.5
-                },
-                {
-                  "type": "text",
-                  "id": "hjoFt",
-                  "name": "Note",
-                  "fill": "#76756F",
-                  "textGrowth": "fixed-width",
-                  "width": 900,
-                  "content": "A table is either a white card or nothing at all — hairlines straight on the page. The card is for a table that owns its block; the bare one is for a table already inside a panel, where a second surface would be a box in a box.\n\nPaging never sits inside either. It goes under the table, on the page's own ground, aligned right: it is a control over the list, not a row of it.",
-                  "lineHeight": 1.5,
-                  "fontFamily": "Onest",
-                  "fontSize": 13,
-                  "fontWeight": "normal"
                 }
               ]
             },
@@ -178038,7 +177999,7 @@
                   "id": "yVgZw",
                   "name": "Caption",
                   "fill": "#9C9B97",
-                  "content": "As a card — a table that owns its block",
+                  "content": "As a card",
                   "fontFamily": "Onest",
                   "fontSize": 12,
                   "fontWeight": "500"
@@ -178896,7 +178857,7 @@
                   "id": "Esad3",
                   "name": "Caption",
                   "fill": "#9C9B97",
-                  "content": "On the page — already inside a panel, so no second surface",
+                  "content": "On the page",
                   "fontFamily": "Onest",
                   "fontSize": 12,
                   "fontWeight": "500"
@@ -178908,6 +178869,10 @@
                   "clip": true,
                   "width": "fill_container",
                   "fill": "#00000000",
+                  "cornerRadius": 12,
+                  "stroke": "#DCDBD8",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "layout": "vertical",
                   "children": [
                     {
@@ -178917,7 +178882,7 @@
                       "width": "fill_container",
                       "height": 44,
                       "fill": "#00000000",
-                      "stroke": "$border",
+                      "stroke": "#DCDBD8",
                       "strokeWidth": {
                         "bottom": 1
                       },
@@ -179045,7 +179010,7 @@
                       "name": "Row — Hollow Tide",
                       "width": "fill_container",
                       "height": 56,
-                      "stroke": "$border-subtle",
+                      "stroke": "#EBEAE8",
                       "strokeWidth": {
                         "bottom": 1
                       },
@@ -179241,7 +179206,7 @@
                       "name": "Row — Neon Drift",
                       "width": "fill_container",
                       "height": 56,
-                      "stroke": "$border-subtle",
+                      "stroke": "#EBEAE8",
                       "strokeWidth": {
                         "bottom": 1
                       },
