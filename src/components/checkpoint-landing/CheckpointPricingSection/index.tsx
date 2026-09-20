@@ -7,18 +7,16 @@ import { CHECKPOINT_CTA_HREF } from "../constants";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
 
-/** Prices per checkpoint, from `docs/checkpoint-standard.md` §9. */
+/** Prices per checkpoint, from `docs/checkpoint-standard.md` §8. */
 const LEVELS = [
-	{ key: "middle", prices: [250, 283, 317, 367] },
-	{ key: "experienced", prices: [312, 354, 396, 458] },
-	{ key: "expert", prices: [375, 425, 475, 550] },
+	{ key: "experienced", prices: [300, 340, 380, 440] },
+	{ key: "expert", prices: [450, 510, 570, 660] },
 ] as const;
 
 export const CheckpointPricingSection = () => {
 	const { t } = useTranslate();
 
 	const levelNames: Record<(typeof LEVELS)[number]["key"], string> = {
-		middle: t("checkpointLanding.pricing.level.middle", "Middle"),
 		experienced: t(
 			"checkpointLanding.pricing.level.experienced",
 			"Experienced",

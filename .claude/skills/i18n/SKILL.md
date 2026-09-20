@@ -12,6 +12,28 @@ tolgee.gdhub.io, and it runs on every push. **Editing them by hand is work that
 disappears at the next push.** The server is the source of truth; the files are a
 build artefact that happens to be committed.
 
+## The platform is English-only for now
+
+**Add the key, write the English default, stop there.** Do not write Russian —
+nobody is reading it yet, and a translation written ahead of the copy being
+settled is work that gets thrown away when the English changes. `ru.json` keeps
+whatever is already in it; new keys simply have no Russian until the day the
+platform is translated for real.
+
+So the job when adding a string is: a Tolgee key with a real English default,
+pushed to the server so it exists for that day.
+
+## A key cannot be both a string and a namespace
+
+The export is nested JSON, so `checkpoints.start` as a value and
+`checkpoints.start.h1` as another key cannot both survive: the leaf wins and the
+whole namespace under it silently disappears from `src/i18n/*.json`. The code
+then renders its inline defaults forever and no translation can ever reach it.
+
+`tolgee push` never deletes a key, so the only cures are renaming the new keys
+out of the way or deleting the leaf in the Tolgee UI. Check before inventing a
+namespace: if `foo.bar` is already a string, do not add `foo.bar.baz`.
+
 ## Adding a string
 
 1. In the component: `const { t } = useTranslate();` then

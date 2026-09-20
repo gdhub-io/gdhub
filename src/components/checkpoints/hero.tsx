@@ -3,6 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Flex } from "antd";
 import dayjs from "dayjs";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
 import { CuratorBadge } from "./CuratorBadge";
@@ -25,18 +26,50 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 			? `${dayjs(checkpoint.startedAt).format("D MMM")} – ${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
+	// The day count belongs here and nowhere else on the page, so the status slot
+	// only appears when it has something else to say — a verdict, or the wait for
+	// one — rather than repeating the number beside it.
+	const day = checkpoint.day
+		? t("checkpoints.status.day", "Day {day} of 28", { day: checkpoint.day })
+		: null;
+	const restates =
+		!checkpoint.verdict && checkpoint.status === CheckpointStatus.Active;
+
+	// A draft is not "Checkpoint 3" yet in the reader's head — it is the thing
+	// being set up, and the line under it says how far that has got. Once it has
+	// been bought it is that checkpoint for good, even if a curator handed it
+	// back and the status is a draft again.
+	const isDraft =
+		checkpoint.status === CheckpointStatus.Draft &&
+		!checkpoint.paymentId &&
+		!checkpoint.curatorDeclinedAt;
+
+	// Prepare, whether it is still being filled in or already paid for and
+	// waiting: until the 28 days run, the curator is a choice rather than a fact.
+	const preparing =
+		isDraft || checkpoint.status === CheckpointStatus.AwaitingCurator;
+
 	return {
-		title: t("checkpoints.number", "Checkpoint {number}", {
-			number: checkpoint.order,
-		}),
-		description: [checkpoint.stageName, dates].filter(Boolean).join(" · "),
+		title: isDraft
+			? t("checkpoints.draft.pageTitle", "Checkpoint draft")
+			: t("checkpoints.number", "Checkpoint {number}", {
+					number: checkpoint.order,
+				}),
+		description: isDraft
+			? t("checkpoints.draft.pageSub", "Prepare · Setup incomplete")
+			: [dates, checkpoint.stageName, day].filter(Boolean).join(" · "),
 		actions: (
 			<Flex vertical align="flex-end" gap={8}>
-				<CheckpointStatusSlot checkpoint={checkpoint} />
-				<CuratorBadge
-					kind={checkpoint.curatorKind}
-					curator={checkpoint.curator}
-				/>
+				{!restates && <CheckpointStatusSlot checkpoint={checkpoint} />}
+				{/* Through Prepare the curator has accepted nothing — they are being
+				    chosen, or being waited on — and a badge in the header reads as
+				    settled. The status slot beside it is what says where it stands. */}
+				{!preparing && (
+					<CuratorBadge
+						kind={checkpoint.curatorKind}
+						curator={checkpoint.curator}
+					/>
+				)}
 			</Flex>
 		),
 	};

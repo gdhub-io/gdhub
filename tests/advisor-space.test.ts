@@ -58,8 +58,8 @@ describe("advisor space definition", () => {
 			expect.arrayContaining([
 				"advisor.requests.view",
 				"advisor.requests.manage",
-				"advisor.reviews.create",
-				"advisor.reviews.delete",
+				"advisor.checkpoints.view",
+				"advisor.checkpoints.manage",
 				"advisor.settings.manage",
 			]),
 		);

@@ -9,14 +9,15 @@ import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 import { useCheckpoint } from "@/hooks/checkpoints";
 
 export default function ProjectCheckpointPage() {
-	const params = useParams();
-	const { data: checkpoint, isLoading } = useCheckpoint(
-		params?.id as string | undefined,
-	);
+	const params = useParams<{ slug?: string; id?: string }>();
+	const { data: checkpoint, isLoading } = useCheckpoint(params?.id);
 	const hero = useCheckpointHero(checkpoint);
 
 	return (
-		<ProjectSpace {...hero}>
+		<ProjectSpace
+			{...hero}
+			backHref={`/user/project/${params?.slug}/checkpoints`}
+		>
 			{isLoading ? (
 				<Skeleton active paragraph={{ rows: 8 }} />
 			) : checkpoint ? (

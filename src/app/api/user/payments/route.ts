@@ -4,8 +4,9 @@ import { prisma } from "@/services/prisma";
 
 /**
  * Billing history for the current user: every payment they made, newest first.
- * VACANCY payments are enriched with the vacancy title + project name so the UI
- * can describe what was paid for.
+ * A row carries what it bought — the vacancy's title or the checkpoint's stage
+ * and number — with the project beside it, so the table describes the purchase
+ * rather than an id.
  */
 export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
@@ -19,6 +20,23 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	const vacancyIds = payments
 		.filter((p) => p.payableType === PayableType.VACANCY)
 		.map((p) => p.payableId);
+
+	const checkpointIds = payments
+		.filter((p) => p.payableType === PayableType.CHECKPOINT)
+		.map((p) => p.payableId);
+
+	const checkpoints = checkpointIds.length
+		? await prisma.projectCheckpoint.findMany({
+				where: { id: { in: checkpointIds } },
+				select: {
+					id: true,
+					order: true,
+					stageName: true,
+					project: { select: { name: true } },
+				},
+			})
+		: [];
+	const checkpointById = new Map(checkpoints.map((c) => [c.id, c]));
 
 	const vacancies = vacancyIds.length
 		? await prisma.teamVacancy.findMany({
@@ -37,6 +55,10 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 			p.payableType === PayableType.VACANCY
 				? vacancyById.get(p.payableId)
 				: undefined;
+		const checkpoint =
+			p.payableType === PayableType.CHECKPOINT
+				? checkpointById.get(p.payableId)
+				: undefined;
 
 		return {
 			id: p.id,
@@ -50,8 +72,11 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 			// A receipt is only retrievable once Paddle has settled the transaction.
 			hasInvoice:
 				p.status === PaymentStatus.COMPLETED && !!p.providerTransactionId,
-			title: vacancy?.title ?? null,
-			projectName: vacancy?.team?.project?.name ?? null,
+			title: vacancy?.title ?? checkpoint?.stageName ?? null,
+			/** The checkpoint's number, shown beside the word rather than under it. */
+			number: checkpoint?.order ?? null,
+			projectName:
+				vacancy?.team?.project?.name ?? checkpoint?.project?.name ?? null,
 		};
 	});
 

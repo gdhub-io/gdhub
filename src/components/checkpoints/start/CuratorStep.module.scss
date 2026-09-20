@@ -1,0 +1,82 @@
+/** A field label: 14/600, eight pixels off the control it names — the same rule StartLayout uses. */
+.label {
+	display: block;
+	margin-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.option {
+	// Two cards side by side, equal width and equal height: the pair is compared
+	// across, so the description of one cannot sit lower than the other's.
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	flex: 1;
+	min-width: 0;
+	// The frame draws 103. A floor rather than a height, so a longer description
+	// grows both cards instead of spilling out of one.
+	min-height: 104px;
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+	text-align: left;
+	cursor: pointer;
+
+	&[data-chosen] {
+		border-color: var(--gd-color-accent);
+	}
+}
+
+.optionHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.optionName {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.optionDescription {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+}
+
+
+
+.vat {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+
+.fixed {
+	// Small: the panel says one figure, so it takes the width of the figure and
+	// not the width of the question above it.
+	width: fit-content;
+	min-width: 240px;
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.fixedLabel {
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text-secondary);
+}
+
+.fixedAmount {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	line-height: var(--gd-line-height-heading);
+}
+
+.note {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+}

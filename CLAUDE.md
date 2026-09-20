@@ -197,11 +197,23 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   deleted: state a library already keeps, helpers used once, options nothing
   passes, branches nothing reaches, comments that restate their code. Say what
   came out — or that nothing did.
-- **Markup is antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
-  `Typography` — if antd ships it, use it. Hand-rolled markup needs a bespoke
-  design behind it and a note naming the frame; layout itself is still CSS.
-- **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
-  Never `Read`/`Edit`/`Grep` a `.pen` file directly.
+- **Markup is antd, icons are Tabler.** If antd ships it, use it — `<button>` is
+  `Button`, `<p>`/`<h2>` are `Typography`, `<ul>` is `List`, `<table>` is `Table`,
+  `<img>` is `AppImage`, `<a href>` is next/link, `<hr>` is `Divider`. The **antd
+  MCP server is connected**: `antd_list` finds the component, `antd_doc` and
+  `antd_demo` give its props and a working example — read them instead of guessing
+  the API or falling back to raw HTML. Hand-rolled markup needs a bespoke design
+  behind it and a note naming the frame; layout itself is still CSS.
+  [.claude/hooks/ui-antd-guard.sh](.claude/hooks/ui-antd-guard.sh) reads the lines an
+  edit *adds*, so legacy markup is never re-litigated. It does not forbid HTML — HTML
+  is right for a custom component or a bespoke design antd cannot cover — it forbids
+  reaching for HTML *silently*: keep it and name what antd could not do, with
+  `ui-guard-ignore <reason>` on the line or the line above it, or `ui-guard: off
+  <reason>` once at the top of the file. A bare marker is refused as well; a mute
+  button is how a rule like this stops working.
+- **Design files (`*.pen`) are JSON and may be read directly** — grepping one is often
+  the quickest way to a number or a frame id. **Edit them only through the Pencil MCP
+  tools**: a hand-edited file is how the canvas gets corrupted.
 
 ## Changing the database schema
 

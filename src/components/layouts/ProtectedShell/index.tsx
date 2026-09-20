@@ -36,6 +36,7 @@ import type { Permission } from "@/config/spaces";
 import { useTelegram } from "@/helpers/useTelegram";
 import type { UserSpaces } from "@/repositories/user-spaces";
 import styles from "./style.module.scss";
+import { useSwitchAccountMenuItems } from "./useSwitchAccountMenu";
 
 const ChatModal = dynamic(
 	() => import("@/components/Chat/ChatModal").then((m) => m.ChatModal),
@@ -65,6 +66,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const { setOpenChatModal } = useChat();
 	const spaceHeader = useSpaceHeader();
 	const { can } = useAccess();
+	const switchAccountMenuItems = useSwitchAccountMenuItems();
 	const contentRef = useRef<HTMLElement>(null);
 	const shellRef = useRef<HTMLElement>(null);
 
@@ -189,7 +191,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	}, [getLanguage]);
 
 	const dropdownMenuItems: MenuProps["items"] = useMemo(() => {
-		let menu: MenuProps["items"] = [];
+		let menu: MenuProps["items"] = [...switchAccountMenuItems];
 
 		if (showAdministration) {
 			menu.push({
@@ -282,6 +284,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		t,
 		inlineMenuItems,
 		linkToChat,
+		switchAccountMenuItems,
 	]);
 
 	/**

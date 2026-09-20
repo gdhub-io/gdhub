@@ -63,7 +63,7 @@ export const CheckpointHeroSection = () => {
 				<p className={styles.priceNote}>
 					{t(
 						"checkpointLanding.hero.priceNote",
-						"AI curator — $19 · Industry curator — from $250 · Exact price before payment",
+						"AI curator — $19 · Industry curator — from $300 · Exact price before payment",
 					)}
 				</p>
 			</div>

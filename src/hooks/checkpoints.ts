@@ -2,8 +2,19 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import type { CheckpointItemInput } from "@/schemas/checkpoint";
 import type {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+} from "@/config/prisma-enums";
+import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
+import type {
+	CheckpointEvidenceBody,
+	CheckpointItemInput,
+	CheckpointScopeBody,
+} from "@/schemas/checkpoint";
+import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
+import type {
+	AdvisorCheckpointDto,
 	CheckpointDto,
 	CheckpointListResponse,
 } from "@/types/checkpoints";
@@ -45,8 +56,16 @@ export const useUpdateCheckpoint = (id?: string) => {
 	return useMutation({
 		mutationFn: async (body: {
 			goal?: string;
+			curatorKind?: CheckpointCuratorKind;
+			curatorId?: string | null;
+			acceptedTerms?: boolean;
 			inputs?: CheckpointItemInput[];
 			outcomes?: CheckpointItemInput[];
+			/**
+			 * The day the 28 days are meant to start, as `YYYY-MM-DD`: a day rather
+			 * than an instant, so the server's UTC midnight is what gets stored.
+			 */
+			startedAt?: string | null;
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,
 		onSuccess: (checkpoint) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
@@ -54,6 +73,184 @@ export const useUpdateCheckpoint = (id?: string) => {
 		},
 	});
 };
+
+/**
+ * The day-14 answer: cut, reword, add — or none of the three and a reason why
+ * the list stands. It lands once, so the whole change is one request.
+ */
+export const useChangeScope = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: CheckpointScopeBody) =>
+			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/scope`, body))
+				.data,
+		onSuccess: (checkpoint) => {
+			queryClient.setQueryData(["checkpoint", id], checkpoint);
+			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
+		},
+	});
+};
+
+/** Bind an artifact to the outcomes it proves, or let one go with `artifactId: null`. */
+export const useAttachEvidence = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: CheckpointEvidenceBody) =>
+			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/evidence`, body))
+				.data,
+		onSuccess: (checkpoint) => {
+			queryClient.setQueryData(["checkpoint", id], checkpoint);
+			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
+		},
+	});
+};
+
+/**
+ * Opens Stripe Checkout for a draft and hands back where to send the author.
+ *
+ * It starts nothing. The checkpoint leaves `Draft` when Stripe calls the
+ * webhook, so an author who closes the tab has spent nothing and still has
+ * their draft.
+ */
+export const useCheckpointCheckout = (id?: string) =>
+	useMutation({
+		mutationFn: async () =>
+			(await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`)).data,
+	});
+
+/**
+ * The curator's answer to a checkpoint handed to them. Accepting captures the
+ * money that was held and starts the 28 days; turning it down releases it.
+ */
+export const useAnswerCheckpoint = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (accept: boolean) =>
+			(
+				await axios.post<{ accepted: boolean }>(
+					`/api/checkpoint/${id}/curator`,
+					{ accept },
+				)
+			).data,
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoints"] }),
+	});
+};
+
+/** One of them, opened. Null for a checkpoint this curator does not run. */
+export const useAdvisorCheckpoint = (id?: string) =>
+	useQuery({
+		queryKey: ["advisor-checkpoint", id],
+		queryFn: async () =>
+			(await axios.get<AdvisorCheckpointDto>(`/api/advisor/checkpoints/${id}`))
+				.data,
+		enabled: !!id,
+	});
+
+/**
+ * The curator writing their review of a sprint. It lands on that sprint's
+ * devlog, which is where a review lives until the schema holds one of its own.
+ */
+export const useWriteReview = (checkpointId?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: { devlogId: string; text: string }) =>
+			(
+				await axios.post(
+					`/api/advisor/checkpoints/${checkpointId}/review`,
+					body,
+				)
+			).data,
+		onSuccess: () =>
+			queryClient.invalidateQueries({
+				queryKey: ["advisor-checkpoint", checkpointId],
+			}),
+	});
+};
+
+/** The checkpoints handed to the signed-in curator, in three groups. */
+export const useAdvisorCheckpoints = () =>
+	useQuery({
+		queryKey: ["advisor-checkpoints"],
+		queryFn: async () =>
+			(
+				await axios.get<{
+					asked: AdvisorCheckpointDto[];
+					running: AdvisorCheckpointDto[];
+					closed: AdvisorCheckpointDto[];
+					declined: AdvisorCheckpointDto[];
+				}>("/api/advisor/checkpoints")
+			).data,
+	});
+
+/**
+ * Calling a checkpoint off before it starts, with the money back if any was
+ * taken. Refused once the 28 days run.
+ */
+export const useCancelCheckpoint = (id?: string, projectId?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async () =>
+			(await axios.post<{ refunded: boolean }>(`/api/checkpoint/${id}/cancel`))
+				.data,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["checkpoint", id] });
+			queryClient.invalidateQueries({
+				queryKey: ["project-checkpoints", projectId],
+			});
+		},
+	});
+};
+
+/**
+ * The AI curator reading the goal card against the 28 days and the hours the
+ * team has.
+ *
+ * Run when the payment question opens, not from a button: by then everything it
+ * judges — what exists, what is promised, who curates, how many hours the team
+ * put in — has been answered, and the remark lands where the author can still
+ * press Edit. `signature` is those same facts: change any of them and this is a
+ * different question, so it is asked again; come back without changing anything
+ * and the answer is the one already paid for.
+ */
+export const useGoalCheck = (id?: string, signature?: string) =>
+	useQuery<GoalCheckResult | null>({
+		queryKey: ["goal-check", id, signature],
+		queryFn: async () =>
+			(await axios.post<GoalCheckResult>(`/api/checkpoint/${id}/goal-check`))
+				.data,
+		enabled: !!id && !!signature,
+		staleTime: Number.POSITIVE_INFINITY,
+		retry: false,
+	});
+
+/** Specialists who have said they take mentees, at an expert level. */
+export const useCheckpointCurators = () =>
+	useQuery({
+		queryKey: ["checkpoint-curators"],
+		queryFn: async () =>
+			(await axios.get<CheckpointCurator[]>("/api/checkpoint/curators")).data,
+	});
+
+/**
+ * The curator proposing the lines of the goal card, for an author who does not
+ * know what to write. It suggests into the form; nothing is saved until the
+ * author leaves the question, and every line is theirs to edit or drop.
+ */
+export const useSuggestLines = (id?: string) =>
+	useMutation({
+		mutationFn: async (kind: CheckpointItemKind) =>
+			(
+				await axios.post<{ lines: string[] }>(`/api/checkpoint/${id}/suggest`, {
+					kind,
+				})
+			).data.lines,
+	});
 
 export const useCreateCheckpoint = (projectId?: string) => {
 	const queryClient = useQueryClient();

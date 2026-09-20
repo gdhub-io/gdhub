@@ -5,8 +5,11 @@ import styles from "./style.module.scss";
 
 export type EmptyStateProps = {
 	icon: Icon;
-	/** Already-translated. One short affirmative line — "You're all caught up". */
-	title: string;
+	/**
+	 * Already-translated. One short affirmative line — "You're all caught up".
+	 * Left out where the sentence is the whole message, as on a first-run screen.
+	 */
+	title?: string;
 	/** Already-translated. One sentence saying what will appear here and when. */
 	description?: string;
 	/** A single primary action at most. */
@@ -47,7 +50,7 @@ export function EmptyState({
 				ink={ink}
 			/>
 			<div className={styles.text}>
-				<p className={styles.title}>{title}</p>
+				{!!title && <p className={styles.title}>{title}</p>}
 				{description && <p className={styles.description}>{description}</p>}
 			</div>
 			{action}

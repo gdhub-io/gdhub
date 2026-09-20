@@ -1,155 +1,102 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, Typography } from "antd";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Button, Flex, Typography } from "antd";
+import clsx from "clsx";
+import type { ReactNode } from "react";
 import styles from "./StartLayout.module.scss";
 
 /**
- * The shell every step of the start flow shares (frames `W76sA5`, `pyT9o`).
+ * The shell every question of the purchase shares — frames `W76sA5` … `tmP5M`.
  *
- * Four segments and "Step N of 4" across the top, one question, room to answer
- * it, and a footer bar. No step repeats what an earlier one asked — everything
- * is shown back on the summary step instead.
+ * Five bars across the top say where the purchase has got to, and nothing else
+ * does: the step's name is already under the bar it belongs to, so the panel
+ * never repeats it, and the count is the bars themselves rather than a sentence.
+ *
+ * It lives inside the checkpoint page's panel, so it takes the height its
+ * content needs; the full-viewport variant is gone with the routes it belonged
+ * to.
  */
 
-export const START_STEPS = ["now", "goal", "curator", "payment"] as const;
+export const START_STEPS = [
+	"now",
+	"goal",
+	"curator",
+	"planning",
+	"payment",
+] as const;
 
 export type StartStep = (typeof START_STEPS)[number];
 
 export type StartLayoutProps = {
 	step: StartStep;
-	/** The stage the checkpoint is being opened on. */
-	stageName?: string;
-	question: string;
-	hint: string;
+	/** One line under the bars saying what this question is for. */
+	hint?: string;
+	/** Sits above the hint: what the author has to read before the step's own words. */
+	notice?: ReactNode;
 	children: ReactNode;
+	/** Sits between the buttons and the standing note. */
+	footNote?: ReactNode;
+	/**
+	 * What the foot says about the state of the purchase. Defaults to the draft
+	 * note; `null` leaves the corner empty, which is what a bought checkpoint
+	 * needs — it is no longer a draft and has nothing to report there.
+	 */
+	saved?: string | null;
 	onBack?: () => void;
-	onCancel: () => void;
-	forward: ReactNode;
+	/** The way on. Payment has none — its action is in the price card. */
+	forward?: ReactNode;
 };
 
 export function StartLayout({
 	step,
-	stageName,
-	question,
 	hint,
+	notice,
 	children,
+	footNote,
+	saved,
 	onBack,
-	onCancel,
 	forward,
 }: StartLayoutProps) {
 	const { t } = useTranslate();
 	const index = START_STEPS.indexOf(step);
 
-	// The flow runs from wherever it starts to the bottom of the window, so the
-	// footer bar sits on the edge of the screen and the answer scrolls under it
-	// rather than pushing it away. The chrome above it is the space header, whose
-	// height is not a token, so it is measured.
-	//
-	// Watched rather than measured once: the header is published into the layout
-	// from an effect and lands a tick after this mounts, and a single reading
-	// taken before it does leaves the page overflowing by exactly its height.
-	const flow = useRef<HTMLDivElement>(null);
-	const [height, setHeight] = useState<string>();
-
-	useEffect(() => {
-		const measure = () => {
-			const node = flow.current;
-			if (!node) return;
-
-			setHeight(
-				`calc(100dvh - ${Math.round(node.getBoundingClientRect().top)}px)`,
-			);
-		};
-
-		const observer = new ResizeObserver(measure);
-		observer.observe(document.body);
-
-		measure();
-		// The header lands on the next frame, and the body may not change size
-		// when it does, so one more reading after it has settled.
-		const frame = requestAnimationFrame(measure);
-		window.addEventListener("resize", measure);
-
-		return () => {
-			cancelAnimationFrame(frame);
-			observer.disconnect();
-			window.removeEventListener("resize", measure);
-		};
-	}, []);
-
 	const labels: Record<StartStep, string> = {
-		now: t("checkpoints.start.step1", "Now"),
-		goal: t("checkpoints.start.step2", "Goal"),
-		curator: t("checkpoints.start.step3", "Curator"),
-		payment: t("checkpoints.start.step4", "Payment"),
+		now: t("checkpoints.prepare.step.now", "Now"),
+		goal: t("checkpoints.prepare.step.goal", "Goal"),
+		curator: t("checkpoints.prepare.step.curator", "Curator"),
+		planning: t("checkpoints.prepare.step.planning", "Planning"),
+		payment: t("checkpoints.prepare.step.payment", "Payment"),
 	};
 
-	const confirmCancel = () =>
-		Modal.confirm({
-			title: t("checkpoints.cancel.title", "Cancel this draft?"),
-			content: (
-				<Flex vertical gap={8}>
-					<span>
-						{t(
-							"checkpoints.cancel.body",
-							"Everything written on the three steps goes with it, and nothing on this page can bring it back.",
-						)}
-					</span>
-					<Typography.Text type="secondary">
-						{t(
-							"checkpoints.cancel.leaving",
-							"Closing the tab or walking away does not cancel anything — the draft waits in the checkpoint list.",
-						)}
-					</Typography.Text>
-				</Flex>
-			),
-			okText: t("checkpoints.cancel.confirm", "Cancel the draft"),
-			cancelText: t("checkpoints.cancel.keep", "Keep the draft"),
-			okButtonProps: { danger: true, type: "primary" },
-			onOk: onCancel,
-		});
-
 	return (
-		<div className={styles.flow} ref={flow} style={{ height }}>
-			<Flex vertical gap={32} className={styles.content}>
-				<Flex vertical gap={10}>
-					{/* The rail says which step; this says what is being built. */}
-					<Typography.Text className={styles.kicker}>
-						{[t("checkpoints.start.kicker", "New checkpoint"), stageName]
-							.filter(Boolean)
-							.join(" · ")}
-					</Typography.Text>
-					<Flex gap={10}>
-						{START_STEPS.map((candidate, position) => (
-							<Flex vertical gap={6} key={candidate} className={styles.segment}>
-								<span
-									className={styles.bar}
-									data-reached={position <= index || undefined}
-								/>
-								<Typography.Text
-									className={styles.segmentLabel}
-									data-current={position === index || undefined}
-								>
-									{labels[candidate]}
-								</Typography.Text>
-							</Flex>
-						))}
-					</Flex>
-					<Typography.Text className={styles.meta}>
-						{t("checkpoints.start.stepMeta", "Step {step} of 4", {
-							step: index + 1,
-						})}
-					</Typography.Text>
+		<div className={styles.flow}>
+			<Flex vertical gap={24} className={styles.content}>
+				<Flex gap={12}>
+					{START_STEPS.map((candidate, position) => (
+						<Flex vertical gap={8} key={candidate} className={styles.segment}>
+							<span
+								className={clsx(
+									styles.bar,
+									position < index && styles.barDone,
+									position === index && styles.barCurrent,
+								)}
+							/>
+							<Typography.Text
+								className={styles.segmentLabel}
+								data-current={position === index || undefined}
+							>
+								{labels[candidate]}
+							</Typography.Text>
+						</Flex>
+					))}
 				</Flex>
 
-				<Flex vertical gap={10}>
-					<Typography.Title level={1} className={styles.question}>
-						{question}
-					</Typography.Title>
+				{notice}
+
+				{!!hint && (
 					<Typography.Text className={styles.hint}>{hint}</Typography.Text>
-				</Flex>
+				)}
 
 				<div className={styles.answer}>{children}</div>
 			</Flex>
@@ -158,14 +105,19 @@ export function StartLayout({
 				<Flex gap={8}>
 					{onBack && (
 						<Button onClick={onBack}>
-							{t("checkpoints.start.back", "Back")}
+							{t("checkpoints.prepare.back", "Back")}
 						</Button>
 					)}
-					<Button onClick={confirmCancel}>
-						{t("checkpoints.start.cancel", "Cancel")}
-					</Button>
+					{forward}
 				</Flex>
-				{forward}
+				<Flex gap={12} align="center">
+					{footNote}
+					{saved !== null && (
+						<Typography.Text className={styles.saved}>
+							{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
+						</Typography.Text>
+					)}
+				</Flex>
 			</footer>
 		</div>
 	);

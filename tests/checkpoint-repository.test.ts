@@ -1,8 +1,8 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { dueDateFrom } from "@/lib/checkpoint-days";
 import {
 	createDraftCheckpoint,
-	dueDateFrom,
 	getCreationBlocker,
 } from "@/repositories/checkpoint.repository";
 import { prisma } from "@/services/prisma";
@@ -38,7 +38,10 @@ describe("getCreationBlocker", () => {
 		expect(prisma.projectWorkflow.findUnique).not.toHaveBeenCalled();
 	});
 
-	it("counts only Active and Review as open — a draft is the attempt itself", async () => {
+	// A draft is the attempt itself and does not block. A checkpoint waiting on
+	// its curator does: it is paid for, and a second one beside it would be two
+	// live purchases on one project.
+	it("counts a paid checkpoint as open, and a draft as not", async () => {
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
 			currentStepId: "step-3",
@@ -49,7 +52,13 @@ describe("getCreationBlocker", () => {
 			expect.objectContaining({
 				where: {
 					projectId: "p1",
-					status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+					status: {
+						in: [
+							CheckpointStatus.AwaitingCurator,
+							CheckpointStatus.Active,
+							CheckpointStatus.Review,
+						],
+					},
 				},
 			}),
 		);
@@ -70,7 +79,7 @@ describe("getCreationBlocker", () => {
 describe("createDraftCheckpoint", () => {
 	const currentStep = { id: "step-3", name: "Prototyping" };
 
-	it("snapshots the stage name and numbers the checkpoint within that stage", async () => {
+	it("snapshots the stage name and numbers it through the whole project", async () => {
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
 			currentStep,
 		} as never);
@@ -80,6 +89,9 @@ describe("createDraftCheckpoint", () => {
 
 		await createDraftCheckpoint("p1");
 
+		expect(prisma.projectCheckpoint.count).toHaveBeenCalledWith({
+			where: { projectId: "p1" },
+		});
 		expect(prisma.projectCheckpoint.create).toHaveBeenCalledWith(
 			expect.objectContaining({
 				data: expect.objectContaining({

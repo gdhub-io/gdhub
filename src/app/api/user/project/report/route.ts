@@ -1,4 +1,4 @@
-import { Prisma } from "@gdhub-io/gdhub-prisma";
+import { CheckpointStatus, Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import {
@@ -77,6 +77,18 @@ export const POST = withAuth({ mode: "user" })(
 			select: { currentStepId: true },
 		});
 
+		// A devlog written while a checkpoint is running is that checkpoint's
+		// devlog, wherever it was written from: the sprint it belongs to is read
+		// off its date, and a post the checkpoint cannot see is a sprint that
+		// looks silent when it was not.
+		const checkpoint = await prisma.projectCheckpoint.findFirst({
+			where: {
+				projectId,
+				status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+			},
+			select: { id: true },
+		});
+
 		await prisma.projectReport.create({
 			data: {
 				content,
@@ -86,6 +98,7 @@ export const POST = withAuth({ mode: "user" })(
 				authorId: currentUser.id,
 				projectId,
 				stepId: workflow?.currentStepId ?? undefined,
+				checkpointId: checkpoint?.id,
 			},
 		});
 

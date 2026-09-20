@@ -1,0 +1,481 @@
+import { readFileSync } from "node:fs";
+import {
+	CheckpointItemKind,
+	CheckpointStatus,
+	CheckpointVerdict,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
+import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
+import {
+	answerDevlog,
+	closeCheckpoint,
+	runGoalCheck,
+	writeMidNote,
+} from "@/repositories/checkpoint-curator.repository";
+import { checkpointCurator } from "@/services/checkpoint-curator";
+import { prisma } from "@/services/prisma";
+
+vi.mock("@/services/prisma", () => ({
+	prisma: {
+		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn() },
+		projectReport: { findUnique: vi.fn(), update: vi.fn() },
+		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
+	},
+}));
+
+vi.mock("@/services/checkpoint-curator", () => ({
+	checkpointCurator: {
+		checkGoal: vi.fn(),
+		answerDevlog: vi.fn(),
+		writeMidNote: vi.fn(),
+		writeReport: vi.fn(),
+	},
+}));
+
+beforeEach(() => {
+	vi.clearAllMocks();
+	vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+});
+
+const outcome = (id: string, artifact: unknown = null) => ({
+	id,
+	kind: CheckpointItemKind.Outcome,
+	text: `outcome ${id}`,
+	originalText: null,
+	cut: false,
+	addedAt: null,
+	acceptedNote: null,
+	artifact,
+});
+
+const readable = {
+	type: "GameplayVideo",
+	name: "Slice",
+	description: null,
+	link: "https://example.com/v",
+	checkStatus: "Readable",
+};
+
+const running = (over: Record<string, unknown> = {}) => ({
+	goal: "A playable vertical slice",
+	stageName: "Prototyping",
+	stepId: "step-1",
+	status: CheckpointStatus.Active,
+	verdict: null,
+	midNote: null,
+	revisedAt: null,
+	revisedNote: null,
+	startedAt: new Date("2026-09-01T00:00:00.000Z"),
+	items: [outcome("o1", readable)],
+	reports: [],
+	pulses: [],
+	...over,
+});
+
+describe("runGoalCheck", () => {
+	const member = (timeForWork: number[] | null) => ({
+		user: { profile: timeForWork ? { timeForWork } : null },
+	});
+
+	const draft = (
+		members: ReturnType<typeof member>[],
+		kept: { goalCheck?: unknown; goalCheckHash?: string | null } = {},
+	) => ({
+		goal: "A playable vertical slice",
+		stageName: "Prototyping",
+		stepId: "step-1",
+		goalCheck: null,
+		goalCheckHash: null,
+		items: [outcome("o1")],
+		project: { team: { members } },
+		...kept,
+	});
+
+	const checked = { reachable: true, notes: [], missing: [], note: "n" };
+
+	it("hands the model the team's hours, weekly and over the whole run", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20]), member([5, 8])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				team: {
+					members: 2,
+					stated: 2,
+					hoursPerWeek: { from: 15, to: 28 },
+					hoursPerRun: {
+						from: 15 * SPRINTS_PER_CHECKPOINT,
+						to: 28 * SPRINTS_PER_CHECKPOINT,
+					},
+				},
+			}),
+			{},
+		);
+	});
+
+	it("does not read a member who stated nothing as a member with no hours", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20]), member([]), member(null)]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				team: expect.objectContaining({
+					members: 3,
+					stated: 1,
+					hoursPerWeek: { from: 10, to: 20 },
+				}),
+			}),
+			{},
+		);
+	});
+
+	it("leaves the hours unknown when the whole team stated nothing", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([]), member(null)]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				team: expect.objectContaining({
+					members: 2,
+					hoursPerWeek: null,
+					hoursPerRun: null,
+				}),
+			}),
+			{},
+		);
+	});
+
+	it("counts the roster the team page counts, and no one else", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.findUnique).mock.calls[0];
+		const select = (args as Record<string, any>).select;
+
+		expect(select.project.select.team.select.members.where).toEqual({
+			status: { in: TEAM_ROSTER_STATUSES },
+		});
+		expect(TEAM_ROSTER_STATUSES).toEqual([
+			TeamMemberStatus.Founder,
+			TeamMemberStatus.Hired,
+			TeamMemberStatus.Fired,
+		]);
+		// The team page is where that definition comes from; a second list there
+		// would let the two drift apart without either test failing.
+		expect(
+			readFileSync("src/app/api/user/project/team/route.ts", "utf8"),
+		).toContain("TEAM_ROSTER_STATUSES");
+	});
+
+	// The payment step is the only caller and opens on every load, so a read that
+	// is not kept is a model call each time.
+	it("keeps the read it just made, under the hash of what it asked", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const data = (args as Record<string, any>).data;
+
+		expect(data.goalCheck).toEqual(checked);
+		expect(data.goalCheckHash).toEqual(expect.any(String));
+	});
+
+	it("does not ask again while the plan behind the read is unchanged", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const hash = (args as Record<string, any>).data.goalCheckHash;
+		vi.clearAllMocks();
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])], {
+				goalCheck: checked,
+				goalCheckHash: hash,
+			}) as never,
+		);
+
+		await expect(runGoalCheck("cp1")).resolves.toEqual(checked);
+		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	// The hours reach the model, so they are part of the question: a team that
+	// restated them must not be answered from the card alone.
+	it("asks again when the team's hours moved under a kept read", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const hash = (args as Record<string, any>).data.goalCheckHash;
+		vi.clearAllMocks();
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([30, 40])], {
+				goalCheck: checked,
+				goalCheckHash: hash,
+			}) as never,
+		);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalled();
+	});
+
+	it("keeps nothing when the model fails", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(null as never);
+
+		await expect(runGoalCheck("cp1")).resolves.toBeNull();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	it("asks nothing of the model for a checkpoint that is not there", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(null);
+
+		await expect(runGoalCheck("cp1")).resolves.toBeNull();
+		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+	});
+});
+
+describe("answerDevlog", () => {
+	it("writes the answer under the post and stamps the time", async () => {
+		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
+			content: "Tide states are in.",
+			video: null,
+			publishedAt: new Date("2026-09-08T10:00:00.000Z"),
+			curatorFeedbackAt: null,
+			checkpoint: { goal: "g", items: [outcome("o1")] },
+		} as never);
+		vi.mocked(checkpointCurator.answerDevlog).mockResolvedValue({
+			answer: "This moves the tide work.",
+			moves: ["o1"],
+			untouched: [],
+		});
+
+		await answerDevlog("r1");
+
+		expect(prisma.projectReport.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: expect.objectContaining({
+					curatorFeedback: "This moves the tide work.",
+				}),
+			}),
+		);
+	});
+
+	it("does not answer a post that already carries one", async () => {
+		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
+			content: "x",
+			video: null,
+			publishedAt: new Date(),
+			curatorFeedbackAt: new Date(),
+			checkpoint: { goal: "g", items: [] },
+		} as never);
+
+		await expect(answerDevlog("r1")).resolves.toBeNull();
+		expect(checkpointCurator.answerDevlog).not.toHaveBeenCalled();
+	});
+
+	it("ignores a devlog that belongs to no checkpoint", async () => {
+		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
+			content: "x",
+			video: null,
+			publishedAt: new Date(),
+			curatorFeedbackAt: null,
+			checkpoint: null,
+		} as never);
+
+		await expect(answerDevlog("r1")).resolves.toBeNull();
+		expect(checkpointCurator.answerDevlog).not.toHaveBeenCalled();
+	});
+
+	it("writes nothing when the model fails", async () => {
+		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
+			content: "x",
+			video: null,
+			publishedAt: new Date(),
+			curatorFeedbackAt: null,
+			checkpoint: { goal: "g", items: [] },
+		} as never);
+		vi.mocked(checkpointCurator.answerDevlog).mockResolvedValue(null);
+
+		await expect(answerDevlog("r1")).resolves.toBeNull();
+		expect(prisma.projectReport.update).not.toHaveBeenCalled();
+	});
+});
+
+describe("writeMidNote", () => {
+	it("hands the model the unclaimed outcomes rather than asking for them", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({ items: [outcome("o1", readable), outcome("o2")] }) as never,
+		);
+		vi.mocked(checkpointCurator.writeMidNote).mockResolvedValue({
+			note: "One outcome has nothing against it.",
+		});
+
+		await writeMidNote("cp1");
+
+		expect(checkpointCurator.writeMidNote).toHaveBeenCalledWith(
+			expect.objectContaining({
+				unproven: [
+					{ id: "o2", text: "outcome o2", reason: "missing" },
+				],
+			}),
+			{},
+		);
+		expect(prisma.projectCheckpoint.update).toHaveBeenCalled();
+	});
+
+	it("does not write a second note", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({ midNote: "already written" }) as never,
+		);
+
+		await expect(writeMidNote("cp1")).resolves.toBeNull();
+		expect(checkpointCurator.writeMidNote).not.toHaveBeenCalled();
+	});
+
+	it("leaves a checkpoint that is not running alone", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({ status: CheckpointStatus.Draft }) as never,
+		);
+
+		await expect(writeMidNote("cp1")).resolves.toBeNull();
+		expect(checkpointCurator.writeMidNote).not.toHaveBeenCalled();
+	});
+});
+
+describe("closeCheckpoint", () => {
+	it("writes the report and the settled verdict, and closes", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running() as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue({
+			summary: "The slice is playable.",
+			verdict: CheckpointVerdict.StageClosed,
+			verdictNote: "Everything owed is proven.",
+		});
+
+		await expect(closeCheckpoint("cp1")).resolves.toMatchObject({
+			verdict: CheckpointVerdict.StageClosed,
+			overrode: null,
+		});
+		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: expect.objectContaining({
+					status: CheckpointStatus.Closed,
+					verdict: CheckpointVerdict.StageClosed,
+				}),
+			}),
+		);
+	});
+
+	it("overrules a verdict the evidence does not support", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({ items: [outcome("o1", readable), outcome("o2")] }) as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue({
+			summary: "Good progress.",
+			verdict: CheckpointVerdict.StageClosed,
+			verdictNote: "Looks done.",
+		});
+
+		await expect(closeCheckpoint("cp1")).resolves.toMatchObject({
+			verdict: CheckpointVerdict.GoalMissed,
+			overrode: CheckpointVerdict.StageClosed,
+		});
+		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: expect.objectContaining({
+					verdict: CheckpointVerdict.GoalMissed,
+				}),
+			}),
+		);
+	});
+
+	it("does not close on a model failure", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running() as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue(null);
+
+		await expect(closeCheckpoint("cp1")).resolves.toBeNull();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	it("does not decide a checkpoint twice", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({
+				status: CheckpointStatus.Closed,
+				verdict: CheckpointVerdict.GoalMet,
+			}) as never,
+		);
+
+		await expect(closeCheckpoint("cp1")).resolves.toBeNull();
+		expect(checkpointCurator.writeReport).not.toHaveBeenCalled();
+	});
+
+	it("sends only the artifacts that are attached, and says which could not be opened", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({
+				items: [
+					outcome("o1", readable),
+					outcome("o2", { ...readable, checkStatus: "Unreachable" }),
+					outcome("o3"),
+				],
+			}) as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue({
+			summary: "s",
+			verdict: CheckpointVerdict.GoalMissed,
+			verdictNote: "n",
+		});
+
+		await closeCheckpoint("cp1");
+
+		expect(checkpointCurator.writeReport).toHaveBeenCalledWith(
+			expect.objectContaining({
+				artifacts: [
+					expect.objectContaining({ itemId: "o1", readable: true }),
+					expect.objectContaining({ itemId: "o2", readable: false }),
+				],
+				unproven: [
+					expect.objectContaining({ id: "o2", reason: "unreachable" }),
+					expect.objectContaining({ id: "o3", reason: "missing" }),
+				],
+			}),
+			{},
+		);
+	});
+});

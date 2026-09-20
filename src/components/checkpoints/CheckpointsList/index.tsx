@@ -1,18 +1,26 @@
 "use client";
 
-import { IconFlag } from "@tabler/icons-react";
+import {
+	IconAlertTriangle,
+	IconChevronRight,
+	IconFlag,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Flex, Skeleton, Typography } from "antd";
+import { App, Button, Flex, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import { EmptyState, SectionHeading } from "@/components/ui";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { useCheckpoints, useDiscardCheckpoint } from "@/hooks/checkpoints";
 import { useCurrentProject } from "@/hooks/project";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCard } from "../CheckpointCard";
+import { CheckpointsSkeleton } from "../CheckpointsSkeleton";
 import { CuratorBadge } from "../CuratorBadge";
+import { DraftCard } from "../DraftCard";
 import { StartCheckpointButton } from "../StartCheckpointButton";
 import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
@@ -21,25 +29,41 @@ const PAGE_SIZE = 10;
 
 export function CheckpointsList() {
 	const { t } = useTranslate();
+	const router = useRouter();
 	const { message } = App.useApp();
 	const { project, isLoading: projectLoading } = useCurrentProject();
 	const [page, setPage] = useState(1);
 
-	const { data, isPending } = useCheckpoints(project?.id, page);
+	const { data, isPending, isError, refetch, isFetching } = useCheckpoints(
+		project?.id,
+		page,
+	);
 	const discardCheckpoint = useDiscardCheckpoint();
 
 	const columns: ColumnsType<CheckpointDto> = useMemo(
 		() => [
 			{
+				// The number runs through the project, not through the stage, so it
+				// names the row on its own and the stage is context beside it.
 				title: t("checkpoints.past.column.checkpoint", "Checkpoint"),
 				key: "checkpoint",
+				width: 120,
+				render: (_, row) => (
+					<Typography.Text className={styles.number}>
+						{t("checkpoints.number", "Checkpoint {number}", {
+							number: row.order,
+						})}
+					</Typography.Text>
+				),
+			},
+			{
+				title: t("checkpoints.past.column.stage", "Stage"),
+				key: "stage",
 				width: 220,
 				render: (_, row) => (
-					// The stage gives way; the number never does.
-					<Flex gap={4} className={styles.stageCell}>
-						<Typography.Text ellipsis>{row.stageName}</Typography.Text>
-						<Typography.Text type="secondary" className={styles.number}>
-							{`· ${row.order}`}
+					<Flex className={styles.stageCell}>
+						<Typography.Text type="secondary" ellipsis>
+							{row.stageName}
 						</Typography.Text>
 					</Flex>
 				),
@@ -67,11 +91,25 @@ export function CheckpointsList() {
 					row.verdict ? <VerdictChip verdict={row.verdict} /> : "—",
 			},
 			{
-				title: t("checkpoints.past.column.decidedBy", "Decided by"),
+				title: t("checkpoints.past.column.curator", "Curator"),
 				key: "decidedBy",
 				width: 180,
 				render: (_, row) => (
 					<CuratorBadge kind={row.curatorKind} curator={row.curator} />
+				),
+			},
+			{
+				// The row is a link and says so: a table of past runs that opens
+				// nothing looks like a record rather than a way in.
+				key: "open",
+				width: 48,
+				align: "center",
+				render: () => (
+					<IconChevronRight
+						size={18}
+						stroke={1.6}
+						className={styles.openHint}
+					/>
 				),
 			},
 		],
@@ -94,20 +132,43 @@ export function CheckpointsList() {
 	// `isPending` stays true while the query is disabled, so the empty state
 	// cannot flash before the project id has even arrived.
 	if (projectLoading || isPending) {
-		return <Skeleton active paragraph={{ rows: 6 }} />;
+		return <CheckpointsSkeleton />;
+	}
+
+	// The page head stays as it is and only the list becomes one panel: the tab
+	// is still navigable, and the one thing that failed says so (frame `O0tgre`).
+	if (isError) {
+		return (
+			<div className={styles.error}>
+				<EmptyState
+					icon={IconAlertTriangle}
+					tint="var(--gd-danger-tint)"
+					ink="var(--gd-danger-solid)"
+					description={t(
+						"checkpoints.error.title",
+						"Checkpoints could not be loaded",
+					)}
+					action={
+						<Button
+							type="primary"
+							loading={isFetching}
+							onClick={() => refetch()}
+						>
+							{t("checkpoints.error.retry", "Try again")}
+						</Button>
+					}
+				/>
+			</div>
+		);
 	}
 
 	if (!data?.current && data?.closed.total === 0) {
 		return (
 			<EmptyState
 				icon={IconFlag}
-				title={t(
+				description={t(
 					"checkpoints.empty.title",
 					"Your first checkpoint starts here",
-				)}
-				description={t(
-					"checkpoints.empty.description",
-					"28 days, one goal, a curator, and a verdict that opens the next stage.",
 				)}
 				action={
 					<StartCheckpointButton
@@ -121,32 +182,43 @@ export function CheckpointsList() {
 
 	return (
 		<Flex vertical gap={32}>
-			{data?.current && (
-				<CheckpointCard
-					checkpoint={data.current}
-					projectSlug={project?.slug ?? ""}
-					onDiscard={discard}
-					discarding={discardCheckpoint.isPending}
-				/>
-			)}
+			{data?.current &&
+				// A checkpoint that has not started gets the compact card, whether it
+				// is still being filled in or paid for and waiting.
+				(data.current.status === CheckpointStatus.Draft ||
+				data.current.status === CheckpointStatus.AwaitingCurator ? (
+					<DraftCard
+						checkpoint={data.current}
+						projectSlug={project?.slug ?? ""}
+						onDiscard={discard}
+						discarding={discardCheckpoint.isPending}
+					/>
+				) : (
+					<CheckpointCard
+						checkpoint={data.current}
+						projectSlug={project?.slug ?? ""}
+					/>
+				))}
 
 			{data && data.closed.total > 0 && (
 				<Flex vertical gap={16}>
-					<Flex gap={8} align="center">
-						<SectionHeading
-							level={4}
-							title={t("checkpoints.past.title", "Past checkpoints")}
-						/>
-						<Typography.Text type="secondary">
-							{data.closed.total}
-						</Typography.Text>
-					</Flex>
+					<SectionHeading
+						level={4}
+						title={t("checkpoints.past.title", "Past checkpoints")}
+					/>
 					<ModernTable<CheckpointDto>
 						density="compact"
 						rowKey="id"
 						columns={columns}
 						dataSource={data.closed.rows}
-						scroll={{ x: 900 }}
+						className={styles.past}
+						onRow={(row) => ({
+							onClick: () =>
+								router.push(
+									`/user/project/${project?.slug ?? ""}/checkpoints/${row.id}`,
+								),
+						})}
+						scroll={{ x: 1000 }}
 						pagination={{
 							current: page,
 							pageSize: PAGE_SIZE,

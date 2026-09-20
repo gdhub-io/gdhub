@@ -15,11 +15,21 @@
 	color: var(--gd-color-text-tertiary);
 }
 
+// Inside a button the border and the press belong to the button, so the slot is
+// only its icon and its name.
+.plain {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	min-width: 0;
+	color: inherit;
+}
+
 .label {
 	// A raw URL has no break opportunity, so it is truncated, never wrapped.
 	max-width: 140px;
 	color: inherit;
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 }
 
 .picker {

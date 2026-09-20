@@ -1,0 +1,16 @@
+.icon {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.label {
+	flex: none;
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--gd-font-size-body-sm);
+}

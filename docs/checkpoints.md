@@ -8,6 +8,14 @@ The rules a curator and an author follow are in
 [docs/checkpoint-standard.md](checkpoint-standard.md). This file is the engineering side
 of the same thing.
 
+**The page this describes has been redesigned (GDHUB-57).** The checkpoint is now one page
+laid out as a path — the purchase, four **sprints**, the checkpoint itself — and the unit
+inside it is a sprint of seven days counted from the day it started, never a calendar week.
+Where this file still says "week", or describes the action card and the thread, the current
+shape is in [docs/design/specs/checkpoints.md](design/specs/checkpoints.md) and that file
+wins. What is stored, and §8 of the design spec on what the schema cannot hold yet, are the
+two places to read before changing data.
+
 ## 1. Vocabulary
 
 - **Checkpoint** — the point at the end of the 28 days where the work is taken or

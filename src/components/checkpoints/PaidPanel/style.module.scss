@@ -1,0 +1,63 @@
+// Two blocks rather than one card: what was paid and who is being waited on are
+// separate facts, and the frame `P8Tfn` draws them apart.
+.block {
+	width: 100%;
+
+	// One line tall, the way frame `SwaKm` draws it: the block states a fact and
+	// carries the one button that follows from it.
+	:global(.ant-card-body) {
+		padding: var(--gd-space-2);
+	}
+
+	// Settled money reads as settled: the one green thing on the page.
+	&[data-tone="paid"] {
+		border-color: var(--gd-success-solid);
+		background: var(--gd-success-tint);
+	}
+
+	// Money that went back is not bad news and not good news: it is the state
+	// of the account, said plainly.
+	&[data-tone="released"] {
+		background: var(--gd-color-surface-sunken);
+	}
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.body {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+}
+
+.dates {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// The wait is not a card: nothing has happened that needs a surface of its own,
+// and the frame `dvMPy` draws it as centred text on the panel.
+.waiting {
+	padding: var(--gd-space-8) var(--gd-space-4);
+	text-align: center;
+}
+
+.waitingText {
+	max-width: 420px;
+}
+
+// Present, findable, and not competing with anything: replacing a curator or
+// calling the checkpoint off is rarely what the author came to do.
+.quiet {
+	height: auto;
+	padding: 0;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+}

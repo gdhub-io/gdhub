@@ -6,16 +6,9 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EmptyState } from "@/components/ui/EmptyState";
+import type { FixtureUser } from "@/repositories/dev-fixture-users.repository";
 
 const { Title, Text } = Typography;
-
-export type FixtureUser = {
-	email: string;
-	name: string;
-	image: string | null;
-	/** What the account can do, read off its own rows. */
-	badges: string[];
-};
 
 /**
  * Untranslated on purpose: the screen only exists where `E2E_TEST_AUTH=1` is

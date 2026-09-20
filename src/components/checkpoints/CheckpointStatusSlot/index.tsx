@@ -6,7 +6,10 @@ import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
 
 export type CheckpointStatusSlotProps = {
-	checkpoint: Pick<CheckpointDto, "status" | "verdict" | "day">;
+	checkpoint: Pick<
+		CheckpointDto,
+		"status" | "verdict" | "day" | "curatorDeclinedAt" | "curator"
+	>;
 	className?: string;
 };
 
@@ -38,6 +41,39 @@ export function CheckpointStatusSlot({
 		);
 	}
 
+	// Paid for, and the person asked to run it has not answered. Saying "Day 1"
+	// here would claim the 28 days had started when nobody has taken them on.
+	if (checkpoint.status === CheckpointStatus.AwaitingCurator) {
+		return (
+			<StatusDot
+				tone="info"
+				label={t(
+					"checkpoints.status.awaitingCurator",
+					"Waiting for the curator",
+				)}
+				className={className}
+			/>
+		);
+	}
+
+	// A draft again, but not a fresh one: somebody was asked and said no, and
+	// "Draft" would hide the one fact the author has to act on.
+	if (
+		checkpoint.status === CheckpointStatus.Draft &&
+		checkpoint.curatorDeclinedAt &&
+		!checkpoint.curator
+	) {
+		return (
+			<StatusDot
+				tone="warning"
+				label={t("checkpoints.status.declined", "Expert unavailable")}
+				className={className}
+			/>
+		);
+	}
+
+	// A status is a dot and a word, never a filled pill — the day is the one
+	// exception, because it is a figure rather than a state.
 	if (checkpoint.status === CheckpointStatus.Draft) {
 		return (
 			<StatusDot
@@ -49,7 +85,7 @@ export function CheckpointStatusSlot({
 	}
 
 	return (
-		<span className={`${styles.day}${className ? ` ${className}` : ""}`}>
+		<span className={`${styles.chip}${className ? ` ${className}` : ""}`}>
 			{t("checkpoints.status.day", "Day {day} of 28", {
 				day: checkpoint.day ?? 1,
 			})}

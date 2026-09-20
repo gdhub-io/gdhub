@@ -1,10 +1,10 @@
-.day {
+.chip {
 	flex: none;
 	padding: 3px var(--gd-space-2);
 	border-radius: var(--gd-radius-chip);
 	background: var(--gd-color-surface-sunken);
 	color: var(--gd-color-text);
-	font-size: 13px;
+	font-size: var(--gd-font-size-body-sm);
 	font-weight: 600;
 	font-feature-settings: "tnum";
 	white-space: nowrap;

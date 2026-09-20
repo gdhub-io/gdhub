@@ -2,8 +2,13 @@
 	width: 100%;
 }
 
+// The field takes whatever the trailing controls leave — all of it on the ghost
+// row, which carries none, so both rows start on the same left edge.
 .input {
-	height: 44px;
-	border-radius: var(--gd-radius-control);
-	font-size: 15px;
+	flex: 1;
+	min-width: 0;
+}
+
+.attach {
+	flex: none;
 }

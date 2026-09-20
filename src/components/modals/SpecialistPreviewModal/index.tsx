@@ -72,7 +72,15 @@ const matchColor = (percent: number, token: any) => {
 
 // Keep the rail tidy for prolific members — active projects first, the rest
 // behind a "show more" toggle.
-const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
+const SpecialistPreviewModal = ({
+	specialistId,
+	open,
+	onCancel,
+	// Off where the card is opened to weigh somebody up for something else — the
+	// curator picker is considering them for the 28 days, not for a seat on the
+	// team, and a hiring CTA there is an offer nobody meant to make.
+	withOffer = true,
+}: any) => {
 	const { t } = useTranslate();
 	const session: any = useSession();
 	const { setSelectedRoomId, setOpenChatModal } = useChat();
@@ -97,13 +105,13 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 	// their own card). Once the specialist accepted an offer, the CTA becomes
 	// "Go to chat" instead.
 	const { data: myPositions = [] } = useMyOpenPositions(
-		open && !!session?.data,
+		open && withOffer && !!session?.data,
 	);
 
 	const data = specialist;
 	const isSelf = data?.user.id === session?.data?.user?.id;
 	const acceptedRoomId = data?.chat?.roomId ?? null;
-	const canOffer = myPositions.length > 0 && !!data && !isSelf;
+	const canOffer = withOffer && myPositions.length > 0 && !!data && !isSelf;
 	const emailRevealed = !!data?.user.email;
 
 	const goToChat = () => {

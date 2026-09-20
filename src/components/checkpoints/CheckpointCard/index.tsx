@@ -4,9 +4,9 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { CheckpointStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { CheckpointSignals } from "../CheckpointSignals";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";
 import { CuratorBadge } from "../CuratorBadge";
 import styles from "./style.module.scss";
@@ -14,51 +14,46 @@ import styles from "./style.module.scss";
 export type CheckpointCardProps = {
 	checkpoint: CheckpointDto;
 	projectSlug: string;
-	onDiscard?: (id: string) => void;
-	discarding?: boolean;
+	/** Where Open leads. Defaults to the author's page inside the project. */
+	href?: string;
 };
 
 /**
- * The one live item in the list, and the only one that takes a fill —
- * everything below it stays outlined (frame `iSVBs`).
+ * The checkpoint under way — frame `qfMkz`.
  *
  * Three bands with a hairline between them: what this checkpoint is, where it
- * has got to, and the one thing to do about it. A draft and a checkpoint under
- * way are the same card with a different foot: they are one object at two
- * moments, and two shapes would teach the reader that they are two things.
+ * has got to, and the one thing to do about it. A draft is `DraftCard` instead:
+ * it has no goal to quote and no day to count, so the same shape would be a card
+ * of empty fields.
  */
 export function CheckpointCard({
 	checkpoint,
 	projectSlug,
-	onDiscard,
-	discarding,
+	href,
 }: CheckpointCardProps) {
 	const { t } = useTranslate();
-	const isDraft = checkpoint.status === CheckpointStatus.Draft;
 
 	const dates =
 		checkpoint.startedAt && checkpoint.dueAt
 			? `${dayjs(checkpoint.startedAt).format("D MMM")}–${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
 
-	const href = isDraft
-		? `/user/project/${projectSlug}/checkpoints/new/inputs`
-		: `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
+	const opensAt =
+		href ?? `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`;
 
 	return (
 		<section className={styles.card}>
 			<header className={styles.head}>
-				<Flex gap={10} align="center" className={styles.identity}>
-					<Typography.Text className={styles.stage} ellipsis>
-						{checkpoint.stageName}
+				<Flex gap={12} align="center" className={styles.identity}>
+					{/* The number names it, the stage is context: numbering runs
+					    through the project rather than restarting inside a stage. */}
+					<Typography.Text className={styles.stage}>
+						{t("checkpoints.number", "Checkpoint {number}", {
+							number: checkpoint.order,
+						})}
 					</Typography.Text>
-					<Typography.Text className={styles.number}>
-						{[
-							t("checkpoints.number", "Checkpoint {number}", {
-								number: checkpoint.order,
-							}),
-							dates,
-						]
+					<Typography.Text className={styles.number} ellipsis>
+						{[checkpoint.stageName, dates]
 							.filter(Boolean)
 							.map((part) => `· ${part}`)
 							.join(" ")}
@@ -94,35 +89,21 @@ export function CheckpointCard({
 						</div>
 					</Flex>
 				)}
+
+				{!!checkpoint.signals && (
+					<CheckpointSignals
+						signals={checkpoint.signals}
+						day={checkpoint.day}
+					/>
+				)}
 			</div>
 
 			<footer className={styles.foot}>
-				<Typography.Text className={styles.note}>
-					{isDraft
-						? t(
-								"checkpoints.draft.nothingCharged",
-								"Nothing has been charged and no days are counting.",
-							)
-						: ""}
-				</Typography.Text>
-
-				<Flex gap={8}>
-					{isDraft && onDiscard && (
-						<Button
-							loading={discarding}
-							onClick={() => onDiscard(checkpoint.id)}
-						>
-							{t("checkpoints.draft.discard", "Discard")}
-						</Button>
-					)}
-					<Link href={href}>
-						<Button type="primary">
-							{isDraft
-								? t("checkpoints.continue", "Continue")
-								: t("checkpoints.open", "Open checkpoint")}
-						</Button>
-					</Link>
-				</Flex>
+				<Link href={opensAt}>
+					<Button type="primary">
+						{t("checkpoints.open", "Open checkpoint")}
+					</Button>
+				</Link>
 			</footer>
 		</section>
 	);

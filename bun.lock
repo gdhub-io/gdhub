@@ -40,7 +40,7 @@
         "@editorjs/table": "^2.4.5",
         "@firebase/app": "^0.14.6",
         "@firebase/messaging": "^0.12.23",
-        "@gdhub-io/gdhub-prisma": "2.0.0-beta.55",
+        "@gdhub-io/gdhub-prisma": "2.0.0-beta.58",
         "@gdhub-io/gdhub-typesense": "^1.0.6",
         "@hello-pangea/dnd": "^18.0.1",
         "@langchain/langgraph-sdk": "^0.1.6",
@@ -107,6 +107,7 @@
         "remark-gfm": "^4.0.1",
         "sharp": "^0.35.3",
         "slugify": "^1.6.6",
+        "stripe": "^22.6.2",
         "telegram-react-auth-button": "^0.4.0",
         "uuid": "^14.0.2",
         "voca": "^1.4.1",
@@ -790,7 +791,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.12", "", {}, "sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww=="],
 
-    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.55", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.55/c1b3726ac2e4c163c59a367efc845f66afe3bd66", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-HHVoPwprCaoTyGJsxkL6RAYzehi3Dgkt4Pf1v2Kqtqat5ECkaPAiax87tgnV4ieoIGZcsneMwXc32XTysQiU0w=="],
+    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.58", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.58/8c10984d4b4e0cf6aaf38e994ff855e39166f680", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-S1vXEZZH9QCSXBEl2zImiTxH+qU31hSGBEdr435KZ1J8c70G8fH/AccmOPSHD2YOVPAjZqLEXWWUZzyir3QvTg=="],
 
     "@gdhub-io/gdhub-typesense": ["@gdhub-io/gdhub-typesense@1.0.6", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.6/2825e41b4b51a61291221e549d82c396059e4ab1", { "dependencies": { "dayjs": "^1.11.13", "typesense": "^1.8.2", "typesense-instantsearch-adapter": "^2.8.0" } }, "sha512-jxhOwbHh0dtcAsemld5XPjODMqcjuipJjJx5nxM2z2qCKa/TGUw95j3Z78oOOlexksj0MSVqSNUluJpp9o+Rug=="],
 
@@ -4177,6 +4178,8 @@
     "strip-indent": ["strip-indent@4.1.1", "", {}, "sha512-SlyRoSkdh1dYP0PzclLE7r0M9sgbFKKMFXpFRUMNuKhQSbC6VQIGzq3E0qsfvGJaUFJPGv6Ws1NZ/haTAjfbMA=="],
 
     "strip-json-comments": ["strip-json-comments@3.1.1", "", {}, "sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig=="],
+
+    "stripe": ["stripe@22.6.2", "", { "peerDependencies": { "@types/node": ">=18" }, "optionalPeers": ["@types/node"] }, "sha512-PwRE2scocvXqDKPiskMa5vRJEAEkq46W69XyUYmAwrNSLr675lQnfqLwnsndAWizwgihOWw/irLmoFRo3ez7ew=="],
 
     "style-loader": ["style-loader@3.3.4", "", { "peerDependencies": { "webpack": "^5.0.0" } }, "sha512-0WqXzrsMTyb8yjZJHDqwmnwRJvhALK9LfRtRc6B4UTWe8AijYLZYZ9thuJTZc2VfQWINADW/j+LiJnfy2RoC1w=="],
 

@@ -39,9 +39,11 @@ export const GET = pipe(
 
 	const { projectId, page, limit } = body as CheckpointListQuery;
 
-	const [current, closed, blocker] = await Promise.all([
-		getUnfinishedCheckpoint(projectId),
-		listClosedCheckpoints(projectId, { page, limit }),
+	const current = await getUnfinishedCheckpoint(projectId);
+	const [closed, blocker] = await Promise.all([
+		// Everything but the row above it, so a checkpoint can never be in neither
+		// list — which is how a paid one used to disappear.
+		listClosedCheckpoints(projectId, { page, limit, exceptId: current?.id }),
 		getCreationBlocker(projectId),
 	]);
 

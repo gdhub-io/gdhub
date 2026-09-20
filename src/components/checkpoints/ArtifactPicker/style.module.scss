@@ -1,0 +1,54 @@
+.picker {
+	padding: var(--gd-space-2) 0 var(--gd-space-1);
+}
+
+// The store can be long; the list scrolls and whatever hosts the picker does not.
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	max-height: 260px;
+	overflow-y: auto;
+	padding-right: var(--gd-space-1);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	margin: 0;
+	padding: var(--gd-space-2) var(--gd-space-3);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-control);
+
+	// The label's text span, which antd leaves at its intrinsic width.
+	> span:last-child {
+		flex: 1;
+		min-width: 0;
+		padding-inline: var(--gd-space-2) 0;
+	}
+}
+
+// The accent marks the chosen row and never fills it.
+.row:global(.ant-radio-wrapper-checked) {
+	border-color: var(--gd-color-accent);
+	background: var(--gd-color-accent-subtle);
+}
+
+.rowBody {
+	min-width: 0;
+}
+
+.rowName {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-ui);
+}
+
+.rowMeta {
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
+}
+
+.noMatch {
+	font-size: var(--gd-font-size-body-sm);
+}

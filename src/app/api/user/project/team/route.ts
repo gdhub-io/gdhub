@@ -1,6 +1,6 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withAuth, withValidation } from "@/lib/api-handlers";
+import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { prisma } from "@/services/prisma";
 
 const UserTeamQuerySchema = z.object({
@@ -20,15 +20,7 @@ export const GET = withAuth({ mode: "user" })(
 			where: { id: teamId },
 			include: {
 				members: {
-					where: {
-						status: {
-							in: [
-								TeamMemberStatus.Founder,
-								TeamMemberStatus.Hired,
-								TeamMemberStatus.Fired,
-							],
-						},
-					},
+					where: { status: { in: TEAM_ROSTER_STATUSES } },
 					orderBy: { createdAt: "asc" },
 					include: {
 						user: {

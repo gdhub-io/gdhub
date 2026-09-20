@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLock, IconPlus } from "@tabler/icons-react";
+import { IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Tooltip } from "antd";
 import dayjs from "dayjs";
@@ -14,9 +14,10 @@ export type StartCheckpointButtonProps = {
 };
 
 /**
- * Lives in the page hero (frame `iSVBs`) and again in the empty state, where it
- * is the only thing on the screen. One component so the two cannot drift, and
- * so the reason it is disabled is written once.
+ * The one way into a checkpoint, on the empty screen where it is the only thing
+ * to press (frame `J0pS4h`). It carries the reason it is disabled, because that
+ * reason — a checkpoint already running, or no workflow stage — is the whole
+ * answer to why nothing happens when you want to start one.
  */
 export function StartCheckpointButton({
 	projectId,
@@ -40,24 +41,24 @@ export function StartCheckpointButton({
 
 	const reason = blockedUntil
 		? t(
-				"checkpoints.start.disabled",
+				"checkpoints.prepare.disabled",
 				"One checkpoint at a time. This one ends {date}.",
 				{ date: blockedUntil },
 			)
 		: blocker?.reason === "noStage"
 			? t(
-					"checkpoints.start.noStage",
+					"checkpoints.prepare.noStage",
 					"The project is not on a workflow stage yet.",
 				)
 			: undefined;
 
 	const start = async () => {
 		try {
-			await createCheckpoint.mutateAsync();
-			router.push(`/user/project/${projectSlug}/checkpoints/new/inputs`);
+			const checkpoint = await createCheckpoint.mutateAsync();
+			router.push(`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`);
 		} catch {
 			message.error(
-				t("checkpoints.start.failed", "The checkpoint could not be started"),
+				t("checkpoints.prepare.failed", "The checkpoint could not be started"),
 			);
 		}
 	};
@@ -66,12 +67,12 @@ export function StartCheckpointButton({
 		<Tooltip title={reason}>
 			<Button
 				type="primary"
-				icon={reason ? <IconLock size={15} /> : <IconPlus size={15} />}
+				icon={reason ? <IconLock size={15} /> : undefined}
 				disabled={!data?.canCreate}
 				loading={createCheckpoint.isPending}
 				onClick={start}
 			>
-				{t("checkpoints.start", "Start a checkpoint")}
+				{t("checkpoints.empty.cta", "Plan my first checkpoint")}
 			</Button>
 		</Tooltip>
 	);

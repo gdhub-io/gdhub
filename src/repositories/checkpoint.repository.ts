@@ -2,20 +2,47 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
+	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { checkpointProgress, utcStartOfDay } from "@/lib/checkpoint-days";
+import { checkpointSignals } from "@/lib/checkpoint-signals";
+import {
+	currentSprint,
+	devlogDayOf,
+	SPRINTS_PER_CHECKPOINT,
+	sprintDayRange,
+	sprintOfDate,
+	sprintRange,
+} from "@/lib/checkpoint-sprints";
+import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
+import type {
+	CheckpointArtifactRef,
+	CheckpointEvidenceDto,
+	CheckpointPulseCellDto,
+	CheckpointPulseRowDto,
+	CheckpointSprintDto,
+} from "@/types/checkpoints";
 
 /**
  * Reading and creating checkpoints for a project.
  *
  * The rules that cannot be expressed in the schema live here: one checkpoint at
- * a time per project, the stage it belongs to, and the number it carries within
- * that stage.
+ * a time per project, the stage it belongs to, and the number it carries through
+ * the project.
  */
 
 /** A checkpoint that has not reached its verdict yet. */
-const OPEN_STATUSES = [CheckpointStatus.Active, CheckpointStatus.Review];
+/**
+ * A checkpoint that is under way. `AwaitingCurator` belongs here and not with
+ * the drafts: it has been paid for, it is the project's one checkpoint on the
+ * go, and a second one may not be started beside it.
+ */
+const OPEN_STATUSES = [
+	CheckpointStatus.AwaitingCurator,
+	CheckpointStatus.Active,
+	CheckpointStatus.Review,
+];
 
 const checkpointItemSelect = {
 	id: true,
@@ -38,7 +65,8 @@ const checkpointItemSelect = {
 	},
 } as const;
 
-const checkpointSelect = {
+/** Everything a checkpoint row needs to be drawn, wherever it is drawn. */
+export const checkpointSelect = {
 	id: true,
 	projectId: true,
 	stepId: true,
@@ -58,30 +86,334 @@ const checkpointSelect = {
 	verdictNote: true,
 	decidedAt: true,
 	acceptedTermsAt: true,
+	curatorDeclinedAt: true,
+	declinedCuratorIds: true,
+	paymentId: true,
 	createdAt: true,
 	updatedAt: true,
 	curator: { select: { id: true, name: true, image: true } },
 	items: { select: checkpointItemSelect, orderBy: { order: "asc" } },
 } as const;
 
+/** The artifact as the evidence list needs it: the ref, plus who offered it. */
+const evidenceArtifactSelect = {
+	id: true,
+	name: true,
+	type: true,
+	link: true,
+	checkStatus: true,
+	createdAt: true,
+	createdByUser: { select: { id: true, name: true, image: true } },
+} as const;
+
+/**
+ * The detail payload answers the whole page in one request: the devlog thread,
+ * the four sprints, the pulse matrix and the evidence. Each of them is read on
+ * the same screen, and splitting them would cost a round trip per section.
+ *
+ * The team is reached through the project — a checkpoint has no team of its own
+ * — and the members are the confirmed ones including those who have left, since
+ * a sprint someone was not on the team for is a blank cell, not an absence.
+ */
+const checkpointDetailSelect = {
+	...checkpointSelect,
+	// Wider than the list's: an item's artifact is also a row of the evidence.
+	items: {
+		select: {
+			...checkpointItemSelect,
+			artifact: { select: evidenceArtifactSelect },
+		},
+		orderBy: { order: "asc" },
+	},
+	reports: {
+		orderBy: { publishedAt: "desc" },
+		select: {
+			id: true,
+			publishedAt: true,
+			content: true,
+			curatorFeedback: true,
+			curatorFeedbackAt: true,
+		},
+	},
+	pulses: {
+		select: {
+			teamMemberId: true,
+			week: true,
+			confirmedAt: true,
+			source: true,
+		},
+	},
+	artifacts: { select: evidenceArtifactSelect },
+	project: {
+		select: {
+			team: {
+				select: {
+					members: {
+						where: CONFIRMED_STATUS,
+						orderBy: { startedAt: "asc" },
+						select: {
+							id: true,
+							startedAt: true,
+							finishedAt: true,
+							position: true,
+							user: { select: { id: true, name: true, image: true } },
+							speciality: { select: { name: true } },
+						},
+					},
+				},
+			},
+		},
+	},
+} as const;
+
+type DetailRow = Prisma.ProjectCheckpointGetPayload<{
+	select: typeof checkpointDetailSelect;
+}>;
+
+type EvidenceArtifact = DetailRow["artifacts"][number];
+type PulseRow = DetailRow["pulses"][number];
+type TeamMemberRow = NonNullable<
+	DetailRow["project"]["team"]
+>["members"][number];
+
+const toArtifactRef = ({
+	id,
+	name,
+	type,
+	link,
+	checkStatus,
+}: EvidenceArtifact): CheckpointArtifactRef => ({
+	id,
+	name,
+	type,
+	link,
+	checkStatus,
+});
+
+/** The four sprints, or nothing at all: a draft has no dates to divide. */
+const buildSprints = (startedAt: Date | null): CheckpointSprintDto[] => {
+	if (!startedAt) return [];
+
+	const now = new Date();
+	const today = utcStartOfDay(now);
+	const current = currentSprint(startedAt, now);
+
+	return Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) => {
+		const number = index + 1;
+		const { from, to } = sprintRange(startedAt, number);
+		const { firstDay, lastDay } = sprintDayRange(number);
+		// `currentSprint` clamps to the fourth, so a finished sprint is decided by
+		// its last day rather than by which one it names.
+		const state =
+			to < today ? "done" : number === current ? "current" : "ahead";
+
+		return {
+			number,
+			from: from.toISOString(),
+			to: to.toISOString(),
+			firstDay,
+			lastDay,
+			devlogDay: devlogDayOf(number),
+			state,
+		} satisfies CheckpointSprintDto;
+	});
+};
+
+const pulseCell = (
+	sprint: number,
+	member: TeamMemberRow,
+	pulse: PulseRow | undefined,
+	startedAt: Date,
+	now: Date,
+): CheckpointPulseCellDto => {
+	const { from, to } = sprintRange(startedAt, sprint);
+	const joined = utcStartOfDay(member.startedAt);
+	const left = member.finishedAt ? utcStartOfDay(member.finishedAt) : null;
+	const blank = { sprint, confirmedAt: null, source: null };
+
+	if (joined > to || (left && left < from)) {
+		return { ...blank, state: "notOnTeam" };
+	}
+
+	if (!pulse) return { ...blank, state: "notAsked" };
+
+	if (pulse.confirmedAt) {
+		return {
+			sprint,
+			state: "confirmed",
+			confirmedAt: pulse.confirmedAt.toISOString(),
+			source: pulse.source,
+		};
+	}
+
+	// Asked and unanswered: a miss only once the sprint is over, otherwise there
+	// is still time to answer.
+	return {
+		sprint,
+		state: to < utcStartOfDay(now) ? "missed" : "waiting",
+		confirmedAt: null,
+		source: pulse.source,
+	};
+};
+
+const buildPulseRows = (
+	members: TeamMemberRow[],
+	pulses: PulseRow[],
+	startedAt: Date | null,
+): CheckpointPulseRowDto[] => {
+	const now = new Date();
+	const byMemberAndSprint = new Map(
+		pulses.map((pulse) => [`${pulse.teamMemberId}:${pulse.week}`, pulse]),
+	);
+
+	return members.map((member) => ({
+		memberId: member.id,
+		userId: member.user.id,
+		name: member.user.name,
+		image: member.user.image,
+		role: member.speciality?.name ?? member.position,
+		joinedAt: member.startedAt.toISOString(),
+		leftAt: member.finishedAt?.toISOString() ?? null,
+		cells: startedAt
+			? Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) =>
+					pulseCell(
+						index + 1,
+						member,
+						byMemberAndSprint.get(`${member.id}:${index + 1}`),
+						startedAt,
+						now,
+					),
+				)
+			: [],
+	}));
+};
+
+/**
+ * Everything offered as evidence: the artifacts made for this checkpoint and
+ * the ones its items point at. The two sets overlap, and the second can hold an
+ * artifact from an earlier checkpoint — an author may prove an outcome with
+ * something the project already had.
+ */
+const buildEvidence = (
+	items: DetailRow["items"],
+	artifacts: EvidenceArtifact[],
+	startedAt: Date | null,
+): CheckpointEvidenceDto[] => {
+	const itemIdsByArtifact = new Map<string, string[]>();
+
+	for (const item of items) {
+		if (!item.artifact) continue;
+		const known = itemIdsByArtifact.get(item.artifact.id);
+		if (known) known.push(item.id);
+		else itemIdsByArtifact.set(item.artifact.id, [item.id]);
+	}
+
+	const byId = new Map<string, EvidenceArtifact>();
+
+	for (const artifact of [
+		...artifacts,
+		...items.flatMap((item) => (item.artifact ? [item.artifact] : [])),
+	]) {
+		byId.set(artifact.id, artifact);
+	}
+
+	return [...byId.values()]
+		.map((artifact) => ({
+			artifact: toArtifactRef(artifact),
+			addedAt: artifact.createdAt.toISOString(),
+			addedBy: artifact.createdByUser,
+			itemIds: itemIdsByArtifact.get(artifact.id) ?? [],
+			sprint: startedAt ? sprintOfDate(startedAt, artifact.createdAt) : null,
+		}))
+		.sort(
+			(a, b) =>
+				a.addedAt.localeCompare(b.addedAt) ||
+				a.artifact.id.localeCompare(b.artifact.id),
+		);
+};
+
 export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
-export const getCheckpoint = async (id: string) =>
-	prisma.projectCheckpoint.findUnique({
+/** The row as the checkpoint page reads it; the artifact joins stay behind. */
+const toCheckpointDetail = (row: DetailRow) => {
+	const { artifacts, items, project, pulses, reports, ...checkpoint } = row;
+	const { startedAt } = checkpoint;
+
+	return {
+		...checkpoint,
+		items: items.map((item) => ({
+			...item,
+			artifact: item.artifact ? toArtifactRef(item.artifact) : null,
+		})),
+		reports: reports.map((report) => ({
+			...report,
+			sprint: startedAt ? sprintOfDate(startedAt, report.publishedAt) : null,
+		})),
+		sprints: buildSprints(startedAt),
+		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt),
+		evidence: buildEvidence(items, artifacts, startedAt),
+	};
+};
+
+export const getCheckpoint = async (id: string) => {
+	const row = await prisma.projectCheckpoint.findUnique({
 		where: { id },
-		select: checkpointSelect,
+		select: checkpointDetailSelect,
 	});
 
+	return row ? toCheckpointDetail(row) : null;
+};
+
+/**
+ * The one on the go carries its three signals; the closed rows below it do not,
+ * so the reports, pulses and team are read only for this one checkpoint.
+ */
+const currentCheckpointSelect = {
+	...checkpointSelect,
+	reports: { select: { publishedAt: true } },
+	pulses: { select: { week: true, confirmedAt: true } },
+	project: {
+		select: {
+			team: {
+				select: {
+					members: {
+						where: CONFIRMED_STATUS,
+						select: { startedAt: true, finishedAt: true },
+					},
+				},
+			},
+		},
+	},
+} as const;
+
 /** The one checkpoint a project may have on the go, `Draft` included. */
-export const getUnfinishedCheckpoint = async (projectId: string) =>
-	prisma.projectCheckpoint.findFirst({
+export const getUnfinishedCheckpoint = async (projectId: string) => {
+	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
 			projectId,
 			status: { in: [CheckpointStatus.Draft, ...OPEN_STATUSES] },
 		},
 		orderBy: { createdAt: "desc" },
-		select: checkpointSelect,
+		select: currentCheckpointSelect,
 	});
+
+	if (!row) return null;
+
+	const { reports, pulses, project, ...checkpoint } = row;
+
+	return {
+		...checkpoint,
+		signals: checkpointSignals({
+			startedAt: checkpoint.startedAt,
+			reports,
+			pulses,
+			members: project.team?.members ?? [],
+			outcomes: checkpoint.items
+				.filter((item) => item.kind === CheckpointItemKind.Outcome)
+				.map((item) => ({ cut: item.cut, hasArtifact: !!item.artifact })),
+		}),
+	};
+};
 
 /**
  * Why a project cannot start another checkpoint, or null when it can.
@@ -116,13 +448,26 @@ export const getCreationBlocker = async (projectId: string) => {
 	return null;
 };
 
+/**
+ * Every checkpoint of the project except the one on the go.
+ *
+ * Filtering by `Closed` and `Cancelled` alone hid anything that was neither:
+ * a project that ended up with two unfinished checkpoints — which it could,
+ * before a paid one counted as open — showed the newest and lost the other,
+ * payment and all. Excluding the current row instead means nothing can fall
+ * between the two lists.
+ */
 export const listClosedCheckpoints = async (
 	projectId: string,
-	{ page = 1, limit = 10 }: { page?: number; limit?: number } = {},
+	{
+		page = 1,
+		limit = 10,
+		exceptId,
+	}: { page?: number; limit?: number; exceptId?: string } = {},
 ) => {
 	const where = {
 		projectId,
-		status: { in: [CheckpointStatus.Closed, CheckpointStatus.Cancelled] },
+		...(exceptId ? { id: { not: exceptId } } : {}),
 	};
 
 	const [rows, total] = await Promise.all([
@@ -154,16 +499,17 @@ export const createDraftCheckpoint = async (projectId: string) => {
 	const step = workflow?.currentStep;
 	if (!step) throw new Error("Project is not on a workflow stage");
 
-	const onStage = await prisma.projectCheckpoint.count({
-		where: { stepId: step.id },
-	});
+	// The number runs through the project, not through the stage: a reader tells
+	// checkpoints apart by it, and restarting at 1 on every stage would put two
+	// "Checkpoint 1" rows in the same list.
+	const before = await prisma.projectCheckpoint.count({ where: { projectId } });
 
 	return prisma.projectCheckpoint.create({
 		data: {
 			projectId,
 			stepId: step.id,
 			stageName: step.name,
-			order: onStage + 1,
+			order: before + 1,
 			curatorKind: CheckpointCuratorKind.AI,
 			status: CheckpointStatus.Draft,
 			goal: "",
@@ -180,7 +526,16 @@ export const createDraftCheckpoint = async (projectId: string) => {
  * A missed or cut outcome comes across as a bare line, because it is exactly
  * what the project still does not have. The step people abandon is the empty one.
  */
-const carryForwardInputs = async (projectId: string) => {
+const carryForwardInputs = async (projectId: string) =>
+	(await lastClosedOutcomes(projectId)).map((item, index) => ({
+		kind: CheckpointItemKind.Input,
+		order: index + 1,
+		text: item.text,
+		artifactId: item.artifactId,
+	}));
+
+/** What the project's last closed checkpoint owed — which is what it has now. */
+export const lastClosedOutcomes = async (projectId: string) => {
 	const previous = await prisma.projectCheckpoint.findFirst({
 		where: { projectId, status: CheckpointStatus.Closed },
 		orderBy: { decidedAt: "desc" },
@@ -193,12 +548,7 @@ const carryForwardInputs = async (projectId: string) => {
 		},
 	});
 
-	return (previous?.items ?? []).map((item, index) => ({
-		kind: CheckpointItemKind.Input,
-		order: index + 1,
-		text: item.text,
-		artifactId: item.artifactId,
-	}));
+	return previous?.items ?? [];
 };
 
 /** Replaces one side of the goal card. Only a `Draft` may be rewritten this way. */
@@ -220,49 +570,30 @@ export const replaceCheckpointItems = async (
 		}),
 	]);
 
-/** Day 1 is `startedAt`; the 28th day is the checkpoint itself. */
-export const dueDateFrom = (startedAt: Date) => {
-	const due = new Date(startedAt);
-	due.setUTCDate(due.getUTCDate() + CHECKPOINT_DAYS - 1);
-
-	return due;
-};
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-const utcMidnight = (date: Date) =>
-	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-
-/**
- * Which of the 28 days a checkpoint is on, counted in UTC and on the server.
- *
- * Counted from midnight to midnight rather than from the hour it started, so a
- * checkpoint bought at 23:50 is not on day 2 ten minutes later. Computed here
- * and sent with the payload because a browser in another timezone would show a
- * different day number for the same checkpoint, and the deadline is the product.
- */
-export const checkpointDay = (startedAt: Date, now = new Date()) => {
-	const elapsed = (utcMidnight(now) - utcMidnight(startedAt)) / MS_PER_DAY;
-
-	return Math.min(Math.max(elapsed + 1, 1), CHECKPOINT_DAYS);
-};
-
-/** The day number and days left, or nulls for a checkpoint that has not started. */
-export const checkpointProgress = (
-	startedAt: Date | null,
-	now = new Date(),
-) => {
-	if (!startedAt) return { day: null, daysLeft: null };
-
-	const day = checkpointDay(startedAt, now);
-
-	return { day, daysLeft: CHECKPOINT_DAYS - day };
-};
-
 /** Stamps the day count onto a checkpoint before it leaves the server. */
-export const withProgress = <T extends { startedAt: Date | null }>(
+/**
+ * The day counter, and only where it is true.
+ *
+ * `startedAt` exists from the moment the author picks a date, so counting from
+ * it alone would put a paid checkpoint on "day 1 of 28" while it is still
+ * waiting for the person who has to run those days.
+ */
+export const withProgress = <
+	T extends { startedAt: Date | null; status: CheckpointStatus },
+>(
 	checkpoint: T | null,
-) =>
-	checkpoint
-		? { ...checkpoint, ...checkpointProgress(checkpoint.startedAt) }
-		: null;
+) => {
+	if (!checkpoint) return null;
+
+	const running =
+		checkpoint.status === CheckpointStatus.Active ||
+		checkpoint.status === CheckpointStatus.Review ||
+		checkpoint.status === CheckpointStatus.Closed;
+
+	return {
+		...checkpoint,
+		...(running
+			? checkpointProgress(checkpoint.startedAt)
+			: { day: null, daysLeft: null }),
+	};
+};
