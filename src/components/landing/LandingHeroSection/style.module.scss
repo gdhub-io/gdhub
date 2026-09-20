@@ -61,13 +61,24 @@
 }
 
 .heroMain {
-  // Size only — fill, label and ring come from the landing CTA rule in globals.
   .heroButton {
+    color: var(--gd-color-text);
+    border-color: var(--gd-color-accent);
+    background-color: var(--gd-color-accent);
     padding: 24px 62px;
     width: 100%;
     max-width: 236px;
     height: auto;
     font-size: 20px;
+    outline: 0px solid var(--gd-color-text-secondary);
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--gd-color-accent) !important;
+      outline: 1px solid var(--gd-color-accent);
+      outline-offset: 3px;
+    }
   }
 
   .subTitle {

@@ -202,25 +202,6 @@ export const fontSize = {
 	label: 11,
 } as const;
 
-/**
- * Display steps for marketing pages; the product scale tops out at a section
- * heading. A `[mobile, desktop]` pair is emitted as one `clamp()` and needs no
- * breakpoint; a single number is a step that does not scale.
- */
-export const marketingFontSize = {
-	hero: [42, 64],
-	display: [34, 52],
-	h2: [32, 42],
-	/** A figure read at a glance — a price, a count. */
-	stat: 28,
-	/** One step above the product's `h2`. */
-	h3: 22,
-	lead: [15, 18],
-} as const satisfies Record<string, number | readonly [number, number]>;
-
-/** The viewport widths `marketingFontSize` pairs are measured at. */
-export const marketingViewport = { min: 390, max: 1440 } as const;
-
 export const fontWeight = {
 	regular: 400,
 	medium: 500,

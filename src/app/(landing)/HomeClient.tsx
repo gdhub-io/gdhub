@@ -94,7 +94,7 @@ export function HomeClient({ stats }: { stats: HomeStats }) {
 			locale={getLanguage() === "en" ? enLocale : ruLocale}
 		>
 			<LandingLayout className={styles.container}>
-				<div className={styles.main} data-gd-landing>
+				<div className={styles.main}>
 					<LandingHeroSection stats={stats} />
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />

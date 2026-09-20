@@ -73,18 +73,6 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		return pathname == "/" ? internalLink : `/${internalLink}`;
 	};
 
-	// Next re-renders the same route and leaves the reader halfway down the page.
-	const scrollToTopIfHere = (
-		e: React.MouseEvent<HTMLAnchorElement>,
-		href: string,
-	) => {
-		if (pathname !== href) return;
-
-		e.preventDefault();
-		window.scrollTo({ behavior: "smooth", top: 0 });
-		setOpenMobileMenu(false);
-	};
-
 	// Function for smooth scrolling to anchor
 	const scrollToAnchor = (
 		e: React.MouseEvent<HTMLAnchorElement>,
@@ -128,8 +116,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		}
 	};
 
-	// Home-page anchors, grouped so the bar itself stays about products.
-	const platformMenu: MenuProps["items"] = useMemo(
+	const headerMenu: MenuProps["items"] = useMemo(
 		() => [
 			{
 				label: (
@@ -157,6 +144,30 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 			{
 				label: (
+					<Link href="/projects" title={t("Video Games")}>
+						{t("public-menu.video-games", "Video Games")}
+					</Link>
+				),
+				key: "/projects",
+			},
+			{
+				label: (
+					<Link href="/jobs" title={t("public-menu.jobs", "Open positions")}>
+						🔥 {t("public-menu.jobs", "Open positions")}
+					</Link>
+				),
+				key: "/jobs",
+			},
+			{
+				label: (
+					<Link href="/events" title={t("public-menu.events", "Events")}>
+						{t("public-menu.events", "Events")}
+					</Link>
+				),
+				key: "/events",
+			},
+			{
+				label: (
 					<Link
 						href={writeInternalLink("#contacts")}
 						title={t("public-menu.contacts", "Contacts")}
@@ -169,75 +180,6 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			},
 		],
 		[screens, session],
-	);
-
-	const headerMenu: MenuProps["items"] = useMemo(
-		() => [
-			{
-				// A link, not a bare label: its three anchors all live on the home page.
-				label: (
-					<Link
-						href="/"
-						title={t("public-menu.platform", "Platform")}
-						onClick={(e) => scrollToTopIfHere(e, "/")}
-					>
-						{t("public-menu.platform", "Platform")}
-					</Link>
-				),
-				key: "platform",
-				popupClassName: styles.menuPopup,
-				children: platformMenu,
-			},
-			{
-				label: (
-					<Link
-						href="/checkpoint"
-						title={t("public-menu.checkpoint", "Checkpoint")}
-						onClick={(e) => scrollToTopIfHere(e, "/checkpoint")}
-					>
-						{t("public-menu.checkpoint", "Checkpoint")}
-					</Link>
-				),
-				key: "/checkpoint",
-			},
-			{
-				label: (
-					<Link
-						href="/projects"
-						title={t("Video Games")}
-						onClick={(e) => scrollToTopIfHere(e, "/projects")}
-					>
-						{t("public-menu.video-games", "Video Games")}
-					</Link>
-				),
-				key: "/projects",
-			},
-			{
-				label: (
-					<Link
-						href="/jobs"
-						title={t("public-menu.jobs", "Open positions")}
-						onClick={(e) => scrollToTopIfHere(e, "/jobs")}
-					>
-						🔥 {t("public-menu.jobs", "Open positions")}
-					</Link>
-				),
-				key: "/jobs",
-			},
-			{
-				label: (
-					<Link
-						href="/events"
-						title={t("public-menu.events", "Events")}
-						onClick={(e) => scrollToTopIfHere(e, "/events")}
-					>
-						{t("public-menu.events", "Events")}
-					</Link>
-				),
-				key: "/events",
-			},
-		],
-		[screens, session, platformMenu],
 	);
 
 	const actionButton = useMemo(() => {
@@ -291,6 +233,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				{screens.lg && (
 					<div className={styles.menuContainer}>
 						<Menu
+							theme="dark"
 							mode="horizontal"
 							items={headerMenu}
 							className={styles.menu}
@@ -334,7 +277,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 					<Space orientation="vertical" size={32} style={{ width: "100%" }}>
 						<Menu
 							items={headerMenu}
-							mode="inline"
+							theme="dark"
 							onSelect={({ key }) => {
 								setOpenMobileMenu(false);
 								setActiveMenuKey(key);
