@@ -74,7 +74,7 @@ export const CheckpointHowItWorksSection = () => {
 					eyebrow={t("checkpointLanding.how.eyebrow", "How it works")}
 					headline={t(
 						"checkpointLanding.how.headline",
-						"One goal. Four focused weeks. A saved Checkpoint at the end.",
+						"One goal. Four focused weeks. A saved Checkpoint at the end",
 					)}
 					lead={t(
 						"checkpointLanding.how.lead",

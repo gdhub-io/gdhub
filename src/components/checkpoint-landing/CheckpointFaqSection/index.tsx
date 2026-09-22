@@ -27,10 +27,7 @@ export const CheckpointFaqSection = () => {
 			),
 		},
 		{
-			q: t(
-				"checkpointLanding.faq.idea.q",
-				"My project is only an idea so far.",
-			),
+			q: t("checkpointLanding.faq.idea.q", "My project is only an idea so far"),
 			a: t(
 				"checkpointLanding.faq.idea.a",
 				"That is a fine place to start. Set goals an idea can reach in 28 days: a concept document, a paper prototype, a first playable scene. On day 1 the curator cuts the list to what four weeks can hold.",
@@ -72,7 +69,7 @@ export const CheckpointFaqSection = () => {
 					eyebrow={t("checkpointLanding.faq.eyebrow", "Questions")}
 					headline={t(
 						"checkpointLanding.faq.headline",
-						"Before you plan the next Checkpoint.",
+						"Before you plan the next Checkpoint",
 					)}
 					lead={t(
 						"checkpointLanding.faq.lead",

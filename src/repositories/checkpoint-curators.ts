@@ -1,4 +1,5 @@
 import { CURATOR_LEVELS, type CuratorLevel } from "@/config/checkpoint-pricing";
+import type { SkillLevel } from "@/config/prisma-enums";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 import { prisma } from "@/services/prisma";
 
@@ -7,14 +8,14 @@ export type FeaturedCurator = {
 	/** Speciality name — "Game Designer", "Technical Director". */
 	role: string;
 	name: string;
-	specialization: string;
+	level: SkillLevel;
 	summary: string;
 	image: string | null;
 };
 
 /** No curator record yet — the experts set, `isFeatured` first then most-read. */
 export async function getFeaturedCurators(
-	limit = 3,
+	limit = 4,
 ): Promise<FeaturedCurator[]> {
 	const specialities = await prisma.speciality.findMany({
 		where: {
@@ -28,7 +29,7 @@ export async function getFeaturedCurators(
 		select: {
 			id: true,
 			name: true,
-			specialization: true,
+			level: true,
 			summary: true,
 			user: {
 				select: {
@@ -44,7 +45,7 @@ export async function getFeaturedCurators(
 		id: speciality.id,
 		role: speciality.name,
 		name: speciality.user.profile?.name ?? speciality.user.name ?? "",
-		specialization: speciality.specialization,
+		level: speciality.level,
 		summary: speciality.summary ?? "",
 		image: speciality.user.image,
 	}));

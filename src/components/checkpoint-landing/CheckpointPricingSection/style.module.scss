@@ -3,6 +3,28 @@
 	gap: 28px;
 }
 
+// No gap: on a phone she stands on the table the way she stands on the AI panel
+// on a wide screen.
+.tableRow {
+	position: relative;
+	display: grid;
+	justify-items: center;
+}
+
+// Cropped at the waist: below it she turns into a poster, and the rumour is an
+// aside, not the offer.
+.art {
+	order: -1;
+	width: 100%;
+	max-width: 220px;
+	// `height: auto` is what lets the ratio win over next/image's own attribute.
+	height: auto;
+	aspect-ratio: 800 / 1040;
+	object-fit: cover;
+	object-position: top;
+	justify-self: center;
+}
+
 .table {
 	width: 100%;
 	// `separate`: a collapsed table loses the cell borders once `thead` is hidden.
@@ -43,6 +65,35 @@
 	.table tbody tr:hover td {
 		background-color: var(--gd-fill-subtle);
 	}
+}
+
+// A phone has no table head to carry the outline, so the block becomes a card.
+.priceCard {
+	// No border-box reset in this tree: without it the padding widens the card
+	// past the AI panel beside it.
+	box-sizing: border-box;
+	width: 100%;
+	// 4 at the foot plus the last row's own 16 is the 20 the head has.
+	padding: 20px 20px 4px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+}
+
+// The matrix is four columns wide and a phone holds one, so the head names the
+// block and the select says which column is showing.
+.tableHead {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding-block: 0 12px;
+}
+
+.tableTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
 }
 
 .level {
@@ -117,14 +168,6 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-.anchor {
-	margin: 0;
-	max-width: 1000px;
-	font-size: var(--gd-font-size-body-sm);
-	line-height: 1.6;
-	color: var(--gd-color-text-tertiary);
-}
-
 .ctaLink {
 	justify-self: start;
 }
@@ -137,6 +180,15 @@
 @media screen and (min-width: 992px) {
 	.layout {
 		gap: 52px;
+	}
+
+	.intro {
+		max-width: 620px;
+	}
+
+	// The table gives up the right third of the band so the art can stand there.
+	.tableRow {
+		justify-items: start;
 	}
 
 	// Gutters on the cells, not the table, so the row hairlines reach the panel edge.
@@ -190,8 +242,14 @@
 		font-weight: 600;
 	}
 
-	.from {
+	.tableHead {
 		display: none;
+	}
+
+	// The table takes the outline back: a card around it would box a box.
+	.priceCard {
+		padding: 0;
+		border: 0;
 	}
 
 	.wideOnly {
@@ -210,4 +268,22 @@
 		justify-items: end;
 	}
 
+}
+
+// The lane she needs is 300 beside a 780 table; narrower than this the two would
+// overlap, so below it she drops under the table as she does on a phone.
+@media screen and (min-width: 1280px) {
+	.table {
+		max-width: 780px;
+	}
+
+	// Her feet land on the AI panel's top edge: the overhang is the layout's own
+	// gap, and taking her out of the flow keeps the table its own height.
+	.art {
+		position: absolute;
+		right: 0;
+		bottom: -52px;
+		width: 300px;
+		max-width: none;
+	}
 }

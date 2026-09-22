@@ -18,7 +18,7 @@ export const CheckpointAudienceSection = () => {
 		),
 		t(
 			"checkpointLanding.audience.for.devlogs",
-			"You will publish four devlogs and turn up to four sessions",
+			"You will publish four devlogs and turn up to five sessions",
 		),
 		t(
 			"checkpointLanding.audience.for.outside",
@@ -53,7 +53,7 @@ export const CheckpointAudienceSection = () => {
 					eyebrow={t("checkpointLanding.audience.eyebrow", "Before you buy")}
 					headline={t(
 						"checkpointLanding.audience.headline",
-						"A Checkpoint is not for every project.",
+						"A Checkpoint is not for every project",
 					)}
 					lead={t(
 						"checkpointLanding.audience.lead",
