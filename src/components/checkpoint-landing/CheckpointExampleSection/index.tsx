@@ -60,7 +60,7 @@ export const CheckpointExampleSection = () => {
 					<h2 className={styles.headline}>
 						{t(
 							"checkpointLanding.example.headline",
-							"From “make the combat better” to a complete playable loop.",
+							"From “make the combat better” to a complete playable loop",
 						)}
 					</h2>
 					<p className={styles.context}>

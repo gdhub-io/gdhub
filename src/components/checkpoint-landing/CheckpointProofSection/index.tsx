@@ -1,4 +1,8 @@
 import { useTranslate } from "@tolgee/react";
+import {
+	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_PRICE_CURRENCY,
+} from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
 import styles from "./style.module.scss";
 
@@ -16,11 +20,11 @@ export const CheckpointProofSection = () => {
 		{
 			title: t(
 				"checkpointLanding.proof.reviews.title",
-				"4 reviews or live calls",
+				"5 reviews or live calls",
 			),
 			body: t(
 				"checkpointLanding.proof.reviews.body",
-				"AI feedback or a curator call before each sprint",
+				"One before each sprint, and one that decides the Checkpoint",
 			),
 		},
 		{
@@ -31,7 +35,14 @@ export const CheckpointProofSection = () => {
 			),
 		},
 		{
-			title: t("checkpointLanding.proof.price.title", "From $19 per cycle"),
+			title: t(
+				"checkpointLanding.proof.price.title",
+				"From {currency}{price} per cycle",
+				{
+					currency: CHECKPOINT_PRICE_CURRENCY,
+					price: CHECKPOINT_AI_PRICE,
+				},
+			),
 			body: t(
 				"checkpointLanding.proof.price.body",
 				"A dedicated AI or game industry curator",

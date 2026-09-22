@@ -3,6 +3,11 @@ import { Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import heroImage from "@/assets/images/checkpoint/checkpoint-hero.png";
+import {
+	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_MIN_CURATOR_PRICE,
+	CHECKPOINT_PRICE_CURRENCY,
+} from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
 import { CHECKPOINT_CTA_HREF } from "../constants";
 import styles from "./style.module.scss";
@@ -36,7 +41,7 @@ export const CheckpointHeroSection = () => {
 					<p className={styles.subhead}>
 						{t(
 							"checkpointLanding.hero.subhead",
-							"The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release. Over 28 days, the project team works with a curator to define a realistic goal, organize the work needed to achieve it, review progress, and adjust priorities when necessary.",
+							"The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
 						)}
 					</p>
 
@@ -63,7 +68,12 @@ export const CheckpointHeroSection = () => {
 				<p className={styles.priceNote}>
 					{t(
 						"checkpointLanding.hero.priceNote",
-						"AI curator — $19 · Industry curator — from $300 · Exact price before payment",
+						"AI curator — {currency}{ai} · Industry curator — from {currency}{human}",
+						{
+							currency: CHECKPOINT_PRICE_CURRENCY,
+							ai: CHECKPOINT_AI_PRICE,
+							human: CHECKPOINT_MIN_CURATOR_PRICE,
+						},
 					)}
 				</p>
 			</div>

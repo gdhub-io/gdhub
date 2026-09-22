@@ -1,6 +1,11 @@
 import { IconCheck, IconMinus, IconPencil } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { useState } from "react";
+import {
+	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_MIN_CURATOR_PRICE,
+	CHECKPOINT_PRICE_CURRENCY,
+} from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
@@ -152,7 +157,7 @@ export const CheckpointCuratorChoiceSection = () => {
 					eyebrow={t("checkpointLanding.curatorChoice.eyebrow", "The curator")}
 					headline={t(
 						"checkpointLanding.curatorChoice.headline",
-						"Choose the kind of judgement your project needs.",
+						"Choose the kind of judgement your project needs",
 					)}
 					lead={t(
 						"checkpointLanding.curatorChoice.lead",
@@ -191,14 +196,18 @@ export const CheckpointCuratorChoiceSection = () => {
 						)}
 						summary={t(
 							"checkpointLanding.curatorChoice.industry.summary",
-							"Years behind them, and a call every sprint.",
+							"Years behind them, and five calls across the 28 days.",
 						)}
 						rows={rows}
 						side="industry"
 						vat={vat}
 						price={t(
 							"checkpointLanding.curatorChoice.industry.price",
-							"From $250 · by level, rate and team size",
+							"From {currency}{price} · by level, rate and team size",
+							{
+								currency: CHECKPOINT_PRICE_CURRENCY,
+								price: CHECKPOINT_MIN_CURATOR_PRICE,
+							},
 						)}
 					/>
 
@@ -217,7 +226,11 @@ export const CheckpointCuratorChoiceSection = () => {
 						vat={vat}
 						price={t(
 							"checkpointLanding.curatorChoice.ai.price",
-							"$19 · any team size",
+							"{currency}{price} · any team size",
+							{
+								currency: CHECKPOINT_PRICE_CURRENCY,
+								price: CHECKPOINT_AI_PRICE,
+							},
 						)}
 					/>
 				</div>

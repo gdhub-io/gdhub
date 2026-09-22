@@ -1,4 +1,5 @@
 @use "../../../styles/surfaces" as surfaces;
+@use "../../../styles/variables" as variables;
 
 .layout {
 	display: grid;
@@ -8,70 +9,109 @@
 .cards {
 	display: grid;
 	gap: 24px;
-	margin: 0;
-	padding: 0;
-	list-style: none;
+}
+
+// The neighbours stay on screen, dimmed and a size down: a slider nobody can
+// tell is a slider gets one curator read and the rest never seen.
+.slider {
+	// A grid item is `min-width: auto`, and slick sizes its track from the box it
+	// is given: without this the two grow each other until the page gives up.
+	min-width: 0;
+
+	:global(.slick-list) {
+		cursor: grab;
+	}
+
+	:global(.slick-list:active) {
+		cursor: grabbing;
+	}
+
+	// Slick's own wrapper does the centring: the card is an inline-block in there,
+	// so auto margins have nothing to centre.
+	:global(.slick-slide > div) {
+		display: flex;
+		justify-content: center;
+	}
+
+	// Capped rather than stretched: a tablet's slide is wide, and a card that
+	// filled it would read as a poster. No border-box reset here, so the card's
+	// own padding has to be inside the cap.
+	.card {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 320px;
+	}
+
+	:global(.slick-slide) {
+		opacity: 0.4;
+		transform: scale(0.9);
+		transition: transform 0.3s, opacity 0.3s;
+	}
+
+	:global(.slick-slide.slick-center) {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+// The slider runs edge to edge: inside the page gutter the neighbour is cut by a
+// margin, which reads as a broken card rather than as more cards.
+@media screen and (max-width: 575px) {
+	.slider {
+		margin-inline: -#{variables.$landing-padding-xs};
+	}
+}
+
+// 48 is the section's own gutter in this band — see `CheckpointSection`.
+@media screen and (min-width: 576px) and (max-width: 991px) {
+	.slider {
+		margin-inline: -48px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.slider :global(.slick-slide),
+	.slider :global(.slick-slide.slick-center) {
+		transform: none;
+		transition: opacity 0.3s;
+	}
 }
 
 .card {
 	@include surfaces.light-island;
 
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
+	display: grid;
+	padding: 8px;
 	border-radius: var(--gd-radius-panel);
-	transition: transform 0.2s, box-shadow 0.2s;
+	text-align: center;
 }
 
-// A shadow is invisible on the near-black band, so the card takes a brand ring.
-@media (hover: hover) {
-	.card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 0 0 2px var(--gd-color-accent);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.card {
-		transition: box-shadow 0.2s;
-	}
-
-	.card:hover {
-		transform: none;
-	}
-}
-
-.photo {
+.portrait {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 220px;
-	background-color: var(--gd-neutral-100);
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	border-radius: var(--gd-radius-card);
+	background-color: var(--gd-color-surface-sunken);
 }
 
-.photoImage {
+// Square, which is the shape avatars are stored in: any taller box crops a face.
+.photo {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-.photoPlaceholder {
-	color: var(--gd-neutral-300);
+.placeholder {
+	color: var(--gd-color-text-tertiary);
 }
 
 .info {
 	display: grid;
 	gap: 8px;
-	padding: 20px;
-}
-
-.role {
-	margin: 0;
-	font-size: var(--gd-font-size-label);
-	font-weight: 600;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--gd-color-accent);
+	justify-items: center;
+	padding: 24px 16px;
 }
 
 .name {
@@ -81,11 +121,25 @@
 	color: var(--gd-color-text);
 }
 
-.experience {
-	margin: 0;
+.meta {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.role {
 	font-size: var(--gd-font-size-body);
-	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+// A step below white is invisible on a white card, so the chip takes neutral-100.
+.level {
+	margin: 0;
+	background: var(--gd-neutral-100);
+	border-radius: var(--gd-radius-chip);
 	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
 }
 
 .bio {
@@ -100,11 +154,10 @@
 		gap: 48px;
 	}
 
+	// Centred auto-fit rather than four fixed columns: the query takes four and
+	// often finds fewer, and a fixed grid would park them against the left edge.
 	.cards {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-
-	.info {
-		gap: 12px;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 288px));
+		justify-content: center;
 	}
 }

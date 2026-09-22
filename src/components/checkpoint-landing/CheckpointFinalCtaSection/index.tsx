@@ -30,7 +30,7 @@ export const CheckpointFinalCtaSection = () => {
 				<h2 className={styles.headline}>
 					{t(
 						"checkpointLanding.finalCta.headline",
-						"One Checkpoint after another — until your game is released.",
+						"One Checkpoint after another — until your game is released",
 					)}
 				</h2>
 				<p className={styles.subhead}>

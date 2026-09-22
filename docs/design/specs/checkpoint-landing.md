@@ -20,8 +20,8 @@ for prices, verdicts and guarantees.
 | 4 | `CheckpointExampleSection` | **One checkpoint, whole.** The story column and the finished result card. |
 | 5 | `CheckpointHowItWorksSection` | **The mechanic.** Three steps and the 28-day rail. |
 | 6 | `CheckpointCuratorChoiceSection` | **Which kind of curator.** Five rows of difference, as a three-column comparison on desktop and two cards on a phone. |
-| 7 | `CheckpointCuratorsSection` | **And who those people are.** Three curator cards, from the database. Takes itself off the page when there is nobody to show. |
-| 8 | `CheckpointPricingSection` | The price matrix by level and team size, the AI price, the market anchor, the CTA. |
+| 7 | `CheckpointCuratorsSection` | **And who those people are.** Up to four curator cards, from the database. Takes itself off the page when there is nobody to show. |
+| 8 | `CheckpointPricingSection` | The price matrix by level and team size, the AI price, the rumour art, the CTA. |
 | 9 | `CheckpointAudienceSection` | The honest filter. Heading on the right, the two columns on the left. |
 | 10 | `CheckpointFaqSection` | Six questions in an accordion, the first one open. |
 | 11 | `CheckpointFinalCtaSection` | The closing band, over the road artwork. |
@@ -72,11 +72,41 @@ for prices, verdicts and guarantees.
   `getFeaturedCurators` reads the closest true thing: a specialist at expert level who has
   opened themselves for mentoring — the same set the experts page lists. `isFeatured` puts
   a chosen few first.
-- **The card carries no chips.** What belongs under a curator is the workflow stages they
-  can help on — the nine of the `default` schema, chosen by the curator in
-  [`/advisor/settings`](../../advisor-space.md#43-advisorsettings). Neither the field nor
-  that page exists yet, so the card ends at the bio rather than showing
-  `openForQuestions` under a label that would mean something else.
+- **The card is a white island on the dark band** — frame `AsirO`, cards `O3GnAO` and its
+  three siblings. 8 of padding around a 3:4 portrait at radius 12, then name, the
+  speciality with its level as a chip, and the summary clamped to three lines. `surfaces
+  .light-island` is what lets the antd `Tag` and the type inside it read light on a band
+  whose roles are inverse.
+- **The level chip takes `--gd-neutral-100`, not `--gd-color-surface-sunken`.** A step
+  below white disappears on a white card; this is the rule the guidelines state for a
+  neutral fill inside a panel, and the chip sits at 13 rather than label size so the level
+  is readable at a glance.
+- **The curators are a grid on a wide screen and a slider on a phone.** Below 992 the
+  cards become an antd `Carousel` in `centerMode`: the centre card reads, its neighbours
+  stay on screen dimmed and a size down, and a drag cycles through them. Spacing goes on
+  the card rather than the slide — slick writes each slide's width in pixels and this tree
+  has no `border-box` reset, so padding on the slide throws its sums off and the track
+  drifts. The wrapper needs `min-width: 0` for the same reason it needs it in a table: a
+  grid item is `min-width: auto`, and slick and the grid grow each other without it. The
+  slider runs to the screen edges — negative margins cancel the section's own gutter, so
+  the neighbour is cut by the edge of the phone rather than by a margin, which would read
+  as a broken card instead of as more cards. It shows **one** card at every width below
+  992: slick only centres the active slide when the count is odd, and two side by side
+  push it against an edge. The gutter is whatever the screen has left over
+  once the slide is 336 — card plus its air — so the card never grows and what peeks out
+  at the edges is the neighbouring card rather than the empty slide it would otherwise be
+  centred in. Slick reads `centerPadding` with `parseInt`, so it is measured in React and
+  passed in pixels; a `calc()` or a percentage cannot hold that rule at every width.
+- **A phone gets a team-size select instead of the matrix.** The four columns do not fit,
+  so the block becomes a card headed "Human curator" with a select that says which column
+  is showing — the same numbers as the desktop matrix, one at a time. The select is hidden
+  from 992 up, where the whole matrix is visible.
+- **The grid is centred auto-fit.** `getFeaturedCurators` takes four and regularly finds
+  fewer; four fixed columns would park three cards against the left edge.
+- **The card's last line is the stages the curator helps on** — `HELPS AT` and up to three
+  chips, or the single chip `The whole way` (frame `fFAD5` and its siblings). The field
+  behind it does not exist, so the built card ends at the bio; the frame is drawn so the
+  day `Speciality.curatorStages` lands there is nothing left to decide.
 
 ## Placeholders — must be real before this ships
 
@@ -85,9 +115,6 @@ for prices, verdicts and guarantees.
 - **The five FAQ answers after the first one were written here**, from the program doc and
   the standard's §6 and §7. Only the first answer existed in the frame. Check them against
   the standard before publishing.
-- **The market anchor** (Indie Game Academy $999–5,400, CG Spectrum from $9,999) is
-  second-hand from the September 2026 research report; nobody has opened the primary
-  sources.
 
 ## Where the code deviates from the frame, and why
 
@@ -98,6 +125,16 @@ for prices, verdicts and guarantees.
   and "EARLY ACCESS" on mobile; neither is true yet, so the column carries none.
 - **`from $300` for Experienced on a phone.** The frame drew `from $315` against the old
   rates; the standard and the desktop matrix both say $300.
+- **The pricing section reads in one column with the art beside it** — frames `G7SvM`
+  (desktop) and `u0PwiK` (mobile). The lead sits under the headline rather than beside it,
+  the table gives up the right 400 of the band, and `checkpoint-rumour.png` stands there
+  with her feet on the AI panel's top edge — the overhang is exactly the layout's own 52
+  gap. She is cropped at the waist and drops to 220 under 1280, where the lane beside a
+  780 table stops fitting; on a phone she stands on the table itself, as the mobile frame
+  draws her.
+- **The rumour is inside the picture, not beside it.** That makes it one asset with baked
+  English text: no Tolgee key, and a Russian landing needs a second export. The `alt` text
+  carries the joke so it survives a failed image and a screen reader.
 - **The curator cards carry no artwork of their own.** The concept-artifacts overlay on the
   result card and the journey art in the cycle band both came out of the frames, so the
   page ships two pictures: the hero and the closing road.
