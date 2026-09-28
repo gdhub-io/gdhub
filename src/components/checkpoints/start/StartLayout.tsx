@@ -9,7 +9,7 @@ import styles from "./StartLayout.module.scss";
 /**
  * The shell every question of the purchase shares — frames `W76sA5` … `tmP5M`.
  *
- * Five bars across the top say where the purchase has got to, and nothing else
+ * Six bars across the top say where the purchase has got to, and nothing else
  * does: the step's name is already under the bar it belongs to, so the panel
  * never repeats it, and the count is the bars themselves rather than a sentence.
  *
@@ -28,8 +28,11 @@ export const START_STEPS = [
 
 export type StartStep = (typeof START_STEPS)[number];
 
+/** The questions, then where paying lands — no question of its own. */
+const BARS = [...START_STEPS, "ready"] as const;
+
 export type StartLayoutProps = {
-	step: StartStep;
+	step: (typeof BARS)[number];
 	/** One line under the bars saying what this question is for. */
 	hint?: string;
 	/** Sits above the hint: what the author has to read before the step's own words. */
@@ -59,21 +62,22 @@ export function StartLayout({
 	forward,
 }: StartLayoutProps) {
 	const { t } = useTranslate();
-	const index = START_STEPS.indexOf(step);
+	const index = BARS.indexOf(step);
 
-	const labels: Record<StartStep, string> = {
+	const labels: Record<(typeof BARS)[number], string> = {
 		now: t("checkpoints.prepare.step.now", "Now"),
 		goal: t("checkpoints.prepare.step.goal", "Goal"),
 		curator: t("checkpoints.prepare.step.curator", "Curator"),
 		planning: t("checkpoints.prepare.step.planning", "Planning"),
 		payment: t("checkpoints.prepare.step.payment", "Payment"),
+		ready: t("checkpoints.prepare.step.ready", "Ready"),
 	};
 
 	return (
 		<div className={styles.flow}>
 			<Flex vertical gap={24} className={styles.content}>
 				<Flex gap={12}>
-					{START_STEPS.map((candidate, position) => (
+					{BARS.map((candidate, position) => (
 						<Flex vertical gap={8} key={candidate} className={styles.segment}>
 							<span
 								className={clsx(
@@ -85,6 +89,7 @@ export function StartLayout({
 							<Typography.Text
 								className={styles.segmentLabel}
 								data-current={position === index || undefined}
+								data-ahead={position > index || undefined}
 							>
 								{labels[candidate]}
 							</Typography.Text>

@@ -30,11 +30,14 @@
 
 .segmentLabel {
 	font-size: var(--gd-font-size-body-sm);
-	color: var(--gd-color-text-secondary);
+	color: var(--gd-color-text);
 
 	&[data-current] {
-		color: var(--gd-color-text);
 		font-weight: 600;
+	}
+
+	&[data-ahead] {
+		color: var(--gd-color-text-secondary);
 	}
 }
 

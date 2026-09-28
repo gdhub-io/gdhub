@@ -16,8 +16,8 @@ export type PreparePanelProps = {
 	/** Where Cancel and "no draft" land: the project's checkpoint list. */
 	base: string;
 	/**
-	 * Set once the checkpoint has been paid for. The five questions are answered
-	 * and the step stays open on the last of them, showing what paying did.
+	 * Set once the checkpoint has been paid for. The five questions are answered,
+	 * so whichever one is asked for, the stage opens on Ready.
 	 */
 	paid?: CheckpointDto;
 };
@@ -54,7 +54,7 @@ export function PreparePanel({ base, paid }: PreparePanelProps) {
 
 	if (paid) {
 		return (
-			<StartLayout step="payment" saved={null}>
+			<StartLayout step="ready" saved={null}>
 				<PaidPanel checkpoint={paid} />
 			</StartLayout>
 		);
