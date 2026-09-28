@@ -6,6 +6,7 @@ const checkpointFindUnique = vi.fn();
 const checkpointUpdate = vi.fn();
 const specialityFindFirst = vi.fn();
 const paymentCount = vi.fn();
+const paymentFindFirst = vi.fn();
 const getCheckpoint = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
@@ -33,6 +34,7 @@ vi.mock("@/services/prisma", () => ({
 		},
 		payment: {
 			count: (...args: unknown[]) => paymentCount(...args),
+			findFirst: (...args: unknown[]) => paymentFindFirst(...args),
 		},
 	},
 }));
@@ -59,6 +61,7 @@ beforeEach(() => {
 	checkpointUpdate.mockResolvedValue({});
 	specialityFindFirst.mockResolvedValue({ id: "sp1" });
 	paymentCount.mockResolvedValue(0);
+	paymentFindFirst.mockResolvedValue(null);
 	getCheckpoint.mockResolvedValue({ id: "cp1" });
 });
 
@@ -117,6 +120,8 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// the same 28 days is the bug this guards.
 	it("sends a paid checkpoint to the curator picked next, unpaid again", async () => {
 		paymentCount.mockResolvedValue(1);
+		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		await put({ curatorKind: "Human", curatorId: "u9" });
 
@@ -137,6 +142,8 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	it("lets a waiting checkpoint be handed to somebody else", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
 		paymentCount.mockResolvedValue(1);
+		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		const response = await put({ curatorKind: "Human", curatorId: "u9" });
 
@@ -145,6 +152,32 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 			status: "AwaitingCurator",
 			curatorId: "u9",
 		});
+	});
+
+	// The money held buys one price. A dearer curator would need a top-up and a
+	// cheaper one a partial refund; until either exists, both are refused.
+	it("refuses a replacement who costs other than what is held", async () => {
+		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
+		paymentFindFirst.mockResolvedValue({ amount: 30000 });
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+
+		const response = await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "curatorPriceDiffers",
+		});
+		expect(checkpointUpdate).not.toHaveBeenCalled();
+	});
+
+	it("refuses the AI curator in place of a person already paid for", async () => {
+		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
+		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+
+		const response = await put({ curatorKind: "AI", curatorId: null });
+
+		expect(response.status).toBe(400);
+		expect(checkpointUpdate).not.toHaveBeenCalled();
 	});
 
 	it("refuses to rewrite anything else on a waiting checkpoint", async () => {

@@ -194,6 +194,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 				checkpointId={checkpoint.id}
 				currentCuratorId={checkpoint.curator?.id}
 				unavailable={checkpoint.declinedCuratorIds}
+				price={checkpoint.heldPrice}
 				open={replacing}
 				onClose={() => setReplacing(false)}
 			/>

@@ -20,6 +20,8 @@ import {
 	withProgress,
 } from "@/repositories/checkpoint.repository";
 import {
+	curatorCharge,
+	heldAmount,
 	isCheckpointPaid,
 	pendingCheckout,
 	reconcileCheckout,
@@ -92,7 +94,7 @@ export const PUT = pipe(
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
-		select: { status: true },
+		select: { status: true, curatorKind: true, curatorId: true },
 	});
 
 	if (!checkpoint) return apiError.notFound();
@@ -124,6 +126,23 @@ export const PUT = pipe(
 		});
 
 		if (!open) return apiError.badRequest("curatorNotOpenForMentoring");
+	}
+
+	// Money already held buys exactly one price: a dearer curator would need a
+	// top-up and a cheaper one a partial refund, and neither exists yet.
+	if (curatorId !== undefined || curatorKind) {
+		const held = await heldAmount(id);
+		const charge =
+			held === null
+				? null
+				: await curatorCharge(
+						curatorKind ?? checkpoint.curatorKind,
+						curatorId === undefined ? checkpoint.curatorId : curatorId,
+					);
+
+		if (held !== null && charge !== held) {
+			return apiError.badRequest("curatorPriceDiffers");
+		}
 	}
 
 	// A curator who declined leaves a paid checkpoint back in Draft. Naming

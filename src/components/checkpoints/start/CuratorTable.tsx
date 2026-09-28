@@ -29,6 +29,8 @@ export type CuratorTableProps = {
 	 * and unpickable: one who vanishes is one the author tries to pick again.
 	 */
 	unavailable?: string[];
+	/** Only curators at this price, whole units: the one money is already held for. */
+	price?: number | null;
 };
 
 /**
@@ -49,13 +51,18 @@ export function CuratorTable({
 	onChange,
 	exclude,
 	unavailable,
+	price,
 }: CuratorTableProps) {
 	const { t } = useTranslate();
 	const curators = useCheckpointCurators();
 	const [preview, setPreview] = useState<string>();
 
 	const talentCard = t("checkpoints.curator.talentCard", "Talent card");
-	const rows = (curators.data ?? []).filter((row) => row.userId !== exclude);
+	const rows = (curators.data ?? []).filter(
+		(row) =>
+			row.userId !== exclude &&
+			(price == null || curatorPrice(row.level) === price),
+	);
 	const cannot = (row: CheckpointCurator) =>
 		!!unavailable?.includes(row.userId);
 
@@ -83,10 +90,16 @@ export function CuratorTable({
 							: ""
 				}
 				locale={{
-					emptyText: t(
-						"checkpoints.curator.noneOpen",
-						"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
-					),
+					emptyText:
+						price == null
+							? t(
+									"checkpoints.curator.noneOpen",
+									"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
+								)
+							: t(
+									"checkpoints.curator.noneAtPrice",
+									"Nobody else at this price is taking checkpoints right now.",
+								),
 				}}
 				columns={
 					[

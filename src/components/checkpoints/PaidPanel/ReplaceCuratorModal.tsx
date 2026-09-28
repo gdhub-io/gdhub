@@ -14,6 +14,8 @@ export type ReplaceCuratorModalProps = {
 	currentCuratorId?: string | null;
 	/** Everyone who already said they could not: shown, but not pickable. */
 	unavailable?: string[];
+	/** The price already held; nobody dearer or cheaper can take it over. */
+	price?: number | null;
 	open: boolean;
 	onClose: () => void;
 };
@@ -32,6 +34,7 @@ export function ReplaceCuratorModal({
 	checkpointId,
 	currentCuratorId,
 	unavailable,
+	price,
 	open,
 	onClose,
 }: ReplaceCuratorModalProps) {
@@ -69,7 +72,12 @@ export function ReplaceCuratorModal({
 					{t(
 						"checkpoints.paid.replaceNote",
 						"The 28 days will wait for whoever you pick. Nothing is charged again.",
-					)}
+					)}{" "}
+					{price != null &&
+						t(
+							"checkpoints.paid.replaceSamePrice",
+							"Only experts at the price you reserved are listed.",
+						)}
 				</Typography.Text>
 
 				<CuratorTable
@@ -77,6 +85,7 @@ export function ReplaceCuratorModal({
 					onChange={setPicked}
 					exclude={currentCuratorId}
 					unavailable={unavailable}
+					price={price}
 				/>
 			</Flex>
 		</Modal>

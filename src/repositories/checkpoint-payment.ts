@@ -47,12 +47,56 @@ export const isCheckpointPaid = async (checkpointId: string) =>
 	})) > 0;
 
 /**
+ * What this curator costs for the 28 days, in minor units, or null when they
+ * cannot be bought. A person's level is read at this moment — someone who has
+ * since stopped taking mentees is not for sale.
+ */
+export const curatorCharge = async (
+	kind: CheckpointCuratorKind | null,
+	curatorId: string | null | undefined,
+) => {
+	if (kind === CheckpointCuratorKind.AI) return CHECKPOINT_AI_PRICE * MINOR;
+
+	const speciality = await prisma.speciality.findFirst({
+		where: {
+			userId: curatorId ?? "",
+			isOpenForMentoring: true,
+			level: { in: CURATOR_LEVELS },
+		},
+		select: { level: true },
+	});
+
+	return speciality
+		? curatorPrice(speciality.level as CuratorLevel) * MINOR
+		: null;
+};
+
+/**
+ * The money this checkpoint holds or has taken, in minor units, or null when
+ * there is none. A curator it is handed to must cost exactly this: there is no
+ * top-up and no partial refund yet.
+ */
+export const heldAmount = async (checkpointId: string) =>
+	(
+		await prisma.payment.findFirst({
+			where: {
+				payableType: PayableType.CHECKPOINT,
+				payableId: checkpointId,
+				status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
+			},
+			select: { amount: true },
+		})
+	)?.amount ?? null;
+
+/** Minor units back to the whole ones the price table and the screen use. */
+export const toWholePrice = (amount: number) => amount / MINOR;
+
+/**
  * What a checkout for this checkpoint would charge, and for what.
  *
  * The price is computed here and never taken from the client: the screen shows
  * the same number because it runs the same table, not because it is trusted to
- * send it. A human curator's level is read off their speciality at this moment —
- * someone who has since stopped taking mentees cannot be bought.
+ * send it.
  */
 export const checkpointCheckout = async (checkpointId: string) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
@@ -89,29 +133,19 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	}
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
-	const speciality = isAI
-		? null
-		: await prisma.speciality.findFirst({
-				where: {
-					userId: checkpoint.curatorId ?? "",
-					isOpenForMentoring: true,
-					level: { in: CURATOR_LEVELS },
-				},
-				select: { level: true },
-			});
+	const amount = await curatorCharge(
+		checkpoint.curatorKind,
+		checkpoint.curatorId,
+	);
 
-	if (!isAI && !speciality) {
+	if (amount === null) {
 		return { ok: false as const, reason: "curatorUnavailable" as const };
 	}
-
-	const price = speciality
-		? curatorPrice(speciality.level as CuratorLevel)
-		: CHECKPOINT_AI_PRICE;
 
 	return {
 		ok: true as const,
 		checkpoint,
-		amount: price * MINOR,
+		amount,
 		currency: CHECKPOINT_CURRENCY,
 		name: `${checkpoint.project.name} — checkpoint ${checkpoint.order}`,
 		description: isAI

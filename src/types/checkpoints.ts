@@ -132,6 +132,8 @@ export type CheckpointDto = {
 	declinedCuratorIds: string[];
 	/** Set once a payment completed; what the receipt is fetched by. */
 	paymentId: string | null;
+	/** The price held or paid, whole units — the only one a replacement may cost. Detail only. */
+	heldPrice?: number | null;
 	createdAt: string;
 	updatedAt: string;
 	items: CheckpointItemDto[];

@@ -14,6 +14,7 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 import type {
@@ -361,7 +362,15 @@ export const getCheckpoint = async (id: string) => {
 		select: checkpointDetailSelect,
 	});
 
-	return row ? toCheckpointDetail(row) : null;
+	if (!row) return null;
+
+	// Only a checkpoint carrying a payment can hold money a replacement must match.
+	const held = row.paymentId ? await heldAmount(id) : null;
+
+	return {
+		...toCheckpointDetail(row),
+		heldPrice: held === null ? null : toWholePrice(held),
+	};
 };
 
 /**
