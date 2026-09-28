@@ -15,6 +15,7 @@ import type {
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import type {
 	AdvisorCheckpointDto,
+	AdvisorProjectDto,
 	CheckpointDto,
 	CheckpointListResponse,
 } from "@/types/checkpoints";
@@ -135,8 +136,10 @@ export const useAnswerCheckpoint = (id?: string) => {
 					{ accept },
 				)
 			).data,
-		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoints"] }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoints"] });
+			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoint", id] });
+		},
 	});
 };
 
@@ -148,6 +151,19 @@ export const useAdvisorCheckpoint = (id?: string) =>
 			(await axios.get<AdvisorCheckpointDto>(`/api/advisor/checkpoints/${id}`))
 				.data,
 		enabled: !!id,
+	});
+
+/** The project behind a checkpoint, fetched when the curator opens its card. */
+export const useAdvisorProject = (checkpointId?: string, enabled = true) =>
+	useQuery({
+		queryKey: ["advisor-project", checkpointId],
+		queryFn: async () =>
+			(
+				await axios.get<AdvisorProjectDto>(
+					`/api/advisor/checkpoints/${checkpointId}/project`,
+				)
+			).data,
+		enabled: !!checkpointId && enabled,
 	});
 
 /**

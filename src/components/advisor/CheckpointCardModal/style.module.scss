@@ -1,0 +1,83 @@
+// The checkpoint tab's own pieces; everything else is the scout card's module.
+
+// The goal is the sentence the 28 days are judged against, so it is set as
+// prose at reading size rather than as a caption.
+.goal {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-body-lg);
+	line-height: var(--gd-line-height-body);
+}
+
+// Rows bleed to the card's edges divided by its own border, like Game details.
+.itemRow {
+	min-width: 0;
+	padding: 10px 20px;
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border-strong);
+	}
+}
+
+.itemText {
+	flex: 1;
+	min-width: 0;
+}
+
+.itemEmpty {
+	display: block;
+	padding: 16px 20px;
+}
+
+// A devlog is read, not scanned: a card per post, the review nested under it.
+.devlog {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+}
+
+.devlogText {
+	margin: 0 !important;
+	white-space: pre-line;
+}
+
+.feedback {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-base);
+}
+
+// The date column is the thing scanned first, so it keeps one width down the
+// whole plan rather than following each label's length.
+.plan {
+	padding-top: var(--gd-space-2);
+}
+
+.planWhen {
+	min-width: 112px;
+	text-align: right;
+}
+
+.planIcon {
+	color: var(--gd-color-text-secondary);
+}
+
+// The scout's round link chip, widened to carry its label.
+.projectLink {
+	height: 32px;
+	padding: 0 var(--gd-space-3);
+	border: none;
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-neutral-900);
+	color: var(--gd-neutral-0);
+
+	&:hover {
+		background: var(--gd-neutral-800) !important;
+		color: var(--gd-neutral-0) !important;
+	}
+}

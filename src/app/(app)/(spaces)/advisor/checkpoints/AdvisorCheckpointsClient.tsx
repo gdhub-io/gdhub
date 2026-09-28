@@ -102,8 +102,8 @@ export function AdvisorCheckpointsClient() {
 				{!isPending && !!data?.asked.length && (
 					<Typography.Text type="secondary" className={styles.note}>
 						{t(
-							"advisor.checkpoints.answerNote",
-							"An author's money is held until you answer, and released after three days without one.",
+							"advisor.checkpoints.answerWindow",
+							"You have three days to answer.",
 						)}
 					</Typography.Text>
 				)}

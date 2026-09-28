@@ -159,6 +159,51 @@ export type AdvisorCheckpointDto = CheckpointDto & {
 	project: { name: string; slug: string };
 };
 
+/** The project as its curator reads it: the game and the shape of its team. */
+export type AdvisorProjectDto = {
+	name: string;
+	description: string | null;
+	coverImage: string | null;
+	videoLink: string | null;
+	startedAt: string;
+	updatedAt: string;
+	details: {
+		genre: string | null;
+		platform: string | null;
+		setting: string | null;
+		visualStyle: string | null;
+		audition: string | null;
+	};
+	links: { platform: string; link: string }[];
+	stage: string | null;
+	capacity: {
+		members: number;
+		stated: number;
+		hoursPerWeek: { from: number; to: number } | null;
+		hoursPerRun: { from: number; to: number } | null;
+	};
+	/** Roles, not people: no name, no face, no link to a profile. */
+	team: {
+		id: string;
+		position: string | null;
+		speciality: { name: string; level: string } | null;
+		isFounder: boolean;
+		/** `[min, max]` a week as stated, or null when nothing was. */
+		hoursPerWeek: number[] | null;
+		startedAt: string;
+		/** Four cells once the 28 days run, none before. */
+		pulse: CheckpointPulseCellDto[];
+	}[];
+	sprints: CheckpointSprintDto[];
+	/** The project's last three, newest first. */
+	latestDevlogs: { id: string; publishedAt: string; content: string }[];
+	/**
+	 * This checkpoint's, newest first; empty until the curator takes it on. No
+	 * author: the curator reads the work, not who wrote it up.
+	 */
+	devlogs: Omit<CheckpointDevlogDto, "curatorFeedbackAt">[];
+};
+
 /** Why another checkpoint cannot be started, or null when one can. */
 export type CheckpointBlocker =
 	| {

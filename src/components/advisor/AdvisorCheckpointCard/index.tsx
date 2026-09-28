@@ -2,14 +2,14 @@
 
 import { IconDeviceGamepad2 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { useState } from "react";
 import { IconTile } from "@/components/ui";
-import { CheckpointStatus } from "@/config/prisma-enums";
-import { useAnswerCheckpoint } from "@/hooks/checkpoints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
+import { CheckpointCardModal } from "../CheckpointCardModal";
 import styles from "./style.module.scss";
 
 export type AdvisorCheckpointCardProps = {
@@ -24,29 +24,19 @@ export type AdvisorCheckpointCardProps = {
  * The project comes first because that is what the curator recognises; the
  * checkpoint's own number, stage and dates are the line under it. The goal is
  * quoted in full: it is the thing they are being asked to hold the 28 days to.
+ * The answer itself is given in the brief, once the plan has been read.
  */
 export function AdvisorCheckpointCard({
 	checkpoint,
 	answerable,
 }: AdvisorCheckpointCardProps) {
 	const { t } = useTranslate();
-	const { message } = App.useApp();
-	const answer = useAnswerCheckpoint(checkpoint.id);
+	const [briefOpen, setBriefOpen] = useState(false);
 
 	const dates =
 		checkpoint.startedAt && checkpoint.dueAt
 			? `${dayjs(checkpoint.startedAt).format("D MMM")}–${dayjs(checkpoint.dueAt).format("D MMM YYYY")}`
 			: null;
-
-	const reply = async (accept: boolean) => {
-		try {
-			await answer.mutateAsync(accept);
-		} catch {
-			message.error(
-				t("advisor.checkpoints.answerFailed", "The answer was not saved"),
-			);
-		}
-	};
 
 	return (
 		<section className={styles.card} data-asked={answerable || undefined}>
@@ -87,31 +77,30 @@ export function AdvisorCheckpointCard({
 
 				<Flex gap={8} align="center" className={styles.actions}>
 					{answerable ? (
-						<>
-							<Button
-								onClick={() => reply(false)}
-								loading={answer.isPending}
-								disabled={answer.isPending}
-							>
-								{t("advisor.checkpoints.decline", "Turn down")}
-							</Button>
-							<Button
-								type="primary"
-								onClick={() => reply(true)}
-								loading={answer.isPending}
-							>
-								{t("advisor.checkpoints.accept", "Take it on")}
-							</Button>
-						</>
+						<Button type="primary" onClick={() => setBriefOpen(true)}>
+							{t("advisor.brief.review", "Review and answer")}
+						</Button>
 					) : (
-						<Link
-							href={`/user/project/${checkpoint.project.slug}/checkpoints/${checkpoint.id}`}
-						>
-							<Button>{t("checkpoints.open", "Open checkpoint")}</Button>
-						</Link>
+						<>
+							<Button type="link" onClick={() => setBriefOpen(true)}>
+								{t("advisor.brief.open", "Details")}
+							</Button>
+							<Link
+								href={`/user/project/${checkpoint.project.slug}/checkpoints/${checkpoint.id}`}
+							>
+								<Button>{t("checkpoints.open", "Open checkpoint")}</Button>
+							</Link>
+						</>
 					)}
 				</Flex>
 			</Flex>
+
+			<CheckpointCardModal
+				checkpoint={checkpoint}
+				open={briefOpen}
+				onClose={() => setBriefOpen(false)}
+				answerable={answerable}
+			/>
 		</section>
 	);
 }

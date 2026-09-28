@@ -2,11 +2,14 @@
 
 import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Skeleton } from "antd";
+import { Button, Flex, Skeleton } from "antd";
+import { useState } from "react";
+import { CheckpointCardModal } from "@/components/advisor/CheckpointCardModal";
 import { CheckpointDetail } from "@/components/checkpoints/CheckpointDetail";
 import { useCheckpointHero } from "@/components/checkpoints/hero";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { EmptyState } from "@/components/ui";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { useAdvisorCheckpoint } from "@/hooks/checkpoints";
 
 /**
@@ -21,6 +24,7 @@ export function AdvisorCheckpointClient({ id }: { id: string }) {
 	const { t } = useTranslate();
 	const { data: checkpoint, isPending, isError } = useAdvisorCheckpoint(id);
 	const hero = useCheckpointHero(checkpoint);
+	const [briefOpen, setBriefOpen] = useState(false);
 
 	if (isPending) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -41,9 +45,22 @@ export function AdvisorCheckpointClient({ id }: { id: string }) {
 			<ProtectedPageHeader
 				title={checkpoint.project.name}
 				subTitle={hero.description}
-				extra={hero.actions}
+				extra={
+					<Flex gap={8} align="center">
+						<Button onClick={() => setBriefOpen(true)}>
+							{t("advisor.brief.open", "Details")}
+						</Button>
+						{hero.actions}
+					</Flex>
+				}
 			/>
 			<CheckpointDetail checkpoint={checkpoint} viewer="curator" />
+			<CheckpointCardModal
+				checkpoint={checkpoint}
+				open={briefOpen}
+				onClose={() => setBriefOpen(false)}
+				answerable={checkpoint.status === CheckpointStatus.AwaitingCurator}
+			/>
 		</div>
 	);
 }

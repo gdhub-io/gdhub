@@ -1,6 +1,12 @@
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { CheckpointStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { prisma } from "@/services/prisma";
-import { checkpointSelect, withProgress } from "./checkpoint.repository";
+import {
+	checkpointSelect,
+	getCheckpoint,
+	withProgress,
+} from "./checkpoint.repository";
+import { CONFIRMED_MEMBERS } from "./scout.games";
 
 /**
  * The advisor's own board, in the order the work reaches them.
@@ -82,4 +88,130 @@ export const getAdvisorCheckpoint = async (id: string, curatorId: string) => {
 	});
 
 	return withProgress(row);
+};
+
+/** How many of the project's devlogs the Project tab leads with. */
+const LATEST_DEVLOGS = 3;
+
+/**
+ * The checkpoint's card as its curator may read it: the project, the hours its
+ * team says it has, each seat's weekly pulse and the devlogs of the 28 days.
+ *
+ * A curator is not a scout: they are told what the game is and what kind of
+ * team makes it, and nothing a deal would be built on — no equity, no files,
+ * no investors, and no names. The team is its roles, specialities and levels.
+ */
+export const getAdvisorProject = async (
+	checkpointId: string,
+	curatorId: string,
+) => {
+	const checkpoint = await prisma.projectCheckpoint.findFirst({
+		where: { id: checkpointId, curatorId },
+		select: {
+			project: {
+				select: {
+					name: true,
+					description: true,
+					coverImage: true,
+					videoLink: true,
+					startedAt: true,
+					updatedAt: true,
+					genre: true,
+					platform: true,
+					setting: true,
+					visualStyle: true,
+					audition: true,
+					links: true,
+					workflow: {
+						select: { currentStep: { select: { name: true } } },
+					},
+					reports: {
+						where: { isSystem: false },
+						orderBy: { publishedAt: "desc" },
+						take: LATEST_DEVLOGS,
+						select: { id: true, publishedAt: true, content: true },
+					},
+					team: {
+						select: {
+							members: {
+								where: CONFIRMED_MEMBERS,
+								orderBy: { startedAt: "asc" },
+								select: {
+									id: true,
+									position: true,
+									status: true,
+									startedAt: true,
+									speciality: { select: { name: true, level: true } },
+									user: {
+										select: { profile: { select: { timeForWork: true } } },
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+
+	if (!checkpoint) return null;
+
+	const { project } = checkpoint;
+	const members = project.team?.members ?? [];
+	// The page's own sprints, pulse and devlog reads, so the card cannot draw a
+	// week differently from the checkpoint it describes.
+	const detail = await getCheckpoint(checkpointId);
+	// The pulse and the checkpoint's devlogs are shown to the curator running
+	// it, not to one still deciding whether to take it.
+	const accepted =
+		!!detail &&
+		detail.status !== CheckpointStatus.Draft &&
+		detail.status !== CheckpointStatus.AwaitingCurator;
+	const pulseOf = new Map(
+		accepted ? detail.pulses.map((row) => [row.memberId, row.cells]) : [],
+	);
+	const hoursOf = (member: (typeof members)[number]) =>
+		member.user.profile?.timeForWork ?? null;
+
+	return {
+		name: project.name,
+		description: project.description,
+		coverImage: project.coverImage,
+		videoLink: project.videoLink,
+		startedAt: project.startedAt,
+		updatedAt: project.updatedAt,
+		details: {
+			genre: project.genre,
+			platform: project.platform,
+			setting: project.setting,
+			visualStyle: project.visualStyle,
+			audition: project.audition,
+		},
+		links: project.links,
+		stage: project.workflow?.currentStep?.name ?? null,
+		// The same arithmetic the author's payment step shows, so both read one figure.
+		capacity: teamCapacity(
+			members.map((member) => ({ timeForWork: hoursOf(member) })),
+		),
+		// The member id stays only as a row key; nothing on it leads to a person.
+		team: members.map((member) => ({
+			id: member.id,
+			position: member.position,
+			speciality: member.speciality,
+			isFounder: member.status === TeamMemberStatus.Founder,
+			hoursPerWeek: hoursOf(member),
+			startedAt: member.startedAt,
+			pulse: pulseOf.get(member.id) ?? [],
+		})),
+		sprints: accepted ? detail.sprints : [],
+		/** The project's own latest, whatever checkpoint they belong to. */
+		latestDevlogs: project.reports,
+		devlogs: (accepted ? detail.reports : []).map((report) => ({
+			id: report.id,
+			publishedAt: report.publishedAt,
+			content: report.content,
+			curatorFeedback: report.curatorFeedback,
+			sprint: report.sprint,
+		})),
+	};
 };

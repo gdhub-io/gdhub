@@ -1,7 +1,7 @@
 "use client";
 
 import { IconCheck, IconUsers } from "@tabler/icons-react";
-import { useTranslate } from "@tolgee/react";
+import { type TFnType, useTranslate } from "@tolgee/react";
 import { Card, Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -13,6 +13,25 @@ import type {
 	CheckpointSprintDto,
 } from "@/types/checkpoints";
 import styles from "./style.module.scss";
+
+/** What a pulse cell says on hover — the same words wherever the matrix is drawn. */
+export const pulseCellLabel = (
+	t: TFnType,
+	cell: CheckpointPulseCellDto | undefined,
+) => {
+	if (!cell || cell.state === "notOnTeam")
+		return t("checkpoints.signals.legend.notOnTeam", "Not on the team");
+	if (cell.state === "confirmed")
+		return t("checkpoints.signals.marked", "Marked {date}", {
+			date: dayjs(cell.confirmedAt).format("D MMM"),
+		});
+	if (cell.state === "missed")
+		return t("checkpoints.signals.legend.missed", "Missed");
+	if (cell.state === "waiting")
+		return t("checkpoints.signals.legend.waiting", "Waiting");
+
+	return t("checkpoints.signals.legend.notAsked", "Not asked yet");
+};
 
 export type SignalsProps = {
 	checkpoint: CheckpointDto;
@@ -27,21 +46,6 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 	const { t } = useTranslate();
 	const sprints = checkpoint.sprints ?? [];
 	const rows = checkpoint.pulses ?? [];
-
-	const cellLabel = (cell: CheckpointPulseCellDto | undefined) => {
-		if (!cell || cell.state === "notOnTeam")
-			return t("checkpoints.signals.legend.notOnTeam", "Not on the team");
-		if (cell.state === "confirmed")
-			return t("checkpoints.signals.marked", "Marked {date}", {
-				date: dayjs(cell.confirmedAt).format("D MMM"),
-			});
-		if (cell.state === "missed")
-			return t("checkpoints.signals.legend.missed", "Missed");
-		if (cell.state === "waiting")
-			return t("checkpoints.signals.legend.waiting", "Waiting");
-
-		return t("checkpoints.signals.legend.notAsked", "Not asked yet");
-	};
 
 	if (!rows.length)
 		return (
@@ -128,7 +132,7 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 
 							return (
 								<span key={item.number} className={styles.col}>
-									<Tooltip title={cellLabel(cell)}>
+									<Tooltip title={pulseCellLabel(t, cell)}>
 										<span
 											className={clsx(
 												styles.cell,
