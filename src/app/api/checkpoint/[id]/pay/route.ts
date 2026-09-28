@@ -13,9 +13,16 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
-import { checkpointCheckout } from "@/repositories/checkpoint-payment";
+import {
+	checkpointCheckout,
+	pendingCheckout,
+	reconcileCheckout,
+} from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
-import { createCheckpointCheckout } from "@/services/stripe/server";
+import {
+	createCheckpointCheckout,
+	expireCheckout,
+} from "@/services/stripe/server";
 
 /**
  * Opens the checkout for a checkpoint and hands back the URL to send the author
@@ -38,6 +45,11 @@ export const POST = pipe(
 
 	const { id } = (await ctx.params) as { id: string };
 
+	// A checkout finished in another tab, whose webhook has not come, must not
+	// be sold a second time.
+	const earlier = await pendingCheckout(id);
+	if (earlier) await reconcileCheckout(earlier);
+
 	const quote = await checkpointCheckout(id);
 
 	if (!quote.ok) {
@@ -55,7 +67,12 @@ export const POST = pipe(
 	const page = `${base}/user/project/${quote.checkpoint.project.slug}/checkpoints/${id}`;
 
 	// A checkout left open keeps its row PENDING forever and would sit beside the
-	// new one in the author's receipts. Only one attempt is live at a time.
+	// new one in the author's receipts. Only one attempt is live at a time, and
+	// the old one is closed at Stripe too: paid later, nothing here would claim it.
+	if (earlier?.providerTransactionId) {
+		await expireCheckout(earlier.providerTransactionId).catch(() => null);
+	}
+
 	await prisma.payment.updateMany({
 		where: {
 			payableType: PayableType.CHECKPOINT,

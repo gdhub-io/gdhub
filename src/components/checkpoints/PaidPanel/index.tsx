@@ -65,12 +65,12 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 
 		const timer = setInterval(() => {
 			queryClient.invalidateQueries({
-				queryKey: ["project-checkpoints", checkpoint.projectId],
+				queryKey: ["checkpoint", checkpoint.id],
 			});
 		}, SETTLE_EVERY);
 
 		return () => clearInterval(timer);
-	}, [settling, queryClient, checkpoint.projectId]);
+	}, [settling, queryClient, checkpoint.id]);
 
 	// Cancelling takes the money back and closes the checkpoint, so it asks
 	// first: the confirm is the only place a filled red button is allowed.

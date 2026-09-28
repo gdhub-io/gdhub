@@ -2,8 +2,10 @@ import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 	PayableType,
+	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import type Stripe from "stripe";
 import {
 	CHECKPOINT_AI_PRICE,
 	CURATOR_LEVELS,
@@ -11,7 +13,11 @@ import {
 	curatorPrice,
 } from "@/config/checkpoint-pricing";
 import { prisma } from "@/services/prisma";
-import { refundCheckout, releaseCheckout } from "@/services/stripe/server";
+import {
+	refundCheckout,
+	releaseCheckout,
+	retrieveCheckout,
+} from "@/services/stripe/server";
 
 /** Prices are written in whole units; Stripe and `Payment.amount` want minor ones. */
 const MINOR = 100;
@@ -180,3 +186,97 @@ export const returnCheckpointMoney = async (
 
 	return { released: false, refunded: true };
 };
+
+/**
+ * A completed checkout, applied: the payment becomes a hold and the checkpoint
+ * goes to its curator, or starts at once with the AI one.
+ *
+ * The webhook and the reconciliation both land here, possibly for the same
+ * purchase. Only a `PENDING` row moves, so whichever comes second finds nothing
+ * to do — and a confirmation arriving late cannot turn a captured or released
+ * payment back into a hold.
+ *
+ * Returns whether this call was the one that applied it.
+ */
+export const settleCheckpointCheckout = async (
+	payment: { id: string; payableId: string },
+	session: Stripe.Checkout.Session,
+) => {
+	const { count } = await prisma.payment.updateMany({
+		where: { id: payment.id, status: PaymentStatus.PENDING },
+		data: {
+			status: PaymentStatus.PROCESSING,
+			providerTransactionId: session.id,
+			providerCustomerId:
+				typeof session.customer === "string" ? session.customer : null,
+		},
+	});
+
+	if (!count) return false;
+
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: payment.payableId },
+		select: { status: true, curatorKind: true },
+	});
+
+	// A checkpoint deleted in the meantime keeps its hold as PROCESSING, and the
+	// holds cron lets it go like any other nobody answered for.
+	if (checkpoint?.status !== CheckpointStatus.Draft) return true;
+
+	await prisma.projectCheckpoint.update({
+		where: { id: payment.payableId },
+		data: {
+			status:
+				checkpoint.curatorKind === CheckpointCuratorKind.AI
+					? CheckpointStatus.Active
+					: CheckpointStatus.AwaitingCurator,
+			paymentId: payment.id,
+		},
+	});
+
+	return true;
+};
+
+type PendingCheckout = {
+	id: string;
+	payableId: string;
+	providerTransactionId: string | null;
+};
+
+/**
+ * Asks Stripe what became of a checkout still `PENDING` here, and applies the
+ * answer. A webhook that never arrived — not forwarded, misconfigured, failed
+ * past its retries — would otherwise leave money held on a card for a
+ * checkpoint that still reads as unpaid.
+ */
+export const reconcileCheckout = async (payment: PendingCheckout) => {
+	if (!payment.providerTransactionId) return false;
+
+	const session = await retrieveCheckout(payment.providerTransactionId);
+
+	if (session.status === "complete") {
+		return settleCheckpointCheckout(payment, session);
+	}
+
+	if (session.status === "expired") {
+		await prisma.payment.updateMany({
+			where: { id: payment.id, status: PaymentStatus.PENDING },
+			data: { status: PaymentStatus.CANCELED },
+		});
+	}
+
+	return false;
+};
+
+/** The checkout this checkpoint is waiting on, if there is one. */
+export const pendingCheckout = (checkpointId: string) =>
+	prisma.payment.findFirst({
+		where: {
+			payableType: PayableType.CHECKPOINT,
+			payableId: checkpointId,
+			provider: PaymentProvider.STRIPE,
+			status: PaymentStatus.PENDING,
+		},
+		orderBy: { createdAt: "desc" },
+		select: { id: true, payableId: true, providerTransactionId: true },
+	});

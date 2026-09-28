@@ -10,6 +10,7 @@
 	"scripts": {
 		"dev": "next dev --turbopack",
 		"dev:webpack": "next dev",
+		"stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhooks",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
 		"build": "next build --turbopack",

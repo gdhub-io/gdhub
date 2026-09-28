@@ -11,7 +11,7 @@ import { sessionOfPaymentIntent, stripeEvent } from "@/services/stripe/server";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		payment: { findUnique: vi.fn(), update: vi.fn() },
+		payment: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
 		paymentEvent: { create: vi.fn() },
 		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
 		refund: { upsert: vi.fn() },
@@ -21,6 +21,9 @@ vi.mock("@/services/prisma", () => ({
 vi.mock("@/services/stripe/server", () => ({
 	stripeEvent: vi.fn(),
 	sessionOfPaymentIntent: vi.fn(),
+	retrieveCheckout: vi.fn(),
+	refundCheckout: vi.fn(),
+	releaseCheckout: vi.fn(),
 }));
 
 const post = () =>
@@ -77,6 +80,7 @@ beforeEach(() => {
 	// clearAllMocks forgets the calls, not the implementation.
 	vi.mocked(prisma.paymentEvent.create).mockResolvedValue({} as never);
 	vi.mocked(prisma.payment.findUnique).mockResolvedValue(payment as never);
+	vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 1 });
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 		draft() as never,
 	);
@@ -98,7 +102,7 @@ describe("the Stripe webhook", () => {
 		vi.mocked(prisma.paymentEvent.create).mockRejectedValue({ code: "P2002" });
 
 		expect((await post()).status).toBe(200);
-		expect(prisma.payment.update).not.toHaveBeenCalled();
+		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
 	});
 
@@ -114,8 +118,9 @@ describe("the Stripe webhook", () => {
 			}),
 		);
 		// Authorised, not charged: the money is taken when a curator accepts.
-		expect(prisma.payment.update).toHaveBeenCalledWith(
+		expect(prisma.payment.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: { id: "pay_1", status: PaymentStatus.PENDING },
 				data: expect.objectContaining({ status: PaymentStatus.PROCESSING }),
 			}),
 		);
@@ -143,7 +148,18 @@ describe("the Stripe webhook", () => {
 
 		await post();
 
-		expect(prisma.payment.update).toHaveBeenCalled();
+		expect(prisma.payment.updateMany).toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	// The reconciliation may have applied it first, or the curator declined and
+	// the hold was released: a late delivery must not bring either back.
+	it("does nothing when the payment is no longer waiting", async () => {
+		vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 0 });
+
+		await post();
+
+		expect(prisma.projectCheckpoint.findUnique).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
 	});
 

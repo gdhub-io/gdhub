@@ -1,11 +1,11 @@
 import {
-	CheckpointCuratorKind,
 	CheckpointStatus,
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { settleCheckpointCheckout } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
 import { sessionOfPaymentIntent, stripeEvent } from "@/services/stripe/server";
 
@@ -155,46 +155,7 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({ received: true });
 	}
 
-	const session = event.data.object as Stripe.Checkout.Session;
-	const checkpointId = payment.payableId;
-
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id: checkpointId },
-		select: { status: true, curatorKind: true },
-	});
-
-	if (!checkpoint) return NextResponse.json({ received: true });
-
-	// Authorised, not charged: `PROCESSING` is money held on the card, and it
-	// becomes `COMPLETED` when a curator accepts and it is captured.
-	await prisma.payment.update({
-		where: { id: payment.id },
-		data: {
-			status: PaymentStatus.PROCESSING,
-			providerTransactionId: session.id,
-			providerCustomerId:
-				typeof session.customer === "string" ? session.customer : null,
-		},
-	});
-
-	// A checkpoint that already left Draft has been started by an earlier
-	// delivery of this purchase; paying twice never rewinds it.
-	if (checkpoint.status !== CheckpointStatus.Draft) {
-		return NextResponse.json({ received: true });
-	}
-
-	await prisma.projectCheckpoint.update({
-		where: { id: checkpointId },
-		data: {
-			// The 28 days begin when a person takes it on. The AI curator has
-			// nobody to ask, so its checkpoint starts with the payment.
-			status:
-				checkpoint.curatorKind === CheckpointCuratorKind.AI
-					? CheckpointStatus.Active
-					: CheckpointStatus.AwaitingCurator,
-			paymentId: payment.id,
-		},
-	});
+	await settleCheckpointCheckout(payment, event.data.object);
 
 	return NextResponse.json({ received: true });
 }

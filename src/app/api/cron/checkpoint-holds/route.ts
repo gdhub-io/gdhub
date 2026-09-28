@@ -1,15 +1,50 @@
 import {
 	CheckpointStatus,
 	PayableType,
+	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
+import { reconcileCheckout } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
 import { releaseCheckout } from "@/services/stripe/server";
 
 /** How long a curator has to answer before the money goes back. */
 export const CURATOR_ANSWER_DAYS = 3;
+
+/** How long the webhook is given before Stripe is asked instead. */
+const WEBHOOK_GRACE_MS = 60 * 60 * 1000;
+
+/**
+ * Checkouts still `PENDING` here after the webhook had its chance. Nobody may
+ * open the checkpoint to trigger the check on read, and a hold nobody sees
+ * runs out on the author's card.
+ */
+const reconcilePending = async () => {
+	const pending = await prisma.payment.findMany({
+		where: {
+			payableType: PayableType.CHECKPOINT,
+			provider: PaymentProvider.STRIPE,
+			status: PaymentStatus.PENDING,
+			providerTransactionId: { not: null },
+			createdAt: { lt: new Date(Date.now() - WEBHOOK_GRACE_MS) },
+		},
+		select: { id: true, payableId: true, providerTransactionId: true },
+	});
+
+	let settled = 0;
+
+	for (const payment of pending) {
+		try {
+			if (await reconcileCheckout(payment)) settled += 1;
+		} catch (error) {
+			console.error("[checkpoint-holds] reconcile failed", payment.id, error);
+		}
+	}
+
+	return settled;
+};
 
 /**
  * Lets go of the money held for checkpoints nobody answered for.
@@ -25,6 +60,8 @@ export const CURATOR_ANSWER_DAYS = 3;
  */
 export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog("checkpoint-holds", async () => {
+		const settled = await reconcilePending();
+
 		const deadline = new Date();
 		deadline.setUTCDate(deadline.getUTCDate() - CURATOR_ANSWER_DAYS);
 
@@ -86,7 +123,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			released += 1;
 		}
 
-		return { released, considered: stale.length };
+		return { settled, released, considered: stale.length };
 	});
 
 	return json(result);

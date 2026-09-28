@@ -91,6 +91,14 @@ export const stripeEvent = (rawBody: string, signature: string | null) => {
 	}
 };
 
+/** A checkout as Stripe sees it now — the answer when the webhook has not come. */
+export const retrieveCheckout = (sessionId: string) =>
+	stripe().checkout.sessions.retrieve(sessionId);
+
+/** Closes a checkout nobody is going to finish, so it cannot be paid later. */
+export const expireCheckout = (sessionId: string) =>
+	stripe().checkout.sessions.expire(sessionId);
+
 /**
  * The receipt Stripe hosts for a completed checkout, or null when there is none
  * yet. One-off payments carry it on the charge rather than as an invoice, so the

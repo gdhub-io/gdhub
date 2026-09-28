@@ -19,7 +19,11 @@ import {
 	replaceCheckpointItems,
 	withProgress,
 } from "@/repositories/checkpoint.repository";
-import { isCheckpointPaid } from "@/repositories/checkpoint-payment";
+import {
+	isCheckpointPaid,
+	pendingCheckout,
+	reconcileCheckout,
+} from "@/repositories/checkpoint-payment";
 import {
 	type UpdateCheckpointBody,
 	UpdateCheckpointSchema,
@@ -42,9 +46,19 @@ export const GET = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const checkpoint = await getCheckpoint(id);
+	let checkpoint = await getCheckpoint(id);
 
 	if (!checkpoint) return apiError.notFound();
+
+	// A draft may have been paid for without the webhook ever arriving; Stripe
+	// is asked directly before the page tells its author to pay again.
+	if (checkpoint.status === CheckpointStatus.Draft) {
+		const pending = await pendingCheckout(id);
+
+		if (pending && (await reconcileCheckout(pending).catch(() => false))) {
+			checkpoint = (await getCheckpoint(id)) ?? checkpoint;
+		}
+	}
 
 	return json(withProgress(checkpoint));
 });
