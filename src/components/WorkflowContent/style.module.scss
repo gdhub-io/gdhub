@@ -102,15 +102,11 @@
   margin-top: 16px;
 }
 
+// Starts flush with the step content beside it, so both columns share one top.
 .tasksSidebar {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 8px 0;
-
-  @media (max-width: 768px) {
-    padding: 0;
-  }
+  gap: var(--gd-space-3);
 }
 
 .tasksList {

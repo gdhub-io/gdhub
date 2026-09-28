@@ -11,6 +11,8 @@ export type WorkflowTaskItem = {
 	description?: string | null;
 	required: boolean;
 	done: boolean;
+	/** A checkpoint's task: it carries a deadline, not a place in the stage gate. */
+	due?: { label: string; overdue: boolean };
 };
 
 export type WorkflowTasksPanelProps = {
@@ -31,7 +33,8 @@ const WorkflowTasksPanel = ({
 
 	if (tasks.length === 0) return null;
 
-	const requiredTasks = tasks.filter((task) => task.required);
+	// The gate counts the stage's own tasks; a checkpoint's are not part of it.
+	const requiredTasks = tasks.filter((task) => task.required && !task.due);
 	const doneRequiredCount = requiredTasks.filter((task) => task.done).length;
 
 	return (
@@ -61,6 +64,7 @@ const WorkflowTasksPanel = ({
 						description={task.description}
 						required={task.required}
 						completed={task.done}
+						due={task.due}
 					/>
 				))}
 			</div>

@@ -18,7 +18,11 @@ export default function MyProjectHomePage() {
 	return (
 		<ProjectSpace title={t("Workflow")}>
 			{!!project && (
-				<WorkflowContent projectId={project.id} locale={session?.user.lang} />
+				<WorkflowContent
+					projectId={project.id}
+					projectSlug={project.slug}
+					locale={session?.user.lang}
+				/>
 			)}
 		</ProjectSpace>
 	);

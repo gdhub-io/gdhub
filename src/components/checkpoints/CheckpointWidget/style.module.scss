@@ -1,0 +1,28 @@
+// The one white block in the column: the task list below it is outlined only.
+.card {
+	background: var(--gd-color-surface);
+	border-color: var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+
+	:global(.ant-card-body) {
+		padding: var(--gd-space-4);
+	}
+}
+
+.head {
+	min-width: 0;
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.meta {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.callIcon {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}

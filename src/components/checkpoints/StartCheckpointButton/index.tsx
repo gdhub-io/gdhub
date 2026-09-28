@@ -11,6 +11,8 @@ import { useCheckpoints, useCreateCheckpoint } from "@/hooks/checkpoints";
 export type StartCheckpointButtonProps = {
 	projectId?: string;
 	projectSlug?: string;
+	/** Defaults to the first-checkpoint wording of the empty list. */
+	label?: string;
 };
 
 /**
@@ -22,6 +24,7 @@ export type StartCheckpointButtonProps = {
 export function StartCheckpointButton({
 	projectId,
 	projectSlug,
+	label,
 }: StartCheckpointButtonProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
@@ -72,7 +75,7 @@ export function StartCheckpointButton({
 				loading={createCheckpoint.isPending}
 				onClick={start}
 			>
-				{t("checkpoints.empty.cta", "Plan my first checkpoint")}
+				{label ?? t("checkpoints.empty.cta", "Plan my first checkpoint")}
 			</Button>
 		</Tooltip>
 	);

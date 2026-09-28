@@ -4,7 +4,12 @@ import {
 	CheckpointStatus,
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
-import { checkpointProgress, utcStartOfDay } from "@/lib/checkpoint-days";
+import {
+	checkpointProgress,
+	dayNumberOn,
+	utcStartOfDay,
+} from "@/lib/checkpoint-days";
+import { authorNextStep } from "@/lib/checkpoint-plan";
 import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
 	currentSprint,
@@ -409,9 +414,24 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 	if (!row) return null;
 
 	const { reports, pulses, project, ...checkpoint } = row;
+	const { startedAt } = checkpoint;
 
 	return {
 		...checkpoint,
+		// Only a running checkpoint asks anything of its author on a given day.
+		next:
+			startedAt &&
+			(checkpoint.status === CheckpointStatus.Active ||
+				checkpoint.status === CheckpointStatus.Review)
+				? authorNextStep(
+						dayNumberOn(startedAt, new Date()),
+						new Set(
+							reports
+								.map((report) => sprintOfDate(startedAt, report.publishedAt))
+								.filter((sprint) => sprint !== null),
+						),
+					)
+				: null,
 		signals: checkpointSignals({
 			startedAt: checkpoint.startedAt,
 			reports,

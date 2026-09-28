@@ -56,3 +56,47 @@ export const dateOfDay = (startedAt: Date | string, day: number) => {
 
 	return date;
 };
+
+export type AuthorNextStep =
+	| { kind: "devlog"; sprint: number; day: number; overdue: boolean }
+	| { kind: "call"; call: number; day: number }
+	| { kind: "verdict"; day: number };
+
+/**
+ * What the author has to do next, on the day given.
+ *
+ * A sprint's devlog is owed until the call that follows it — late, but still the
+ * thing to do before that call — and drops away once published. Otherwise it is
+ * the next call, and after the last call only the verdict is left, which is the
+ * curator's move and the author's wait.
+ */
+export const authorNextStep = (
+	day: number,
+	written: ReadonlySet<number>,
+): AuthorNextStep | null => {
+	const plan = checkpointPlan();
+
+	for (const [index, step] of plan.entries()) {
+		if (step.kind === "devlog") {
+			const callAfter = plan[index + 1]?.day ?? step.day;
+
+			if (!written.has(step.sprint) && day <= callAfter) {
+				return {
+					kind: "devlog",
+					sprint: step.sprint,
+					day: step.day,
+					overdue: day > step.day,
+				};
+			}
+			continue;
+		}
+
+		if (step.day < day) continue;
+
+		return step.kind === "call"
+			? { kind: "call", call: step.call, day: step.day }
+			: { kind: "verdict", day: step.day };
+	}
+
+	return null;
+};

@@ -1,6 +1,8 @@
 import { IconCheck } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
+import { Tag, Typography } from "antd";
 import type React from "react";
+import { StatusDot } from "@/components/ui";
 import styles from "./style.module.scss";
 
 export type TaskCardProps = {
@@ -8,6 +10,8 @@ export type TaskCardProps = {
 	description?: string | null;
 	required: boolean;
 	completed: boolean;
+	/** Set for a checkpoint's task: the deadline replaces the gate label. */
+	due?: { label: string; overdue: boolean };
 };
 
 /**
@@ -20,6 +24,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 	description,
 	required,
 	completed,
+	due,
 }) => {
 	const { t } = useTranslate();
 
@@ -36,14 +41,22 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 					{label}
 				</div>
 				{description && <div className={styles.description}>{description}</div>}
+				{due &&
+					(due.overdue ? (
+						<StatusDot tone="danger" label={due.label} />
+					) : (
+						<Typography.Text type="secondary" className={styles.description}>
+							{due.label}
+						</Typography.Text>
+					))}
 			</div>
-			<div
-				className={`${styles.pill} ${required ? styles.required : styles.optional}`}
-			>
-				{required
-					? t("workflow.tasks.required", "Required")
-					: t("workflow.tasks.optional", "Optional")}
-			</div>
+			<Tag className={styles.tag}>
+				{due
+					? t("workflow.tasks.checkpoint", "Checkpoint")
+					: required
+						? t("workflow.tasks.required", "Required")
+						: t("workflow.tasks.optional", "Optional")}
+			</Tag>
 		</div>
 	);
 };

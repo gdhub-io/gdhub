@@ -6,6 +6,7 @@ import type {
 	CheckpointVerdict,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
+import type { AuthorNextStep } from "@/lib/checkpoint-plan";
 
 /**
  * What the checkpoint endpoints send to the browser.
@@ -145,6 +146,8 @@ export type CheckpointDto = {
 	evidence?: CheckpointEvidenceDto[];
 	/** The list's current row only, and null while it is still a draft. */
 	signals?: CheckpointSignalsDto | null;
+	/** The list's current row only: what its author has to do next, if anything. */
+	next?: AuthorNextStep | null;
 	/** Counted in UTC on the server — see `checkpointProgress`. */
 	day: number | null;
 	daysLeft: number | null;

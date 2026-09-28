@@ -21,6 +21,8 @@ import {
 import axios from "axios";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { CheckpointWidget } from "@/components/checkpoints/CheckpointWidget";
+import { useCheckpointTasks } from "@/components/checkpoints/CheckpointWidget/useCheckpointTasks";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { capitalize } from "@/helpers/text";
@@ -66,12 +68,15 @@ export type ProjectWorkflowWithSteps = ProjectWorkflow & {
 
 const WorkflowContent = ({
 	projectId,
+	projectSlug,
 	locale = "en",
 }: {
 	projectId: string;
+	projectSlug: string;
 	locale?: string;
 }) => {
 	const screens = Grid.useBreakpoint();
+	const checkpointTasks = useCheckpointTasks(projectId);
 	const projectContext = useContext(ProjectContext)?.contextProject;
 	const [conditionStatus, setConditionStatus] = useState<any>({
 		completed: false,
@@ -184,15 +189,17 @@ const WorkflowContent = ({
 		setConditionStatus({ completed: requiredTasks.every((t) => t.done) });
 	}, [workflow?.currentStep?.tasks]);
 
-	const taskItems: WorkflowTaskItem[] = (
-		workflow?.currentStep?.tasks ?? []
-	).map((task) => ({
-		id: task.id,
-		label: task.name || task.description || "",
-		description: task.name ? task.description : null,
-		required: task.required,
-		done: task.done,
-	}));
+	// A checkpoint's tasks lead: they carry a deadline the stage's do not.
+	const taskItems: WorkflowTaskItem[] = [
+		...checkpointTasks,
+		...(workflow?.currentStep?.tasks ?? []).map((task) => ({
+			id: task.id,
+			label: task.name || task.description || "",
+			description: task.name ? task.description : null,
+			required: task.required,
+			done: task.done,
+		})),
+	];
 
 	const stepsStepsList = (
 		<div className={styles.stepsWrapper}>
@@ -211,6 +218,10 @@ const WorkflowContent = ({
 	);
 
 	if (!workflow) return null;
+
+	const checkpointWidget = (
+		<CheckpointWidget projectId={projectId} projectSlug={projectSlug} />
+	);
 
 	return (
 		<div className={styles.container}>
@@ -290,9 +301,12 @@ const WorkflowContent = ({
 								</Button>
 							)}
 
-							{!screens.lg && isRoadmapStep && taskItems.length > 0 && (
+							{!screens.lg && isRoadmapStep && (
 								<div className={styles.tasksSidebar}>
-									<WorkflowTasksPanel tasks={taskItems} />
+									{checkpointWidget}
+									{taskItems.length > 0 && (
+										<WorkflowTasksPanel tasks={taskItems} />
+									)}
 								</div>
 							)}
 						</Space>
@@ -300,6 +314,7 @@ const WorkflowContent = ({
 					{screens.lg && isRoadmapStep && (
 						<Col xs={24} lg={8}>
 							<div className={styles.tasksSidebar}>
+								{checkpointWidget}
 								{taskItems.length > 0 ? (
 									<WorkflowTasksPanel tasks={taskItems} />
 								) : (
