@@ -1,4 +1,4 @@
-import { IconShieldCheck, IconX } from "@tabler/icons-react";
+import { IconShield, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -48,7 +48,9 @@ export const RoadmapChart = ({
 	const screens = Grid.useBreakpoint();
 	const roadmapRef = useRef<HTMLDivElement>(null);
 	const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-	const [currentProgress, setCurrentProgress] = useState(0);
+	// Percent of the road: where the current stage starts, and where its sprint
+	// — the first half of it — ends.
+	const [progress, setProgress] = useState({ done: 0, sprint: 0 });
 	const steps = useMemo(
 		() => workflow.steps.slice(1).slice(0, -1),
 		[workflow.steps],
@@ -115,20 +117,29 @@ export const RoadmapChart = ({
 
 		// If current step is not in screenSteps, don't show progress
 		if (currentStepIndex === -1) {
-			setCurrentProgress(0);
+			setProgress({ done: 0, sprint: 0 });
 			return;
 		}
 
+		const road = roadmapRef.current.getBoundingClientRect();
 		const first = stepRefs.current[0]?.getBoundingClientRect();
 		const current = stepRefs.current[currentStepIndex]?.getBoundingClientRect();
-
-		const totalWidth = roadmapRef.current.offsetWidth;
+		const next =
+			stepRefs.current[currentStepIndex + 1]?.getBoundingClientRect();
 
 		// Nothing laid out yet — leave the marker where it is rather than
 		// snapping it back to the start of the road.
-		if (!first || !current || totalWidth === 0) return;
+		if (!first || !current || road.width === 0) return;
 
-		setCurrentProgress(((current.left - first.left) / totalWidth) * 100);
+		const start = current.left - first.left;
+		// The last stage runs to the end of the road.
+		const end = (next?.left ?? road.right) - first.left;
+		const percent = (value: number) => (value / road.width) * 100;
+
+		setProgress({
+			done: percent(start),
+			sprint: percent(start + (end - start) / 2),
+		});
 	}, [workflow.currentStep, screenSteps]);
 
 	useEffect(() => {
@@ -207,16 +218,24 @@ export const RoadmapChart = ({
 				className={styles.roadmapContainer}
 			>
 				<div
+					className={styles.progressDone}
+					style={{ width: `${progress.done}%` }}
+				/>
+				<div
 					className={styles.progressContainer}
-					style={{ width: `${currentProgress}%` }}
+					style={{
+						left: `${progress.done}%`,
+						width: `${progress.sprint - progress.done}%`,
+					}}
 				>
 					<div className={styles.currentTime}>
-						{/* A badge with a tick, the shape this marker has always had —
-						    the icon migration swapped `MdBeenhere` for a rosette, whose
-						    scalloped edge reads as a sticker rather than a marker. */}
+						{/* Frame `n4D6fb`: a shield with the current point in it. */}
 						<span className={styles.currentTimeText}>
 							You&apos;re here
-							<IconShieldCheck />
+							<span className={styles.achievement}>
+								<IconShield size={20} stroke={1.6} />
+								<span className={styles.point} />
+							</span>
 						</span>
 					</div>
 				</div>
