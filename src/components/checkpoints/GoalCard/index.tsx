@@ -46,16 +46,7 @@ export function GoalCard({ items }: GoalCardProps) {
 						>
 							{item.text}
 						</Typography.Text>
-						{!item.cut && (
-							<EvidenceSlot
-								artifact={item.artifact}
-								emptyLabel={
-									kind === CheckpointItemKind.Outcome
-										? t("checkpoints.evidence.none", "Nothing attached")
-										: undefined
-								}
-							/>
-						)}
+						{!item.cut && <EvidenceSlot artifact={item.artifact} />}
 					</Flex>
 				))}
 			</Flex>

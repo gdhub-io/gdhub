@@ -35,7 +35,10 @@ export type EvidenceSlotProps = {
 	/** The project's artifacts, for the picker. Omit to render read-only. */
 	options?: CheckpointArtifactRef[];
 	onChange?: (artifactId: string | null) => void;
-	/** What an empty slot says. Step 2 owes proof; step 1 may have none. */
+	/**
+	 * What an empty slot says. Defaults to asking for proof where it can be
+	 * given, and to saying there is none where it cannot.
+	 */
 	emptyLabel?: string;
 	disabled?: boolean;
 	/**
@@ -65,8 +68,14 @@ export function EvidenceSlot({
 	plain,
 }: EvidenceSlotProps) {
 	const { t } = useTranslate();
+	const readOnly = !options || !onChange;
+	// A reader cannot attach anything, so an empty slot is a fact for them, not a
+	// request: the curator must not be told to do the author's part.
 	const empty =
-		emptyLabel ?? t("checkpoints.evidence.attach", "Attach evidence");
+		emptyLabel ??
+		(readOnly
+			? t("checkpoints.evidence.none", "Nothing attached")
+			: t("checkpoints.evidence.attach", "Attach evidence"));
 
 	if (plain) {
 		const Icon = artifact ? ICON[artifact.type] : IconPaperclip;
@@ -81,7 +90,7 @@ export function EvidenceSlot({
 		);
 	}
 
-	if (!options || !onChange) {
+	if (readOnly) {
 		if (!artifact) {
 			return (
 				<span className={styles.slot} data-empty>
