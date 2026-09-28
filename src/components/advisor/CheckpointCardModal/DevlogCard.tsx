@@ -13,16 +13,10 @@ export type DevlogCardProps = {
 	content: string;
 	/** Set for a devlog of this checkpoint; the project's others have none. */
 	sprint?: number | null;
-	curatorFeedback?: string | null;
 };
 
-/** One devlog, read in place: the date, the text folded at six lines, any review. */
-export function DevlogCard({
-	publishedAt,
-	content,
-	sprint,
-	curatorFeedback,
-}: DevlogCardProps) {
+/** One devlog, read in place: the date and the text folded at six lines. */
+export function DevlogCard({ publishedAt, content, sprint }: DevlogCardProps) {
 	const { t } = useTranslate();
 
 	return (
@@ -50,14 +44,6 @@ export function DevlogCard({
 			>
 				{content}
 			</Paragraph>
-			{curatorFeedback && (
-				<div className={styles.feedback}>
-					<Text className={scout.eyebrow}>
-						{t("advisor.card.yourReview", "Your review")}
-					</Text>
-					<Paragraph className={styles.devlogText}>{curatorFeedback}</Paragraph>
-				</div>
-			)}
 		</article>
 	);
 }

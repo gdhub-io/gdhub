@@ -196,8 +196,6 @@ const PROJECT: AdvisorProjectDto = {
 			publishedAt: "2026-10-04T12:00:00.000Z",
 			content:
 				"Week one: the tide sim now runs off a single state machine, and the first stranger playtest finished in 22 minutes.\n\nNext: cut the tutorial in half.",
-			curatorFeedback:
-				"Good first week. Watch the 22 minutes — the goal is 15, and the tutorial is the obvious place to find them.",
 			sprint: 1,
 		},
 	],

@@ -201,7 +201,10 @@ export type AdvisorProjectDto = {
 	 * This checkpoint's, newest first; empty until the curator takes it on. No
 	 * author: the curator reads the work, not who wrote it up.
 	 */
-	devlogs: Omit<CheckpointDevlogDto, "curatorFeedbackAt">[];
+	devlogs: Pick<
+		CheckpointDevlogDto,
+		"id" | "publishedAt" | "content" | "sprint"
+	>[];
 };
 
 /** Why another checkpoint cannot be started, or null when one can. */

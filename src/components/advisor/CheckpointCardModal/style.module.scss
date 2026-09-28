@@ -28,7 +28,7 @@
 	padding: 16px 20px;
 }
 
-// A devlog is read, not scanned: a card per post, the review nested under it.
+// A devlog is read, not scanned: a card per post.
 .devlog {
 	display: flex;
 	flex-direction: column;
@@ -43,14 +43,6 @@
 	white-space: pre-line;
 }
 
-.feedback {
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-1);
-	padding: var(--gd-space-3);
-	border-radius: var(--gd-radius-control);
-	background: var(--gd-fill-base);
-}
 
 // The date column is the thing scanned first, so it keeps one width down the
 // whole plan rather than following each label's length.

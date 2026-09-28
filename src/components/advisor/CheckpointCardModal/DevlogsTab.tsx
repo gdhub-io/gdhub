@@ -8,7 +8,10 @@ import { EmptyState } from "@/components/ui";
 import type { AdvisorProjectDto } from "@/types/checkpoints";
 import { DevlogCard } from "./DevlogCard";
 
-/** What the team published during these 28 days, and what the curator said back. */
+/**
+ * What the team published during these 28 days. A person curating answers on
+ * the calls, not in writing — written answers are the AI curator's.
+ */
 export function DevlogsTab({
 	devlogs,
 }: {

@@ -210,7 +210,6 @@ export const getAdvisorProject = async (
 			id: report.id,
 			publishedAt: report.publishedAt,
 			content: report.content,
-			curatorFeedback: report.curatorFeedback,
 			sprint: report.sprint,
 		})),
 	};
