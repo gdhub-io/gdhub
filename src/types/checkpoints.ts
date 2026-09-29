@@ -5,6 +5,7 @@ import type {
 	CheckpointStatus,
 	CheckpointVerdict,
 	ProjectArtifactType,
+	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
 import type { AuthorNextStep } from "@/lib/checkpoint-plan";
 
@@ -115,7 +116,13 @@ export type CheckpointDto = {
 	status: CheckpointStatus;
 	goal: string;
 	curatorKind: CheckpointCuratorKind;
-	curator: { id: string; name: string | null; image: string | null } | null;
+	curator: {
+		id: string;
+		name: string | null;
+		image: string | null;
+		/** The list's current row only. */
+		speciality?: { name: string; level: SkillLevel } | null;
+	} | null;
 	startedAt: string | null;
 	dueAt: string | null;
 	goalAgreedAt: string | null;

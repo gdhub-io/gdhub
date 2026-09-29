@@ -9,6 +9,7 @@ import {
 	CheckpointStatus,
 	CheckpointVerdict,
 	ProjectArtifactType,
+	SkillLevel,
 } from "@/config/prisma-enums";
 import { sprintFactsOf } from "@/lib/checkpoint-facts";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
@@ -109,36 +110,34 @@ export const StatusSlot: StoryObj = {
 	),
 };
 
+const curator = {
+	id: "u1",
+	name: "Marta Ilves",
+	image: null,
+	speciality: { name: "Game design", level: SkillLevel.Expert },
+};
+
+/** Frame `TJ2dF`: sprint 2 under way, one outcome reworded and one cut. */
 export const RunningCard: StoryObj = {
 	render: () => (
 		<CheckpointCard
 			checkpoint={{
 				...base,
-				signals: {
-					devlogs: { done: 2, total: 4 },
-					pulses: { done: 2, total: 5 },
-					evidence: { done: 0, total: 3 },
-				},
+				curatorKind: CheckpointCuratorKind.Human,
+				curator,
+				items,
+				sprints,
 			}}
 			projectSlug="neon-drift"
 		/>
 	),
 };
 
-/** Late in the run, with everything answered and the evidence in. */
-export const RunningCardComplete: StoryObj = {
+/** The AI curator, before any outcome is written: no task row at all. */
+export const RunningCardAI: StoryObj = {
 	render: () => (
 		<CheckpointCard
-			checkpoint={{
-				...base,
-				day: 27,
-				daysLeft: 1,
-				signals: {
-					devlogs: { done: 4, total: 4 },
-					pulses: { done: 5, total: 5 },
-					evidence: { done: 3, total: 3 },
-				},
-			}}
+			checkpoint={{ ...base, sprints }}
 			projectSlug="neon-drift"
 		/>
 	),
@@ -226,7 +225,9 @@ export const AwaitingVerdict: StoryObj = {
 				day: 28,
 				daysLeft: 0,
 				curatorKind: CheckpointCuratorKind.Human,
-				curator: { id: "u1", name: "Marta Ilves", image: null },
+				curator,
+				items,
+				sprints: sprints.map((sprint) => ({ ...sprint, state: "done" })),
 			}}
 			projectSlug="neon-drift"
 		/>

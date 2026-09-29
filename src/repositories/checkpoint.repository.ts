@@ -384,6 +384,19 @@ export const getCheckpoint = async (id: string) => {
  */
 const currentCheckpointSelect = {
 	...checkpointSelect,
+	// The card names the curator's craft; their strongest speciality stands for it.
+	curator: {
+		select: {
+			id: true,
+			name: true,
+			image: true,
+			specialities: {
+				select: { name: true, level: true },
+				orderBy: { level: "desc" },
+				take: 1,
+			},
+		},
+	},
 	reports: { select: { publishedAt: true } },
 	pulses: { select: { week: true, confirmedAt: true } },
 	project: {
@@ -413,11 +426,18 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 
 	if (!row) return null;
 
-	const { reports, pulses, project, ...checkpoint } = row;
+	const { reports, pulses, project, curator, ...checkpoint } = row;
 	const { startedAt } = checkpoint;
 
 	return {
 		...checkpoint,
+		curator: curator && {
+			id: curator.id,
+			name: curator.name,
+			image: curator.image,
+			speciality: curator.specialities[0] ?? null,
+		},
+		sprints: buildSprints(startedAt),
 		// Only a running checkpoint asks anything of its author on a given day.
 		next:
 			startedAt &&

@@ -1,75 +1,186 @@
 .card {
-	// The one live item takes the fill; past checkpoints stay in the table below.
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
 	background: var(--gd-color-surface);
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
-	overflow: hidden;
-}
-
-.head,
-.foot {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: var(--gd-space-3);
-}
-
-.head {
-	padding: var(--gd-space-3) var(--gd-space-6);
-	border-bottom: 1px solid var(--gd-color-border-subtle);
-}
-
-.foot {
-	padding: var(--gd-space-3) var(--gd-space-6);
-	border-top: 1px solid var(--gd-color-border-subtle);
 }
 
 .identity {
 	min-width: 0;
 }
 
-.stage {
-	font-size: var(--gd-font-size-body);
-	font-weight: 600;
-}
-
-.number {
-	color: var(--gd-color-text-tertiary);
-	font-size: var(--gd-font-size-body-sm);
-	font-feature-settings: "tnum";
-	white-space: nowrap;
-}
-
-.body {
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-6);
-	padding: var(--gd-space-6);
-}
-
-.goal {
-	margin: 0 !important;
+.title {
+	color: var(--gd-color-text);
 	font-size: var(--gd-font-size-h3);
-	font-weight: 600;
+	font-weight: 700;
 	line-height: var(--gd-line-height-heading);
 	letter-spacing: -0.02em;
+
+	&:hover {
+		color: var(--gd-color-link);
+	}
 }
 
-.counter {
+.muted {
 	color: var(--gd-color-text-tertiary);
 	font-size: var(--gd-font-size-body-sm);
 	font-feature-settings: "tnum";
 }
 
-.track {
-	height: var(--gd-space-2);
-	border-radius: var(--gd-radius-pill);
-	background: var(--gd-color-border);
-	overflow: hidden;
+.curatorText {
+	min-width: 0;
+	max-width: 280px;
+	text-align: right;
 }
 
-.fill {
-	height: 100%;
+.divider {
+	height: var(--gd-space-8);
+	margin: 0;
+}
+
+// Sprints
+
+.sprint {
+	flex: 1;
+	min-width: 0;
+}
+
+.bar {
+	display: flex;
+	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
-	background: var(--gd-color-accent);
+	overflow: hidden;
+	background: var(--gd-color-border);
+
+	&.done {
+		background: var(--gd-success-solid);
+	}
+
+	// What is left of the sprint under way is striped, the days behind it solid.
+	&.current {
+		background: repeating-linear-gradient(
+				-45deg,
+				var(--gd-success-solid) 0 2px,
+				transparent 2px 6px
+			),
+			var(--gd-success-tint);
+	}
+}
+
+.barFill {
+	height: 100%;
+	background: var(--gd-success-solid);
+}
+
+.sprintIcon {
+	flex: none;
+	margin-top: 1px;
+	color: var(--gd-color-text-tertiary);
+
+	&.done,
+	&.current {
+		color: var(--gd-success-solid);
+	}
+}
+
+.sprintName {
+	font-size: var(--gd-font-size-body);
+}
+
+.sprintState {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+
+	&.done,
+	&.current {
+		color: var(--gd-success-on-tint);
+		font-weight: 500;
+	}
+}
+
+// Goal
+
+.goal {
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.goalLabel {
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+.goalText {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-body-lg);
+	line-height: var(--gd-line-height-body);
+}
+
+// Tasks
+
+.square {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border: 1.5px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-chip);
+	color: var(--gd-color-surface);
+	cursor: default;
+}
+
+.squareDone {
+	border-color: var(--gd-success-solid);
+	background: var(--gd-success-solid);
+}
+
+.squareCut {
+	border-color: var(--gd-color-border);
+	background: var(--gd-fill-subtle);
+	color: var(--gd-color-text-tertiary);
+}
+
+.reworded,
+.legendDot {
+	width: var(--gd-space-2);
+	height: var(--gd-space-2);
+	border-radius: var(--gd-radius-pill);
+	background: var(--gd-warning-solid);
+}
+
+.reworded {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	width: 10px;
+	height: 10px;
+	box-shadow: 0 0 0 2px var(--gd-color-surface);
+}
+
+.legend {
+	margin-left: auto;
+}
+
+.legendSquare {
+	width: 12px;
+	height: 12px;
+	border-width: 1px;
+}
+
+.struck {
+	text-decoration: line-through;
+}
+
+.tipMuted {
+	opacity: 0.65;
+	font-size: var(--gd-font-size-caption);
 }
