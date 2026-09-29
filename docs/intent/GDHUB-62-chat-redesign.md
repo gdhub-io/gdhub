@@ -47,8 +47,7 @@ unread badge breaks the design rule that red means destructive.
 ## Done when
 
 - [ ] On desktop, the header icon opens a panel under it, not a drawer. The
-      panel shows the list or one conversation, with a back arrow between them
-      and an expand toggle.
+      panel shows the list or one conversation, with a back arrow between them.
 - [ ] The badge on the header icon counts unread chats, and it is not red.
 - [ ] The All / Unread / Archived tabs filter the list. Archived holds closed
       chats (`ChatRoom.status=Closed`) and nothing else.
@@ -63,6 +62,9 @@ unread badge breaks the design rule that red means destructive.
   - [ ] once the user has scrolled up, a jump-to-latest button appears and
         counts the new messages;
   - [ ] a failed message can be retried.
+  - [ ] a message can be replied to, copied and reacted to with an emoji; the
+        author can edit or delete their own, and a deleted one leaves a
+        placeholder.
 - [ ] Messages are marked read only while the latest one is on screen and the
       tab is visible.
 - [ ] On mobile, the list and the conversation each fill the screen.
@@ -71,7 +73,8 @@ unread badge breaks the design rule that red means destructive.
 
 - **Attachments and file sending:** the folder icon, room media, the attach
   button. Nothing in the client sends or lists `m.file`/`m.image` yet.
-- Voice messages, reactions, typing indicators, replies, threads, search.
+- Voice messages, typing indicators, threads, search.
+- An expanded (larger) panel mode.
 - A personal "archive for me" action or Matrix room tags. Archived means closed.
 - New chat kinds and space-scoped grouping. Those are GDHUB-28.
 
