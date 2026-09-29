@@ -18,6 +18,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 			kind: true,
 			status: true,
 			finishedAt: true,
+			createdAt: true,
 			directKey: true,
 			context: true,
 		},
@@ -33,7 +34,10 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		const provider = getChatProvider(room.kind);
 		if (provider) {
 			const loaded = await provider.load(room);
-			return json(provider.buildContext(room, loaded, currentUser.id));
+			return json({
+				...provider.buildContext(room, loaded, currentUser.id),
+				canClose: provider.canClose(room, loaded, currentUser.id),
+			});
 		}
 	}
 

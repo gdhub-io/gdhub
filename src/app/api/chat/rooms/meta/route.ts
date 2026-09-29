@@ -4,25 +4,26 @@ import {
 	filterParticipantRooms,
 	participationSelect,
 } from "@/services/chat/participation";
+import { loadRoomLabels } from "@/services/chat/room-labels";
 import { prisma } from "@/services/prisma";
+import type { ChatRoomMeta } from "@/types/chat";
 
-const KindsQuerySchema = z.object({
+const MetaQuerySchema = z.object({
 	// Comma-separated Matrix room ids from the client's own sync.
 	matrixRoomIds: z.string().min(1),
 });
 
-type KindsQuery = z.infer<typeof KindsQuerySchema>;
+type MetaQuery = z.infer<typeof MetaQuerySchema>;
 
-// Batch matrixRoomId -> ChatRoomKind mapping for the drawer's grouped chat
-// list. Rooms unknown to the registry are simply absent from the response —
-// the client buckets them into the Direct group.
+// Batch matrixRoomId -> registry facts for the chat list. Rooms unknown to the
+// registry are absent from the response; the client treats them as direct.
 export const GET = withAuth({ mode: "user" })(
 	withValidation(
-		KindsQuerySchema,
+		MetaQuerySchema,
 		"query",
 	)(async (_req, _ctx, { user, body }) => {
 		if (!user) return apiError.unauthorized();
-		const { matrixRoomIds } = body as KindsQuery;
+		const { matrixRoomIds } = body as MetaQuery;
 
 		const ids = matrixRoomIds
 			.split(",")
@@ -33,19 +34,34 @@ export const GET = withAuth({ mode: "user" })(
 
 		const rooms = await prisma.chatRoom.findMany({
 			where: { matrixRoomId: { in: ids } },
-			select: { matrixRoomId: true, ...participationSelect },
+			select: {
+				matrixRoomId: true,
+				status: true,
+				finishedAt: true,
+				...participationSelect,
+			},
 		});
 
 		// The client sends room ids from its own sync, but nothing stops it from
 		// sending someone else's — the mapping would then confirm which rooms
 		// exist and what they are about.
-		const own = await filterParticipantRooms(rooms, user.id);
+		const own = (await filterParticipantRooms(rooms, user.id)).filter(
+			(room): room is typeof room & { matrixRoomId: string } =>
+				!!room.matrixRoomId,
+		);
+		const labels = await loadRoomLabels(own);
 
 		return json(
 			Object.fromEntries(
-				own
-					.filter((room) => room.matrixRoomId)
-					.map((room) => [room.matrixRoomId as string, room.kind]),
+				own.map((room): [string, ChatRoomMeta] => [
+					room.matrixRoomId,
+					{
+						kind: room.kind,
+						status: room.status,
+						label: labels.get(room.matrixRoomId) ?? null,
+						closedAt: room.finishedAt?.toISOString() ?? null,
+					},
+				]),
 			),
 		);
 	}),

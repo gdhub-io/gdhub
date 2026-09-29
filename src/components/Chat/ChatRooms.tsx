@@ -18,6 +18,7 @@ import {
 	GROUP_ORDER,
 	groupOfKind,
 } from "@/services/chat/kind-groups";
+import type { ChatRoomMeta } from "@/types/chat";
 import styles from "./ChatModal.module.scss";
 import { MatrixAvatar } from "./MatrixAvatar";
 import { resolveRoomDisplayName } from "./roomName";
@@ -43,10 +44,10 @@ export default function ChatRooms({
 
 	const roomIds = useMemo(() => items.map((i) => i.value).sort(), [items]);
 
-	// matrixRoomId -> ChatRoomKind from the registry, batched: unbounded id
+	// matrixRoomId -> registry meta, batched: unbounded id
 	// lists would overflow the URL/header limit on large accounts.
-	const { data: roomKinds } = useQuery({
-		queryKey: ["chat-room-kinds", roomIds.join(",")],
+	const { data: roomMeta } = useQuery({
+		queryKey: ["chat-room-meta", roomIds.join(",")],
 		queryFn: async () => {
 			const chunks: string[][] = [];
 			for (let i = 0; i < roomIds.length; i += KINDS_CHUNK) {
@@ -55,13 +56,13 @@ export default function ChatRooms({
 			const results = await Promise.all(
 				chunks.map((chunk) =>
 					axios
-						.get<Record<string, string>>("/api/chat/rooms/kinds", {
+						.get<Record<string, ChatRoomMeta>>("/api/chat/rooms/meta", {
 							params: { matrixRoomIds: chunk.join(",") },
 						})
 						.then((res) => res.data),
 				),
 			);
-			return Object.assign({}, ...results) as Record<string, string>;
+			return Object.assign({}, ...results) as Record<string, ChatRoomMeta>;
 		},
 		enabled: roomIds.length > 0,
 		staleTime: 60_000,
@@ -78,18 +79,18 @@ export default function ChatRooms({
 	// follows item order, so sort by GROUP_ORDER (stable — keeps recency inside
 	// each group).
 	const groupedItems = useMemo(() => {
-		if (!roomKinds) return items;
+		if (!roomMeta) return items;
 		return items
 			.map((item) => ({
 				...item,
-				group: groupOfKind(roomKinds[item.value]),
+				group: groupOfKind(roomMeta[item.value]?.kind),
 			}))
 			.sort(
 				(a, b) =>
 					GROUP_ORDER.indexOf(a.group as ChatGroup) -
 					GROUP_ORDER.indexOf(b.group as ChatGroup),
 			);
-	}, [items, roomKinds]);
+	}, [items, roomMeta]);
 
 	useEffect(() => {
 		if (!chatClient || !ready) {
@@ -263,7 +264,7 @@ export default function ChatRooms({
 		<Conversations
 			items={groupedItems}
 			groupable={
-				roomKinds
+				roomMeta
 					? {
 							label: (group: string) =>
 								groupLabels[group as ChatGroup] ?? group,

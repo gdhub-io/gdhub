@@ -41,18 +41,22 @@ on the client, using `status` from the room metadata endpoint. There is no separ
       matches the design.
 
 ### 1. Room metadata and list model
-- [ ] Extend `GET /api/chat/rooms/kinds` to return, per Matrix room id: `kind`, `status`,
-      `label` (the project or space name) and `closedAt`. Rename it only if the name starts
-      to mislead.
-- [ ] `GET /api/chat/rooms/[id]` supplies every popover field (spec §4): the advice comment,
-      the vacancy id and title, the application date, `status` and `closedAt`.
-- [ ] Pure list model in `src/components/Chat/model/`:
+- [x] `GET /api/chat/rooms/kinds` became `GET /api/chat/rooms/meta`, which returns
+      `{ kind, status, label, closedAt }` per Matrix room id (`ChatRoomMeta` in
+      `src/types/chat.ts`). The project labels come from two batched queries in
+      `services/chat/room-labels.ts`. The old `ChatRooms` reads `.kind` until stage 3
+      replaces it.
+- [x] `GET /api/chat/rooms/[id]` now returns `canClose` from the provider, and the vacancy
+      context carries `appliedAt`, which is the room's `createdAt`. The other popover fields
+      were already there.
+- [x] Pure list model in `src/components/Chat/model/` (`rooms.ts`, `time.ts`):
   - room summary: last event, preview, "You:" prefix, unread, timestamp;
   - tab filter: all / unread / closed;
   - sort by recency;
   - list time format and separator labels.
-- [ ] Unit tests for the filter, the sort and the time/date labels, including timezone and
-      the "yesterday" edge.
+- [x] Unit tests in `tests/chat-list-model.test.ts`, green in three timezones. What is still
+      open: the summary builder from a Matrix `Room` (last event, preview, "You:") and the
+      label formatting move to stage 3, next to the row that renders them.
 
 ### 2. Panel shell
 - [ ] `ChatPanel`: a `Popover` on desktop and a full-screen `Drawer` below `md`. It holds two
@@ -133,4 +137,6 @@ on the client, using `status` from the room metadata endpoint. There is no separ
 
 ## Progress log
 
-- 2026-09-29: design approved; plan written.
+- 2026-09-29: design approved; plan written. Stage 1 done: meta endpoint, room context,
+  and the list model with tests. Also found `node_modules` drifted to gdhub-prisma beta.58
+  against the pinned beta.53, and `bun install` + `db:generate` restored it.
