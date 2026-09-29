@@ -16,8 +16,8 @@
         "@ant-design/x": "^2.7.0",
         "@auth/prisma-adapter": "^2.11.2",
         "@ctrl/tinycolor": "^4.1.0",
-        "@daily-co/daily-js": "^0.90.0",
-        "@daily-co/daily-react": "^0.25.2",
+        "@daily-co/daily-js": "^0.92.2",
+        "@daily-co/daily-react": "^0.26.0",
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/modifiers": "^9.0.0",
         "@dnd-kit/sortable": "^10.0.0",
@@ -551,9 +551,9 @@
 
     "@ctrl/tinycolor": ["@ctrl/tinycolor@4.2.0", "", {}, "sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A=="],
 
-    "@daily-co/daily-js": ["@daily-co/daily-js@0.90.0", "", { "dependencies": { "@babel/runtime": "^7.12.5", "@sentry/browser": "^8.33.1", "bowser": "^2.8.1", "dequal": "^2.0.3", "events": "^3.1.0" } }, "sha512-XnuuNIxLt8GOv+rFYoU+OPTSmVj+Mg9hRPK2EM6WYVY62F6rcw7vwzZBOSCisVuu1VnTIF/2J9V0VEBa83lDzw=="],
+    "@daily-co/daily-js": ["@daily-co/daily-js@0.92.2", "", { "dependencies": { "@babel/runtime": "^7.12.5", "@sentry/browser": "^8.33.1", "bowser": "^2.8.1", "dequal": "^2.0.3", "events": "^3.1.0" } }, "sha512-YuZGsBzKKfPFdKg2osTUrm53VkLoNdrtAyx/+R9MZrd1bJ4E2SC/ie3SugYaSpp30yzy/6qSLkH7dgLk5a8cvg=="],
 
-    "@daily-co/daily-react": ["@daily-co/daily-react@0.25.3", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "jotai-family": "^1.0.2", "lodash.throttle": "^4.1.1" }, "peerDependencies": { "@daily-co/daily-js": ">=0.68.0 <1", "jotai": "^2", "react": "^16.8 || ^17.0 || ^18.0 || ^19.0", "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0" } }, "sha512-rQrXpMFRAH68+iT2kWmOX+zYTZWKG7C+aGIASzo9lFexBl9ThQookHCNzkZFtOK6VQngs0LnbTgZfZWydG2v0w=="],
+    "@daily-co/daily-react": ["@daily-co/daily-react@0.26.0", "", { "dependencies": { "fast-deep-equal": "^3.1.3", "jotai-family": "^1.0.2", "lodash.throttle": "^4.1.1" }, "peerDependencies": { "@daily-co/daily-js": ">=0.68.0 <1", "jotai": "^2", "react": "^16.8 || ^17.0 || ^18.0 || ^19.0", "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0" } }, "sha512-RQGWd9YB4bGk8CKO3hn8wyuhISeJwoGhitP8BdvNeqzr4lcTjnPk42vDadQwWsxzlcHaEpEPwO3ujZBP1tUD3A=="],
 
     "@discordjs/builders": ["@discordjs/builders@1.14.1", "", { "dependencies": { "@discordjs/formatters": "^0.6.2", "@discordjs/util": "^1.2.0", "@sapphire/shapeshift": "^4.0.0", "discord-api-types": "^0.38.40", "fast-deep-equal": "^3.1.3", "ts-mixer": "^6.0.4", "tslib": "^2.6.3" } }, "sha512-gSKkhXLqs96TCzk66VZuHHl8z2bQMJFGwrXC0f33ngK+FLNau4hU1PYny3DNJfNdSH+gVMzE85/d5FQ2BpcNwQ=="],
 
