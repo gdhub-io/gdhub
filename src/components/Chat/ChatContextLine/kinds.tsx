@@ -1,8 +1,3 @@
-import {
-	IconArchive,
-	IconCircleCheck,
-	IconExternalLink,
-} from "@tabler/icons-react";
 import { Button } from "antd";
 import dayjs from "dayjs";
 import type { ReactNode } from "react";
@@ -97,13 +92,7 @@ function adviceSlot(
 		actions:
 			!closed && !invited && context.canClose
 				? [
-						<Button
-							key="resolve"
-							type="primary"
-							size="small"
-							icon={<IconCircleCheck size={16} />}
-							onClick={onClose}
-						>
+						<Button key="resolve" type="primary" size="small" onClick={onClose}>
 							{t("chat.context.advice.resolve", "Question resolved")}
 						</Button>,
 					]
@@ -130,13 +119,7 @@ function vacancySlot(
 		fields: [
 			{
 				label: t("chat.context.vacancy.position", "Position"),
-				value: vacancyId ? (
-					<a href={`/job/${vacancyId}`} target="_blank" rel="noreferrer">
-						{position}
-					</a>
-				) : (
-					position
-				),
+				value: position,
 			},
 			{ label: t("chat.context.vacancy.project", "Project"), value: project },
 			...(data.appliedAt
@@ -155,18 +138,13 @@ function vacancySlot(
 					size="small"
 					href={`/job/${vacancyId}`}
 					target="_blank"
-					icon={<IconExternalLink size={16} />}
+					rel="noopener noreferrer"
 				>
 					{t("chat.context.vacancy.openPosition", "Open position page")}
 				</Button>
 			),
 			!closed && !invited && context.canClose && (
-				<Button
-					key="close"
-					size="small"
-					icon={<IconArchive size={16} />}
-					onClick={onClose}
-				>
+				<Button key="close" size="small" onClick={onClose}>
 					{t("chat.context.vacancy.close", "Close chat")}
 				</Button>
 			),
