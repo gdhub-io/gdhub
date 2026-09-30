@@ -44,7 +44,6 @@ const nextConfig = {
 	transpilePackages: [
 		"@mdxeditor/editor",
 		"@ant-design",
-		"@ant-design/x",
 		"@rc-component/util",
 		"rc-input",
 		"rc-util",

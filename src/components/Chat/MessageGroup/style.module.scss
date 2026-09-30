@@ -1,0 +1,270 @@
+.group {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: flex-start;
+
+  &[data-own] {
+    justify-content: flex-end;
+  }
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-1);
+  min-width: 0;
+  max-width: min(360px, 85%);
+
+  [data-own] > & {
+    align-items: flex-end;
+  }
+}
+
+.head {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: baseline;
+}
+
+.name {
+  font-size: var(--gd-font-size-body-sm);
+  font-weight: 600;
+  color: var(--gd-color-text);
+}
+
+.time,
+.edited {
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-tertiary);
+}
+
+.item,
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  [data-own] & {
+    align-items: flex-end;
+  }
+}
+
+// The hover target: the bubble keeps its fill, and the menu trigger appears
+// beside it on the chat background.
+.block {
+  display: inline-flex;
+  gap: var(--gd-space-2);
+  align-items: flex-start;
+  max-width: 100%;
+
+  &:hover,
+  &:focus-within,
+  &[data-open] {
+    .trigger {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
+.bubble {
+  min-width: 0;
+  padding: var(--gd-space-2) var(--gd-space-3);
+  font-size: var(--gd-font-size-body);
+  line-height: var(--gd-line-height-body);
+  color: var(--gd-color-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--gd-neutral-100);
+  border-radius: var(--gd-radius-card);
+
+  [data-own] & {
+    background: var(--gd-color-accent-subtle);
+  }
+
+  &[data-deleted] {
+    font-style: italic;
+    color: var(--gd-color-text-tertiary);
+    background: transparent;
+    border: 1px solid var(--gd-color-border);
+  }
+}
+
+// Always reserved, so nothing moves when the trigger appears.
+.triggerSlot {
+  flex-shrink: 0;
+  width: 24px;
+  margin-top: var(--gd-space-1);
+}
+
+.trigger {
+  width: 24px !important;
+  min-width: 24px !important;
+  // antd's `transition: all` would delay the hide and let it overlap its swap.
+  transition-property: background-color, color !important;
+  opacity: 0;
+  pointer-events: none;
+
+  [data-open] & {
+    background: var(--gd-fill-strong) !important;
+  }
+
+  // Touch screens have no hover: keep the trigger reachable.
+  @media (hover: none) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.menuStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-2);
+  align-items: stretch;
+}
+
+.strip {
+  display: flex;
+  padding: var(--gd-space-1);
+  background: var(--gd-color-surface);
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-card);
+  box-shadow: var(--gd-shadow-e2);
+}
+
+.stripEmoji {
+  width: 32px;
+  height: 32px;
+  font-size: var(--gd-font-size-body-lg);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: var(--gd-radius-control);
+
+  &:hover {
+    background: var(--gd-fill-base);
+  }
+}
+
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gd-space-1);
+}
+
+.chip {
+  display: inline-flex;
+  gap: var(--gd-space-1);
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--gd-space-2);
+  font: inherit;
+  cursor: pointer;
+  background: var(--gd-color-surface);
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-pill);
+  corner-shape: round;
+
+  &[data-mine] {
+    background: var(--gd-color-accent-subtle);
+    border-color: var(--gd-color-accent);
+
+    .chipCount {
+      color: var(--gd-color-text);
+    }
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.chipCount {
+  font-size: var(--gd-font-size-caption);
+  font-weight: 600;
+  color: var(--gd-color-text-secondary);
+}
+
+.quoteRow {
+  display: flex;
+  gap: var(--gd-space-1);
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--gd-space-1);
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.quoteIcon {
+  flex-shrink: 0;
+  color: var(--gd-color-text-secondary);
+}
+
+.quote {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--gd-space-1) var(--gd-space-2);
+  background: var(--gd-color-surface);
+  border-radius: var(--gd-radius-chip);
+}
+
+.quoteName {
+  font-size: var(--gd-font-size-caption);
+  font-weight: 600;
+  color: var(--gd-color-text);
+}
+
+.quoteText {
+  overflow: hidden;
+  font-size: var(--gd-font-size-body-sm);
+  color: var(--gd-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-deleted] {
+    font-style: italic;
+    color: var(--gd-color-text-tertiary);
+  }
+}
+
+// Where "jump to the original" lands.
+.message[data-flash] .bubble {
+  box-shadow: 0 0 0 2px var(--gd-color-border-strong);
+}
+
+.ownFoot {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+}
+
+.delivery {
+  display: inline-flex;
+  gap: var(--gd-space-1);
+  align-items: center;
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-secondary);
+
+  &[data-status="failed"] {
+    color: var(--gd-danger-solid);
+  }
+}
+
+.linkButton {
+  padding: 0;
+  font: inherit;
+  color: var(--gd-color-link);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
