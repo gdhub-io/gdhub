@@ -198,15 +198,47 @@ on the client, using `status` from the room metadata endpoint. There is no separ
 - [x] The jump-to-latest button is centred and opaque (Dmitry's request).
 
 ### 7. Message actions
-- [ ] `MessageActions`: the block takes its bubble colour on hover and while the menu is open,
-      the trigger slot is reserved, and long-press opens the menu on touch screens.
-- [ ] Reactions: aggregated through relations, chips, the strip, optimistic toggle,
-      a tooltip listing who reacted.
-- [ ] Reply: send `m.in_reply_to`, show the quote row with the corner arrow (vertically
-      centred against the quote), and jump to the original with a flash.
-- [ ] Edit (`m.replace`), Delete (redaction with a confirm) and Copy.
-- [ ] Closed chat: the menu offers Copy only, and chips are read-only.
-- [ ] Stories: `MessageActions` states, and reactions, reply and deleted in `MessageGroup`.
+- [x] Menu per message: a 24px `IconDotsVertical` appears beside the bubble on hover or
+      focus, on the chat background (spec revision 4). Its slot is always reserved, so
+      nothing moves.
+  - Click or right-click (a long press on Android) opens it.
+  - The trigger stays visible on touch screens.
+- [x] The menu is antd `Dropdown` with `popupRender`: a strip of 7 quick reactions above
+      Reply / Copy / Edit / Delete. Edit and Delete appear on own messages only.
+  - Delete asks to confirm (danger button), then redacts.
+  - A closed chat shows **Copy only**, with no strip, and the chips are not togglable.
+  - Esc closes only the topmost layer, so the panel survives closing a menu.
+- [x] Reactions:
+  - aggregated through `room.relations` annotations;
+  - a toggle chip marks the viewer's own reaction;
+  - a tooltip lists who reacted;
+  - taking a reaction back redacts it;
+  - a key with no live events is hidden (no "0" chips).
+- [x] Reply:
+  - the composer strip, then `m.in_reply_to`;
+  - a quote row with a corner arrow above the text; other clients' fallback quote lines
+    are stripped (`stripReplyFallback`, tested);
+  - clicking the quote scrolls to the original and outlines it, paging back until it is
+    loaded.
+- [x] Edit fills the composer, saves with `m.replace` and shows "edited". Copy writes the
+      clipboard and shows a toast.
+- [x] Stories: `Chat/MessageGroup/ReplyAndReactions` and `ReadOnly`; the conversation
+      fixture carries a reply and reactions.
+- [x] Checked live:
+  - react and un-react;
+  - reply with its quote;
+  - edit to "edited";
+  - delete to "Message deleted";
+  - the closed chat's Copy-only menu;
+  - Esc with a menu open.
+- Dmitry's review fixes on the way:
+  - no hover fill;
+  - a smaller trigger with no extra space;
+  - the list row's hover swap no longer overlaps (antd's `transition: all` delayed
+    `visibility`).
+- A broken SCSS edit took every route down with a 500 for a few minutes.
+  - **Compile changed `.scss` with `bunx sass` before reloading.** Neither `lint` nor
+    `type-check` catches it.
 
 ### 8. Finish
 - [ ] Tolgee keys (spec §8) pushed through the i18n skill. Retire `chat.groups.*`.
@@ -222,3 +254,4 @@ on the client, using `status` from the room metadata endpoint. There is no separ
 - 2026-09-30: stage 2 done and checked live. Stage 3 done and checked live: the list, the
   tabs, and the panel edge aligned with the avatar. Stage 4 done and checked live.
   Stage 5 done and checked live. Stage 6 done and checked live.
+  Stage 7 done and checked live.

@@ -1,4 +1,5 @@
 import { useTranslate } from "@tolgee/react";
+import { App } from "antd";
 import {
 	EventStatus,
 	EventTimeline,
@@ -14,7 +15,11 @@ import { markRoomRead } from "../matrix";
 import {
 	buildTimeline,
 	type DeliveryStatus,
+	type Reaction,
+	type ReplyQuote,
+	stripReplyFallback,
 	type TimelineEntry,
+	type TimelineMessage,
 } from "../model/timeline";
 import { useChat } from "../useChat";
 import { ChatTimeline } from "./index";
@@ -66,6 +71,49 @@ function noticeText(event: MatrixEvent, room: Room, t: Translate) {
 	}
 }
 
+function reactionsOf(
+	room: Room,
+	eventId: string,
+	myId: string | null,
+): Reaction[] | undefined {
+	const annotations = room.relations
+		.getChildEventsForEvent(eventId, "m.annotation", EventType.Reaction)
+		?.getSortedAnnotationsByKey();
+	if (!annotations?.length) return undefined;
+	// A taken-back reaction stays in the aggregation as a redacted event.
+	return annotations.flatMap(([key, events]) => {
+		const live = [...events].filter((event) => !event.isRedacted());
+		if (live.length === 0) return [];
+		return {
+			key,
+			count: live.length,
+			mineEventId:
+				live.find((event) => event.getSender() === myId)?.getId() ?? null,
+			senderNames: live.map(
+				(event) =>
+					room.getMember(event.getSender() ?? "")?.name ??
+					event.getSender() ??
+					"",
+			),
+		};
+	});
+}
+
+function replyOf(room: Room, event: MatrixEvent): ReplyQuote | undefined {
+	const id = event.replyEventId;
+	if (!id) return undefined;
+	const original = room.findEventById(id);
+	const sender = original?.getSender() ?? "";
+	return {
+		id,
+		senderName: room.getMember(sender)?.name ?? sender,
+		text: original
+			? stripReplyFallback(String(original.getContent().body ?? ""))
+			: null,
+		deleted: !!original?.isRedacted(),
+	};
+}
+
 /** Timeline entries from the live timeline, oldest first. */
 function entriesOf(
 	room: Room,
@@ -110,10 +158,16 @@ function entriesOf(
 			avatarMxc: member?.getMxcAvatarUrl() ?? null,
 			own,
 			ts: event.getTs(),
-			text: String(event.getContent().body ?? ""),
+			text: event.replyEventId
+				? stripReplyFallback(String(event.getContent().body ?? ""))
+				: String(event.getContent().body ?? ""),
 			edited: !!event.replacingEventId(),
 			deleted: event.isRedacted(),
 			status: own ? deliveryOf(event, index, readUpTo) : undefined,
+			replyTo: replyOf(room, event),
+			reactions: event.getId()
+				? reactionsOf(room, event.getId() as string, myId)
+				: undefined,
 		});
 	});
 	return entries;
@@ -123,11 +177,14 @@ function entriesOf(
 export function ConnectedTimeline({
 	room,
 	name,
+	readOnly,
 }: {
 	room: Room;
 	name: string;
+	readOnly?: boolean;
 }) {
 	const { t } = useTranslate();
+	const { modal, message } = App.useApp();
 	const chatClient = useChat((s) => s.chatClient);
 	const panelOpen = useChat((s) => s.openChatModal);
 	const [version, setVersion] = useState(0);
@@ -199,11 +256,67 @@ export function ConnectedTimeline({
 		[markIfVisible],
 	);
 
-	const retry = (messageId: string) => {
-		const event = timeline
+	const eventOf = (messageId: string) =>
+		timeline
 			.getEvents()
 			.find((e) => e.getId() === messageId || e.getTxnId() === messageId);
-		if (event && chatClient) chatClient.resendEvent(event, room);
+
+	const failed = () =>
+		message.error(
+			t("chat.message.actionFailed", "Couldn't update the message"),
+		);
+
+	const actions = {
+		onRetry: (messageId: string) => {
+			const event = eventOf(messageId);
+			if (event && chatClient) chatClient.resendEvent(event, room);
+		},
+		// Toggle: a second tap on the same emoji takes the reaction back.
+		onReact: (target: TimelineMessage, key: string) => {
+			if (!chatClient) return;
+			const mine = target.reactions?.find((r) => r.key === key)?.mineEventId;
+			const request = mine
+				? chatClient.redactEvent(room.roomId, mine)
+				: chatClient.sendEvent(room.roomId, EventType.Reaction, {
+						"m.relates_to": {
+							rel_type: "m.annotation",
+							event_id: target.id,
+							key,
+						},
+					} as never);
+			request.catch(failed);
+		},
+		onReply: (target: TimelineMessage) =>
+			useChat.getState().setMode(room.roomId, {
+				type: "reply",
+				eventId: target.id,
+				senderName: target.senderName,
+				preview: target.text,
+			}),
+		onEdit: (target: TimelineMessage) =>
+			useChat.getState().setMode(room.roomId, {
+				type: "edit",
+				eventId: target.id,
+				original: target.text,
+			}),
+		onCopy: (target: TimelineMessage) =>
+			navigator.clipboard
+				.writeText(target.text)
+				.then(() => message.success(t("chat.message.copied", "Copied")))
+				.catch(failed),
+		onDelete: (target: TimelineMessage) =>
+			modal.confirm({
+				title: t("chat.deleteConfirm.title", "Delete this message?"),
+				content: t(
+					"chat.deleteConfirm.content",
+					"It will be removed for everyone in the chat. This can't be undone.",
+				),
+				okText: t("chat.deleteConfirm.ok", "Delete"),
+				okButtonProps: { danger: true },
+				cancelText: t("chat.composer.cancel", "Cancel"),
+				onOk: () =>
+					chatClient?.redactEvent(room.roomId, target.id).catch(failed),
+			}),
 	};
 
 	return (
@@ -212,7 +325,8 @@ export function ConnectedTimeline({
 			canLoadEarlier={canLoadEarlier}
 			loadingEarlier={loadingEarlier}
 			onLoadEarlier={loadEarlier}
-			onRetry={retry}
+			actions={actions}
+			readOnly={readOnly}
 			onAtBottomChange={onAtBottomChange}
 			empty={<EmptyConversation name={name} />}
 		/>

@@ -54,9 +54,14 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 			}
 			close();
 		};
+		// Esc closes the topmost layer only: a menu, popover or confirm first.
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key !== "Escape") return;
-			if ((event.target as Element).closest?.(".ant-modal-root")) return;
+			const layers = document.querySelectorAll(
+				".ant-dropdown:not(.ant-dropdown-hidden), .ant-popover:not(.ant-popover-hidden), .ant-modal-wrap:not([style*='display: none'])",
+			);
+			// The panel itself is one open popover.
+			if (layers.length > 1) return;
 			close();
 		};
 		document.addEventListener("pointerdown", onPointerDown);

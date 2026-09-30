@@ -10,7 +10,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { MessageGroup } from "../MessageGroup";
+import { type MessageActions, MessageGroup } from "../MessageGroup";
 import { dayBucket } from "../model/time";
 import type { TimelineItem } from "../model/timeline";
 import styles from "./style.module.scss";
@@ -23,7 +23,9 @@ type ChatTimelineProps = {
 	canLoadEarlier?: boolean;
 	loadingEarlier?: boolean;
 	onLoadEarlier?: () => void;
-	onRetry?: (messageId: string) => void;
+	/** Reply-quote jumps are handled here, where the scroll lives. */
+	actions?: Omit<MessageActions, "onJumpTo">;
+	readOnly?: boolean;
 	/** Fires when the latest message comes into or leaves view. */
 	onAtBottomChange?: (atBottom: boolean) => void;
 	/** Shown when the room has no messages at all. */
@@ -53,7 +55,8 @@ export function ChatTimeline({
 	canLoadEarlier,
 	loadingEarlier,
 	onLoadEarlier,
-	onRetry,
+	actions,
+	readOnly,
 	onAtBottomChange,
 	empty,
 }: ChatTimelineProps) {
@@ -67,6 +70,7 @@ export function ChatTimeline({
 	const anchorRef = useRef<number | null>(null);
 	const [farFromBottom, setFarFromBottom] = useState(false);
 	const [seenTs, setSeenTs] = useState<number | null>(null);
+	const [pendingJump, setPendingJump] = useState<string | null>(null);
 
 	const messages = useMemo(
 		() => items.flatMap((item) => (item.type === "group" ? item.messages : [])),
@@ -139,6 +143,31 @@ export function ChatTimeline({
 		}
 	};
 
+	// Scroll the original into view and flash it; page back until it is loaded.
+	const jumpTo = (messageId: string) => {
+		const target = scrollRef.current?.querySelector<HTMLElement>(
+			`[data-message-id="${CSS.escape(messageId)}"]`,
+		);
+		if (target) {
+			setPendingJump(null);
+			target.scrollIntoView({ block: "center", behavior: "smooth" });
+			target.dataset.flash = "";
+			setTimeout(() => delete target.dataset.flash, 1000);
+			return;
+		}
+		if (canLoadEarlier) {
+			setPendingJump(messageId);
+			if (!loadingEarlier) onLoadEarlier?.();
+		} else {
+			setPendingJump(null);
+		}
+	};
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: retry once more history is in
+	useEffect(() => {
+		if (pendingJump && !loadingEarlier) jumpTo(pendingJump);
+	}, [items, loadingEarlier]);
+
 	const jumpToLatest = () =>
 		scrollRef.current?.scrollTo({
 			top: scrollRef.current.scrollHeight,
@@ -172,7 +201,9 @@ export function ChatTimeline({
 								avatarMxc={item.avatarMxc}
 								ts={item.ts}
 								messages={item.messages}
-								onRetry={onRetry}
+								readOnly={readOnly}
+								{...actions}
+								onJumpTo={jumpTo}
 							/>
 						),
 					)}

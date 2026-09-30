@@ -58,7 +58,21 @@ export const conversationFixture: TimelineEntry[] = [
 		ts: now - 30 * MINUTE,
 		text: "How did the store page test go?",
 	}),
-	mine({ id: "b2", ts: now - 12 * MINUTE, text: "Wishlists doubled 🎉" }),
+	mine({
+		id: "b2",
+		ts: now - 12 * MINUTE,
+		text: "Wishlists doubled 🎉",
+		replyTo: {
+			id: "a3",
+			senderName: "Anna Volkova",
+			text: "How did the store page test go?",
+			deleted: false,
+		},
+		reactions: [
+			{ key: "🔥", count: 2, mineEventId: null, senderNames: ["Anna", "Joel"] },
+			{ key: "👍", count: 1, mineEventId: "$r", senderNames: ["Me"] },
+		],
+	}),
 	mine({
 		id: "b3",
 		ts: now - 11 * MINUTE,

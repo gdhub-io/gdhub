@@ -63,9 +63,7 @@ type Story = StoryObj<typeof ChatConversation>;
 export const Chat: Story = {
 	args: {
 		context: slotOf(adviceContext),
-		children: (
-			<ChatTimeline items={buildTimeline(conversationFixture)} onRetry={noop} />
-		),
+		children: <ChatTimeline items={buildTimeline(conversationFixture)} />,
 	},
 };
 

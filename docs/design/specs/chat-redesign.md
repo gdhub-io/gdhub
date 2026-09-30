@@ -18,6 +18,13 @@ Revision history — 1: first handoff. 2, after user review:
 - Reply quotes and the composer's mode strip lost the accent left bar. A reply is now marked by
   an `IconCornerDownRight`, vertically centred to the left of the quote.
 
+4, while building (2026-09-30):
+- **No hover fill.** A hovered message keeps its bubble as it is; only the 24px
+  `IconDotsVertical` trigger appears beside it, on the chat background, 8px from the bubble.
+  This supersedes the hover-block rows in §3 and §5.
+- Reply quotes use the corner arrow centred against the quote, as in revision 3.
+- A reaction whose last sender took it back disappears. There is no "0" chip.
+
 ---
 
 ## 1. Problem & user

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	buildTimeline,
+	stripReplyFallback,
 	type TimelineEntry,
 	type TimelineMessage,
 } from "@/components/Chat/model/timeline";
@@ -76,5 +77,19 @@ describe("buildTimeline", () => {
 
 	it("returns nothing for an empty room", () => {
 		expect(buildTimeline([])).toEqual([]);
+	});
+});
+
+describe("stripReplyFallback", () => {
+	it("drops the quoted fallback other clients prepend", () => {
+		expect(
+			stripReplyFallback("> <@anna:mx> How did it go?\n> second line\n\nGreat!"),
+		).toBe("Great!");
+	});
+
+	it("leaves a message without a fallback alone", () => {
+		expect(stripReplyFallback("Great!\n> not a quote")).toBe(
+			"Great!\n> not a quote",
+		);
 	});
 });

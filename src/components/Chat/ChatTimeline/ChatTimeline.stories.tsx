@@ -21,7 +21,7 @@ const meta: Meta<typeof ChatTimeline> = {
 	title: "Chat/ChatTimeline",
 	component: ChatTimeline,
 	parameters: { layout: "centered" },
-	args: { items: buildTimeline(conversationFixture), onRetry: () => undefined },
+	args: { items: buildTimeline(conversationFixture) },
 	decorators: [
 		(Story) => (
 			<div

@@ -129,6 +129,8 @@
 
 // The trigger takes the meta column's place on hover, centred on the row.
 .trigger {
+  // antd's `transition: all` would delay the hide and let it overlap its swap.
+  transition-property: background-color, color !important;
   position: absolute;
   top: 50%;
   right: var(--gd-space-4);

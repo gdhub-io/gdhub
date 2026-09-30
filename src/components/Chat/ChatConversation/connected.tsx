@@ -153,7 +153,9 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 					onDecline={() => respond("decline")}
 				/>
 			) : (
-				room && <ConnectedTimeline room={room} name={displayName} />
+				room && (
+					<ConnectedTimeline room={room} name={displayName} readOnly={closed} />
+				)
 			)}
 		</ChatConversation>
 	);

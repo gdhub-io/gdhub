@@ -2,6 +2,22 @@ import dayjs from "dayjs";
 
 export type DeliveryStatus = "sending" | "sent" | "read" | "failed";
 
+export type Reaction = {
+	key: string;
+	count: number;
+	/** The viewer's own reaction event, when they reacted with this key. */
+	mineEventId: string | null;
+	senderNames: string[];
+};
+
+export type ReplyQuote = {
+	id: string;
+	senderName: string;
+	/** Null when the original is not loaded. */
+	text: string | null;
+	deleted: boolean;
+};
+
 export type TimelineMessage = {
 	kind: "message";
 	/** Event id, or the transaction id of a local echo. */
@@ -16,6 +32,8 @@ export type TimelineMessage = {
 	deleted: boolean;
 	/** Own messages only. */
 	status?: DeliveryStatus;
+	replyTo?: ReplyQuote;
+	reactions?: Reaction[];
 };
 
 export type TimelineNotice = {
@@ -87,4 +105,17 @@ export function buildTimeline(entries: TimelineEntry[]): TimelineItem[] {
 		lastTs = entry.ts;
 	}
 	return items;
+}
+
+/**
+ * Replies from other clients carry the quoted text as a fallback: leading
+ * "> " lines and a blank line. The quote block shows the original instead.
+ */
+export function stripReplyFallback(body: string): string {
+	const lines = body.split("\n");
+	let i = 0;
+	while (i < lines.length && lines[i].startsWith(">")) i++;
+	if (i === 0) return body;
+	if (lines[i] === "") i++;
+	return lines.slice(i).join("\n");
 }

@@ -73,3 +73,40 @@ export const EditedAndDeleted: Story = {
 		],
 	},
 };
+
+/** Frame `X7HUy`: a reply quote and reaction chips, own reaction highlighted. */
+export const ReplyAndReactions: Story = {
+	args: {
+		own: false,
+		onReact: () => undefined,
+		messages: [
+			messageFixture({
+				id: "1",
+				text: "Great, send me the numbers",
+				replyTo: {
+					id: "0",
+					senderName: "Me",
+					text: "Wishlists doubled after the store page test",
+					deleted: false,
+				},
+				reactions: [
+					{
+						key: "🔥",
+						count: 2,
+						mineEventId: null,
+						senderNames: ["Anna", "Joel"],
+					},
+					{ key: "👍", count: 1, mineEventId: "$r", senderNames: ["Me"] },
+				],
+			}),
+		],
+	},
+};
+
+/** Closed chat (`hPrUv` case 5): the menu is Copy only, chips are not togglable. */
+export const ReadOnly: Story = {
+	args: {
+		...ReplyAndReactions.args,
+		readOnly: true,
+	},
+};
