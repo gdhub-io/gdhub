@@ -128,77 +128,86 @@ export function ChatRoomList({
 	}
 
 	const unread = rooms ? unreadChatCount(rooms) : 0;
-	const pane = (key: ChatTab, empty: React.ReactNode) =>
-		byTab ? (
-			<RoomPane rooms={byTab[key]} empty={empty} actions={actions} />
-		) : (
-			<SkeletonRows />
-		);
+	const tabs: {
+		key: ChatTab;
+		label: React.ReactNode;
+		empty: React.ReactNode;
+	}[] = [
+		{
+			key: "all",
+			label: t("chat.tabs.all", "All"),
+			empty: (
+				<EmptyState
+					icon={IconMessageCircle}
+					title={t("chat.empty.all.title", "No conversations yet")}
+					description={t(
+						"chat.empty.all.description",
+						"Chats with experts and project teams appear here once one of you writes.",
+					)}
+					action={
+						<Link href="/hub/experts">
+							<Button type="primary">
+								{t("chat.empty.all.action", "Find an expert")}
+							</Button>
+						</Link>
+					}
+				/>
+			),
+		},
+		{
+			key: "unread",
+			label: (
+				<span className={styles.tabLabel}>
+					{t("chat.tabs.unread", "Unread")}
+					{unread > 0 && <span className={styles.tabCount}>{unread}</span>}
+				</span>
+			),
+			empty: (
+				<EmptyState
+					icon={IconChecks}
+					title={t("chat.empty.unread.title", "You're all caught up")}
+					description={t(
+						"chat.empty.unread.description",
+						"Chats with new messages show up here.",
+					)}
+				/>
+			),
+		},
+		{
+			key: "closed",
+			label: t("chat.tabs.closed", "Closed"),
+			empty: (
+				<EmptyState
+					icon={IconArchive}
+					title={t("chat.empty.closed.title", "No closed chats")}
+					description={t(
+						"chat.empty.closed.description",
+						"Resolved questions and closed offers land here. They stay readable.",
+					)}
+				/>
+			),
+		},
+	];
 
+	// Tabs draws only the bar. The panes are ours and all stay mounted, so each
+	// one keeps its own scroll position.
 	return (
-		<Tabs
-			className={styles.tabs}
-			activeKey={tab}
-			onChange={(key) => onTabChange(key as ChatTab)}
-			items={[
-				{
-					key: "all",
-					label: t("chat.tabs.all", "All"),
-					children: pane(
-						"all",
-						<EmptyState
-							icon={IconMessageCircle}
-							title={t("chat.empty.all.title", "No conversations yet")}
-							description={t(
-								"chat.empty.all.description",
-								"Chats with experts and project teams appear here once one of you writes.",
-							)}
-							action={
-								<Link href="/hub/experts">
-									<Button type="primary">
-										{t("chat.empty.all.action", "Find an expert")}
-									</Button>
-								</Link>
-							}
-						/>,
-					),
-				},
-				{
-					key: "unread",
-					label: (
-						<span className={styles.tabLabel}>
-							{t("chat.tabs.unread", "Unread")}
-							{unread > 0 && <span className={styles.tabCount}>{unread}</span>}
-						</span>
-					),
-					children: pane(
-						"unread",
-						<EmptyState
-							icon={IconChecks}
-							title={t("chat.empty.unread.title", "You're all caught up")}
-							description={t(
-								"chat.empty.unread.description",
-								"Chats with new messages show up here.",
-							)}
-						/>,
-					),
-				},
-				{
-					key: "closed",
-					label: t("chat.tabs.closed", "Closed"),
-					children: pane(
-						"closed",
-						<EmptyState
-							icon={IconArchive}
-							title={t("chat.empty.closed.title", "No closed chats")}
-							description={t(
-								"chat.empty.closed.description",
-								"Resolved questions and closed offers land here. They stay readable.",
-							)}
-						/>,
-					),
-				},
-			]}
-		/>
+		<>
+			<Tabs
+				className={styles.tabs}
+				activeKey={tab}
+				onChange={(key) => onTabChange(key as ChatTab)}
+				items={tabs.map(({ key, label }) => ({ key, label }))}
+			/>
+			{tabs.map(({ key, empty }) => (
+				<div key={key} className={key === tab ? styles.panel : styles.hidden}>
+					{byTab ? (
+						<RoomPane rooms={byTab[key]} empty={empty} actions={actions} />
+					) : (
+						<SkeletonRows />
+					)}
+				</div>
+			))}
+		</>
 	);
 }
