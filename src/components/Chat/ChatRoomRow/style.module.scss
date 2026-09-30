@@ -4,10 +4,23 @@
   align-items: center;
   border-bottom: 1px solid var(--gd-color-border-subtle);
 
+  // Unread orients the eye: the brand tint the DS reserves for it.
+  &[data-unread] {
+    background: var(--gd-color-accent-subtle);
+  }
+
   &:hover,
   &:focus-within,
   &[data-menu-open] {
     background: var(--gd-fill-base);
+  }
+
+  &[data-unread]:hover,
+  &[data-unread]:focus-within,
+  &[data-unread][data-menu-open] {
+    background:
+      linear-gradient(var(--gd-fill-base), var(--gd-fill-base)),
+      var(--gd-color-accent-subtle);
   }
 }
 
@@ -129,23 +142,27 @@
 
 // The trigger takes the meta column's place on hover, centred on the row.
 .trigger {
-  // antd's `transition: all` would delay the hide and let it overlap its swap.
+  // antd's `transition: all` would fade it and let it overlap its swap.
   transition-property: background-color, color !important;
   position: absolute;
   top: 50%;
   right: var(--gd-space-4);
-  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
   transform: translateY(-50%);
 
   .row:hover &,
   .row:focus-within &,
   .row[data-menu-open] & {
-    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
+// Opacity, not visibility: visibility is inherited, and the badge inside
+// animates it, so the count lingered over the trigger for a moment.
 .row:hover .meta,
 .row:focus-within .meta,
 .row[data-menu-open] .meta {
-  visibility: hidden;
+  opacity: 0;
 }

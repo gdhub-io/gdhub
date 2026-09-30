@@ -66,7 +66,8 @@
   &:focus-within,
   &[data-open] {
     .trigger {
-      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 }
@@ -106,7 +107,8 @@
   min-width: 24px !important;
   // antd's `transition: all` would delay the hide and let it overlap its swap.
   transition-property: background-color, color !important;
-  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 
   [data-open] & {
     background: var(--gd-fill-strong) !important;
@@ -114,7 +116,8 @@
 
   // Touch screens have no hover: keep the trigger reachable.
   @media (hover: none) {
-    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
