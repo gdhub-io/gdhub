@@ -16,7 +16,7 @@ vi.mock("../src/services/prisma", () => ({
 	prisma: {
 		chatRoom: { findUnique: vi.fn(), findMany: vi.fn() },
 		teamVacancy: { findUnique: vi.fn(), findMany: vi.fn() },
-		adviceRequest: { findUnique: vi.fn() },
+		adviceRequest: { findUnique: vi.fn(), findMany: vi.fn() },
 		user: { findUnique: vi.fn(), findMany: vi.fn() },
 	},
 }));
@@ -145,6 +145,7 @@ describe("GET /api/chat/rooms/[id]", () => {
 			id: "room1",
 			status: "Open",
 			finishedAt: null,
+			createdAt: new Date("2026-09-01T09:00:00Z"),
 			...vacancyRoom,
 		});
 		(prisma.teamVacancy.findUnique as AnyMock).mockResolvedValue({
@@ -159,7 +160,10 @@ describe("GET /api/chat/rooms/[id]", () => {
 		});
 
 		expect(res.status).toBe(200);
-		expect((await res.json()).type).toBe("vacancy-application");
+		const body = await res.json();
+		expect(body.type).toBe("vacancy-application");
+		expect(body.data.appliedAt).toBe("2026-09-01T09:00:00.000Z");
+		expect(body.canClose).toBe(true);
 	});
 
 	it("lets in a room member the registry cannot recognise", async () => {
@@ -186,6 +190,8 @@ describe("GET /api/chat/rooms/[id]", () => {
 		});
 
 		expect(res.status).toBe(200);
+		// Reading is membership; closing stays with the candidate and the author.
+		expect((await res.json()).canClose).toBe(false);
 	});
 
 	it("leaks nothing about a room the registry does not know", async () => {
@@ -249,20 +255,42 @@ describe("POST /api/chat/rooms/[id]/invite-response", () => {
 	});
 });
 
-describe("GET /api/chat/rooms/kinds", () => {
-	it("maps only the caller's own rooms", async () => {
+describe("GET /api/chat/rooms/meta", () => {
+	it("returns meta only for the caller's own rooms", async () => {
 		(prisma.chatRoom.findMany as AnyMock).mockResolvedValue([
-			{ matrixRoomId: "!mine:mx.test", ...vacancyRoom },
-			{ matrixRoomId: "!theirs:mx.test", ...adviceRoom },
+			{
+				matrixRoomId: "!mine:mx.test",
+				status: "Closed",
+				finishedAt: new Date("2026-09-18T10:00:00Z"),
+				...vacancyRoom,
+			},
+			{
+				matrixRoomId: "!theirs:mx.test",
+				status: "Open",
+				finishedAt: null,
+				...adviceRoom,
+			},
+		]);
+		(prisma.teamVacancy.findMany as AnyMock).mockResolvedValue([
+			{ id: "v1", team: { project: { name: "Starfall" } } },
 		]);
 
-		const { GET } = await import("../src/app/api/chat/rooms/kinds/route");
+		const { GET } = await import("../src/app/api/chat/rooms/meta/route");
 		const res = await callRoute(
 			GET,
-			"http://t/api/chat/rooms/kinds?matrixRoomIds=!mine:mx.test,!theirs:mx.test",
+			"http://t/api/chat/rooms/meta?matrixRoomIds=!mine:mx.test,!theirs:mx.test",
 			"GET",
 		);
 
-		expect(await res.json()).toEqual({ "!mine:mx.test": "VacancyOffer" });
+		expect(await res.json()).toEqual({
+			"!mine:mx.test": {
+				kind: "VacancyOffer",
+				status: "Closed",
+				label: "Starfall",
+				closedAt: "2026-09-18T10:00:00.000Z",
+			},
+		});
+		// The other person's advice room never reaches the label query.
+		expect(prisma.adviceRequest.findMany).not.toHaveBeenCalled();
 	});
 });

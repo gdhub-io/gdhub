@@ -228,6 +228,17 @@ install throws the change away.
 - **A reusable component ships with a story.** `Component.stories.tsx` next to it,
   one story per state the design drew — including empty and loading. It is the only
   way those states can be looked at without a database behind them.
+- **Checking a change in the running app:** sign in through
+  `http://localhost:3000/dev-signin`. It lists the fixture accounts (`@gdhub.local`,
+  `@livinitlarge.net`), each with badges for its roles, and signs in as any of them with
+  one click. Use it whenever a change has to be seen as someone other than the account
+  already open: one persona per role or permission the change depends on (member, author,
+  advisor, hub admin, super admin, scout, …; `bun run test-env` seeds the catalogue in
+  [tests/personas.ts](tests/personas.ts)). For anything between two people (chat,
+  invites, offers, advice requests), open each user in its own isolated browser context
+  (Chrome DevTools `new_page` with a distinct `isolatedContext`), sign each in, and act
+  from both sides. The page only exists when `E2E_TEST_AUTH=1` outside production.
+  The dev server on :3000 is Dmitry's: use it as it is, and ask him to restart it.
 - Test what can be wrong silently, not what is easy to assert: filter and status
   maps, the `where` that scopes one user's rows from everyone else's, transitions
   that must refuse an illegal move, and anything derived from time or timezone.
