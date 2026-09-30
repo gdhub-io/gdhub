@@ -5,6 +5,7 @@ import axios from "axios";
 import { ClientEvent, RoomEvent, UserEvent } from "matrix-js-sdk";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { SpaceRole } from "@/config/permissions/roles";
 import { ConnectedComposer } from "../ChatComposer/connected";
 import { contextSlot, type RoomContext } from "../ChatContextLine/kinds";
 import ChatPushStatus from "../ChatPushStatus";
@@ -38,7 +39,8 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 	const chatClient = useChat((s) => s.chatClient);
 	const ready = useChat((s) => s.ready);
 	const closeChat = useCloseChat();
-	const { isIn } = useAccess();
+	// Transport details and push diagnostics are for the hub owner only.
+	const hubOwner = useAccess().roleIn("hub") === SpaceRole.Owner;
 	const [, setVersion] = useState(0);
 	const [busy, setBusy] = useState<"accept" | "decline" | null>(null);
 
@@ -116,16 +118,18 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 			onBack={back}
 			onClose={close}
 			info={
-				<>
-					<span>
-						{t(
-							"chat.info.security",
-							"Messages travel over a secure connection (TLS) and only the people in this chat can read them.",
-						)}
-					</span>
-					<span>{t("chat.info.matrix", "Chat is powered by Matrix.")}</span>
-					{isIn("admin") && <ChatPushStatus />}
-				</>
+				hubOwner && (
+					<>
+						<span>
+							{t(
+								"chat.info.security",
+								"Messages travel over a secure connection (TLS) and only the people in this chat can read them.",
+							)}
+						</span>
+						<span>{t("chat.info.matrix", "Chat is powered by Matrix.")}</span>
+						<ChatPushStatus />
+					</>
+				)
 			}
 			footer={
 				invited ? null : closed ? (
