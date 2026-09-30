@@ -1,0 +1,193 @@
+@use "../../../styles/surfaces" as surfaces;
+
+.layout {
+	display: grid;
+	gap: 28px;
+}
+
+.story {
+	display: grid;
+	gap: 16px;
+	align-content: start;
+}
+
+.eyebrow {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.13em;
+	text-transform: uppercase;
+	color: var(--gd-color-accent);
+}
+
+.headline {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-h2);
+	font-weight: 700;
+	line-height: 1.12;
+	letter-spacing: -0.02em;
+	color: var(--gd-color-text);
+}
+
+.context {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-lead);
+	line-height: 1.6;
+	color: var(--gd-color-text-secondary);
+}
+
+.facts {
+	margin: 0;
+	padding: 0;
+}
+
+.fact {
+	position: relative;
+	display: grid;
+	gap: 4px;
+	padding: 12px 8px;
+	margin-inline: -8px;
+	border-radius: var(--gd-radius-chip);
+	transition: background-color 0.2s;
+}
+
+// Drawn, not bordered, so the hover tint can round its corners.
+.fact::before {
+	content: "";
+	position: absolute;
+	inset-inline: 8px;
+	top: 0;
+	height: 1px;
+	background-color: var(--gd-color-border-strong);
+}
+
+@media (hover: hover) {
+	.fact:hover {
+		background-color: var(--gd-fill-subtle);
+	}
+}
+
+.factLabel {
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.factValue {
+	margin: 0;
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	line-height: 1.5;
+	color: var(--gd-color-text);
+}
+
+.card {
+	@include surfaces.light-island;
+
+	display: grid;
+	gap: 20px;
+	padding: 20px;
+	border-radius: var(--gd-radius-panel);
+}
+
+.cardHeader {
+	display: grid;
+	gap: 4px;
+}
+
+.cardEyebrow {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-tertiary);
+}
+
+.cardTitle {
+	margin: 0 0 8px;
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.verdict {
+	display: grid;
+	gap: 12px;
+	margin: 0;
+	padding: 20px;
+	border-radius: var(--gd-radius-card);
+	background-color: var(--gd-color-surface-sunken);
+}
+
+.verdictLabel {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--gd-color-accent);
+}
+
+.verdictQuote {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-lead);
+	font-weight: 500;
+	line-height: 1.5;
+	color: var(--gd-color-text);
+}
+
+.evidence {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.evidenceItem {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	color: var(--gd-color-text-secondary);
+}
+
+.note {
+	margin: 0;
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+
+@media screen and (min-width: 992px) {
+	.layout {
+		grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+		column-gap: 72px;
+		align-items: center;
+	}
+
+	.story {
+		gap: 24px;
+	}
+
+	.fact {
+		grid-template-columns: 120px minmax(0, 1fr);
+		gap: 24px;
+		padding-block: 16px;
+	}
+
+	.card {
+		gap: 24px;
+		padding: 32px;
+	}
+
+	.evidence {
+		gap: 12px 20px;
+	}
+
+}

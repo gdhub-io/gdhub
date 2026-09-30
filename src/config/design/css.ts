@@ -9,6 +9,8 @@ import {
 	fillInverse,
 	fontSize,
 	lineHeight,
+	marketingFontSize,
+	marketingViewport,
 	neutral,
 	radius,
 	semantic,
@@ -18,6 +20,15 @@ import {
 
 const kebab = (value: string) =>
 	value.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
+
+/** Clamped at both ends, so the emitted value reproduces each frame exactly. */
+function fluid([min, max]: readonly [number, number]): string {
+	const slope = (max - min) / (marketingViewport.max - marketingViewport.min);
+	const intercept = min - slope * marketingViewport.min;
+	const round = (value: number) => Number(value.toFixed(2));
+
+	return `clamp(${min}px, ${round(intercept)}px + ${round(slope * 100)}vw, ${max}px)`;
+}
 
 /**
  * The token set as CSS custom properties, so SCSS modules read the same values
@@ -85,6 +96,10 @@ export function designCssVariables(
 	}
 	for (const [name, value] of Object.entries(fontSize)) {
 		vars[`--gd-font-size-${kebab(name)}`] = `${value}px`;
+	}
+	for (const [name, value] of Object.entries(marketingFontSize)) {
+		vars[`--gd-font-size-marketing-${kebab(name)}`] =
+			typeof value === "number" ? `${value}px` : fluid(value);
 	}
 	for (const [name, value] of Object.entries(lineHeight)) {
 		vars[`--gd-line-height-${name}`] = String(value);

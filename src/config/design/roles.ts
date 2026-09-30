@@ -97,6 +97,7 @@ export const roles: Record<DesignMode, DesignRoles> = {
 		// Deep enough that a white label clears the 4.5:1 minimum: brand-500 gave
 		// 3.4:1 and brand-600 only 4.4:1, both of which the contrast test rejects
 		// at button-label sizes. brand-700 reaches 6.2:1.
+		// The landings' louder CTA is not a role: `[data-gd-landing]` in globals.scss.
 		action: brand[700],
 		actionHover: brand[600],
 		onAction: neutral[0],

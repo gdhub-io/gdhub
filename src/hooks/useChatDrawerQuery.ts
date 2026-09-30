@@ -1,56 +1,18 @@
-import type { MatrixClient } from "matrix-js-sdk";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
+import { useChat } from "@/components/Chat/useChat";
 
-type UseChatDrawerQueryOptions = {
-	chatClient: MatrixClient | null;
-	setOpenChatModal: (open: boolean) => void;
-	onResolveRoomId: (roomId: string) => void;
-};
-
-export function useChatDrawerQuery({
-	chatClient,
-	setOpenChatModal,
-	onResolveRoomId,
-}: UseChatDrawerQueryOptions) {
-	const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
-
-	// Keep latest callbacks in refs so the URL-reading effect can run exactly
-	// once. Depending on the callbacks directly loops forever when a caller
-	// passes inline functions (each render → new identity → effect re-runs →
-	// setOpenChatModal → re-render → …).
-	const setOpenChatModalRef = useRef(setOpenChatModal);
-	const onResolveRoomIdRef = useRef(onResolveRoomId);
-	setOpenChatModalRef.current = setOpenChatModal;
-	onResolveRoomIdRef.current = onResolveRoomId;
-
+/**
+ * `?chat=1&roomId=` opens the chat panel straight on that conversation. The
+ * room may not be synced yet — the conversation view waits for it.
+ */
+export function useChatDrawerQuery() {
 	useEffect(() => {
-		if (typeof window === "undefined") {
-			return;
-		}
-
 		const url = new URL(window.location.href);
-		const chatParam = url.searchParams.get("chat");
-		const roomIdParam = url.searchParams.get("roomId");
+		if (url.searchParams.get("chat") !== "1") return;
 
-		if (chatParam === "1") {
-			setOpenChatModalRef.current(true);
-			if (roomIdParam) {
-				setPendingRoomId(roomIdParam);
-			}
-		}
+		const { setOpenChatModal, setSelectedRoomId } = useChat.getState();
+		const roomId = url.searchParams.get("roomId");
+		if (roomId) setSelectedRoomId(roomId);
+		setOpenChatModal(true);
 	}, []);
-
-	useEffect(() => {
-		if (!pendingRoomId) return;
-		if (!chatClient) return;
-
-		const roomExists = chatClient
-			.getRooms()
-			.some((room) => room.roomId === pendingRoomId);
-
-		if (roomExists) {
-			onResolveRoomIdRef.current(pendingRoomId);
-			setPendingRoomId(null);
-		}
-	}, [chatClient, pendingRoomId]);
 }

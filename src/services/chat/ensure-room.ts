@@ -201,6 +201,13 @@ export async function ensureChatRoom(
 					if (!resp.ok) {
 						throw new Error(`${resp.status} ${await resp.text()}`);
 					}
+					await markRoomRead(baseUrl, roomId, invitee.accessToken).catch(
+						(error) =>
+							console.error(
+								`[chat] read receipt failed for ${inviteeId}`,
+								error,
+							),
+					);
 				} catch (error) {
 					// The invite still stands — the user can accept manually.
 					console.error(`[chat] auto-join failed for ${inviteeId}`, error);
@@ -236,4 +243,29 @@ export async function ensureChatRoom(
 	}
 
 	return { chatRoomId: row.id, roomId, created: true };
+}
+
+// A backend join leaves the invite unread: ten minutes later Synapse emails
+// "you've been invited" to a member, and that email swallows the room's
+// first messages. Reading up to the join event closes it out.
+async function markRoomRead(
+	baseUrl: string,
+	roomId: string,
+	accessToken: string,
+): Promise<void> {
+	const room = `${baseUrl}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}`;
+	const headers = {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${accessToken}`,
+	};
+	const latest = await fetch(`${room}/messages?dir=b&limit=1`, { headers });
+	if (!latest.ok) throw new Error(`${latest.status} ${await latest.text()}`);
+	const { chunk } = (await latest.json()) as { chunk?: { event_id: string }[] };
+	const eventId = chunk?.[0]?.event_id;
+	if (!eventId) return;
+	const resp = await fetch(
+		`${room}/receipt/m.read/${encodeURIComponent(eventId)}`,
+		{ method: "POST", headers, body: "{}" },
+	);
+	if (!resp.ok) throw new Error(`${resp.status} ${await resp.text()}`);
 }

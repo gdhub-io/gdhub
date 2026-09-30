@@ -10,6 +10,7 @@ export type ChatRoomRow = {
 	kind: ChatRoomKind;
 	status: ChatRoomStatus;
 	finishedAt: Date | null;
+	createdAt?: Date;
 	// Untyped `Json?` column: Prisma 7 surfaces it as `unknown`, so every reader
 	// narrows it to its own context shape.
 	context: unknown;
@@ -111,6 +112,7 @@ const vacancyOfferProvider: ChatKindProvider<VacancyOfferLoaded> = {
 				project: project
 					? { id: project.id, name: project.name, slug: project.slug }
 					: null,
+				appliedAt: room.createdAt ?? null,
 				offerMessage: ctx.offerMessage ?? null,
 			},
 			isRecruiter: ctx.candidateUserId !== currentUserId,
