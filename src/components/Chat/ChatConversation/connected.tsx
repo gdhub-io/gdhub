@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App } from "antd";
 import axios from "axios";
-import { ClientEvent, type Room, RoomEvent, UserEvent } from "matrix-js-sdk";
+import { ClientEvent, RoomEvent, UserEvent } from "matrix-js-sdk";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { ConnectedComposer } from "../ChatComposer/connected";
@@ -39,21 +39,13 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 	const ready = useChat((s) => s.ready);
 	const closeChat = useCloseChat();
 	const { isIn } = useAccess();
-	const [room, setRoom] = useState<Room | null>(
-		() => chatClient?.getRoom(roomId) ?? null,
-	);
-	const [, rerender] = useState(0);
+	const [, setVersion] = useState(0);
 	const [busy, setBusy] = useState<"accept" | "decline" | null>(null);
 
 	// A deep link can name a room the first sync has not delivered yet.
 	useEffect(() => {
 		if (!chatClient) return;
-		const sync = () => {
-			setRoom(chatClient.getRoom(roomId));
-			rerender((n) => n + 1);
-		};
-		sync();
-		const listener = sync as never;
+		const listener = (() => setVersion((v) => v + 1)) as never;
 		for (const event of ROOM_EVENTS) chatClient.on(event as never, listener);
 		return () => {
 			for (const event of ROOM_EVENTS) {
@@ -70,6 +62,7 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 				.then((res) => res.data),
 	});
 
+	const room = chatClient?.getRoom(roomId) ?? null;
 	const back = () => useChat.getState().setSelectedRoomId(null);
 	const close = () => useChat.getState().setOpenChatModal(false);
 	const membership = room?.getMyMembership();

@@ -59,7 +59,7 @@ export type TimelineItem =
 	  };
 
 /** Consecutive messages further apart than this start a new group. */
-export const GROUP_GAP_MS = 5 * 60_000;
+const GROUP_GAP_MS = 5 * 60_000;
 
 /**
  * Entries in timeline order → day separators, notices and sender groups. A

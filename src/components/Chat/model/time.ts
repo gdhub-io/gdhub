@@ -20,3 +20,20 @@ export function dayBucket(ts: number, now: Date = new Date()): DayBucket {
 	if (daysAgo <= 6) return { unit: "weekday" };
 	return { unit: "date", withYear: day.year() !== today.year() };
 }
+
+type Translate = (key: string, fallback: string) => string;
+
+/** Row time: `HH:mm` today, then "Yesterday", a weekday, a date. */
+export function listStamp(ts: number, t: Translate, now = new Date()): string {
+	const bucket = dayBucket(ts, now);
+	switch (bucket.unit) {
+		case "today":
+			return dayjs(ts).format("HH:mm");
+		case "yesterday":
+			return t("chat.row.yesterday", "Yesterday");
+		case "weekday":
+			return dayjs(ts).format("ddd");
+		case "date":
+			return dayjs(ts).format(bucket.withYear ? "DD.MM.YYYY" : "D MMM");
+	}
+}

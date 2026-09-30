@@ -263,9 +263,9 @@ function Message({
 }
 
 /**
- * One sender's run of messages — frames `YGPUq` / `X7HUy`. Hand-rolled rather
- * than a library bubble: on hover the block takes over the bubble's fill, which
- * a library bubble does not let go of.
+ * One sender's run of messages — frames `YGPUq` / `X7HUy`. Hand-rolled: the
+ * menu trigger beside each bubble, the reply quote and the reaction chips have
+ * no slot in a library bubble.
  */
 export function MessageGroup({
 	own,

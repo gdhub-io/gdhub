@@ -2,7 +2,6 @@ import {
 	IconArrowLeft,
 	IconInfoCircle,
 	IconLock,
-	IconMessageOff,
 	IconMoodSmile,
 	IconX,
 } from "@tabler/icons-react";
@@ -15,7 +14,7 @@ import type { ChatContextSlot } from "../ChatContextLine/kinds";
 import { MatrixAvatar } from "../MatrixAvatar";
 import styles from "./style.module.scss";
 
-export type ConversationState = "loading" | "error" | "unavailable" | "ready";
+export type ConversationState = "loading" | "unavailable" | "ready";
 
 type ChatConversationProps = {
 	name: string;
@@ -25,7 +24,6 @@ type ChatConversationProps = {
 	state: ConversationState;
 	onBack: () => void;
 	onClose: () => void;
-	onRetry?: () => void;
 	/** The timeline, or the invite that replaces it. */
 	children?: ReactNode;
 	/** The composer or the read-only banner. */
@@ -65,7 +63,6 @@ export function ChatConversation({
 	state,
 	onBack,
 	onClose,
-	onRetry,
 	children,
 	footer,
 	info,
@@ -126,22 +123,6 @@ export function ChatConversation({
 			{context && state !== "unavailable" && <ChatContextLine slot={context} />}
 			<div className={styles.body}>
 				{state === "loading" && <ConversationSkeleton />}
-				{state === "error" && (
-					<div className={styles.center}>
-						<EmptyState
-							size="compact"
-							icon={IconMessageOff}
-							title={t("chat.timeline.error.title", "Couldn't load messages")}
-							action={
-								onRetry && (
-									<Button onClick={onRetry}>
-										{t("chat.error.retry", "Try again")}
-									</Button>
-								)
-							}
-						/>
-					</div>
-				)}
 				{state === "unavailable" && (
 					<div className={styles.center}>
 						<EmptyState

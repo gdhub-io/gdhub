@@ -241,10 +241,25 @@ on the client, using `status` from the room metadata endpoint. There is no separ
     `type-check` catches it.
 
 ### 8. Finish
-- [ ] Tolgee keys (spec §8) pushed through the i18n skill. Retire `chat.groups.*`.
-- [ ] `docs/chat-system.md` updated for the panel and the tabs.
-- [ ] Full gate green, and the design-tokens guard passing.
-- [ ] Simplify pass, then a PR to `dev`, and GDHUB-62 moved to **In Review**.
+- [ ] **Tolgee keys, pending.** tolgee.gdhub.io answered 502 on 2026-09-30, so `tolgee
+      compare` / `sync` could not run. Every string renders from its inline English
+      default meanwhile.
+  - When the server is back, run
+    `tolgee sync` **without** `--remove-unused`, then `bun run refresh-translations`.
+  - After that, delete `chat.groups.*` and `chat.topic.openPositionPage` from the
+    server; nothing reads them any more.
+- [x] `docs/chat-system.md` describes the panel, the tabs and the connected/presentational
+      split. The old stage 5 is marked superseded.
+- [x] Simplify pass, 27 lines in and 59 out:
+  - the conversation reads its `room` from the client instead of mirroring it in state
+    next to a re-render counter;
+  - the unreachable `error` state and `onRetry` are dropped from `ChatConversation`,
+    because nothing ever passed them;
+  - `stamp.ts` is folded into `time.ts`;
+  - `GROUP_GAP_MS` is no longer exported;
+  - a stale doc comment on `MessageGroup` (hover fill) is fixed.
+- [x] Full gate green: lint, type-check, 674 tests.
+- [ ] Push, PR to `dev`, GDHUB-62 → **In Review**.
 
 ## Progress log
 

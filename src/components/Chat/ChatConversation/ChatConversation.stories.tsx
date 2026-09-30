@@ -113,7 +113,3 @@ export const Closed: Story = {
 export const Unavailable: Story = {
 	args: { name: "", presence: null, state: "unavailable" },
 };
-
-export const LoadError: Story = {
-	args: { state: "error", context: slotOf(adviceContext), onRetry: noop },
-};

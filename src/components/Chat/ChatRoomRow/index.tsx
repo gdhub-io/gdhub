@@ -9,7 +9,7 @@ import { Badge, Button, Dropdown, type MenuProps, Tag, theme } from "antd";
 import { useState } from "react";
 import { MatrixAvatar } from "../MatrixAvatar";
 import { canCloseFromList, isUnread, type RoomSummary } from "../model/rooms";
-import { listStamp } from "../model/stamp";
+import { listStamp } from "../model/time";
 import styles from "./style.module.scss";
 
 export type ChatRoomRowActions = {
