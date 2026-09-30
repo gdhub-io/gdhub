@@ -65,7 +65,7 @@ function Delivery({
 
 /**
  * One sender's run of messages — frames `YGPUq` / `X7HUy`. Hand-rolled rather
- * than `@ant-design/x` `Bubble`: the hover block of stage 7 has to take over the
+ * than a library bubble: the hover block of stage 7 has to take over the
  * bubble's fill, which the library bubble does not let go of.
  */
 export function MessageGroup({

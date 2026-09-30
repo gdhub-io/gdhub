@@ -174,13 +174,28 @@ on the client, using `status` from the room metadata endpoint. There is no separ
       start, and no loop.
 
 ### 6. Composer
-- [ ] Rework `ChatInput`:
-  - borderless auto-growing textarea;
-  - Enter sends, Shift+Enter adds a newline;
-  - one draft per room;
-  - the bogus "Cancel sending!" toast removed.
-- [ ] Emoji picker (`frimousse`) in a `Popover`.
-- [ ] Mode strip for reply and edit, with cancel.
+- [x] `ChatComposer` (presentational):
+  - bordered box; the textarea draws no focus ring of its own;
+  - auto-grows to 6 rows;
+  - Enter sends; Shift+Enter or an IME composition inserts a newline; Esc leaves reply or
+    edit mode;
+  - Send is disabled while the text is empty;
+  - Save replaces Send while editing.
+- [x] Emoji picker: `frimousse` in an antd `Popover`, styled with our tokens. It inserts
+      at the cursor and gives focus back.
+  - Its emoji data loads from the Emojibase CDN (jsDelivr) on first open.
+- [x] Mode strip for reply (`IconCornerDownRight`) and edit (`IconPencil`), with cancel.
+      Drafts and modes are kept per room in `useChat`, so going back to the list keeps them.
+- [x] `ConnectedComposer` sends without awaiting: the local echo shows "Sending…", and a
+      failure stays in the timeline with Retry.
+  - Reply sends `m.in_reply_to`; edit sends `m.replace`.
+  - Saving an unchanged edit is a no-op.
+  - The bogus "Cancel sending!" toast is gone together with `ChatInput`.
+- [x] `@ant-design/x` removed from the dependencies and `transpilePackages` (nothing
+      imports it any more).
+- [x] Stories: `Chat/ChatComposer` — empty, with text, replying, editing.
+- [x] Checked live: Shift+Enter, Enter, the local echo turning into "Sent", emoji insert.
+- [x] The jump-to-latest button is centred and opaque (Dmitry's request).
 
 ### 7. Message actions
 - [ ] `MessageActions`: the block takes its bubble colour on hover and while the menu is open,
@@ -206,4 +221,4 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   against the pinned beta.53, and `bun install` + `db:generate` restored it.
 - 2026-09-30: stage 2 done and checked live. Stage 3 done and checked live: the list, the
   tabs, and the panel edge aligned with the avatar. Stage 4 done and checked live.
-  Stage 5 done and checked live.
+  Stage 5 done and checked live. Stage 6 done and checked live.

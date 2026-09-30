@@ -9,6 +9,11 @@ export type PushStatus = {
 	error: string | null;
 };
 
+/** What the composer is doing besides writing a new message. */
+export type ComposerMode =
+	| { type: "reply"; eventId: string; senderName: string; preview: string }
+	| { type: "edit"; eventId: string; original: string };
+
 export type ChatStore = {
 	ready: boolean;
 	/** The first sync failed and has not recovered yet. */
@@ -18,6 +23,11 @@ export type ChatStore = {
 	chatClient: sdk.MatrixClient | null;
 	unreadTotal: number;
 	pushStatus: PushStatus | null;
+	/** Per room, so a draft survives going back to the list. */
+	drafts: Record<string, string>;
+	modes: Record<string, ComposerMode | null>;
+	setDraft: (roomId: string, draft: string) => void;
+	setMode: (roomId: string, mode: ComposerMode | null) => void;
 	setOpenChatModal: (openChatModal: boolean) => void;
 	setReady: (ready: boolean) => void;
 	setSyncError: (syncError: boolean) => void;
@@ -36,6 +46,21 @@ export const useChat = create<ChatStore>((set, get) => ({
 	chatClient: null,
 	unreadTotal: 0,
 	pushStatus: null,
+	drafts: {},
+	modes: {},
+	setDraft: (roomId, draft) =>
+		set((s) => ({ drafts: { ...s.drafts, [roomId]: draft } })),
+	// Editing takes over the textarea with the message; leaving edit clears it.
+	setMode: (roomId, mode) =>
+		set((s) => ({
+			modes: { ...s.modes, [roomId]: mode },
+			drafts:
+				mode?.type === "edit"
+					? { ...s.drafts, [roomId]: mode.original }
+					: s.modes[roomId]?.type === "edit"
+						? { ...s.drafts, [roomId]: "" }
+						: s.drafts,
+		})),
 	setChatClient: (chatClient: sdk.MatrixClient | null) => set({ chatClient }),
 	setUnreadTotal: (unreadTotal: number) => set({ unreadTotal }),
 	setPushStatus: (pushStatus: PushStatus | null) => set({ pushStatus }),

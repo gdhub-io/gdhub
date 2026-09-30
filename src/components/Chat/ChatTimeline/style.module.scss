@@ -47,10 +47,12 @@
 
 .jump {
   position: absolute !important;
-  right: var(--gd-space-6);
   bottom: var(--gd-space-4);
+  left: 50%;
+  transform: translateX(-50%);
 
   :global(.ant-btn) {
+    background: var(--gd-color-surface) !important;
     border-color: var(--gd-color-border-strong);
     box-shadow: var(--gd-shadow-e2);
   }

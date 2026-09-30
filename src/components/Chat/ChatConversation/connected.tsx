@@ -5,8 +5,8 @@ import axios from "axios";
 import { ClientEvent, type Room, RoomEvent, UserEvent } from "matrix-js-sdk";
 import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { ConnectedComposer } from "../ChatComposer/connected";
 import { contextSlot, type RoomContext } from "../ChatContextLine/kinds";
-import ChatInput from "../ChatInput";
 import ChatPushStatus from "../ChatPushStatus";
 import { ConnectedTimeline } from "../ChatTimeline/connected";
 import { resolveRoomDisplayName } from "../roomName";
@@ -134,7 +134,13 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 					{isIn("admin") && <ChatPushStatus />}
 				</>
 			}
-			footer={invited ? null : closed ? <ReadOnlyBanner /> : <ChatInput />}
+			footer={
+				invited ? null : closed ? (
+					<ReadOnlyBanner />
+				) : (
+					<ConnectedComposer roomId={roomId} />
+				)
+			}
 		>
 			{invited ? (
 				<ChatInvite

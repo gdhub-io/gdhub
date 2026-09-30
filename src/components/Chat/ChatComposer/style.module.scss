@@ -1,0 +1,121 @@
+.wrap {
+  flex-shrink: 0;
+  padding: var(--gd-space-3) var(--gd-space-4) var(--gd-space-4);
+  padding-bottom: calc(var(--gd-space-4) + env(safe-area-inset-bottom));
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-2);
+  padding: var(--gd-space-2);
+  border: 1px solid var(--gd-color-border-strong);
+  border-radius: var(--gd-radius-control);
+
+  &:focus-within {
+    border-color: var(--gd-color-accent);
+    box-shadow: 0 0 0 2px var(--gd-color-accent-subtle);
+  }
+}
+
+.strip {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+  padding: var(--gd-space-1) var(--gd-space-1) var(--gd-space-1) var(--gd-space-2);
+  font-size: var(--gd-font-size-body-sm);
+  color: var(--gd-color-text-secondary);
+  background: var(--gd-fill-base);
+  border-radius: var(--gd-radius-chip);
+}
+
+.stripText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  strong {
+    color: var(--gd-color-text);
+  }
+}
+
+// The box draws the focus; the textarea inside must not draw its own.
+.textarea,
+.textarea:focus,
+.textarea:focus-within {
+  padding-inline: var(--gd-space-2) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.emojiPopover {
+  padding: var(--gd-space-2) !important;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-2);
+  width: 304px;
+  height: 320px;
+
+  [frimousse-category-header] {
+    padding: var(--gd-space-2) var(--gd-space-1) var(--gd-space-1);
+    font-size: var(--gd-font-size-caption);
+    font-weight: 600;
+    color: var(--gd-color-text-secondary);
+    background: var(--gd-color-surface);
+  }
+
+  [frimousse-row] {
+    padding-inline: var(--gd-space-1);
+  }
+
+  [frimousse-emoji] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: var(--gd-font-size-h3);
+    background: none;
+    border: 0;
+    border-radius: var(--gd-radius-control);
+
+    &[data-active] {
+      background: var(--gd-fill-base);
+    }
+  }
+}
+
+.pickerSearch {
+  padding: var(--gd-space-1) var(--gd-space-2);
+  font: inherit;
+  font-size: var(--gd-font-size-body-sm);
+  color: var(--gd-color-text);
+  background: var(--gd-fill-base);
+  border: 0;
+  border-radius: var(--gd-radius-control);
+  outline: none;
+}
+
+.pickerViewport {
+  flex: 1;
+  outline: none;
+}
+
+.pickerNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--gd-color-text-tertiary);
+}
