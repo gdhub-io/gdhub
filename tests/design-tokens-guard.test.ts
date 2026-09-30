@@ -50,7 +50,6 @@ const ALLOWED: Record<string, string> = {
 	"src/components/GameCard/DefaultCover.tsx": "placeholder cover art gradients",
 	"src/components/landing/LandingFeedbackSection/index.tsx":
 		"generated avatar skin tone",
-	"src/components/Chat/ChatMessages.tsx": "avatar identity fills",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
 	"src/components/layouts/Header/Header.stories.tsx": "avatar fill in a story",
 

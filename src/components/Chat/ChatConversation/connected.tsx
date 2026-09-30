@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { contextSlot, type RoomContext } from "../ChatContextLine/kinds";
 import ChatInput from "../ChatInput";
-import ChatMessages from "../ChatMessages";
 import ChatPushStatus from "../ChatPushStatus";
+import { ConnectedTimeline } from "../ChatTimeline/connected";
 import { resolveRoomDisplayName } from "../roomName";
 import { useChat } from "../useChat";
 import { useCloseChat } from "../useCloseChat";
@@ -102,11 +102,14 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 		}
 	};
 
+	const displayName = room
+		? resolveRoomDisplayName(room, chatClient) || room.name
+		: "";
 	const vacancy = context?.data?.vacancy as { title?: string } | undefined;
 
 	return (
 		<ChatConversation
-			name={room ? resolveRoomDisplayName(room, chatClient) || room.name : ""}
+			name={displayName}
 			avatarMxc={room?.getMxcAvatarUrl() || member?.getMxcAvatarUrl() || null}
 			presence={invited ? "invitation" : online ? "online" : null}
 			context={slot}
@@ -135,7 +138,7 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 		>
 			{invited ? (
 				<ChatInvite
-					name={room ? resolveRoomDisplayName(room, chatClient) : ""}
+					name={displayName}
 					avatarMxc={member?.getMxcAvatarUrl()}
 					position={vacancy?.title}
 					offerMessage={context?.data?.offerMessage as string | undefined}
@@ -144,7 +147,7 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 					onDecline={() => respond("decline")}
 				/>
 			) : (
-				<ChatMessages />
+				room && <ConnectedTimeline room={room} name={displayName} />
 			)}
 		</ChatConversation>
 	);

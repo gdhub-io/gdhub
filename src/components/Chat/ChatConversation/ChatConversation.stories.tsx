@@ -1,10 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { contextSlot, type RoomContext } from "../ChatContextLine/kinds";
+import { ChatTimeline } from "../ChatTimeline";
 import {
 	adviceContext,
 	closedAdviceContext,
 	vacancyContext,
 } from "../fixtures/context";
+import { conversationFixture } from "../fixtures/timeline";
+import { buildTimeline } from "../model/timeline";
 import {
 	ChatConversation,
 	ChatInvite,
@@ -55,6 +58,16 @@ const meta: Meta<typeof ChatConversation> = {
 export default meta;
 
 type Story = StoryObj<typeof ChatConversation>;
+
+/** Frame `YGPUq`: an advice chat with two days of messages. */
+export const Chat: Story = {
+	args: {
+		context: slotOf(adviceContext),
+		children: (
+			<ChatTimeline items={buildTimeline(conversationFixture)} onRetry={noop} />
+		),
+	},
+};
 
 /** Opening a conversation: header is known, messages are still loading. */
 export const Loading: Story = {

@@ -51,15 +51,22 @@ export function summarizeRoom(
 	};
 }
 
-/** Read receipt and fully-read marker up to the latest event. */
+/**
+ * Read receipt and fully-read marker up to the latest event. A no-op once it
+ * is read: sending a receipt emits a local `Room.receipt` at once, so a caller
+ * that re-runs on receipts would otherwise loop.
+ */
 export async function markRoomRead(
 	client: MatrixClient,
 	roomId: string,
 ): Promise<void> {
-	const events = client.getRoom(roomId)?.getLiveTimeline().getEvents() ?? [];
+	const room = client.getRoom(roomId);
+	const events = room?.getLiveTimeline().getEvents() ?? [];
 	const latest = [...events].reverse().find((event) => !!event.getId());
 	const latestId = latest?.getId();
-	if (!latest || !latestId) return;
+	const myId = client.getUserId();
+	if (!room || !latest || !latestId || !myId) return;
+	if (room.hasUserReadEvent(myId, latestId)) return;
 	await Promise.allSettled([
 		client.sendReadReceipt(latest),
 		client.setRoomReadMarkers(roomId, latestId, latest),

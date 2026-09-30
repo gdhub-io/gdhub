@@ -140,18 +140,38 @@ on the client, using `status` from the room metadata endpoint. There is no separ
 - [x] Checked live on a vacancy chat: header, context line, popover fields and actions.
 
 ### 5. Timeline
-- [ ] Pure grouping: same sender, same day, less than 5 minutes apart. Unit tests.
-- [ ] `MessageGroup`:
-  - bubbles;
-  - date separators;
+- [x] Pure `buildTimeline` (`model/timeline.ts`) groups by same sender, same day and less
+      than 5 minutes apart, and adds day separators. A notice breaks a group. Tested in
+      `tests/chat-timeline-model.test.ts`, green in three timezones.
+- [x] `MessageGroup` (hand-rolled, frames `YGPUq` / `X7HUy`):
+  - the avatar, name and time appear once per group;
   - "edited";
-  - redacted messages shown as "Message deleted" instead of `{}`;
-  - no typewriter animation.
-- [ ] Delivery line with a working **Retry** for failed messages.
-- [ ] History paging with the scroll anchor kept, and the "Loading earlier" state.
-- [ ] Jump-to-latest with a new-message count.
-- [ ] Read marking only when the timeline is at the bottom and the tab is visible.
-- [ ] Stories for `MessageGroup`: own and other × each delivery status.
+  - "Message deleted" instead of `{}`;
+  - no typewriter animation;
+  - delivery line: Sending / Sent / Read / Not sent · **Retry** (`resendEvent`).
+- [x] `ChatTimeline`:
+  - day separators;
+  - membership notices (joined / left / invited) — renames, topics and power levels are
+    dropped;
+  - older history on scroll with the scroll anchor kept;
+  - a room with no messages in the first window fetches further back before showing the
+    empty state;
+  - jump-to-latest once more than a viewport up, with a count of new messages;
+  - a `ResizeObserver` keeps it pinned to the bottom through late layout.
+- [x] Read marking: only at the bottom, with the panel open and the tab visible.
+  `markRoomRead` is a no-op once the latest event is read. **Without that it looped**: a
+  receipt emits a local `Room.receipt`, which re-ran the effect and froze the app (fixed on
+  2026-09-30 before commit).
+- [x] "Read" is computed once per rebuild (the furthest event any other member has read),
+      not with `getUsersReadUpTo` per message.
+- [x] `ChatMessages` is deleted (with its guard allowlist entry and the old styles).
+- [x] Stories:
+  - `Chat/MessageGroup`: other, own × each status, edited and deleted;
+  - `Chat/ChatTimeline`: conversation, long history, loading earlier, empty;
+  - `Chat/ChatConversation/Chat`: a populated chat.
+  - Not opened in the Storybook UI this session: only type-checked and linted.
+- [x] Checked live: grouping, delivery lines, the bottom pin on open, history to the room's
+      start, and no loop.
 
 ### 6. Composer
 - [ ] Rework `ChatInput`:
@@ -186,3 +206,4 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   against the pinned beta.53, and `bun install` + `db:generate` restored it.
 - 2026-09-30: stage 2 done and checked live. Stage 3 done and checked live: the list, the
   tabs, and the panel edge aligned with the avatar. Stage 4 done and checked live.
+  Stage 5 done and checked live.
