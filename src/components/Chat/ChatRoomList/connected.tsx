@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App } from "antd";
 import axios from "axios";
@@ -8,6 +8,7 @@ import type { ChatRoomMeta } from "@/types/chat";
 import { markRoomRead, summarizeRoom } from "../matrix";
 import type { ChatTab } from "../model/rooms";
 import { useChat } from "../useChat";
+import { useCloseChat } from "../useCloseChat";
 import { ChatRoomList } from "./index";
 
 // Room ids per request — keeps the GET URL far below header limits.
@@ -29,8 +30,8 @@ const LIST_EVENTS = [
 /** `ChatRoomList` fed from the Matrix client and the room registry. */
 export function ConnectedChatRoomList() {
 	const { t } = useTranslate();
-	const { modal, message } = App.useApp();
-	const queryClient = useQueryClient();
+	const { message } = App.useApp();
+	const closeChat = useCloseChat();
 	const chatClient = useChat((s) => s.chatClient);
 	const ready = useChat((s) => s.ready);
 	const syncError = useChat((s) => s.syncError);
@@ -106,30 +107,6 @@ export function ConnectedChatRoomList() {
 				: null,
 		[rooms, chatClient, meta],
 	);
-
-	const closeChat = (roomId: string) =>
-		modal.confirm({
-			title: t("chat.closeConfirm.title", "Close this chat?"),
-			content: t(
-				"chat.closeConfirm.content",
-				"You'll both still be able to read it, but nobody can send new messages. It moves to Closed.",
-			),
-			okText: t("chat.closeConfirm.ok", "Close chat"),
-			cancelText: t("chat.closeConfirm.cancel", "Cancel"),
-			onOk: async () => {
-				try {
-					await axios.put(
-						`/api/chat/rooms/${encodeURIComponent(roomId)}/resolve`,
-					);
-					await queryClient.invalidateQueries({ queryKey: ["chat-room-meta"] });
-					message.success(t("chat.closeConfirm.success", "Chat closed"));
-				} catch {
-					message.error(
-						t("chat.closeConfirm.error", "Couldn't close the chat"),
-					);
-				}
-			},
-		});
 
 	return (
 		<ChatRoomList

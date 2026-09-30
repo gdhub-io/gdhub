@@ -16,26 +16,14 @@ export type ChatStore = {
 	openChatModal: boolean;
 	selectedRoomId: string | null;
 	chatClient: sdk.MatrixClient | null;
-	userMembership: string | null;
 	unreadTotal: number;
 	pushStatus: PushStatus | null;
-	chatContext: {
-		type: string;
-		data: Record<string, any> | null;
-	} | null;
-	setChatContext: (
-		chatContext: {
-			type: string;
-			data: Record<string, any> | null;
-		} | null,
-	) => void;
 	setOpenChatModal: (openChatModal: boolean) => void;
 	setReady: (ready: boolean) => void;
 	setSyncError: (syncError: boolean) => void;
 	setSelectedRoomId: (selectedRoomId: string | null) => void;
 	setSelectedRoomByAlias: (alias: string) => Promise<void>;
 	setChatClient: (chatClient: sdk.MatrixClient | null) => void;
-	setUserMembership: (userMembership: string | null) => void;
 	setUnreadTotal: (unreadTotal: number) => void;
 	setPushStatus: (pushStatus: PushStatus | null) => void;
 };
@@ -46,18 +34,9 @@ export const useChat = create<ChatStore>((set, get) => ({
 	openChatModal: false,
 	selectedRoomId: null,
 	chatClient: null,
-	userMembership: null,
 	unreadTotal: 0,
 	pushStatus: null,
-	chatContext: null,
-	setChatContext: (
-		chatContext: {
-			type: string;
-			data: Record<string, any> | null;
-		} | null,
-	) => set({ chatContext }),
 	setChatClient: (chatClient: sdk.MatrixClient | null) => set({ chatClient }),
-	setUserMembership: (userMembership: string | null) => set({ userMembership }),
 	setUnreadTotal: (unreadTotal: number) => set({ unreadTotal }),
 	setPushStatus: (pushStatus: PushStatus | null) => set({ pushStatus }),
 	setReady: (ready: boolean) => set({ ready }),

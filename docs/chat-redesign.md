@@ -14,8 +14,8 @@ The design was approved 2026-09-29. These defaults hold until Dmitry says otherw
 
 1. The tab is named **Closed**, matching the *Close chat* action.
 2. **Leave** returns to the row menu, for direct chats only, so a direct chat can still be left.
-3. The info popover leaves the header. `ChatPushStatus` moves into the admin-only
-   `IconPlus` area, as a tooltip on the new-chat button.
+3. The TLS / Matrix note and, for admins, `ChatPushStatus` sit in an info popover in the
+   conversation header, left of close. Dmitry asked for this on 2026-09-30.
 4. Both participants may close an advice or vacancy chat, as today.
 5. The emoji picker is `frimousse`: small, headless, and styleable with our tokens. The
    reaction strip stays at the fixed 7 emoji.
@@ -117,12 +117,27 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   which Dmitry asked for.
 
 ### 4. Conversation shell
-- [ ] Header: back, avatar, name, `StatusDot`, close.
-- [ ] `ChatContextLine`: one line plus a popover, with the per-kind slot registry
-      (`kinds.ts`, spec §4) for advice and vacancy. Replaces `ChatTopic`.
-- [ ] Invite view restyle (`ZMcrW`), the read-only banner, and the permission-denied,
-      loading and error states.
-- [ ] Stories for the context line: advice and vacancy × collapsed and open, plus closed.
+- [x] `ChatConversation` (presentational):
+  - header: back, avatar, name, `StatusDot` (Online / Invitation), info popover, close;
+  - states: skeleton, error, unavailable and ready;
+  - slots for the body (timeline or invite) and the footer (composer or read-only banner).
+- [x] `ChatContextLine`: one line plus a popover. Slots come from the per-kind registry in
+      `ChatContextLine/kinds.tsx` (advice, vacancy). Actions respect `canClose`, closed
+      status and a pending invite (tested in `tests/chat-context-slot.test.ts`).
+      Replaces `ChatTopic`.
+- [x] `ChatInvite` (frame `ZMcrW`), `ReadOnlyBanner` and `EmptyConversation` (frame
+      `u8M7E`) replace `special-messages/*`.
+- [x] `ConnectedConversation` wires them to Matrix and `GET /api/chat/rooms/[id]`.
+  - "Unavailable" means the client is synced and the user is not in the room.
+  - The close confirm is shared with the list through `useCloseChat`.
+  - `useChat` lost `chatContext` / `userMembership`; the conversation owns them now.
+    `ChatTitle` is deleted.
+- [x] Stories:
+  - `Chat/ChatContextLine`: advice and vacancy × collapsed and open, closed;
+  - `Chat/ChatConversation`: loading skeleton, empty chat, invite, closed, unavailable,
+    error.
+  - A populated chat story comes with the stage 5 timeline.
+- [x] Checked live on a vacancy chat: header, context line, popover fields and actions.
 
 ### 5. Timeline
 - [ ] Pure grouping: same sender, same day, less than 5 minutes apart. Unit tests.
@@ -170,4 +185,4 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   and the list model with tests. Also found `node_modules` drifted to gdhub-prisma beta.58
   against the pinned beta.53, and `bun install` + `db:generate` restored it.
 - 2026-09-30: stage 2 done and checked live. Stage 3 done and checked live: the list, the
-  tabs, and the panel edge aligned with the avatar.
+  tabs, and the panel edge aligned with the avatar. Stage 4 done and checked live.

@@ -50,29 +50,10 @@
   }
 }
 
-.conversationHeader {
-  padding-left: var(--gd-space-3);
-}
-
 .title {
   flex: 1;
   min-width: 0;
   margin: 0 !important;
   font-size: var(--gd-font-size-h3) !important;
   font-weight: 600;
-}
-
-.content {
-  position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.center {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
 }

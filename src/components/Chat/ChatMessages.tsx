@@ -26,8 +26,6 @@ import {
 } from "react";
 import styles from "./ChatModal.module.scss";
 import { MatrixAvatar } from "./MatrixAvatar";
-import DefaultInvite from "./special-messages/DefaultInvite";
-import VacancyChatInvite from "./special-messages/VacancyChatInvite";
 import { useChat } from "./useChat";
 
 type MessageStatus = "sending" | "sent" | "read" | "failed";
@@ -89,14 +87,7 @@ export default function ChatMessages() {
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const shouldStickToBottomRef = useRef(true);
 	const lastMarkedEventIdRef = useRef<string | null>(null);
-	const {
-		selectedRoomId,
-		chatClient,
-		ready,
-		userMembership,
-		chatContext,
-		openChatModal,
-	} = useChat();
+	const { selectedRoomId, chatClient, ready, openChatModal } = useChat();
 	const [messages, setMessages] = useState<MatrixEvent[]>([]);
 	const [preparedMessages, setPreparedMessages] = useState<MessageBubble[]>([]);
 	const [isPaginating, setIsPaginating] = useState(false);
@@ -517,16 +508,6 @@ export default function ChatMessages() {
 		if (!preparedMessages.length) return;
 		markRoomAsRead();
 	}, [markRoomAsRead, openChatModal, preparedMessages, selectedRoomId]);
-
-	if (selectedRoomId && userMembership === "invite") {
-		// Advice-request chats auto-join the requester, so no invite branch here;
-		// a legacy pre-migration invite falls through to DefaultInvite.
-		if (chatContext?.type === "vacancy-application") {
-			return <VacancyChatInvite />;
-		}
-
-		return <DefaultInvite />;
-	}
 
 	return (
 		<div
