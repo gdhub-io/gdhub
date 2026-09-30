@@ -23,8 +23,6 @@ const DOCS_URL = "https://docs.gdhub.io";
 type HeaderActionsProps = {
 	dropdownMenuItems: MenuProps["items"];
 	onOpenMobileMenu: () => void;
-	/** When provided, renders the chat button (only the hub-level layouts have it). */
-	onOpenChat?: () => void;
 	/** When provided, falls back to a generated avatar instead of nothing. */
 	avatarConfig?: AvatarFullConfig;
 };
@@ -39,7 +37,6 @@ type HeaderActionsProps = {
 export const HeaderActions = ({
 	dropdownMenuItems,
 	onOpenMobileMenu,
-	onOpenChat,
 	avatarConfig,
 }: HeaderActionsProps) => {
 	const { t } = useTranslate();
@@ -69,7 +66,7 @@ export const HeaderActions = ({
 		return (
 			<Space align="center" size={8}>
 				<NotificationsBell />
-				{onOpenChat && <ChatButton onClick={() => onOpenChat()} />}
+				<ChatButton />
 				<Button
 					type="text"
 					shape="circle"
@@ -108,7 +105,7 @@ export const HeaderActions = ({
 					</Button>
 				</Link>
 			)}
-			{onOpenChat && <ChatButton onClick={() => onOpenChat()} />}
+			<ChatButton />
 			<NotificationsBell />
 			<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
 				<Button

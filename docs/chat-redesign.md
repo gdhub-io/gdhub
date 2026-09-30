@@ -59,11 +59,17 @@ on the client, using `status` from the room metadata endpoint. There is no separ
       label formatting move to stage 3, next to the row that renders them.
 
 ### 2. Panel shell
-- [ ] `ChatPanel`: a `Popover` on desktop and a full-screen `Drawer` below `md`. It holds two
-      views, list and conversation, and replaces `ChatModal`.
-- [ ] `useChat` store: `view`, `selectedRoomId`, the tab and per-tab scroll position. Drop the
-      dead `chatSession` and type `reset`.
-- [ ] Every way in opens the panel on its conversation:
+- [x] `ChatPanel` (`src/components/Chat/ChatPanel/`): a `Popover` on desktop and a
+      full-screen `Drawer` below `md`. It holds two views, list and conversation, and
+      replaces `ChatModal`, which is deleted.
+  - The panel closes on an outside click (portals opened from the panel don't count), on
+    Esc and on a route change.
+  - Until stages 3 to 5 land, the views host the old `ChatRooms` / `ChatTopic` /
+    `ChatMessages` / `ChatInput`.
+- [x] `useChat` store: the view is derived from `selectedRoomId` (null means the list). The
+      list stays mounted under a conversation, so back keeps its scroll. The dead
+      `chatSession` / `reset` are gone. Tab state comes with stage 3.
+- [x] Every way in opens the panel on its conversation:
   - the `?chat=1&roomId=` deep link;
   - `/chat#/room/{id}`;
   - the `open-chat` event;
@@ -71,7 +77,14 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   - the domain "Open chat" buttons.
   
   Also fix the deep-link race: a room that is not synced yet gets selected once it arrives.
-- [ ] Launcher badge uses `colorPrimary`, not red, and invites count.
+  **Done:** `useChatDrawerQuery` selects the room right away, and the conversation view
+  waits on `ClientEvent.Room`. The first-room auto-select in `ChatRooms` is removed.
+- [x] The launcher badge uses `colorPrimary`, not red, and invites count as one each.
+      `HeaderActions` lost its `onOpenChat` prop: the one caller always passed it.
+- [ ] **Live check pending.** The panel opens under the launcher at 520×720, verified on
+      2026-09-30. The list and conversation views are not checked yet, because the running
+      dev server (started 2026-09-29) answered `/api/auth/session` with 500 after the
+      prisma package was reset, and it needs a restart.
 
 ### 3. Room list
 - [ ] `ChatRoomRow` (frame `Jtbe5`):
@@ -140,3 +153,5 @@ on the client, using `status` from the room metadata endpoint. There is no separ
 - 2026-09-29: design approved; plan written. Stage 1 done: meta endpoint, room context,
   and the list model with tests. Also found `node_modules` drifted to gdhub-prisma beta.58
   against the pinned beta.53, and `bun install` + `db:generate` restored it.
+- 2026-09-30: stage 2 done in code, the live check of the views is still pending (see
+  stage 2).

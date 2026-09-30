@@ -44,12 +44,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 	const clientRef = useRef<MatrixClient | null>(null);
 	const { chatClient, setChatClient, setReady, setUnreadTotal } = useChat();
 
-	// drive the drawer from the ?chat=1&roomId=... query params
-	useChatDrawerQuery({
-		chatClient,
-		setOpenChatModal: (open) => useChat.getState().setOpenChatModal(open),
-		onResolveRoomId: (roomId) => useChat.getState().setSelectedRoomId(roomId),
-	});
+	useChatDrawerQuery();
 
 	const { data: chatSessionData } = useQuery<MatrixChatSessionResponse>({
 		queryKey: ["chat-client-session", session?.user.id],
@@ -113,7 +108,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 				const rooms = (client.getRooms() || []).filter((r: Room) =>
 					["join", "invite"].includes(r.getMyMembership()),
 				);
+				// An unanswered invite counts as one unread message.
 				const total = rooms.reduce((acc: number, r: Room) => {
+					if (r.getMyMembership() === "invite") return acc + 1;
 					const count =
 						r.getUnreadNotificationCount?.(NotificationCountType.Total) || 0;
 					return acc + (Number.isFinite(count) ? count : 0);

@@ -27,11 +27,7 @@ import { useChat } from "./useChat";
 // Room ids per request — keeps the GET URL far below header limits.
 const KINDS_CHUNK = 100;
 
-export default function ChatRooms({
-	onReady,
-}: {
-	onReady: (data: { count: number }) => void;
-}) {
+export default function ChatRooms() {
 	const {
 		selectedRoomId,
 		setSelectedRoomId,
@@ -128,15 +124,6 @@ export default function ChatRooms({
 		const refreshRooms = () => {
 			const nextItems = mapRoomsToItems(chatClient.getRooms() || []);
 			setItems(nextItems);
-			try {
-				onReady({ count: nextItems.length });
-				const { setUserMembership, setSelectedRoomId } = useChat.getState();
-				if (nextItems.length === 0) {
-					// clear selection when no rooms remain
-					setSelectedRoomId("");
-					setUserMembership(null);
-				}
-			} catch {}
 		};
 
 		refreshRooms();
@@ -180,8 +167,6 @@ export default function ChatRooms({
 			} catch {}
 		}, 60_000);
 
-		onReady({ count: mapRoomsToItems(chatClient.getRooms() || []).length });
-
 		return () => {
 			chatClient.removeListener(RoomEvent.MyMembership, onMembership);
 			chatClient.removeListener(
@@ -197,20 +182,6 @@ export default function ChatRooms({
 			clearInterval(presenceInterval);
 		};
 	}, [chatClient, ready]);
-
-	useEffect(() => {
-		if (items.length === 0) return;
-		if (!selectedRoomId) {
-			handleSelectRoom(items[0].key);
-			return;
-		}
-
-		const exists = items.some((i) => i.key === selectedRoomId);
-		if (!exists) handleSelectRoom(items[0].key);
-
-		const room = chatClient?.getRoom(selectedRoomId);
-		setUserMembership(room?.getMyMembership() || null);
-	}, [items, selectedRoomId]);
 
 	const menuConfig: ConversationsProps["menu"] = (conversation) => {
 		const member = chatClient

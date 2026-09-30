@@ -22,7 +22,11 @@ export default function ChatTitle() {
 		const room = chatClient?.getRoom(selectedRoomId);
 
 		setTitle(resolveRoomDisplayName(room, chatClient));
-	}, [selectedRoomId, ready, chatClient?.baseUrl, chatClient?.getRoom]);
+	}, [selectedRoomId, ready, chatClient]);
 
-	return ready && title ? <Text>Chat with {title}</Text> : <Text>Chat</Text>;
+	return (
+		<Text strong ellipsis>
+			{title}
+		</Text>
+	);
 }

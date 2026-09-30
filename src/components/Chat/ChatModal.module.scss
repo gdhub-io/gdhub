@@ -1,17 +1,3 @@
-@use "sass:meta";
-.chatDrawer {
-  border-radius: var(--gd-radius-panel);
-}
-
-.chatDrawerWrapper {
-  border-radius: var(--gd-radius-panel);
-  margin: 8px;
-}
-
-.chatRoomsSider {
-  border-right: 1px solid var(--gd-color-surface-sunken);
-}
-
 .chatContent {
   display: flex;
   flex-direction: column;
@@ -102,5 +88,3 @@
   padding: 16px;
   border-bottom: 1px solid var(--gd-color-surface-sunken);
 }
-
-@include meta.load-css('styles/md.scss'); // screen < 991px
