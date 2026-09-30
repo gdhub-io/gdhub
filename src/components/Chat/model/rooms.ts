@@ -6,13 +6,17 @@ export type ChatTab = "all" | "unread" | "closed";
 export type RoomSummary = {
 	roomId: string;
 	name: string;
+	avatarMxc: string | null;
+	online: boolean;
 	membership: "join" | "invite";
 	kind: ChatRoomKind;
 	status: ChatRoomStatus;
 	label: string | null;
 	lastTs: number;
+	/** Plain text of the last message; null when there is none yet. */
 	preview: string | null;
 	previewIsOwn: boolean;
+	previewDeleted: boolean;
 	unread: number;
 };
 

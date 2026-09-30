@@ -11,6 +11,8 @@ export type PushStatus = {
 
 export type ChatStore = {
 	ready: boolean;
+	/** The first sync failed and has not recovered yet. */
+	syncError: boolean;
 	openChatModal: boolean;
 	selectedRoomId: string | null;
 	chatClient: sdk.MatrixClient | null;
@@ -29,6 +31,7 @@ export type ChatStore = {
 	) => void;
 	setOpenChatModal: (openChatModal: boolean) => void;
 	setReady: (ready: boolean) => void;
+	setSyncError: (syncError: boolean) => void;
 	setSelectedRoomId: (selectedRoomId: string | null) => void;
 	setSelectedRoomByAlias: (alias: string) => Promise<void>;
 	setChatClient: (chatClient: sdk.MatrixClient | null) => void;
@@ -39,6 +42,7 @@ export type ChatStore = {
 
 export const useChat = create<ChatStore>((set, get) => ({
 	ready: false,
+	syncError: false,
 	openChatModal: false,
 	selectedRoomId: null,
 	chatClient: null,
@@ -57,6 +61,7 @@ export const useChat = create<ChatStore>((set, get) => ({
 	setUnreadTotal: (unreadTotal: number) => set({ unreadTotal }),
 	setPushStatus: (pushStatus: PushStatus | null) => set({ pushStatus }),
 	setReady: (ready: boolean) => set({ ready }),
+	setSyncError: (syncError: boolean) => set({ syncError }),
 	setOpenChatModal: (openChatModal: boolean) => set({ openChatModal }),
 	setSelectedRoomId: (selectedRoomId: string | null) => set({ selectedRoomId }),
 	setSelectedRoomByAlias: async (alias: string) => {

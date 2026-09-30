@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import ReactNiceAvatar, { type AvatarFullConfig } from "react-nice-avatar";
+import { ChatPanel } from "@/components/Chat/ChatPanel";
 import { ChatButton } from "@/components/ChatButton";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
@@ -64,18 +65,20 @@ export const HeaderActions = ({
 
 	if (!screens.xl) {
 		return (
-			<Space align="center" size={8}>
-				<NotificationsBell />
-				<ChatButton />
-				<Button
-					type="text"
-					shape="circle"
-					style={{ top: 2 }}
-					onClick={onOpenMobileMenu}
-				>
-					<IconMenu2 />
-				</Button>
-			</Space>
+			<ChatPanel>
+				<Space align="center" size={8}>
+					<NotificationsBell />
+					<ChatButton />
+					<Button
+						type="text"
+						shape="circle"
+						style={{ top: 2 }}
+						onClick={onOpenMobileMenu}
+					>
+						<IconMenu2 />
+					</Button>
+				</Space>
+			</ChatPanel>
 		);
 	}
 
@@ -96,32 +99,35 @@ export const HeaderActions = ({
 				...(dropdownMenuItems ?? []),
 			];
 
+	// The chat panel hangs from the whole row, so it ends under the avatar.
 	return (
-		<Space align="center" size={8}>
-			{showDocsButton && (
-				<Link href={DOCS_URL} target="_blank">
-					<Button type="text" style={{ fontSize: 14 }}>
-						{t("hub.menu.documentation", "Documentation")}
-					</Button>
-				</Link>
-			)}
-			<ChatButton />
-			<NotificationsBell />
-			<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
-				<Button
-					type="text"
-					shape="circle"
-					style={{
-						display: "inline-flex",
-						alignItems: "center",
-						justifyContent: "center",
-						padding: 0,
-						lineHeight: 0,
-					}}
-					icon={avatar}
-				/>
-			</Dropdown>
-		</Space>
+		<ChatPanel>
+			<Space align="center" size={8}>
+				{showDocsButton && (
+					<Link href={DOCS_URL} target="_blank">
+						<Button type="text" style={{ fontSize: 14 }}>
+							{t("hub.menu.documentation", "Documentation")}
+						</Button>
+					</Link>
+				)}
+				<ChatButton />
+				<NotificationsBell />
+				<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+					<Button
+						type="text"
+						shape="circle"
+						style={{
+							display: "inline-flex",
+							alignItems: "center",
+							justifyContent: "center",
+							padding: 0,
+							lineHeight: 0,
+						}}
+						icon={avatar}
+					/>
+				</Dropdown>
+			</Space>
+		</ChatPanel>
 	);
 };
 

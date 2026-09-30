@@ -1,0 +1,149 @@
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--gd-color-border-subtle);
+
+  &:hover,
+  &:focus-within,
+  &[data-menu-open] {
+    background: var(--gd-fill-base);
+  }
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  gap: var(--gd-space-3);
+  align-items: center;
+  min-width: 0;
+  padding: var(--gd-space-3) var(--gd-space-4);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  font: inherit;
+}
+
+.avatar {
+  position: relative;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.online {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--gd-success-solid);
+  border: 2px solid var(--gd-color-surface);
+  border-radius: var(--gd-radius-pill);
+  corner-shape: round;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.titleLine {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--gd-font-size-body);
+  font-weight: 500;
+  color: var(--gd-color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  [data-unread] & {
+    font-weight: 600;
+  }
+}
+
+.kind {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.label {
+  overflow: hidden;
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview {
+  overflow: hidden;
+  font-size: var(--gd-font-size-body-sm);
+  color: var(--gd-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  [data-unread] & {
+    color: var(--gd-color-text);
+  }
+
+  &[data-deleted] {
+    font-style: italic;
+    color: var(--gd-color-text-tertiary);
+  }
+}
+
+.meta {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: var(--gd-space-1);
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 48px;
+}
+
+.time {
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-tertiary);
+
+  [data-unread] & {
+    font-weight: 600;
+    color: var(--gd-color-text);
+  }
+}
+
+.count :global(.ant-badge-count) {
+  border-radius: var(--gd-radius-pill);
+  corner-shape: round;
+}
+
+// The trigger takes the meta column's place on hover, centred on the row.
+.trigger {
+  position: absolute;
+  top: 50%;
+  right: var(--gd-space-4);
+  visibility: hidden;
+  transform: translateY(-50%);
+
+  .row:hover &,
+  .row:focus-within &,
+  .row[data-menu-open] & {
+    visibility: visible;
+  }
+}
+
+.row:hover .meta,
+.row:focus-within .meta,
+.row[data-menu-open] .meta {
+  visibility: hidden;
+}

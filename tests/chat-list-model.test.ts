@@ -10,6 +10,8 @@ import { dayBucket } from "@/components/Chat/model/time";
 const room = (patch: Partial<RoomSummary>): RoomSummary => ({
 	roomId: "!r",
 	name: "Room",
+	avatarMxc: null,
+	online: false,
 	membership: "join",
 	kind: "Direct",
 	status: "Open",
@@ -17,6 +19,7 @@ const room = (patch: Partial<RoomSummary>): RoomSummary => ({
 	lastTs: 0,
 	preview: null,
 	previewIsOwn: false,
+	previewDeleted: false,
 	unread: 0,
 	...patch,
 });

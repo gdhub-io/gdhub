@@ -18,7 +18,8 @@ const PANEL_PORTALS =
 	".ant-popover, .ant-dropdown, .ant-modal-root, .ant-tooltip, .ant-message, .ant-notification, .ant-select-dropdown";
 
 /**
- * The chat, anchored to the header launcher: a floating panel on desktop and a
+ * The chat, hanging from the header actions it wraps (so its right edge meets
+ * the avatar's): a floating panel on desktop and a
  * full-screen sheet below `md`. The open state lives in `useChat`, so deep
  * links, toasts and "Open chat" buttons elsewhere open it too.
  */
@@ -27,7 +28,6 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 	const desktop = !!screens.md;
 	const open = useChat((s) => s.openChatModal);
 	const panelRef = useRef<HTMLDivElement>(null);
-	const anchorRef = useRef<HTMLSpanElement>(null);
 	const pathname = usePathname();
 	const lastPathname = useRef(pathname);
 
@@ -47,7 +47,7 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 			const target = event.target as Element;
 			if (
 				panelRef.current?.contains(target) ||
-				anchorRef.current?.contains(target) ||
+				target.closest?.("[data-chat-launcher]") ||
 				target.closest?.(PANEL_PORTALS)
 			) {
 				return;
@@ -98,9 +98,7 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 				</div>
 			}
 		>
-			<span ref={anchorRef} className={styles.anchor}>
-				{children}
-			</span>
+			<span className={styles.anchor}>{children}</span>
 		</Popover>
 	);
 }

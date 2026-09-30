@@ -9,7 +9,7 @@ import { useAccess } from "@/components/access/AccessProvider";
 import ChatInput from "../ChatInput";
 import ChatMessages from "../ChatMessages";
 import ChatPushStatus from "../ChatPushStatus";
-import ChatRooms from "../ChatRooms";
+import { ConnectedChatRoomList } from "../ChatRoomList/connected";
 import ChatTitle from "../ChatTitle";
 import ChatTopic from "../ChatTopic";
 import NewChatModal from "../NewChatModal";
@@ -57,9 +57,7 @@ function ListView({ hidden }: { hidden: boolean }) {
 				)}
 				<CloseButton />
 			</div>
-			<div className={styles.content}>
-				<ChatRooms />
-			</div>
+			<ConnectedChatRoomList />
 			<NewChatModal open={openNewChat} onClose={() => setOpenNewChat(false)} />
 		</div>
 	);
@@ -137,17 +135,6 @@ function ConversationView({ roomId }: { roomId: string }) {
 
 export default function ChatPanelBody() {
 	const selectedRoomId = useChat((s) => s.selectedRoomId);
-	const ready = useChat((s) => s.ready);
-
-	if (!ready) {
-		return (
-			<div className={styles.body}>
-				<div className={styles.center}>
-					<Spin />
-				</div>
-			</div>
-		);
-	}
 
 	return (
 		<div className={styles.body}>

@@ -81,24 +81,40 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   waits on `ClientEvent.Room`. The first-room auto-select in `ChatRooms` is removed.
 - [x] The launcher badge uses `colorPrimary`, not red, and invites count as one each.
       `HeaderActions` lost its `onOpenChat` prop: the one caller always passed it.
-- [ ] **Live check pending.** The panel opens under the launcher at 520×720, verified on
-      2026-09-30. The list and conversation views are not checked yet, because the running
-      dev server (started 2026-09-29) answered `/api/auth/session` with 500 after the
-      prisma package was reset, and it needs a restart.
+- [x] Live check, 2026-09-30:
+  - the panel opens under the launcher;
+  - the list shows;
+  - a row opens its conversation (context, timeline, and the composer hidden for a closed
+    chat);
+  - back returns to the list;
+  - an outside click closes the panel.
 
 ### 3. Room list
-- [ ] `ChatRoomRow` (frame `Jtbe5`):
-  - avatar with the online dot only when online;
-  - kind `Tag` and label;
-  - preview;
-  - meta column;
-  - `IconDotsVertical` menu on hover.
-- [ ] Row menu: Mark as read, Close chat… (closable kinds only, while open), Leave (direct
-      chats only).
-- [ ] `ChatRoomList`: tabs All / Unread [n] / Closed, incremental render, and the skeleton,
-      loading-more, empty (×3) and error states.
-- [ ] Stories for the row and the list states. Remove `ChatRooms`, `kind-groups` and
-      `@ant-design/x` `Conversations` usage.
+- [x] `ChatRoomRow` (frame `Jtbe5`):
+  - avatar, with the online dot only when online;
+  - kind `Tag` and project label;
+  - preview, with "You:" for own messages, italic for a deleted one, "Invitation" for an
+    invite;
+  - time over the unread count;
+  - `IconDotsVertical` in place of the meta column on hover.
+- [x] Row menu: Mark as read (unread only), Close chat… (open advice or vacancy), Leave
+      (direct only). Closing goes through a confirm and the resolve endpoint.
+- [x] `ChatRoomList`: tabs All / Unread [n] / Closed, 20 rows at a time via an
+      `IntersectionObserver`. Each tab pane scrolls on its own.
+  - States: skeleton, empty ×3 and error.
+  - The spec's "loading more" spinner is not drawn: the rows are already synced, so the
+    next page renders instantly.
+- [x] `ConnectedChatRoomList` builds rows through `summarizeRoom` (`Chat/matrix.ts`) and
+      rebuilds once per frame on Matrix events. The error state is `useChat.syncError`: the
+      first sync failed, and retry calls `retryImmediately`.
+- [x] Stories: `Chat/ChatRoomList` (all, unread, closed, closed empty, empty, unread empty,
+      loading, error, long list) and `Chat/ChatRoomRow` (every row variant). Fixtures are in
+      `Chat/fixtures/rooms.ts`.
+- [x] `ChatRooms`, `services/chat/kind-groups.ts` and the `Conversations` list are removed.
+- [x] The panel hangs from the whole header actions row, so its right edge meets the
+      avatar's. The outside-click check keys on `[data-chat-launcher]`.
+- Conversation stories (a chat, an empty chat, a skeleton) come with stages 4 and 5,
+  which Dmitry asked for.
 
 ### 4. Conversation shell
 - [ ] Header: back, avatar, name, `StatusDot`, close.
@@ -153,5 +169,5 @@ on the client, using `status` from the room metadata endpoint. There is no separ
 - 2026-09-29: design approved; plan written. Stage 1 done: meta endpoint, room context,
   and the list model with tests. Also found `node_modules` drifted to gdhub-prisma beta.58
   against the pinned beta.53, and `bun install` + `db:generate` restored it.
-- 2026-09-30: stage 2 done in code, the live check of the views is still pending (see
-  stage 2).
+- 2026-09-30: stage 2 done and checked live. Stage 3 done and checked live: the list, the
+  tabs, and the panel edge aligned with the avatar.

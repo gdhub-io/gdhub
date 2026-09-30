@@ -133,7 +133,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		// is unreachable at boot, and consuming it would leave the chat stuck on
 		// its loader for the rest of the session.
 		const handleSync = (state: SyncState) => {
+			if (state === SyncState.Error) {
+				if (!useChat.getState().ready) useChat.getState().setSyncError(true);
+				return;
+			}
 			if (state !== SyncState.Prepared) return;
+			useChat.getState().setSyncError(false);
 			setReady(true);
 			if (createdClient) tryComputeUnreadTotal(createdClient);
 		};

@@ -1,0 +1,79 @@
+// Each tab pane scrolls on its own, so switching tabs keeps every position.
+.tabs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  :global(.ant-tabs-nav) {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0 var(--gd-space-6);
+  }
+
+  :global(.ant-tabs-content-holder),
+  :global(.ant-tabs-content),
+  :global(.ant-tabs-tabpane-active) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+}
+
+.tabLabel {
+  display: inline-flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+}
+
+.tabCount {
+  min-width: 20px;
+  padding: 0 6px;
+  font-size: var(--gd-font-size-caption);
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--gd-color-text-secondary);
+  text-align: center;
+  background: var(--gd-neutral-100);
+  border-radius: var(--gd-radius-pill);
+  corner-shape: round;
+}
+
+.pane {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.sentinel {
+  height: 1px;
+}
+
+.center {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gd-space-6);
+}
+
+.skeleton {
+  flex: 1;
+  overflow: hidden;
+}
+
+.skeletonRow {
+  display: flex;
+  gap: var(--gd-space-3);
+  align-items: center;
+  padding: var(--gd-space-3) var(--gd-space-4);
+  border-bottom: 1px solid var(--gd-color-border-subtle);
+}
+
+.skeletonText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--gd-space-2);
+}
