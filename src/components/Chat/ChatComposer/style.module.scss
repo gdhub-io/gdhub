@@ -12,9 +12,9 @@
   border: 1px solid var(--gd-color-border-strong);
   border-radius: var(--gd-radius-control);
 
+  // One outline for the whole box, a step darker than at rest.
   &:focus-within {
-    border-color: var(--gd-color-accent);
-    box-shadow: 0 0 0 2px var(--gd-color-accent-subtle);
+    border-color: var(--gd-neutral-300);
   }
 }
 
@@ -47,6 +47,7 @@
 .textarea:focus-within {
   padding-inline: var(--gd-space-2) !important;
   border: 0 !important;
+  outline: none !important;
   box-shadow: none !important;
 }
 
