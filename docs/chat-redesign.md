@@ -240,6 +240,25 @@ on the client, using `status` from the room metadata endpoint. There is no separ
   - **Compile changed `.scss` with `bunx sass` before reloading.** Neither `lint` nor
     `type-check` catches it.
 
+### 7b. Context line as an inline disclosure (spec revision 5, Dmitry's review)
+- [x] The popover is replaced by a section that drops down from the line **over** the
+      timeline. The messages keep their size and scroll position (checked live:
+      `scrollTop` and height unchanged).
+- [x] Line and section are one surface. The hover fill is on the line only. The one shadow
+      (`--gd-shadow-e2`, clipped to the bottom edge) sits at the block's bottom.
+- [x] Slot contract v2 (`kinds.tsx`):
+  - `closed`;
+  - fields with `span: "half" | "full"`, the half ones packed per row;
+  - actions as data, text only, with `href` opening a new tab;
+  - status as a field.
+- [x] The section collapses on the line, Esc (without closing the panel: it is a
+      `[data-chat-layer]`), an outside click, and when the chat is closed from it. Every
+      room opens with it collapsed.
+- [x] The section is at most `min(360px, 45dvh)`; the fields scroll inside and the actions
+      stay at the bottom.
+- [x] Stories: collapsed and open for advice and vacancy, a long comment, and closed, all
+      over stand-in messages.
+
 ### 8. Finish
 - [ ] **Tolgee keys, pending.** tolgee.gdhub.io answered 502 on 2026-09-30, so `tolgee
       compare` / `sync` could not run. Every string renders from its inline English

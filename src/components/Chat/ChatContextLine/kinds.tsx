@@ -1,6 +1,6 @@
-import { Button } from "antd";
 import dayjs from "dayjs";
 import type { ReactNode } from "react";
+import { StatusDot } from "@/components/ui";
 
 type Translate = (
 	key: string,
@@ -8,18 +8,32 @@ type Translate = (
 	params?: Record<string, string>,
 ) => string;
 
-/** What one chat kind contributes to the context line and its popover. */
+export type ChatContextField = {
+	label: string;
+	value: ReactNode;
+	/** "half" fields pack two or three to a row; default "full". */
+	span?: "half" | "full";
+};
+
+export type ChatContextAction = {
+	key: string;
+	label: string;
+	onClick?: () => void;
+	/** The committing action; at most one. */
+	primary?: boolean;
+	/** Navigation, opened in a new tab. */
+	href?: string;
+};
+
+/** What one chat kind contributes to the context disclosure. */
 export type ChatContextSlot = {
 	tag: string;
 	/** Collapsed line text, truncated by CSS. */
 	summary: string;
-	status: "open" | "closed";
-	/** Popover title status, e.g. "Resolved 18 Sep". */
-	statusLabel?: string;
-	title: string;
-	fields: { label: string; value: ReactNode }[];
-	/** Popover footer, right-aligned; empty → no footer. */
-	actions: ReactNode[];
+	closed: boolean;
+	fields: ChatContextField[];
+	/** Empty → no action row. */
+	actions: ChatContextAction[];
 };
 
 /** `GET /api/chat/rooms/[id]` as the panel receives it. */
@@ -54,7 +68,24 @@ type SlotOptions = {
 
 const dash = (value?: string | null) => value || "—";
 const day = (value?: string | null) =>
-	value ? dayjs(value).format("D MMM YYYY") : undefined;
+	value ? dayjs(value).format("D MMM YYYY") : "";
+
+function statusField(
+	t: Translate,
+	closed: boolean,
+	closedLabel: string,
+): ChatContextField {
+	return {
+		label: t("chat.context.status", "Status"),
+		span: "half",
+		value: (
+			<StatusDot
+				tone={closed ? "neutral" : "success"}
+				label={closed ? closedLabel : t("chat.context.open", "Open")}
+			/>
+		),
+	};
+}
 
 function adviceSlot(
 	context: RoomContext,
@@ -70,20 +101,26 @@ function adviceSlot(
 			topic: dash(data.topic),
 			project,
 		}),
-		status: closed ? "closed" : "open",
-		statusLabel:
-			closed && data.finishedAt
-				? t("chat.context.advice.resolvedOn", "Resolved {date}", {
-						date: day(data.finishedAt) ?? "",
-					})
-				: undefined,
-		title: t("chat.context.advice.title", "Advice request"),
+		closed,
 		fields: [
+			{
+				label: t("chat.context.advice.project", "Project"),
+				value: project,
+				span: "half",
+			},
+			statusField(
+				t,
+				closed,
+				data.finishedAt
+					? t("chat.context.advice.resolvedOn", "Resolved {date}", {
+							date: day(data.finishedAt),
+						})
+					: t("chat.context.closed", "Closed"),
+			),
 			{
 				label: t("chat.context.advice.topic", "Topic"),
 				value: dash(data.topic),
 			},
-			{ label: t("chat.context.advice.project", "Project"), value: project },
 			{
 				label: t("chat.context.advice.comment", "Comment"),
 				value: dash(data.comment),
@@ -92,9 +129,12 @@ function adviceSlot(
 		actions:
 			!closed && !invited && context.canClose
 				? [
-						<Button key="resolve" type="primary" size="small" onClick={onClose}>
-							{t("chat.context.advice.resolve", "Question resolved")}
-						</Button>,
+						{
+							key: "resolve",
+							label: t("chat.context.advice.resolve", "Question resolved"),
+							primary: true,
+							onClick: onClose,
+						},
 					]
 				: [],
 	};
@@ -109,46 +149,48 @@ function vacancySlot(
 	const position = dash(data.vacancy?.title);
 	const project = dash(data.project?.name);
 	const vacancyId = data.vacancy?.id;
+	const actions: ChatContextAction[] = [];
+	if (vacancyId) {
+		actions.push({
+			key: "open",
+			label: t("chat.context.vacancy.openPosition", "Open position page"),
+			href: `/job/${vacancyId}`,
+		});
+	}
+	if (!closed && !invited && context.canClose) {
+		actions.push({
+			key: "close",
+			label: t("chat.context.vacancy.close", "Close chat"),
+			onClick: onClose,
+		});
+	}
 
 	return {
 		tag: t("chat.kind.offer", "Offer"),
 		summary: `${position} · ${project}`,
-		status: closed ? "closed" : "open",
-		statusLabel: closed ? day(data.finishedAt) : undefined,
-		title: t("chat.context.vacancy.title", "Vacancy offer"),
+		closed,
 		fields: [
 			{
 				label: t("chat.context.vacancy.position", "Position"),
 				value: position,
 			},
-			{ label: t("chat.context.vacancy.project", "Project"), value: project },
+			{
+				label: t("chat.context.vacancy.project", "Project"),
+				value: project,
+				span: "half",
+			},
 			...(data.appliedAt
 				? [
 						{
 							label: t("chat.context.vacancy.applied", "Applied"),
 							value: day(data.appliedAt),
+							span: "half" as const,
 						},
 					]
 				: []),
+			statusField(t, closed, t("chat.context.closed", "Closed")),
 		],
-		actions: [
-			vacancyId && (
-				<Button
-					key="open"
-					size="small"
-					href={`/job/${vacancyId}`}
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					{t("chat.context.vacancy.openPosition", "Open position page")}
-				</Button>
-			),
-			!closed && !invited && context.canClose && (
-				<Button key="close" size="small" onClick={onClose}>
-					{t("chat.context.vacancy.close", "Close chat")}
-				</Button>
-			),
-		].filter(Boolean),
+		actions,
 	};
 }
 

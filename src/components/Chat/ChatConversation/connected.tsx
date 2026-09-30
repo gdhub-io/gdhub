@@ -72,7 +72,7 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 		invited,
 		onClose: () => closeChat(roomId),
 	});
-	const closed = slot?.status === "closed";
+	const closed = !!slot?.closed;
 	const member = room?.getAvatarFallbackMember();
 	const user = member?.user;
 	const online = !!user && (user.currentlyActive || user.presence === "online");

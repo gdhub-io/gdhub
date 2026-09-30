@@ -257541,7 +257541,7 @@
       "id": "uRZrC",
       "x": 4400,
       "y": 62880,
-      "name": "Chat · Panel · Conversation · Vacancy offer (open, sending)",
+      "name": "Chat · Panel · Conversation · Vacancy offer (context expanded, sending)",
       "clip": true,
       "width": 520,
       "height": 720,
@@ -257683,15 +257683,22 @@
         },
         {
           "type": "frame",
-          "id": "DYoGR",
-          "name": "Context line · Offer",
+          "id": "V5s5Ug",
+          "name": "Context line (summary) · Offer · expanded",
           "width": "fill_container",
           "height": 40,
-          "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
+          "fill": "$surface",
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
           },
-          "strokeAlignment": "inner",
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "enabled": false,
+            "color": "#000000"
+          },
           "gap": 8,
           "padding": [
             0,
@@ -257703,7 +257710,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "ak35U",
+              "id": "yxQlu",
               "name": "Tag · Offer",
               "height": 20,
               "fill": "$neutral-100",
@@ -257716,7 +257723,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "X4wY9",
+                  "id": "e2WdU",
                   "name": "Label",
                   "fill": "$text-primary",
                   "content": "Offer",
@@ -257728,7 +257735,7 @@
             },
             {
               "type": "frame",
-              "id": "MGENz",
+              "id": "Ayp6z",
               "name": "Summary (ellipsis)",
               "clip": true,
               "width": "fill_container",
@@ -257737,7 +257744,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "R4dQJ",
+                  "id": "c0gdmj",
                   "name": "Summary",
                   "fill": "$text-secondary",
                   "content": "Senior Unity developer · Pixel Harbor",
@@ -257749,11 +257756,11 @@
             },
             {
               "type": "icon",
-              "id": "E2ivux",
-              "name": "Tabler: IconChevronDown",
+              "id": "Z8so5v",
+              "name": "Tabler: IconChevronDown (rotated 180°)",
               "width": 16,
               "height": 16,
-              "icon": "chevron-down",
+              "icon": "chevron-up",
               "library": "lucide",
               "fill": "$text-secondary"
             }
@@ -258308,6 +258315,276 @@
                           "fill": "$text-tertiary"
                         }
                       ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tJet8",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 104,
+          "name": "Context panel · overlay (drops over the timeline)",
+          "width": 520,
+          "fill": "$surface",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0E14",
+            "offset": {
+              "x": 0,
+              "y": 12
+            },
+            "blur": 12,
+            "spread": -6
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "gjbB4",
+              "name": "Fields (scrolls past the cap)",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                4,
+                24,
+                12,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "y5uEi",
+                  "name": "Field · Position",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TWYjk",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "content": "Position",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "PhEbY",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Senior Unity developer",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "R68zT",
+                  "name": "Row · columns",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "aho75",
+                      "name": "Field · Project",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "e6GI66",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Project",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "UBRZ3",
+                          "name": "Value",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Pixel Harbor",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DeqtS",
+                      "name": "Field · Applied",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "YwwtR",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Applied",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Lnxax",
+                          "name": "Value",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "22 Sep",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "z7XB3",
+                      "name": "Field · Status",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Kwegs",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Status",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "O6OtDb",
+                          "name": "StatusDot · Open",
+                          "height": 21,
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "DqBfa",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 6,
+                              "height": 6
+                            },
+                            {
+                              "type": "text",
+                              "id": "YP4PH",
+                              "name": "Label",
+                              "fill": "$text-primary",
+                              "content": "Open",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "OFINt",
+              "name": "Actions (text-only buttons)",
+              "width": "fill_container",
+              "gap": 8,
+              "padding": [
+                0,
+                24,
+                16,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pK3ar",
+                  "name": "Button · default · small · Open position page",
+                  "height": 32,
+                  "cornerRadius": 14,
+                  "stroke": "$border-strong",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sAlzI",
+                      "name": "Label",
+                      "fill": "$text-primary",
+                      "content": "Open position page",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mqPQp",
+                  "name": "Button · default · small · Close chat",
+                  "height": 32,
+                  "cornerRadius": 14,
+                  "stroke": "$border-strong",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "luJEE",
+                      "name": "Label",
+                      "fill": "$text-primary",
+                      "content": "Close chat",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "500"
                     }
                   ]
                 }
@@ -259638,7 +259915,7 @@
       "id": "G1YeC",
       "x": 1880,
       "y": 63680,
-      "name": "Chat · Mobile · Conversation (full screen)",
+      "name": "Chat · Mobile · Conversation (full screen, context expanded)",
       "clip": true,
       "width": 390,
       "height": 844,
@@ -259778,15 +260055,22 @@
         },
         {
           "type": "frame",
-          "id": "wAMlt",
-          "name": "Context line · Advice",
+          "id": "LosGA",
+          "name": "Context line (summary) · Advice · expanded",
           "width": "fill_container",
           "height": 40,
-          "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
+          "fill": "$surface",
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
           },
-          "strokeAlignment": "inner",
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "enabled": false,
+            "color": "#000000"
+          },
           "gap": 8,
           "padding": [
             0,
@@ -259798,7 +260082,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "CWy6R",
+              "id": "Nt3N7",
               "name": "Tag · Advice",
               "height": 20,
               "fill": "$neutral-100",
@@ -259811,7 +260095,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "yuyjo",
+                  "id": "aGTzQ",
                   "name": "Label",
                   "fill": "$text-primary",
                   "content": "Advice",
@@ -259823,7 +260107,7 @@
             },
             {
               "type": "frame",
-              "id": "UcjZl",
+              "id": "asR5K",
               "name": "Summary (ellipsis)",
               "clip": true,
               "width": "fill_container",
@@ -259832,10 +260116,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "g9GvG",
+                  "id": "a9uU0f",
                   "name": "Summary",
                   "fill": "$text-secondary",
-                  "content": "Topic: URP shader banding on mobile · Hollow Tide",
+                  "content": "Topic: URP shader banding · Hollow Tide",
                   "fontFamily": "$font",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -259844,11 +260128,11 @@
             },
             {
               "type": "icon",
-              "id": "NINU5",
-              "name": "Tabler: IconChevronDown",
+              "id": "NFv0m",
+              "name": "Tabler: IconChevronDown (rotated 180°)",
               "width": 16,
               "height": 16,
-              "icon": "chevron-down",
+              "icon": "chevron-up",
               "library": "lucide",
               "fill": "$text-secondary"
             }
@@ -260527,6 +260811,259 @@
                           "fill": "$text-tertiary"
                         }
                       ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "EQXeD",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 104,
+          "name": "Context panel · overlay (drops over the timeline)",
+          "width": 390,
+          "fill": "$surface",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0E14",
+            "offset": {
+              "x": 0,
+              "y": 12
+            },
+            "blur": 12,
+            "spread": -6
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "D3wW2i",
+              "name": "Fields (scrolls past the cap)",
+              "clip": true,
+              "width": "fill_container",
+              "height": 220,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                4,
+                16,
+                12,
+                16
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CgnUm",
+                  "name": "Row · columns",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ihawc",
+                      "name": "Field · Project",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "rVSXa",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Project",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "AwnxO",
+                          "name": "Value",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Hollow Tide",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "S7ZVG",
+                      "name": "Field · Status",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "I1Dn0",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Status",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ir4rk",
+                          "name": "StatusDot · Open",
+                          "height": 21,
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "o6BZg5",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 6,
+                              "height": 6
+                            },
+                            {
+                              "type": "text",
+                              "id": "YVKcX",
+                              "name": "Label",
+                              "fill": "$text-primary",
+                              "content": "Open",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "p16pw",
+                  "name": "Field · Topic",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "AnpIc",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "content": "Topic",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "IUeXk",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "URP shader banding on mobile",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dIWVA",
+                  "name": "Field · Comment",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "p95r4",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "content": "Comment",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "TsUDQ",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Gradients in the sky shader band badly on Android devices only — the same scene on iOS and in the editor is clean. I've tried 16-bit textures, dithering in post and switching the colour space to linear, none of it helped. Build and frame debugger captures from a Pixel 6 are available.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": "$radius-pill",
+                  "id": "DpqFU",
+                  "layoutPosition": "absolute",
+                  "x": 382,
+                  "y": 8,
+                  "name": "Scrollbar thumb",
+                  "fill": "$border-strong",
+                  "width": 4,
+                  "height": 64
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "OpnCn",
+              "name": "Actions (text-only buttons)",
+              "width": "fill_container",
+              "gap": 8,
+              "padding": [
+                12,
+                16
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "a2xGVV",
+                  "name": "Button · primary · small · Question resolved",
+                  "height": 32,
+                  "fill": "$text-primary",
+                  "cornerRadius": 14,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hzHtn",
+                      "name": "Label",
+                      "fill": "$surface",
+                      "content": "Question resolved",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "500"
                     }
                   ]
                 }
@@ -262164,36 +262701,36 @@
       "id": "kWwIn",
       "x": 2400,
       "y": 64160,
-      "name": "Chat · Context line + popover · states",
+      "name": "Chat · Context line — inline disclosure · states",
       "fill": "$page-bg",
       "gap": 40,
       "padding": 24,
       "children": [
         {
           "type": "frame",
-          "id": "fOe3n",
-          "name": "Case · 1 · Collapsed — advice request",
+          "id": "o98fS",
+          "name": "Case · 1 · Advice — collapsed",
           "width": 520,
           "layout": "vertical",
           "gap": 12,
           "children": [
             {
               "type": "text",
-              "id": "Xsgoq",
+              "id": "Q7V3E1",
               "name": "Caption",
               "fill": "$text-secondary",
-              "content": "1 · Collapsed — advice request",
+              "content": "1 · Advice — collapsed",
               "fontFamily": "$font",
               "fontSize": 13,
               "fontWeight": "600"
             },
             {
               "type": "frame",
-              "id": "Vh2ux",
+              "id": "ptJAd",
               "name": "Panel crop",
               "clip": true,
               "width": 520,
-              "height": 200,
+              "height": 480,
               "fill": "$surface",
               "cornerRadius": 20,
               "stroke": "$border",
@@ -262203,7 +262740,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "jcfON",
+                  "id": "dryM9",
                   "name": "Header",
                   "width": "fill_container",
                   "height": 64,
@@ -262220,7 +262757,7 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "id": "m2IxdV",
+                      "id": "H1x90Q",
                       "type": "ref",
                       "ref": "S9qItu",
                       "name": "Button · IconArrowLeft",
@@ -262233,7 +262770,7 @@
                     },
                     {
                       "type": "ellipse",
-                      "id": "uAtZh",
+                      "id": "M3iC08",
                       "name": "AppAvatar 32",
                       "metadata": {
                         "type": "unsplash",
@@ -262252,14 +262789,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "bbWtU",
+                      "id": "PvXNk",
                       "name": "Who",
                       "width": "fill_container",
                       "layout": "vertical",
                       "children": [
                         {
                           "type": "text",
-                          "id": "yBCvX",
+                          "id": "hj3kB",
                           "name": "Name",
                           "fill": "$text-primary",
                           "content": "Anna Kowalska",
@@ -262269,14 +262806,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "W8c7VG",
+                          "id": "RTnNW",
                           "name": "StatusDot · Online",
                           "gap": 6,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "u9c8B",
+                              "id": "kR3fc",
                               "name": "Dot",
                               "fill": "$success",
                               "width": 6,
@@ -262284,7 +262821,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "fwbwT",
+                              "id": "crAcS",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Online",
@@ -262298,13 +262835,13 @@
                     },
                     {
                       "type": "frame",
-                      "id": "wJ9Ru",
+                      "id": "vXEJ8",
                       "name": "Actions",
                       "gap": 4,
                       "alignItems": "center",
                       "children": [
                         {
-                          "id": "haA7H",
+                          "id": "B5v3U",
                           "type": "ref",
                           "ref": "S9qItu",
                           "name": "Button · IconX",
@@ -262321,11 +262858,10 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Twydf",
-                  "name": "Context line · Advice",
+                  "id": "nKBCG",
+                  "name": "Context line (summary) · Advice · collapsed",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "#00000000",
                   "stroke": "$border",
                   "strokeWidth": {
                     "bottom": 1
@@ -262342,7 +262878,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "GSes7",
+                      "id": "Pg93S",
                       "name": "Tag · Advice",
                       "height": 20,
                       "fill": "$neutral-100",
@@ -262355,7 +262891,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "fRmDJ",
+                          "id": "P1WqLH",
                           "name": "Label",
                           "fill": "$text-primary",
                           "content": "Advice",
@@ -262367,7 +262903,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "F8reY",
+                      "id": "FbikH",
                       "name": "Summary (ellipsis)",
                       "clip": true,
                       "width": "fill_container",
@@ -262376,7 +262912,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "PHYzd",
+                          "id": "K1wAda",
                           "name": "Summary",
                           "fill": "$text-secondary",
                           "content": "Topic: URP shader banding on mobile · Hollow Tide",
@@ -262388,7 +262924,7 @@
                     },
                     {
                       "type": "icon",
-                      "id": "j4HyZ",
+                      "id": "F4sKBd",
                       "name": "Tabler: IconChevronDown",
                       "width": 16,
                       "height": 16,
@@ -262397,132 +262933,55 @@
                       "fill": "$text-secondary"
                     }
                   ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "UGQtJ",
-          "name": "Case · 2 · Collapsed — vacancy offer",
-          "width": 520,
-          "layout": "vertical",
-          "gap": 12,
-          "children": [
-            {
-              "type": "text",
-              "id": "atkxF",
-              "name": "Caption",
-              "fill": "$text-secondary",
-              "content": "2 · Collapsed — vacancy offer",
-              "fontFamily": "$font",
-              "fontSize": 13,
-              "fontWeight": "600"
-            },
-            {
-              "type": "frame",
-              "id": "cRSKq",
-              "name": "Panel crop",
-              "clip": true,
-              "width": 520,
-              "height": 200,
-              "fill": "$surface",
-              "cornerRadius": 20,
-              "stroke": "$border",
-              "strokeWidth": 1,
-              "strokeAlignment": "inner",
-              "layout": "vertical",
-              "children": [
+                },
                 {
                   "type": "frame",
-                  "id": "qjKtd",
-                  "name": "Header",
+                  "id": "xRCmO",
+                  "name": "Timeline (unchanged size, under the overlay)",
+                  "clip": true,
                   "width": "fill_container",
-                  "height": 64,
-                  "stroke": "$border",
-                  "strokeWidth": {
-                    "bottom": 1
-                  },
-                  "strokeAlignment": "inner",
-                  "gap": 8,
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
                   "padding": [
-                    0,
-                    12
+                    16,
+                    24
                   ],
-                  "alignItems": "center",
                   "children": [
                     {
-                      "id": "E6jA8q",
-                      "type": "ref",
-                      "ref": "S9qItu",
-                      "name": "Button · IconArrowLeft",
-                      "descendants": {
-                        "LbcSZ": {
-                          "icon": "arrow-left",
-                          "name": "Tabler: IconArrowLeft"
-                        }
-                      }
-                    },
-                    {
-                      "type": "ellipse",
-                      "id": "mckKL",
-                      "name": "AppAvatar 32",
-                      "metadata": {
-                        "type": "unsplash",
-                        "username": "virajsometimes",
-                        "link": "https://unsplash.com/@virajsometimes",
-                        "author": "Viraj Upadhyay"
-                      },
-                      "fill": {
-                        "type": "image",
-                        "enabled": true,
-                        "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
-                        "mode": "fill"
-                      },
-                      "width": 32,
-                      "height": 32
-                    },
-                    {
                       "type": "frame",
-                      "id": "e633X",
-                      "name": "Who",
+                      "id": "G9Sgz3",
+                      "name": "Group",
                       "width": "fill_container",
-                      "layout": "vertical",
+                      "gap": 12,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "wubJb",
-                          "name": "Name",
-                          "fill": "$text-primary",
-                          "content": "Mark Levin",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "600"
+                          "type": "ellipse",
+                          "id": "CHm8X",
+                          "name": "AppAvatar 32",
+                          "fill": "$neutral-100",
+                          "width": 32,
+                          "height": 32
                         },
                         {
                           "type": "frame",
-                          "id": "GRRFL",
-                          "name": "StatusDot · Online",
-                          "gap": 6,
-                          "alignItems": "center",
+                          "id": "v9CmF",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
                           "children": [
                             {
-                              "type": "ellipse",
-                              "id": "q9eg7y",
-                              "name": "Dot",
-                              "fill": "$success",
-                              "width": 6,
-                              "height": 6
-                            },
-                            {
                               "type": "text",
-                              "id": "R3fnf",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Online",
+                              "id": "eEHw1",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Which Unity version are you testing on?",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -262531,103 +262990,141 @@
                     },
                     {
                       "type": "frame",
-                      "id": "o0EHK",
-                      "name": "Actions",
-                      "gap": 4,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "id": "IL6Qo",
-                          "type": "ref",
-                          "ref": "S9qItu",
-                          "name": "Button · IconX",
-                          "descendants": {
-                            "LbcSZ": {
-                              "icon": "x",
-                              "name": "Tabler: IconX"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "cJ3iJ",
-                  "name": "Context line · Offer",
-                  "width": "fill_container",
-                  "height": 40,
-                  "fill": "#00000000",
-                  "stroke": "$border",
-                  "strokeWidth": {
-                    "bottom": 1
-                  },
-                  "strokeAlignment": "inner",
-                  "gap": 8,
-                  "padding": [
-                    0,
-                    16,
-                    0,
-                    24
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "Zsv5q",
-                      "name": "Tag · Offer",
-                      "height": 20,
-                      "fill": "$neutral-100",
-                      "cornerRadius": 8,
+                      "id": "LZCUp",
+                      "name": "Message",
+                      "width": "fill_container",
                       "padding": [
                         0,
-                        8
+                        0,
+                        0,
+                        44
                       ],
-                      "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "eDqJy",
-                          "name": "Label",
-                          "fill": "$text-primary",
-                          "content": "Offer",
-                          "fontFamily": "$font",
-                          "fontSize": 11,
-                          "fontWeight": "500"
+                          "type": "frame",
+                          "id": "LS5pr",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "MEvyg",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Also: which GPU are the Android devices?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     },
                     {
                       "type": "frame",
-                      "id": "Eu62o",
-                      "name": "Summary (ellipsis)",
-                      "clip": true,
+                      "id": "soVDH",
+                      "name": "Message",
                       "width": "fill_container",
-                      "height": 20,
-                      "alignItems": "center",
+                      "justifyContent": "end",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "TTG2G",
-                          "name": "Summary",
-                          "fill": "$text-secondary",
-                          "content": "Senior Unity developer · Pixel Harbor",
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "type": "frame",
+                          "id": "KQwID",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "F774Sy",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "2022.3 LTS, Pixel 6 and an iPhone 12",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     },
                     {
-                      "type": "icon",
-                      "id": "HPNEH",
-                      "name": "Tabler: IconChevronDown",
-                      "width": 16,
-                      "height": 16,
-                      "icon": "chevron-down",
-                      "library": "lucide",
-                      "fill": "$text-secondary"
+                      "type": "frame",
+                      "id": "sXGif",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "c03ZI",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Q62UgW",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "The banding only shows up on Android",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "iKKVF",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wHymv",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zj4hy",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Got it — send me the build",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -262637,29 +263134,29 @@
         },
         {
           "type": "frame",
-          "id": "zbCLp",
-          "name": "Case · 3 · Popover open — advice request",
+          "id": "ZmQDw",
+          "name": "Case · 2 · Advice — expanded (capped, comment scrolls)",
           "width": 520,
           "layout": "vertical",
           "gap": 12,
           "children": [
             {
               "type": "text",
-              "id": "NvP4i",
+              "id": "E0viB",
               "name": "Caption",
               "fill": "$text-secondary",
-              "content": "3 · Popover open — advice request",
+              "content": "2 · Advice — expanded (capped, comment scrolls)",
               "fontFamily": "$font",
               "fontSize": 13,
               "fontWeight": "600"
             },
             {
               "type": "frame",
-              "id": "HB6l8",
+              "id": "q0vmk",
               "name": "Panel crop",
               "clip": true,
               "width": 520,
-              "height": 460,
+              "height": 480,
               "fill": "$surface",
               "cornerRadius": 20,
               "stroke": "$border",
@@ -262669,7 +263166,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "v16ef",
+                  "id": "Vdicy",
                   "name": "Header",
                   "width": "fill_container",
                   "height": 64,
@@ -262686,7 +263183,7 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "id": "WnjvU",
+                      "id": "Gx0Wv",
                       "type": "ref",
                       "ref": "S9qItu",
                       "name": "Button · IconArrowLeft",
@@ -262699,7 +263196,7 @@
                     },
                     {
                       "type": "ellipse",
-                      "id": "u67hp",
+                      "id": "ogQ55",
                       "name": "AppAvatar 32",
                       "metadata": {
                         "type": "unsplash",
@@ -262718,14 +263215,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "yjfUq",
+                      "id": "Zu8yf",
                       "name": "Who",
                       "width": "fill_container",
                       "layout": "vertical",
                       "children": [
                         {
                           "type": "text",
-                          "id": "Gzic9",
+                          "id": "srDtc",
                           "name": "Name",
                           "fill": "$text-primary",
                           "content": "Anna Kowalska",
@@ -262735,14 +263232,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "GtjmV",
+                          "id": "H03Nnx",
                           "name": "StatusDot · Online",
                           "gap": 6,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "IrQjv",
+                              "id": "Omx7r",
                               "name": "Dot",
                               "fill": "$success",
                               "width": 6,
@@ -262750,7 +263247,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "lRIwd",
+                              "id": "YYt1g",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Online",
@@ -262764,13 +263261,13 @@
                     },
                     {
                       "type": "frame",
-                      "id": "WLS2V",
+                      "id": "o6tOGF",
                       "name": "Actions",
                       "gap": 4,
                       "alignItems": "center",
                       "children": [
                         {
-                          "id": "xYwAa",
+                          "id": "Fn2EN",
                           "type": "ref",
                           "ref": "S9qItu",
                           "name": "Button · IconX",
@@ -262787,16 +263284,22 @@
                 },
                 {
                   "type": "frame",
-                  "id": "L89gyj",
-                  "name": "Context line · Advice · open",
+                  "id": "rgDYE",
+                  "name": "Context line (summary) · Advice · expanded",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "$page-bg",
-                  "stroke": "$border",
-                  "strokeWidth": {
-                    "bottom": 1
+                  "fill": "$surface",
+                  "stroke": {
+                    "type": "color",
+                    "color": "#00000000",
+                    "enabled": false
                   },
-                  "strokeAlignment": "inner",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "enabled": false,
+                    "color": "#000000"
+                  },
                   "gap": 8,
                   "padding": [
                     0,
@@ -262808,7 +263311,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "B7NDkj",
+                      "id": "fZaTP",
                       "name": "Tag · Advice",
                       "height": 20,
                       "fill": "$neutral-100",
@@ -262821,7 +263324,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "Nnx17",
+                          "id": "O7LTw",
                           "name": "Label",
                           "fill": "$text-primary",
                           "content": "Advice",
@@ -262833,7 +263336,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "IVxTC",
+                      "id": "IGPFl",
                       "name": "Summary (ellipsis)",
                       "clip": true,
                       "width": "fill_container",
@@ -262842,7 +263345,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "lRqfK",
+                          "id": "zOWUH",
                           "name": "Summary",
                           "fill": "$text-secondary",
                           "content": "Topic: URP shader banding on mobile · Hollow Tide",
@@ -262854,8 +263357,8 @@
                     },
                     {
                       "type": "icon",
-                      "id": "HC2Va",
-                      "name": "Tabler: IconChevronUp",
+                      "id": "tVJvu",
+                      "name": "Tabler: IconChevronDown (rotated 180°)",
                       "width": 16,
                       "height": 16,
                       "icon": "chevron-up",
@@ -262866,16 +263369,317 @@
                 },
                 {
                   "type": "frame",
-                  "id": "hkMtl",
+                  "id": "rJVQn",
+                  "name": "Timeline (unchanged size, under the overlay)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MCu7n",
+                      "name": "Group",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "hHXhX",
+                          "name": "AppAvatar 32",
+                          "fill": "$neutral-100",
+                          "width": 32,
+                          "height": 32
+                        },
+                        {
+                          "type": "frame",
+                          "id": "S4drT",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "w4Bgy",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Which Unity version are you testing on?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "C0ldh",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "VrdNB",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Q45rSs",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Also: which GPU are the Android devices?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XpT2u",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "bRZ93",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "c0Rx3",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "2022.3 LTS, Pixel 6 and an iPhone 12",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mdnXF",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "W8M2l",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZHiae",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "The banding only shows up on Android",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "KYp0R",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fqwfY",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "VuQJz",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Got it — send me the build",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YpNBl",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "IGZdL",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Mi3SF",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "I'll send the build tonight",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "vCxIf",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "H6mPK2",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "E79FrZ",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Dithering in the fragment shader fixed it",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "g4MEnd",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "NPOmz",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nULSs",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Great — marking this as resolved",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "j0nQWy",
                   "layoutPosition": "absolute",
-                  "x": 16,
-                  "y": 108,
-                  "name": "Context popover (antd Popover) · slot",
-                  "width": 488,
+                  "x": 0,
+                  "y": 104,
+                  "name": "Context panel · overlay (drops over the timeline)",
+                  "width": 520,
                   "fill": "$surface",
-                  "cornerRadius": 16,
                   "stroke": "$border",
-                  "strokeWidth": 1,
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
                   "strokeAlignment": "inner",
                   "effect": {
                     "type": "shadow",
@@ -262883,64 +263687,114 @@
                     "color": "#0F0F0E14",
                     "offset": {
                       "x": 0,
-                      "y": 4
+                      "y": 12
                     },
                     "blur": 12,
-                    "spread": -2
+                    "spread": -6
                   },
                   "layout": "vertical",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "D6jQL",
-                      "name": "Slot · body",
+                      "id": "McROL",
+                      "name": "Fields (scrolls past the cap)",
+                      "clip": true,
                       "width": "fill_container",
+                      "height": 248,
                       "layout": "vertical",
                       "gap": 12,
-                      "padding": 16,
+                      "padding": [
+                        4,
+                        24,
+                        12,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Bw2j2",
-                          "name": "Slot · title",
+                          "id": "t6NMG6",
+                          "name": "Row · 2–3 columns",
                           "width": "fill_container",
-                          "justifyContent": "space_between",
-                          "alignItems": "center",
+                          "gap": 16,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "o9mGeS",
-                              "name": "Title",
-                              "fill": "$text-primary",
-                              "content": "Advice request",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "600"
-                            },
-                            {
                               "type": "frame",
-                              "id": "rPeI0",
-                              "name": "StatusDot · Open",
-                              "gap": 6,
-                              "alignItems": "center",
+                              "id": "gZ0Kx",
+                              "name": "Field · Project",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
                               "children": [
                                 {
-                                  "type": "ellipse",
-                                  "id": "bTSEh",
-                                  "name": "Dot",
-                                  "fill": "$success",
-                                  "width": 6,
-                                  "height": 6
+                                  "type": "text",
+                                  "id": "vibFd",
+                                  "name": "Label",
+                                  "fill": "$text-secondary",
+                                  "content": "Project",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "text",
-                                  "id": "a5WaXc",
+                                  "id": "T7TUo1",
+                                  "name": "Value",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hollow Tide",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "HmoeQ",
+                              "name": "Field · Status",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "yZh2g",
                                   "name": "Label",
                                   "fill": "$text-secondary",
-                                  "content": "Open",
+                                  "content": "Status",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 12,
                                   "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "f8No3o",
+                                  "name": "StatusDot · Open",
+                                  "height": 21,
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "L2Qks",
+                                      "name": "Dot",
+                                      "fill": "$success",
+                                      "width": 6,
+                                      "height": 6
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "yVKFR",
+                                      "name": "Label",
+                                      "fill": "$text-primary",
+                                      "content": "Open",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -262948,7 +263802,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "DJyUy",
+                          "id": "doTA2",
                           "name": "Field · Topic",
                           "width": "fill_container",
                           "layout": "vertical",
@@ -262956,7 +263810,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "SmVpT",
+                              "id": "EhTVK",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Topic",
@@ -262966,7 +263820,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "SOf4O",
+                              "id": "JC6aS",
                               "name": "Value",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
@@ -262981,40 +263835,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "Cj10K",
-                          "name": "Field · Project",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "Vy9Bd",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Project",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "egzwp",
-                              "name": "Value",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Hollow Tide",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "N8H8n",
+                          "id": "gPQTf",
                           "name": "Field · Comment",
                           "width": "fill_container",
                           "layout": "vertical",
@@ -263022,7 +263843,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "hcRm0",
+                              "id": "zu4IP",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Comment",
@@ -263032,46 +263853,53 @@
                             },
                             {
                               "type": "text",
-                              "id": "r5wPHO",
+                              "id": "tfib3",
                               "name": "Value",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Gradients in the sky shader band badly on Android devices only. I've tried 16-bit textures and dithering in post, neither helped. Build and frame debugger captures available.",
+                              "content": "Gradients in the sky shader band badly on Android devices only — the same scene on iOS and in the editor is clean. I've tried 16-bit textures, dithering in post and switching the colour space to linear, none of it helped. The build and frame debugger captures from a Pixel 6 are available if you want to look at the render passes. Happy to jump on a call if it's easier.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": "$radius-pill",
+                          "id": "U2Czoc",
+                          "layoutPosition": "absolute",
+                          "x": 512,
+                          "y": 8,
+                          "name": "Scrollbar thumb",
+                          "fill": "$border-strong",
+                          "width": 4,
+                          "height": 64
                         }
                       ]
                     },
                     {
                       "type": "frame",
-                      "id": "Tud4r",
-                      "name": "Slot · actions",
+                      "id": "e5dhe",
+                      "name": "Actions (text-only buttons)",
                       "width": "fill_container",
-                      "stroke": "$border",
-                      "strokeWidth": {
-                        "top": 1
-                      },
-                      "strokeAlignment": "inner",
                       "gap": 8,
                       "padding": [
                         12,
-                        16
+                        24,
+                        16,
+                        24
                       ],
-                      "justifyContent": "end",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "KdweG",
-                          "name": "Button · primary · Question resolved",
+                          "id": "e1cWv1",
+                          "name": "Button · primary · small · Question resolved",
                           "height": 32,
                           "fill": "$text-primary",
                           "cornerRadius": 14,
-                          "gap": 8,
                           "padding": [
                             0,
                             12
@@ -263079,18 +263907,8 @@
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "icon",
-                              "id": "l98ulA",
-                              "name": "Tabler: IconCircleCheck",
-                              "width": 16,
-                              "height": 16,
-                              "icon": "circle-check",
-                              "library": "lucide",
-                              "fill": "$surface"
-                            },
-                            {
                               "type": "text",
-                              "id": "D3zsea",
+                              "id": "nQv3l",
                               "name": "Label",
                               "fill": "$surface",
                               "content": "Question resolved",
@@ -263110,29 +263928,29 @@
         },
         {
           "type": "frame",
-          "id": "T3lrp",
-          "name": "Case · 4 · Popover open — vacancy offer",
+          "id": "U04gU4",
+          "name": "Case · 3 · Vacancy — collapsed",
           "width": 520,
           "layout": "vertical",
           "gap": 12,
           "children": [
             {
               "type": "text",
-              "id": "g9XzOd",
+              "id": "o0XoEe",
               "name": "Caption",
               "fill": "$text-secondary",
-              "content": "4 · Popover open — vacancy offer",
+              "content": "3 · Vacancy — collapsed",
               "fontFamily": "$font",
               "fontSize": 13,
               "fontWeight": "600"
             },
             {
               "type": "frame",
-              "id": "bRmpA",
+              "id": "nJiVK",
               "name": "Panel crop",
               "clip": true,
               "width": 520,
-              "height": 460,
+              "height": 480,
               "fill": "$surface",
               "cornerRadius": 20,
               "stroke": "$border",
@@ -263142,7 +263960,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "J3inOt",
+                  "id": "FI4N1",
                   "name": "Header",
                   "width": "fill_container",
                   "height": 64,
@@ -263159,7 +263977,7 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "id": "V1d6Kc",
+                      "id": "RzOMs",
                       "type": "ref",
                       "ref": "S9qItu",
                       "name": "Button · IconArrowLeft",
@@ -263172,7 +263990,7 @@
                     },
                     {
                       "type": "ellipse",
-                      "id": "OanyV",
+                      "id": "qDr6h",
                       "name": "AppAvatar 32",
                       "metadata": {
                         "type": "unsplash",
@@ -263191,14 +264009,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "fp5FI",
+                      "id": "rNJtl",
                       "name": "Who",
                       "width": "fill_container",
                       "layout": "vertical",
                       "children": [
                         {
                           "type": "text",
-                          "id": "fMhJC",
+                          "id": "ySZEp",
                           "name": "Name",
                           "fill": "$text-primary",
                           "content": "Mark Levin",
@@ -263208,14 +264026,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "iBRhd",
+                          "id": "Ve5uv",
                           "name": "StatusDot · Online",
                           "gap": 6,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "Cu7sO",
+                              "id": "fbnTH",
                               "name": "Dot",
                               "fill": "$success",
                               "width": 6,
@@ -263223,7 +264041,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "AEbZ2",
+                              "id": "Ppm9F",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Online",
@@ -263237,13 +264055,13 @@
                     },
                     {
                       "type": "frame",
-                      "id": "L6Tep",
+                      "id": "R7zXq",
                       "name": "Actions",
                       "gap": 4,
                       "alignItems": "center",
                       "children": [
                         {
-                          "id": "x0TXgP",
+                          "id": "yI954",
                           "type": "ref",
                           "ref": "S9qItu",
                           "name": "Button · IconX",
@@ -263260,11 +264078,10 @@
                 },
                 {
                   "type": "frame",
-                  "id": "mOxna",
-                  "name": "Context line · Offer · open",
+                  "id": "DWGpS",
+                  "name": "Context line (summary) · Offer · collapsed",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "$page-bg",
                   "stroke": "$border",
                   "strokeWidth": {
                     "bottom": 1
@@ -263281,7 +264098,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "pPQBt",
+                      "id": "h2bVk",
                       "name": "Tag · Offer",
                       "height": 20,
                       "fill": "$neutral-100",
@@ -263294,7 +264111,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "LVSPI",
+                          "id": "v9FxLW",
                           "name": "Label",
                           "fill": "$text-primary",
                           "content": "Offer",
@@ -263306,7 +264123,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "v6vCkB",
+                      "id": "a5Uao",
                       "name": "Summary (ellipsis)",
                       "clip": true,
                       "width": "fill_container",
@@ -263315,7 +264132,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "ywyYr",
+                          "id": "MPfsr",
                           "name": "Summary",
                           "fill": "$text-secondary",
                           "content": "Senior Unity developer · Pixel Harbor",
@@ -263327,11 +264144,11 @@
                     },
                     {
                       "type": "icon",
-                      "id": "ypA8o",
-                      "name": "Tabler: IconChevronUp",
+                      "id": "sBAik",
+                      "name": "Tabler: IconChevronDown",
                       "width": 16,
                       "height": 16,
-                      "icon": "chevron-up",
+                      "icon": "chevron-down",
                       "library": "lucide",
                       "fill": "$text-secondary"
                     }
@@ -263339,179 +264156,50 @@
                 },
                 {
                   "type": "frame",
-                  "id": "sYYrW",
-                  "layoutPosition": "absolute",
-                  "x": 16,
-                  "y": 108,
-                  "name": "Context popover (antd Popover) · slot",
-                  "width": 488,
-                  "fill": "$surface",
-                  "cornerRadius": 16,
-                  "stroke": "$border",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
-                  "effect": {
-                    "type": "shadow",
-                    "shadowType": "outer",
-                    "color": "#0F0F0E14",
-                    "offset": {
-                      "x": 0,
-                      "y": 4
-                    },
-                    "blur": 12,
-                    "spread": -2
-                  },
+                  "id": "WtS0H",
+                  "name": "Timeline (unchanged size, under the overlay)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
                   "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
                   "children": [
                     {
                       "type": "frame",
-                      "id": "wnWnH",
-                      "name": "Slot · body",
+                      "id": "BszEM",
+                      "name": "Group",
                       "width": "fill_container",
-                      "layout": "vertical",
                       "gap": 12,
-                      "padding": 16,
                       "children": [
                         {
-                          "type": "frame",
-                          "id": "cJc42",
-                          "name": "Slot · title",
-                          "width": "fill_container",
-                          "justifyContent": "space_between",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "bafpv",
-                              "name": "Title",
-                              "fill": "$text-primary",
-                              "content": "Vacancy offer",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "Wzj3I",
-                              "name": "StatusDot · Open",
-                              "gap": 6,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "u5kyD",
-                                  "name": "Dot",
-                                  "fill": "$success",
-                                  "width": 6,
-                                  "height": 6
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "V2JBp",
-                                  "name": "Label",
-                                  "fill": "$text-secondary",
-                                  "content": "Open",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
+                          "type": "ellipse",
+                          "id": "keNBT",
+                          "name": "AppAvatar 32",
+                          "fill": "$neutral-100",
+                          "width": 32,
+                          "height": 32
                         },
                         {
                           "type": "frame",
-                          "id": "GREQO",
-                          "name": "Field · Position",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
+                          "id": "J4g1ux",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
                           "children": [
                             {
                               "type": "text",
-                              "id": "dGUxk",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Position",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "N0oAjt",
-                              "name": "Value",
-                              "fill": "$link",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Senior Unity developer",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "QzXKF",
-                          "name": "Field · Project",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "yy7ec",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Project",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "R3frFJ",
-                              "name": "Value",
+                              "id": "yFWs3",
+                              "name": "Text",
                               "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Pixel Harbor",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "dyH6w",
-                          "name": "Field · Applied",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "l4OMjd",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Applied",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "UPzOu",
-                              "name": "Value",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "22 Sep",
-                              "lineHeight": 1.5,
+                              "content": "Which Unity version are you testing on?",
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -263522,31 +264210,798 @@
                     },
                     {
                       "type": "frame",
-                      "id": "QHGkx",
-                      "name": "Slot · actions",
+                      "id": "mN9JQ",
+                      "name": "Message",
                       "width": "fill_container",
-                      "stroke": "$border",
-                      "strokeWidth": {
-                        "top": 1
-                      },
-                      "strokeAlignment": "inner",
-                      "gap": 8,
                       "padding": [
-                        12,
-                        16
+                        0,
+                        0,
+                        0,
+                        44
                       ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CwTW3",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZLzKS",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Also: which GPU are the Android devices?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "y1EmYc",
+                      "name": "Message",
+                      "width": "fill_container",
                       "justifyContent": "end",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "qMQ0d",
-                          "name": "Button · default · Open position page",
+                          "id": "J4Ftw",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "XlvY3",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "2022.3 LTS, Pixel 6 and an iPhone 12",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "X4JW1I",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "YmPtX",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "X5f9SR",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "The banding only shows up on Android",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "g9nAZ4",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "d67NPq",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "I0lsQ",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Got it — send me the build",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IqO9O",
+          "name": "Case · 4 · Vacancy — expanded",
+          "width": 520,
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "BbGfF",
+              "name": "Caption",
+              "fill": "$text-secondary",
+              "content": "4 · Vacancy — expanded",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "sJ8Ep",
+              "name": "Panel crop",
+              "clip": true,
+              "width": 520,
+              "height": 480,
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "xe24p",
+                  "name": "Header",
+                  "width": "fill_container",
+                  "height": 64,
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "zBY9S",
+                      "type": "ref",
+                      "ref": "S9qItu",
+                      "name": "Button · IconArrowLeft",
+                      "descendants": {
+                        "LbcSZ": {
+                          "icon": "arrow-left",
+                          "name": "Tabler: IconArrowLeft"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "TJLKC",
+                      "name": "AppAvatar 32",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "virajsometimes",
+                        "link": "https://unsplash.com/@virajsometimes",
+                        "author": "Viraj Upadhyay"
+                      },
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "width": 32,
+                      "height": 32
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PZkaq",
+                      "name": "Who",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "i6PWc",
+                          "name": "Name",
+                          "fill": "$text-primary",
+                          "content": "Mark Levin",
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "agmyZ",
+                          "name": "StatusDot · Online",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "JIp8h",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 6,
+                              "height": 6
+                            },
+                            {
+                              "type": "text",
+                              "id": "a2TzKZ",
+                              "name": "Label",
+                              "fill": "$text-secondary",
+                              "content": "Online",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pB4N8",
+                      "name": "Actions",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "J69uQ",
+                          "type": "ref",
+                          "ref": "S9qItu",
+                          "name": "Button · IconX",
+                          "descendants": {
+                            "LbcSZ": {
+                              "icon": "x",
+                              "name": "Tabler: IconX"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "agiP0",
+                  "name": "Context line (summary) · Offer · expanded",
+                  "width": "fill_container",
+                  "height": 40,
+                  "fill": "$surface",
+                  "stroke": {
+                    "type": "color",
+                    "color": "#00000000",
+                    "enabled": false
+                  },
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "enabled": false,
+                    "color": "#000000"
+                  },
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16,
+                    0,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "yX4lf",
+                      "name": "Tag · Offer",
+                      "height": 20,
+                      "fill": "$neutral-100",
+                      "cornerRadius": 8,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "XVw4S",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "Offer",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GNYIL",
+                      "name": "Summary (ellipsis)",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 20,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Z3opig",
+                          "name": "Summary",
+                          "fill": "$text-secondary",
+                          "content": "Senior Unity developer · Pixel Harbor",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "i1fdl",
+                      "name": "Tabler: IconChevronDown (rotated 180°)",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "chevron-up",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cN9oX",
+                  "name": "Timeline (unchanged size, under the overlay)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "svuCV",
+                      "name": "Group",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "OjGxS",
+                          "name": "AppAvatar 32",
+                          "fill": "$neutral-100",
+                          "width": 32,
+                          "height": 32
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dsPt6",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "QUBzb",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Which Unity version are you testing on?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Mh9s6",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "K5Kdwu",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "YcOqG",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Also: which GPU are the Android devices?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uquPL",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "nnrJc",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "d7FKsP",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "2022.3 LTS, Pixel 6 and an iPhone 12",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "xO2t9",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "g2WgmJ",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ar6Xa",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "The banding only shows up on Android",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kRF3M",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "zTPZV",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "XtsyI",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Got it — send me the build",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KI5qT",
+                  "layoutPosition": "absolute",
+                  "x": 0,
+                  "y": 104,
+                  "name": "Context panel · overlay (drops over the timeline)",
+                  "width": 520,
+                  "fill": "$surface",
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0F0F0E14",
+                    "offset": {
+                      "x": 0,
+                      "y": 12
+                    },
+                    "blur": 12,
+                    "spread": -6
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "reABW",
+                      "name": "Fields (scrolls past the cap)",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        4,
+                        24,
+                        12,
+                        24
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "knrMr",
+                          "name": "Field · Position",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "TtZYC",
+                              "name": "Label",
+                              "fill": "$text-secondary",
+                              "content": "Position",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "r2cz9Y",
+                              "name": "Value",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Senior Unity developer",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "psmPq",
+                          "name": "Row · 2–3 columns",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "z8sFN",
+                              "name": "Field · Project",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "QaVbX",
+                                  "name": "Label",
+                                  "fill": "$text-secondary",
+                                  "content": "Project",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "tqTSq",
+                                  "name": "Value",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Pixel Harbor",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "POdr3",
+                              "name": "Field · Applied",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "IpDWf",
+                                  "name": "Label",
+                                  "fill": "$text-secondary",
+                                  "content": "Applied",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "TYJgb",
+                                  "name": "Value",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "22 Sep",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "dv9Xi",
+                              "name": "Field · Status",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ySOcg",
+                                  "name": "Label",
+                                  "fill": "$text-secondary",
+                                  "content": "Status",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "n8oSW",
+                                  "name": "StatusDot · Open",
+                                  "height": 21,
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "wT2Tl",
+                                      "name": "Dot",
+                                      "fill": "$success",
+                                      "width": 6,
+                                      "height": 6
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "aPlS6",
+                                      "name": "Label",
+                                      "fill": "$text-primary",
+                                      "content": "Open",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Y1ZwcI",
+                      "name": "Actions (text-only buttons)",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        24,
+                        16,
+                        24
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "n3R3nI",
+                          "name": "Button · default · small · Open position page",
                           "height": 32,
                           "cornerRadius": 14,
                           "stroke": "$border-strong",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "gap": 8,
                           "padding": [
                             0,
                             12
@@ -263554,18 +265009,8 @@
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "icon",
-                              "id": "E3ORjr",
-                              "name": "Tabler: IconExternalLink",
-                              "width": 16,
-                              "height": 16,
-                              "icon": "external-link",
-                              "library": "lucide",
-                              "fill": "$text-primary"
-                            },
-                            {
                               "type": "text",
-                              "id": "ssPTp",
+                              "id": "B8p8Ep",
                               "name": "Label",
                               "fill": "$text-primary",
                               "content": "Open position page",
@@ -263577,14 +265022,13 @@
                         },
                         {
                           "type": "frame",
-                          "id": "vkDLz",
-                          "name": "Button · default · Close chat",
+                          "id": "dgHTU",
+                          "name": "Button · default · small · Close chat",
                           "height": 32,
                           "cornerRadius": 14,
                           "stroke": "$border-strong",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "gap": 8,
                           "padding": [
                             0,
                             12
@@ -263592,18 +265036,8 @@
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "icon",
-                              "id": "ELEiS",
-                              "name": "Tabler: IconArchive",
-                              "width": 16,
-                              "height": 16,
-                              "icon": "archive",
-                              "library": "lucide",
-                              "fill": "$text-primary"
-                            },
-                            {
                               "type": "text",
-                              "id": "Dy3vJ",
+                              "id": "T95GoV",
                               "name": "Label",
                               "fill": "$text-primary",
                               "content": "Close chat",
@@ -263623,29 +265057,29 @@
         },
         {
           "type": "frame",
-          "id": "RxfOD",
-          "name": "Case · 5 · Closed chat — status on the line, no close action",
+          "id": "jSjOz",
+          "name": "Case · 5 · Closed — collapsed",
           "width": 520,
           "layout": "vertical",
           "gap": 12,
           "children": [
             {
               "type": "text",
-              "id": "yIdpL",
+              "id": "PtcGa",
               "name": "Caption",
               "fill": "$text-secondary",
-              "content": "5 · Closed chat — status on the line, no close action",
+              "content": "5 · Closed — collapsed",
               "fontFamily": "$font",
               "fontSize": 13,
               "fontWeight": "600"
             },
             {
               "type": "frame",
-              "id": "pM84Z",
+              "id": "omKhj",
               "name": "Panel crop",
               "clip": true,
               "width": 520,
-              "height": 460,
+              "height": 480,
               "fill": "$surface",
               "cornerRadius": 20,
               "stroke": "$border",
@@ -263655,7 +265089,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "OUuGS",
+                  "id": "QGPPl",
                   "name": "Header",
                   "width": "fill_container",
                   "height": 64,
@@ -263672,7 +265106,7 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "id": "mBflM",
+                      "id": "U22Vom",
                       "type": "ref",
                       "ref": "S9qItu",
                       "name": "Button · IconArrowLeft",
@@ -263685,7 +265119,7 @@
                     },
                     {
                       "type": "ellipse",
-                      "id": "kwt3X",
+                      "id": "WwoFu",
                       "name": "AppAvatar 32",
                       "metadata": {
                         "type": "unsplash",
@@ -263704,14 +265138,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "IVwmr",
+                      "id": "OCH1c",
                       "name": "Who",
                       "width": "fill_container",
                       "layout": "vertical",
                       "children": [
                         {
                           "type": "text",
-                          "id": "JE8wW",
+                          "id": "fJGtg",
                           "name": "Name",
                           "fill": "$text-primary",
                           "content": "Anna Kowalska",
@@ -263721,14 +265155,14 @@
                         },
                         {
                           "type": "frame",
-                          "id": "N9uRtZ",
+                          "id": "p0iIm",
                           "name": "StatusDot · Online",
                           "gap": 6,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "j5UBw",
+                              "id": "wPJA6",
                               "name": "Dot",
                               "fill": "$success",
                               "width": 6,
@@ -263736,7 +265170,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "FKjYD",
+                              "id": "bxina",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Online",
@@ -263750,13 +265184,13 @@
                     },
                     {
                       "type": "frame",
-                      "id": "HCfyM",
+                      "id": "K1vZMS",
                       "name": "Actions",
                       "gap": 4,
                       "alignItems": "center",
                       "children": [
                         {
-                          "id": "wtD1e",
+                          "id": "q7PiV",
                           "type": "ref",
                           "ref": "S9qItu",
                           "name": "Button · IconX",
@@ -263773,11 +265207,10 @@
                 },
                 {
                   "type": "frame",
-                  "id": "mFVqJ",
-                  "name": "Context line · Advice · closed · open",
+                  "id": "GgJhG",
+                  "name": "Context line (summary) · Advice · closed · collapsed",
                   "width": "fill_container",
                   "height": 40,
-                  "fill": "$page-bg",
                   "stroke": "$border",
                   "strokeWidth": {
                     "bottom": 1
@@ -263794,7 +265227,7 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "E7GGc1",
+                      "id": "BkrrY",
                       "name": "Tag · Advice",
                       "height": 20,
                       "fill": "$neutral-100",
@@ -263807,7 +265240,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "telFD",
+                          "id": "AqINk",
                           "name": "Label",
                           "fill": "$text-primary",
                           "content": "Advice",
@@ -263819,7 +265252,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "v37rIy",
+                      "id": "d5fKX",
                       "name": "Summary (ellipsis)",
                       "clip": true,
                       "width": "fill_container",
@@ -263828,7 +265261,7 @@
                       "children": [
                         {
                           "type": "text",
-                          "id": "bGRve",
+                          "id": "ZtDw4",
                           "name": "Summary",
                           "fill": "$text-secondary",
                           "content": "Topic: URP shader banding on mobile · Hollow Tide",
@@ -263840,14 +265273,14 @@
                     },
                     {
                       "type": "frame",
-                      "id": "enFvd",
+                      "id": "zGcRO",
                       "name": "StatusDot · Closed",
                       "gap": 6,
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "ellipse",
-                          "id": "PJLSE",
+                          "id": "W9Qrc",
                           "name": "Dot",
                           "fill": "$text-tertiary",
                           "width": 6,
@@ -263855,7 +265288,7 @@
                         },
                         {
                           "type": "text",
-                          "id": "N8wYl",
+                          "id": "D2wyH",
                           "name": "Label",
                           "fill": "$text-secondary",
                           "content": "Closed",
@@ -263867,8 +265300,468 @@
                     },
                     {
                       "type": "icon",
-                      "id": "hxMz4",
-                      "name": "Tabler: IconChevronUp",
+                      "id": "eSP07",
+                      "name": "Tabler: IconChevronDown",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "chevron-down",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "v3aqDG",
+                  "name": "Timeline (unchanged size, under the overlay)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "AUzF5",
+                      "name": "Group",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "Fl6a1",
+                          "name": "AppAvatar 32",
+                          "fill": "$neutral-100",
+                          "width": 32,
+                          "height": 32
+                        },
+                        {
+                          "type": "frame",
+                          "id": "nhQ4U",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kPuPM",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Which Unity version are you testing on?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "VTn42",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "FXadN",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kZAwX",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Also: which GPU are the Android devices?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qGmZk",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "tPwwA",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "mysA3",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "2022.3 LTS, Pixel 6 and an iPhone 12",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "N7EWgh",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "rwZmR",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "izcyE",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "The banding only shows up on Android",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "b4IjXp",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "SFDoh",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "sUsjX",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Got it — send me the build",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "o3JqB",
+          "name": "Case · 6 · Closed — expanded, no close action",
+          "width": 520,
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "zorVt",
+              "name": "Caption",
+              "fill": "$text-secondary",
+              "content": "6 · Closed — expanded, no close action",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "XVAs3",
+              "name": "Panel crop",
+              "clip": true,
+              "width": 520,
+              "height": 480,
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HbvnZ",
+                  "name": "Header",
+                  "width": "fill_container",
+                  "height": 64,
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "GNQNB",
+                      "type": "ref",
+                      "ref": "S9qItu",
+                      "name": "Button · IconArrowLeft",
+                      "descendants": {
+                        "LbcSZ": {
+                          "icon": "arrow-left",
+                          "name": "Tabler: IconArrowLeft"
+                        }
+                      }
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "VIQsw",
+                      "name": "AppAvatar 32",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "virajsometimes",
+                        "link": "https://unsplash.com/@virajsometimes",
+                        "author": "Viraj Upadhyay"
+                      },
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1604364721460-0cbc5866219d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1MTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      },
+                      "width": 32,
+                      "height": 32
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wBNti",
+                      "name": "Who",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "uqyJU",
+                          "name": "Name",
+                          "fill": "$text-primary",
+                          "content": "Anna Kowalska",
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "EqDXZ",
+                          "name": "StatusDot · Online",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "jawej",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 6,
+                              "height": 6
+                            },
+                            {
+                              "type": "text",
+                              "id": "T5OzA",
+                              "name": "Label",
+                              "fill": "$text-secondary",
+                              "content": "Online",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Q3Lpb8",
+                      "name": "Actions",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "M3VAgo",
+                          "type": "ref",
+                          "ref": "S9qItu",
+                          "name": "Button · IconX",
+                          "descendants": {
+                            "LbcSZ": {
+                              "icon": "x",
+                              "name": "Tabler: IconX"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "nvfUb",
+                  "name": "Context line (summary) · Advice · closed · expanded",
+                  "width": "fill_container",
+                  "height": 40,
+                  "fill": "$surface",
+                  "stroke": {
+                    "type": "color",
+                    "color": "#00000000",
+                    "enabled": false
+                  },
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "enabled": false,
+                    "color": "#000000"
+                  },
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16,
+                    0,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Q0Wb9F",
+                      "name": "Tag · Advice",
+                      "height": 20,
+                      "fill": "$neutral-100",
+                      "cornerRadius": 8,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "iQjXd",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "Advice",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sfzpf",
+                      "name": "Summary (ellipsis)",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 20,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Tpr8e",
+                          "name": "Summary",
+                          "fill": "$text-secondary",
+                          "content": "Topic: URP shader banding on mobile · Hollow Tide",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "y8pPeR",
+                      "name": "StatusDot · Closed",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "L0FOP3",
+                          "name": "Dot",
+                          "fill": "$text-tertiary",
+                          "width": 6,
+                          "height": 6
+                        },
+                        {
+                          "type": "text",
+                          "id": "VudUQ",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Closed",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "IWfIZ",
+                      "name": "Tabler: IconChevronDown (rotated 180°)",
                       "width": 16,
                       "height": 16,
                       "icon": "chevron-up",
@@ -263879,16 +265772,317 @@
                 },
                 {
                   "type": "frame",
-                  "id": "E5DqEb",
+                  "id": "y8040c",
+                  "name": "Timeline (unchanged size, under the overlay)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "MiYGA",
+                      "name": "Group",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "eDLKY",
+                          "name": "AppAvatar 32",
+                          "fill": "$neutral-100",
+                          "width": 32,
+                          "height": 32
+                        },
+                        {
+                          "type": "frame",
+                          "id": "D0rmjH",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "p9md8",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Which Unity version are you testing on?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "MSZ8k",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hE6va",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JAi0o",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Also: which GPU are the Android devices?",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "R7psT",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "jMG9S",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "TYAYW",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "2022.3 LTS, Pixel 6 and an iPhone 12",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XAPhM",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "EKGl0",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "RmqBh",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "The banding only shows up on Android",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GZhsF",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZEmHR",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kkzRD",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Got it — send me the build",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cWrSF",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "justifyContent": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Uf1aO",
+                          "name": "Bubble · own",
+                          "fill": "$accent-subtle",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "i5SKE",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "I'll send the build tonight",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "q56qL",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "v9U7Z",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "S5Jsu",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Dithering in the fragment shader fixed it",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "N2qQyl",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        44
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "cNOFc",
+                          "name": "Bubble · other",
+                          "fill": "$neutral-100",
+                          "cornerRadius": 16,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "emUdb",
+                              "name": "Text",
+                              "fill": "$text-primary",
+                              "content": "Great — marking this as resolved",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "KK9bQ",
                   "layoutPosition": "absolute",
-                  "x": 16,
-                  "y": 108,
-                  "name": "Context popover (antd Popover) · slot",
-                  "width": 488,
+                  "x": 0,
+                  "y": 104,
+                  "name": "Context panel · overlay (drops over the timeline)",
+                  "width": 520,
                   "fill": "$surface",
-                  "cornerRadius": 16,
                   "stroke": "$border",
-                  "strokeWidth": 1,
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
                   "strokeAlignment": "inner",
                   "effect": {
                     "type": "shadow",
@@ -263896,64 +266090,114 @@
                     "color": "#0F0F0E14",
                     "offset": {
                       "x": 0,
-                      "y": 4
+                      "y": 12
                     },
                     "blur": 12,
-                    "spread": -2
+                    "spread": -6
                   },
                   "layout": "vertical",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "o1KJM",
-                      "name": "Slot · body",
+                      "id": "J5Ao7",
+                      "name": "Fields (scrolls past the cap)",
+                      "clip": true,
                       "width": "fill_container",
+                      "height": 248,
                       "layout": "vertical",
                       "gap": 12,
-                      "padding": 16,
+                      "padding": [
+                        4,
+                        24,
+                        12,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
-                          "id": "iDJII",
-                          "name": "Slot · title",
+                          "id": "z7r87P",
+                          "name": "Row · 2–3 columns",
                           "width": "fill_container",
-                          "justifyContent": "space_between",
-                          "alignItems": "center",
+                          "gap": 16,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "jIp39",
-                              "name": "Title",
-                              "fill": "$text-primary",
-                              "content": "Advice request",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "600"
-                            },
-                            {
                               "type": "frame",
-                              "id": "V0nzlb",
-                              "name": "StatusDot · Resolved 18 Sep",
-                              "gap": 6,
-                              "alignItems": "center",
+                              "id": "W4eZX",
+                              "name": "Field · Project",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
                               "children": [
                                 {
-                                  "type": "ellipse",
-                                  "id": "hPp53",
-                                  "name": "Dot",
-                                  "fill": "$text-tertiary",
-                                  "width": 6,
-                                  "height": 6
+                                  "type": "text",
+                                  "id": "CYbC2",
+                                  "name": "Label",
+                                  "fill": "$text-secondary",
+                                  "content": "Project",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "text",
-                                  "id": "bZgx5",
+                                  "id": "I2wSxI",
+                                  "name": "Value",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hollow Tide",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "smVcS",
+                              "name": "Field · Status",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "YLtgY",
                                   "name": "Label",
                                   "fill": "$text-secondary",
-                                  "content": "Resolved 18 Sep",
+                                  "content": "Status",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 12,
                                   "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "yOkRP",
+                                  "name": "StatusDot · Resolved 18 Sep",
+                                  "height": 21,
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "g1Wtpd",
+                                      "name": "Dot",
+                                      "fill": "$text-tertiary",
+                                      "width": 6,
+                                      "height": 6
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "i2OdJb",
+                                      "name": "Label",
+                                      "fill": "$text-primary",
+                                      "content": "Resolved 18 Sep",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -263961,7 +266205,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "iJFbZ",
+                          "id": "iOcUX",
                           "name": "Field · Topic",
                           "width": "fill_container",
                           "layout": "vertical",
@@ -263969,7 +266213,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "ZFWxJ",
+                              "id": "Z5jkJS",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Topic",
@@ -263979,7 +266223,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "GeLqX",
+                              "id": "ceWNb",
                               "name": "Value",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
@@ -263994,40 +266238,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "gQTvk",
-                          "name": "Field · Project",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "I4Yd0T",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Project",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "i1LWYP",
-                              "name": "Value",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Hollow Tide",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "Pg842",
+                          "id": "xaunb",
                           "name": "Field · Comment",
                           "width": "fill_container",
                           "layout": "vertical",
@@ -264035,7 +266246,7 @@
                           "children": [
                             {
                               "type": "text",
-                              "id": "bo2oC",
+                              "id": "I4teV",
                               "name": "Label",
                               "fill": "$text-secondary",
                               "content": "Comment",
@@ -264045,18 +266256,30 @@
                             },
                             {
                               "type": "text",
-                              "id": "qUDIv",
+                              "id": "J2O10m",
                               "name": "Value",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Gradients in the sky shader band badly on Android devices only. I've tried 16-bit textures and dithering in post, neither helped. Build and frame debugger captures available.",
+                              "content": "Gradients in the sky shader band badly on Android devices only — the same scene on iOS and in the editor is clean. I've tried 16-bit textures, dithering in post and switching the colour space to linear, none of it helped. The build and frame debugger captures from a Pixel 6 are available if you want to look at the render passes. Happy to jump on a call if it's easier.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": "$radius-pill",
+                          "id": "p92bU",
+                          "layoutPosition": "absolute",
+                          "x": 512,
+                          "y": 8,
+                          "name": "Scrollbar thumb",
+                          "fill": "$border-strong",
+                          "width": 4,
+                          "height": 64
                         }
                       ]
                     }

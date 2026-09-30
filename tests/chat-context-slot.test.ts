@@ -33,7 +33,7 @@ describe("contextSlot", () => {
 		expect(actionKeys(adviceContext)).toEqual(["resolve"]);
 		expect(actionKeys({ ...adviceContext, canClose: false })).toEqual([]);
 		expect(actionKeys(closedAdviceContext)).toEqual([]);
-		expect(contextSlot(closedAdviceContext, options)?.status).toBe("closed");
+		expect(contextSlot(closedAdviceContext, options)?.closed).toBe(true);
 	});
 
 	it("keeps the position link but drops close while an invite is pending", () => {

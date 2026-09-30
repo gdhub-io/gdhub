@@ -58,7 +58,7 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key !== "Escape") return;
 			const layers = document.querySelectorAll(
-				".ant-dropdown:not(.ant-dropdown-hidden), .ant-popover:not(.ant-popover-hidden), .ant-modal-wrap:not([style*='display: none'])",
+				".ant-dropdown:not(.ant-dropdown-hidden), .ant-popover:not(.ant-popover-hidden), .ant-modal-wrap:not([style*='display: none']), [data-chat-layer]",
 			);
 			// The panel itself is one open popover.
 			if (layers.length > 1) return;
