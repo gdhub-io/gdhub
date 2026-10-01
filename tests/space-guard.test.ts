@@ -299,7 +299,7 @@ describe("audit trail", () => {
 		});
 
 		const guarded = withSpaceGuard({
-			permission: "project.documents.manage",
+			permission: "project.artifacts.manage",
 			idFrom: "query.id",
 		})(handler);
 

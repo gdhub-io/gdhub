@@ -24,7 +24,7 @@
 | **Space kind** | Тип спейса, описанный двумя частями (§4): конфигурация прав (features, отклонения от дефолтов) и — необязательно — адаптер, который умеет вычислить роль и состояние сущности. |
 | **Space instance** | Конкретный экземпляр: пара `(spaceType, spaceId)`, где `spaceId` — **id доменной сущности**: `Project.id`, `Event.id`, `Course.id`. Отдельного реестра спейсов нет (§5.1). У одноэкземплярных (`hub`, `admin`, `dev`) сущности нет, поэтому `spaceId = "default"`. |
 | **Space role** | Роль юзера в **конкретном экземпляре**: `owner`, `admin`, `member`, `guest`. Плюс служебное `none` — доступа нет. |
-| **Feature** | Функциональный блок спейса со своим набором действий: `workflow`, `documents`, `schedule`, `devlog`, `certificates`, `equity`… Объявляется **внутри своего спейса** (§3); одинаковые имена в разных спейсах независимы. |
+| **Feature** | Функциональный блок спейса со своим набором действий: `workflow`, `artifacts`, `schedule`, `devlog`, `certificates`, `equity`… Объявляется **внутри своего спейса** (§3); одинаковые имена в разных спейсах независимы. |
 | **Permission** | `{spaceType}.{feature}.{action}` — `project.members.invite`, `event.certificates.issue`. Собирается автоматически, руками не перечисляется. |
 
 Правило разделения ответственности:
@@ -266,7 +266,7 @@ export const projectSpace = defineSpace({
     info:      ["view", "edit"],
     lifecycle: ["archive", "delete"],
     members:   ["view", "invite", "remove"],
-    documents: ["view", "manage"],
+    artifacts: ["view", "manage"],
     workflow:  ["view", "edit"],
     vacancies: ["view", "manage", "review"],
     equity:    ["view", "manage"],
@@ -279,7 +279,7 @@ export const projectSpace = defineSpace({
 | Спейс | Features |
 |---|---|
 | `hub` | `talent_pool`, `projects`, `events`, `courses`, `jobs`, `experts`, `chat`, `live_room` |
-| `project` | `info`, `lifecycle`, `members`, `documents`, `workflow`, `vacancies`, `equity`, `devlog` |
+| `project` | `info`, `lifecycle`, `members`, `artifacts`, `workflow`, `vacancies`, `equity`, `devlog` |
 | `event` | `info`, `lifecycle`, `members`, `content`, `schedule`, `certificates` |
 | `course` | `info`, `lifecycle`, `curriculum`, `classroom`, `students`, `groups`, `content`, `certificates` |
 | `admin` | `users`, `posts`, `devlog_posts`, `workflow`, `audit_logs` |
@@ -413,7 +413,7 @@ export const projectSpace = defineSpace({
     info:      ["view", "edit"],
     lifecycle: ["archive", "delete"],
     members:   ["view", "invite", "remove"],
-    documents: ["view", "manage"],
+    artifacts: ["view", "manage"],
     workflow:  ["view", "edit"],
     vacancies: ["view", "manage", "review"],
     equity:    ["view", "manage"],
@@ -1001,7 +1001,7 @@ UI перестаёт решать вопросы доступа.
 | `/user/project/[slug]/devlog` | member¹ | `project.devlog.view`; создание — `project.devlog.create`, публикация — `project.devlog.publish` (admin) |
 | `/user/project/[slug]/team` | member | `project.members.view`; приглашение/исключение — `project.members.invite` / `.remove` (admin) |
 | `/user/project/[slug]/open-positions` | admin | `project.vacancies.manage`, отбор кандидатов — `project.vacancies.review` |
-| `/user/project/[slug]/documents` | member | `project.documents.view`; загрузка — `project.documents.manage` (admin) |
+| `/user/project/[slug]/artifacts` | member | `project.artifacts.view`; загрузка — `project.artifacts.manage` (admin) |
 | `/user/project/[slug]/settings/[[...item]]` | admin | `project.info.edit` |
 | └ `settings/danger` | **owner** | `project.lifecycle.archive` / `.delete` |
 

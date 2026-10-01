@@ -88,22 +88,22 @@ export const projectOfTeam = async (req: Request): Promise<string | null> => {
 	return team?.projectId ?? null;
 };
 
-/** `documentId` in the route params — the project the document belongs to. */
-export const projectOfTeamDocument = async (
+/** `artifactId` in the route params — the project the artifact belongs to. */
+export const projectOfArtifact = async (
 	_req: Request,
 	params: Record<string, string | string[]> | undefined,
 ): Promise<string | null> => {
-	const raw = params?.documentId;
-	const documentId = Array.isArray(raw) ? raw[0] : raw;
+	const raw = params?.artifactId;
+	const artifactId = Array.isArray(raw) ? raw[0] : raw;
 
-	if (!documentId) return null;
+	if (!artifactId) return null;
 
-	const document = await prisma.teamDocument.findUnique({
-		where: { id: documentId },
-		select: { team: { select: { projectId: true } } },
+	const artifact = await prisma.projectArtifact.findUnique({
+		where: { id: artifactId },
+		select: { projectId: true },
 	});
 
-	return document?.team?.projectId ?? null;
+	return artifact?.projectId ?? null;
 };
 
 /** `vacancyId` or `id` — the project the vacancy belongs to. */

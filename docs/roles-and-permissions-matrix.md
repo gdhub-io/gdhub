@@ -54,8 +54,8 @@ Entering a space is not guarded by a permission — any role gets you in
 | `project.members.invite` | ✅ | ✅ | — | — | manage |
 | `project.members.remove` | ✅ | ✅ | — | — | manage |
 | | | | | | |
-| `project.documents.view` | ✅ | ✅ | ✅ | — | read & take part |
-| `project.documents.manage` | ✅ | ✅ | — | — | manage |
+| `project.artifacts.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `project.artifacts.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
 | `project.workflow.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `project.workflow.edit` | ✅ | ✅ | — | — | manage |

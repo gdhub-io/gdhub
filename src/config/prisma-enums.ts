@@ -2,6 +2,7 @@ import type {
 	AdviceRequestStatus as AdviceRequestStatusType,
 	AIThreadStatus as AIThreadStatusType,
 	ApplauseActivityType as ApplauseActivityTypeType,
+	ArtifactCheckStatus as ArtifactCheckStatusType,
 	AuditAction as AuditActionType,
 	BlogPostStatus as BlogPostStatusType,
 	ChatRoomKind as ChatRoomKindType,
@@ -20,7 +21,6 @@ import type {
 	EventType as EventTypeType,
 	InvitationStatus as InvitationStatusType,
 	Language as LanguageType,
-	LectureStage as LectureStageType,
 	LegalAcceptanceContext as LegalAcceptanceContextType,
 	LegalActorRole as LegalActorRoleType,
 	LegalDocumentCode as LegalDocumentCodeType,
@@ -30,6 +30,7 @@ import type {
 	PaymentRateType as PaymentRateTypeType,
 	PaymentStatus as PaymentStatusType,
 	PrimaryInterest as PrimaryInterestType,
+	ProjectArtifactType as ProjectArtifactTypeType,
 	ProjectLegalEventType as ProjectLegalEventTypeType,
 	ProjectLegalSnapshotStatus as ProjectLegalSnapshotStatusType,
 	ProjectStatus as ProjectStatusType,
@@ -39,7 +40,6 @@ import type {
 	SkillLevel as SkillLevelType,
 	SpaceRole as SpaceRoleType,
 	SubscriptionStatus as SubscriptionStatusType,
-	TeamDocumentType as TeamDocumentTypeType,
 	TeamMemberStatus as TeamMemberStatusType,
 	TeamVacancyStatus as TeamVacancyStatusType,
 	UserRole as UserRoleType,
@@ -240,16 +240,6 @@ export const Language = {
 } as const satisfies Record<LanguageType, LanguageType>;
 export type Language = LanguageType;
 
-export const LectureStage = {
-	Requested: "Requested",
-	Proposed: "Proposed",
-	Actualized: "Actualized",
-	Ready: "Ready",
-	Held: "Held",
-	Canceled: "Canceled",
-} as const satisfies Record<LectureStageType, LectureStageType>;
-export type LectureStage = LectureStageType;
-
 export const LegalAcceptanceContext = {
 	ProjectCreate: "ProjectCreate",
 	InviteJoin: "InviteJoin",
@@ -273,6 +263,7 @@ export type LegalActorRole = LegalActorRoleType;
 
 export const LegalDocumentCode = {
 	CoDevelopmentAgreement: "CoDevelopmentAgreement",
+	CheckpointTerms: "CheckpointTerms",
 } as const satisfies Record<LegalDocumentCodeType, LegalDocumentCodeType>;
 export type LegalDocumentCode = LegalDocumentCodeType;
 
@@ -287,6 +278,7 @@ export const PayableType = {
 	VACANCY: "VACANCY",
 	EVENT: "EVENT",
 	COURSE: "COURSE",
+	CHECKPOINT: "CHECKPOINT",
 } as const satisfies Record<PayableTypeType, PayableTypeType>;
 export type PayableType = PayableTypeType;
 
@@ -403,14 +395,26 @@ export const SubscriptionStatus = {
 } as const satisfies Record<SubscriptionStatusType, SubscriptionStatusType>;
 export type SubscriptionStatus = SubscriptionStatusType;
 
-export const TeamDocumentType = {
+export const ArtifactCheckStatus = {
+	Pending: "Pending",
+	Readable: "Readable",
+	Unreachable: "Unreachable",
+	Unsupported: "Unsupported",
+} as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
+export type ArtifactCheckStatus = ArtifactCheckStatusType;
+
+export const ProjectArtifactType = {
 	JDA: "JDA",
 	Concept: "Concept",
 	GDD: "GDD",
 	NDA: "NDA",
+	Art: "Art",
+	GameplayVideo: "GameplayVideo",
+	PrototypeVideo: "PrototypeVideo",
+	ExecutableBuild: "ExecutableBuild",
 	Other: "Other",
-} as const satisfies Record<TeamDocumentTypeType, TeamDocumentTypeType>;
-export type TeamDocumentType = TeamDocumentTypeType;
+} as const satisfies Record<ProjectArtifactTypeType, ProjectArtifactTypeType>;
+export type ProjectArtifactType = ProjectArtifactTypeType;
 
 export const TeamMemberStatus = {
 	Applicant: "Applicant",

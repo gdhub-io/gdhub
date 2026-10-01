@@ -465,6 +465,7 @@
 		},
 		"user-project": {
 			"menu": {
+				"artifacts": "Artifacts",
 				"documents": "Documents",
 				"open-positions": "Open positions",
 				"overview": "Devlog",
@@ -480,12 +481,100 @@
 	},
 	"are-you-sure-you-want-to-delete-it": "Are you sure you want to delete it?",
 	"artifacts": {
+		"add": "Add artifact",
+		"addOther": "Add something else",
+		"addVideo": "Add a video",
 		"check": {
 			"pending": "Checking…",
 			"ready": "Ready",
 			"unreachable": "Cannot be opened",
 			"unsupported": "Saved, not readable"
 		},
+		"column": {
+			"addedBy": "Added by",
+			"artifact": "Artifact",
+			"check": "Check",
+			"description": "Description",
+			"name": "Title",
+			"stage": "Stage",
+			"updatedAt": "Updated At",
+			"when": "When",
+			"workflow": "Workflow"
+		},
+		"delete": "Delete artifact",
+		"deleteConfirm": "Delete this artifact?",
+		"deleted": "Artifact deleted",
+		"empty": "Your first artifact will appear here.",
+		"error": {
+			"retry": "Try again",
+			"title": "Artifacts could not be loaded"
+		},
+		"filter": {
+			"all": "All"
+		},
+		"kind": {
+			"build": "Build",
+			"document": "Document",
+			"image": "Image",
+			"other": "Other",
+			"video": "Video"
+		},
+		"modal": {
+			"cancel-text": "Cancel",
+			"description": {
+				"label": "What it is",
+				"placeholder": "Add context for the curator.",
+				"suffix": "2 sentences"
+			},
+			"error": "The artifact could not be added",
+			"field": {
+				"description": {
+					"label": "Short Description",
+					"placeholder": "This artifact is about..."
+				},
+				"link": {
+					"label": "Link to artifact",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Title",
+					"placeholder": "Artifact title"
+				},
+				"type": {
+					"label": "Type",
+					"placeholder": "Select artifact type"
+				}
+			},
+			"filed": "Filed under {stage}",
+			"kind": {
+				"label": "Kind"
+			},
+			"link": {
+				"label": "Link",
+				"videoHelp": "YouTube, Vimeo or a direct link."
+			},
+			"name": {
+				"label": "Name",
+				"placeholder": "Prototype walkthrough, 3 min"
+			},
+			"ok-text": "Add",
+			"privacy": "Nothing here is public until the project page is.",
+			"title": "Add artifact",
+			"type": {
+				"label": "Type"
+			},
+			"videoHint": "Videos can be reviewed without running a build."
+		},
+		"noMatch": "No artifacts match",
+		"page": {
+			"description": "Project builds, videos, images and documents.",
+			"title": "Artifacts"
+		},
+		"search": "Search artifacts",
+		"stage": {
+			"count": "{count, plural, one {# artifact} other {# artifacts}}"
+		},
+		"total": "{count, plural, one {# artifact} other {# artifacts}}",
 		"type": {
 			"art": "Art",
 			"build": "Build",
@@ -496,7 +585,9 @@
 			"nda": "NDA",
 			"other": "Other",
 			"prototypeVideo": "Prototype video"
-		}
+		},
+		"unsorted": "Unsorted",
+		"unsortedHint": "No stage"
 	},
 	"blog": {
 		"create-post": {

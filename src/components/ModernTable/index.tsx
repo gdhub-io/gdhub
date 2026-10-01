@@ -79,7 +79,12 @@ export function ModernTable<T extends object>({
 					// `max-content` sizes the table to its content, which leaves
 					// column widths advisory and lets one long string eat the row.
 					// A caller that has fixed widths passes its own total instead.
-					scroll={scroll ?? { x: "max-content" }}
+					// An empty table has nothing to scroll to, so it gets no scrollbar.
+					scroll={
+						props.dataSource?.length
+							? (scroll ?? { x: "max-content" })
+							: undefined
+					}
 					rowClassName={(record, index) =>
 						classNames(
 							"table-row",
