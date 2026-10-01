@@ -56,6 +56,7 @@
 	height: 24px;
 	flex: none;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	border: 1px solid transparent;
 	color: var(--gd-color-text-secondary);
 }
@@ -86,6 +87,7 @@
 	width: var(--gd-space-2);
 	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-color-accent);
 }
 
@@ -115,6 +117,7 @@
 	height: var(--gd-space-2);
 	flex: none;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-color-accent);
 }
 

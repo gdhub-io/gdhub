@@ -18,7 +18,7 @@
 .requestCard {
   background: transparent;
   border: 1px solid var(--gd-color-surface-sunken);
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   padding: 16px;
 }
 

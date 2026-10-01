@@ -1,5 +1,6 @@
 import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { ARTIFACT_DESCRIPTION_MAX } from "@/components/MyProjectArtifacts/artifacts";
 import {
 	apiError,
 	json,
@@ -17,7 +18,7 @@ const UpdateArtifactSchema = z.object({
 		.enum(Object.values(ProjectArtifactType) as [string, ...string[]])
 		.optional(),
 	name: z.string().optional(),
-	description: z.string().optional(),
+	description: z.string().max(ARTIFACT_DESCRIPTION_MAX).optional(),
 	link: z.string().optional(),
 });
 

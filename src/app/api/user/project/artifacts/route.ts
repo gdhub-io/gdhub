@@ -1,5 +1,6 @@
 import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { ARTIFACT_DESCRIPTION_MAX } from "@/components/MyProjectArtifacts/artifacts";
 import {
 	apiError,
 	json,
@@ -19,7 +20,7 @@ const CreateArtifactSchema = z.object({
 	projectId: z.string(),
 	type: z.enum(Object.values(ProjectArtifactType) as [string, ...string[]]),
 	name: z.string(),
-	description: z.string().optional(),
+	description: z.string().max(ARTIFACT_DESCRIPTION_MAX).optional(),
 	link: z.string(),
 });
 
@@ -41,7 +42,7 @@ export const GET = pipe(
 
 	const artifacts = await prisma.projectArtifact.findMany({
 		where: { projectId },
-		orderBy: { updatedAt: "desc" },
+		orderBy: { createdAt: "asc" },
 		include: {
 			createdByUser: {
 				select: {
@@ -49,6 +50,7 @@ export const GET = pipe(
 					image: true,
 				},
 			},
+			step: { select: { id: true, name: true, order: true } },
 		},
 	});
 
@@ -70,12 +72,21 @@ export const POST = pipe(
 	const { projectId, type, name, description, link } =
 		body as CreateArtifactBody;
 
+	// Filed under the stage the project is on when the artifact arrives.
+	const workflow = await prisma.projectWorkflow.findUnique({
+		where: { projectId },
+		select: { currentStepId: true },
+	});
+
 	const artifact = await prisma.projectArtifact.create({
 		data: {
 			type: type as ProjectArtifactType,
 			name,
 			description,
 			link,
+			step: workflow?.currentStepId
+				? { connect: { id: workflow.currentStepId } }
+				: undefined,
 			project: { connect: { id: projectId } },
 			createdByUser: { connect: { id: currentUser.id } },
 		},

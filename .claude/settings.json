@@ -52,7 +52,7 @@
         ]
       },
       {
-        "matcher": "mcp__claude_ai_Linear__(save|create|delete|merge|submit|share|unshare|mark|resolve)_.*",
+        "matcher": "mcp__(linear-gdhub|claude_ai_Linear)__(save|create|delete|merge|submit|share|unshare|mark|resolve)_.*",
         "hooks": [
           {
             "type": "command",

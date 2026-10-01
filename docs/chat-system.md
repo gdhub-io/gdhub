@@ -35,19 +35,28 @@ Core pieces:
     `status=Closed`, `finishedAt` (legacy branch for AdviceRequest).
   - `POST rooms/[id]/invite-response` — Novu-notify the inviter about
     accept/decline (membership itself changes client-side via Matrix).
-- **Frontend** (`src/components/Chat/`): `ChatProvider` (Matrix session, toasts,
-  unread badge, push), `ChatModal` (drawer, fetches context), `ChatRooms`
-  (sidebar — currently from Matrix `getRooms()`, not DB), `ChatMessages`
-  (timeline + invite screen per type), `ChatTopic` (header + archive button),
-  `special-messages/*Invite.tsx` (accept/decline per type).
+- **Frontend** (`src/components/Chat/`, redesigned in GDHUB-62, see
+  [chat-redesign.md](chat-redesign.md)).
+  - `ChatProvider` owns the Matrix session, toasts, the unread badge and push.
+  - `ChatPanel` hangs from the header actions: a popover on desktop, a full-screen
+    drawer below `md`. It holds two views, the list and one conversation.
+  - `ChatRoomList` has tabs All / Unread / Closed. Rows come from the Matrix sync,
+    joined with `GET rooms/meta`.
+  - `ChatConversation` is the header plus `ChatContextLine`, a per-kind popover with
+    its slots in `ChatContextLine/kinds.tsx`, and `ChatInvite` / `ReadOnlyBanner`.
+  - `ChatTimeline` / `MessageGroup` are grouped messages with reactions, replies,
+    edit and delete.
+  - `ChatComposer` has the emoji picker and the reply and edit modes.
+  - Each of these is presentational with a story. A `connected.tsx` next to it wires
+    it to Matrix.
 
 Context `type` strings and their invite components:
 
-| `type` | Kind | Invite component |
+| `type` | Kind | Invite |
 |---|---|---|
-| `advice-request` | AdviceRequest (legacy path today) | `AdviceRequestInvite.tsx` — removed in Stage 1 (requester is auto-joined) |
-| `vacancy-application` | VacancyOffer | `VacancyChatInvite.tsx` — after Stage 3 shown only for talent-pool offers; applied candidates are auto-joined |
-| `default` | Direct / unknown | `DefaultInvite.tsx` |
+| `advice-request` | AdviceRequest | none — the requester is auto-joined |
+| `vacancy-application` | VacancyOffer | `ChatInvite` with the position and the offer message — only talent-pool offers; applied candidates are auto-joined |
+| `default` | Direct / unknown | `ChatInvite` without a position |
 
 ## 2. Chat kinds — current vs target
 
@@ -249,7 +258,13 @@ Backend (`POST /api/chat/rooms/vacancy`, author-initiated, optional first
 5. Closing follows Stage 3 rules (vacancy closed → chat closed; reject → closed
    if they became a candidate).
 
-### Stage 5 — grouped chat list in the drawer — done 2026-07-02
+### Stage 5 — grouped chat list in the drawer — done 2026-07-02, superseded by GDHUB-62
+
+The group headers are gone. The list has tabs All / Unread / Closed, and each row
+carries its kind as a tag with the project name beside it.
+`GET rooms/kinds` became `GET rooms/meta` (kind, status, label, closedAt), and
+`ChatRooms.tsx` / `kind-groups.ts` were deleted. What follows is the original record.
+
 (`GET /api/chat/rooms/kinds` + `groupable` Conversations in `ChatRooms.tsx`;
 groups render once the kind mapping loads, unknown rooms → Direct)
 
@@ -478,8 +493,8 @@ in `.env`.
 `GET /api/chat/rooms/[matrixRoomId]` returned the chat context — advice topic
 and comment, vacancy title, offered amount, project — to **any** signed-in
 caller, and room ids travel in Novu deep links. `invite-response` notified the
-members of any room id it was handed, and `rooms/kinds` confirmed which room
-ids exist.
+members of any room id it was handed, and `rooms/kinds` (now `rooms/meta`)
+confirmed which room ids exist.
 
 [src/services/chat/participation.ts](../src/services/chat/participation.ts) is
 now the single answer to "does this user belong to this chat": `directKey`
@@ -585,8 +600,11 @@ Storing the subject makes one field serve both sides:
 | Team / course / event chat | the space itself | everyone | — |
 
 Drawer rule, one line: **a chat shows under its space when you are a member of
-that space, and in a `kind` bucket otherwise.** So `kind-groups.ts` does not
-disappear — it becomes the fallback for the outside party.
+that space, and in a `kind` bucket otherwise.**
+
+Since GDHUB-62 the list has no group headers. Each row shows its kind as a tag and
+the project or space as a label. The space rule above becomes a filter over those
+labels, not a set of section headers (`kind-groups.ts` was deleted).
 
 Permission to *create* such a chat comes from the initiator's own space and is
 checked on the route, the way `rooms/vacancy` already composes

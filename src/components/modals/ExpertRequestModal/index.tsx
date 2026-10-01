@@ -290,7 +290,7 @@ export default function ExpertRequestModal({
 					padding: 0,
 					border: "none",
 					overflow: "hidden",
-					borderRadius: 16,
+					borderRadius: "var(--gd-radius-panel)",
 				},
 				body: { padding: 0 },
 			}}

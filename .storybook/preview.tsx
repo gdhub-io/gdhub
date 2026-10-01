@@ -1,3 +1,4 @@
+import { StyleProvider } from "@ant-design/cssinjs";
 import type { Preview } from "@storybook/nextjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FormatIcu } from "@tolgee/format-icu";
@@ -43,6 +44,11 @@ const queryClient = new QueryClient({
 if (typeof document !== "undefined") {
 	for (const [name, value] of Object.entries(designCssVariables())) {
 		document.body.style.setProperty(name, value);
+		// On <html> as well: globals.scss paints the page background from
+		// `--gd-color-bg` on both elements, and on <html> the name would resolve
+		// to nothing and the canvas would fall back to white — the app's page is
+		// a warm off-white, so every story sat on the wrong ground.
+		document.documentElement.style.setProperty(name, value);
 	}
 	document.body.classList.add(...fontClassName.split(" ").filter(Boolean));
 	document.body.dataset.gdTheme = "product";
@@ -73,7 +79,7 @@ const preview: Preview = {
 				style={{
 					...(designCssVariables() as CSSProperties),
 					fontFamily: uiFont.style.fontFamily,
-					background: "#fff",
+					background: "var(--gd-color-bg)",
 					minHeight: "100vh",
 				}}
 			>
@@ -84,9 +90,17 @@ const preview: Preview = {
 							{/* The canvas is the design system's reference, so it runs the
 							    token theme rather than the legacy one the public shells
 							    still use. */}
-							<ConfigProvider theme={productTheme}>
-								<Story />
-							</ConfigProvider>
+							{/*
+							    `layer` is what the app does through `<AntdRegistry layer>`.
+							    Without it antd's styles are unlayered here and beat every
+							    `@layer` the app's own CSS uses — the corner jitter in
+							    `@layer shape` simply never applied in the canvas while it
+							    did in the product. */}
+							<StyleProvider layer>
+								<ConfigProvider theme={productTheme}>
+									<Story />
+								</ConfigProvider>
+							</StyleProvider>
 						</TolgeeProvider>
 					</QueryClientProvider>
 				</SessionProvider>

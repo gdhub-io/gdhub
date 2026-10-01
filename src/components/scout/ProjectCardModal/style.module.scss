@@ -97,6 +97,7 @@
 	width: 32px;
 	height: 32px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-neutral-900);
 	color: var(--gd-neutral-0);
 	border: none;
@@ -257,6 +258,7 @@
 	align-items: center;
 	gap: var(--gd-space-1);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-fill-base);
 	color: var(--gd-color-text-secondary);
 	font-size: 12px;
@@ -508,6 +510,7 @@
 	width: 8px;
 	height: 8px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-success-solid);
 	flex: none;
 }

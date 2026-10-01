@@ -1,0 +1,126 @@
+.toolbar {
+	margin-bottom: var(--gd-space-4);
+
+	/* globals.scss makes every svg a block, which stacks the icon on the label. */
+	:global(.ant-segmented-item-label) {
+		display: flex;
+		align-items: center;
+		gap: var(--gd-space-1);
+	}
+}
+
+.search {
+	width: 260px;
+	max-width: 100%;
+}
+
+/* An outlined panel, per ui-guidelines Layout 1. */
+.panel {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.blank {
+	padding: var(--gd-space-12) var(--gd-space-6);
+}
+
+.card {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+/* Same height as a row, so the page does not jump when the rows arrive. */
+.skeletonRow {
+	display: flex;
+	align-items: center;
+	height: 56px;
+	padding: 0 var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+/* An outlined panel rather than a white card, so every fill and hairline is
+   read against the page: `surface-sunken` and `border-subtle` vanish there.
+   The extra `.ant-table` in each selector outranks ModernTable's own rules. */
+.table {
+	> div {
+		margin-top: 0;
+		border: 1px solid var(--gd-color-border);
+		border-radius: var(--gd-radius-card);
+		box-shadow: none;
+		background: transparent;
+	}
+
+	:global(.ant-table) :global(.ant-table-thead > tr > th) {
+		height: 44px;
+		padding-block: 0;
+		border-bottom: 1px solid var(--gd-color-border);
+		background: transparent;
+		font-size: 11px;
+		letter-spacing: 0;
+		color: var(--gd-color-text-tertiary);
+
+		&::before {
+			display: none;
+		}
+	}
+
+	:global(.ant-table) :global(.ant-table-tbody > tr > td) {
+		height: 56px;
+		padding-block: 0;
+		border-bottom-color: var(--gd-color-border);
+	}
+
+	:global(.ant-table) :global(.ant-table-cell:first-child) {
+		padding-left: var(--gd-space-6);
+	}
+
+	:global(.ant-table) :global(.ant-table-cell:last-child) {
+		padding-right: var(--gd-space-6);
+	}
+
+	/* A band, not a row: no hover, and the fill has to survive ModernTable's. */
+	:global(.ant-table) :global(.ant-table-tbody) > tr.stageRow > td {
+		height: 40px;
+		background: var(--gd-neutral-100) !important;
+	}
+}
+
+.stage {
+	font-size: 13px;
+}
+
+.count {
+	font-size: 12px;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* Lets the text inside a flex cell truncate. */
+.shrink {
+	min-width: 0;
+}
+
+.kindIcon {
+	flex-shrink: 0;
+	color: var(--gd-color-text-secondary);
+}
+
+.name {
+	min-width: 0;
+	font-weight: 500;
+}
+
+.kind {
+	flex-shrink: 0;
+	margin: 0;
+	/* The theme's chip fill is the page colour; on a transparent row it vanishes. */
+	background: var(--gd-neutral-100);
+}
+
+.footer {
+	margin-top: var(--gd-space-4);
+}

@@ -465,6 +465,7 @@
 		},
 		"user-project": {
 			"menu": {
+				"artifacts": "Артефакты",
 				"documents": "Документы",
 				"open-positions": "Вакансии",
 				"overview": "Дневник разработки",
@@ -480,12 +481,100 @@
 	},
 	"are-you-sure-you-want-to-delete-it": "Точно хотите удалить?",
 	"artifacts": {
+		"add": "Добавить артефакт",
+		"addOther": "Добавить что-то еще",
+		"addVideo": "Добавить видео",
 		"check": {
 			"pending": "Проверка…",
 			"ready": "Готово",
 			"unreachable": "Не удалось открыть",
 			"unsupported": "Сохранено, нечитаемо"
 		},
+		"column": {
+			"addedBy": "Добавил",
+			"artifact": "Артефакт",
+			"check": "Проверить",
+			"description": "Описание",
+			"name": "Название",
+			"stage": "Этап",
+			"updatedAt": "Обновлён",
+			"when": "Когда",
+			"workflow": "Рабочий процесс"
+		},
+		"delete": "Удалить артефакт",
+		"deleteConfirm": "Удалить этот артефакт?",
+		"deleted": "Артефакт удалён",
+		"empty": "Ваш первый артефакт появится здесь.",
+		"error": {
+			"retry": "Попробовать снова",
+			"title": "Артефакты не удалось загрузить"
+		},
+		"filter": {
+			"all": "Все"
+		},
+		"kind": {
+			"build": "Сборка",
+			"document": "Документ",
+			"image": "Изображение",
+			"other": "Другие",
+			"video": "Видео"
+		},
+		"modal": {
+			"cancel-text": "Отменить",
+			"description": {
+				"label": "Что это такое",
+				"placeholder": "Добавьте контекст для кураторов.",
+				"suffix": "2 предложения"
+			},
+			"error": "Артефакт не удалось добавить",
+			"field": {
+				"description": {
+					"label": "Краткое описание",
+					"placeholder": "Этот артефакт касается..."
+				},
+				"link": {
+					"label": "Ссылка на артефакт",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Название",
+					"placeholder": "Название артефакта"
+				},
+				"type": {
+					"label": "Тип",
+					"placeholder": "Выберите тип артефакта"
+				}
+			},
+			"filed": "Отсортировано по {stage}",
+			"kind": {
+				"label": "Тип"
+			},
+			"link": {
+				"label": "Ссылка",
+				"videoHelp": "YouTube, Vimeo или прямая ссылка."
+			},
+			"name": {
+				"label": "Инвестор",
+				"placeholder": "Прототипный гид, 3 мин"
+			},
+			"ok-text": "Добавить",
+			"privacy": "Ничто здесь не будет публичным, пока не будет страница проекта.",
+			"title": "Добавить артефакт",
+			"type": {
+				"label": "Тип"
+			},
+			"videoHint": "Видео можно просматривать без сборки."
+		},
+		"noMatch": "Нет совпадающих артефактов",
+		"page": {
+			"description": "Сборки проектов, видео, изображения и документы.",
+			"title": "Артефакты"
+		},
+		"search": "Поиск артефактов",
+		"stage": {
+			"count": "{count, plural, one {# артефакт} few {# артефакта} other {# артефактов} }"
+		},
+		"total": "{count, plural, one {# артефакт} few {# артефакта} other {# артефактов} }",
 		"type": {
 			"art": "Искусство",
 			"build": "Сборка",
@@ -496,7 +585,9 @@
 			"nda": "Соглашение о неразглашении",
 			"other": "Другие",
 			"prototypeVideo": "Прототип видео"
-		}
+		},
+		"unsorted": "Несортированные",
+		"unsortedHint": "Нет этапа"
 	},
 	"blog": {
 		"create-post": {

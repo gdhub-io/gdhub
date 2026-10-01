@@ -1,13 +1,14 @@
 import type { Icon } from "@tabler/icons-react";
 import { getWorkDirection } from "@/components/DirectionBadge";
+import { radius } from "@/config/design";
 import styles from "./style.module.scss";
 
 const SIZES = {
 	// For a block that is one line tall, where `sm` would set the height itself.
-	xs: { box: 24, radius: 10, icon: 18 },
-	sm: { box: 32, radius: 10, icon: 16 },
-	md: { box: 40, radius: 12, icon: 19 },
-	lg: { box: 56, radius: 16, icon: 26 },
+	xs: { box: 24, radius: radius.control, icon: 18 },
+	sm: { box: 32, radius: radius.control, icon: 16 },
+	md: { box: 40, radius: radius.card, icon: 19 },
+	lg: { box: 56, radius: radius.panel, icon: 26 },
 } as const;
 
 export type IconTileProps = {

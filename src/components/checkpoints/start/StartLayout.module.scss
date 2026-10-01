@@ -17,6 +17,7 @@
 .bar {
 	height: var(--gd-space-1);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-color-border);
 }
 

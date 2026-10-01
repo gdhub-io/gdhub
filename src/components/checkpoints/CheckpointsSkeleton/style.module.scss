@@ -92,6 +92,7 @@
 .track {
 	height: 6px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 }
 
 .button {
@@ -104,6 +105,7 @@
 	width: 88px;
 	height: 18px;
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 }
 
 .pastMeta {

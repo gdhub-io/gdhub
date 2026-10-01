@@ -72,7 +72,7 @@ export const DirectionMap: StoryObj = {
 							style={{
 								width: 20,
 								height: 20,
-								borderRadius: 6,
+								borderRadius: "var(--gd-radius-chip)",
 								background: d.color,
 								border: "1px solid rgba(0,0,0,0.08)",
 							}}

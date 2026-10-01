@@ -4,7 +4,7 @@
 	// footer dividers stop short of the modal edges.
 	:global(.ant-modal-container) {
 		padding: 0;
-		border-radius: 12px;
+		border-radius: var(--gd-radius-card);
 		overflow: hidden;
 	}
 

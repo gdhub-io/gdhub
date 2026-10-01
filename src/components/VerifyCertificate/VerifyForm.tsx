@@ -29,7 +29,11 @@ export const VerifyForm = ({
 
 	return (
 		<Card
-			style={{ width: "100%", maxWidth: 520, borderRadius: 16 }}
+			style={{
+				width: "100%",
+				maxWidth: 520,
+				borderRadius: "var(--gd-radius-panel)",
+			}}
 			styles={{ body: { padding: 24 } }}
 		>
 			<Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
@@ -51,7 +55,7 @@ export const VerifyForm = ({
 							placeholder={t("verify.form.placeholder", "GDH-XXXXXX")}
 							value={number}
 							onChange={(e) => setNumber(e.target.value)}
-							style={{ flex: 1, borderRadius: 10 }}
+							style={{ flex: 1, borderRadius: "var(--gd-radius-control)" }}
 						/>
 						<Button
 							type="primary"
@@ -61,7 +65,10 @@ export const VerifyForm = ({
 							icon={<IconShieldCheck size={16} />}
 							loading={submitting}
 							disabled={!number.trim()}
-							style={{ borderRadius: 10, fontWeight: 600 }}
+							style={{
+								borderRadius: "var(--gd-radius-control)",
+								fontWeight: 600,
+							}}
 						>
 							{t("verify.form.submit", "Verify")}
 						</Button>
@@ -76,7 +83,7 @@ export const VerifyForm = ({
 						"You can also open gdhub.io/verify/<NUMBER> to see the result directly.",
 					)}
 					style={{
-						borderRadius: 10,
+						borderRadius: "var(--gd-radius-control)",
 						background: "var(--gd-neutral-25)",
 						border: "none",
 					}}

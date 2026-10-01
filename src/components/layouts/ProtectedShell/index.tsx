@@ -25,7 +25,6 @@ import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { genConfig } from "react-nice-avatar";
 import { useAccess } from "@/components/access/AccessProvider";
 import { signOutWithChat } from "@/components/Chat/session";
-import { useChat } from "@/components/Chat/useChat";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
@@ -38,18 +37,13 @@ import type { UserSpaces } from "@/repositories/user-spaces";
 import styles from "./style.module.scss";
 import { useSwitchAccountMenuItems } from "./useSwitchAccountMenu";
 
-const ChatModal = dynamic(
-	() => import("@/components/Chat/ChatModal").then((m) => m.ChatModal),
-	{ ssr: false },
-);
-
 const { Content } = Layout;
 const { Text } = Typography;
 
 /**
  * The single shell of the authenticated app, mounted once in
  * `app/(app)/layout.tsx`: AntD ConfigProvider, top header (logo, breadcrumbs,
- * navigation, actions), mobile drawer and ChatModal.
+ * navigation, actions) and mobile drawer.
  *
  * Breadcrumbs and top navigation default to the hub ones, and are replaced by
  * whatever the current space publishes through `useSetSpaceHeader` (project,
@@ -63,7 +57,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const [isOpenedInTelegram] = useTelegram();
 	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
-	const { setOpenChatModal } = useChat();
 	const spaceHeader = useSpaceHeader();
 	const { can } = useAccess();
 	const switchAccountMenuItems = useSwitchAccountMenuItems();
@@ -387,7 +380,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							<HeaderActions
 								dropdownMenuItems={dropdownMenuItems}
 								onOpenMobileMenu={() => setOpenMobileMenu(true)}
-								onOpenChat={() => setOpenChatModal(true)}
 								avatarConfig={avatarConfig}
 							/>
 						}
@@ -454,9 +446,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 						/>
 					</>
 				)} */}
-
-				{/* chat modal */}
-				<ChatModal />
 			</ConfigProvider>
 		</>
 	);

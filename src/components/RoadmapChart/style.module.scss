@@ -114,6 +114,7 @@
   width: 5px;
   height: 5px;
   border-radius: var(--gd-radius-pill);
+  corner-shape: round;
   background: var(--gd-success-on-tint);
   transform: translate(-50%, -50%);
 }

@@ -1,0 +1,64 @@
+.wrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// Short conversations sit at the bottom, next to the composer.
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-4);
+  margin-top: auto;
+  padding: var(--gd-space-3) var(--gd-space-6) var(--gd-space-4);
+}
+
+.day {
+  margin: 0 !important;
+  font-size: var(--gd-font-size-caption) !important;
+  font-weight: 500;
+  color: var(--gd-color-text-tertiary) !important;
+}
+
+.notice {
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-tertiary);
+  text-align: center;
+}
+
+.earlier {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+  justify-content: center;
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-secondary);
+}
+
+.jump {
+  position: absolute !important;
+  bottom: var(--gd-space-4);
+  left: 50%;
+  transform: translateX(-50%);
+
+  :global(.ant-btn) {
+    background: var(--gd-color-surface) !important;
+    border-color: var(--gd-color-border-strong);
+    box-shadow: var(--gd-shadow-e2);
+  }
+
+  :global(.ant-badge-count) {
+    border-radius: var(--gd-radius-pill);
+    corner-shape: round;
+  }
+}

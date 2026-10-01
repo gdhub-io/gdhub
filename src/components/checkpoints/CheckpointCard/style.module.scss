@@ -52,6 +52,7 @@
 	display: flex;
 	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	overflow: hidden;
 	background: var(--gd-color-border);
 
@@ -154,6 +155,7 @@
 	width: var(--gd-space-2);
 	height: var(--gd-space-2);
 	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
 	background: var(--gd-warning-solid);
 }
 

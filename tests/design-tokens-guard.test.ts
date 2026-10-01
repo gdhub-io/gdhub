@@ -50,7 +50,6 @@ const ALLOWED: Record<string, string> = {
 	"src/components/GameCard/DefaultCover.tsx": "placeholder cover art gradients",
 	"src/components/landing/LandingFeedbackSection/index.tsx":
 		"generated avatar skin tone",
-	"src/components/Chat/ChatMessages.tsx": "avatar identity fills",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
 	"src/components/layouts/Header/Header.stories.tsx": "avatar fill in a story",
 
@@ -152,6 +151,40 @@ describe("design tokens guard", () => {
 				"Check the name against src/config/design (the spacing scale is",
 				"1, 2, 3, 4, 6, 8, 12, 16 — there is no 5), or give it a fallback",
 				"if it is deliberately optional.",
+				"",
+				...offenders,
+			].join("\n"),
+		).toEqual([]);
+	});
+
+	/**
+	 * `corner-shape: squircle` is applied to every box in `src/styles/shape.scss`,
+	 * which turns a 50% radius into an app icon and a status dot into a square.
+	 * A circle or a pill has to say `corner-shape: round` next to its radius —
+	 * nothing but a screenshot would catch a missing one.
+	 */
+	it("keeps circles and pills round under the global squircle", async () => {
+		const circular =
+			/border-radius:\s*(?:50%|999px|9999px|var\(--gd-radius-pill\))\s*;/;
+		const files = (await sourceFiles()).filter(
+			(file) => file.endsWith(".scss") && file !== "src/styles/shape.scss",
+		);
+		const offenders: string[] = [];
+
+		for (const file of files) {
+			const lines = readFileSync(path.join(ROOT, file), "utf8").split("\n");
+			lines.forEach((line, index) => {
+				if (!circular.test(line)) return;
+				if (lines[index + 1]?.includes("corner-shape")) return;
+				offenders.push(`${file}:${index + 1} — ${line.trim()}`);
+			});
+		}
+
+		expect(
+			offenders,
+			[
+				"A circular or pill radius with no `corner-shape: round;` under it.",
+				"The global squircle in src/styles/shape.scss would square its ends off.",
 				"",
 				...offenders,
 			].join("\n"),

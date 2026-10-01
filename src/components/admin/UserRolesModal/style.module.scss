@@ -4,7 +4,7 @@
 	// footer dividers stop short of the modal edges.
 	:global(.ant-modal-container) {
 		padding: 0;
-		border-radius: 12px;
+		border-radius: var(--gd-radius-card);
 		overflow: hidden;
 	}
 
@@ -82,7 +82,7 @@
 	display: flex;
 	flex-direction: column;
 	border: 1px solid var(--gd-color-border);
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 }
 
 .row {
@@ -173,5 +173,5 @@
 	height: 44px;
 	color: var(--gd-color-text-secondary);
 	border-color: var(--gd-color-border-strong);
-	border-radius: 10px;
+	border-radius: var(--gd-radius-control);
 }

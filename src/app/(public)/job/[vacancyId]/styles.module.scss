@@ -49,7 +49,7 @@
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: var(--gd-radius-control);
   background: var(--gd-color-accent);
   color: var(--gd-color-surface);
   font-size: 18px;
@@ -232,6 +232,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  corner-shape: round;
   object-fit: cover;
 }
 
@@ -402,7 +403,7 @@
   aspect-ratio: 16/9;
   position: relative;
   background: var(--gd-color-text);
-  border-radius: 12px;
+  border-radius: var(--gd-radius-card);
   overflow: hidden;
   margin-bottom: 24px;
 

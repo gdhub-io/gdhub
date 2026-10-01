@@ -213,7 +213,7 @@
     }
 
     :global(.editorjs-video-block) {
-      border-radius: 16px;
+      border-radius: var(--gd-radius-panel);
       overflow: hidden;
 
       iframe {
