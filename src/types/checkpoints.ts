@@ -120,7 +120,7 @@ export type CheckpointDto = {
 		id: string;
 		name: string | null;
 		image: string | null;
-		/** The list's current row only. */
+		/** The current row and the page; the closed rows of the list go without. */
 		speciality?: { name: string; level: SkillLevel } | null;
 	} | null;
 	startedAt: string | null;

@@ -33,12 +33,15 @@ const { Title, Text } = Typography;
  */
 export const ProjectSpace = ({
 	title,
+	titleExtra,
 	description,
 	children,
 	actions,
 	backHref,
 }: {
 	title?: string;
+	/** Sits on the title's line, after it — a stage tag, a status. */
+	titleExtra?: ReactNode;
 	description?: string;
 	children: ReactNode;
 	actions?: ReactNode;
@@ -239,7 +242,10 @@ export const ProjectSpace = ({
 						</Link>
 					)}
 					<Space orientation="vertical" size={0}>
-						{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+						<Flex gap={10} align="center" wrap>
+							{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+							{titleExtra}
+						</Flex>
 						{!!description && <Text type="secondary">{description}</Text>}
 					</Space>
 				</Flex>

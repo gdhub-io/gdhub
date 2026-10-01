@@ -47,6 +47,7 @@ export function AdvisorCheckpointClient({ id }: { id: string }) {
 				subTitle={hero.description}
 				extra={
 					<Flex gap={8} align="center">
+						{hero.titleExtra}
 						<Button onClick={() => setBriefOpen(true)}>
 							{t("advisor.brief.open", "Details")}
 						</Button>

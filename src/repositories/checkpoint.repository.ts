@@ -101,6 +101,31 @@ export const checkpointSelect = {
 	items: { select: checkpointItemSelect, orderBy: { order: "asc" } },
 } as const;
 
+// The card and the page header name the curator's craft; their strongest speciality stands for it.
+const curatorWithCraftSelect = {
+	select: {
+		id: true,
+		name: true,
+		image: true,
+		specialities: {
+			select: { name: true, level: true },
+			orderBy: { level: "desc" },
+			take: 1,
+		},
+	},
+} as const;
+
+const withCraft = <
+	T extends { specialities: { name: string; level: string }[] },
+>(
+	curator: T | null,
+) => {
+	if (!curator) return null;
+	const { specialities, ...rest } = curator;
+
+	return { ...rest, speciality: specialities[0] ?? null };
+};
+
 /** The artifact as the evidence list needs it: the ref, plus who offered it. */
 const evidenceArtifactSelect = {
 	id: true,
@@ -123,6 +148,7 @@ const evidenceArtifactSelect = {
  */
 const checkpointDetailSelect = {
 	...checkpointSelect,
+	curator: curatorWithCraftSelect,
 	// Wider than the list's: an item's artifact is also a row of the evidence.
 	items: {
 		select: {
@@ -342,11 +368,13 @@ export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
 /** The row as the checkpoint page reads it; the artifact joins stay behind. */
 const toCheckpointDetail = (row: DetailRow) => {
-	const { artifacts, items, project, pulses, reports, ...checkpoint } = row;
+	const { artifacts, curator, items, project, pulses, reports, ...checkpoint } =
+		row;
 	const { startedAt } = checkpoint;
 
 	return {
 		...checkpoint,
+		curator: withCraft(curator),
 		items: items.map((item) => ({
 			...item,
 			artifact: item.artifact ? toArtifactRef(item.artifact) : null,
@@ -384,19 +412,7 @@ export const getCheckpoint = async (id: string) => {
  */
 const currentCheckpointSelect = {
 	...checkpointSelect,
-	// The card names the curator's craft; their strongest speciality stands for it.
-	curator: {
-		select: {
-			id: true,
-			name: true,
-			image: true,
-			specialities: {
-				select: { name: true, level: true },
-				orderBy: { level: "desc" },
-				take: 1,
-			},
-		},
-	},
+	curator: curatorWithCraftSelect,
 	reports: { select: { publishedAt: true } },
 	pulses: { select: { week: true, confirmedAt: true } },
 	project: {
@@ -431,12 +447,7 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 
 	return {
 		...checkpoint,
-		curator: curator && {
-			id: curator.id,
-			name: curator.name,
-			image: curator.image,
-			speciality: curator.specialities[0] ?? null,
-		},
+		curator: withCraft(curator),
 		sprints: buildSprints(startedAt),
 		// Only a running checkpoint asks anything of its author on a given day.
 		next:
