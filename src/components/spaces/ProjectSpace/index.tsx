@@ -113,6 +113,14 @@ export const ProjectSpace = ({
 					]
 				: []),
 			{
+				key: `/user/project/${projectSlug}/room`,
+				label: (
+					<Link href={`/user/project/${projectSlug}/room`}>
+						{t("app.user-project.menu.room", "Room")}
+					</Link>
+				),
+			},
+			{
 				key: `/user/project/${projectSlug}/artifacts`,
 				label: (
 					<Link href={`/user/project/${projectSlug}/artifacts`}>
