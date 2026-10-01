@@ -82,6 +82,7 @@ export function SprintPanel({
 					children: (
 						<Review
 							facts={facts}
+							curatorKind={checkpoint.curatorKind}
 							checkpointId={checkpoint.id}
 							writable={writable}
 						/>

@@ -596,7 +596,12 @@ export const SprintReview: StoryObj = {
 };
 
 export const SprintReviewEmpty: StoryObj = {
-	render: () => <Review facts={sprintFactsOf(withItems, sprints[1])} />,
+	render: () => (
+		<Review
+			facts={sprintFactsOf(withItems, sprints[1])}
+			curatorKind={withItems.curatorKind}
+		/>
+	),
 };
 
 /** The three states of the tab before there is anything to read — frames `zAqpb`, `O0tgre`, `J0pS4h`. */

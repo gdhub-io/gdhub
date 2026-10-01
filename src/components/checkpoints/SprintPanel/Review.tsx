@@ -6,12 +6,15 @@ import { App, Button, Card, Flex, Input, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { useWriteReview } from "@/hooks/checkpoints";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
 import styles from "./style.module.scss";
 
 export type ReviewProps = {
 	facts: SprintFacts;
+	/** Who curates: an AI reviews the activity, a person's review follows a call. */
+	curatorKind?: CheckpointCuratorKind;
 	/** Set for the curator running it: the one thing they may write here. */
 	checkpointId?: string;
 	writable?: boolean;
@@ -22,7 +25,12 @@ export type ReviewProps = {
  * devlog. Until the schema holds a review of its own it is read off the sprint's
  * devlog, which is why a sprint without one shows nothing here.
  */
-export function Review({ facts, checkpointId, writable }: ReviewProps) {
+export function Review({
+	facts,
+	curatorKind,
+	checkpointId,
+	writable,
+}: ReviewProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [draft, setDraft] = useState("");
@@ -91,10 +99,17 @@ export function Review({ facts, checkpointId, writable }: ReviewProps) {
 			<EmptyState
 				icon={IconMessage2}
 				title={t("checkpoints.review.empty", "No review yet")}
-				description={t(
-					"checkpoints.review.emptyNote",
-					"The curator writes one for every sprint, after its devlog.",
-				)}
+				description={
+					curatorKind === CheckpointCuratorKind.AI
+						? t(
+								"checkpoints.review.emptyNoteAI",
+								"The AI curator will go through the project's activity and write the review.",
+							)
+						: t(
+								"checkpoints.review.emptyNoteHuman",
+								"The review is written after the call with the curator — a record of what was discussed.",
+							)
+				}
 			/>
 		);
 
