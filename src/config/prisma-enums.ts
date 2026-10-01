@@ -2,6 +2,7 @@ import type {
 	AdviceRequestStatus as AdviceRequestStatusType,
 	AIThreadStatus as AIThreadStatusType,
 	ApplauseActivityType as ApplauseActivityTypeType,
+	ArtifactCheckStatus as ArtifactCheckStatusType,
 	AuditAction as AuditActionType,
 	BlogPostStatus as BlogPostStatusType,
 	ChatRoomKind as ChatRoomKindType,
@@ -393,6 +394,14 @@ export const SubscriptionStatus = {
 	Canceled: "Canceled",
 } as const satisfies Record<SubscriptionStatusType, SubscriptionStatusType>;
 export type SubscriptionStatus = SubscriptionStatusType;
+
+export const ArtifactCheckStatus = {
+	Pending: "Pending",
+	Readable: "Readable",
+	Unreachable: "Unreachable",
+	Unsupported: "Unsupported",
+} as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
+export type ArtifactCheckStatus = ArtifactCheckStatusType;
 
 export const ProjectArtifactType = {
 	JDA: "JDA",

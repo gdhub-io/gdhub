@@ -1,215 +1,101 @@
-import type { ProjectArtifact, User } from "@gdhub-io/gdhub-prisma";
-import { IconTrash } from "@tabler/icons-react";
+"use client";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import {
-	Button,
-	Flex,
-	message,
-	Popconfirm,
-	Space,
-	Tooltip,
-	Typography,
-} from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { Button, message } from "antd";
 import axios from "axios";
-import dayjs from "dayjs";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { useContext, useState } from "react";
-import ModernTable from "@/components/ModernTable";
-import { AppAvatar } from "@/components/ui/AppAvatar";
-import { ProjectContext } from "@/contexts/ProjectContext";
-
-const { Text } = Typography;
+import { useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
+import { ProjectSpace } from "@/components/spaces/ProjectSpace";
+import { ProjectStatus } from "@/config/prisma-enums";
+import { useCurrentProject } from "@/hooks/project";
+import { ArtifactsView } from "./ArtifactsView";
+import type { ArtifactListItem } from "./artifacts";
 
 const CreateArtifactModal = dynamic(
 	() => import("@/components/modals/CreateArtifactModal"),
-	{
-		ssr: false,
-	},
+	{ ssr: false },
 );
-
-type ArtifactWithCreatedByUser = ProjectArtifact & {
-	createdByUser: User;
-};
-
-const LinkPreviewText = ({ link }: { link: string }) => {
-	const previewLength = 20;
-
-	return (
-		<Tooltip title={link} popupVisible={false}>
-			<Text
-				ellipsis
-				type="secondary"
-				style={{ maxWidth: "250px", fontSize: 12 }}
-			>
-				{[
-					link.slice(0, previewLength),
-					link.slice(link.length - previewLength),
-				].join(" ... ")}
-			</Text>
-		</Tooltip>
-	);
-};
 
 const MyProjectArtifacts = () => {
 	const { t } = useTranslate();
-	const contextProject = useContext(ProjectContext)?.contextProject;
-	const isProjectArchived =
-		!contextProject || !!contextProject.isProjectArchived;
-	const [showArtifactModal, setShowArtifactModal] = useState(false);
+	const { can } = useAccess();
+	const { project } = useCurrentProject();
+	const [adding, setAdding] = useState(false);
+
+	const canManage =
+		can("project.artifacts.manage") &&
+		!!project &&
+		project.status !== ProjectStatus.Archived;
 
 	const {
-		data: projectArtifacts,
-		refetch: fetchMyProjectArtifacts,
-		isLoading: isLoadingMyProjectArtifacts,
+		data: artifacts = [],
+		refetch,
+		isPending,
+		isError,
 	} = useQuery({
-		queryKey: ["project-artifacts", contextProject?.id],
-		queryFn: () =>
-			axios.get("/api/user/project/artifacts", {
-				params: { projectId: contextProject?.id },
-			}),
-		enabled: !!contextProject?.id,
+		queryKey: ["project-artifacts", project?.id],
+		queryFn: async () =>
+			(
+				await axios.get<ArtifactListItem[]>("/api/user/project/artifacts", {
+					params: { projectId: project?.id },
+				})
+			).data,
+		enabled: !!project?.id,
 		refetchOnWindowFocus: false,
 	});
 
-	const { mutateAsync: deleteArtifact } = useMutation({
+	const { mutate: deleteArtifact } = useMutation({
 		mutationFn: (id: string) =>
 			axios.delete(`/api/user/project/artifacts/${id}`),
+		onSuccess: () => {
+			refetch();
+			message.success(t("artifacts.deleted", "Artifact deleted"));
+		},
 	});
 
-	const artifactColumns: ColumnsType<ArtifactWithCreatedByUser> = [
-		{
-			title: t("artifacts.column.name", "Title"),
-			dataIndex: "name",
-			key: "name",
-			width: "30%",
-			ellipsis: true,
-			render: (value, data) => (
-				<Space orientation="vertical" size={0}>
-					<Text strong>
-						<Link href={data.link} target="_blank">
-							{value}
-						</Link>
-					</Text>
-					<LinkPreviewText link={data.link} />
-				</Space>
-			),
-		},
-		{
-			title: t("artifacts.column.description", "Description"),
-			dataIndex: "description",
-			key: "description",
-			ellipsis: true,
-			responsive: ["md"],
-			width: "30%",
-			render: (value) => (
-				<Text ellipsis type="secondary" style={{ maxWidth: "120px" }}>
-					{value}
-				</Text>
-			),
-		},
-		{
-			title: t("artifacts.column.addedBy", "Added by"),
-			dataIndex: ["createdByUser", "name"],
-			key: "createdByUser",
-			responsive: ["md"],
-			width: "20%",
-			render: (value, data) => (
-				<Space align="center" size={8}>
-					<AppAvatar src={data.createdByUser.image} size={24} />
-					<Text>{value}</Text>
-				</Space>
-			),
-		},
-		{
-			title: t("artifacts.column.updatedAt", "Updated At"),
-			dataIndex: "updatedAt",
-			key: "updatedAt",
-			align: "right",
-			responsive: ["md"],
-			width: "20%",
-			render: (value) => dayjs(value).format("LLL"),
-		},
-		{
-			key: "actions",
-			width: "1%",
-			hidden: isProjectArchived,
-			render: (value, record) => (
-				<Space>
-					<Popconfirm
-						title={t("artifacts.deleteConfirm", "Delete this artifact?")}
-						okText={t("Yes", "Yes")}
-						cancelText={t("No", "No")}
-						onConfirm={() => handleDeleteArtifact(record.id)}
-					>
-						<Button type="text" danger>
-							<IconTrash />
-						</Button>
-					</Popconfirm>
-				</Space>
-			),
-		},
-	];
-
-	const handleDeleteArtifact = async (id: string) => {
-		if (isProjectArchived) return;
-
-		await deleteArtifact(id);
-		fetchMyProjectArtifacts();
-
-		message.success(t("artifacts.deleted", "Artifact deleted"));
-	};
-
-	const handleCreateArtifact = () => {
-		setShowArtifactModal(false);
-		fetchMyProjectArtifacts();
-	};
-
-	const handleCancelCreateArtifact = () => {
-		setShowArtifactModal(false);
-	};
+	const workflow = project?.workflow;
+	const stageName = workflow?.steps.find(
+		(step) => step.id === workflow.currentStepId,
+	)?.name;
 
 	return (
-		<>
-			<Flex justify="space-between" align="center">
-				<Space align="center">
-					{!isProjectArchived && (
-						<Button onClick={() => setShowArtifactModal(true)}>
-							{t("artifacts.add", "Add artifact")}
-						</Button>
-					)}
-				</Space>
-			</Flex>
-
-			{projectArtifacts?.data.length > 0 ? (
-				<ModernTable
-					loading={isLoadingMyProjectArtifacts}
-					columns={artifactColumns.filter((column) => !column.hidden)}
-					dataSource={projectArtifacts?.data?.map(
-						(m: ArtifactWithCreatedByUser) => ({
-							...m,
-							key: m.id,
-						}),
-					)}
-					pagination={false}
-				/>
-			) : (
-				<p style={{ marginTop: 12, color: "gray" }}>
-					{t("artifacts.empty", "Your first artifact will appear here.")}
-				</p>
+		<ProjectSpace
+			title={t("artifacts.page.title", "Artifacts")}
+			description={t(
+				"artifacts.page.description",
+				"Project builds, videos, images and documents.",
 			)}
+			actions={
+				canManage && (
+					<Button type="primary" onClick={() => setAdding(true)}>
+						{t("artifacts.add", "Add artifact")}
+					</Button>
+				)
+			}
+		>
+			<ArtifactsView
+				artifacts={artifacts}
+				status={isError ? "error" : isPending ? "loading" : "ready"}
+				canManage={canManage}
+				onRetry={refetch}
+				onDelete={deleteArtifact}
+			/>
 
-			{!isProjectArchived && (
+			{canManage && (
 				<CreateArtifactModal
-					projectId={contextProject?.id}
-					open={showArtifactModal}
-					onCancel={handleCancelCreateArtifact}
-					onCreate={handleCreateArtifact}
+					open={adding}
+					projectId={project?.id}
+					stageName={stageName}
+					onCancel={() => setAdding(false)}
+					onCreate={() => {
+						setAdding(false);
+						refetch();
+					}}
 				/>
 			)}
-		</>
+		</ProjectSpace>
 	);
 };
 
