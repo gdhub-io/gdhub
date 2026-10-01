@@ -30,7 +30,7 @@
 		opacity: 0.45;
 	}
 
-	&:not(:disabled):hover {
+	&:not(:disabled, .selected):hover {
 		background: var(--gd-fill-subtle);
 	}
 }
@@ -38,10 +38,6 @@
 .selected {
 	background: var(--gd-color-surface);
 	border-color: var(--gd-color-border-strong);
-
-	&:hover {
-		background: var(--gd-color-surface);
-	}
 
 	.name {
 		font-weight: 600;
