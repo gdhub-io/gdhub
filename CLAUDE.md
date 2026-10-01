@@ -25,11 +25,14 @@ a token cannot see, and Linear would write into the other workspace without comp
 - Commits: `dmitry.drynov@gmail.com`.
 - Linear: `dmitry.drynov`, workspace GDHub, team `GDHUB`. **Confirm with
   `get_user("me")` before the first write of a session** — every read is harmless, a
-  write into the wrong workspace is not undone by retrying.
+  write into the wrong workspace is not undone by retrying. The server is
+  `linear-gdhub`, declared in `~/projects/gdhub/.mcp.json` for every repository under
+  that directory; the claude.ai Linear connector is one account for the whole machine
+  and is not used here.
 
-`.claude/hooks/account-guard.sh` blocks `gh` and `git push` from the wrong account and
-forces a prompt on Linear writes; `.husky/pre-push` repeats the check for pushes made
-outside Claude.
+`.claude/hooks/account-guard.sh` blocks `gh` and `git push` from the wrong account,
+forces a prompt on Linear writes and refuses them through the claude.ai connector;
+`.husky/pre-push` repeats the check for pushes made outside Claude.
 
 ## Starting a piece of work
 

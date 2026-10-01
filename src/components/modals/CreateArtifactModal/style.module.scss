@@ -1,0 +1,28 @@
+.hint {
+	font-size: 13px;
+	font-weight: 400;
+}
+
+.suffix {
+	margin-left: var(--gd-space-2);
+	font-weight: 400;
+}
+
+.filed {
+	padding: var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
+}
+
+.note {
+	font-size: 12px;
+	color: var(--gd-color-text-tertiary);
+}
+
+/* globals.scss makes every svg a block, which stacks the icon on the label. */
+.kinds :global(.ant-segmented-item-label) {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+}

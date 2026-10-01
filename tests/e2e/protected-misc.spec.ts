@@ -12,7 +12,7 @@ const PROTECTED_ROUTES = [
 	"/user/project/__no__/open-positions",
 	"/user/project/__no__/workflow",
 	"/user/project/__no__/devlog",
-	"/user/project/__no__/documents",
+	"/user/project/__no__/artifacts",
 	"/user/project/__no__/settings",
 	"/user/event/__no__",
 	"/user/event/__no__/content",

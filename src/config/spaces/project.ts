@@ -11,7 +11,7 @@ export const projectSpace = defineSpace({
 		info: ["view", "edit"],
 		lifecycle: ["archive", "delete"],
 		members: ["view", "invite", "remove"],
-		documents: ["view", "manage"],
+		artifacts: ["view", "manage"],
 		workflow: ["view", "edit"],
 		vacancies: ["view", "manage", "review"],
 		equity: ["view", "manage"],

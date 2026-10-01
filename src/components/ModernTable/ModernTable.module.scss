@@ -31,6 +31,12 @@
     background-color: rgba(241, 85, 65, 0.04) !important;
   }
 
+  // The empty state is not a row: it takes no fill and no hover.
+  :global(.ant-table-tbody > tr.ant-table-placeholder > td),
+  :global(.ant-table-tbody > tr.ant-table-placeholder:hover > td) {
+    background: transparent !important;
+  }
+
   :global(.ant-table-row-selected > td) {
     background-color: rgba(241, 85, 65, 0.08) !important;
   }

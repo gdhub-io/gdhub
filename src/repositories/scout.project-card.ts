@@ -394,8 +394,8 @@ export async function getProjectCardInvestment(id: string) {
 const SECTION_LIMIT = 50;
 
 export async function getProjectCardFiles(id: string, limit = SECTION_LIMIT) {
-	return prisma.teamDocument.findMany({
-		where: { team: { projectId: id } },
+	return prisma.projectArtifact.findMany({
+		where: { projectId: id },
 		orderBy: { updatedAt: "desc" },
 		take: limit,
 		select: {
@@ -467,8 +467,8 @@ export async function getProjectCardActivities(
 			take: limit,
 			select: { id: true, name: true, finishedAt: true },
 		}),
-		prisma.teamDocument.findMany({
-			where: { team: { projectId: id } },
+		prisma.projectArtifact.findMany({
+			where: { projectId: id },
 			orderBy: { createdAt: "desc" },
 			take: limit,
 			select: {

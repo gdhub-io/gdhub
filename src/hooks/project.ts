@@ -1,4 +1,8 @@
-import type { Project } from "@gdhub-io/gdhub-prisma";
+import type {
+	Project,
+	ProjectWorkflow,
+	ProjectWorkflowStep,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -6,6 +10,7 @@ import { useSession } from "next-auth/react";
 
 export type CurrentProject = Project & {
 	team: { id: string } | null;
+	workflow: (ProjectWorkflow & { steps: ProjectWorkflowStep[] }) | null;
 };
 
 export const useCurrentProject = () => {

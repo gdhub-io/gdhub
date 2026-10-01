@@ -14,7 +14,7 @@ Argument: a Linear id (`GDHUB-24`), or nothing — then ask which issue.
 
 ## 1. Read the issue, do not trust it to be filled in
 
-`mcp__claude_ai_Linear__get_issue` with the id. Take the title, the status, the
+`mcp__linear-gdhub__get_issue` with the id. Take the title, the status, the
 `gitBranchName` and the url. Expect `description` to be empty; that is normal
 here, not a reason to stop.
 
@@ -58,9 +58,9 @@ Do not restate the stack, the conventions or the API pattern — they are in
 
 The issue description is empty; the intent is exactly what belongs there.
 Confirm first that `get_user("me")` is `dmitry.drynov` — there is more than one
-Linear account here and a write lands wherever the connector points. Then ask the
+Linear account here and a write lands wherever the server points. Then ask the
 user, because it writes outside the repository, and
-`mcp__claude_ai_Linear__save_issue` with the intent body. Now the ticket is
+`mcp__linear-gdhub__save_issue` with the intent body. Now the ticket is
 readable by someone who does not have the repo open.
 
 ## 5. Linear is where a decision is asked for
