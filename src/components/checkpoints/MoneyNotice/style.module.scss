@@ -20,6 +20,13 @@
 	}
 }
 
+// The same fact as a closing line under a page: no fill, no border, lined up
+// with the text inside the cards above it.
+.plain {
+	padding: 0 var(--gd-space-4);
+	font-size: var(--gd-font-size-body);
+}
+
 .text {
 	flex: 1;
 	min-width: 0;

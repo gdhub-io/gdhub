@@ -92,12 +92,13 @@ export function MoneyNotice({ checkpoint, starting, plain }: MoneyNoticeProps) {
 
 	if (plain) {
 		return (
-			<Flex gap={8} align="center">
-				<Typography.Text type="secondary">{money.title}</Typography.Text>
+			<Flex gap={8} align="center" className={styles.plain}>
+				<money.icon size={16} stroke={2} color={money.ink} />
+				<Typography.Text className={styles.text}>{money.title}</Typography.Text>
 				{hasReceipt && (
 					<Button
-						type="link"
 						size="small"
+						icon={<IconReceipt size={14} stroke={1.6} />}
 						loading={fetching}
 						onClick={openReceipt}
 					>
