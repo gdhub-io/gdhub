@@ -182,7 +182,7 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 
 	return (
 		<Flex vertical gap={16}>
-			<GoalStrip goal={checkpoint.goal} />
+			<GoalStrip goal={checkpoint.goal} curatorKind={checkpoint.curatorKind} />
 
 			<ScopeModal
 				open={!!scope}

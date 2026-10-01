@@ -147,7 +147,7 @@ export function Review({
 					styles={{ body: { padding: 0 } }}
 					title={
 						<span className={styles.cardTitle}>
-							{t("checkpoints.midnote.title", "Day 14 — the scope note")}
+							{t("checkpoints.midnote.title", "Day 15 — the scope note")}
 						</span>
 					}
 					extra={

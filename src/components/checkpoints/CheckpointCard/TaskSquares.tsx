@@ -44,7 +44,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 								)}
 								<span className={styles.tipMuted}>
 									{item.cut
-										? t("checkpoints.card.taskCut", "Cut on day 14")
+										? t("checkpoints.card.taskCut", "Cut on day 15")
 										: item.artifact
 											? t("checkpoints.card.taskEvidence", "Evidence: {name}", {
 													name:
@@ -88,7 +88,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 						<Flex gap={6} align="center">
 							<span className={styles.legendDot} />
 							<Typography.Text className={styles.muted}>
-								{t("checkpoints.card.legendReworded", "Reworded on day 14")}
+								{t("checkpoints.card.legendReworded", "Reworded on day 15")}
 							</Typography.Text>
 						</Flex>
 					)}
@@ -104,7 +104,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 								<IconMinus size={8} stroke={2} />
 							</span>
 							<Typography.Text className={styles.muted}>
-								{t("checkpoints.card.legendCut", "Cut on day 14 · not counted")}
+								{t("checkpoints.card.legendCut", "Cut on day 15 · not counted")}
 							</Typography.Text>
 						</Flex>
 					)}
