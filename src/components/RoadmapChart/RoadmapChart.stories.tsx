@@ -34,6 +34,14 @@ type Story = StoryObj<typeof RoadmapChart>;
 export const MidRoad: Story = {
 	args: {
 		workflow: { projectId: "p1", steps: STEPS, currentStep: STEPS[3] },
+		sprint: true,
+	},
+};
+
+/** No checkpoint running: nothing striped, the marker at the start of the stage. */
+export const NoCheckpoint: Story = {
+	args: {
+		workflow: { projectId: "p1", steps: STEPS, currentStep: STEPS[3] },
 	},
 };
 
@@ -41,6 +49,7 @@ export const MidRoad: Story = {
 export const FirstStage: Story = {
 	args: {
 		workflow: { projectId: "p1", steps: STEPS, currentStep: STEPS[1] },
+		sprint: true,
 	},
 };
 
@@ -48,5 +57,6 @@ export const FirstStage: Story = {
 export const LastStage: Story = {
 	args: {
 		workflow: { projectId: "p1", steps: STEPS, currentStep: STEPS[5] },
+		sprint: true,
 	},
 };

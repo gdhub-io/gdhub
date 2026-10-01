@@ -39,9 +39,12 @@ export type RoadmapWorkflow = {
 export const RoadmapChart = ({
 	workflow,
 	editable = false,
+	sprint = false,
 }: {
 	workflow: RoadmapWorkflow;
 	editable?: boolean;
+	/** A checkpoint is running: its sprint is striped over the stage. Without one the marker stands at the stage's start. */
+	sprint?: boolean;
 }) => {
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
@@ -49,7 +52,7 @@ export const RoadmapChart = ({
 	const roadmapRef = useRef<HTMLDivElement>(null);
 	const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 	// Percent of the road: where the current stage starts, and where its sprint
-	// — the first half of it — ends.
+	// — the first half of it, when a checkpoint is running — ends.
 	const [progress, setProgress] = useState({ done: 0, sprint: 0 });
 	const steps = useMemo(
 		() => workflow.steps.slice(1).slice(0, -1),
@@ -138,9 +141,9 @@ export const RoadmapChart = ({
 
 		setProgress({
 			done: percent(start),
-			sprint: percent(start + (end - start) / 2),
+			sprint: percent(sprint ? start + (end - start) / 2 : start),
 		});
-	}, [workflow.currentStep, screenSteps]);
+	}, [workflow.currentStep, screenSteps, sprint]);
 
 	useEffect(() => {
 		calculateProgress();

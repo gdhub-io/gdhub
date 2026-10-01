@@ -23,9 +23,11 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { CheckpointWidget } from "@/components/checkpoints/CheckpointWidget";
 import { useCheckpointTasks } from "@/components/checkpoints/CheckpointWidget/useCheckpointTasks";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { capitalize } from "@/helpers/text";
+import { useCheckpoints } from "@/hooks/checkpoints";
 import { RoadmapChart } from "../RoadmapChart";
 import styles from "./style.module.scss";
 import WorkflowStepContent from "./WorkflowStepContent";
@@ -91,6 +93,10 @@ const WorkflowContent = ({
 	// Editing the workflow is a permission, and an archived project has it
 	// revoked server-side — no separate archive check needed here.
 	const isAuthor = can("project.workflow.edit");
+	// The same read the checkpoint widget makes, so it costs no second request.
+	const { data: checkpoints } = useCheckpoints(
+		can("project.checkpoints.view") ? projectId : undefined,
+	);
 	const isProjectArchived =
 		!projectContext || !!projectContext.isProjectArchived;
 
@@ -227,7 +233,11 @@ const WorkflowContent = ({
 		<div className={styles.container}>
 			<Space orientation="vertical" style={{ width: "100%" }}>
 				{!isIntroductionStep && !isCompletionStep && (
-					<RoadmapChart workflow={workflow} editable={isAuthor} />
+					<RoadmapChart
+						workflow={workflow}
+						editable={isAuthor}
+						sprint={checkpoints?.current?.status === CheckpointStatus.Active}
+					/>
 				)}
 
 				<Row gutter={[32, 32]}>
