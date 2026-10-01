@@ -2,6 +2,7 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Tag } from "antd";
+import { useParams } from "next/navigation";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCurator } from "./CheckpointCard/Curator";
@@ -18,6 +19,7 @@ import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
  */
 export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 	const { t } = useTranslate();
+	const params = useParams<{ slug?: string }>();
 
 	if (!checkpoint) return {};
 
@@ -66,6 +68,8 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 			</>
 		),
 		description: [dates, day].filter(Boolean).join(" · "),
-		actions: !preparing && <CheckpointCurator checkpoint={checkpoint} />,
+		actions: !preparing && (
+			<CheckpointCurator checkpoint={checkpoint} projectSlug={params?.slug} />
+		),
 	};
 };

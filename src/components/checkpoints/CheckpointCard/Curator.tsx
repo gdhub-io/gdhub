@@ -7,19 +7,30 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Tooltip, Typography } from "antd";
+import Link from "next/link";
+import { useAccess } from "@/components/access/AccessProvider";
 import { useChat } from "@/components/Chat/useChat";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { opensRoom } from "@/lib/checkpoint-room";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 /** Who curates the checkpoint and the two ways to reach them — the card's right side, and the page header's. */
 export function CheckpointCurator({
 	checkpoint,
+	projectSlug,
 }: {
-	checkpoint: Pick<CheckpointDto, "curatorKind" | "curator">;
+	checkpoint: Pick<CheckpointDto, "status" | "curatorKind" | "curator">;
+	/** The project whose room the call button opens. */
+	projectSlug?: string;
 }) {
 	const { t } = useTranslate();
+	const { can } = useAccess();
+	// No room, no button: an AI curator, a checkpoint not running, or the
+	// curator's own pages outside the project space.
+	const roomOpen =
+		!!projectSlug && can("project.room.use") && opensRoom(checkpoint);
 	const { setOpenChatModal } = useChat();
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
@@ -55,14 +66,16 @@ export function CheckpointCurator({
 				)}
 			</Flex>
 			<Divider orientation="vertical" className={styles.divider} />
-			{/* No checkpoint room yet: chat opens the messenger itself, the call page is still to come. */}
-			<Tooltip title={t("checkpoints.card.soon", "Coming soon")}>
-				<Button
-					disabled
-					icon={<IconVideo size={18} stroke={1.6} />}
-					aria-label={t("checkpoints.card.call", "Call curator")}
-				/>
-			</Tooltip>
+			{roomOpen && (
+				<Tooltip title={t("checkpoints.card.room", "Open the room")}>
+					<Link href={`/user/project/${projectSlug}/room`}>
+						<Button
+							icon={<IconVideo size={18} stroke={1.6} />}
+							aria-label={t("checkpoints.card.room", "Open the room")}
+						/>
+					</Link>
+				</Tooltip>
+			)}
 			<Tooltip title={t("checkpoints.card.chat", "Chat with curator")}>
 				<Button
 					icon={<IconMessageCircle size={18} stroke={1.6} />}

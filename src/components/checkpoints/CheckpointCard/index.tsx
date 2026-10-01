@@ -1,8 +1,8 @@
 "use client";
 
-import { IconFlag } from "@tabler/icons-react";
+import { IconArrowRight, IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Tag, Typography } from "antd";
+import { Button, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -15,7 +15,7 @@ import { TaskSquares } from "./TaskSquares";
 export type CheckpointCardProps = {
 	checkpoint: CheckpointDto;
 	projectSlug: string;
-	/** Where the title leads. Defaults to the author's page inside the project. */
+	/** Where the button leads. Defaults to the author's page inside the project. */
 	href?: string;
 };
 
@@ -54,17 +54,11 @@ export function CheckpointCard({
 			<Flex justify="space-between" align="center" gap={24} wrap>
 				<Flex vertical gap={6} className={styles.identity}>
 					<Flex gap={10} align="center" wrap>
-						<Link
-							href={
-								href ??
-								`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`
-							}
-							className={styles.title}
-						>
+						<Typography.Text className={styles.title}>
 							{t("checkpoints.number", "Checkpoint {number}", {
 								number: checkpoint.order,
 							})}
-						</Link>
+						</Typography.Text>
 						<Tag variant="filled">{checkpoint.stageName}</Tag>
 						{!running && <CheckpointStatusSlot checkpoint={checkpoint} />}
 					</Flex>
@@ -73,7 +67,7 @@ export function CheckpointCard({
 					</Typography.Text>
 				</Flex>
 
-				<CheckpointCurator checkpoint={checkpoint} />
+				<CheckpointCurator checkpoint={checkpoint} projectSlug={projectSlug} />
 			</Flex>
 
 			{!!checkpoint.sprints?.length && (
@@ -95,6 +89,21 @@ export function CheckpointCard({
 			</Flex>
 
 			{outcomes.length > 0 && <TaskSquares items={outcomes} />}
+
+			<Flex justify="flex-end">
+				<Link
+					href={
+						href ?? `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`
+					}
+				>
+					<Button
+						icon={<IconArrowRight size={18} stroke={1.6} />}
+						iconPlacement="end"
+					>
+						{t("checkpoints.open", "Open checkpoint")}
+					</Button>
+				</Link>
+			</Flex>
 		</section>
 	);
 }
