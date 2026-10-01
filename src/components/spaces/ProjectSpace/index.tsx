@@ -97,36 +97,6 @@ export const ProjectSpace = ({
 					</Link>
 				),
 			},
-			{
-				key: `/user/project/${projectSlug}/devlog`,
-				label: (
-					<Link href={`/user/project/${projectSlug}/devlog`}>
-						{t("app.user-project.menu.overview", "Devlog")}
-					</Link>
-				),
-			},
-			// Shown to whoever may open it, rather than shown greyed out: a tab you
-			// can see but never use is a promise the space does not keep.
-			...(can("project.vacancies.manage")
-				? [
-						{
-							key: `/user/project/${projectSlug}/open-positions`,
-							label: (
-								<Link href={`/user/project/${projectSlug}/open-positions`}>
-									{t("app.user-project.menu.open-positions", "Open positions")}
-								</Link>
-							),
-						},
-					]
-				: []),
-			{
-				key: `/user/project/${projectSlug}/team`,
-				label: (
-					<Link href={`/user/project/${projectSlug}/team`}>
-						{t("app.user-project.menu.team", "Team")}
-					</Link>
-				),
-			},
 			...(can("project.checkpoints.view")
 				? [
 						{
@@ -147,6 +117,36 @@ export const ProjectSpace = ({
 					</Link>
 				),
 			},
+			{
+				key: `/user/project/${projectSlug}/devlog`,
+				label: (
+					<Link href={`/user/project/${projectSlug}/devlog`}>
+						{t("app.user-project.menu.overview", "Devlog")}
+					</Link>
+				),
+			},
+			{
+				key: `/user/project/${projectSlug}/team`,
+				label: (
+					<Link href={`/user/project/${projectSlug}/team`}>
+						{t("app.user-project.menu.team", "Team")}
+					</Link>
+				),
+			},
+			// Shown to whoever may open it, rather than shown greyed out: a tab you
+			// can see but never use is a promise the space does not keep.
+			...(can("project.vacancies.manage")
+				? [
+						{
+							key: `/user/project/${projectSlug}/open-positions`,
+							label: (
+								<Link href={`/user/project/${projectSlug}/open-positions`}>
+									{t("app.user-project.menu.open-positions", "Open positions")}
+								</Link>
+							),
+						},
+					]
+				: []),
 			...(can("project.info.edit")
 				? [
 						{
