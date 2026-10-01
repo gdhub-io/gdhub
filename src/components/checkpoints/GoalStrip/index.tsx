@@ -13,8 +13,8 @@ export type GoalStripProps = {
  * The goal on one quiet row, above everything a sprint asks.
  *
  * It repeats on every sprint on purpose — it is what the 28 days are judged
- * against, and a sprint is where an author forgets it. It is deliberately absent
- * from Inputs, where the outcome list is already the subject.
+ * against, and a sprint is where an author forgets it. On Inputs it is written
+ * out in full instead, above the list that spells it out.
  */
 export function GoalStrip({ goal }: GoalStripProps) {
 	const { t } = useTranslate();

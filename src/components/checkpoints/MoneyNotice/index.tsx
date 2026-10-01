@@ -17,6 +17,8 @@ export type MoneyNoticeProps = {
 	 * knows that — from its own URL — and it is not a state of the checkpoint.
 	 */
 	starting?: boolean;
+	/** A line of text and a link, for the record under a page — not the block. */
+	plain?: boolean;
 };
 
 /**
@@ -27,7 +29,7 @@ export type MoneyNoticeProps = {
  * to the author's money, which is why it lives here rather than being redrawn
  * wherever a page needs to mention it.
  */
-export function MoneyNotice({ checkpoint, starting }: MoneyNoticeProps) {
+export function MoneyNotice({ checkpoint, starting, plain }: MoneyNoticeProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [fetching, setFetching] = useState(false);
@@ -84,6 +86,28 @@ export function MoneyNotice({ checkpoint, starting }: MoneyNoticeProps) {
 						: t("checkpoints.paid.received", "Payment received"),
 			};
 
+	// A receipt exists once the money has moved; a reservation and a released
+	// hold have nothing to show for themselves.
+	const hasReceipt = !!checkpoint.paymentId && !held && !declined;
+
+	if (plain) {
+		return (
+			<Flex gap={8} align="center">
+				<Typography.Text type="secondary">{money.title}</Typography.Text>
+				{hasReceipt && (
+					<Button
+						type="link"
+						size="small"
+						loading={fetching}
+						onClick={openReceipt}
+					>
+						{t("checkpoints.paid.receipt", "Receipt")}
+					</Button>
+				)}
+			</Flex>
+		);
+	}
+
 	return (
 		<Card className={styles.block} data-tone={money.tone}>
 			<Flex gap={8} align="center">
@@ -99,9 +123,7 @@ export function MoneyNotice({ checkpoint, starting }: MoneyNoticeProps) {
 					</Typography.Text>
 				</Flex>
 
-				{/* A receipt exists once the money has moved; a reservation and a
-				    released hold have nothing to show for themselves. */}
-				{checkpoint.paymentId && !held && !declined && (
+				{hasReceipt && (
 					<Button
 						icon={<IconReceipt size={16} stroke={1.6} />}
 						loading={fetching}

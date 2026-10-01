@@ -8,6 +8,19 @@
 	font-feature-settings: "tnum";
 }
 
+.goal {
+	margin: 0 !important;
+	padding: var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-subtle);
+	font-size: var(--gd-font-size-body-lg);
+	line-height: var(--gd-line-height-body);
+}
+
+.number {
+	flex: none;
+	font-feature-settings: "tnum";
+}
+
 .rows {
 	display: flex;
 	flex-direction: column;

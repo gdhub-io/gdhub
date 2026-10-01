@@ -18,8 +18,8 @@ export type InputsPanelProps = {
  * frames `Checkpoint — Page · Inputs, and the Checkpoint step`.
  *
  * The same step is the purchase before it is paid for; from here it is the
- * record. The goal itself is not repeated: it sits on every sprint's Status,
- * and here the list is already the subject.
+ * record: what there was, the goal with the list that spells it out, and —
+ * last, as a line — that it was paid for.
  */
 export function InputsPanel({ checkpoint }: InputsPanelProps) {
 	const { t } = useTranslate();
@@ -32,6 +32,9 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 		meta: string,
 		items: CheckpointItemDto[],
 		empty: string,
+		// The goal, and under it the list that spells it out — numbered, so the
+		// two read as one sentence and its parts.
+		goal?: string,
 	) => (
 		<Card
 			size="small"
@@ -43,10 +46,20 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 				</Typography.Text>
 			}
 		>
+			{!!goal && (
+				<Typography.Paragraph className={styles.goal}>
+					{goal}
+				</Typography.Paragraph>
+			)}
 			{items.length ? (
 				<div className={styles.rows}>
-					{items.map((item) => (
+					{items.map((item, index) => (
 						<Flex key={item.id} gap={12} align="center" className={styles.row}>
+							{!!goal && (
+								<Typography.Text type="secondary" className={styles.number}>
+									{index + 1}.
+								</Typography.Text>
+							)}
 							<Typography.Text
 								className={styles.text}
 								delete={item.cut}
@@ -71,8 +84,6 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 
 	return (
 		<Flex vertical gap={16}>
-			<MoneyNotice checkpoint={checkpoint} />
-
 			{card(
 				t("checkpoints.inputs.existed", "What existed on day 1"),
 				checkpoint.startedAt
@@ -83,27 +94,27 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 			)}
 
 			{card(
-				t("checkpoints.outcomes.title", "Outcomes"),
+				t("checkpoints.goal.label", "Goal"),
 				t("checkpoints.goal.claimed", "{claimed} of {owed} outcomes claimed", {
 					claimed,
 					owed: outcomes.filter((item) => !item.cut).length,
 				}),
 				outcomes,
 				t("checkpoints.goal.sideEmpty", "Nothing listed"),
+				checkpoint.goal,
 			)}
 
-			<Typography.Text type="secondary" className={styles.note}>
-				{checkpoint.goalAgreedAt
-					? t(
-							"checkpoints.inputs.agreed",
-							"Agreed with the curator on {date}. From then it is what the verdict is written against.",
-							{ date: dayjs(checkpoint.goalAgreedAt).format("D MMM") },
-						)
-					: t(
-							"checkpoints.outcomes.draftNote",
-							"Editable until the goal call, then locked for the cycle.",
-						)}
-			</Typography.Text>
+			{!!checkpoint.goalAgreedAt && (
+				<Typography.Text type="secondary" className={styles.note}>
+					{t(
+						"checkpoints.inputs.agreed",
+						"Agreed with the curator on {date}. From then it is what the verdict is written against.",
+						{ date: dayjs(checkpoint.goalAgreedAt).format("D MMM") },
+					)}
+				</Typography.Text>
+			)}
+
+			<MoneyNotice checkpoint={checkpoint} plain />
 		</Flex>
 	);
 }
