@@ -1001,7 +1001,6 @@ UI перестаёт решать вопросы доступа.
 | `/user/project/[slug]/devlog` | member¹ | `project.devlog.view`; создание — `project.devlog.create`, публикация — `project.devlog.publish` (admin) |
 | `/user/project/[slug]/team` | member | `project.members.view`; приглашение/исключение — `project.members.invite` / `.remove` (admin) |
 | `/user/project/[slug]/open-positions` | admin | `project.vacancies.manage`, отбор кандидатов — `project.vacancies.review` |
-| `/user/project/[slug]/room` | member | `project.room.use` — войти и подключиться к идущему звонку; `project.room.manage` — начать звонок, право куратора, в команде его нет ни у кого Вкладка и страница существуют только при активном чекпоинте с куратором-человеком (заглушка: видеосвязь запланирована) |
 | `/user/project/[slug]/artifacts` | member | `project.artifacts.view`; загрузка — `project.artifacts.manage` (admin) |
 | `/user/project/[slug]/settings/[[...item]]` | admin | `project.info.edit` |
 | └ `settings/danger` | **owner** | `project.lifecycle.archive` / `.delete` |

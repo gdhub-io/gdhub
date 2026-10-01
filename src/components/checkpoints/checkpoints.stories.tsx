@@ -26,6 +26,7 @@ import { InputsPanel } from "./InputsPanel";
 import { PaidPanel } from "./PaidPanel";
 import { Evidence } from "./SprintPanel/Evidence";
 import { Review } from "./SprintPanel/Review";
+import { Room } from "./SprintPanel/Room";
 import { Signals } from "./SprintPanel/Signals";
 import { VerdictChip } from "./VerdictChip";
 
@@ -596,12 +597,16 @@ export const SprintReview: StoryObj = {
 };
 
 export const SprintReviewEmpty: StoryObj = {
-	render: () => (
-		<Review
-			facts={sprintFactsOf(withItems, sprints[1])}
-			curatorKind={withItems.curatorKind}
-		/>
-	),
+	render: () => <Review facts={sprintFactsOf(withItems, sprints[1])} />,
+};
+
+/** A person curates: the call's placeholder, with the notes of it underneath. */
+export const SprintRoom: StoryObj = {
+	render: () => <Room facts={sprintFactsOf(reviewed, sprints[1])} />,
+};
+
+export const SprintRoomEmpty: StoryObj = {
+	render: () => <Room facts={sprintFactsOf(withItems, sprints[1])} />,
 };
 
 /** The three states of the tab before there is anything to read — frames `zAqpb`, `O0tgre`, `J0pS4h`. */

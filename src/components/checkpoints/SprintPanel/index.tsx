@@ -2,15 +2,17 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Tabs } from "antd";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { Evidence } from "./Evidence";
 import { Review } from "./Review";
+import { Room } from "./Room";
 import { Signals } from "./Signals";
 import { Status } from "./Status";
 import styles from "./style.module.scss";
 
-export type SprintTab = "status" | "signals" | "evidence" | "review";
+export type SprintTab = "status" | "signals" | "evidence" | "review" | "room";
 
 export type SprintPanelProps = {
 	checkpoint: CheckpointDto;
@@ -24,7 +26,7 @@ export type SprintPanelProps = {
 };
 
 /**
- * One sprint, four tabs — frame `Checkpoint — Page · Signals, Evidence, Review`.
+ * One sprint, four tabs, the last of them the curator's — frame `Checkpoint — Page · Signals, Evidence, Review`.
  *
  * The counts live on the tabs so no panel below has to restate them, and the
  * sprint's dates are not repeated here at all: they are in the sidebar.
@@ -46,9 +48,41 @@ export function SprintPanel({
 		</span>
 	);
 
+	// A person's review is what was said on the call, so the call and its notes
+	// share a tab; an AI holds no calls and keeps the written review.
+	const last =
+		checkpoint.curatorKind === CheckpointCuratorKind.Human
+			? {
+					key: "room",
+					label: label(t("checkpoints.sprintTab.room", "Room")),
+					children: (
+						<Room
+							facts={facts}
+							checkpointId={checkpoint.id}
+							writable={writable}
+						/>
+					),
+				}
+			: {
+					key: "review",
+					label: label(t("checkpoints.sprintTab.review", "Review")),
+					children: (
+						<Review
+							facts={facts}
+							checkpointId={checkpoint.id}
+							writable={writable}
+						/>
+					),
+				};
+
 	return (
 		<Tabs
-			activeKey={tab}
+			// A link to the other curator's tab opens the sprint, not a blank panel.
+			activeKey={
+				(tab === "room" || tab === "review") && tab !== last.key
+					? "status"
+					: tab
+			}
 			onChange={(key) => onTab(key as SprintTab)}
 			items={[
 				{
@@ -76,18 +110,7 @@ export function SprintPanel({
 					),
 					children: <Evidence checkpoint={checkpoint} facts={facts} />,
 				},
-				{
-					key: "review",
-					label: label(t("checkpoints.sprintTab.review", "Review")),
-					children: (
-						<Review
-							facts={facts}
-							curatorKind={checkpoint.curatorKind}
-							checkpointId={checkpoint.id}
-							writable={writable}
-						/>
-					),
-				},
+				last,
 			]}
 		/>
 	);

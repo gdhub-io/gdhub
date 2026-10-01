@@ -21,8 +21,8 @@ export function CheckpointCurator({
 	checkpoint,
 	projectSlug,
 }: {
-	checkpoint: Pick<CheckpointDto, "status" | "curatorKind" | "curator">;
-	/** The project whose room the call button opens. */
+	checkpoint: Pick<CheckpointDto, "id" | "status" | "curatorKind" | "curator">;
+	/** The project the checkpoint is opened in; the call button leads to its room tab. */
 	projectSlug?: string;
 }) {
 	const { t } = useTranslate();
@@ -68,7 +68,9 @@ export function CheckpointCurator({
 			<Divider orientation="vertical" className={styles.divider} />
 			{roomOpen && (
 				<Tooltip title={t("checkpoints.card.room", "Open the room")}>
-					<Link href={`/user/project/${projectSlug}/room`}>
+					<Link
+						href={`/user/project/${projectSlug}/checkpoints/${checkpoint.id}?tab=room`}
+					>
 						<Button
 							icon={<IconVideo size={18} stroke={1.6} />}
 							aria-label={t("checkpoints.card.room", "Open the room")}

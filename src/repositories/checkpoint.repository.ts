@@ -10,7 +10,6 @@ import {
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
 import { authorNextStep } from "@/lib/checkpoint-plan";
-import { opensRoom } from "@/lib/checkpoint-room";
 import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
 	currentSprint,
@@ -474,17 +473,6 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 				.map((item) => ({ cut: item.cut, hasArtifact: !!item.artifact })),
 		}),
 	};
-};
-
-/** Whether the project's room is open right now — the rule is `opensRoom`. */
-export const projectHasRoom = async (projectSlug: string) => {
-	const current = await prisma.projectCheckpoint.findFirst({
-		where: { project: { slug: projectSlug }, status: { in: OPEN_STATUSES } },
-		orderBy: { createdAt: "desc" },
-		select: { status: true, curatorKind: true },
-	});
-
-	return opensRoom(current);
 };
 
 /**
