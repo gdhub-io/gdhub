@@ -17,8 +17,10 @@ import {
 } from "@/components/layouts/SpaceHeader";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
+import { useCheckpoints } from "@/hooks/checkpoints";
 import { useCurrentProject } from "@/hooks/project";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { opensRoom } from "@/lib/checkpoint-room";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -90,6 +92,11 @@ export const ProjectSpace = ({
 		title ? `${title} · ${project?.name ?? "Project"}` : project?.name,
 	);
 
+	const { data: checkpoints } = useCheckpoints(
+		can("project.room.use") ? project?.id : undefined,
+	);
+	const roomOpen = opensRoom(checkpoints?.current);
+
 	const spaceHeader: SpaceHeaderConfig = useMemo(() => {
 		const menuItems: (ItemType & { disabled?: boolean })[] = [
 			{
@@ -112,14 +119,18 @@ export const ProjectSpace = ({
 						},
 					]
 				: []),
-			{
-				key: `/user/project/${projectSlug}/room`,
-				label: (
-					<Link href={`/user/project/${projectSlug}/room`}>
-						{t("app.user-project.menu.room", "Room")}
-					</Link>
-				),
-			},
+			...(roomOpen
+				? [
+						{
+							key: `/user/project/${projectSlug}/room`,
+							label: (
+								<Link href={`/user/project/${projectSlug}/room`}>
+									{t("app.user-project.menu.room", "Room")}
+								</Link>
+							),
+						},
+					]
+				: []),
 			{
 				key: `/user/project/${projectSlug}/artifacts`,
 				label: (
@@ -208,7 +219,7 @@ export const ProjectSpace = ({
 					.sort((a, b) => b.length - a.length)[0] ?? pathname,
 			],
 		};
-	}, [projectSlug, can, project?.name, pathname, screens.md, t]);
+	}, [projectSlug, can, roomOpen, project?.name, pathname, screens.md, t]);
 
 	useSetSpaceHeader(spaceHeader);
 

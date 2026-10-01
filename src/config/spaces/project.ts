@@ -13,6 +13,7 @@ export const projectSpace = defineSpace({
 		members: ["view", "invite", "remove"],
 		artifacts: ["view", "manage"],
 		checkpoints: ["view", "create", "manage"],
+		room: ["use", "manage"],
 		workflow: ["view", "edit"],
 		vacancies: ["view", "manage", "review"],
 		equity: ["view", "manage"],
@@ -28,7 +29,12 @@ export const projectSpace = defineSpace({
 		[SpaceRole.Admin]: {
 			"project.checkpoints.create": false,
 			"project.checkpoints.manage": false,
+			"project.room.manage": false,
 		},
+		// Starting a call in the room is the curator's, at the time agreed; the
+		// team joins one that is running and cannot open its own. The curator has
+		// no role in this space yet, so for now nobody holds it.
+		[SpaceRole.Owner]: { "project.room.manage": false },
 		[SpaceRole.Member]: {
 			// A team member sees their own shares, not the whole cap table.
 			"project.equity.view": "own",

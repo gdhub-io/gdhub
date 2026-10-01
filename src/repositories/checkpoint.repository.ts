@@ -10,6 +10,7 @@ import {
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
 import { authorNextStep } from "@/lib/checkpoint-plan";
+import { opensRoom } from "@/lib/checkpoint-room";
 import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
 	currentSprint,
@@ -481,6 +482,17 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
  * A draft does not block — it *is* the attempt in progress, and the list offers
  * it back as `Continue` rather than pretending nothing is there.
  */
+/** Whether the project's room is open right now — the rule is `opensRoom`. */
+export const projectHasRoom = async (projectSlug: string) => {
+	const current = await prisma.projectCheckpoint.findFirst({
+		where: { project: { slug: projectSlug }, status: { in: OPEN_STATUSES } },
+		orderBy: { createdAt: "desc" },
+		select: { status: true, curatorKind: true },
+	});
+
+	return opensRoom(current);
+};
+
 export const getCreationBlocker = async (projectId: string) => {
 	const open = await prisma.projectCheckpoint.findFirst({
 		where: { projectId, status: { in: OPEN_STATUSES } },

@@ -279,7 +279,7 @@ export const projectSpace = defineSpace({
 | Спейс | Features |
 |---|---|
 | `hub` | `talent_pool`, `projects`, `events`, `courses`, `jobs`, `experts`, `chat`, `live_room` |
-| `project` | `info`, `lifecycle`, `members`, `artifacts`, `workflow`, `vacancies`, `equity`, `devlog` |
+| `project` | `info`, `lifecycle`, `members`, `artifacts`, `checkpoints`, `room`, `workflow`, `vacancies`, `equity`, `devlog` |
 | `event` | `info`, `lifecycle`, `members`, `content`, `schedule`, `certificates` |
 | `course` | `info`, `lifecycle`, `curriculum`, `classroom`, `students`, `groups`, `content`, `certificates` |
 | `admin` | `users`, `posts`, `devlog_posts`, `workflow`, `audit_logs` |
@@ -1001,7 +1001,7 @@ UI перестаёт решать вопросы доступа.
 | `/user/project/[slug]/devlog` | member¹ | `project.devlog.view`; создание — `project.devlog.create`, публикация — `project.devlog.publish` (admin) |
 | `/user/project/[slug]/team` | member | `project.members.view`; приглашение/исключение — `project.members.invite` / `.remove` (admin) |
 | `/user/project/[slug]/open-positions` | admin | `project.vacancies.manage`, отбор кандидатов — `project.vacancies.review` |
-| `/user/project/[slug]/room` | member | — (заглушка: видеосвязь с куратором запланирована) |
+| `/user/project/[slug]/room` | member | `project.room.use` — войти и подключиться к идущему звонку; `project.room.manage` — начать звонок, право куратора, в команде его нет ни у кого Вкладка и страница существуют только при активном чекпоинте с куратором-человеком (заглушка: видеосвязь запланирована) |
 | `/user/project/[slug]/artifacts` | member | `project.artifacts.view`; загрузка — `project.artifacts.manage` (admin) |
 | `/user/project/[slug]/settings/[[...item]]` | admin | `project.info.edit` |
 | └ `settings/danger` | **owner** | `project.lifecycle.archive` / `.delete` |
