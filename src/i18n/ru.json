@@ -465,6 +465,7 @@
 		},
 		"user-project": {
 			"menu": {
+				"artifacts": "Артефакты",
 				"documents": "Документы",
 				"open-positions": "Вакансии",
 				"overview": "Дневник разработки",
@@ -480,11 +481,48 @@
 	},
 	"are-you-sure-you-want-to-delete-it": "Точно хотите удалить?",
 	"artifacts": {
+		"add": "Добавить артефакт",
 		"check": {
 			"pending": "Проверка…",
 			"ready": "Готово",
 			"unreachable": "Не удалось открыть",
 			"unsupported": "Сохранено, нечитаемо"
+		},
+		"column": {
+			"addedBy": "Добавил",
+			"description": "Описание",
+			"name": "Название",
+			"updatedAt": "Обновлён"
+		},
+		"deleteConfirm": "Удалить этот артефакт?",
+		"deleted": "Артефакт удалён",
+		"empty": "Ваш первый артефакт появится здесь.",
+		"modal": {
+			"cancel-text": "Отменить",
+			"field": {
+				"description": {
+					"label": "Краткое описание",
+					"placeholder": "Этот артефакт касается..."
+				},
+				"link": {
+					"label": "Ссылка на артефакт",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Название",
+					"placeholder": "Название артефакта"
+				},
+				"type": {
+					"label": "Тип",
+					"placeholder": "Выберите тип артефакта"
+				}
+			},
+			"ok-text": "Добавить",
+			"title": "Добавить артефакт"
+		},
+		"page": {
+			"description": "Сборки проектов, видео, изображения и документы.",
+			"title": "Артефакты"
 		},
 		"type": {
 			"art": "Искусство",

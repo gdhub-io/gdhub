@@ -465,6 +465,7 @@
 		},
 		"user-project": {
 			"menu": {
+				"artifacts": "Artifacts",
 				"documents": "Documents",
 				"open-positions": "Open positions",
 				"overview": "Devlog",
@@ -480,11 +481,48 @@
 	},
 	"are-you-sure-you-want-to-delete-it": "Are you sure you want to delete it?",
 	"artifacts": {
+		"add": "Add artifact",
 		"check": {
 			"pending": "Checking…",
 			"ready": "Ready",
 			"unreachable": "Cannot be opened",
 			"unsupported": "Saved, not readable"
+		},
+		"column": {
+			"addedBy": "Added by",
+			"description": "Description",
+			"name": "Title",
+			"updatedAt": "Updated At"
+		},
+		"deleteConfirm": "Delete this artifact?",
+		"deleted": "Artifact deleted",
+		"empty": "Your first artifact will appear here.",
+		"modal": {
+			"cancel-text": "Cancel",
+			"field": {
+				"description": {
+					"label": "Short Description",
+					"placeholder": "This artifact is about..."
+				},
+				"link": {
+					"label": "Link to artifact",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Title",
+					"placeholder": "Artifact title"
+				},
+				"type": {
+					"label": "Type",
+					"placeholder": "Select artifact type"
+				}
+			},
+			"ok-text": "Add",
+			"title": "Add artifact"
+		},
+		"page": {
+			"description": "Project builds, videos, images and documents.",
+			"title": "Artifacts"
 		},
 		"type": {
 			"art": "Art",

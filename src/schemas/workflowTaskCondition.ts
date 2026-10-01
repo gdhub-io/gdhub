@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
 	AdviceRequestStatus,
 	ApplauseActivityType,
-	TeamDocumentType,
+	ProjectArtifactType,
 	TeamMemberStatus,
 	TeamVacancyStatus,
 } from "@/config/prisma-enums";
@@ -83,11 +83,11 @@ const InvestorsCondition = z.object({
 	min: minCount,
 });
 
-/** Done when the team has at least `min` documents (optionally by type). */
-const DocumentsCondition = z.object({
-	source: z.literal("documents"),
+/** Done when the project has at least `min` artifacts (optionally by type). */
+const ArtifactsCondition = z.object({
+	source: z.literal("artifacts"),
 	min: minCount,
-	type: z.nativeEnum(TeamDocumentType).optional(),
+	type: z.nativeEnum(ProjectArtifactType).optional(),
 });
 
 /** Done when the project has at least `min` advice requests (optionally by status). */
@@ -128,7 +128,7 @@ export const WorkflowTaskConditionSchema = z.discriminatedUnion("source", [
 	VacanciesCondition,
 	TeamMembersCondition,
 	InvestorsCondition,
-	DocumentsCondition,
+	ArtifactsCondition,
 	AdviceRequestsCondition,
 	EstimationsCondition,
 	EquityAllocationsCondition,
@@ -221,15 +221,15 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 		filters: [],
 	},
 	{
-		source: "documents",
-		label: "Documents",
+		source: "artifacts",
+		label: "Artifacts",
 		hasMin: true,
-		noun: ["document", "documents"],
+		noun: ["artifact", "artifacts"],
 		filters: [
 			{
 				key: "type",
 				label: "Type",
-				options: enumOptions(TeamDocumentType),
+				options: enumOptions(ProjectArtifactType),
 			},
 		],
 	},

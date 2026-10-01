@@ -5,34 +5,34 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Form, Input, Modal, message, Select, Spin } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
-import { TeamDocumentType } from "@/config/prisma-enums";
+import { ProjectArtifactType } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 
-const CreateDocumentModal = ({
+const CreateArtifactModal = ({
 	open,
 	onCreate = () => {},
 	onCancel = () => {},
-	teamId,
+	projectId,
 }: any) => {
 	const [form] = Form.useForm();
-	const selectedDocumentType = Form.useWatch("type", form);
+	const selectedArtifactType = Form.useWatch("type", form);
 	const { t } = useTranslate();
 
 	const {
-		mutateAsync: createDocument,
-		error: createDocumentError,
+		mutateAsync: createArtifact,
+		error: createArtifactError,
 		isPending: isCreateProcessing,
 	} = useMutation({
 		mutationFn: (data) =>
-			axios.post<Project>("/api/user/project/documents", data),
+			axios.post<Project>("/api/user/project/artifacts", data),
 	});
 
 	useEffect(() => {
-		const error = createDocumentError as any;
+		const error = createArtifactError as any;
 		if (error?.response?.data?.message) {
 			message.error(error.response?.data?.message);
 		}
-	}, [createDocumentError]);
+	}, [createArtifactError]);
 
 	const handleOk = async () => {
 		let data: any;
@@ -48,10 +48,10 @@ const CreateDocumentModal = ({
 
 		if (!data) return;
 
-		const document = await createDocument({ ...data, teamId });
-		gtmEventTrigger("document_create", {
-			projectId: document.data.id,
-			name: document.data.name,
+		const artifact = await createArtifact({ ...data, projectId });
+		gtmEventTrigger("artifact_create", {
+			projectId: artifact.data.id,
+			name: artifact.data.name,
 		});
 
 		form.resetFields();
@@ -64,15 +64,15 @@ const CreateDocumentModal = ({
 		onCancel();
 	};
 
-	const renderDocumentType = (type: string) => {
+	const defaultNameForType = (type: string) => {
 		switch (type) {
-			case TeamDocumentType.JDA:
+			case ProjectArtifactType.JDA:
 				return "Joint Development Agreement";
-			case TeamDocumentType.Concept:
+			case ProjectArtifactType.Concept:
 				return "Concept Document";
-			case TeamDocumentType.GDD:
+			case ProjectArtifactType.GDD:
 				return "Game Design Document";
-			case TeamDocumentType.NDA:
+			case ProjectArtifactType.NDA:
 				return "NDA";
 			default:
 				return "Other";
@@ -80,12 +80,12 @@ const CreateDocumentModal = ({
 	};
 
 	useEffect(() => {
-		if (selectedDocumentType === TeamDocumentType.Other) {
+		if (selectedArtifactType === ProjectArtifactType.Other) {
 			form.setFieldsValue({ name: "" });
-		} else if (selectedDocumentType) {
-			form.setFieldsValue({ name: renderDocumentType(selectedDocumentType) });
+		} else if (selectedArtifactType) {
+			form.setFieldsValue({ name: defaultNameForType(selectedArtifactType) });
 		}
-	}, [selectedDocumentType]);
+	}, [selectedArtifactType]);
 
 	return (
 		<Modal
@@ -93,13 +93,13 @@ const CreateDocumentModal = ({
 			title={
 				<Flex align="center" gap={8}>
 					<IconFile size={32} />
-					{t("modal.create-document.title", "Add new team document")}
+					{t("artifacts.modal.title", "Add artifact")}
 				</Flex>
 			}
 			width={640}
 			mask={{ closable: false }}
-			okText={t("modal.create-document.ok-text", "Add")}
-			cancelText={t("modal.create-document.cancel-text", "Cancel")}
+			okText={t("artifacts.modal.ok-text", "Add")}
+			cancelText={t("artifacts.modal.cancel-text", "Cancel")}
 			open={open}
 			onOk={handleOk}
 			onCancel={handleCancel}
@@ -118,65 +118,62 @@ const CreateDocumentModal = ({
 					initialValues={{ agree: false }}
 				>
 					<Form.Item
-						label={t("modal.create-document.field.type.label", "Type")}
+						label={t("artifacts.modal.field.type.label", "Type")}
 						name="type"
 						rules={[{ required: true }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Select
 							placeholder={t(
-								"modal.create-document.field.type.placeholder",
-								"Select document type",
+								"artifacts.modal.field.type.placeholder",
+								"Select artifact type",
 							)}
 							options={[
 								{
 									label: "Joint Development Agreement",
-									value: TeamDocumentType.JDA,
+									value: ProjectArtifactType.JDA,
 								},
 								{
 									label: "Concept Document",
-									value: TeamDocumentType.Concept,
+									value: ProjectArtifactType.Concept,
 								},
 								{
 									label: "Game Design Document",
-									value: TeamDocumentType.GDD,
+									value: ProjectArtifactType.GDD,
 								},
-								{ label: "NDA", value: TeamDocumentType.NDA },
-								{ label: "Other", value: TeamDocumentType.Other },
+								{ label: "NDA", value: ProjectArtifactType.NDA },
+								{ label: "Other", value: ProjectArtifactType.Other },
 							]}
 						/>
 					</Form.Item>
 					<Form.Item
-						label={t("modal.create-document.field.name.label", "Title")}
+						label={t("artifacts.modal.field.name.label", "Title")}
 						name="name"
 						rules={[
 							{
-								required: selectedDocumentType === TeamDocumentType.Other,
+								required: selectedArtifactType === ProjectArtifactType.Other,
 							},
 						]}
 						wrapperCol={{ span: 24 }}
-						hidden={selectedDocumentType !== TeamDocumentType.Other}
+						hidden={selectedArtifactType !== ProjectArtifactType.Other}
 					>
 						<Input
 							placeholder={t(
-								"modal.create-document.field.name.placeholder",
-								"Document title",
+								"artifacts.modal.field.name.placeholder",
+								"Artifact title",
 							)}
 						/>
 					</Form.Item>
 
 					<Form.Item
-						label={t(
-							"modal.create-document.field.link.label",
-							"Link to document",
-						)}
+						label={t("artifacts.modal.field.link.label", "Link to artifact")}
 						name="link"
 						rules={[{ required: true, type: "url" }]}
 						wrapperCol={{ span: 24 }}
 					>
 						<Input
 							placeholder={t(
-								"modal.create-document.field.link.placeholder",
+								"artifacts.modal.field.link.placeholder",
 								"https://example.com/document.pdf",
 							)}
 						/>
@@ -184,7 +181,7 @@ const CreateDocumentModal = ({
 					<Form.Item
 						name="description"
 						label={t(
-							"modal.create-document.field.description.label",
+							"artifacts.modal.field.description.label",
 							"Short Description",
 						)}
 						wrapperCol={{ span: 24 }}
@@ -192,8 +189,8 @@ const CreateDocumentModal = ({
 						<Input.TextArea
 							rows={3}
 							placeholder={t(
-								"modal.create-document.field.description.placeholder",
-								"This document is about...",
+								"artifacts.modal.field.description.placeholder",
+								"This artifact is about...",
 							)}
 						/>
 					</Form.Item>
@@ -203,4 +200,4 @@ const CreateDocumentModal = ({
 	);
 };
 
-export default CreateDocumentModal;
+export default CreateArtifactModal;
