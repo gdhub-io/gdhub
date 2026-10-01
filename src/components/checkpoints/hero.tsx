@@ -45,11 +45,6 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 		!checkpoint.paymentId &&
 		!checkpoint.curatorDeclinedAt;
 
-	// Prepare, whether it is still being filled in or already paid for and
-	// waiting: until the 28 days run, the curator is a choice rather than a fact.
-	const preparing =
-		isDraft || checkpoint.status === CheckpointStatus.AwaitingCurator;
-
 	if (isDraft) {
 		return {
 			title: t("checkpoints.draft.pageTitle", "Checkpoint draft"),
@@ -68,7 +63,9 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 			</>
 		),
 		description: [dates, day].filter(Boolean).join(" · "),
-		actions: !preparing && (
+		// Paid for and waiting: until the 28 days run, the curator is a choice
+		// rather than a fact.
+		actions: checkpoint.status !== CheckpointStatus.AwaitingCurator && (
 			<CheckpointCurator checkpoint={checkpoint} projectSlug={params?.slug} />
 		),
 	};

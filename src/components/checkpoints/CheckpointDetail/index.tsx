@@ -108,10 +108,10 @@ export function CheckpointDetail({
 		(!!asked && /^sprint-[1-4]$/.test(asked));
 	// A sprint that has not begun has nothing on it to read: the path will not
 	// open one, and a link to one lands on the default step instead.
-	const ahead = (key: string) =>
-		sprints.find((sprint) => `sprint-${sprint.number}` === key)?.state ===
+	const ahead =
+		sprints.find((sprint) => `sprint-${sprint.number}` === asked)?.state ===
 		"ahead";
-	const step = started && known && asked && !ahead(asked) ? asked : defaultStep;
+	const step = started && known && asked && !ahead ? asked : defaultStep;
 	const tab = (search?.get("tab") as SprintTab) ?? "status";
 
 	const go = (next: { step?: string; tab?: string }) => {

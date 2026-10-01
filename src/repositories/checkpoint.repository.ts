@@ -476,12 +476,6 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 	};
 };
 
-/**
- * Why a project cannot start another checkpoint, or null when it can.
- *
- * A draft does not block — it *is* the attempt in progress, and the list offers
- * it back as `Continue` rather than pretending nothing is there.
- */
 /** Whether the project's room is open right now — the rule is `opensRoom`. */
 export const projectHasRoom = async (projectSlug: string) => {
 	const current = await prisma.projectCheckpoint.findFirst({
@@ -493,6 +487,12 @@ export const projectHasRoom = async (projectSlug: string) => {
 	return opensRoom(current);
 };
 
+/**
+ * Why a project cannot start another checkpoint, or null when it can.
+ *
+ * A draft does not block — it *is* the attempt in progress, and the list offers
+ * it back as `Continue` rather than pretending nothing is there.
+ */
 export const getCreationBlocker = async (projectId: string) => {
 	const open = await prisma.projectCheckpoint.findFirst({
 		where: { projectId, status: { in: OPEN_STATUSES } },
