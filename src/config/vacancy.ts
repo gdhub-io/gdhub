@@ -8,5 +8,11 @@
  */
 export const LISTING_WINDOW_DAYS = 90;
 
+/**
+ * A listing this short gets no "archived tomorrow" warning: its author set the
+ * end date days ago and only needs to hear that it closed.
+ */
+export const NO_WARNING_LISTING_DAYS = 3;
+
 /** Fallback listing length used when restoring a vacancy whose window has lapsed. */
 export const DEFAULT_FINISH_DAYS = 90;

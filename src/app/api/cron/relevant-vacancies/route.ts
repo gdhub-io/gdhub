@@ -6,11 +6,16 @@ import {
 	type User,
 } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
+import { NO_WARNING_LISTING_DAYS } from "@/config/vacancy";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
+import {
+	vacancyArchived,
+	vacancyArchiveWarning,
+} from "@/services/vacancyExpiryMessages";
 
 const vacancyWithAuthor = {
 	include: {
@@ -55,7 +60,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		const today = dayjs().startOf("day");
 
 		// 1) Warn authors whose listing ends today: the next run archives it.
-		const expiringSoon = (await prisma.teamVacancy.findMany({
+		const endingToday = (await prisma.teamVacancy.findMany({
 			where: {
 				status: TeamVacancyStatus.Published,
 				finishedAt: {
@@ -73,17 +78,20 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			},
 		})) as (VacancyWithAuthor & { _count: { applicants: number } })[];
 
+		const expiringSoon = endingToday.filter(
+			(vacancy) =>
+				dayjs(vacancy.finishedAt).diff(
+					vacancy.publishedAt ?? vacancy.createdAt,
+					"day",
+					true,
+				) > NO_WARNING_LISTING_DAYS,
+		);
+
 		for (const vacancy of expiringSoon) {
-			const pending = vacancy._count.applicants;
-			const action = pending
-				? `update its end date or make a decision on the ${pending} ${pending === 1 ? "candidate" : "candidates"} waiting for your answer`
-				: "update its end date";
-			await notifyAuthor(vacancy, {
-				title: "Vacancy will be archived tomorrow",
-				message:
-					`Your vacancy "${vacancy.title}" will be archived tomorrow and its chats with candidates will be closed. ` +
-					`If the vacancy is still relevant, ${action} — otherwise it will close automatically in 24 hours.`,
-			});
+			await notifyAuthor(
+				vacancy,
+				vacancyArchiveWarning(vacancy.title, vacancy._count.applicants),
+			);
 		}
 
 		// 2) Archive listings that ended before today and notify their authors.
@@ -111,10 +119,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			} catch (error) {
 				console.error("[cron.relevant-vacancies] chat close failed:", error);
 			}
-			await notifyAuthor(vacancy, {
-				title: "Vacancy archived",
-				message: `Your vacancy "${vacancy.title}" has expired and was archived.`,
-			});
+			await notifyAuthor(vacancy, vacancyArchived(vacancy.title));
 		}
 
 		return {
