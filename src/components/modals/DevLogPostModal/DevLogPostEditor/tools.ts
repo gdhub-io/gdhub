@@ -32,6 +32,37 @@ class CustomImageTool extends Image {
 	}
 }
 
+function uploadFailed() {
+	notification.error({
+		message: "Some problem with uploading. Try insert other image.",
+	});
+
+	return { success: 0 as const };
+}
+
+/** Stores a picture and answers in the shape the image tool expects. */
+export async function uploadImage(file: File) {
+	try {
+		const data = new FormData();
+		data.append("file", file);
+
+		const res = await axios.post("/api/file", data);
+
+		return { success: 1 as const, file: { url: res.data.url as string } };
+	} catch (error) {
+		if ((error as AxiosError).response?.status !== 413) return uploadFailed();
+
+		notification.error({
+			message: `Your file too large. Maximum file size is ${env(
+				"NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE",
+				5,
+			)}Mb.`,
+		});
+
+		return { success: 0 as const };
+	}
+}
+
 export const tools: {
 	[toolName: string]: ToolConstructable | ToolSettings;
 } = {
@@ -86,90 +117,17 @@ export const tools: {
 				caption: "optional",
 			},
 			uploader: {
-				async uploadByFile(file: File) {
-					try {
-						const data = new FormData();
-						data.append("file", file);
-
-						const res = await axios.post("/api/file", data);
-
-						return {
-							success: 1,
-							file: {
-								url: res.data.url,
-							},
-						};
-					} catch (error) {
-						const axiosError = error as AxiosError;
-						if (axiosError.response?.status === 413) {
-							notification.error({
-								message: `Your file too large. Maximum file size is ${env(
-									"NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE",
-									5,
-								)}Mb.`,
-							});
-						} else {
-							notification.error({
-								message: "Some problem with uploading. Try insert other image.",
-							});
-						}
-
-						return {
-							success: 0,
-						};
-					}
-				},
+				uploadByFile: uploadImage,
 				async uploadByUrl(url: string) {
-					try {
-						let file: File;
+					// Covers both a pasted link and a base64 image from the clipboard.
+					const blob = await fetch(url)
+						.then((response) => response.blob())
+						.catch(() => null);
+					if (!blob) return uploadFailed();
 
-						// Handle data URLs (base64 images from clipboard)
-						if (url.startsWith("data:")) {
-							const response = await fetch(url);
-							const blob = await response.blob();
-							file = new File([blob], "pasted-image.png", {
-								type: blob.type || "image/png",
-							});
-						} else {
-							// Handle regular URLs - download and upload
-							const response = await fetch(url);
-							const blob = await response.blob();
-							file = new File([blob], "image.png", {
-								type: blob.type || "image/png",
-							});
-						}
-
-						// Use the same upload logic as uploadByFile
-						const data = new FormData();
-						data.append("file", file);
-
-						const res = await axios.post("/api/file", data);
-
-						return {
-							success: 1,
-							file: {
-								url: res.data.url,
-							},
-						};
-					} catch (error) {
-						const axiosError = error as AxiosError;
-						if (axiosError.response?.status === 413) {
-							notification.error({
-								message: `Your file too large. Maximum file size is ${env(
-									"NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE",
-									5,
-								)}Mb.`,
-							});
-						} else {
-							notification.error({
-								message: "Some problem with uploading. Try insert other image.",
-							});
-						}
-
-						return {
-							success: 0,
-						};
-					}
+					return uploadImage(
+						new File([blob], "image.png", { type: blob.type || "image/png" }),
+					);
 				},
 			},
 		},

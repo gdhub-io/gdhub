@@ -1,0 +1,111 @@
+$mobile: 767px;
+// The public post's column (`devlog/[projectReportId]`): full screen shows the
+// text at the width it will be read at.
+$post-column: 800px;
+
+// The dialog as the whole viewport: full screen on desktop, always on a phone.
+@mixin sheet {
+	// antd centres with a full-height inline pseudo-element; a dialog as wide as
+	// the viewport would wrap onto the line below it.
+	:global(.ant-modal-wrap) {
+		overflow: hidden;
+
+		&::before {
+			display: none;
+		}
+	}
+
+	:global(.ant-modal) {
+		display: block;
+		max-width: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	:global(.ant-modal-container) {
+		height: 100dvh;
+		border-radius: 0;
+	}
+
+	:global(.ant-modal-body),
+	.composer {
+		height: 100%;
+	}
+
+	.body {
+		flex: 1;
+		max-height: none;
+	}
+}
+
+.modal :global(.ant-modal-container) {
+	padding: var(--gd-space-6);
+}
+
+.composer {
+	// The author's avatar (40) plus the gap beside it.
+	--composer-gutter: calc(40px + var(--gd-space-3));
+}
+
+.context {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.body {
+	min-height: 240px;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.skeleton {
+	padding-left: var(--composer-gutter);
+}
+
+// The head's own control sits in the corner, not centred on the author.
+.corner {
+	align-self: flex-start;
+}
+
+.chrome,
+.tools :global(.ant-btn:not(:disabled)) {
+	color: var(--gd-color-text-secondary);
+}
+
+.video {
+	width: 320px;
+}
+
+.fullscreen {
+	@include sheet;
+
+	.composer {
+		max-width: calc($post-column + var(--composer-gutter));
+		margin: 0 auto;
+	}
+}
+
+@media (max-width: $mobile) {
+	.modal {
+		@include sheet;
+
+		:global(.ant-modal-container) {
+			padding: var(--gd-space-4);
+		}
+	}
+
+	// A phone has no width to spare for the gutter; EditorJS moves its handle
+	// to the right edge by itself.
+	.composer {
+		--composer-gutter: 0px;
+	}
+
+	.desktopOnly {
+		display: none;
+	}
+}
+
+@media (min-width: #{$mobile + 1px}) {
+	.mobileOnly {
+		display: none;
+	}
+}
