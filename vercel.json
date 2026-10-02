@@ -1,6 +1,10 @@
 {
 	"crons": [
 		{
+			"path": "/api/cron/relevant-vacancies",
+			"schedule": "0 2 * * *"
+		},
+		{
 			"path": "/api/cron/devlog-reminder",
 			"schedule": "0 10 * * *"
 		},
