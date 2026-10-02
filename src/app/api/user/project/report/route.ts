@@ -56,6 +56,7 @@ export const GET = withAuth({ mode: "user" })(
 				author: {
 					select: { id: true, name: true, image: true },
 				},
+				step: { select: { name: true } },
 			},
 		});
 
@@ -77,7 +78,7 @@ export const POST = withAuth({ mode: "user" })(
 			select: { currentStepId: true },
 		});
 
-		await prisma.projectReport.create({
+		await prisma.projectReport.createNumbered({
 			data: {
 				content,
 				contentEditor: contentEditor || Prisma.JsonNull,

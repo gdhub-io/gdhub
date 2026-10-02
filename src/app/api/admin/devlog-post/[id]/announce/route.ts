@@ -45,6 +45,7 @@ const loadPost = (id: string) =>
 			id: true,
 			content: true,
 			contentEditor: true,
+			number: true,
 			isSystem: true,
 			project: { select: { name: true, coverImage: true } },
 		},

@@ -1,31 +1,45 @@
-.postContainer {
-  width: 100%;
-  margin: 0 auto;
-  min-height: 300px;
-  background-color: var(--ant-color-bg-base);
-  border-radius: var(--ant-border-radius);
-  // padding: 24px;
-  // box-shadow: var(--ant-box-shadow);
-  // border: 1px solid var(--ant-color-border);
-  box-sizing: border-box;
-  height: auto;
+.editor {
+	:global(.codex-editor__redactor) {
+		font-size: var(--gd-font-size-body-lg);
+		line-height: 1.5;
+	}
 
-  :global(.codex-editor__redactor) {
-    font-size: 16px !important;
-    min-height: 300px;
-    line-height: 1.6;
-  }
+	:global(h2.ce-header) {
+		font-size: var(--gd-font-size-h3);
+		font-weight: 600;
+	}
 
-  :global(.ce-block__content),
-  :global(.ce-toolbar__content) {
-    max-width: 90% !important;
-  }
+	// The quote tool ships two boxed inputs; a quote here is a bar and its text.
+	:global(.cdx-quote) {
+		margin: 0;
+		padding-left: var(--gd-space-4);
+		border-left: 2px solid var(--gd-color-border-strong);
+	}
 
-  :global(.ce-block) {
-    margin-bottom: 8px;
-  }
+	:global(.cdx-quote__text),
+	:global(.cdx-quote__caption) {
+		min-height: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: none;
+		box-shadow: none;
+	}
 
-  :global(.ce-paragraph) {
-    margin-bottom: 8px;
-  }
+	:global(.cdx-quote__text) {
+		margin-bottom: var(--gd-space-1);
+	}
+
+	:global(.cdx-quote__caption) {
+		font-size: var(--gd-font-size-body-sm);
+		color: var(--gd-color-text-secondary);
+	}
+
+	// The text starts under the author's name; the gutter this leaves on the left
+	// is where EditorJS puts its own "+" and block handle.
+	:global(.ce-block__content),
+	:global(.ce-toolbar__content) {
+		max-width: none;
+		margin: 0 0 0 var(--composer-gutter);
+	}
 }

@@ -17,6 +17,7 @@ import {
 } from "@/helpers/content";
 import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
 import { useFeedViews } from "@/hooks/useContentViews";
+import { useDevlogName } from "@/hooks/useDevlogName";
 import styles from "./style.module.scss";
 
 const { Title, Text, Paragraph } = Typography;
@@ -33,6 +34,7 @@ const getInitials = (title: string): string => {
 
 export const LandingRecentDevlogsSection = () => {
 	const { t } = useTranslate();
+	const devlogName = useDevlogName();
 	const sectionId = useId();
 	const trackView = useFeedViews("ProjectReport");
 
@@ -131,7 +133,11 @@ export const LandingRecentDevlogsSection = () => {
 															size={4}
 															className={styles.projectInfo}
 														>
-															<Text strong>{devlog.project?.name}</Text>
+															<Text strong>
+																{devlog.project?.name}
+																{!!devlog.number &&
+																	` · ${devlogName(devlog.number)}`}
+															</Text>
 															<Text type="secondary">
 																{dayjs(devlog.publishedAt).format(
 																	"MMMM D, YYYY",

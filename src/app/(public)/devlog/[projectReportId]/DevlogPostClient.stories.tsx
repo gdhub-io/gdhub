@@ -8,7 +8,7 @@ import { DevlogPostClient, type Post } from "./DevlogPostClient";
 
 const basePost: Post = {
 	id: "post-1",
-	title: "Prototype build is live",
+	number: 15,
 	content: MARKDOWN_SHOWCASE,
 	coverImage: "/images/new-project.png",
 	createdAt: "2026-07-20T09:00:00.000Z",

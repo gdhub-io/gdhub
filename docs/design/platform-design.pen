@@ -194837,358 +194837,6 @@
     },
     {
       "type": "frame",
-      "id": "YOWK1",
-      "x": 2770,
-      "y": 57351,
-      "name": "Modal — Write the devlog (DevLogPostModal, as built)",
-      "clip": true,
-      "width": 800,
-      "fill": "$surface",
-      "cornerRadius": 16,
-      "stroke": "$card-border",
-      "strokeWidth": 1,
-      "strokeAlignment": "inner",
-      "layout": "vertical",
-      "children": [
-        {
-          "type": "frame",
-          "id": "p8BKKY",
-          "name": "Head",
-          "width": "fill_container",
-          "stroke": "$border",
-          "strokeWidth": {
-            "bottom": 1
-          },
-          "strokeAlignment": "inner",
-          "gap": 12,
-          "padding": [
-            20,
-            24
-          ],
-          "justifyContent": "space_between",
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "frame",
-              "id": "qJNXj",
-              "name": "Title",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 4,
-              "children": [
-                {
-                  "type": "text",
-                  "id": "bJnO2",
-                  "name": "Heading",
-                  "fill": "#1A1917",
-                  "content": "Write the devlog",
-                  "fontFamily": "Onest",
-                  "fontSize": 20,
-                  "fontWeight": "600"
-                },
-                {
-                  "type": "text",
-                  "id": "AdZLJ",
-                  "name": "Context",
-                  "fill": "#76756F",
-                  "content": "Sprint 2 · Day 13 of 28",
-                  "fontFamily": "Onest",
-                  "fontSize": 13,
-                  "fontWeight": "normal"
-                }
-              ]
-            },
-            {
-              "type": "icon",
-              "id": "WgeJA",
-              "name": "X",
-              "width": 20,
-              "height": 20,
-              "icon": "x",
-              "library": "lucide",
-              "fill": "$text-secondary"
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "dldsY",
-          "name": "Body",
-          "width": "fill_container",
-          "layout": "vertical",
-          "gap": 20,
-          "padding": 24,
-          "children": [
-            {
-              "type": "frame",
-              "id": "L8FN5u",
-              "name": "EditorJS",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 14,
-              "padding": [
-                4,
-                40,
-                24,
-                40
-              ],
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "FBnBt",
-                  "name": "Block",
-                  "width": "fill_container",
-                  "gap": 10,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "eLlI9",
-                      "name": "Sp",
-                      "width": 22,
-                      "height": 1
-                    },
-                    {
-                      "type": "text",
-                      "id": "T7sbbh",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Art for state one, and a save bug we cannot reproduce",
-                      "lineHeight": 1.25,
-                      "fontFamily": "$font",
-                      "fontSize": 22,
-                      "fontWeight": "600",
-                      "letterSpacing": -0.3
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "n3TJNZ",
-                  "name": "Block",
-                  "width": "fill_container",
-                  "gap": 10,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "jv8wu",
-                      "name": "Sp",
-                      "width": 22,
-                      "height": 1
-                    },
-                    {
-                      "type": "text",
-                      "id": "Y8MgOi",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "State one has art and it reads. The tide switch keeps the timing from sprint 1.",
-                      "lineHeight": 1.55,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "ezyfr",
-                  "name": "Block",
-                  "width": "fill_container",
-                  "gap": 10,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "u6uFbX",
-                      "name": "Sp",
-                      "width": 22,
-                      "height": 1
-                    },
-                    {
-                      "type": "text",
-                      "id": "w2bfNv",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "•  Tide state one — art in, lighting pass done",
-                      "lineHeight": 1.55,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "QUNZW",
-                  "name": "Block",
-                  "width": "fill_container",
-                  "gap": 10,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "E1CO5k",
-                      "name": "Sp",
-                      "width": 22,
-                      "height": 1
-                    },
-                    {
-                      "type": "text",
-                      "id": "n9VNa",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "•  Save system — corrupts about one run in twenty",
-                      "lineHeight": 1.55,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "fsbhq",
-                  "name": "Block — placeholder",
-                  "width": "fill_container",
-                  "gap": 10,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "WyAAt",
-                      "name": "Add",
-                      "width": 22,
-                      "height": 22,
-                      "cornerRadius": 6,
-                      "stroke": "$border-strong",
-                      "strokeWidth": 1,
-                      "strokeAlignment": "inner",
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "R1gut8",
-                          "name": "Ic",
-                          "width": 13,
-                          "height": 13,
-                          "icon": "plus",
-                          "library": "lucide",
-                          "fill": "$text-tertiary"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "KiI7C",
-                      "name": "L",
-                      "fill": "$text-tertiary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Start typing your post...",
-                      "lineHeight": 1.55,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "mxhcr",
-          "name": "Foot",
-          "width": "fill_container",
-          "stroke": "$border",
-          "strokeWidth": {
-            "top": 1
-          },
-          "strokeAlignment": "inner",
-          "gap": 12,
-          "padding": [
-            16,
-            24
-          ],
-          "justifyContent": "space_between",
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "frame",
-              "id": "K2h82",
-              "name": "A",
-              "gap": 8,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "MpHFE",
-                  "name": "Btn Cancel",
-                  "height": 40,
-                  "fill": "#00000000",
-                  "cornerRadius": 10,
-                  "stroke": "$card-border",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
-                  "padding": [
-                    0,
-                    16
-                  ],
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "LOzDG",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "content": "Cancel",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "EPicu",
-                  "name": "Btn Save",
-                  "height": 40,
-                  "fill": "$btn-black",
-                  "cornerRadius": 10,
-                  "padding": [
-                    0,
-                    16
-                  ],
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "UBPzj",
-                      "name": "L",
-                      "fill": "$text-invert",
-                      "content": "Save",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "frame",
       "id": "n5OePF",
       "x": 2770,
       "y": 57854,
@@ -268044,6 +267692,1850 @@
                   "name": "Label",
                   "fill": "$surface",
                   "content": "Delete",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "IDeWH",
+      "x": 2770,
+      "y": 57351,
+      "name": "Modal — Devlog composer · empty",
+      "clip": true,
+      "width": 720,
+      "fill": "$surface",
+      "cornerRadius": 16,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "kKGeI",
+          "name": "Head",
+          "width": "fill_container",
+          "gap": 12,
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "Hf0pZ",
+              "name": "AppAvatar 40",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "width": 40,
+              "height": 40
+            },
+            {
+              "type": "frame",
+              "id": "E8NrO",
+              "name": "Author",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "AUBKR",
+                  "name": "Name",
+                  "fill": "$text-primary",
+                  "content": "Dzmitry Drynau",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "wSXdE",
+                  "name": "Context",
+                  "fill": "$text-secondary",
+                  "content": "Hollow Tide · Prototyping",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "kovda",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Full screen",
+              "descendants": {
+                "LbcSZ": {
+                  "icon": "maximize-2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kj42o",
+          "name": "EditorJS",
+          "width": "fill_container",
+          "height": 240,
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            0,
+            0,
+            52
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "g0ggde",
+              "name": "Placeholder",
+              "fill": "$text-tertiary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "What moved on the project?",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "p01O6",
+          "name": "Foot",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "XAbbw",
+              "name": "Insert tools",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "yOG2s",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Image",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "image"
+                    }
+                  }
+                },
+                {
+                  "id": "FdK8m",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Video embed",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "video"
+                    }
+                  }
+                },
+                {
+                  "id": "ZVDnI",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Heading",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "NQPrT",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — List",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "list"
+                    }
+                  }
+                },
+                {
+                  "id": "b0B4ve",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Quote",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "quote"
+                    }
+                  }
+                },
+                {
+                  "id": "g7yS8",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — More blocks",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "W3BXV",
+              "name": "Actions",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zVilX",
+                  "name": "Btn Cancel",
+                  "height": 40,
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n9DeSh",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "h0EEu",
+                  "name": "Btn Post (disabled)",
+                  "height": 40,
+                  "fill": "$bg-muted",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "EyDUF",
+                      "name": "L",
+                      "fill": "$text-disabled",
+                      "content": "Post",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "X0HR8",
+      "x": 3570,
+      "y": 57351,
+      "name": "Modal — Devlog composer · with content",
+      "clip": true,
+      "width": 720,
+      "fill": "$surface",
+      "cornerRadius": 16,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "z6Ig3y",
+          "name": "Head",
+          "width": "fill_container",
+          "gap": 12,
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "u9uD4",
+              "name": "AppAvatar 40",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "width": 40,
+              "height": 40
+            },
+            {
+              "type": "frame",
+              "id": "DNXL8",
+              "name": "Author",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kdNU7",
+                  "name": "Name",
+                  "fill": "$text-primary",
+                  "content": "Dzmitry Drynau",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "n6p6N",
+                  "name": "Context",
+                  "fill": "$text-secondary",
+                  "content": "Hollow Tide · Prototyping",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "ZnBl9",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Full screen",
+              "descendants": {
+                "LbcSZ": {
+                  "icon": "maximize-2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "wSU44",
+          "name": "EditorJS",
+          "width": "fill_container",
+          "height": 240,
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            0,
+            0,
+            52
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "b0raG",
+              "name": "Block — heading",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Art for state one, and a save bug we cannot reproduce",
+              "lineHeight": 1.3,
+              "fontFamily": "$font",
+              "fontSize": 20,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "f0rWt",
+              "name": "Block — paragraph",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "State one has art and it reads. The tide switch keeps the timing from checkpoint 1.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "TC1kX",
+              "name": "Block — list item",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "•  Tide state one — art in, lighting pass done",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "X8sAg",
+              "name": "Block — list item",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "•  Save system — corrupts about one run in twenty",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "hGE8w",
+              "name": "Block — quote",
+              "width": "fill_container",
+              "stroke": "$border-strong",
+              "strokeWidth": {
+                "left": 2
+              },
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 4,
+              "padding": [
+                0,
+                0,
+                0,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "W5bB4",
+                  "name": "Quote",
+                  "fill": "$text-primary",
+                  "content": "The switch finally feels like weather, not a button.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "K1CIB9",
+                  "name": "Caption",
+                  "fill": "$text-secondary",
+                  "content": "Tom, playtest",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "RXD9p",
+          "name": "Foot",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "uwCjZ",
+              "name": "Insert tools",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "Idxiy",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Image",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "image"
+                    }
+                  }
+                },
+                {
+                  "id": "ehySQ",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Video embed",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "video"
+                    }
+                  }
+                },
+                {
+                  "id": "muGHr",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Heading",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "vDH65",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — List",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "list"
+                    }
+                  }
+                },
+                {
+                  "id": "WKqpr",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Quote",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "quote"
+                    }
+                  }
+                },
+                {
+                  "id": "Z3vbi",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — More blocks",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YrHSm",
+              "name": "Actions",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "yDZYe",
+                  "name": "Btn Cancel",
+                  "height": 40,
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Eh1tb",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Tumvi",
+                  "name": "Btn Post",
+                  "height": 40,
+                  "fill": "$btn-black",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "WoUq7",
+                      "name": "L",
+                      "fill": "$text-invert",
+                      "content": "Post",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "pGE34",
+      "x": 4370,
+      "y": 57351,
+      "name": "Modal — Devlog composer · edit, loading",
+      "clip": true,
+      "width": 720,
+      "fill": "$surface",
+      "cornerRadius": 16,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "qTB0X",
+          "name": "Head",
+          "width": "fill_container",
+          "gap": 12,
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "KyKMF",
+              "name": "AppAvatar 40",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "width": 40,
+              "height": 40
+            },
+            {
+              "type": "frame",
+              "id": "j8You",
+              "name": "Author",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VI57b",
+                  "name": "Name",
+                  "fill": "$text-primary",
+                  "content": "Dzmitry Drynau",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "CI7nr",
+                  "name": "Context",
+                  "fill": "$text-secondary",
+                  "content": "Hollow Tide · Prototyping",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "KzISL",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Full screen",
+              "descendants": {
+                "LbcSZ": {
+                  "icon": "maximize-2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "L6CrT",
+          "name": "EditorJS",
+          "width": "fill_container",
+          "height": 240,
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            0,
+            0,
+            52
+          ],
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "ktM3a",
+              "name": "Skeleton line",
+              "fill": "$bg-muted",
+              "width": 420,
+              "height": 20
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "eel2Z",
+              "name": "Skeleton line",
+              "fill": "$bg-muted",
+              "width": 616,
+              "height": 12
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "w1ZAwC",
+              "name": "Skeleton line",
+              "fill": "$bg-muted",
+              "width": 560,
+              "height": 12
+            },
+            {
+              "type": "rectangle",
+              "cornerRadius": 6,
+              "id": "OEvah",
+              "name": "Skeleton line",
+              "fill": "$bg-muted",
+              "width": 320,
+              "height": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VE7Vt",
+          "name": "Foot",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "udesN",
+              "name": "Insert tools",
+              "opacity": 0.4,
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "z7lLem",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Image",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "image"
+                    }
+                  }
+                },
+                {
+                  "id": "M8gXsi",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Video embed",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "video"
+                    }
+                  }
+                },
+                {
+                  "id": "V3bKbM",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Heading",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "kkbg7",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — List",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "list"
+                    }
+                  }
+                },
+                {
+                  "id": "K0bnsh",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Quote",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "quote"
+                    }
+                  }
+                },
+                {
+                  "id": "jdIS7",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — More blocks",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s2QLC",
+              "name": "Actions",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AlFOx",
+                  "name": "Btn Cancel",
+                  "height": 40,
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "v0hrm",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OrBTi",
+                  "name": "Btn Save (disabled)",
+                  "height": 40,
+                  "fill": "$bg-muted",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "IytPZ",
+                      "name": "L",
+                      "fill": "$text-disabled",
+                      "content": "Save",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Hxjri",
+      "x": 5170,
+      "y": 57351,
+      "name": "Modal — Devlog composer · full screen (text column 800, as the public post)",
+      "clip": true,
+      "width": 1265,
+      "height": 800,
+      "fill": "$surface",
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "D5dHx1",
+          "name": "Head",
+          "width": 852,
+          "gap": 12,
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "OTE6b",
+              "name": "AppAvatar 40",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "width": 40,
+              "height": 40
+            },
+            {
+              "type": "frame",
+              "id": "ohpEr",
+              "name": "Author",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "O1DF0S",
+                  "name": "Name",
+                  "fill": "$text-primary",
+                  "content": "Dzmitry Drynau",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "TPBwb",
+                  "name": "Context",
+                  "fill": "$text-secondary",
+                  "content": "Hollow Tide · Prototyping",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "l0UAfm",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Exit full screen",
+              "descendants": {
+                "LbcSZ": {
+                  "icon": "minimize-2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "T3jxaw",
+          "name": "EditorJS",
+          "width": 852,
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            0,
+            0,
+            52
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "K0EC1a",
+              "name": "Block — heading",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Art for state one, and a save bug we cannot reproduce",
+              "lineHeight": 1.3,
+              "fontFamily": "$font",
+              "fontSize": 20,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "tv9iJ",
+              "name": "Block — paragraph",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "State one has art and it reads. The tide switch keeps the timing from checkpoint 1.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "TKr5R",
+              "name": "Block — list item",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "•  Tide state one — art in, lighting pass done",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "uVGB4",
+              "name": "Block — list item",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "•  Save system — corrupts about one run in twenty",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "o7pYIw",
+              "name": "Block — quote",
+              "width": "fill_container",
+              "stroke": "$border-strong",
+              "strokeWidth": {
+                "left": 2
+              },
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 4,
+              "padding": [
+                0,
+                0,
+                0,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uSnur",
+                  "name": "Quote",
+                  "fill": "$text-primary",
+                  "content": "The switch finally feels like weather, not a button.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "s94Z1W",
+                  "name": "Caption",
+                  "fill": "$text-secondary",
+                  "content": "Tom, playtest",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kV3SY",
+          "name": "Foot",
+          "width": 852,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "n17u3",
+              "name": "Insert tools",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "YTcEm",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Image",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "image"
+                    }
+                  }
+                },
+                {
+                  "id": "m5Cab",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Video embed",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "video"
+                    }
+                  }
+                },
+                {
+                  "id": "Qzp2L",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Heading",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "q5fMa",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — List",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "list"
+                    }
+                  }
+                },
+                {
+                  "id": "h0Qo7P",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Quote",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "quote"
+                    }
+                  }
+                },
+                {
+                  "id": "B2BI40",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — More blocks",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "z8Y0r",
+              "name": "Actions",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "qawZa",
+                  "name": "Btn Cancel",
+                  "height": 40,
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "stroke": "$card-border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LrztX",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "zZpK8",
+                  "name": "Btn Post",
+                  "height": 40,
+                  "fill": "$btn-black",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GAaZA",
+                      "name": "L",
+                      "fill": "$text-invert",
+                      "content": "Post",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Awrms",
+      "x": 6515,
+      "y": 57351,
+      "name": "Modal — Devlog composer · mobile",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$surface",
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 16,
+      "children": [
+        {
+          "type": "frame",
+          "id": "R6Nj6",
+          "name": "Head",
+          "width": "fill_container",
+          "gap": 12,
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "tKARN",
+              "name": "AppAvatar 40",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1658797508656-bd349f0ecf1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1NzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "width": 40,
+              "height": 40
+            },
+            {
+              "type": "frame",
+              "id": "gXVLr",
+              "name": "Author",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VvWPu",
+                  "name": "Name",
+                  "fill": "$text-primary",
+                  "content": "Dzmitry Drynau",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "RFAVr",
+                  "name": "Context",
+                  "fill": "$text-secondary",
+                  "content": "Hollow Tide · Prototyping",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "uF4EL",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Close",
+              "descendants": {
+                "LbcSZ": {
+                  "icon": "x"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jP9W7",
+          "name": "EditorJS",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "WiemX",
+              "name": "Block — heading",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Art for state one, and a save bug we cannot reproduce",
+              "lineHeight": 1.3,
+              "fontFamily": "$font",
+              "fontSize": 20,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "A1Q3jy",
+              "name": "Block — paragraph",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "State one has art and it reads. The tide switch keeps the timing from checkpoint 1.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "VNJk7",
+              "name": "Block — list item",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "•  Tide state one — art in, lighting pass done",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "XmZCV",
+              "name": "Block — list item",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "•  Save system — corrupts about one run in twenty",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "q9ka3",
+              "name": "Block — quote",
+              "width": "fill_container",
+              "stroke": "$border-strong",
+              "strokeWidth": {
+                "left": 2
+              },
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 4,
+              "padding": [
+                0,
+                0,
+                0,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "iugQp",
+                  "name": "Quote",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The switch finally feels like weather, not a button.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "LRARd",
+                  "name": "Caption",
+                  "fill": "$text-secondary",
+                  "content": "Tom, playtest",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qNk7u",
+          "name": "Foot",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "o3kxva",
+              "name": "Insert tools",
+              "gap": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "u3yybD",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Image",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "image"
+                    }
+                  }
+                },
+                {
+                  "id": "FHVWJ",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Video embed",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "video"
+                    }
+                  }
+                },
+                {
+                  "id": "v1HAGr",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Heading",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "Q66OJa",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — List",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "list"
+                    }
+                  }
+                },
+                {
+                  "id": "GlcvG",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — Quote",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "quote"
+                    }
+                  }
+                },
+                {
+                  "id": "xA2gI",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Tool — More blocks",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "ellipsis"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZeDVO",
+              "name": "Actions",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HGWiL",
+                  "name": "Btn Post",
+                  "height": 40,
+                  "fill": "$btn-black",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hsgkY",
+                      "name": "L",
+                      "fill": "$text-invert",
+                      "content": "Post",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "j88gi",
+      "x": 6985,
+      "y": 57351,
+      "name": "Modal — Share post",
+      "clip": true,
+      "width": 600,
+      "fill": "$surface",
+      "cornerRadius": 16,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "BBpKJ",
+          "name": "Head",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "n7wGb",
+              "name": "Title",
+              "fill": "$text-primary",
+              "content": "Share post",
+              "fontFamily": "$font",
+              "fontSize": 20,
+              "fontWeight": "600"
+            },
+            {
+              "id": "kviid",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Close"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "KM9Qb",
+          "name": "Preview card",
+          "clip": true,
+          "width": "fill_container",
+          "cornerRadius": 12,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "J3xpX",
+              "name": "OG image 1200×630",
+              "width": "fill_container",
+              "height": 288,
+              "fill": "$neutral-100",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hgZL7",
+                  "name": "L",
+                  "fill": "$text-tertiary",
+                  "content": "OG card — /api/og-blog",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yleGX",
+              "name": "Meta",
+              "width": "fill_container",
+              "gap": 12,
+              "padding": [
+                12,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IAUjV",
+                  "name": "Texts",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tSw9E",
+                      "name": "Text",
+                      "fill": "$text-primary",
+                      "content": "Hollow Tide — devlog on GDHub",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "HM6df",
+                      "name": "Link",
+                      "fill": "$text-secondary",
+                      "content": "gdhub.io/devlog/cmmpif8tj0004",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "T2pavF",
+                  "type": "ref",
+                  "ref": "S9qItu",
+                  "name": "Btn — Copy link",
+                  "descendants": {
+                    "LbcSZ": {
+                      "icon": "copy",
+                      "width": 16,
+                      "height": 16
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Qk0Px",
+          "name": "Share to",
+          "width": "fill_container",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ixrOu",
+              "name": "Btn LinkedIn",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "aepHm",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "linkedin",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "IJevd",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "LinkedIn",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "P6X1ZG",
+              "name": "Btn Telegram",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "p34C9",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "send",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "P7Dwx8",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Telegram",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vCAfQ",
+              "name": "Btn X",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "cxDzY",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "twitter",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "o0DSJ",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "X",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "l5222",
+              "name": "Btn Facebook",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "k0khs",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "facebook",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "RFMVO",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Facebook",
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "500"

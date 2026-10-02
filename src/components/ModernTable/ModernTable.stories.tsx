@@ -145,6 +145,11 @@ export const Loading: Story = {
 };
 
 /** Paged tables are the norm on admin screens, so check the footer sits right. */
+/** `DS · 11 Tables`, "On the page": outlined, with the paging outside. */
+export const OnPage: Story = {
+	args: { surface: "page", pagination: { pageSize: 3, total: 12, current: 1 } },
+};
+
 export const Paginated: Story = {
 	args: { pagination: { pageSize: 3, total: 12, current: 1 } },
 };

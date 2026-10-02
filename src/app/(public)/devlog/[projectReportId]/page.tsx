@@ -1,3 +1,4 @@
+import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -7,6 +8,8 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { devlogTitle } from "@/helpers/devlog";
+import { devlogOgImage } from "@/services/telegram/messages";
 import { DevlogPostClient, type Post } from "./DevlogPostClient";
 
 type Params = Promise<{ projectReportId: string }>;
@@ -55,16 +58,31 @@ export async function generateMetadata({
 	const result = await loadPost(projectReportId);
 	if (!result) return { title: "Devlog" };
 	const { post } = result;
+	const title = devlogTitle(post.project?.name ?? "GDHub", post.number);
+	// The card the admin announce posts, so a link shared by hand looks the same.
+	const ogImage = devlogOgImage({
+		id: post.id,
+		number: post.number,
+		content: post.content,
+		contentEditor: (post.contentEditor ?? null) as Prisma.JsonValue,
+		project: {
+			name: post.project?.name ?? "GDHub",
+			coverImage: post.project?.coverImage ?? null,
+		},
+	});
 	return {
-		title: post.title,
+		title,
 		alternates: { canonical: `/devlog/${projectReportId}` },
 		openGraph: {
 			type: "article",
 			url: `/devlog/${projectReportId}`,
-			title: post.title,
-			images: post.pageCover
-				? [{ url: post.pageCover, alt: post.title }]
-				: undefined,
+			title,
+			images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+		},
+		twitter: {
+			card: "summary_large_image",
+			title,
+			images: [ogImage],
 		},
 	};
 }

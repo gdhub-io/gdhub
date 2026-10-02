@@ -183,7 +183,12 @@ export function ProjectPageClient({
 					components: { Button: { controlHeight: 36, paddingInline: 16 } },
 				}}
 			>
-				<Flex align="center" gap={16} style={{ margin: "16px 0 0" }}>
+				<Flex
+					align="center"
+					gap={16}
+					className={styles.projectActions}
+					style={{ margin: "16px 0 0" }}
+				>
 					{linkElements}
 
 					<Tooltip key={`tooltip-qr-code`} title={`QR Code`}>
@@ -200,7 +205,6 @@ export function ProjectPageClient({
 						subject={{ kind: "project", id: project.id }}
 						count={projectApplauseCount}
 						size="large"
-						className={styles.projectApplause}
 					/>
 				</Flex>
 			</ConfigProvider>

@@ -24,6 +24,7 @@ import {
 } from "@/helpers/content";
 import { htmlFragmentToPlainText } from "@/helpers/telegramHtml";
 import { useFeedViews } from "@/hooks/useContentViews";
+import { useDevlogName } from "@/hooks/useDevlogName";
 import type { DevlogFeedPage } from "@/types/devlog";
 import styles from "./styles.module.scss";
 
@@ -63,6 +64,7 @@ const PostCard: React.FC<{
 	/** The first card is above the fold — its cover is what LCP measures. */
 	eager?: boolean;
 }> = ({ post, onClick, variant, eager = false }) => {
+	const devlogName = useDevlogName();
 	/** Two letters when there is no photo — a tinted circle beats a generated face. */
 	const authorInitials = useMemo(() => {
 		const name = post.author?.name?.trim();
@@ -136,7 +138,10 @@ const PostCard: React.FC<{
 						    project, not by who typed it. The name is not a link here — the
 						    post it opens carries one. */}
 						<span className={styles.postIdentity}>
-							<span className={styles.postProject}>{post.project?.name}</span>
+							<span className={styles.postProject}>
+								{post.project?.name}
+								{!!post.number && ` · ${devlogName(post.number)}`}
+							</span>
 							<span className={styles.postAuthor}>{post.author?.name}</span>
 						</span>
 					</div>
