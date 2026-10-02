@@ -79,6 +79,7 @@ export async function GET(_req: Request, { params }: { params: Params }) {
 		// Transform the data to match the expected format in the frontend
 		const post = {
 			id: report.id,
+			number: report.number,
 			content: report.content,
 			contentEditor: report.contentEditor,
 			coverImage: report.project?.coverImage,

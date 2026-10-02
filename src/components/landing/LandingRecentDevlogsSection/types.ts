@@ -1,5 +1,6 @@
 export interface DevlogPost {
 	id: string;
+	number: number | null;
 	content: string;
 	publishedAt: string;
 	authorId: string;
