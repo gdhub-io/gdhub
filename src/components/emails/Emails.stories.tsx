@@ -98,7 +98,7 @@ export const DevlogReminder: StoryObj = {
 			button="Post to your devlog"
 			afterButton={[
 				"We’re looking forward to hearing from you!",
-				"If you need any help — we’re here for you, feel free to reach out in our community chat or find the expert you need in our “Game Dev Mentors” app.",
+				"If you need any help — we’re here for you, feel free to reach out in our community chat or find the expert you need on the Experts page.",
 			]}
 		/>
 	),
