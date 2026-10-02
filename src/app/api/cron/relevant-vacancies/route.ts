@@ -5,6 +5,7 @@ import {
 	type User,
 } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
+import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
@@ -49,61 +50,64 @@ async function notifyAuthor(
 }
 
 export const GET = withAuth({ mode: "vercel_cron" })(async () => {
-	// 1) Remind authors whose listing expires in EXPIRY_REMINDER_DAYS days.
-	// A 1-day window keyed to the reminder day makes a daily cron fire once.
-	const reminderDay = dayjs().add(EXPIRY_REMINDER_DAYS, "day");
-	const expiringSoon = (await prisma.teamVacancy.findMany({
-		where: {
-			status: TeamVacancyStatus.Published,
-			finishedAt: {
-				gte: reminderDay.startOf("day").toDate(),
-				lte: reminderDay.endOf("day").toDate(),
+	const result = await runWithCronLog("relevant-vacancies", async () => {
+		// 1) Remind authors whose listing expires in EXPIRY_REMINDER_DAYS days.
+		// A 1-day window keyed to the reminder day makes a daily cron fire once.
+		const reminderDay = dayjs().add(EXPIRY_REMINDER_DAYS, "day");
+		const expiringSoon = (await prisma.teamVacancy.findMany({
+			where: {
+				status: TeamVacancyStatus.Published,
+				finishedAt: {
+					gte: reminderDay.startOf("day").toDate(),
+					lte: reminderDay.endOf("day").toDate(),
+				},
 			},
-		},
-		...vacancyWithAuthor,
-	})) as VacancyWithAuthor[];
+			...vacancyWithAuthor,
+		})) as VacancyWithAuthor[];
 
-	for (const vacancy of expiringSoon) {
-		await notifyAuthor(vacancy, {
-			title: "Vacancy expiring soon",
-			message: `Your vacancy "${vacancy.title}" will be archived in ${EXPIRY_REMINDER_DAYS} days.`,
-		});
-	}
-
-	// 2) Archive expired listings and notify their authors.
-	const notRelevantVacancies = (await prisma.teamVacancy.findMany({
-		where: {
-			status: TeamVacancyStatus.Published,
-			finishedAt: { lt: dayjs().endOf("day").toDate() },
-		},
-		...vacancyWithAuthor,
-	})) as VacancyWithAuthor[];
-
-	if (notRelevantVacancies.length === 0) {
-		return json({ archived: 0, reminded: expiringSoon.length });
-	}
-
-	const updatedVacancies = await prisma.teamVacancy.updateMany({
-		where: { id: { in: notRelevantVacancies.map((vacancy) => vacancy.id) } },
-		data: { status: TeamVacancyStatus.Closed },
-	});
-
-	for (const vacancy of notRelevantVacancies) {
-		// Archiving the listing ends its conversations too.
-		try {
-			await closeVacancyChats(vacancy.id);
-		} catch (error) {
-			console.error("[cron.relevant-vacancies] chat close failed:", error);
+		for (const vacancy of expiringSoon) {
+			await notifyAuthor(vacancy, {
+				title: "Vacancy expiring soon",
+				message: `Your vacancy "${vacancy.title}" will be archived in ${EXPIRY_REMINDER_DAYS} days.`,
+			});
 		}
-		await notifyAuthor(vacancy, {
-			title: "Vacancy archived",
-			message: `Your vacancy "${vacancy.title}" has expired and was archived.`,
-		});
-	}
 
-	console.log(`${updatedVacancies.count} vacancies archived`);
-	return json({
-		archived: updatedVacancies.count,
-		reminded: expiringSoon.length,
+		// 2) Archive expired listings and notify their authors.
+		const notRelevantVacancies = (await prisma.teamVacancy.findMany({
+			where: {
+				status: TeamVacancyStatus.Published,
+				finishedAt: { lt: new Date() },
+			},
+			...vacancyWithAuthor,
+		})) as VacancyWithAuthor[];
+
+		if (notRelevantVacancies.length === 0) {
+			return { archived: 0, reminded: expiringSoon.length };
+		}
+
+		const updatedVacancies = await prisma.teamVacancy.updateMany({
+			where: { id: { in: notRelevantVacancies.map((vacancy) => vacancy.id) } },
+			data: { status: TeamVacancyStatus.Closed },
+		});
+
+		for (const vacancy of notRelevantVacancies) {
+			// Archiving the listing ends its conversations too.
+			try {
+				await closeVacancyChats(vacancy.id);
+			} catch (error) {
+				console.error("[cron.relevant-vacancies] chat close failed:", error);
+			}
+			await notifyAuthor(vacancy, {
+				title: "Vacancy archived",
+				message: `Your vacancy "${vacancy.title}" has expired and was archived.`,
+			});
+		}
+
+		return {
+			archived: updatedVacancies.count,
+			reminded: expiringSoon.length,
+		};
 	});
+
+	return json(result ?? null);
 });

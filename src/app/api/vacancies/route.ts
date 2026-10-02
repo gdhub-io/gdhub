@@ -3,7 +3,7 @@ import { prisma } from "@/services/prisma";
 
 export async function GET() {
 	const vacancies = await prisma.teamVacancy.findMany({
-		where: { status: "Published" },
+		where: { status: "Published", finishedAt: { gt: new Date() } },
 		orderBy: { publishedAt: "desc" },
 		include: {
 			team: {
