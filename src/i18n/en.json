@@ -1299,7 +1299,9 @@
 			"description": "Share your progress on the development of {projectName}",
 			"description2": " will help attract attention to the project and get feedback.",
 			"title": "Your devlog is empty"
-		}
+		},
+		"numbered": "Devlog #{number}",
+		"unnumbered": "Devlog"
 	},
 	"devlogwall": {
 		"form": {
@@ -1957,8 +1959,33 @@
 			"delete-confirm": "Are you sure you want to delete this report?",
 			"delete-confirm-no": "No",
 			"delete-confirm-yes": "Yes",
+			"empty": "Write something first",
+			"error": "The post could not be saved",
+			"fullscreen": {
+				"enter": "Full screen",
+				"exit": "Exit full screen"
+			},
+			"placeholder": "What moved on the project?",
+			"post": "Post",
 			"report-deleted": "Report deleted",
-			"save": "Save"
+			"save": "Save",
+			"tool": {
+				"checklist": "Checklist",
+				"delimiter": "Divider",
+				"heading": "Heading",
+				"image": "Image",
+				"link": "Link preview",
+				"list": "List",
+				"more": "More blocks",
+				"quote": "Quote",
+				"table": "Table",
+				"video": "Video"
+			},
+			"video": {
+				"add": "Add",
+				"placeholder": "Paste a video link",
+				"unsupported": "This link is not a video we can embed"
+			}
 		},
 		"devlogwall": {
 			"newpost": {
@@ -2462,8 +2489,21 @@
 			"teamInvitation": "Team Invitation"
 		},
 		"my-project-devlog": {
-			"description": "Tell the world about your project development progress",
-			"title": "Project Devlog"
+			"action": {
+				"delete": "Delete",
+				"edit": "Edit",
+				"open": "Go to page"
+			},
+			"actions": "Post actions",
+			"column": {
+				"applause": "Applause",
+				"post": "Post",
+				"published": "Published",
+				"views": "Views"
+			},
+			"description": "Tell the community about your project development progress",
+			"empty": "No posts yet",
+			"title": "Devlog Posts"
 		},
 		"my": {
 			"projects": {
@@ -2936,6 +2976,12 @@
 			"title": "Payments",
 			"vacancyFee": "Vacancy listing"
 		}
+	},
+	"share": {
+		"copied": "Link copied",
+		"copy": "Copy link",
+		"label": "Share",
+		"title": "Share post"
 	},
 	"signin": "Sign in",
 	"signin.backToMain.title": "Back to main",

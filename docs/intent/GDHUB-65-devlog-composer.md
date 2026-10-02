@@ -38,6 +38,13 @@ week.
 - [ ] Post is disabled while the post is empty and says why on hover.
 - [ ] Editing shows a skeleton until the post has loaded, and the button reads
       Save.
+- [ ] A button in the head takes the composer full screen and back. Full screen
+      keeps the text at the width of the public post page, and the toolbar and
+      Post stay at the bottom of the screen however long the post is.
+- [ ] On a phone the composer is the whole screen, with a close button in place
+      of Cancel.
+- [ ] A quote reads as a quote — a bar, the text, its caption — not as two
+      boxed inputs.
 
 ## Out of scope
 

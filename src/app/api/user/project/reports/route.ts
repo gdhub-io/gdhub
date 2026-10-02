@@ -26,6 +26,15 @@ export const GET = withAuth({ mode: "user" })(
 			orderBy: [{ publishedAt: "desc" }],
 		});
 
-		return json(reports);
+		const applauseCounts = await prisma.projectReport.getApplauseCounts({
+			projectReportIds: reports.map((report) => report.id),
+		});
+
+		return json(
+			reports.map((report) => ({
+				...report,
+				applauseCount: applauseCounts.get(report.id) ?? 0,
+			})),
+		);
 	}),
 );
