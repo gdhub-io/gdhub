@@ -115,19 +115,14 @@ archive: "3 · Архив / Истечение" {
     shape: oval
     style.fill: "#f1f1f1"
   }
-  cron_arch: "⏰ GET /api/cron/relevant-vacancies\nPublished + finishedAt < now → Closed\nrelevant-vacancies/route.ts:6" {
+  cron_arch: "⏰ GET /api/cron/relevant-vacancies\nPublished + finishedAt до сегодня → Closed\nrelevant-vacancies/route.ts" {
     shape: hexagon
     style.fill: "#ffe5cc"
-  }
-  cron_gap: "⚠️ НЕ зарегистрирован в vercel.json\n→ авто-архивация по факту НЕ работает" {
-    style.fill: "#f8d7da"
-    style.font-size: 11
   }
   restore: "POST .../vacancy/restore\nСоздаёт НОВЫЙ Draft (копию)\nновое окно, нужна новая оплата\nrestore/route.ts:14" {shape: rectangle}
 
   del -> closed
   cron_arch -> closed
-  cron_arch -> cron_gap: {style.stroke-dash: 3}
   closed -> restore: "restore"
   exp_gap: "⚠️ При архивации/истечении НЕТ\nуведомлений (нет «вакансия скоро\nистечёт» / «архивирована»)" {
     style.fill: "#f8d7da"
@@ -197,7 +192,7 @@ notify: "5 · Уведомления и сообщения" {
 jobs: "6 · Cron / BullMQ jobs" {
   style.fill: "#fdeef6"
 
-  j_arch: "⏰ relevant-vacancies\nархив истёкших Published→Closed\n02:00 UTC (vercel.json)" {
+  j_arch: "⏰ relevant-vacancies\nв последний день — письмо автору,\nна следующий — Published→Closed\n02:00 UTC (vercel.json)" {
     style.fill: "#fff"
     style.font-size: 11
   }
@@ -239,11 +234,10 @@ gaps: "7 · Выводы: пробелы и лишнее" {
   g1: |md
     ### ⚠️ Пробелы (не хватает)
     1. **Нет уведомления автору при публикации / успешной оплате.**
-    2. **Нет напоминаний об истечении** («вакансия истекает через N дней»).
-    3. **Нет уведомления при архивации** (ни ручной, ни по cron).
-    4. **`LISTING_WINDOW_DAYS=90` продублирован** в 3 местах (route, restore, VacancyModal).
-    5. **`QUEUE_VACANCIES_TIME` не задан явно** — молчаливый дефолт 12:00.
-    6. **Withdraw физически DELETE** — теряется история отклика/аналитика.
+    2. **Нет уведомления при ручной архивации.**
+    3. **`LISTING_WINDOW_DAYS=90` продублирован** в 3 местах (route, restore, VacancyModal).
+    4. **`QUEUE_VACANCIES_TIME` не задан явно** — молчаливый дефолт 12:00.
+    5. **Withdraw физически DELETE** — теряется история отклика/аналитика.
   |
   g2: |md
     ### Возможно лишнее / к проверке

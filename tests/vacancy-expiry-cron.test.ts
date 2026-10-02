@@ -24,6 +24,8 @@ vi.mock("@/services/novu", () => ({
 }));
 
 const NOW = new Date("2026-10-02T02:00:00.000Z");
+const TODAY = new Date("2026-10-02T00:00:00.000Z");
+const TOMORROW = new Date("2026-10-03T00:00:00.000Z");
 
 async function runCron() {
 	const { GET } = await import("@/app/api/cron/relevant-vacancies/route");
@@ -46,9 +48,9 @@ describe("relevant-vacancies cron", () => {
 		send.mockReset();
 	});
 
-	// A listing that ends later today is still live: the cutoff is the moment
-	// of the run, not the end of the day.
-	it("archives only published listings that have already ended", async () => {
+	// A listing that ends today is warned, not archived: closing it in the same
+	// run would leave its author no time to extend it.
+	it("archives only published listings that ended before today", async () => {
 		findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([
 			{ id: "v1", title: "Artist" },
 			{ id: "v2", title: "Coder" },
@@ -59,7 +61,7 @@ describe("relevant-vacancies cron", () => {
 
 		expect(findMany.mock.calls[1][0].where).toEqual({
 			status: "Published",
-			finishedAt: { lt: NOW },
+			finishedAt: { lt: TODAY },
 		});
 		expect(updateMany).toHaveBeenCalledWith({
 			where: { id: { in: ["v1", "v2"] } },
@@ -67,6 +69,39 @@ describe("relevant-vacancies cron", () => {
 		});
 		expect(closeVacancyChats.mock.calls).toEqual([["v1"], ["v2"]]);
 		expect(body).toEqual({ archived: 2, reminded: 0 });
+	});
+
+	it("warns the authors of listings that end today, a run before archiving", async () => {
+		findMany
+			.mockResolvedValueOnce([
+				{
+					id: "v1",
+					title: "Artist",
+					_count: { applicants: 2 },
+					team: {
+						project: { slug: "game", author: { id: "u1", email: "a@b.c" } },
+					},
+				},
+			])
+			.mockResolvedValueOnce([]);
+
+		const body = await runCron();
+
+		expect(findMany.mock.calls[0][0].where).toEqual({
+			status: "Published",
+			finishedAt: { gte: TODAY, lt: TOMORROW },
+		});
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send.mock.calls[0][0]).toMatchObject({
+			template: "default-message",
+			to: { subscriberId: "u1", email: "a@b.c" },
+			payload: { title: "Vacancy will be archived tomorrow" },
+		});
+		expect(send.mock.calls[0][0].payload.message).toContain(
+			"make a decision on the 2 candidates",
+		);
+		expect(updateMany).not.toHaveBeenCalled();
+		expect(body).toEqual({ archived: 0, reminded: 1 });
 	});
 
 	it("touches nothing when no listing has ended", async () => {

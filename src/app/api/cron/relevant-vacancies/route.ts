@@ -1,5 +1,6 @@
 import {
 	type Project,
+	TeamMemberStatus,
 	type TeamVacancy,
 	TeamVacancyStatus,
 	type User,
@@ -10,9 +11,6 @@ import { json, withAuth } from "@/lib/api-handlers";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
-
-// How many days before expiry the author gets a "expiring soon" reminder.
-const EXPIRY_REMINDER_DAYS = 3;
 
 const vacancyWithAuthor = {
 	include: {
@@ -51,32 +49,48 @@ async function notifyAuthor(
 
 export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog("relevant-vacancies", async () => {
-		// 1) Remind authors whose listing expires in EXPIRY_REMINDER_DAYS days.
-		// A 1-day window keyed to the reminder day makes a daily cron fire once.
-		const reminderDay = dayjs().add(EXPIRY_REMINDER_DAYS, "day");
+		// Both steps are keyed to the calendar day, not to the moment of the run:
+		// a listing is warned on its last day and archived on the next one, so
+		// the warning always comes a full run ahead however the cron drifts.
+		const today = dayjs().startOf("day");
+
+		// 1) Warn authors whose listing ends today: the next run archives it.
 		const expiringSoon = (await prisma.teamVacancy.findMany({
 			where: {
 				status: TeamVacancyStatus.Published,
 				finishedAt: {
-					gte: reminderDay.startOf("day").toDate(),
-					lte: reminderDay.endOf("day").toDate(),
+					gte: today.toDate(),
+					lt: today.add(1, "day").toDate(),
 				},
 			},
-			...vacancyWithAuthor,
-		})) as VacancyWithAuthor[];
+			include: {
+				...vacancyWithAuthor.include,
+				_count: {
+					select: {
+						applicants: { where: { status: TeamMemberStatus.Applicant } },
+					},
+				},
+			},
+		})) as (VacancyWithAuthor & { _count: { applicants: number } })[];
 
 		for (const vacancy of expiringSoon) {
+			const pending = vacancy._count.applicants;
+			const action = pending
+				? `update its end date or make a decision on the ${pending} ${pending === 1 ? "candidate" : "candidates"} waiting for your answer`
+				: "update its end date";
 			await notifyAuthor(vacancy, {
-				title: "Vacancy expiring soon",
-				message: `Your vacancy "${vacancy.title}" will be archived in ${EXPIRY_REMINDER_DAYS} days.`,
+				title: "Vacancy will be archived tomorrow",
+				message:
+					`Your vacancy "${vacancy.title}" will be archived tomorrow and its chats with candidates will be closed. ` +
+					`If the vacancy is still relevant, ${action} — otherwise it will close automatically in 24 hours.`,
 			});
 		}
 
-		// 2) Archive expired listings and notify their authors.
+		// 2) Archive listings that ended before today and notify their authors.
 		const notRelevantVacancies = (await prisma.teamVacancy.findMany({
 			where: {
 				status: TeamVacancyStatus.Published,
-				finishedAt: { lt: new Date() },
+				finishedAt: { lt: today.toDate() },
 			},
 			...vacancyWithAuthor,
 		})) as VacancyWithAuthor[];
