@@ -1,5 +1,4 @@
 .component {
-
   :global(div.novu) {
     display: flex;
   }
@@ -8,7 +7,7 @@
     width: 18px;
     height: 18px;
     display: block;
-    color: rgba(0,0,0,0.88);
+    color: var(--gd-color-text);
     position: relative;
     top: 1px;
   }
@@ -24,21 +23,16 @@
     padding: 0;
 
     &:hover {
-      background-color: rgba(0,0,0,0.04);
+      background-color: var(--gd-fill-base);
     }
   }
+}
 
-  .notification {
-    &:hover {
-      // background-color: var(--gd-color-border);
-    }
-  }
+.popoverContent {
+  border-radius: var(--gd-radius-card);
+  box-shadow: var(--gd-shadow-e3);
+}
 
-  .root {
-    display: flex;
-  }
-
-  .popoverContent {
-    border-radius: 4px;
-  }
+.notificationDate {
+  font-size: var(--gd-font-size-caption);
 }
