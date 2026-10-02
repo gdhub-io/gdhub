@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Button, Card, Flex, Typography } from "antd";
 import {
+	candidatesWaiting,
 	vacancyArchived,
 	vacancyArchiveWarning,
 } from "@/services/vacancyExpiryMessages";
 
 // The mails are laid out in Novu, not in this repo: these stories reproduce
-// their text so it can be read and reviewed in one place. Vacancy texts come
+// their text so it can be read and reviewed in one place. Open position texts come
 // from the code that sends them; the devlog reminder is copied from the
 // `share-project-news` workflow (2026-10-02) and has to be re-copied if it is
 // edited there.
@@ -63,7 +64,8 @@ function Email({
 	);
 }
 
-// `default-message` renders the message and one fixed button to `redirectUrl`.
+// `default-message` renders the message and one button to `redirectUrl`,
+// labelled by `buttonText`.
 function DefaultMessage({
 	title,
 	message,
@@ -76,7 +78,7 @@ function DefaultMessage({
 			workflow="default-message"
 			subject={title}
 			paragraphs={[message]}
-			button="Go!"
+			button="Go to open positions"
 		/>
 	);
 }
@@ -85,7 +87,7 @@ function DefaultMessage({
 export const DevlogReminder: StoryObj = {
 	render: () => (
 		<Email
-			workflow="share-project-news (en)"
+			workflow="share-project-news"
 			subject="Share an update about your game Moonlit Harbor"
 			paragraphs={[
 				"Hi!",
@@ -102,42 +104,38 @@ export const DevlogReminder: StoryObj = {
 	),
 };
 
-/** The same reminder for an author whose language is Russian. */
-export const DevlogReminderRu: StoryObj = {
-	render: () => (
-		<Email
-			workflow="share-project-news (ru)"
-			subject="Поделитесь новостями о вашей игре Moonlit Harbor"
-			paragraphs={[
-				"Привет!",
-				"Мы заметили, что вы давно не публиковали обновления по своему игровому проекту Moonlit Harbor . Возможно, у вас сейчас как раз идёт активная работа — если так, будет здорово, если вы поделитесь новостями!",
-				"Регулярные обновления помогают:\n– напомнить о проекте подписчикам и заинтересовать новых участников,\n– получать обратную связь от сообщества,\n– показывать прогресс потенциальным инвесторам и команде.",
-				"Даже короткий пост — это уже шаг вперёд. Расскажите, над чем работаете сейчас, какие этапы прошли или планируете пройти дальше.\nЕсли пока всё в паузе — это тоже нормально, и об этом можно написать.",
-			]}
-			button="Написать в дневник разработки"
-			afterButton={[
-				'Ждём вашего апдейта!\nЕсли нужна помощь — мы рядом, пишите в наш чат сообщества или ищите нужного вам эксперта в нашем приложении "Менторы из геймдев".',
-				"С уважением,\nКоманда Game Developers Hub",
-			]}
-		/>
-	),
-};
-
-/** Sent on a listing's last day, when candidates are still waiting. */
+/** Sent three days before a listing is archived, when candidates are still waiting. */
 export const VacancyArchiveWarning: StoryObj = {
 	render: () => (
-		<DefaultMessage {...vacancyArchiveWarning("Senior 2D Artist", 2)} />
+		<DefaultMessage
+			{...vacancyArchiveWarning("Senior 2D Artist", "Moonlit Harbor", 2)}
+		/>
 	),
 };
 
 /** The same warning for a listing nobody is waiting on. */
 export const VacancyArchiveWarningNoCandidates: StoryObj = {
 	render: () => (
-		<DefaultMessage {...vacancyArchiveWarning("Senior 2D Artist", 0)} />
+		<DefaultMessage
+			{...vacancyArchiveWarning("Senior 2D Artist", "Moonlit Harbor", 0)}
+		/>
+	),
+};
+
+/** Sent when a candidate has waited a week for an answer. */
+export const CandidatesWaiting: StoryObj = {
+	render: () => (
+		<DefaultMessage
+			{...candidatesWaiting("Senior 2D Artist", "Moonlit Harbor", 3)}
+		/>
 	),
 };
 
 /** Sent once the listing is closed — the only mail a listing of three days or less gets. */
 export const VacancyArchived: StoryObj = {
-	render: () => <DefaultMessage {...vacancyArchived("Senior 2D Artist")} />,
+	render: () => (
+		<DefaultMessage
+			{...vacancyArchived("Senior 2D Artist", "Moonlit Harbor")}
+		/>
+	),
 };

@@ -9,10 +9,14 @@
 export const LISTING_WINDOW_DAYS = 90;
 
 /**
- * A listing this short gets no "archived tomorrow" warning: its author set the
- * end date days ago and only needs to hear that it closed.
+ * The author is warned this many days before a listing is archived. A listing
+ * no longer than that gets no warning: its author set the end date days ago
+ * and only needs to hear that it closed.
  */
-export const NO_WARNING_LISTING_DAYS = 3;
+export const ARCHIVE_WARNING_DAYS = 3;
+
+/** An author is reminded once a candidate has waited this long for a decision. */
+export const CANDIDATE_REMINDER_DAYS = 7;
 
 /** Fallback listing length used when restoring a vacancy whose window has lapsed. */
 export const DEFAULT_FINISH_DAYS = 90;

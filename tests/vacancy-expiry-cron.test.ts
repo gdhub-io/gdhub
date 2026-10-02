@@ -25,7 +25,8 @@ vi.mock("@/services/novu", () => ({
 
 const NOW = new Date("2026-10-02T02:00:00.000Z");
 const TODAY = new Date("2026-10-02T00:00:00.000Z");
-const TOMORROW = new Date("2026-10-03T00:00:00.000Z");
+const IN_TWO_DAYS = new Date("2026-10-04T00:00:00.000Z");
+const IN_THREE_DAYS = new Date("2026-10-05T00:00:00.000Z");
 
 async function runCron() {
 	const { GET } = await import("@/app/api/cron/relevant-vacancies/route");
@@ -48,10 +49,12 @@ describe("relevant-vacancies cron", () => {
 		send.mockReset();
 	});
 
-	// A listing that ends today is warned, not archived: closing it in the same
-	// run would leave its author no time to extend it.
+	// A listing is live through its last day and closes on the next run.
 	it("archives only published listings that ended before today", async () => {
-		findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([
+		findMany
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([
 			{ id: "v1", title: "Artist" },
 			{ id: "v2", title: "Coder" },
 		]);
@@ -59,7 +62,7 @@ describe("relevant-vacancies cron", () => {
 
 		const body = await runCron();
 
-		expect(findMany.mock.calls[1][0].where).toEqual({
+		expect(findMany.mock.calls[2][0].where).toEqual({
 			status: "Published",
 			finishedAt: { lt: TODAY },
 		});
@@ -68,42 +71,50 @@ describe("relevant-vacancies cron", () => {
 			data: { status: "Closed" },
 		});
 		expect(closeVacancyChats.mock.calls).toEqual([["v1"], ["v2"]]);
-		expect(body).toEqual({ archived: 2, reminded: 0 });
+		expect(body).toEqual({ archived: 2, reminded: 0, candidateReminders: 0 });
 	});
 
-	it("warns the authors of listings that end today, a run before archiving", async () => {
+	// Archived the day after its last one, so three days ahead of that is a
+	// listing whose last day is the day after tomorrow.
+	it("warns the authors three days before their listing is archived", async () => {
 		findMany
 			.mockResolvedValueOnce([
 				{
 					id: "v1",
 					title: "Artist",
 					publishedAt: new Date("2026-09-02T10:00:00.000Z"),
-					finishedAt: new Date("2026-10-02T10:00:00.000Z"),
+					finishedAt: new Date("2026-10-04T10:00:00.000Z"),
 					_count: { applicants: 2 },
 					team: {
-						project: { slug: "game", author: { id: "u1", email: "a@b.c" } },
+						project: { name: "Moonlit", slug: "game", author: { id: "u1", email: "a@b.c" } },
 					},
 				},
 			])
-			.mockResolvedValueOnce([]);
+			.mockResolvedValue([]);
 
 		const body = await runCron();
 
 		expect(findMany.mock.calls[0][0].where).toEqual({
 			status: "Published",
-			finishedAt: { gte: TODAY, lt: TOMORROW },
+			finishedAt: { gte: IN_TWO_DAYS, lt: IN_THREE_DAYS },
 		});
 		expect(send).toHaveBeenCalledTimes(1);
 		expect(send.mock.calls[0][0]).toMatchObject({
 			template: "default-message",
 			to: { subscriberId: "u1", email: "a@b.c" },
-			payload: { title: "Vacancy will be archived tomorrow" },
+			payload: {
+				title: "Open position will be archived in 3 days",
+				buttonText: "Go to open positions",
+				redirectUrl: expect.stringMatching(
+					/\/user\/project\/game\/open-positions$/,
+				),
+			},
 		});
 		expect(send.mock.calls[0][0].payload.message).toContain(
 			"make a decision on the 2 candidates",
 		);
 		expect(updateMany).not.toHaveBeenCalled();
-		expect(body).toEqual({ archived: 0, reminded: 1 });
+		expect(body).toEqual({ archived: 0, reminded: 1, candidateReminders: 0 });
 	});
 
 	// Its author picked the end date a few days ago; only the closing notice
@@ -115,25 +126,74 @@ describe("relevant-vacancies cron", () => {
 					id: "v1",
 					title: "Artist",
 					publishedAt: null,
-					createdAt: new Date("2026-09-29T10:00:00.000Z"),
-					finishedAt: new Date("2026-10-02T10:00:00.000Z"),
+					createdAt: new Date("2026-10-01T10:00:00.000Z"),
+					finishedAt: new Date("2026-10-04T10:00:00.000Z"),
 					_count: { applicants: 0 },
 				},
 			])
-			.mockResolvedValueOnce([]);
+			.mockResolvedValue([]);
 
 		const body = await runCron();
 
 		expect(send).not.toHaveBeenCalled();
-		expect(body).toEqual({ archived: 0, reminded: 0 });
+		expect(body).toEqual({ archived: 0, reminded: 0, candidateReminders: 0 });
+	});
+
+	// Selected by the day the candidate applied, so each cohort is reminded
+	// once; listings already warned or about to be archived are left out.
+	it("reminds the author of candidates undecided for a week", async () => {
+		findMany
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([
+				{
+					id: "v1",
+					title: "Artist",
+					_count: { applicants: 3 },
+					team: {
+						project: {
+							name: "Moonlit",
+							slug: "game",
+							author: { id: "u1", email: "a@b.c" },
+						},
+					},
+				},
+			])
+			.mockResolvedValue([]);
+
+		const body = await runCron();
+
+		expect(findMany.mock.calls[1][0].where).toEqual({
+			status: "Published",
+			finishedAt: { gte: TODAY },
+			id: { notIn: [] },
+			applicants: {
+				some: {
+					status: "Applicant",
+					createdAt: {
+						gte: new Date("2026-09-24T00:00:00.000Z"),
+						lt: new Date("2026-09-25T00:00:00.000Z"),
+					},
+				},
+			},
+		});
+		expect(send.mock.calls[0][0].payload).toMatchObject({
+			title: "Candidates are waiting for your decision",
+			message: expect.stringContaining("has 3 candidates waiting"),
+			buttonText: "Go to open positions",
+			redirectUrl: expect.stringMatching(/\/user\/project\/game\/open-positions$/),
+		});
+		expect(body).toEqual({ archived: 0, reminded: 0, candidateReminders: 1 });
 	});
 
 	it("tells the author why the listing was archived", async () => {
-		findMany.mockResolvedValueOnce([]).mockResolvedValueOnce([
+		findMany
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([
 			{
 				id: "v1",
 				title: "Artist",
-				team: { project: { slug: "game", author: { id: "u1", email: null } } },
+				team: { project: { name: "Moonlit", slug: "game", author: { id: "u1", email: null } } },
 			},
 		]);
 		updateMany.mockResolvedValue({ count: 1 });
@@ -141,8 +201,9 @@ describe("relevant-vacancies cron", () => {
 		await runCron();
 
 		expect(send.mock.calls[0][0].payload).toMatchObject({
-			title: "Vacancy archived",
-			message: expect.stringContaining("the end date you set for it has passed"),
+			title: "Open position archived",
+			message:
+				'Your open position "Artist" in the project "Moonlit" was archived because the end date you set for it has passed. Its chats with candidates are closed.',
 		});
 	});
 
@@ -152,6 +213,6 @@ describe("relevant-vacancies cron", () => {
 		const body = await runCron();
 
 		expect(updateMany).not.toHaveBeenCalled();
-		expect(body).toEqual({ archived: 0, reminded: 0 });
+		expect(body).toEqual({ archived: 0, reminded: 0, candidateReminders: 0 });
 	});
 });

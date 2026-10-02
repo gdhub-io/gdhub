@@ -6,13 +6,17 @@ import {
 	type User,
 } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
-import { NO_WARNING_LISTING_DAYS } from "@/config/vacancy";
+import {
+	ARCHIVE_WARNING_DAYS,
+	CANDIDATE_REMINDER_DAYS,
+} from "@/config/vacancy";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 import {
+	candidatesWaiting,
 	vacancyArchived,
 	vacancyArchiveWarning,
 } from "@/services/vacancyExpiryMessages";
@@ -29,22 +33,36 @@ type VacancyWithAuthor = TeamVacancy & {
 	} | null;
 };
 
+const withPendingCandidates = {
+	...vacancyWithAuthor.include,
+	_count: {
+		select: {
+			applicants: { where: { status: TeamMemberStatus.Applicant } },
+		},
+	},
+} as const;
+
+type VacancyWithCandidates = VacancyWithAuthor & {
+	_count: { applicants: number };
+};
+
 async function notifyAuthor(
 	vacancy: VacancyWithAuthor,
-	payload: { title: string; message: string },
+	payloadFor: (projectName: string) => { title: string; message: string },
 ) {
-	const author = vacancy.team?.project?.author;
-	const projectSlug = vacancy.team?.project?.slug;
-	if (!author) return;
+	const project = vacancy.team?.project;
+	if (!project?.author) return;
 	try {
 		await NovuService.send({
 			template: "default-message",
-			to: { subscriberId: author.id, email: author.email ?? undefined },
+			to: {
+				subscriberId: project.author.id,
+				email: project.author.email ?? undefined,
+			},
 			payload: {
-				...payload,
-				redirectUrl: projectSlug
-					? `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${projectSlug}`
-					: undefined,
+				...payloadFor(project.name),
+				buttonText: "Go to open positions",
+				redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}/open-positions`,
 			},
 		});
 	} catch (error) {
@@ -55,46 +73,77 @@ async function notifyAuthor(
 export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog("relevant-vacancies", async () => {
 		// Both steps are keyed to the calendar day, not to the moment of the run:
-		// a listing is warned on its last day and archived on the next one, so
-		// the warning always comes a full run ahead however the cron drifts.
+		// a listing is archived the day after its last one and warned
+		// ARCHIVE_WARNING_DAYS runs before that, however the cron drifts.
 		const today = dayjs().startOf("day");
 
-		// 1) Warn authors whose listing ends today: the next run archives it.
-		const endingToday = (await prisma.teamVacancy.findMany({
+		// 1) Warn authors whose listing will be archived in ARCHIVE_WARNING_DAYS days.
+		const endingSoon = (await prisma.teamVacancy.findMany({
 			where: {
 				status: TeamVacancyStatus.Published,
 				finishedAt: {
-					gte: today.toDate(),
-					lt: today.add(1, "day").toDate(),
+					gte: today.add(ARCHIVE_WARNING_DAYS - 1, "day").toDate(),
+					lt: today.add(ARCHIVE_WARNING_DAYS, "day").toDate(),
 				},
 			},
-			include: {
-				...vacancyWithAuthor.include,
-				_count: {
-					select: {
-						applicants: { where: { status: TeamMemberStatus.Applicant } },
-					},
-				},
-			},
-		})) as (VacancyWithAuthor & { _count: { applicants: number } })[];
+			include: withPendingCandidates,
+		})) as VacancyWithCandidates[];
 
-		const expiringSoon = endingToday.filter(
+		const expiringSoon = endingSoon.filter(
 			(vacancy) =>
 				dayjs(vacancy.finishedAt).diff(
 					vacancy.publishedAt ?? vacancy.createdAt,
 					"day",
 					true,
-				) > NO_WARNING_LISTING_DAYS,
+				) > ARCHIVE_WARNING_DAYS,
 		);
 
 		for (const vacancy of expiringSoon) {
-			await notifyAuthor(
-				vacancy,
-				vacancyArchiveWarning(vacancy.title, vacancy._count.applicants),
+			await notifyAuthor(vacancy, (projectName) =>
+				vacancyArchiveWarning(
+					vacancy.title,
+					projectName,
+					vacancy._count.applicants,
+				),
 			);
 		}
 
-		// 2) Archive listings that ended before today and notify their authors.
+		// 2) Remind authors of candidates left undecided for CANDIDATE_REMINDER_DAYS.
+		// The one-day window on the application date makes the reminder fire once.
+		const withStaleCandidates = (await prisma.teamVacancy.findMany({
+			where: {
+				status: TeamVacancyStatus.Published,
+				finishedAt: { gte: today.toDate() },
+				id: { notIn: expiringSoon.map((vacancy) => vacancy.id) },
+				applicants: {
+					some: {
+						status: TeamMemberStatus.Applicant,
+						createdAt: {
+							gte: today.subtract(CANDIDATE_REMINDER_DAYS + 1, "day").toDate(),
+							lt: today.subtract(CANDIDATE_REMINDER_DAYS, "day").toDate(),
+						},
+					},
+				},
+			},
+			include: withPendingCandidates,
+		})) as VacancyWithCandidates[];
+
+		for (const vacancy of withStaleCandidates) {
+			await notifyAuthor(vacancy, (projectName) =>
+				candidatesWaiting(
+					vacancy.title,
+					projectName,
+					vacancy._count.applicants,
+				),
+			);
+		}
+
+		const sent = {
+			reminded: expiringSoon.length,
+			candidateReminders: withStaleCandidates.length,
+		};
+
+		// 3) Archive listings that ended before today and notify their authors.
 		const notRelevantVacancies = (await prisma.teamVacancy.findMany({
 			where: {
 				status: TeamVacancyStatus.Published,
@@ -104,7 +153,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		})) as VacancyWithAuthor[];
 
 		if (notRelevantVacancies.length === 0) {
-			return { archived: 0, reminded: expiringSoon.length };
+			return { archived: 0, ...sent };
 		}
 
 		const updatedVacancies = await prisma.teamVacancy.updateMany({
@@ -119,13 +168,12 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			} catch (error) {
 				console.error("[cron.relevant-vacancies] chat close failed:", error);
 			}
-			await notifyAuthor(vacancy, vacancyArchived(vacancy.title));
+			await notifyAuthor(vacancy, (projectName) =>
+				vacancyArchived(vacancy.title, projectName),
+			);
 		}
 
-		return {
-			archived: updatedVacancies.count,
-			reminded: expiringSoon.length,
-		};
+		return { archived: updatedVacancies.count, ...sent };
 	});
 
 	return json(result ?? null);
