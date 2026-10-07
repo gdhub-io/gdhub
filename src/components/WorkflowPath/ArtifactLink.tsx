@@ -33,7 +33,7 @@ export function ArtifactLink({
 			href={artifact.link}
 			target="_blank"
 			rel="noreferrer"
-			className={styles.metaItem}
+			className={styles.link}
 		>
 			<TypeIcon size={14} />
 			{typeLabel(artifact.type)}

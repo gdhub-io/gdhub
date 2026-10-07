@@ -4,6 +4,7 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import {
 	type Icon,
+	IconArrowRight,
 	IconBulb,
 	IconChartBar,
 	IconChevronDown,
@@ -20,13 +21,11 @@ import {
 	IconTestPipe,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Tag, Tooltip, Typography } from "antd";
+import { Button, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { IconTile } from "@/components/ui";
 import WorkflowStepContent from "@/components/WorkflowContent/WorkflowStepContent";
 import styles from "./style.module.scss";
-
-const { Text } = Typography;
 
 // The default workflow's nine stages, in order; a longer custom one repeats the last.
 const STAGE_ICONS: Icon[] = [
@@ -102,10 +101,12 @@ export function StageCard({
 			>
 				<IconTile icon={StageIcon} size="md" />
 				<div className={styles.cardTitles}>
-					<Text className={styles.eyebrow}>{eyebrow}</Text>
-					<Text className={styles.title}>{title}</Text>
+					<span className={styles.overline}>{eyebrow}</span>
+					<span className={styles.title}>{title}</span>
 				</div>
-				{open ? <IconChevronUp size={20} /> : <IconChevronDown size={20} />}
+				<span className={styles.toggle}>
+					{open ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+				</span>
 			</div>
 
 			{open && (
@@ -115,35 +116,31 @@ export function StageCard({
 					{!!tasks?.length && (
 						<div className={styles.section}>
 							<div className={styles.sectionHead}>
-								<Text type="secondary">
+								<span className={styles.sectionLabel}>
 									{t("workflow.path.stage.tasks", "Tasks")}
-								</Text>
-								<Text type="secondary">
+								</span>
+								<span>
 									{t("workflow.path.count", "{done} of {total}", {
 										done: String(done),
 										total: String(tasks.length),
 									})}
-								</Text>
+								</span>
 							</div>
 							{tasks.map((task) => (
-								<div
-									key={task.id}
-									className={`${styles.taskRow}${task.done ? ` ${styles.taskDone}` : ""}`}
-								>
+								<div key={task.id} className={styles.taskRow}>
 									{task.done ? (
 										<IconCircleCheckFilled
-											size={18}
+											size={16}
 											className={styles.taskIconDone}
 										/>
 									) : (
-										<IconCircle size={18} className={styles.taskIcon} />
+										<IconCircle size={16} className={styles.taskIcon} />
 									)}
-									<Text
-										className={styles.grow}
-										type={task.done ? "secondary" : undefined}
+									<span
+										className={`${styles.grow} ${task.done ? styles.secondary : styles.taskLabel}`}
 									>
 										{task.name || task.description}
-									</Text>
+									</span>
 									{task.required && (
 										<Tag variant="filled">
 											{t("workflow.path.stage.required", "Required")}
@@ -167,6 +164,8 @@ export function StageCard({
 									type="primary"
 									loading={next.loading}
 									onClick={next.onClick}
+									icon={<IconArrowRight size={16} />}
+									iconPlacement="end"
 								>
 									{t("workflow.path.stage.next-button", "Next")}
 								</Button>

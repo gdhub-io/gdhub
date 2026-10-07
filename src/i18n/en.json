@@ -3310,9 +3310,12 @@
 				"with": "Session with {name}"
 			},
 			"sprint": {
+				"artifacts": "Artifacts {done} of {total}",
 				"day": "day {day}",
+				"devlog": "Devlog",
 				"name": "Sprint {number}",
 				"of": "Sprint {number} of 4",
+				"tasks": "{done} of {total} tasks",
 				"toward": "toward Checkpoint {number}"
 			},
 			"stage": {

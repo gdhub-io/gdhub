@@ -1,3 +1,6 @@
+// Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
+// platform-design.pen.
+
 .layout {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) 320px;
@@ -15,8 +18,8 @@
 	gap: var(--gd-space-6);
 }
 
-// One row of the path: the rail on the left, the content on the right. Rows sit
-// flush so the rail reads as one line; the spacing lives in the content.
+// One row of the path: a 40px gutter holding the rail and the marker, 16px, then
+// the content. Rows sit flush so the rail reads as one line.
 .node {
 	display: grid;
 	grid-template-columns: 40px minmax(0, 1fr);
@@ -33,13 +36,19 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: 50%;
-		border-left: 1px solid var(--gd-color-border-strong);
+		left: calc(50% - 1px);
+		width: 2px;
+		background: var(--gd-color-border-strong);
 	}
 }
 
+// The road ahead: 4px dots, 5px apart.
 .railDashed::before {
-	border-left-style: dashed;
+	background: repeating-linear-gradient(
+		to bottom,
+		var(--gd-color-border-strong) 0 4px,
+		transparent 4px 9px
+	);
 }
 
 .railNone::before {
@@ -48,7 +57,60 @@
 
 .body {
 	min-width: 0;
+}
+
+// Where the marker sits on the rail, measured from the top of the row so it
+// lines up with the row's first line — a stage head, a sprint title, a date.
+.at0 {
+	margin-top: 0;
+}
+
+.at4 {
+	margin-top: var(--gd-space-1);
+}
+
+.at6 {
+	margin-top: 6px;
+}
+
+.at24 {
+	margin-top: var(--gd-space-6);
+}
+
+.at26 {
+	margin-top: 26px;
+}
+
+.at28 {
+	margin-top: 28px;
+}
+
+.at30 {
+	margin-top: 30px;
+}
+
+.at56 {
+	margin-top: 56px;
+}
+
+.space0 {
+	padding-bottom: 0;
+}
+
+.space12 {
+	padding-bottom: var(--gd-space-3);
+}
+
+.space24 {
 	padding-bottom: var(--gd-space-6);
+}
+
+.space32 {
+	padding-bottom: var(--gd-space-8);
+}
+
+.space48 {
+	padding-bottom: var(--gd-space-12);
 }
 
 .marker {
@@ -56,9 +118,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-top: var(--gd-space-6);
-	background: var(--gd-color-bg);
-	color: var(--gd-color-text-secondary);
+	flex: none;
 }
 
 .markerDone {
@@ -70,9 +130,22 @@
 	color: var(--gd-success-solid);
 }
 
+// A checkpoint behind the project: the gate it went through, cleared.
+.markerCleared {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
 .markerCurrent {
 	width: 20px;
 	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-accent-subtle);
 
 	&::after {
 		content: "";
@@ -84,33 +157,22 @@
 	}
 }
 
+// A stage ahead and the release: a small rounded square, not a dot.
 .markerTodo {
-	width: 20px;
-	height: 20px;
-
-	&::after {
-		content: "";
-		width: 12px;
-		height: 12px;
-		border: 1.5px solid var(--gd-color-text-tertiary);
-		border-radius: 3px;
-		background: var(--gd-color-bg);
-	}
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--gd-color-text-tertiary);
+	border-radius: 3px;
+	background: var(--gd-color-bg);
 }
 
 .markerSprint {
-	width: 20px;
-	height: 20px;
-
-	&::after {
-		content: "";
-		width: 10px;
-		height: 10px;
-		border: 1.5px solid var(--gd-color-text-tertiary);
-		border-radius: 50%;
-		corner-shape: round;
-		background: var(--gd-color-bg);
-	}
+	width: 10px;
+	height: 10px;
+	border: 2px solid var(--gd-color-text-tertiary);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-bg);
 }
 
 .markerSession {
@@ -126,24 +188,19 @@
 .markerGate {
 	width: 40px;
 	height: 40px;
-	border: 1.5px solid var(--gd-color-text);
+	border: 2px solid var(--gd-color-text);
 	border-radius: 50%;
 	corner-shape: round;
+	background: var(--gd-color-surface);
 	color: var(--gd-color-text);
-}
-
-.markerCleared {
-	width: 20px;
-	height: 20px;
-	color: var(--gd-success-solid);
 }
 
 .hereRow {
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: space-between;
 	gap: var(--gd-space-4);
-	margin-bottom: var(--gd-space-3);
+	min-height: 44px;
 }
 
 .here {
@@ -155,15 +212,21 @@
 	color: var(--gd-color-text);
 
 	svg {
-		color: var(--gd-success-solid);
+		color: var(--gd-success-on-tint);
 	}
 }
 
-// Stage card: outlined when it is not where the project is, filled when it is.
+.quiet {
+	height: 32px;
+	padding: 0 var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+// Stage panel: outlined when the project is not on it, filled when it is.
 .card {
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
-	padding: var(--gd-space-6);
 }
 
 .cardLive {
@@ -176,10 +239,7 @@
 	align-items: center;
 	gap: var(--gd-space-4);
 	width: 100%;
-	padding: 0;
-	border: 0;
-	background: none;
-	text-align: left;
+	padding: var(--gd-space-4) var(--gd-space-6);
 	cursor: pointer;
 	color: inherit;
 }
@@ -188,11 +248,13 @@
 	display: flex;
 	flex: 1;
 	flex-direction: column;
+	gap: var(--gd-space-1);
 	min-width: 0;
 }
 
-.eyebrow {
-	font-size: var(--gd-font-size-caption);
+.overline {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
 	color: var(--gd-color-text-secondary);
 }
 
@@ -202,17 +264,28 @@
 	color: var(--gd-color-text);
 }
 
+.toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	flex: none;
+	color: var(--gd-color-text);
+}
+
+// Under the head, lined up with the stage name: 24 + 40 tile + 16 gap.
 .cardBody {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-6);
-	padding: var(--gd-space-6) 0 0 56px;
+	padding: var(--gd-space-1) var(--gd-space-6) var(--gd-space-6) 80px;
 }
 
 .section {
 	display: flex;
 	flex-direction: column;
-	gap: var(--gd-space-2);
+	gap: var(--gd-space-1);
 }
 
 .sectionHead {
@@ -222,22 +295,32 @@
 	color: var(--gd-color-text-secondary);
 }
 
+.sectionLabel {
+	font-weight: 600;
+}
+
+.label {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
 .taskRow {
 	display: flex;
 	align-items: center;
 	gap: var(--gd-space-3);
-	min-height: 32px;
+	padding: var(--gd-space-2) 0;
 	font-size: var(--gd-font-size-body);
 	color: var(--gd-color-text);
 }
 
-.taskDone {
-	color: var(--gd-color-text-secondary);
+.taskLabel {
+	font-weight: 500;
 }
 
 .taskIcon {
 	flex: none;
-	color: var(--gd-color-text-tertiary);
+	color: var(--gd-color-border-strong);
 }
 
 .taskIconDone {
@@ -250,8 +333,10 @@
 	min-width: 0;
 }
 
-.muted {
-	color: var(--gd-color-text-tertiary);
+.meta {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
 }
 
 // The sprint under way: the one filled card on the page.
@@ -281,6 +366,18 @@
 	color: var(--gd-color-text);
 }
 
+.toward {
+	font-size: var(--gd-font-size-body);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+.dates {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
 .sprintMeta {
 	display: flex;
 	align-items: center;
@@ -294,9 +391,29 @@
 	align-items: center;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-3) var(--gd-space-4);
-	border-radius: var(--gd-radius-control);
-	background: var(--gd-color-surface-sunken);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-neutral-100);
 	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.link {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+}
+
+.checklistHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
 }
 
 .checklistItem {
@@ -326,11 +443,42 @@ button.checklistItem {
 	}
 }
 
+.itemText {
+	display: flex;
+	flex: 1;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+}
+
+.viewResults {
+	height: 32px;
+	padding: 0 var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+.sep {
+	color: var(--gd-color-text-tertiary);
+}
+
+.secondary {
+	color: var(--gd-color-text-secondary);
+}
+
+.chevron {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}
+
+// A sprint behind: outlined, one line of what it came to.
 .summary {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-3);
-	padding: var(--gd-space-4) var(--gd-space-6);
+	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-4)
+		var(--gd-space-6);
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
 }
@@ -353,7 +501,8 @@ button.checklistItem {
 // The next session: outlined dark, because it is the one appointment on the page.
 .session {
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
+	justify-content: space-between;
 	gap: var(--gd-space-6);
 	padding: var(--gd-space-6);
 	border: 1.5px solid var(--gd-color-text);
@@ -364,6 +513,21 @@ button.checklistItem {
 	}
 }
 
+.sessionWho {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	min-width: 0;
+}
+
+.sessionText {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text-secondary);
+}
+
 .sessionWhen {
 	font-size: var(--gd-font-size-h2);
 	font-weight: 600;
@@ -372,8 +536,8 @@ button.checklistItem {
 }
 
 .upNextTitle {
-	margin: var(--gd-space-6) 0 0;
-	font-size: var(--gd-font-size-h4);
+	padding: var(--gd-space-2) 0 var(--gd-space-4);
+	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
 	color: var(--gd-color-text);
 }
@@ -382,7 +546,20 @@ button.checklistItem {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-1);
-	padding-top: var(--gd-space-3);
+}
+
+.futureDates {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.with {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding-top: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
 }
 
 .chip {
@@ -407,11 +584,16 @@ button.checklistItem {
 	background: var(--gd-color-surface);
 }
 
+.aiTile {
+	width: 56px;
+	height: 56px;
+	flex: none;
+}
+
 .gate {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-1);
-	padding-top: var(--gd-space-6);
 }
 
 .gateTitle {
@@ -420,9 +602,9 @@ button.checklistItem {
 	color: var(--gd-color-text);
 }
 
-.release {
-	padding-top: var(--gd-space-6);
+.finish {
 	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
 	color: var(--gd-color-text-tertiary);
 }
 
@@ -430,12 +612,12 @@ button.checklistItem {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--gd-space-2);
-	padding: 2px var(--gd-space-3);
+	padding: var(--gd-space-1) var(--gd-space-3);
 	border: 0;
 	border-radius: var(--gd-radius-pill);
 	corner-shape: round;
 	background: var(--gd-neutral-100);
-	font-size: var(--gd-font-size-caption);
+	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-secondary);
 	cursor: pointer;
 }
@@ -464,8 +646,63 @@ button.checklistItem {
 	}
 }
 
-.aiTile {
-	width: 56px;
-	height: 56px;
-	flex: none;
+.closedHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	cursor: pointer;
+}
+
+.closedTitle {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	margin-top: var(--gd-space-4);
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.prose {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text);
+}
+
+.outcome {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 32px;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+}
+
+.tertiary {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+.divider {
+	height: 1px;
+	background: var(--gd-color-border);
+}
+
+.result {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
 }

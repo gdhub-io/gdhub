@@ -3310,9 +3310,12 @@
 				"with": "Сессия с {name}"
 			},
 			"sprint": {
+				"artifacts": "Артефакты {done} из {total}",
 				"day": "день {day}",
+				"devlog": "Дневник разработки",
 				"name": "Спринт {number}",
 				"of": "Спринт {number} из 4",
+				"tasks": "{done} из {total} задач",
 				"toward": "к Контрольной точке {number}"
 			},
 			"stage": {

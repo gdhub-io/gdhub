@@ -3,18 +3,19 @@ import {
 	IconChevronRight,
 	IconCircleCheck,
 	IconFileText,
+	IconLayoutGridAdd,
 	IconLock,
+	IconNotebook,
 	IconPackage,
-	IconPencil,
 	IconSparkles,
-	IconSquarePlus,
 	IconVideo,
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, Typography } from "antd";
+import { Button, Modal, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
@@ -23,6 +24,7 @@ import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CheckpointCuratorKind,
+	CheckpointItemKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
 import { useMarkVerdictRead } from "@/hooks/checkpoints";
@@ -42,14 +44,12 @@ import { PathNode } from "./PathNode";
 import { PulseChip } from "./PulseChip";
 import styles from "./style.module.scss";
 
-const { Text } = Typography;
-
 const ICON: Record<ChecklistKey, ReactNode> = {
 	verdict: <IconFileText size={20} />,
 	priorities: <IconVideo size={20} />,
 	build: <IconPackage size={20} />,
-	devlog: <IconPencil size={20} />,
-	artifacts: <IconSquarePlus size={20} />,
+	devlog: <IconNotebook size={20} />,
+	artifacts: <IconLayoutGridAdd size={20} />,
 };
 
 export type RunningCheckpointProps = {
@@ -177,18 +177,29 @@ export function RunningCheckpoint({
 				) : (
 					ICON[item.key]
 				)}
-				<Flex className={styles.grow} gap={8} align="center" wrap>
-					<Text type={item.done ? "secondary" : undefined}>
+				<span className={styles.itemText}>
+					<span className={item.done ? styles.secondary : undefined}>
 						{itemLabel(item)}
-					</Text>
-					{itemMeta(item) && <Text type="secondary">· {itemMeta(item)}</Text>}
-				</Flex>
+					</span>
+					{itemMeta(item) && (
+						<>
+							<span className={styles.sep}>·</span>
+							<span className={styles.secondary}>{itemMeta(item)}</span>
+						</>
+					)}
+				</span>
 				{item.key === "verdict" && (
-					<Button type="text" size="small" onClick={() => openItem("verdict")}>
+					<Button
+						type="text"
+						className={styles.viewResults}
+						onClick={() => openItem("verdict")}
+					>
 						{t("workflow.path.check.view-results", "View results")}
 					</Button>
 				)}
-				{actionable && <IconChevronRight size={18} />}
+				{actionable && (
+					<IconChevronRight size={16} className={styles.chevron} />
+				)}
 			</>
 		);
 
@@ -224,31 +235,64 @@ export function RunningCheckpoint({
 		</span>
 	);
 
+	const outcomes = checkpoint.items.filter(
+		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
+	);
+
 	const doneSprint = (sprint: CheckpointSprintDto) => {
 		const items = sprintChecklist(checkpoint, sprint, !!previous);
+		const devlog = checkpoint.reports?.find(
+			(report) => report.sprint === sprint.number,
+		);
+		// What the evidence proved by the end of this sprint, counted once per outcome.
+		const proved = new Set(
+			(checkpoint.evidence ?? [])
+				.filter((item) => item.sprint !== null && item.sprint <= sprint.number)
+				.flatMap((item) => item.itemIds),
+		);
 
 		return (
-			<PathNode key={sprint.number} marker="done">
+			<PathNode key={sprint.number} marker="done" offset={24}>
 				<div className={styles.summary}>
-					<Flex justify="space-between" align="center" gap={16} wrap>
-						<span className={styles.sprintTitle}>
-							{t("workflow.path.sprint.of", "Sprint {number} of 4", {
-								number: String(sprint.number),
-							})}
-							<Text type="secondary">
-								{formatRange(sprint.from, sprint.to)}
-							</Text>
+					<span className={styles.sprintTitle}>
+						{t("workflow.path.sprint.of", "Sprint {number} of 4", {
+							number: String(sprint.number),
+						})}
+						<span className={styles.dates}>
+							{formatRange(sprint.from, sprint.to)}
 						</span>
-						<PulseChip rows={checkpoint.pulses ?? []} sprint={sprint.number} />
-					</Flex>
+					</span>
 					<div className={styles.summaryMeta}>
+						{devlog && (
+							<Link href={`/devlog/${devlog.id}`} className={styles.link}>
+								<IconNotebook size={16} className={styles.secondary} />
+								{t("workflow.path.sprint.devlog", "Devlog")}
+								<IconArrowUpRight size={14} />
+							</Link>
+						)}
+						{outcomes.length > 0 && (
+							<span className={styles.metaItem}>
+								<IconLayoutGridAdd size={16} />
+								{t(
+									"workflow.path.sprint.artifacts",
+									"Artifacts {done} of {total}",
+									{
+										done: String(
+											outcomes.filter((item) => proved.has(item.id)).length,
+										),
+										total: String(outcomes.length),
+									},
+								)}
+							</span>
+						)}
 						<span className={styles.metaItem}>
 							<IconCircleCheck size={16} />
-							{t("workflow.path.count-done", "{done} of {total} done", {
+							{t("workflow.path.sprint.tasks", "{done} of {total} tasks", {
 								done: String(items.filter((item) => item.done).length),
 								total: String(items.length),
 							})}
 						</span>
+						<PulseChip rows={checkpoint.pulses ?? []} sprint={sprint.number} />
 					</div>
 				</div>
 			</PathNode>
@@ -307,41 +351,43 @@ export function RunningCheckpoint({
 				marker={isAI ? "review" : "session"}
 			>
 				<div className={styles.session}>
-					{isAI ? (
-						<span className={`${styles.chipIcon} ${styles.aiTile}`}>
-							<IconSparkles size={24} />
-						</span>
-					) : (
-						<AppAvatar src={checkpoint.curator?.image} size={56}>
-							{curatorName[0]}
-						</AppAvatar>
-					)}
-					<Flex vertical className={styles.grow}>
-						<Text type="secondary">{when.format("MMMM D")}</Text>
-						<span className={styles.sessionWhen}>
-							{isAI
-								? t(
-										"workflow.path.session.review-title",
-										"Sprint {number} review",
-										{
-											number: String(session.index - 1),
-										},
-									)
-								: session.timeKnown
-									? `${when.format("dddd")} · ${when.format("HH:mm")}`
-									: when.format("dddd")}
-						</span>
-						<Text type="secondary">
-							{isAI
-								? t(
-										"workflow.path.session.review-sub",
-										"Written by the AI curator from your devlog, artifacts and activity",
-									)
-								: `${t("workflow.path.session.with", "Session with {name}", {
-										name: curatorName,
-									})} · ${opens}`}
-						</Text>
-					</Flex>
+					<div className={styles.sessionWho}>
+						{isAI ? (
+							<span className={`${styles.chipIcon} ${styles.aiTile}`}>
+								<IconSparkles size={24} />
+							</span>
+						) : (
+							<AppAvatar src={checkpoint.curator?.image} size={56}>
+								{curatorName[0]}
+							</AppAvatar>
+						)}
+						<div className={styles.sessionText}>
+							<span>{when.format("MMMM D")}</span>
+							<span className={styles.sessionWhen}>
+								{isAI
+									? t(
+											"workflow.path.session.review-title",
+											"Sprint {number} review",
+											{
+												number: String(session.index - 1),
+											},
+										)
+									: session.timeKnown
+										? `${when.format("dddd")} · ${when.format("HH:mm")}`
+										: when.format("dddd")}
+							</span>
+							<span>
+								{isAI
+									? t(
+											"workflow.path.session.review-sub",
+											"Written by the AI curator from your devlog, artifacts and activity",
+										)
+									: `${t("workflow.path.session.with", "Session with {name}", {
+											name: curatorName,
+										})} · ${opens}`}
+							</span>
+						</div>
+					</div>
 					{action}
 				</div>
 			</PathNode>
@@ -373,7 +419,7 @@ export function RunningCheckpoint({
 							{t("workflow.path.sprint.of", "Sprint {number} of 4", {
 								number: String(current.number),
 							})}
-							<Text type="secondary">
+							<span className={styles.toward}>
 								{t(
 									"workflow.path.sprint.toward",
 									"toward Checkpoint {number}",
@@ -381,7 +427,7 @@ export function RunningCheckpoint({
 										number: String(number),
 									},
 								)}
-							</Text>
+							</span>
 						</span>
 						<span className={styles.sprintMeta}>
 							{formatRange(current.from, current.to)}
@@ -400,8 +446,8 @@ export function RunningCheckpoint({
 						(openingSession.endedAt ||
 							(isAI && openingSession.contentStatus)) && (
 							<div className={styles.sessionDone}>
-								{isAI ? <IconSparkles size={18} /> : <IconVideo size={18} />}
-								<Text className={styles.grow}>
+								{isAI ? <IconSparkles size={16} /> : <IconVideo size={16} />}
+								<span>
 									{isAI
 										? t(
 												"workflow.path.session.review-title",
@@ -412,13 +458,13 @@ export function RunningCheckpoint({
 											)
 										: t("workflow.path.session.with", "Session with {name}", {
 												name: curatorName,
-											})}{" "}
-									<Text type="secondary">
-										{formatShort(openingSession.scheduledAt)}
-									</Text>
-								</Text>
+											})}
+								</span>
+								<span className={`${styles.meta} ${styles.grow}`}>
+									{formatShort(openingSession.scheduledAt)}
+								</span>
 								<Typography.Link
-									className={styles.metaItem}
+									className={styles.link}
 									onClick={() => router.push(sessionHref(openingSession))}
 								>
 									{isAI
@@ -429,18 +475,18 @@ export function RunningCheckpoint({
 							</div>
 						)}
 
-					<Flex vertical>
-						<Flex justify="space-between" align="center">
-							<Text strong>{nextLabel}</Text>
-							<Text type="secondary">
+					<div>
+						<div className={styles.checklistHead}>
+							{nextLabel}
+							<span className={styles.meta}>
 								{t("workflow.path.count", "{done} of {total}", {
 									done: String(checklist.filter((item) => item.done).length),
 									total: String(checklist.length),
 								})}
-							</Text>
-						</Flex>
+							</span>
+						</div>
 						{checklist.map(checklistRow)}
-					</Flex>
+					</div>
 				</div>
 			</PathNode>
 
@@ -448,9 +494,9 @@ export function RunningCheckpoint({
 
 			{sprints.some((sprint) => sprint.state === "ahead") && (
 				<PathNode marker="none">
-					<Typography.Title level={4} className={styles.upNextTitle}>
+					<div role="heading" aria-level={3} className={styles.upNextTitle}>
 						{t("workflow.path.up-next", "Up next")}
-					</Typography.Title>
+					</div>
 				</PathNode>
 			)}
 			{sprints
@@ -460,7 +506,7 @@ export function RunningCheckpoint({
 					return (
 						<PathNode key={sprint.number} marker="sprint">
 							<div className={styles.futureSprint}>
-								<Text type="secondary">
+								<span className={styles.futureDates}>
 									{formatRange(sprint.from, sprint.to)}
 									{days > 0 &&
 										` · ${
@@ -474,20 +520,18 @@ export function RunningCheckpoint({
 														},
 													)
 										}`}
-								</Text>
-								<Text strong>
+								</span>
+								<span className={styles.title}>
 									{t("workflow.path.sprint.name", "Sprint {number}", {
 										number: String(sprint.number),
 									})}
-								</Text>
-								<Flex align="center" gap={8}>
-									<Text type="secondary">
-										{isAI
-											? t("workflow.path.review-by", "review by")
-											: t("workflow.path.with", "with")}
-									</Text>
+								</span>
+								<div className={styles.with}>
+									{isAI
+										? t("workflow.path.review-by", "review by")
+										: t("workflow.path.with", "with")}
 									{who}
-								</Flex>
+								</div>
 							</div>
 						</PathNode>
 					);
@@ -496,7 +540,7 @@ export function RunningCheckpoint({
 			<PathNode marker="gate" rail="dashed">
 				<div className={styles.gate}>
 					{finalSession && (
-						<Text type="secondary">
+						<span className={styles.meta}>
 							{isAI
 								? t(
 										"workflow.path.gate.ai",
@@ -525,7 +569,7 @@ export function RunningCheckpoint({
 											),
 										},
 									)}
-						</Text>
+						</span>
 					)}
 					<span className={styles.gateTitle}>
 						{t("workflow.path.checkpoint.title", "Checkpoint {number}", {
@@ -548,7 +592,9 @@ export function RunningCheckpoint({
 						},
 					)}
 				>
-					<CheckpointResult checkpoint={previous.checkpoint} />
+					<div className={styles.result}>
+						<CheckpointResult checkpoint={previous.checkpoint} />
+					</div>
 				</Modal>
 			)}
 

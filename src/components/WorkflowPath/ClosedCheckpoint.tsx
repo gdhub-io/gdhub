@@ -5,17 +5,14 @@ import {
 	IconCircleCheck,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
 import { useState } from "react";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { ArtifactLink } from "@/components/WorkflowPath/ArtifactLink";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { ArtifactLink } from "./ArtifactLink";
 import { formatRange, formatShort } from "./dates";
 import styles from "./style.module.scss";
-
-const { Text } = Typography;
 
 export type ClosedCheckpointProps = {
 	checkpoint: CheckpointDto;
@@ -23,8 +20,8 @@ export type ClosedCheckpointProps = {
 };
 
 /**
- * A checkpoint behind the project: its dates and verdict folded, its goal,
- * what was delivered and the curator's word open.
+ * Frame 07.1 (nBVNK): a checkpoint behind the project — its dates and verdict
+ * folded, its goal, what was delivered and the curator's word open.
  */
 export function ClosedCheckpoint({
 	checkpoint,
@@ -34,13 +31,13 @@ export function ClosedCheckpoint({
 	const [open, setOpen] = useState(false);
 
 	return (
-		<Flex vertical gap={16}>
+		<div>
 			{/* ui-guard-ignore the header row toggles the details below it */}
 			<div
 				role="button"
 				tabIndex={0}
 				aria-expanded={open}
-				className={styles.cardHead}
+				className={styles.closedHead}
 				onClick={() => setOpen((value) => !value)}
 				onKeyDown={(event) => {
 					if (event.key === "Enter" || event.key === " ") {
@@ -51,28 +48,30 @@ export function ClosedCheckpoint({
 			>
 				<div className={styles.cardTitles}>
 					{checkpoint.startedAt && checkpoint.dueAt && (
-						<Text className={styles.eyebrow}>
+						<span className={styles.meta}>
 							{formatRange(checkpoint.startedAt, checkpoint.dueAt)}
-						</Text>
+						</span>
 					)}
-					<Flex align="center" gap={12}>
-						<Text className={styles.title}>
+					<span className={styles.closedTitle}>
+						<span className={styles.title}>
 							{t("workflow.path.checkpoint.title", "Checkpoint {number}", {
 								number: String(number),
 							})}
-						</Text>
+						</span>
 						{checkpoint.verdict && <VerdictChip verdict={checkpoint.verdict} />}
-					</Flex>
+					</span>
 				</div>
-				{open ? <IconChevronUp size={20} /> : <IconChevronDown size={20} />}
+				<span className={styles.toggle}>
+					{open ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+				</span>
 			</div>
 
 			{open && (
-				<div className={styles.card}>
+				<div className={styles.panel}>
 					<CheckpointResult checkpoint={checkpoint} />
 				</div>
 			)}
-		</Flex>
+		</div>
 	);
 }
 
@@ -89,41 +88,45 @@ export function CheckpointResult({
 	const delivered = outcomes.filter((item) => item.artifact).length;
 
 	return (
-		<Flex vertical gap={24}>
-			<div className={styles.section}>
-				<Text type="secondary">
+		<>
+			<div className={styles.block}>
+				<span className={styles.label}>
 					{t("workflow.path.checkpoint.goal", "Goal")}
-				</Text>
-				<Text>{checkpoint.goal}</Text>
+				</span>
+				<span className={styles.prose}>{checkpoint.goal}</span>
 			</div>
 
 			{outcomes.length > 0 && (
-				<div className={styles.section}>
+				<div className={styles.block}>
 					<div className={styles.sectionHead}>
-						<Text type="secondary">
+						<span className={styles.sectionLabel}>
 							{t("workflow.path.checkpoint.tasks", "Tasks")}
-						</Text>
-						<Text type="secondary">
+						</span>
+						<span>
 							{t("workflow.path.count", "{done} of {total}", {
 								done: String(delivered),
 								total: String(outcomes.length),
 							})}
-						</Text>
+						</span>
 					</div>
 					{outcomes.map((item) => (
-						<div key={item.id} className={styles.taskRow}>
+						<div key={item.id} className={styles.outcome}>
 							{item.artifact ? (
-								<IconCircleCheck size={18} className={styles.taskIconDone} />
+								<IconCircleCheck size={16} className={styles.taskIconDone} />
 							) : (
-								<IconCircle size={18} className={styles.taskIcon} />
+								<IconCircle size={16} className={styles.taskIcon} />
 							)}
-							<Text className={styles.grow}>{item.text}</Text>
+							<span
+								className={`${styles.grow}${item.artifact ? "" : ` ${styles.secondary}`}`}
+							>
+								{item.text}
+							</span>
 							{item.artifact ? (
 								<ArtifactLink artifact={item.artifact} />
 							) : (
-								<Text type="secondary">
+								<span className={styles.tertiary}>
 									{t("workflow.path.checkpoint.not-delivered", "Not delivered")}
-								</Text>
+								</span>
 							)}
 						</div>
 					))}
@@ -131,26 +134,31 @@ export function CheckpointResult({
 			)}
 
 			{checkpoint.verdict && (
-				<Flex vertical gap={8}>
-					<Flex align="center" gap={8}>
-						<VerdictChip verdict={checkpoint.verdict} />
-						{checkpoint.decidedAt && (
-							<Text type="secondary">
-								· {formatShort(checkpoint.decidedAt)}
-							</Text>
+				<>
+					<div className={styles.divider} />
+					<div className={styles.block}>
+						<span className={styles.closedTitle}>
+							<VerdictChip verdict={checkpoint.verdict} />
+							{checkpoint.decidedAt && (
+								<span className={styles.meta}>
+									· {formatShort(checkpoint.decidedAt)}
+								</span>
+							)}
+						</span>
+						{checkpoint.verdictNote && (
+							<span className={styles.prose}>{checkpoint.verdictNote}</span>
 						)}
-					</Flex>
-					{checkpoint.verdictNote && <Text>{checkpoint.verdictNote}</Text>}
-					{checkpoint.curator && (
-						<Flex align="center" gap={8}>
-							<AppAvatar src={checkpoint.curator.image} size={20}>
-								{checkpoint.curator.name?.[0]}
-							</AppAvatar>
-							<Text type="secondary">{checkpoint.curator.name}</Text>
-						</Flex>
-					)}
-				</Flex>
+						{checkpoint.curator && (
+							<span className={styles.closedTitle}>
+								<AppAvatar src={checkpoint.curator.image} size={24}>
+									{checkpoint.curator.name?.[0]}
+								</AppAvatar>
+								<span className={styles.meta}>{checkpoint.curator.name}</span>
+							</span>
+						)}
+					</div>
+				</>
 			)}
-		</Flex>
+		</>
 	);
 }

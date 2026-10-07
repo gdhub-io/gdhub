@@ -9,7 +9,6 @@ import WorkflowTasksPanel from "@/components/WorkflowContent/WorkflowTasksPanel"
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
-import type { CheckpointDto } from "@/types/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { PathNode } from "./PathNode";
@@ -122,7 +121,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const historyToggle = (
 		<Button
 			type="text"
-			size="small"
+			className={styles.quiet}
 			icon={<IconHistory size={16} />}
 			onClick={() => setShowHistory((value) => !value)}
 		>
@@ -199,7 +198,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 								{closedNodes(current.id)}
 							</>
 						)}
-						<PathNode marker="none">{here(historyToggle)}</PathNode>
+						<PathNode
+							marker="none"
+							rail={historyVisible ? "solid" : "dashed"}
+							space={12}
+						>
+							{here(historyToggle)}
+						</PathNode>
 						<RunningCheckpoint
 							checkpoint={detail}
 							project={project}
@@ -209,8 +214,12 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 					</>
 				) : (
 					<>
-						<PathNode marker="none">{here()}</PathNode>
-						<PathNode marker="current">{stageCard(current.order)}</PathNode>
+						<PathNode marker="none" space={12}>
+							{here()}
+						</PathNode>
+						<PathNode marker="current" offset={26}>
+							{stageCard(current.order)}
+						</PathNode>
 						{closedNodes(current.id)}
 					</>
 				)}
@@ -221,8 +230,8 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 					</PathNode>
 				)}
 				{release && release.order > current.order && (
-					<PathNode marker="todo" rail="none">
-						<div className={styles.release}>{stepName(release.order)}</div>
+					<PathNode marker="todo" rail="none" offset={0} space={0}>
+						<div className={styles.finish}>{stepName(release.order)}</div>
 					</PathNode>
 				)}
 			</div>
