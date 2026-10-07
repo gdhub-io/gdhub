@@ -31,6 +31,7 @@ export const formatDay = (iso: string, now = new Date()) => {
 export const formatDayRange = (from: string, to: string, now = new Date()) => {
 	const a = dayjs(from);
 	const b = dayjs(to);
+	if (a.isSame(b, "day")) return formatDay(from, now);
 	if (a.year() !== b.year())
 		return `${formatDay(from, now)} – ${formatDay(to, now)}`;
 	return `${a.format("D MMM")} – ${formatDay(to, now)}`;

@@ -233,7 +233,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				)}
 				{historyVisible &&
 					steps.slice(firstShown, current.order).flatMap((step) => [
-						<PathNode key={step.id} marker="stageDone">
+						<PathNode key={step.id} marker="stageDone" start={step.order === 0}>
 							{stageCard(step.order)}
 						</PathNode>,
 						...closedNodes(step.id),
@@ -248,7 +248,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						)}
 						{/* The stage stays in view with a checkpoint running on it: it is
 						    what the sprints below are working through. */}
-						<PathNode marker="stageCurrent">
+						<PathNode marker="stageCurrent" start={current.order === 0}>
 							{stageCard(current.order)}
 						</PathNode>
 						{historyVisible && closedNodes(current.id)}
@@ -273,7 +273,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						<PathNode marker="none" space={12}>
 							{here(hereLabel)}
 						</PathNode>
-						<PathNode marker="stageCurrent">
+						<PathNode marker="stageCurrent" start={current.order === 0}>
 							{stageCard(current.order)}
 						</PathNode>
 						{closedNodes(current.id)}

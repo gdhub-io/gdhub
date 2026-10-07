@@ -55,6 +55,12 @@
 	display: none;
 }
 
+// The project's first stage: nothing came before it, so the line starts at its
+// marker (26px down, 10px to the centre of a 20px marker).
+.railStart::before {
+	top: 36px;
+}
+
 .body {
 	min-width: 0;
 }

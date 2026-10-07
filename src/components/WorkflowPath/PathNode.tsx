@@ -81,6 +81,8 @@ export type PathNodeProps = {
 	space?: (typeof SPACE)[PathMarker];
 	/** A row inside the stage — a checkpoint's sprints — sits one step in. */
 	inset?: boolean;
+	/** The very first stage: the line starts at its marker, not above it. */
+	start?: boolean;
 	children: ReactNode;
 };
 
@@ -94,13 +96,17 @@ export function PathNode({
 	offset = OFFSET[marker],
 	space = SPACE[marker],
 	inset = false,
+	start = false,
 	children,
 }: PathNodeProps) {
-	const railClass = {
-		solid: styles.rail,
-		dashed: `${styles.rail} ${styles.railDashed}`,
-		none: `${styles.rail} ${styles.railNone}`,
-	}[rail];
+	const railClass = [
+		styles.rail,
+		rail === "dashed" && styles.railDashed,
+		rail === "none" && styles.railNone,
+		start && styles.railStart,
+	]
+		.filter(Boolean)
+		.join(" ");
 
 	return (
 		<div className={styles.node}>
