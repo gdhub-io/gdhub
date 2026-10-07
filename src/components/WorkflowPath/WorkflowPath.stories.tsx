@@ -184,6 +184,7 @@ export const HumanCurator: StoryObj = {
 				project={project}
 				previous={{ checkpoint: closed, number: 2 }}
 				canManage
+				here={null}
 			/>
 		</div>
 	),
@@ -201,6 +202,7 @@ export const AICurator: StoryObj = {
 				project={project}
 				previous={null}
 				canManage
+				here={null}
 			/>
 		</div>
 	),

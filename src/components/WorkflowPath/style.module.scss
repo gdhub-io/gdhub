@@ -77,6 +77,10 @@
 	margin-top: var(--gd-space-6);
 }
 
+.at64 {
+	margin-top: var(--gd-space-16);
+}
+
 .at26 {
 	margin-top: 26px;
 }
@@ -201,6 +205,10 @@
 	justify-content: space-between;
 	gap: var(--gd-space-4);
 	min-height: 44px;
+}
+
+.hereAbove {
+	padding-bottom: var(--gd-space-3);
 }
 
 .here {
@@ -666,8 +674,8 @@ button.checklistItem {
 	gap: var(--gd-space-6);
 	margin-top: var(--gd-space-4);
 	padding: var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
 }
 
 .block {

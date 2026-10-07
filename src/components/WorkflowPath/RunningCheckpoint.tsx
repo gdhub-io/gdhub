@@ -58,6 +58,8 @@ export type RunningCheckpointProps = {
 	/** The checkpoint before this one, for the verdict sprint 1 starts from. */
 	previous: { checkpoint: CheckpointDto; number: number } | null;
 	canManage: boolean;
+	/** "You are here", when a sprint behind pushes it down to the current one. */
+	here: ReactNode;
 };
 
 /**
@@ -70,6 +72,7 @@ export function RunningCheckpoint({
 	project,
 	previous,
 	canManage,
+	here,
 }: RunningCheckpointProps) {
 	const { t } = useTranslate();
 	const router = useRouter();
@@ -412,7 +415,8 @@ export function RunningCheckpoint({
 		<>
 			{sprints.filter((sprint) => sprint.state === "done").map(doneSprint)}
 
-			<PathNode marker="current">
+			<PathNode marker="current" offset={here ? 64 : 28}>
+				{here && <div className={styles.hereAbove}>{here}</div>}
 				<div className={styles.sprint}>
 					<div className={styles.sprintHead}>
 						<span className={styles.sprintTitle}>

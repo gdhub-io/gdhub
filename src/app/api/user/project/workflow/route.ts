@@ -66,6 +66,8 @@ export const GET = withAuth({ mode: "user" })(
 						id: true,
 						order: true,
 						name: true,
+						// Where the stage's text lives (notion::table.slug): the path opens any stage.
+						description: true,
 						plannedAt: true,
 						finishedAt: true,
 					},

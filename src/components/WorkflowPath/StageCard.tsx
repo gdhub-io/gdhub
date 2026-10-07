@@ -76,7 +76,8 @@ export function StageCard({
 	const StageIcon =
 		STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)] ?? IconFlag;
 	const done = (tasks ?? []).filter((task) => task.done).length;
-	const live = state === "current" && open;
+	// Open, a stage is read: white like the card under way. Folded, it is outlined.
+	const live = open;
 
 	const eyebrow =
 		state === "ahead"

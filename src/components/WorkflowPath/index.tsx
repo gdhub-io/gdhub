@@ -108,14 +108,22 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		});
 	};
 
-	const here = (extra?: ReactNode) => (
+	const hereLabel = (
+		<span className={styles.here}>
+			<IconShieldCheck size={16} />
+			{t("workflow.path.here", "You are here")}
+		</span>
+	);
+	const here = (label: ReactNode, extra?: ReactNode) => (
 		<div className={styles.hereRow}>
-			<span className={styles.here}>
-				<IconShieldCheck size={16} />
-				{t("workflow.path.here", "You are here")}
-			</span>
+			{label}
 			{extra}
 		</div>
+	);
+	// Frame 08: once a sprint is behind, the label moves down to the sprint
+	// under way and the top row keeps only the way back.
+	const sprintBehind = !!detail?.sprints?.some(
+		(sprint) => sprint.state === "done",
 	);
 
 	const historyToggle = (
@@ -203,19 +211,20 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 							rail={historyVisible ? "solid" : "dashed"}
 							space={12}
 						>
-							{here(historyToggle)}
+							{here(sprintBehind ? <span /> : hereLabel, historyToggle)}
 						</PathNode>
 						<RunningCheckpoint
 							checkpoint={detail}
 							project={project}
 							previous={previous}
 							canManage={can("project.checkpoints.manage")}
+							here={sprintBehind ? hereLabel : null}
 						/>
 					</>
 				) : (
 					<>
 						<PathNode marker="none" space={12}>
-							{here()}
+							{here(hereLabel)}
 						</PathNode>
 						<PathNode marker="current" offset={26}>
 							{stageCard(current.order)}
