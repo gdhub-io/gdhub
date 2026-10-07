@@ -44,6 +44,8 @@ export type StageCardProps = {
 	step: ProjectWorkflowStep;
 	title: string;
 	state: "done" | "current" | "ahead";
+	/** When the project was on it: "12 Mar – 4 Jun", or "since 4 Jun" for the current one. */
+	dates?: string | null;
 	locale?: string;
 	/** The current stage's tasks; the API carries no others. */
 	tasks?: ProjectWorkflowTask[];
@@ -66,6 +68,7 @@ export function StageCard({
 	step,
 	title,
 	state,
+	dates,
 	locale,
 	tasks,
 	next,
@@ -106,6 +109,7 @@ export function StageCard({
 					<span className={styles.overline}>{eyebrow}</span>
 					<span className={styles.title}>{title}</span>
 				</div>
+				{dates && <span className={styles.meta}>{dates}</span>}
 				<span className={styles.toggle}>
 					{open ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
 				</span>

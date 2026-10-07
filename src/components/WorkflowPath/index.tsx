@@ -11,6 +11,7 @@ import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
+import { formatDay, formatDayRange } from "./dates";
 import { PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 import { StageCard } from "./StageCard";
@@ -148,6 +149,21 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			</PathNode>
 		));
 
+	// A stage starts when the project moves onto it (plannedAt is stamped then)
+	// and ends when it finishes or the next one starts.
+	const stageDates = (index: number, state: "done" | "current" | "ahead") => {
+		const from = steps[index].plannedAt;
+		if (!from || state === "ahead") return null;
+		if (state === "current")
+			return t("workflow.path.stage.since", "since {date}", {
+				date: formatDay(String(from)),
+			});
+		const to = steps[index].finishedAt ?? steps[index + 1]?.plannedAt;
+		return to
+			? formatDayRange(String(from), String(to))
+			: formatDay(String(from));
+	};
+
 	const stageCard = (index: number) => {
 		const step = steps[index];
 		const state =
@@ -162,6 +178,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				step={step}
 				title={stepName(index)}
 				state={state}
+				dates={stageDates(index, state)}
 				locale={locale}
 				tasks={state === "current" ? current.tasks : undefined}
 				defaultOpen={state === "current" && !running}
