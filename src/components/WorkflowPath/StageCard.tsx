@@ -1,7 +1,4 @@
-import type {
-	ProjectWorkflowStep,
-	ProjectWorkflowTask,
-} from "@gdhub-io/gdhub-prisma";
+import type { ProjectWorkflowStep } from "@gdhub-io/gdhub-prisma";
 import {
 	type Icon,
 	IconArrowRight,
@@ -9,8 +6,6 @@ import {
 	IconChartBar,
 	IconChevronDown,
 	IconChevronUp,
-	IconCircle,
-	IconCircleCheck,
 	IconDeviceGamepad2,
 	IconDoor,
 	IconFlag,
@@ -21,7 +16,7 @@ import {
 	IconTestPipe,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Tag, Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import { useState } from "react";
 import { IconTile } from "@/components/ui";
 import WorkflowStepContent from "@/components/WorkflowContent/WorkflowStepContent";
@@ -47,8 +42,8 @@ export type StageCardProps = {
 	/** When the project was on it: "12 Mar – 4 Jun", or "since 4 Jun" for the current one. */
 	dates?: string | null;
 	locale?: string;
-	/** The current stage's tasks; the API carries no others. */
-	tasks?: ProjectWorkflowTask[];
+	/** Opens unfolded: the stage the project is on, when no checkpoint runs on it. */
+	defaultOpen?: boolean;
 	/** Present only on the current stage, for someone who may move it. */
 	next?: {
 		onClick: () => void;
@@ -60,22 +55,22 @@ export type StageCardProps = {
 
 /**
  * A stage of the workflow on the path. Folded it is a name; open it is the
- * stage's text from Notion, its tasks and, on the current one, Next.
+ * stage's text from Notion and, on the current one, Next — its tasks live
+ * in the aside.
  */
 export function StageCard({
 	step,
 	title,
 	state,
 	dates,
+	defaultOpen = false,
 	locale,
-	tasks,
 	next,
 }: StageCardProps) {
 	const { t } = useTranslate();
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(defaultOpen);
 	const StageIcon =
 		STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)] ?? IconFlag;
-	const done = (tasks ?? []).filter((task) => task.done).length;
 	// Only the stage the project is on is white; one behind or ahead stays outlined, open or not.
 	const live = state === "current" && open;
 
@@ -115,44 +110,6 @@ export function StageCard({
 			{open && (
 				<div className={styles.cardBody}>
 					<WorkflowStepContent step={step} locale={locale} />
-
-					{!!tasks?.length && (
-						<div className={styles.section}>
-							<div className={styles.sectionHead}>
-								<span className={styles.sectionLabel}>
-									{t("workflow.path.stage.tasks", "Tasks")}
-								</span>
-								<span>
-									{t("workflow.path.count", "{done} of {total}", {
-										done: String(done),
-										total: String(tasks.length),
-									})}
-								</span>
-							</div>
-							{tasks.map((task) => (
-								<div key={task.id} className={styles.checklistItem}>
-									{task.done ? (
-										<IconCircleCheck
-											size={20}
-											className={styles.taskIconDone}
-										/>
-									) : (
-										<IconCircle size={20} className={styles.taskIcon} />
-									)}
-									<span
-										className={`${styles.grow}${task.done ? ` ${styles.secondary}` : ""}`}
-									>
-										{task.name || task.description}
-									</span>
-									{task.required && (
-										<Tag variant="filled">
-											{t("workflow.path.stage.required", "Required")}
-										</Tag>
-									)}
-								</div>
-							))}
-						</div>
-					)}
 
 					{next && (
 						<div>
