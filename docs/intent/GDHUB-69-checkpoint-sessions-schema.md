@@ -57,6 +57,6 @@ Everything that reads or writes the new fields:
 - **The transcript is kept** while the notes built from it are being tuned. It is to be cleared once they are good enough, and that needs its own issue for retention and erasure.
 - **The `cp3` number in the route** is derived (the project's non-Draft, non-Cancelled checkpoints in creation order), not stored.
 
-## Dependency
+## Where it lands
 
-Pinning the new version here needs PR #359 (`feature/gdhub-31-add-checkpoints-to-projects`) merged into `dev` first, because `dev` does not have the checkpoint code yet.
+Checkpoint work collects on `feature/gdhub-31-add-checkpoints-to-projects` and reaches `dev` only as a whole. This branch is cut from it and merges back into it.
