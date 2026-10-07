@@ -70,6 +70,8 @@ export type PathNodeProps = {
 	offset?: (typeof OFFSET)[PathMarker];
 	/** Space under the row, when it differs from its kind's. */
 	space?: (typeof SPACE)[PathMarker];
+	/** A row inside the stage — a checkpoint's sprints — sits one step in. */
+	inset?: boolean;
 	children: ReactNode;
 };
 
@@ -82,6 +84,7 @@ export function PathNode({
 	rail = "solid",
 	offset = OFFSET[marker],
 	space = SPACE[marker],
+	inset = false,
 	children,
 }: PathNodeProps) {
 	const railClass = {
@@ -101,7 +104,9 @@ export function PathNode({
 					</span>
 				)}
 			</div>
-			<div className={`${styles.body} ${styles[`space${space}`]}`}>
+			<div
+				className={`${styles.body} ${styles[`space${space}`]}${inset ? ` ${styles.inset}` : ""}`}
+			>
 				{children}
 			</div>
 		</div>

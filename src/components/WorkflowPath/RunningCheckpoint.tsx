@@ -255,7 +255,7 @@ export function RunningCheckpoint({
 		);
 
 		return (
-			<PathNode key={sprint.number} marker="done" offset={24}>
+			<PathNode inset key={sprint.number} marker="done" offset={24}>
 				<div className={styles.summary}>
 					<span className={styles.sprintTitle}>
 						{t("workflow.path.sprint.of", "Sprint {number} of 4", {
@@ -350,6 +350,7 @@ export function RunningCheckpoint({
 
 		return (
 			<PathNode
+				inset
 				key={`session-${session.index}`}
 				marker={isAI ? "review" : "session"}
 			>
@@ -415,7 +416,7 @@ export function RunningCheckpoint({
 		<>
 			{sprints.filter((sprint) => sprint.state === "done").map(doneSprint)}
 
-			<PathNode marker="current" offset={here ? 64 : 28}>
+			<PathNode inset marker="current" offset={here ? 64 : 28}>
 				{here && <div className={styles.hereAbove}>{here}</div>}
 				<div className={styles.sprint}>
 					<div className={styles.sprintHead}>
@@ -497,7 +498,7 @@ export function RunningCheckpoint({
 			{nextSession && nextSession.index <= 4 && sessionCard(nextSession)}
 
 			{sprints.some((sprint) => sprint.state === "ahead") && (
-				<PathNode marker="none">
+				<PathNode inset marker="none">
 					<div role="heading" aria-level={3} className={styles.upNextTitle}>
 						{t("workflow.path.up-next", "Up next")}
 					</div>
@@ -508,7 +509,7 @@ export function RunningCheckpoint({
 				.map((sprint) => {
 					const days = daysUntil(sprint.from);
 					return (
-						<PathNode key={sprint.number} marker="sprint">
+						<PathNode inset key={sprint.number} marker="sprint">
 							<div className={styles.futureSprint}>
 								<span className={styles.futureDates}>
 									{formatRange(sprint.from, sprint.to)}
@@ -541,7 +542,7 @@ export function RunningCheckpoint({
 					);
 				})}
 
-			<PathNode marker="gate" rail="dashed">
+			<PathNode inset marker="gate" rail="dashed">
 				<div className={styles.gate}>
 					{finalSession && (
 						<span className={styles.meta}>

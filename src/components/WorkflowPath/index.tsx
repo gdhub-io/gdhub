@@ -231,7 +231,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						</PathNode>
 						{historyVisible && closedNodes(current.id)}
 						{(historyVisible || !sprintBehind) && (
-							<PathNode marker="none" space={12}>
+							<PathNode marker="none" space={12} inset>
 								{here(
 									sprintBehind ? <span /> : hereLabel,
 									historyVisible ? historyToggle : null,
