@@ -258,7 +258,7 @@ export function RunningCheckpoint({
 			<PathNode inset key={sprint.number} marker="done" offset={24}>
 				<div className={styles.summary}>
 					<span className={styles.sprintTitle}>
-						{t("workflow.path.sprint.of", "Sprint {number} of 4", {
+						{t("workflow.path.sprint.name", "Sprint {number}", {
 							number: String(sprint.number),
 						})}
 						<span className={styles.dates}>
@@ -421,7 +421,7 @@ export function RunningCheckpoint({
 				<div className={styles.sprint}>
 					<div className={styles.sprintHead}>
 						<span className={styles.sprintTitle}>
-							{t("workflow.path.sprint.of", "Sprint {number} of 4", {
+							{t("workflow.path.sprint.name", "Sprint {number}", {
 								number: String(current.number),
 							})}
 							<span className={styles.toward}>

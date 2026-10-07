@@ -10,6 +10,8 @@ import styles from "./style.module.scss";
 export type PathMarker =
 	| "done"
 	| "current"
+	| "stageDone"
+	| "stageCurrent"
 	| "todo"
 	| "sprint"
 	| "session"
@@ -21,6 +23,8 @@ export type PathMarker =
 const MARKER_CLASS: Record<Exclude<PathMarker, "none">, string> = {
 	done: styles.markerDone,
 	current: styles.markerCurrent,
+	stageDone: styles.markerStageDone,
+	stageCurrent: styles.markerStageCurrent,
 	todo: styles.markerTodo,
 	sprint: styles.markerSprint,
 	session: styles.markerSession,
@@ -34,6 +38,8 @@ const OFFSET: Record<PathMarker, 0 | 4 | 6 | 24 | 26 | 28 | 30 | 56 | 64> = {
 	done: 26,
 	cleared: 4,
 	current: 28,
+	stageDone: 26,
+	stageCurrent: 26,
 	todo: 30,
 	sprint: 6,
 	session: 56,
@@ -46,6 +52,8 @@ const SPACE: Record<PathMarker, 0 | 12 | 24 | 32 | 48> = {
 	done: 24,
 	cleared: 32,
 	current: 24,
+	stageDone: 24,
+	stageCurrent: 24,
 	todo: 48,
 	sprint: 24,
 	session: 48,
@@ -56,6 +64,7 @@ const SPACE: Record<PathMarker, 0 | 12 | 24 | 32 | 48> = {
 
 const MARKER_ICON: Partial<Record<PathMarker, ReactNode>> = {
 	done: <IconCheck size={12} />,
+	stageDone: <IconCheck size={12} />,
 	session: <IconVideo size={16} />,
 	review: <IconSparkles size={16} />,
 	gate: <IconFlag size={20} />,

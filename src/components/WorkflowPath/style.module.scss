@@ -165,6 +165,31 @@
 	}
 }
 
+// Stages are squares, sprints are circles, checkpoints are flags: the shape
+// says what the row is before the text does.
+.markerStageDone {
+	width: 20px;
+	height: 20px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.markerStageCurrent {
+	width: 20px;
+	height: 20px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-color-accent-subtle);
+
+	&::after {
+		content: "";
+		width: 8px;
+		height: 8px;
+		border-radius: 3px;
+		background: var(--gd-color-accent);
+	}
+}
+
 // A stage ahead and the release: a small rounded square, not a dot.
 .markerTodo {
 	width: 12px;
