@@ -3293,6 +3293,7 @@
 				"title": "Пульс команды",
 				"waiting": "Еще не"
 			},
+			"release": "Релиз",
 			"results": {
 				"title": "Результаты контрольной точки {number}"
 			},
@@ -3311,7 +3312,9 @@
 				"with": "Сессия с {name}"
 			},
 			"sprint": {
+				"added": "{count, plural, one {# артефакт добавлен} few {# артефакта добавлено} other {# артефактов добавлено} }",
 				"artifacts": "Артефакты {done} из {total}",
+				"closed": "{count, plural, one {# задача закрыта} other {# задач закрыто}}",
 				"day": "день {day}",
 				"devlog": "Дневник разработки",
 				"name": "Спринт {number}",

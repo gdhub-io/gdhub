@@ -206,7 +206,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const historyVisible = !running || behind !== null;
 	const firstShown = Math.max(0, current.order - shown);
 	const nextStep = steps[current.order + 1];
-	const release = steps.at(-1);
+	// The road leads to a released game: support and completion come into view
+	// only once the project is past it.
+	const named = steps.findIndex((step) => /release/i.test(step.name));
+	const releaseIndex = named >= 0 ? named : steps.length - 3;
+	const beforeRelease = current.order <= releaseIndex;
+	const showNext =
+		!!nextStep && (!beforeRelease || nextStep.order <= releaseIndex);
 
 	return (
 		<div className={styles.layout}>
@@ -274,14 +280,16 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 					</>
 				)}
 
-				{nextStep && nextStep !== release && (
-					<PathNode marker="todo" rail="dashed">
+				{showNext && (
+					<PathNode marker="todo" rail={beforeRelease ? "dashed" : "none"}>
 						{stageCard(nextStep.order)}
 					</PathNode>
 				)}
-				{release && release.order > current.order && (
+				{beforeRelease && (
 					<PathNode marker="todo" rail="none" offset={0} space={0}>
-						<div className={styles.finish}>{stepName(release.order)}</div>
+						<div className={styles.finish}>
+							{t("workflow.path.release", "Release")}
+						</div>
 					</PathNode>
 				)}
 			</div>

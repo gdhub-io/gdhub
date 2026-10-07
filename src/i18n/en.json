@@ -3293,6 +3293,7 @@
 				"title": "Team pulse",
 				"waiting": "Not yet"
 			},
+			"release": "Release",
 			"results": {
 				"title": "Checkpoint {number} results"
 			},
