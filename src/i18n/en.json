@@ -3280,6 +3280,7 @@
 			},
 			"here": "You are here",
 			"history": {
+				"earlier": "Show earlier stages",
 				"hide": "Hide previous path",
 				"show": "Show previous path"
 			},

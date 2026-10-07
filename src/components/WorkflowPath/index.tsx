@@ -37,7 +37,9 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const { t } = useTranslate();
 	const { can } = useAccess();
 	const canMove = can("project.workflow.edit");
-	const [showHistory, setShowHistory] = useState(false);
+	// How many stages behind the current one are open. Each "Show earlier"
+	// opens one more; null is the running-checkpoint default, nothing behind.
+	const [behind, setBehind] = useState<number | null>(null);
 	const [equityOpen, setEquityOpen] = useState(false);
 
 	const { data: workflow, refetch } = useQuery({
@@ -131,9 +133,9 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			type="text"
 			className={styles.quiet}
 			icon={<IconHistory size={16} />}
-			onClick={() => setShowHistory((value) => !value)}
+			onClick={() => setBehind(behind === null ? 1 : null)}
 		>
-			{showHistory
+			{behind !== null
 				? t("workflow.path.history.hide", "Hide previous path")
 				: t("workflow.path.history.show", "Show previous path")}
 		</Button>
@@ -182,18 +184,35 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	};
 
 	// With a checkpoint running the page is about its sprints; what led here
-	// folds behind one button. Without one, the stages behind stay in view.
-	const historyVisible = !running || showHistory;
+	// folds behind one button, and opens one stage back at a time. Without one,
+	// the stage just behind stays in view.
+	const shown = behind ?? (running ? 0 : 1);
+	const historyVisible = !running || behind !== null;
+	const firstShown = Math.max(0, current.order - shown);
 	const nextStep = steps[current.order + 1];
 	const release = steps.at(-1);
 
 	return (
 		<div className={styles.layout}>
 			<div>
+				{historyVisible && firstShown > 0 && (
+					<PathNode marker="none" rail="dashed" space={12}>
+						<div className={styles.earlier}>
+							<Button
+								type="text"
+								className={styles.quiet}
+								icon={<IconHistory size={16} />}
+								onClick={() => setBehind(shown + 1)}
+							>
+								{t("workflow.path.history.earlier", "Show earlier stages")}
+							</Button>
+						</div>
+					</PathNode>
+				)}
 				{historyVisible &&
-					steps.slice(0, current.order).flatMap((step, index) => [
+					steps.slice(firstShown, current.order).flatMap((step) => [
 						<PathNode key={step.id} marker="done">
-							{stageCard(index)}
+							{stageCard(step.order)}
 						</PathNode>,
 						...closedNodes(step.id),
 					])}

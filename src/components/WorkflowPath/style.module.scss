@@ -224,6 +224,11 @@
 	}
 }
 
+.earlier {
+	display: flex;
+	justify-content: flex-end;
+}
+
 .quiet {
 	height: 32px;
 	padding: 0 var(--gd-space-2);
