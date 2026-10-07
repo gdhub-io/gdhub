@@ -15,7 +15,7 @@ export const GET = withValidation(
 	const { teamId } = body as VacanciesQuery;
 
 	const vacancies = await prisma.teamVacancy.findMany({
-		where: { status: "Published", teamId },
+		where: { status: "Published", teamId, finishedAt: { gt: new Date() } },
 		include: {
 			direction: { select: { name: true } },
 			team: { select: { project: { select: { name: true } } } },

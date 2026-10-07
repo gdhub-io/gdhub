@@ -12,6 +12,7 @@ const makePost = (
 ): DevlogPostForMessage =>
 	({
 		id: "devlog-1",
+		number: 15,
 		content: "",
 		contentEditor: {
 			blocks: [
@@ -32,7 +33,7 @@ describe("devlog announce messages", () => {
 		const message = devlogPostMessageTelegram(makePost());
 
 		expect(message).toContain(
-			"<b>Update on project Drain the Galaxy</b>",
+			"<b>Drain the Galaxy — Devlog #15</b>",
 		);
 		expect(message).toContain("rewrote the level generator");
 		expect(message).toContain(
@@ -53,7 +54,7 @@ describe("devlog announce messages", () => {
 		const message = devlogPostMessageDiscord(makePost());
 
 		expect(message).not.toMatch(/<\/?[a-z]/i);
-		expect(message).toContain("**Update on project Drain the Galaxy**");
+		expect(message).toContain("**Drain the Galaxy — Devlog #15**");
 		expect(message).toContain("https://gdhub.io/devlog/devlog-1");
 	});
 
@@ -62,7 +63,7 @@ describe("devlog announce messages", () => {
 			makePost({ project: { name: "A <b>& B", coverImage: null } }),
 		);
 
-		expect(message).toContain("**Update on project A <b>& B**");
+		expect(message).toContain("**A <b>& B — Devlog #15**");
 		expect(message).not.toContain("&amp;");
 	});
 
@@ -70,7 +71,7 @@ describe("devlog announce messages", () => {
 		const message = devlogPostMessageLinkedIn(makePost());
 
 		expect(message).not.toMatch(/<\/?[a-z]|\*\*/i);
-		expect(message).toContain("Update on project Drain the Galaxy");
+		expect(message).toContain("Drain the Galaxy — Devlog #15");
 	});
 
 	it("trims the teaser on a word boundary", () => {

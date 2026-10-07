@@ -52,7 +52,7 @@ everywhere, and the dates under it say which seven days are meant.
 | `Checkpoint — Start · the goal sentence is generated` | **M2CuZ** | The derived field: pending, generated, corrected. |
 | `Checkpoint — Start · step 4 states` | **mgUfL** | Payment pending, payment failed, blocked by an active checkpoint. The states hold; their host is now the Prepare panel. |
 | `Dialog — Cancel this draft?` | **H3rdHi** | The confirm behind Cancel. |
-| `Modal — Write the devlog` | **YOWK1** | `DevLogPostModal` as built — not a new modal. |
+| `Modal — Devlog composer` (reuse DevLogPostModal — do not rebuild) | **IDeWH**, **X0HR8**, **pGE34** | **Not a new modal.** `src/components/modals/DevLogPostModal` already writes a devlog on the project's Devlog tab, EditorJS and all, and posts to `/api/user/project/report`; its handoff is [devlog-composer.md](devlog-composer.md). The checkpoint opens that component and passes the checkpoint it belongs to, which joins the project and stage in the line under the author's name. The three questions a devlog answers stay placeholder text in the editor rather than three new fields. |
 | `Modal — Change the scope` | **n5OePF** | Cut, reword, add, and a required `Why`. |
 | `Modal — Rate the assessment` | **QVA8m** | Stars and a comment. |
 | `Artifacts (/user/project/[slug]/artifacts)` | **Q41zlJ** | The project's artifact store, paginated and grouped. |

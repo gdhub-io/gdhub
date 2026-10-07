@@ -1,0 +1,39 @@
+// `DS · 11 Tables`: the leading cell is a thumbnail and one line that truncates.
+.post {
+	min-width: 0;
+}
+
+.cover {
+	flex-shrink: 0;
+	width: 56px;
+	height: 32px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-neutral-100);
+	object-fit: cover;
+}
+
+.text {
+	min-width: 0;
+}
+
+.title {
+	font-weight: 500;
+}
+
+// The name opens the post for editing; it stays text-coloured, as the leading
+// cell of a table is, and says it is a link on hover.
+.text a.title {
+	color: var(--gd-color-text);
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.excerpt {
+	font-size: var(--gd-font-size-caption);
+}
+
+.number {
+	font-feature-settings: "tnum";
+}

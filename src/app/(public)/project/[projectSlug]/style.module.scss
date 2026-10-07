@@ -294,9 +294,11 @@
 
 
 
-// The header is an `InverseBand`, so `--gd-color-text` is already the light ink
-// there — taking it puts the applause at the same strength as the title, and
-// the active disc tints itself from the same colour.
-.projectApplause {
-	color: var(--gd-color-text);
+// The applause takes the ink of the icon buttons beside it — antd's text
+// colour inside the header's inverse theme, a step softer than the title. It is
+// set on the row, not on the applause: the button's own `color: inherit` has the
+// same specificity as a class here, and which of the two wins depends on the
+// order the build emits the stylesheets in.
+.projectActions {
+	color: var(--ant-color-text);
 }

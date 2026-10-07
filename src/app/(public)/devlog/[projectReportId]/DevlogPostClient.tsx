@@ -28,6 +28,7 @@ import { getCleanTextContent } from "@/helpers/content";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { imageSrcSet, optimizedImage } from "@/helpers/image";
 import { useContentPageView } from "@/hooks/useContentViews";
+import { useDevlogName } from "@/hooks/useDevlogName";
 import styles from "./styles.module.scss";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
@@ -53,7 +54,7 @@ interface PreparedEditorJsData {
 
 export interface Post {
 	id: string;
-	title: string;
+	number: number | null;
 	content: string;
 	contentEditor?: EditorJsData;
 	coverImage?: string;
@@ -161,6 +162,7 @@ const MarkdownImage = ({
 
 export function DevlogPostClient({ post }: PageProps) {
 	const { t } = useTranslate();
+	const devlogName = useDevlogName();
 
 	useContentPageView("ProjectReport", post.id);
 
@@ -205,7 +207,7 @@ export function DevlogPostClient({ post }: PageProps) {
 	return (
 		<>
 			<PublicPageHeader
-				title={t("page.devlog.title", "Project reports")}
+				title={devlogName(post.number)}
 				subTitle={
 					getCleanTextContent(post?.project?.description || "", 100) ||
 					undefined

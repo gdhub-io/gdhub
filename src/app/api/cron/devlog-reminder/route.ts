@@ -39,7 +39,6 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 					select: {
 						id: true,
 						email: true,
-						lang: true,
 					},
 				},
 				_count: {
@@ -109,7 +108,6 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 					email: project.author.email || undefined,
 				},
 				payload: {
-					locale: project.author.lang || "en",
 					projectName: project.name,
 					addDevlogPostUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}`,
 				},

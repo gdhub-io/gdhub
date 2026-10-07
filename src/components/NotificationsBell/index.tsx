@@ -12,6 +12,9 @@ import { Suspense, useEffect } from "react";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import styles from "./style.module.scss";
 
+// Novu sizes a notification's lines as this share of `variables.fontSize`.
+const NOVU_TEXT_RATIO = 0.765625;
+
 export const NotificationsBell = () => {
 	const { getLanguage, t } = useTolgee();
 	const router = useRouter();
@@ -165,8 +168,9 @@ export const NotificationsBell = () => {
 					appearance={{
 						variables: {
 							colorPrimary: token.colorPrimaryText,
-							colorBackground: token.colorBgBase,
-							fontSize: `${token.fontSize}px`,
+							colorForeground: token.colorText,
+							colorBackground: token.colorBgElevated,
+							fontSize: `${token.fontSize / NOVU_TEXT_RATIO}px`,
 							borderRadius: `${token.borderRadius}px`,
 						},
 						elements: {
@@ -175,7 +179,7 @@ export const NotificationsBell = () => {
 							},
 							bellIcon: styles.bellIcon,
 							popoverTrigger: styles.popoverTrigger,
-							notification: styles.notification,
+							notificationDate: styles.notificationDate,
 							popoverContent: styles.popoverContent,
 						},
 					}}

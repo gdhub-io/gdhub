@@ -1,14 +1,16 @@
 "use client";
 
 import { IconLock, IconTargetArrow } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Flex, Typography } from "antd";
+import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind } from "@/config/prisma-enums";
+import { useCurrentProject } from "@/hooks/project";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
 import { devlogDayOf } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -32,6 +34,18 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 	const queryClient = useQueryClient();
 	const [writing, setWriting] = useState(false);
 	const [scope, setScope] = useState<"change" | "keep" | null>(null);
+	const { project } = useCurrentProject();
+	// Same key and shape as the Devlog tab, so an open tab shares the list.
+	const { data: reports } = useQuery<{ number: number | null }[]>({
+		queryKey: ["project-reports", checkpoint.projectId],
+		queryFn: () =>
+			axios
+				.get("/api/user/project/reports", {
+					params: { projectId: checkpoint.projectId },
+				})
+				.then((res) => res.data),
+		enabled: writing,
+	});
 	const day = checkpoint.day ?? 0;
 	const devlogDue = devlogDayOf(facts.sprint.number);
 	const missing = facts.marks.asked - facts.marks.confirmed;
@@ -193,6 +207,11 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 
 			<DevLogPostModal
 				projectId={checkpoint.projectId}
+				projectName={project?.name ?? ""}
+				stageName={checkpoint.stageName}
+				nextNumber={
+					Math.max(0, ...(reports ?? []).map((r) => r.number ?? 0)) + 1
+				}
 				open={writing}
 				onClose={() => setWriting(false)}
 				onSave={() => {

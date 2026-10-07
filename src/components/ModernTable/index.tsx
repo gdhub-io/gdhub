@@ -36,6 +36,11 @@ interface ModernTableProps<T> extends TableProps<T> {
 	 * `size="small"` also shrinks the header, breaking alignment with other tables.
 	 */
 	density?: "default" | "compact";
+	/**
+	 * `DS · 11 Tables`: a table is a white card, or — `page` — an outlined panel
+	 * straight on the page ground with its paging outside the outline.
+	 */
+	surface?: "card" | "page";
 }
 
 export function ModernTable<T extends object>({
@@ -45,6 +50,7 @@ export function ModernTable<T extends object>({
 	emptyState,
 	rowTone,
 	density = "default",
+	surface = "card",
 	locale,
 	scroll,
 	...props
@@ -68,6 +74,7 @@ export function ModernTable<T extends object>({
 				styles.modernTableContainer,
 				!showHeader && styles.tableNoHeader,
 				density === "compact" && styles.tableCompact,
+				surface === "page" && styles.onPage,
 				className,
 			)}
 		>

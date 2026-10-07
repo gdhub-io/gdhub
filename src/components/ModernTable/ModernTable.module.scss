@@ -144,6 +144,54 @@
   }
 }
 
+// `DS · 11 Tables`, "On the page": the outline is on the table, not on the
+// wrapper, so the paging sits outside it. The extra `.ant-table` in each
+// selector outranks the card rules above.
+.onPage {
+	.modernTableWrapper {
+		margin-top: 0;
+		overflow: visible;
+		border-radius: 0;
+		box-shadow: none;
+		background: transparent;
+	}
+
+	:global(.ant-table) {
+		overflow: hidden;
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-card);
+	}
+
+	:global(.ant-table) :global(.ant-table-thead > tr > th) {
+		height: 44px;
+		padding-block: 0;
+		border-bottom-color: var(--gd-color-border-strong);
+		font-size: var(--gd-font-size-label);
+		color: var(--gd-color-text-secondary);
+
+		&::before {
+			display: none;
+		}
+	}
+
+	:global(.ant-table) :global(.ant-table-tbody > tr > td) {
+		height: 56px;
+		padding-block: 0;
+		border-bottom-color: var(--gd-color-border);
+	}
+
+	// The frame's hover is `surface-sunken`, which is the page colour itself:
+	// read against the page it has to go one step further.
+	:global(.ant-table) :global(.ant-table-tbody > tr.table-row:hover > td),
+	:global(.ant-table) :global(.ant-table-cell-row-hover) {
+		background-color: var(--gd-neutral-100) !important;
+	}
+
+	:global(.ant-table-pagination.ant-pagination) {
+		margin: var(--gd-space-3) 0 0;
+	}
+}
+
 // Responsive table styles
 @media (max-width: 768px) {
   .modernTableContainer {
