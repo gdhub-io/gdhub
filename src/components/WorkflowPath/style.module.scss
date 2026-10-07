@@ -1,0 +1,471 @@
+.layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: var(--gd-space-12);
+	align-items: start;
+
+	@media (max-width: 991px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.aside {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+// One row of the path: the rail on the left, the content on the right. Rows sit
+// flush so the rail reads as one line; the spacing lives in the content.
+.node {
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr);
+	column-gap: var(--gd-space-4);
+}
+
+.rail {
+	position: relative;
+	display: flex;
+	justify-content: center;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		border-left: 1px solid var(--gd-color-border-strong);
+	}
+}
+
+.railDashed::before {
+	border-left-style: dashed;
+}
+
+.railNone::before {
+	display: none;
+}
+
+.body {
+	min-width: 0;
+	padding-bottom: var(--gd-space-6);
+}
+
+.marker {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: var(--gd-space-6);
+	background: var(--gd-color-bg);
+	color: var(--gd-color-text-secondary);
+}
+
+.markerDone {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.markerCurrent {
+	width: 20px;
+	height: 20px;
+
+	&::after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		corner-shape: round;
+		background: var(--gd-color-accent);
+	}
+}
+
+.markerTodo {
+	width: 20px;
+	height: 20px;
+
+	&::after {
+		content: "";
+		width: 12px;
+		height: 12px;
+		border: 1.5px solid var(--gd-color-text-tertiary);
+		border-radius: 3px;
+		background: var(--gd-color-bg);
+	}
+}
+
+.markerSprint {
+	width: 20px;
+	height: 20px;
+
+	&::after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		border: 1.5px solid var(--gd-color-text-tertiary);
+		border-radius: 50%;
+		corner-shape: round;
+		background: var(--gd-color-bg);
+	}
+}
+
+.markerSession {
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+}
+
+.markerGate {
+	width: 40px;
+	height: 40px;
+	border: 1.5px solid var(--gd-color-text);
+	border-radius: 50%;
+	corner-shape: round;
+	color: var(--gd-color-text);
+}
+
+.markerCleared {
+	width: 20px;
+	height: 20px;
+	color: var(--gd-success-solid);
+}
+
+.hereRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	margin-bottom: var(--gd-space-3);
+}
+
+.here {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text);
+
+	svg {
+		color: var(--gd-success-solid);
+	}
+}
+
+// Stage card: outlined when it is not where the project is, filled when it is.
+.card {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	padding: var(--gd-space-6);
+}
+
+.cardLive {
+	border-color: transparent;
+	background: var(--gd-color-surface);
+}
+
+.cardHead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	width: 100%;
+	padding: 0;
+	border: 0;
+	background: none;
+	text-align: left;
+	cursor: pointer;
+	color: inherit;
+}
+
+.cardTitles {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.eyebrow {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.cardBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6) 0 0 56px;
+}
+
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.sectionHead {
+	display: flex;
+	justify-content: space-between;
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.taskRow {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 32px;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+}
+
+.taskDone {
+	color: var(--gd-color-text-secondary);
+}
+
+.taskIcon {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.taskIconDone {
+	flex: none;
+	color: var(--gd-success-solid);
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.muted {
+	color: var(--gd-color-text-tertiary);
+}
+
+// The sprint under way: the one filled card on the page.
+.sprint {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.sprintHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	flex-wrap: wrap;
+}
+
+.sprintTitle {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.sprintMeta {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.sessionDone {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+	font-size: var(--gd-font-size-body);
+}
+
+.checklistItem {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 52px;
+	width: 100%;
+	padding: 0;
+	border: 0;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: none;
+	text-align: left;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+
+	&:last-child {
+		border-bottom: 0;
+	}
+}
+
+button.checklistItem {
+	cursor: pointer;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.summary {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.summaryMeta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-6);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.metaItem {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+// The next session: outlined dark, because it is the one appointment on the page.
+.session {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border: 1.5px solid var(--gd-color-text);
+	border-radius: var(--gd-radius-panel);
+
+	@media (max-width: 575px) {
+		flex-wrap: wrap;
+	}
+}
+
+.sessionWhen {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+}
+
+.upNextTitle {
+	margin: var(--gd-space-6) 0 0;
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.futureSprint {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding-top: var(--gd-space-3);
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: 2px var(--gd-space-2) 2px 2px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-neutral-100);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text);
+}
+
+.chipIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+}
+
+.gate {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding-top: var(--gd-space-6);
+}
+
+.gateTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.release {
+	padding-top: var(--gd-space-6);
+	font-size: var(--gd-font-size-body-lg);
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulse {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: 2px var(--gd-space-3);
+	border: 0;
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-neutral-100);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+	cursor: pointer;
+}
+
+.pulseLine {
+	color: var(--gd-color-accent);
+}
+
+.pulseTable {
+	display: flex;
+	flex-direction: column;
+	min-width: 240px;
+}
+
+.pulseRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-2) 0;
+	border-bottom: 1px solid var(--gd-color-border);
+	font-size: var(--gd-font-size-body-sm);
+
+	&:last-child {
+		border-bottom: 0;
+	}
+}
+
+.aiTile {
+	width: 56px;
+	height: 56px;
+	flex: none;
+}

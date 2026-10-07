@@ -92,26 +92,15 @@ export const ProjectSpace = ({
 
 	const spaceHeader: SpaceHeaderConfig = useMemo(() => {
 		const menuItems: (ItemType & { disabled?: boolean })[] = [
+			// Checkpoints live on the workflow path now; their old tab is gone.
 			{
-				key: `/user/project/${projectSlug}`,
+				key: `/user/project/${projectSlug}/workflow`,
 				label: (
-					<Link href={`/user/project/${projectSlug}`}>
+					<Link href={`/user/project/${projectSlug}/workflow`}>
 						{t("app.user-project.menu.workflow", "Workflow")}
 					</Link>
 				),
 			},
-			...(can("project.checkpoints.view")
-				? [
-						{
-							key: `/user/project/${projectSlug}/checkpoints`,
-							label: (
-								<Link href={`/user/project/${projectSlug}/checkpoints`}>
-									{t("checkpoints.tab", "Checkpoints")}
-								</Link>
-							),
-						},
-					]
-				: []),
 			{
 				key: `/user/project/${projectSlug}/artifacts`,
 				label: (
@@ -190,8 +179,8 @@ export const ProjectSpace = ({
 				space: project?.id ? { kind: "project", id: project.id } : undefined,
 			},
 			menuItems: menuItems.filter((item) => !item.disabled),
-			// A tab stays lit for everything beneath it — the start flow and a single
-			// checkpoint are still the Checkpoints tab, and a nav that goes dark as
+			// A tab stays lit for everything beneath it — buying a checkpoint and a
+			// session page are still the Workflow tab, and a nav that goes dark as
 			// soon as you use it tells the reader they have left the space.
 			menuSelectedKeys: [
 				menuItems

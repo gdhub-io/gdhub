@@ -3245,6 +3245,89 @@
 		"finish-step": "Next step",
 		"next-step": "Go to completion step",
 		"no-tasks": "No tasks for this step",
+		"path": {
+			"ai-curator": "AI curator",
+			"check": {
+				"artifacts": "Attach artifacts",
+				"at-session": "at the session {date}",
+				"build": "Upload the current build",
+				"devlog": "Write the sprint devlog",
+				"head": "Before the next session · {date}",
+				"head-final": "Before the checkpoint",
+				"head-review": "Before the next review · {date}",
+				"priorities": "Set sprint priorities with {name}",
+				"session-on": "session {date}",
+				"verdict": "Read the Checkpoint {number} verdict",
+				"view-results": "View results"
+			},
+			"checkpoint": {
+				"goal": "Goal",
+				"not-delivered": "Not delivered",
+				"tasks": "Tasks",
+				"title": "Checkpoint {number}"
+			},
+			"count": "{done} of {total}",
+			"count-done": "{done} of {total} done",
+			"due": {
+				"on": "due {date}",
+				"overdue": "overdue since {date}",
+				"today": "due today",
+				"tomorrow": "due tomorrow"
+			},
+			"gate": {
+				"ai": "{date} · final review · verdict by {verdict}",
+				"human": "{date} · call with {name} · verdict by {verdict}"
+			},
+			"here": "You are here",
+			"history": {
+				"hide": "Hide previous path",
+				"show": "Show previous path"
+			},
+			"pulse": {
+				"confirmed": "Checked in",
+				"empty": "Nobody has been asked yet.",
+				"label": "Pulse",
+				"missed": "Missed",
+				"not-asked": "Not asked",
+				"title": "Team pulse",
+				"waiting": "Not yet"
+			},
+			"results": {
+				"title": "Checkpoint {number} results"
+			},
+			"review-by": "review by",
+			"session": {
+				"final": "the final one",
+				"join": "Join session",
+				"join-in": "Join in {days} days",
+				"join-tomorrow": "Join tomorrow",
+				"notes": "Notes",
+				"open-review": "Open review",
+				"opens": "opens Sprint {number}",
+				"review": "Review",
+				"review-sub": "Written by the AI curator from your devlog, artifacts and activity",
+				"review-title": "Sprint {number} review",
+				"with": "Session with {name}"
+			},
+			"sprint": {
+				"day": "day {day}",
+				"name": "Sprint {number}",
+				"of": "Sprint {number} of 4",
+				"toward": "toward Checkpoint {number}"
+			},
+			"stage": {
+				"label": "Stage",
+				"locked": "Finish the required tasks to move on",
+				"next": "Next stage",
+				"next-button": "Next",
+				"required": "Required",
+				"tasks": "Tasks"
+			},
+			"starts-in": "starts in {days} days",
+			"starts-tomorrow": "starts tomorrow",
+			"up-next": "Up next",
+			"with": "with"
+		},
 		"previous-step": "Previous",
 		"start-step": "Go to the next step",
 		"tasks": {
