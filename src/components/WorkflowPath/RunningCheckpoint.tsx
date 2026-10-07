@@ -24,7 +24,6 @@ import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CheckpointCuratorKind,
-	CheckpointItemKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
 import { useMarkVerdictRead } from "@/hooks/checkpoints";
@@ -238,21 +237,22 @@ export function RunningCheckpoint({
 		</span>
 	);
 
-	const outcomes = checkpoint.items.filter(
-		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
-	);
-
 	const doneSprint = (sprint: CheckpointSprintDto) => {
-		const items = sprintChecklist(checkpoint, sprint, !!previous);
 		const devlog = checkpoint.reports?.find(
 			(report) => report.sprint === sprint.number,
 		);
-		// What the evidence proved by the end of this sprint, counted once per outcome.
-		const proved = new Set(
-			(checkpoint.evidence ?? [])
-				.filter((item) => item.sprint !== null && item.sprint <= sprint.number)
-				.flatMap((item) => item.itemIds),
+		// Only what this sprint itself added: a share of the checkpoint's total
+		// would need a per-sprint target nobody set.
+		const evidence = (checkpoint.evidence ?? []).filter(
+			(item) => item.sprint === sprint.number,
 		);
+		const added = new Set([
+			...evidence.map((item) => item.artifact.id),
+			...(checkpoint.builds ?? [])
+				.filter((build) => build.sprint === sprint.number)
+				.map((build) => build.id),
+		]).size;
+		const closed = new Set(evidence.flatMap((item) => item.itemIds)).size;
 
 		return (
 			<PathNode inset key={sprint.number} marker="done" offset={24}>
@@ -273,28 +273,26 @@ export function RunningCheckpoint({
 								<IconArrowUpRight size={14} />
 							</Link>
 						)}
-						{outcomes.length > 0 && (
+						{added > 0 && (
 							<span className={styles.metaItem}>
 								<IconLayoutGridAdd size={16} />
 								{t(
-									"workflow.path.sprint.artifacts",
-									"Artifacts {done} of {total}",
-									{
-										done: String(
-											outcomes.filter((item) => proved.has(item.id)).length,
-										),
-										total: String(outcomes.length),
-									},
+									"workflow.path.sprint.added",
+									"{count, plural, one {# artifact added} other {# artifacts added}}",
+									{ count: added },
 								)}
 							</span>
 						)}
-						<span className={styles.metaItem}>
-							<IconCircleCheck size={16} />
-							{t("workflow.path.sprint.tasks", "{done} of {total} tasks", {
-								done: String(items.filter((item) => item.done).length),
-								total: String(items.length),
-							})}
-						</span>
+						{closed > 0 && (
+							<span className={styles.metaItem}>
+								<IconCircleCheck size={16} />
+								{t(
+									"workflow.path.sprint.closed",
+									"{count, plural, one {# task closed} other {# tasks closed}}",
+									{ count: closed },
+								)}
+							</span>
+						)}
 						<PulseChip rows={checkpoint.pulses ?? []} sprint={sprint.number} />
 					</div>
 				</div>

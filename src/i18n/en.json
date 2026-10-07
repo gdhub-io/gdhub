@@ -3311,7 +3311,9 @@
 				"with": "Session with {name}"
 			},
 			"sprint": {
+				"added": "{count, plural, one {# artifact added} other {# artifacts added}}",
 				"artifacts": "Artifacts {done} of {total}",
+				"closed": "{count, plural, one {# task closed} other {# tasks closed}}",
 				"day": "day {day}",
 				"devlog": "Devlog",
 				"name": "Sprint {number}",
