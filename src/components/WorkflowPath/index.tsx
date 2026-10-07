@@ -181,7 +181,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				dates={stageDates(index, state)}
 				locale={locale}
 				tasks={state === "current" ? current.tasks : undefined}
-				defaultOpen={state === "current" && !running}
 				next={
 					state === "current" && canMove && !isLast
 						? {

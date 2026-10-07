@@ -10,7 +10,7 @@ import {
 	IconChevronDown,
 	IconChevronUp,
 	IconCircle,
-	IconCircleCheckFilled,
+	IconCircleCheck,
 	IconDeviceGamepad2,
 	IconDoor,
 	IconFlag,
@@ -56,8 +56,6 @@ export type StageCardProps = {
 		/** Why Next is locked, or null when it is not. */
 		lockedReason: string | null;
 	};
-	/** A checkpoint running on this stage takes the page; the stage folds away. */
-	defaultOpen?: boolean;
 };
 
 /**
@@ -72,10 +70,9 @@ export function StageCard({
 	locale,
 	tasks,
 	next,
-	defaultOpen = false,
 }: StageCardProps) {
 	const { t } = useTranslate();
-	const [open, setOpen] = useState(defaultOpen);
+	const [open, setOpen] = useState(false);
 	const StageIcon =
 		STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)] ?? IconFlag;
 	const done = (tasks ?? []).filter((task) => task.done).length;
@@ -133,17 +130,17 @@ export function StageCard({
 								</span>
 							</div>
 							{tasks.map((task) => (
-								<div key={task.id} className={styles.taskRow}>
+								<div key={task.id} className={styles.checklistItem}>
 									{task.done ? (
-										<IconCircleCheckFilled
-											size={16}
+										<IconCircleCheck
+											size={20}
 											className={styles.taskIconDone}
 										/>
 									) : (
-										<IconCircle size={16} className={styles.taskIcon} />
+										<IconCircle size={20} className={styles.taskIcon} />
 									)}
 									<span
-										className={`${styles.grow} ${task.done ? styles.secondary : styles.taskLabel}`}
+										className={`${styles.grow}${task.done ? ` ${styles.secondary}` : ""}`}
 									>
 										{task.name || task.description}
 									</span>

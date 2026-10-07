@@ -353,18 +353,7 @@
 	color: var(--gd-color-text-secondary);
 }
 
-.taskRow {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-3);
-	padding: var(--gd-space-2) 0;
-	font-size: var(--gd-font-size-body);
-	color: var(--gd-color-text);
-}
 
-.taskLabel {
-	font-weight: 500;
-}
 
 .taskIcon {
 	flex: none;
