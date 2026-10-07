@@ -238,6 +238,7 @@
 
 // Stage panel: outlined when the project is not on it, filled when it is.
 .card {
+	overflow: hidden;
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
 }
@@ -255,6 +256,11 @@
 	padding: var(--gd-space-4) var(--gd-space-6);
 	cursor: pointer;
 	color: inherit;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
 }
 
 .cardTitles {
@@ -659,12 +665,21 @@ button.checklistItem {
 	}
 }
 
+// Bleeds 8px past the column so the hover reads as a row, not a box around text.
 .closedHead {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--gd-space-4);
+	margin: calc(-1 * var(--gd-space-2));
+	padding: var(--gd-space-2);
+	border-radius: var(--gd-radius-card);
 	cursor: pointer;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
 }
 
 .closedTitle {
