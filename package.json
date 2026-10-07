@@ -81,7 +81,7 @@
 		"@gdhub-io/gdhub-prisma": "2.0.0-beta.60",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@hello-pangea/dnd": "^18.0.1",
-		"@langchain/langgraph-sdk": "^1.10.2",
+		"@langchain/langgraph-sdk": "^1.12.1",
 		"@mdxeditor/editor": "^3.11.5",
 		"@notionhq/client": "^2.2.1",
 		"@novu/api": "^3.12.0",
