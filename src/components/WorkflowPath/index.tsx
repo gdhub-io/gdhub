@@ -271,7 +271,8 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				) : (
 					<>
 						<PathNode marker="none" space={12}>
-							{here(hereLabel)}
+							{/* Opened past the stage just behind: offer the way back to it. */}
+							{here(hereLabel, behind !== null ? historyToggle : null)}
 						</PathNode>
 						<PathNode marker="stageCurrent" start={current.order === 0}>
 							{stageCard(current.order)}
