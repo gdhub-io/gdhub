@@ -79,10 +79,11 @@ export function StageCard({
 	// Only the stage the project is on is white; one behind or ahead stays outlined, open or not.
 	const live = state === "current" && open;
 
-	const eyebrow =
-		state === "ahead"
-			? t("workflow.path.stage.next", "Next stage")
-			: t("workflow.path.stage.label", "Stage");
+	const eyebrow = {
+		ahead: t("workflow.path.stage.next", "Next stage"),
+		current: t("workflow.path.stage.current", "Current stage"),
+		done: t("workflow.path.stage.label", "Stage"),
+	}[state];
 
 	return (
 		<div className={`${styles.card}${live ? ` ${styles.cardLive}` : ""}`}>

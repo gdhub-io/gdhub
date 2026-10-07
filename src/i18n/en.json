@@ -3320,6 +3320,7 @@
 				"toward": "toward Checkpoint {number}"
 			},
 			"stage": {
+				"current": "Current stage",
 				"label": "Stage",
 				"locked": "Finish the required tasks to move on",
 				"next": "Next stage",

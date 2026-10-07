@@ -219,19 +219,25 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 				{running && detail ? (
 					<>
-						{historyVisible && (
-							<>
-								<PathNode marker="done">{stageCard(current.order)}</PathNode>
-								{closedNodes(current.id)}
-							</>
+						{!historyVisible && (
+							<PathNode marker="none" rail="dashed" space={12}>
+								<div className={styles.earlier}>{historyToggle}</div>
+							</PathNode>
 						)}
-						<PathNode
-							marker="none"
-							rail={historyVisible ? "solid" : "dashed"}
-							space={12}
-						>
-							{here(sprintBehind ? <span /> : hereLabel, historyToggle)}
+						{/* The stage stays in view with a checkpoint running on it: it is
+						    what the sprints below are working through. */}
+						<PathNode marker="sprint" offset={26}>
+							{stageCard(current.order)}
 						</PathNode>
+						{historyVisible && closedNodes(current.id)}
+						{(historyVisible || !sprintBehind) && (
+							<PathNode marker="none" space={12}>
+								{here(
+									sprintBehind ? <span /> : hereLabel,
+									historyVisible ? historyToggle : null,
+								)}
+							</PathNode>
+						)}
 						<RunningCheckpoint
 							checkpoint={detail}
 							project={project}
