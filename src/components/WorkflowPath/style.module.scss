@@ -358,8 +358,8 @@
 	flex-direction: column;
 	gap: var(--gd-space-6);
 	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
 }
 
 .sprintHead {
