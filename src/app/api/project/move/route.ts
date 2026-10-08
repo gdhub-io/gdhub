@@ -107,6 +107,13 @@ export const PUT = pipe(
 				data: { currentStepId: changedStep.id },
 			});
 
+			// Leaving a stage is when it finished; returning to one reopens it.
+			await prisma.projectWorkflowStep.update(
+				direction === "next"
+					? { where: { id: currentStep.id }, data: { finishedAt: new Date() } }
+					: { where: { id: changedStep.id }, data: { finishedAt: null } },
+			);
+
 			// set step date if it's not set
 			if (!changedStep?.plannedAt && direction === "next") {
 				await prisma.projectWorkflowStep.update({
@@ -159,6 +166,18 @@ export const PUT = pipe(
 				where: { projectId },
 				data: { currentStepId: targetStep.id },
 			});
+
+			if (currentStep && targetStep.order > currentStep.order) {
+				await prisma.projectWorkflowStep.update({
+					where: { id: currentStep.id },
+					data: { finishedAt: new Date() },
+				});
+			} else {
+				await prisma.projectWorkflowStep.update({
+					where: { id: targetStep.id },
+					data: { finishedAt: null },
+				});
+			}
 
 			// set step date if it's not set and current step is after target step
 			if (
