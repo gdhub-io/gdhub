@@ -1,5 +1,5 @@
 {
-  "version": "2.20",
+  "version": "2.21",
   "children": [
     {
       "type": "frame",
@@ -263210,7 +263210,7 @@
                                           "id": "g1Dbf",
                                           "name": "H",
                                           "fill": "$text-primary",
-                                          "content": "Before the next session · 8 Oct",
+                                          "content": "By the end of Sprint 1 · 7 Oct",
                                           "fontFamily": "$font",
                                           "fontSize": 16,
                                           "fontWeight": "600"
@@ -269852,7 +269852,7 @@
                                           "id": "YjXQ6",
                                           "name": "H",
                                           "fill": "$text-primary",
-                                          "content": "Before the next session · 8 Oct",
+                                          "content": "By the end of Sprint 1 · 7 Oct",
                                           "fontFamily": "$font",
                                           "fontSize": 16,
                                           "fontWeight": "600"
@@ -276383,7 +276383,7 @@
                                           "id": "cRdes",
                                           "name": "H",
                                           "fill": "$text-primary",
-                                          "content": "Before the next session · 15 Oct",
+                                          "content": "By the end of Sprint 2 · 14 Oct",
                                           "fontFamily": "$font",
                                           "fontSize": 16,
                                           "fontWeight": "600"
@@ -281512,7 +281512,7 @@
                                           "id": "oBL3t",
                                           "name": "H",
                                           "fill": "$text-primary",
-                                          "content": "Before the next session · 15 Oct",
+                                          "content": "By the end of Sprint 2 · 14 Oct",
                                           "fontFamily": "$font",
                                           "fontSize": 16,
                                           "fontWeight": "600"
@@ -287280,7 +287280,7 @@
               "fill": "$text-tertiary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "A check is a day with a devlog, an artifact, a done task or the pulse link.",
+              "content": "A check is a day with a devlog, an artifact or the pulse link.",
               "lineHeight": 1.45,
               "fontFamily": "$font",
               "fontSize": 13,
@@ -297103,8 +297103,20 @@
                       "id": "XWuMx",
                       "name": "Title row",
                       "width": "fill_container",
-                      "justifyContent": "end",
+                      "gap": 16,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
                       "children": [
+                        {
+                          "type": "text",
+                          "id": "oIgEp",
+                          "name": "H",
+                          "fill": "$text-primary",
+                          "content": "Payment successful",
+                          "fontFamily": "$font",
+                          "fontSize": 24,
+                          "fontWeight": "600"
+                        },
                         {
                           "type": "text",
                           "id": "WWUfV",
@@ -297125,6 +297137,64 @@
                       "layout": "vertical",
                       "gap": 20,
                       "children": [
+                        {
+                          "type": "frame",
+                          "id": "igs61",
+                          "name": "Money — reserved, receipt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "GqY72",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$success"
+                            },
+                            {
+                              "type": "text",
+                              "id": "WuBE6",
+                              "name": "T",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "The money is reserved",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "vmiij",
+                              "name": "Link — Download receipt",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "SyHfp",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "receipt",
+                                  "library": "lucide",
+                                  "fill": "$brand-primary"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "uSpIc",
+                                  "fill": "$brand-primary",
+                                  "content": "Download receipt",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
                         {
                           "type": "frame",
                           "id": "eexgF",
@@ -297298,7 +297368,7 @@
                               "id": "QaxlJ",
                               "name": "Cancel",
                               "fill": "#76756F",
-                              "content": "Cancel and refund",
+                              "content": "Cancel and release the money",
                               "fontFamily": "Onest",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -325743,7 +325813,7 @@
                                           "id": "lVBiA",
                                           "name": "H",
                                           "fill": "$text-primary",
-                                          "content": "Before the next review · 15 Oct",
+                                          "content": "By the end of Sprint 2 · 14 Oct",
                                           "fontFamily": "$font",
                                           "fontSize": 16,
                                           "fontWeight": "600"
