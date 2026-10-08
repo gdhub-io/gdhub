@@ -5,6 +5,7 @@ import {
 	type Prisma,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import {
 	checkpointProgress,
 	dayNumberOn,
@@ -585,6 +586,8 @@ export const getCreationBlocker = async (projectId: string) => {
 	// A checkpoint belongs to exactly one stage, so a project that is not on one
 	// has nowhere to put it.
 	if (!workflow?.currentStepId) return { reason: "noStage" as const };
+
+	if (!checkpointPurchaseOpen()) return { reason: "purchaseClosed" as const };
 
 	return null;
 };

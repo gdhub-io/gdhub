@@ -47,3 +47,7 @@ export const curatorPrices = (level: CuratorLevel): readonly number[] =>
 export const CHECKPOINT_MIN_CURATOR_PRICE = Math.min(
 	...CURATOR_LEVELS.map(curatorPrice),
 );
+
+/** Server-only: whether a new checkpoint can be bought at all. */
+export const checkpointPurchaseOpen = () =>
+	process.env.CHECKPOINTS_PURCHASE_OPEN === "true";

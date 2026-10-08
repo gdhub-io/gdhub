@@ -3,6 +3,7 @@ import {
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { env } from "@/helpers/env";
 import {
 	apiError,
@@ -44,6 +45,8 @@ export const POST = pipe(
 	if (!payer) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
+
+	if (!checkpointPurchaseOpen()) return apiError.badRequest("purchaseClosed");
 
 	// A checkout finished in another tab, whose webhook has not come, must not
 	// be sold a second time.

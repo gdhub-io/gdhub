@@ -260,7 +260,8 @@ export type CheckpointBlocker =
 				order: number;
 			};
 	  }
-	| { reason: "noStage" };
+	| { reason: "noStage" }
+	| { reason: "purchaseClosed" };
 
 /** The three counts the card under way shows — see `checkpointSignals`. */
 export type CheckpointSignalsDto = {
