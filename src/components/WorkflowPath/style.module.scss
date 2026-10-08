@@ -79,6 +79,10 @@
 	margin-top: 6px;
 }
 
+.at18 {
+	margin-top: 18px;
+}
+
 .at24 {
 	margin-top: var(--gd-space-6);
 }
@@ -290,6 +294,26 @@
 	background: transparent;
 	font: inherit;
 	text-align: left;
+}
+
+// A stage behind is history: one compact line, so the road ahead keeps the room.
+.cardCompact {
+	.cardHead {
+		gap: var(--gd-space-3);
+		padding: var(--gd-space-3) var(--gd-space-6);
+	}
+
+	.cardTitles {
+		gap: 0;
+	}
+
+	.overline {
+		font-size: var(--gd-font-size-caption);
+	}
+
+	.title {
+		font-size: var(--gd-font-size-body);
+	}
 }
 
 .cardHead {

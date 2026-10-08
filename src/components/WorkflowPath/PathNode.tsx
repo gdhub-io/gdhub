@@ -33,20 +33,21 @@ const MARKER_CLASS: Record<Exclude<PathMarker, "none">, string> = {
 	cleared: styles.markerCleared,
 };
 
-// Measured off the frames: a stage head centres at 36, a sprint title at 38.
-const OFFSET: Record<PathMarker, 0 | 4 | 6 | 24 | 26 | 28 | 30 | 56 | 64> = {
-	done: 24,
-	cleared: 4,
-	current: 28,
-	stageDone: 26,
-	stageCurrent: 26,
-	todo: 30,
-	sprint: 6,
-	session: 56,
-	review: 56,
-	gate: 4,
-	none: 0,
-};
+// Measured off the frames: a stage head centres at 36 (a stage behind, 28), a sprint title at 38.
+const OFFSET: Record<PathMarker, 0 | 4 | 6 | 18 | 24 | 26 | 28 | 30 | 56 | 64> =
+	{
+		done: 24,
+		cleared: 4,
+		current: 28,
+		stageDone: 18,
+		stageCurrent: 26,
+		todo: 30,
+		sprint: 6,
+		session: 56,
+		review: 56,
+		gate: 4,
+		none: 0,
+	};
 
 const SPACE: Record<PathMarker, 0 | 12 | 24 | 32 | 48> = {
 	done: 24,

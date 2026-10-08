@@ -80,7 +80,9 @@ export function StageCard({
 	}[state];
 
 	return (
-		<div className={`${styles.card}${live ? ` ${styles.cardLive}` : ""}`}>
+		<div
+			className={`${styles.card}${live ? ` ${styles.cardLive}` : ""}${state === "done" ? ` ${styles.cardCompact}` : ""}`}
+		>
 			{/* ui-guard-ignore the whole header toggles; antd Collapse would restyle the card */}
 			<button
 				type="button"
@@ -88,7 +90,7 @@ export function StageCard({
 				className={styles.cardHead}
 				onClick={() => setOpen((value) => !value)}
 			>
-				<IconTile icon={StageIcon} size="md" />
+				<IconTile icon={StageIcon} size={state === "done" ? "sm" : "md"} />
 				<span className={styles.cardTitles}>
 					<span className={styles.overline}>{eyebrow}</span>
 					<span className={styles.title}>{title}</span>
