@@ -1041,7 +1041,7 @@
 			"lockedNote": "{done} of {total} outcomes has evidence against it so far.",
 			"review": "The curator is writing it",
 			"reviewNote": "Waiting for the curator’s verdict.",
-			"stageClosed": "Stage closed",
+			"stageClosed": "Stage can be closed",
 			"title": "The verdict"
 		},
 		"waiting": {
