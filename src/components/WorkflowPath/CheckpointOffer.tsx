@@ -16,13 +16,12 @@ import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
-import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_MIN_CURATOR_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
-import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import {
 	useCancelCheckpoint,
 	useCreateCheckpoint,
@@ -31,7 +30,6 @@ import {
 import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
-import { formatDay } from "./dates";
 import styles from "./style.module.scss";
 
 /** One fact of the offer: an icon on a muted tile and a short line. */
@@ -72,6 +70,26 @@ export function CheckpointOffer({
 	const [confirmDiscard, setConfirmDiscard] = useState(false);
 
 	const purchase = `/user/project/${project.slug}/workflow/cp/new`;
+
+	// What a checkpoint is, the same three lines on the offer and on its draft.
+	const facts = (
+		<Flex gap={20} className={styles.offerFacts}>
+			{fact(
+				<IconCalendarCheck size={16} />,
+				t("workflow.offer.factSprints", "{count} weekly sprints", {
+					count: SPRINTS_PER_CHECKPOINT,
+				}),
+			)}
+			{fact(
+				<IconMessage2 size={16} />,
+				t("workflow.offer.factFeedback", "Feedback that moves you"),
+			)}
+			{fact(
+				<IconRoute size={16} />,
+				t("workflow.offer.factNext", "A clear next step"),
+			)}
+		</Flex>
+	);
 
 	if (!draft) {
 		const start = async () => {
@@ -139,22 +157,7 @@ export function CheckpointOffer({
 						</Button>
 					</Tooltip>
 				</Flex>
-				<Flex gap={20} className={styles.offerFacts}>
-					{fact(
-						<IconCalendarCheck size={16} />,
-						t("workflow.offer.factSprints", "{count} weekly sprints", {
-							count: SPRINTS_PER_CHECKPOINT,
-						}),
-					)}
-					{fact(
-						<IconMessage2 size={16} />,
-						t("workflow.offer.factFeedback", "Feedback that moves you"),
-					)}
-					{fact(
-						<IconRoute size={16} />,
-						t("workflow.offer.factNext", "A clear next step"),
-					)}
-				</Flex>
+				{facts}
 				<Flex gap={10} align="center" className={styles.offerOptions}>
 					{option(
 						<IconSparkles size={16} />,
@@ -186,10 +189,6 @@ export function CheckpointOffer({
 	const waiting = draft.status === CheckpointStatus.AwaitingCurator;
 	const declined = !waiting && !!draft.curatorDeclinedAt && !draft.curator;
 	const curatorName = draft.curator?.name?.split(" ")[0] ?? "";
-	const dates =
-		draft.startedAt && draft.dueAt
-			? `${formatDay(draft.startedAt)} – ${formatDay(draft.dueAt)}`
-			: null;
 
 	// Where the setup stopped: the step it needs next.
 	const savedAt = draft.acceptedTermsAt
@@ -306,15 +305,6 @@ export function CheckpointOffer({
 		},
 	];
 
-	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
-	// The curator is only a fact once the author got past choosing one.
-	const chosen = paid || savedAt !== "now";
-	const price = isAI
-		? CHECKPOINT_AI_PRICE
-		: draft.heldPrice !== undefined && draft.heldPrice !== null
-			? draft.heldPrice
-			: null;
-
 	return (
 		<Flex vertical gap={20} className={styles.offer}>
 			<Flex gap={16} align="flex-start">
@@ -350,44 +340,7 @@ export function CheckpointOffer({
 					/>
 				</Dropdown>
 			</Flex>
-			<Flex gap={20} className={styles.offerFacts}>
-				{fact(
-					<IconCalendarCheck size={16} />,
-					dates ??
-						t("workflow.offer.factSprints", "{count} weekly sprints", {
-							count: SPRINTS_PER_CHECKPOINT,
-						}),
-				)}
-				{chosen
-					? fact(
-							isAI ? (
-								<IconSparkles size={16} />
-							) : draft.curator ? (
-								<AppAvatar src={draft.curator.image} size={20}>
-									{draft.curator.name?.slice(0, 1).toUpperCase()}
-								</AppAvatar>
-							) : (
-								<IconVideo size={16} />
-							),
-							[
-								isAI
-									? t("checkpoints.curator.ai", "AI curator")
-									: (draft.curator?.name ??
-										t("workflow.offer.industry", "Industry curator")),
-								price !== null && `${CHECKPOINT_PRICE_CURRENCY}${price}`,
-							]
-								.filter(Boolean)
-								.join(" · "),
-						)
-					: fact(
-							<IconMessage2 size={16} />,
-							t("workflow.offer.factFeedback", "Feedback that moves you"),
-						)}
-				{fact(
-					<IconRoute size={16} />,
-					t("workflow.offer.factNext", "A clear next step"),
-				)}
-			</Flex>
+			{facts}
 
 			<Modal
 				open={confirmDiscard}
