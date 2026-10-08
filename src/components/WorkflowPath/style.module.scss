@@ -44,24 +44,34 @@
 	gap: var(--gd-space-6);
 }
 
-// Frame 08 `RV1gV`: the running checkpoint beside the path.
+// Frame 08 `RV1gV`: outlined like the stage's Tasks panel beside it, with the
+// same ruled header.
 .asideCard {
 	display: flex;
 	flex-direction: column;
-	gap: var(--gd-space-6);
-	padding: var(--gd-space-6);
 	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-panel);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
 }
 
-.asideHead,
-.asideBlock {
+.asideHead {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-1);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.asideBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-4);
 }
 
 .asideBlock {
+	display: flex;
+	flex-direction: column;
 	gap: var(--gd-space-2);
 }
 
@@ -100,6 +110,103 @@
 
 .asideDivider.asideDivider {
 	margin: 0;
+}
+
+// Frame 08 `Dmwhm`: the feed scrolls inside its card; the page does not grow.
+.activityList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	max-height: 500px;
+	overflow-y: auto;
+	// Runs to the card's edges and up to the header's rule, so rows scroll under
+	// them rather than vanish short of them; the rows keep the card's inset.
+	margin: calc(-1 * var(--gd-space-4));
+	padding: var(--gd-space-4) 0;
+
+	// A hairline, as in the expert request modal: the standard properties only
+	// for Firefox, since in Chrome they override the 6px webkit rules below.
+	@supports (-moz-appearance: none) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--gd-color-border-strong) transparent;
+	}
+
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 3px;
+		background: var(--gd-color-border-strong);
+	}
+}
+
+.activityEvent,
+.activityBoundary,
+.activityMore {
+	padding: 0 var(--gd-space-4);
+}
+
+.activityEvent {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+}
+
+.activityText {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.activityTitle {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+.activitySub,
+.activityWhen,
+.activityBoundaryLabel,
+.activityMore {
+	font-size: var(--gd-font-size-caption);
+}
+
+.activityWhen {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.activityBoundary {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.activityLine {
+	flex: 1;
+	height: 1px;
+	background: var(--gd-color-border-strong);
+}
+
+.activityBoundaryLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-weight: 500;
+	color: var(--gd-color-text-secondary);
+}
+
+.activityMore {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--gd-space-2);
 }
 
 .asideCurator {

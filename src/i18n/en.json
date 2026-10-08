@@ -3301,6 +3301,23 @@
 				"name": "Closing"
 			}
 		},
+		"activity": {
+			"artifact": "{name} added an artifact",
+			"created": "{name} created the project",
+			"devlog": "{name} published a devlog",
+			"devlogNumber": "Devlog {number}",
+			"empty": "Nothing has happened here yet.",
+			"joined": "{name} joined the team",
+			"left": "{name} left the team",
+			"loading": "Loading earlier activity…",
+			"reworded": "Task reworded on the day-14 revision",
+			"sprint": "Sprint {number} started · {date}",
+			"stage": "Stage finished: {name}",
+			"title": "Activity",
+			"today": "Today, {time}",
+			"vacancyClosed": "Vacancy closed: {title}",
+			"vacancyOpened": "Vacancy opened: {title}"
+		},
 		"all-steps": "All steps",
 		"aside": {
 			"ai": "AI",

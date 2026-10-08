@@ -1,12 +1,18 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 import type {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
+import type { ProjectActivity } from "@/repositories/project-activity.repository";
 import type {
 	CheckpointEvidenceBody,
 	CheckpointItemInput,
@@ -287,3 +293,19 @@ export const useMarkVerdictRead = (id?: string) => {
 			queryClient.invalidateQueries({ queryKey: ["checkpoint", id] }),
 	});
 };
+
+/** The project's activity, newest first, a page further back on each fetch. */
+export const useProjectActivity = (projectId?: string) =>
+	useInfiniteQuery({
+		queryKey: ["project-activity", projectId],
+		queryFn: async ({ pageParam }) =>
+			(
+				await axios.get<{ events: ProjectActivity[]; next: string | null }>(
+					"/api/user/project/activity",
+					{ params: { projectId, before: pageParam ?? undefined } },
+				)
+			).data,
+		initialPageParam: null as string | null,
+		getNextPageParam: (page) => page.next,
+		enabled: !!projectId,
+	});

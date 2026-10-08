@@ -10,6 +10,7 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
+import { ActivityFeed } from "./ActivityFeed";
 import { CheckpointAside } from "./CheckpointAside";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
@@ -345,6 +346,10 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						done: task.done,
 					}))}
 					showHint={false}
+				/>
+				<ActivityFeed
+					projectId={project.id}
+					sprints={running && detail ? detail.sprints : undefined}
 				/>
 			</aside>
 

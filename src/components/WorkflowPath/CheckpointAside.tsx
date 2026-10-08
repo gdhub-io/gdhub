@@ -93,101 +93,106 @@ export function CheckpointAside({
 				)}
 			</div>
 
-			<div className={styles.asideBlock}>
-				<Text type="secondary" strong className={styles.asideMeta}>
-					{t("workflow.aside.goal", "Goal")}
-				</Text>
-				<Text>{checkpoint.goal}</Text>
-			</div>
+			<div className={styles.asideBody}>
+				<div className={styles.asideBlock}>
+					<Text type="secondary" strong className={styles.asideMeta}>
+						{t("workflow.aside.goal", "Goal")}
+					</Text>
+					<Text>{checkpoint.goal}</Text>
+				</div>
 
-			<div className={styles.asideBlock}>
-				{outcomes.length > 0 && (
-					<>
-						<div className={styles.asideRow}>
-							<Text type="secondary" strong className={styles.asideMeta}>
-								{t("workflow.aside.tasks", "Tasks")}
-							</Text>
-							<Text type="secondary" className={styles.asideMeta}>
-								{t("workflow.path.count", "{done} of {total}", {
-									done: String(done),
-									total: String(outcomes.length),
-								})}
-							</Text>
-						</div>
-						{outcomes.map((item) => {
-							const proof = proofOf(item.id);
-							return (
-								<div key={item.id} className={styles.asideOutcome}>
-									{proof ? (
-										<IconCircleCheck size={16} className={styles.asideDone} />
-									) : (
-										<IconCircle size={16} className={styles.asideTodo} />
-									)}
-									<Text
-										type={proof ? undefined : "secondary"}
-										className={styles.grow}
-										ellipsis={{ tooltip: item.text }}
-									>
-										{item.text}
-									</Text>
-									{proof ? (
-										<ArtifactLink artifact={proof} />
-									) : (
-										canManage && (
-											<Tooltip
-												title={t("workflow.aside.attach", "Attach an artifact")}
-											>
-												<Button
-													type="text"
-													icon={<IconPaperclip size={16} />}
-													aria-label={t(
+				<div className={styles.asideBlock}>
+					{outcomes.length > 0 && (
+						<>
+							<div className={styles.asideRow}>
+								<Text type="secondary" strong className={styles.asideMeta}>
+									{t("workflow.aside.tasks", "Tasks")}
+								</Text>
+								<Text type="secondary" className={styles.asideMeta}>
+									{t("workflow.path.count", "{done} of {total}", {
+										done: String(done),
+										total: String(outcomes.length),
+									})}
+								</Text>
+							</div>
+							{outcomes.map((item) => {
+								const proof = proofOf(item.id);
+								return (
+									<div key={item.id} className={styles.asideOutcome}>
+										{proof ? (
+											<IconCircleCheck size={16} className={styles.asideDone} />
+										) : (
+											<IconCircle size={16} className={styles.asideTodo} />
+										)}
+										<Text
+											type={proof ? undefined : "secondary"}
+											className={styles.grow}
+											ellipsis={{ tooltip: item.text }}
+										>
+											{item.text}
+										</Text>
+										{proof ? (
+											<ArtifactLink artifact={proof} />
+										) : (
+											canManage && (
+												<Tooltip
+													title={t(
 														"workflow.aside.attach",
 														"Attach an artifact",
 													)}
-													onClick={() => setAttaching(true)}
-												/>
-											</Tooltip>
-										)
-									)}
-								</div>
-							);
-						})}
+												>
+													<Button
+														type="text"
+														icon={<IconPaperclip size={16} />}
+														aria-label={t(
+															"workflow.aside.attach",
+															"Attach an artifact",
+														)}
+														onClick={() => setAttaching(true)}
+													/>
+												</Tooltip>
+											)
+										)}
+									</div>
+								);
+							})}
+						</>
+					)}
+					<Link
+						href={`/user/project/${projectSlug}/artifacts`}
+						className={styles.link}
+					>
+						{t("workflow.aside.allArtifacts", "All artifacts")}
+						<IconArrowRight size={14} />
+					</Link>
+				</div>
+
+				{curator && (
+					<>
+						<Divider className={styles.asideDivider} />
+						<div className={styles.asideCurator}>
+							<AppAvatar src={curator.image} size={40}>
+								{curator.name?.[0]}
+							</AppAvatar>
+							<div className={styles.grow}>
+								<Text strong>{curator.name}</Text>
+								<Text type="secondary" className={styles.asideMeta}>
+									{t("workflow.aside.curator", "Curator")}
+								</Text>
+							</div>
+							<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
+								<Button
+									size="large"
+									icon={<IconMessageCircle size={20} />}
+									loading={openChat.isPending}
+									onClick={chat}
+									aria-label={t("workflow.aside.chat", "Checkpoint chat")}
+								/>
+							</Tooltip>
+						</div>
 					</>
 				)}
-				<Link
-					href={`/user/project/${projectSlug}/artifacts`}
-					className={styles.link}
-				>
-					{t("workflow.aside.allArtifacts", "All artifacts")}
-					<IconArrowRight size={14} />
-				</Link>
 			</div>
-
-			{curator && (
-				<>
-					<Divider className={styles.asideDivider} />
-					<div className={styles.asideCurator}>
-						<AppAvatar src={curator.image} size={40}>
-							{curator.name?.[0]}
-						</AppAvatar>
-						<div className={styles.grow}>
-							<Text strong>{curator.name}</Text>
-							<Text type="secondary" className={styles.asideMeta}>
-								{t("workflow.aside.curator", "Curator")}
-							</Text>
-						</div>
-						<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
-							<Button
-								size="large"
-								icon={<IconMessageCircle size={20} />}
-								loading={openChat.isPending}
-								onClick={chat}
-								aria-label={t("workflow.aside.chat", "Checkpoint chat")}
-							/>
-						</Tooltip>
-					</div>
-				</>
-			)}
 
 			{canManage && (
 				<AttachEvidenceModal
