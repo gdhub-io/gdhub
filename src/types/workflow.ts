@@ -90,8 +90,6 @@ export type ProjectWorkflowWithSteps = ProjectWorkflow & {
 	})[];
 	currentStep: ProjectWorkflowStep & {
 		tasks: ProjectWorkflowTask[];
-		equityPromises?: (EquityPromise & {
-			allocation: { owner: { name: string } };
-		})[];
+		equityPromises?: EquityPromise[];
 	};
 };

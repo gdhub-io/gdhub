@@ -35,7 +35,7 @@ const MARKER_CLASS: Record<Exclude<PathMarker, "none">, string> = {
 
 // Measured off the frames: a stage head centres at 36, a sprint title at 38.
 const OFFSET: Record<PathMarker, 0 | 4 | 6 | 24 | 26 | 28 | 30 | 56 | 64> = {
-	done: 26,
+	done: 24,
 	cleared: 4,
 	current: 28,
 	stageDone: 26,

@@ -90,8 +90,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		number: index + 1,
 	}));
 	const previous = numbered.at(-1) ?? null;
-	const closedOn = (stepId: string) =>
-		numbered.filter(({ checkpoint }) => checkpoint.stepId === stepId);
 
 	const requiredOpen = current.tasks.some(
 		(task) => task.required && !task.done,
@@ -143,11 +141,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	);
 
 	const closedNodes = (stepId: string) =>
-		closedOn(stepId).map(({ checkpoint, number }) => (
-			<PathNode key={checkpoint.id} marker="cleared">
-				<ClosedCheckpoint checkpoint={checkpoint} number={number} />
-			</PathNode>
-		));
+		numbered
+			.filter(({ checkpoint }) => checkpoint.stepId === stepId)
+			.map(({ checkpoint, number }) => (
+				<PathNode key={checkpoint.id} marker="cleared">
+					<ClosedCheckpoint checkpoint={checkpoint} number={number} />
+				</PathNode>
+			));
 
 	// A stage starts when the project moves onto it (plannedAt is stamped then)
 	// and ends when it finishes or the next one starts.

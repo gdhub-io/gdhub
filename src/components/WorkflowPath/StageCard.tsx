@@ -69,8 +69,7 @@ export function StageCard({
 }: StageCardProps) {
 	const { t } = useTranslate();
 	const [open, setOpen] = useState(defaultOpen);
-	const StageIcon =
-		STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)] ?? IconFlag;
+	const StageIcon = STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)];
 	// Only the stage the project is on is white; one behind or ahead stays outlined, open or not.
 	const live = state === "current" && open;
 

@@ -255,7 +255,7 @@ export function RunningCheckpoint({
 		const closed = new Set(evidence.flatMap((item) => item.itemIds)).size;
 
 		return (
-			<PathNode inset key={sprint.number} marker="done" offset={24}>
+			<PathNode inset key={sprint.number} marker="done">
 				<div className={styles.summary}>
 					<span className={styles.sprintTitle}>
 						{t("workflow.path.sprint.name", "Sprint {number}", {
