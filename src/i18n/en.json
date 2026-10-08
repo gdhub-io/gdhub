@@ -3313,9 +3313,13 @@
 		"no-tasks": "No tasks for this step",
 		"offer": {
 			"createFailed": "Could not start a checkpoint",
+			"factFeedback": "Feedback that moves you",
+			"factNext": "A clear next step",
+			"factSprints": "{count} weekly sprints",
 			"from": "from {price}",
 			"industry": "Industry curator",
 			"locked": "Checkpoints open soon",
+			"or": "or",
 			"sprints": "{count} sprints",
 			"sprintsNote": "a week each",
 			"start": "Get started",

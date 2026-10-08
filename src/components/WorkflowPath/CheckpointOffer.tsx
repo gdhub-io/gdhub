@@ -1,9 +1,11 @@
 import {
+	IconCalendarCheck,
 	IconCircleX,
 	IconDotsVertical,
-	IconFlag,
 	IconInfoCircle,
 	IconLock,
+	IconMessage2,
+	IconReceipt,
 	IconRoute,
 	IconSparkles,
 	IconTrash,
@@ -21,7 +23,7 @@ import {
 	CHECKPOINT_MIN_CURATOR_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
-import { CheckpointStatus } from "@/config/prisma-enums";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import {
 	useCancelCheckpoint,
 	useCreateCheckpoint,
@@ -32,6 +34,14 @@ import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { formatDay } from "./dates";
 import styles from "./style.module.scss";
+
+/** One fact of the offer: an icon on a muted tile and a short line. */
+const fact = (icon: ReactNode, label: ReactNode) => (
+	<Flex gap={8} align="center" className={styles.offerFact}>
+		<span className={styles.offerFactIcon}>{icon}</span>
+		<span className={styles.offerFactLabel}>{label}</span>
+	</Flex>
+);
 
 export type CheckpointOfferProps = {
 	project: { id: string; slug: string };
@@ -82,7 +92,7 @@ export function CheckpointOffer({
 			note: string,
 			price: string,
 		) => (
-			<Flex gap={12} align="center" className={styles.offerOption}>
+			<Flex gap={12} align="flex-start" className={styles.offerOption}>
 				<span className={styles.offerOptionIcon}>{icon}</span>
 				<Flex vertical gap={4} className={styles.grow}>
 					<Typography.Text strong>{name}</Typography.Text>
@@ -98,7 +108,7 @@ export function CheckpointOffer({
 
 		return (
 			<Flex vertical gap={20} className={styles.offer}>
-				<Flex gap={16} align="flex-start">
+				<Flex gap={16} align="center">
 					<Flex vertical gap={4} className={styles.grow}>
 						<span className={styles.title}>
 							{first
@@ -119,6 +129,8 @@ export function CheckpointOffer({
 						}
 					>
 						<Button
+							type="primary"
+							className={styles.offerButton}
 							loading={create.isPending}
 							disabled={locked}
 							icon={locked ? <IconLock size={16} /> : undefined}
@@ -128,29 +140,23 @@ export function CheckpointOffer({
 						</Button>
 					</Tooltip>
 				</Flex>
-				<Flex gap={32} wrap className={styles.small}>
-					<Flex gap={8} align="center">
-						<IconRoute size={16} />
-						<Typography.Text strong className={styles.small}>
-							{t("workflow.offer.sprints", "{count} sprints", {
-								count: SPRINTS_PER_CHECKPOINT,
-							})}
-						</Typography.Text>
-						<Typography.Text type="secondary" className={styles.small}>
-							{t("workflow.offer.sprintsNote", "a week each")}
-						</Typography.Text>
-					</Flex>
-					<Flex gap={8} align="center">
-						<IconFlag size={16} />
-						<Typography.Text strong className={styles.small}>
-							{t("workflow.offer.verdict", "A verdict")}
-						</Typography.Text>
-						<Typography.Text type="secondary" className={styles.small}>
-							{t("workflow.offer.verdictNote", "the stage can close")}
-						</Typography.Text>
-					</Flex>
+				<Flex gap={20} className={styles.offerFacts}>
+					{fact(
+						<IconCalendarCheck size={16} />,
+						t("workflow.offer.factSprints", "{count} weekly sprints", {
+							count: SPRINTS_PER_CHECKPOINT,
+						}),
+					)}
+					{fact(
+						<IconMessage2 size={16} />,
+						t("workflow.offer.factFeedback", "Feedback that moves you"),
+					)}
+					{fact(
+						<IconRoute size={16} />,
+						t("workflow.offer.factNext", "A clear next step"),
+					)}
 				</Flex>
-				<Flex gap={12} className={styles.offerOptions}>
+				<Flex gap={10} align="center" className={styles.offerOptions}>
 					{option(
 						<IconSparkles size={16} />,
 						t("checkpoints.curator.ai", "AI curator"),
@@ -160,6 +166,7 @@ export function CheckpointOffer({
 						),
 						`${CHECKPOINT_PRICE_CURRENCY}${CHECKPOINT_AI_PRICE}`,
 					)}
+					<span className={styles.offerOr}>{t("workflow.offer.or", "or")}</span>
 					{option(
 						<IconVideo size={16} />,
 						t("workflow.offer.industry", "Industry curator"),
@@ -206,17 +213,11 @@ export function CheckpointOffer({
 		? {
 				tone: "warning",
 				label: t("workflow.draft.waiting", "Waiting for the curator"),
-				note: [
-					dates &&
-						t("workflow.draft.planned", "Planned for {dates}.", { dates }),
-					t(
-						"workflow.draft.email",
-						"We'll email you as soon as {name} decides.",
-						{ name: curatorName },
-					),
-				]
-					.filter(Boolean)
-					.join(" "),
+				note: t(
+					"workflow.draft.email",
+					"We'll email you as soon as {name} decides.",
+					{ name: curatorName },
+				),
 			}
 		: declined
 			? {
@@ -306,44 +307,81 @@ export function CheckpointOffer({
 		},
 	];
 
+	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
+	// The curator is only a fact once the author got past choosing one.
+	const chosen = paid || savedAt !== "now";
+	const price = isAI
+		? CHECKPOINT_AI_PRICE
+		: draft.heldPrice !== undefined && draft.heldPrice !== null
+			? draft.heldPrice
+			: null;
+
 	return (
-		<Flex gap={16} align="center" className={styles.offer}>
-			{waiting && draft.curator ? (
-				<AppAvatar src={draft.curator.image} size={40}>
-					{draft.curator.name?.slice(0, 2).toUpperCase()}
-				</AppAvatar>
-			) : (
-				<IconTile icon={IconFlag} size="md" />
-			)}
-			<Flex vertical gap={4} className={styles.grow}>
-				<Flex gap={12} align="center" wrap>
-					<span className={styles.title}>
-						{first
-							? t("workflow.draft.first", "Your first checkpoint")
-							: t("workflow.draft.next", "Your next checkpoint")}
-					</span>
-					<StatusDot tone={state.tone} label={state.label} />
+		<Flex vertical gap={20} className={styles.offer}>
+			<Flex gap={16} align="flex-start">
+				<Flex vertical gap={4} className={styles.grow}>
+					<Flex gap={12} align="center" wrap>
+						<span className={styles.title}>
+							{first
+								? t("workflow.draft.first", "Your first checkpoint")
+								: t("workflow.draft.next", "Your next checkpoint")}
+						</span>
+						<StatusDot tone={state.tone} label={state.label} />
+					</Flex>
+					<Typography.Text type="secondary">{state.note}</Typography.Text>
 				</Flex>
-				<Typography.Text type="secondary" className={styles.small}>
-					{state.note}
-				</Typography.Text>
+				{action && (
+					<Button
+						type="primary"
+						className={styles.offerButton}
+						onClick={() => router.push(action.href)}
+					>
+						{action.label}
+					</Button>
+				)}
+				<Dropdown
+					menu={{ items: menu }}
+					trigger={["click"]}
+					placement="bottomRight"
+				>
+					<Button
+						type="text"
+						icon={<IconDotsVertical size={20} />}
+						aria-label={t("workflow.draft.more", "More")}
+					/>
+				</Dropdown>
 			</Flex>
-			{action && (
-				<Button type="primary" onClick={() => router.push(action.href)}>
-					{action.label}
-				</Button>
-			)}
-			<Dropdown
-				menu={{ items: menu }}
-				trigger={["click"]}
-				placement="bottomRight"
-			>
-				<Button
-					type="text"
-					icon={<IconDotsVertical size={20} />}
-					aria-label={t("workflow.draft.more", "More")}
-				/>
-			</Dropdown>
+			<Flex gap={20} className={styles.offerFacts}>
+				{fact(
+					<IconCalendarCheck size={16} />,
+					dates ??
+						t("workflow.offer.factSprints", "{count} weekly sprints", {
+							count: SPRINTS_PER_CHECKPOINT,
+						}),
+				)}
+				{chosen &&
+					fact(
+						isAI ? (
+							<IconSparkles size={16} />
+						) : draft.curator ? (
+							<AppAvatar src={draft.curator.image} size={32}>
+								{draft.curator.name?.slice(0, 1).toUpperCase()}
+							</AppAvatar>
+						) : (
+							<IconVideo size={16} />
+						),
+						isAI
+							? t("checkpoints.curator.ai", "AI curator")
+							: (draft.curator?.name ??
+									t("workflow.offer.industry", "Industry curator")),
+					)}
+				{chosen &&
+					price !== null &&
+					fact(
+						<IconReceipt size={16} />,
+						`${CHECKPOINT_PRICE_CURRENCY}${price}`,
+					)}
+			</Flex>
 
 			<Modal
 				open={confirmDiscard}

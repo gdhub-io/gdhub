@@ -756,25 +756,63 @@ button.checklistItem {
 	gap: var(--gd-space-6);
 }
 
-// Frames 02 and 02.1: the checkpoint offer, and the draft it becomes. The ink
-// border is what sets it apart from the stages around it.
+// Frames 02 and 02.1 (`TZnHs`): the checkpoint offer, and the draft it
+// becomes. A warm wash and the accent rim set it apart from the stages.
 .offer {
 	padding: var(--gd-space-6);
-	border: 1.5px solid var(--gd-color-text);
+	border: 1px solid var(--gd-color-accent);
 	border-radius: var(--gd-radius-panel);
+	background: linear-gradient(
+		118deg,
+		var(--gd-color-accent-subtle),
+		var(--gd-warning-tint)
+	);
 }
 
-.offerOptions {
-	> * {
-		flex: 1;
-		min-width: 0;
+.offerButton.offerButton {
+	background: var(--gd-color-accent);
+	font-weight: 600;
+
+	&:not(:disabled):hover {
+		background: var(--gd-color-accent-hover);
 	}
+
+	&:disabled {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.offerFacts > * {
+	flex: 1;
+	min-width: 0;
+}
+
+.offerFactIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: var(--gd-space-8);
+	height: var(--gd-space-8);
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-fill-subtle);
+}
+
+.offerFactLabel {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+}
+
+.offerOptions > :not(.offerOr) {
+	flex: 1;
+	min-width: 0;
+	align-self: stretch;
 }
 
 .offerOption {
 	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-card);
-	background: var(--gd-fill-subtle);
 }
 
 .offerOptionIcon {
@@ -782,6 +820,7 @@ button.checklistItem {
 	align-items: center;
 	justify-content: center;
 	flex: none;
+	align-self: flex-start;
 	width: var(--gd-space-8);
 	height: var(--gd-space-8);
 	border-radius: var(--gd-radius-pill);
@@ -792,6 +831,15 @@ button.checklistItem {
 .offerPrice {
 	flex: none;
 	align-self: flex-start;
+}
+
+.offerOr {
+	flex: none;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-secondary);
 }
 
 .small {

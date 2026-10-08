@@ -294,3 +294,57 @@ export const OfferCuratorDeclined: StoryObj = {
 			curatorDeclinedAt: day(0),
 		}),
 };
+
+/** Every face of the card on one page: the offer, locked, and the draft's four states. */
+export const OfferAllStates: StoryObj = {
+	render: () => (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				gap: 32,
+				maxWidth: 800,
+			}}
+		>
+			{[
+				["Offer", null, false],
+				["Offer — purchase not open yet", null, true],
+				["Draft — setup not finished", draft, false],
+				[
+					"Payment did not go through",
+					{ ...draft, acceptedTermsAt: day(0), paymentFailed: true },
+					false,
+				],
+				[
+					"Paid, waiting for the curator",
+					{
+						...draft,
+						status: CheckpointStatus.AwaitingCurator,
+						paymentId: "pay1",
+					},
+					false,
+				],
+				[
+					"Curator declined",
+					{
+						...draft,
+						paymentId: "pay1",
+						curator: null,
+						curatorDeclinedAt: day(0),
+					},
+					false,
+				],
+			].map(([label, state, locked]) => (
+				<div key={label as string}>
+					<p style={{ margin: "0 0 8px", opacity: 0.6 }}>{label as string}</p>
+					<CheckpointOffer
+						project={project}
+						draft={state as CheckpointDto | null}
+						first
+						locked={locked as boolean}
+					/>
+				</div>
+			))}
+		</div>
+	),
+};
