@@ -42,8 +42,6 @@ export type StageCardProps = {
 	/** When the project was on it: "12 Mar – 4 Jun", or "since 4 Jun" for the current one. */
 	dates?: string | null;
 	locale?: string;
-	/** Opens unfolded: the stage the project is on, when no checkpoint runs on it. */
-	defaultOpen?: boolean;
 	/** Present only on the current stage, for someone who may move it. */
 	next?: {
 		onClick: () => void;
@@ -63,12 +61,11 @@ export function StageCard({
 	title,
 	state,
 	dates,
-	defaultOpen = false,
 	locale,
 	next,
 }: StageCardProps) {
 	const { t } = useTranslate();
-	const [open, setOpen] = useState(defaultOpen);
+	const [open, setOpen] = useState(false);
 	const StageIcon = STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)];
 	// Only the stage the project is on is white, folded or open; the others stay outlined.
 	const live = state === "current";

@@ -107,8 +107,35 @@
 	margin-top: 56px;
 }
 
-.inset {
-	padding-left: var(--gd-space-6);
+// A stage's checkpoints run on a branch one step right of the stage line; the
+// two curves carry the line out to it and back (26 wide: from axis 20 to 44).
+.branch {
+	position: relative;
+	padding: var(--gd-space-6) 0 var(--gd-space-6) var(--gd-space-6);
+}
+
+.branchIn,
+.branchOut {
+	position: absolute;
+	left: 19px;
+	width: 26px;
+	height: var(--gd-space-6);
+	fill: none;
+	stroke: var(--gd-color-border-strong);
+	stroke-width: 2;
+}
+
+.branchIn {
+	top: 0;
+}
+
+.branchOut {
+	bottom: 0;
+}
+
+// The way back to the stage line is still ahead, so it is dashed like the rest.
+.branchAhead {
+	stroke-dasharray: 4 5;
 }
 
 .space0 {

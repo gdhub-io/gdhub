@@ -13,7 +13,7 @@ import type { ProjectWorkflowWithSteps } from "@/types/workflow";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { formatDay, formatDayRange } from "./dates";
-import { PathNode } from "./PathNode";
+import { PathBranch, PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 import { StageCard } from "./StageCard";
 import styles from "./style.module.scss";
@@ -160,14 +160,14 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		</PathNode>
 	);
 
+	const closedOn = (stepId: string) =>
+		numbered.filter(({ checkpoint }) => checkpoint.stepId === stepId);
 	const closedNodes = (stepId: string) =>
-		numbered
-			.filter(({ checkpoint }) => checkpoint.stepId === stepId)
-			.map(({ checkpoint, number }) => (
-				<PathNode key={checkpoint.id} marker="cleared">
-					<ClosedCheckpoint checkpoint={checkpoint} number={number} />
-				</PathNode>
-			));
+		closedOn(stepId).map(({ checkpoint, number }) => (
+			<PathNode key={checkpoint.id} marker="cleared">
+				<ClosedCheckpoint checkpoint={checkpoint} number={number} />
+			</PathNode>
+		));
 
 	// A stage starts when the project moves onto it (plannedAt is stamped then)
 	// and ends when it finishes or the next one starts.
@@ -200,7 +200,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				state={state}
 				dates={stageDates(index, state)}
 				locale={locale}
-				defaultOpen={state === "current" && !running}
 				next={
 					state === "current" && canMove && nextStep
 						? {
@@ -255,7 +254,11 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						<PathNode key={step.id} marker="stageDone" start={step.order === 0}>
 							{stageCard(step.order)}
 						</PathNode>,
-						...closedNodes(step.id),
+						closedOn(step.id).length > 0 && (
+							<PathBranch key={`${step.id}-branch`}>
+								{closedNodes(step.id)}
+							</PathBranch>
+						),
 					])}
 
 				{running && detail ? (
@@ -264,22 +267,24 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						{/* The stage stays in view with a checkpoint running on it: it is
 						    what the sprints below are working through. */}
 						{currentStage}
-						{historyVisible && closedNodes(current.id)}
-						{(historyVisible || !sprintBehind) && (
-							<PathNode marker="none" space={12} inset>
-								{here(
-									sprintBehind ? <span /> : hereLabel,
-									historyVisible ? historyToggle : null,
-								)}
-							</PathNode>
-						)}
-						<RunningCheckpoint
-							checkpoint={detail}
-							project={project}
-							previous={previous}
-							canManage={can("project.checkpoints.manage")}
-							here={sprintBehind ? hereLabel : null}
-						/>
+						<PathBranch ahead>
+							{historyVisible && closedNodes(current.id)}
+							{(historyVisible || !sprintBehind) && (
+								<PathNode marker="none" space={12}>
+									{here(
+										sprintBehind ? <span /> : hereLabel,
+										historyVisible ? historyToggle : null,
+									)}
+								</PathNode>
+							)}
+							<RunningCheckpoint
+								checkpoint={detail}
+								project={project}
+								previous={previous}
+								canManage={can("project.checkpoints.manage")}
+								here={sprintBehind ? hereLabel : null}
+							/>
+						</PathBranch>
 					</>
 				) : (
 					<>
@@ -288,16 +293,20 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 							{here(hereLabel, behind !== null ? historyToggle : null)}
 						</PathNode>
 						{currentStage}
-						{closedNodes(current.id)}
-						{offered && (
-							<PathNode marker="none" rail="dashed" space={48}>
-								<CheckpointOffer
-									project={project}
-									draft={pending}
-									first={numbered.length === 0}
-									locked={locked}
-								/>
-							</PathNode>
+						{(offered || closedOn(current.id).length > 0) && (
+							<PathBranch ahead pending={closedOn(current.id).length === 0}>
+								{closedNodes(current.id)}
+								{offered && (
+									<PathNode marker="none" rail="dashed" space={0}>
+										<CheckpointOffer
+											project={project}
+											draft={pending}
+											first={numbered.length === 0}
+											locked={locked}
+										/>
+									</PathNode>
+								)}
+							</PathBranch>
 						)}
 					</>
 				)}

@@ -14,7 +14,7 @@ import type {
 } from "@/types/checkpoints";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
-import { PathNode } from "./PathNode";
+import { PathBranch, PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 
 // Dated from today so the path reads as it would on the day: sprint 2, day 2.
@@ -180,13 +180,15 @@ export default meta;
 export const HumanCurator: StoryObj = {
 	render: () => (
 		<div style={{ maxWidth: 800 }}>
-			<RunningCheckpoint
-				checkpoint={running}
-				project={project}
-				previous={{ checkpoint: closed, number: 2 }}
-				canManage
-				here={null}
-			/>
+			<PathBranch ahead>
+				<RunningCheckpoint
+					checkpoint={running}
+					project={project}
+					previous={{ checkpoint: closed, number: 2 }}
+					canManage
+					here={null}
+				/>
+			</PathBranch>
 		</div>
 	),
 };
@@ -194,17 +196,19 @@ export const HumanCurator: StoryObj = {
 export const AICurator: StoryObj = {
 	render: () => (
 		<div style={{ maxWidth: 800 }}>
-			<RunningCheckpoint
-				checkpoint={{
-					...running,
-					curatorKind: CheckpointCuratorKind.AI,
-					curator: null,
-				}}
-				project={project}
-				previous={null}
-				canManage
-				here={null}
-			/>
+			<PathBranch ahead>
+				<RunningCheckpoint
+					checkpoint={{
+						...running,
+						curatorKind: CheckpointCuratorKind.AI,
+						curator: null,
+					}}
+					project={project}
+					previous={null}
+					canManage
+					here={null}
+				/>
+			</PathBranch>
 		</div>
 	),
 };
