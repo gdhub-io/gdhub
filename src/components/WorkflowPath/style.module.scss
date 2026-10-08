@@ -167,6 +167,7 @@
 }
 
 .markerDone {
+	box-sizing: border-box;
 	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
@@ -178,6 +179,7 @@
 
 // A checkpoint behind the project: the gate it went through, cleared.
 .markerCleared {
+	box-sizing: border-box;
 	border: 2px solid var(--gd-color-border-strong);
 	width: 32px;
 	height: 32px;
@@ -188,6 +190,7 @@
 }
 
 .markerCurrent {
+	box-sizing: border-box;
 	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
@@ -209,6 +212,7 @@
 // says what the row is before the text does. Filled markers carry the rail's own
 // 2px stroke, so they read as stops on the line rather than stickers on it.
 .markerStageDone {
+	box-sizing: border-box;
 	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
@@ -218,6 +222,7 @@
 }
 
 .markerStageCurrent {
+	box-sizing: border-box;
 	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
@@ -252,6 +257,7 @@
 }
 
 .markerSession {
+	box-sizing: border-box;
 	width: 32px;
 	height: 32px;
 	border: 2px solid var(--gd-color-border-strong);

@@ -223,28 +223,45 @@ export const ClosedOne: StoryObj = {
 	),
 };
 
+// Where each marker's centre falls in its row: its offset plus half its size.
+const MARKER_CENTRE = {
+	stageDone: 28,
+	stageCurrent: 36,
+	done: 34,
+	current: 38,
+	session: 72,
+	review: 72,
+	sprint: 13,
+	gate: 26,
+	cleared: 20,
+	todo: 38,
+} as const;
+
+const markerRow = (marker: keyof typeof MARKER_CENTRE, rail?: "dashed") => (
+	<PathNode key={marker} marker={marker} rail={rail}>
+		{/* The label's 20px line sits on the marker's centre. */}
+		<div style={{ paddingTop: MARKER_CENTRE[marker] - 10, lineHeight: "20px" }}>
+			{marker}
+		</div>
+	</PathNode>
+);
+
+/** Every marker on the line, the stage's own checkpoint markers on its branch. */
 export const Markers: StoryObj = {
 	render: () => (
 		<div style={{ maxWidth: 400 }}>
-			{(
-				[
-					"done",
-					"current",
-					"session",
-					"sprint",
-					"gate",
-					"cleared",
-					"todo",
-				] as const
-			).map((marker) => (
-				<PathNode
-					key={marker}
-					marker={marker}
-					rail={marker === "todo" ? "dashed" : "solid"}
-				>
-					<div style={{ paddingTop: 24 }}>{marker}</div>
-				</PathNode>
-			))}
+			{markerRow("stageDone")}
+			{markerRow("stageCurrent")}
+			<PathBranch ahead>
+				{markerRow("cleared")}
+				{markerRow("done")}
+				{markerRow("current")}
+				{markerRow("session")}
+				{markerRow("review")}
+				{markerRow("sprint")}
+				{markerRow("gate", "dashed")}
+			</PathBranch>
+			{markerRow("todo", "dashed")}
 		</div>
 	),
 };
