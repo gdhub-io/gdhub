@@ -78,3 +78,16 @@
 	font-size: var(--gd-font-size-body-sm);
 	line-height: var(--gd-line-height-body);
 }
+
+// Frame 04 marks the answer in the accent, on the type cards and the list alike.
+.choices :global(.ant-radio-wrapper) {
+	--ant-color-primary: var(--gd-color-accent);
+	--ant-color-primary-hover: var(--gd-color-accent-hover);
+	--ant-color-primary-active: var(--gd-color-accent-hover);
+
+	// Inside the type card's button the hover state would paint it ink again.
+	:global(.ant-radio.ant-radio-checked) {
+		border-color: var(--gd-color-accent);
+		background: var(--gd-color-accent);
+	}
+}

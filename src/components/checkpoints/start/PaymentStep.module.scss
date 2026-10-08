@@ -8,9 +8,10 @@
 	min-width: 0;
 }
 
+// The hairline has to show on the page's own grey, which border-subtle matches.
 .block {
 	padding-bottom: var(--gd-space-4);
-	border-bottom: 1px solid var(--gd-color-border-subtle);
+	border-bottom: 1px solid var(--gd-color-border);
 
 	&:last-child {
 		border-bottom: none;
@@ -41,6 +42,12 @@
 .price {
 	flex: none;
 	width: 300px;
+
+	// Frame 05 ticks the agreement in the accent.
+	:global(.ant-checkbox-wrapper) {
+		--ant-color-primary: var(--gd-color-accent);
+		--ant-color-primary-hover: var(--gd-color-accent-hover);
+	}
 
 	:global(.ant-card-body) {
 		display: flex;

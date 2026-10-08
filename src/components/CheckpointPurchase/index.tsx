@@ -18,7 +18,7 @@ import {
 } from "@/components/checkpoints/start/StartLayout";
 import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { EmptyState } from "@/components/ui";
-import { CheckpointStatus } from "@/config/prisma-enums";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import {
 	useCheckpoint,
 	useCheckpoints,
@@ -53,10 +53,20 @@ export function CheckpointPurchase() {
 
 	const workflow = `/user/project/${project?.slug}/workflow`;
 	const asked = search?.get("step");
-	const step: StartStep =
+	// The furthest question the draft has earned: a step is not skipped by URL.
+	const reachable: StartStep = !current?.goal.trim()
+		? "now"
+		: current.curatorKind === CheckpointCuratorKind.AI || current.curator
+			? "payment"
+			: "curator";
+	const wanted: StartStep =
 		asked && START_STEPS.includes(asked as StartStep)
 			? (asked as StartStep)
-			: "now";
+			: reachable;
+	const step =
+		START_STEPS.indexOf(wanted) > START_STEPS.indexOf(reachable)
+			? reachable
+			: wanted;
 
 	// Paid, or on the way back from Stripe before the webhook lands: Ready.
 	const paid =
@@ -64,7 +74,10 @@ export function CheckpointPurchase() {
 		(current.status === CheckpointStatus.AwaitingCurator ||
 			(current.status === CheckpointStatus.Draft &&
 				(!!current.paymentId || !!current.curatorDeclinedAt)) ||
-			(current.status === CheckpointStatus.Draft && asked === "ready"));
+			// Back from Stripe, before the webhook: only once the terms were taken.
+			(current.status === CheckpointStatus.Draft &&
+				asked === "ready" &&
+				!!current.acceptedTermsAt));
 	// The curator took it on, or the AI one started it: the path shows it now.
 	const running =
 		current?.status === CheckpointStatus.Active ||
@@ -73,6 +86,12 @@ export function CheckpointPurchase() {
 	useEffect(() => {
 		if (running && project?.slug) router.replace(workflow);
 	}, [running, project?.slug, router, workflow]);
+
+	// Keep the address honest when it asked for a step the draft has not earned.
+	useEffect(() => {
+		if (current && !paid && asked && asked !== step)
+			router.replace(`${pathname}?step=${step}`, { scroll: false });
+	}, [current, paid, asked, step, pathname, router]);
 
 	const header = useMemo(
 		() => ({

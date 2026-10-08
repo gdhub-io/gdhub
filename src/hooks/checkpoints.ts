@@ -71,7 +71,10 @@ export const useUpdateCheckpoint = (id?: string) => {
 		}) => (await axios.put<CheckpointDto>(`/api/checkpoint/${id}`, body)).data,
 		onSuccess: (checkpoint) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
-			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
+			// Awaited: the purchase reads the list to decide which steps are open.
+			return queryClient.invalidateQueries({
+				queryKey: ["project-checkpoints"],
+			});
 		},
 	});
 };

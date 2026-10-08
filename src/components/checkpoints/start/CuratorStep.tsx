@@ -126,7 +126,7 @@ export function CuratorStep() {
 				</Button>
 			}
 		>
-			<Flex vertical gap={24}>
+			<Flex vertical gap={24} className={styles.choices}>
 				<div>
 					<Typography.Text className={styles.label}>
 						{t("checkpoints.curator.typeLabel", "Curator type")}
