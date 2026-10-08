@@ -42,6 +42,7 @@ const evidence = (
 const checkpoint = (overrides: Partial<CheckpointDto> = {}) =>
 	({
 		curatorKind: CheckpointCuratorKind.Human,
+		startedAt: "2026-10-01T00:00:00.000Z",
 		previousVerdictReadAt: null,
 		sessions: [],
 		reports: [],

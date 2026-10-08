@@ -10,7 +10,7 @@ import {
 	dayNumberOn,
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
-import { authorNextStep } from "@/lib/checkpoint-plan";
+import { authorNextStep, dateOfDay } from "@/lib/checkpoint-plan";
 import { buildSessions } from "@/lib/checkpoint-sessions";
 import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
@@ -23,6 +23,7 @@ import {
 } from "@/lib/checkpoint-sprints";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
+import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,
@@ -439,7 +440,10 @@ const buildsDuring = async (row: {
 		where: {
 			projectId: row.projectId,
 			type: ProjectArtifactType.ExecutableBuild,
-			createdAt: { gte: utcStartOfDay(startedAt) },
+			createdAt: {
+				gte: utcStartOfDay(startedAt),
+				lt: dateOfDay(startedAt, CHECKPOINT_DAYS + 1),
+			},
 		},
 		select: { id: true, createdAt: true },
 	});
@@ -470,8 +474,9 @@ export const getCheckpoint = async (id: string) => {
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
 	const [held, number, builds] = await Promise.all([
 		row.paymentId ? heldAmount(id) : null,
-		checkpointNumber(row),
-		buildsDuring(row),
+		// A draft has no number yet and no sprints to file builds in.
+		row.status === CheckpointStatus.Draft ? undefined : checkpointNumber(row),
+		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
 	]);
 
 	return {

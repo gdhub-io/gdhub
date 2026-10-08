@@ -82,29 +82,22 @@ export function StageCard({
 	return (
 		<div className={`${styles.card}${live ? ` ${styles.cardLive}` : ""}`}>
 			{/* ui-guard-ignore the whole header toggles; antd Collapse would restyle the card */}
-			<div
-				role="button"
-				tabIndex={0}
+			<button
+				type="button"
 				aria-expanded={open}
 				className={styles.cardHead}
 				onClick={() => setOpen((value) => !value)}
-				onKeyDown={(event) => {
-					if (event.key === "Enter" || event.key === " ") {
-						event.preventDefault();
-						setOpen((value) => !value);
-					}
-				}}
 			>
 				<IconTile icon={StageIcon} size="md" />
-				<div className={styles.cardTitles}>
+				<span className={styles.cardTitles}>
 					<span className={styles.overline}>{eyebrow}</span>
 					<span className={styles.title}>{title}</span>
-				</div>
+				</span>
 				{dates && <span className={styles.meta}>{dates}</span>}
 				<span className={styles.toggle}>
 					{open ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
 				</span>
-			</div>
+			</button>
 
 			{open && (
 				<div className={styles.cardBody}>
@@ -112,23 +105,24 @@ export function StageCard({
 
 					{next && (
 						<div>
-							{next.lockedReason ? (
-								<Tooltip title={next.lockedReason}>
-									<Button disabled icon={<IconLock size={16} />}>
-										{t("workflow.path.stage.next-button", "Next")}
-									</Button>
-								</Tooltip>
-							) : (
+							<Tooltip title={next.lockedReason}>
 								<Button
-									type="primary"
+									type={next.lockedReason ? "default" : "primary"}
+									disabled={!!next.lockedReason}
 									loading={next.loading}
 									onClick={next.onClick}
-									icon={<IconArrowRight size={16} />}
-									iconPlacement="end"
+									icon={
+										next.lockedReason ? (
+											<IconLock size={16} />
+										) : (
+											<IconArrowRight size={16} />
+										)
+									}
+									iconPlacement={next.lockedReason ? "start" : "end"}
 								>
 									{t("workflow.path.stage.next-button", "Next")}
 								</Button>
-							)}
+							</Tooltip>
 						</div>
 					)}
 				</div>

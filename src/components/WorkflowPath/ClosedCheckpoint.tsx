@@ -6,12 +6,13 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { useState } from "react";
+import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
-import { formatRange, formatShort } from "./dates";
+import { formatShort } from "./dates";
 import styles from "./style.module.scss";
 
 export type ClosedCheckpointProps = {
@@ -33,23 +34,16 @@ export function ClosedCheckpoint({
 	return (
 		<div>
 			{/* ui-guard-ignore the header row toggles the details below it */}
-			<div
-				role="button"
-				tabIndex={0}
+			<button
+				type="button"
 				aria-expanded={open}
 				className={styles.closedHead}
 				onClick={() => setOpen((value) => !value)}
-				onKeyDown={(event) => {
-					if (event.key === "Enter" || event.key === " ") {
-						event.preventDefault();
-						setOpen((value) => !value);
-					}
-				}}
 			>
-				<div className={styles.cardTitles}>
+				<span className={styles.cardTitles}>
 					{checkpoint.startedAt && checkpoint.dueAt && (
 						<span className={styles.meta}>
-							{formatRange(checkpoint.startedAt, checkpoint.dueAt)}
+							{dayRange(checkpoint.startedAt, checkpoint.dueAt)}
 						</span>
 					)}
 					<span className={styles.closedTitle}>
@@ -60,11 +54,11 @@ export function ClosedCheckpoint({
 						</span>
 						{checkpoint.verdict && <VerdictChip verdict={checkpoint.verdict} />}
 					</span>
-				</div>
+				</span>
 				<span className={styles.toggle}>
 					{open ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
 				</span>
-			</div>
+			</button>
 
 			{open && (
 				<div className={styles.panel}>
@@ -90,7 +84,7 @@ export function CheckpointResult({
 	return (
 		<>
 			<div className={styles.block}>
-				<span className={styles.label}>
+				<span className={styles.overline}>
 					{t("workflow.path.checkpoint.goal", "Goal")}
 				</span>
 				<span className={styles.prose}>{checkpoint.goal}</span>

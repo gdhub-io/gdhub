@@ -12,13 +12,14 @@ import {
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Modal, Typography } from "antd";
+import { Button, Modal } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
+import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -32,13 +33,14 @@ import {
 	type ChecklistKey,
 	sprintChecklist,
 } from "@/lib/checkpoint-checklist";
+import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
 import type {
 	CheckpointDto,
 	CheckpointSessionDto,
 	CheckpointSprintDto,
 } from "@/types/checkpoints";
 import { CheckpointResult } from "./ClosedCheckpoint";
-import { daysUntil, formatRange, formatShort } from "./dates";
+import { daysUntil, formatShort } from "./dates";
 import { PathNode } from "./PathNode";
 import { PulseChip } from "./PulseChip";
 import styles from "./style.module.scss";
@@ -131,7 +133,7 @@ export function RunningCheckpoint({
 			verdict: t(
 				"workflow.path.check.verdict",
 				"Read the Checkpoint {number} verdict",
-				{ number: String(previous?.number ?? number - 1) },
+				{ number: String(previous?.number) },
 			),
 			priorities: t(
 				"workflow.path.check.priorities",
@@ -159,7 +161,7 @@ export function RunningCheckpoint({
 	const openItem = (key: ChecklistKey) => {
 		if (key === "verdict") {
 			setModal("results");
-			markRead.mutate();
+			if (!checkpoint.previousVerdictReadAt) markRead.mutate();
 			return;
 		}
 		if (key === "build" || key === "devlog" || key === "artifacts")
@@ -172,6 +174,7 @@ export function RunningCheckpoint({
 			!item.done &&
 			item.key !== "priorities" &&
 			item.key !== "verdict";
+		const meta = itemMeta(item);
 		const body = (
 			<>
 				{item.done ? (
@@ -183,10 +186,10 @@ export function RunningCheckpoint({
 					<span className={item.done ? styles.secondary : undefined}>
 						{itemLabel(item)}
 					</span>
-					{itemMeta(item) && (
+					{meta && (
 						<>
 							<span className={styles.sep}>·</span>
-							<span className={styles.secondary}>{itemMeta(item)}</span>
+							<span className={styles.secondary}>{meta}</span>
 						</>
 					)}
 				</span>
@@ -261,8 +264,8 @@ export function RunningCheckpoint({
 						{t("workflow.path.sprint.name", "Sprint {number}", {
 							number: String(sprint.number),
 						})}
-						<span className={styles.dates}>
-							{formatRange(sprint.from, sprint.to)}
+						<span className={styles.meta}>
+							{dayRange(sprint.from, sprint.to)}
 						</span>
 					</span>
 					<div className={styles.summaryMeta}>
@@ -401,20 +404,26 @@ export function RunningCheckpoint({
 			? t(
 					"workflow.path.check.head-review",
 					"Before the next review · {date}",
-					{
-						date: formatShort(nextSession.scheduledAt),
-					},
+					{ date: formatShort(nextSession.scheduledAt) },
 				)
 			: t("workflow.path.check.head", "Before the next session · {date}", {
 					date: formatShort(nextSession.scheduledAt),
 				})
 		: t("workflow.path.check.head-final", "Before the checkpoint");
+	const ahead = sprints.filter((sprint) => sprint.state === "ahead");
+	const gateDates = finalSession &&
+		checkpoint.startedAt && {
+			date: formatShort(finalSession.scheduledAt),
+			verdict: formatShort(
+				dateOfDay(checkpoint.startedAt, VERDICT_DAY).toISOString(),
+			),
+		};
 
 	return (
 		<>
 			{sprints.filter((sprint) => sprint.state === "done").map(doneSprint)}
 
-			<PathNode inset marker="current" offset={here ? 64 : 28}>
+			<PathNode inset marker="current" offset={here ? 64 : undefined}>
 				{here && <div className={styles.hereAbove}>{here}</div>}
 				<div className={styles.sprint}>
 					<div className={styles.sprintHead}>
@@ -433,7 +442,7 @@ export function RunningCheckpoint({
 							</span>
 						</span>
 						<span className={styles.sprintMeta}>
-							{formatRange(current.from, current.to)}
+							{dayRange(current.from, current.to)}
 							{checkpoint.day !== null &&
 								` · ${t("workflow.path.sprint.day", "day {day}", {
 									day: String(checkpoint.day - current.firstDay + 1),
@@ -466,15 +475,15 @@ export function RunningCheckpoint({
 								<span className={`${styles.meta} ${styles.grow}`}>
 									{formatShort(openingSession.scheduledAt)}
 								</span>
-								<Typography.Link
+								<Link
+									href={sessionHref(openingSession)}
 									className={styles.link}
-									onClick={() => router.push(sessionHref(openingSession))}
 								>
 									{isAI
 										? t("workflow.path.session.review", "Review")
 										: t("workflow.path.session.notes", "Notes")}
 									<IconArrowUpRight size={14} />
-								</Typography.Link>
+								</Link>
 							</div>
 						)}
 
@@ -495,82 +504,59 @@ export function RunningCheckpoint({
 
 			{nextSession && nextSession.index <= 4 && sessionCard(nextSession)}
 
-			{sprints.some((sprint) => sprint.state === "ahead") && (
+			{ahead.length > 0 && (
 				<PathNode inset marker="none">
 					<div role="heading" aria-level={3} className={styles.upNextTitle}>
 						{t("workflow.path.up-next", "Up next")}
 					</div>
 				</PathNode>
 			)}
-			{sprints
-				.filter((sprint) => sprint.state === "ahead")
-				.map((sprint) => {
-					const days = daysUntil(sprint.from);
-					return (
-						<PathNode inset key={sprint.number} marker="sprint">
-							<div className={styles.futureSprint}>
-								<span className={styles.futureDates}>
-									{formatRange(sprint.from, sprint.to)}
-									{days > 0 &&
-										` · ${
-											days === 1
-												? t("workflow.path.starts-tomorrow", "starts tomorrow")
-												: t(
-														"workflow.path.starts-in",
-														"starts in {days} days",
-														{
-															days: String(days),
-														},
-													)
-										}`}
-								</span>
-								<span className={styles.title}>
-									{t("workflow.path.sprint.name", "Sprint {number}", {
-										number: String(sprint.number),
-									})}
-								</span>
-								<div className={styles.with}>
-									{isAI
-										? t("workflow.path.review-by", "review by")
-										: t("workflow.path.with", "with")}
-									{who}
-								</div>
+			{ahead.map((sprint) => {
+				const days = daysUntil(sprint.from);
+				return (
+					<PathNode inset key={sprint.number} marker="sprint">
+						<div className={styles.futureSprint}>
+							<span className={styles.futureDates}>
+								{dayRange(sprint.from, sprint.to)}
+								{days > 0 &&
+									` · ${
+										days === 1
+											? t("workflow.path.starts-tomorrow", "starts tomorrow")
+											: t("workflow.path.starts-in", "starts in {days} days", {
+													days: String(days),
+												})
+									}`}
+							</span>
+							<span className={styles.title}>
+								{t("workflow.path.sprint.name", "Sprint {number}", {
+									number: String(sprint.number),
+								})}
+							</span>
+							<div className={styles.with}>
+								{isAI
+									? t("workflow.path.review-by", "review by")
+									: t("workflow.path.with", "with")}
+								{who}
 							</div>
-						</PathNode>
-					);
-				})}
+						</div>
+					</PathNode>
+				);
+			})}
 
 			<PathNode inset marker="gate" rail="dashed">
 				<div className={styles.gate}>
-					{finalSession && (
+					{gateDates && (
 						<span className={styles.meta}>
 							{isAI
 								? t(
 										"workflow.path.gate.ai",
 										"{date} · final review · verdict by {verdict}",
-										{
-											date: formatShort(finalSession.scheduledAt),
-											verdict: formatShort(
-												dayjs
-													.utc(finalSession.scheduledAt)
-													.add(3, "day")
-													.toISOString(),
-											),
-										},
+										gateDates,
 									)
 								: t(
 										"workflow.path.gate.human",
 										"{date} · call with {name} · verdict by {verdict}",
-										{
-											date: formatShort(finalSession.scheduledAt),
-											name: curatorName,
-											verdict: formatShort(
-												dayjs
-													.utc(finalSession.scheduledAt)
-													.add(3, "day")
-													.toISOString(),
-											),
-										},
+										{ ...gateDates, name: curatorName },
 									)}
 						</span>
 					)}

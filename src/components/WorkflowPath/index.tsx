@@ -44,7 +44,8 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const [equityOpen, setEquityOpen] = useState(false);
 
 	const { data: workflow, refetch } = useQuery({
-		queryKey: ["project-workflow", project.id],
+		// VacancyModal caches the raw response under ["project-workflow", id].
+		queryKey: ["project-workflow", project.id, "path"],
 		queryFn: async () =>
 			(
 				await axios.get<ProjectWorkflowWithSteps>(
@@ -82,19 +83,16 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 	// Numbered through the project in the order they ran; drafts and cancelled
 	// ones never took a number.
-	const ran = (list?.closed.rows ?? [])
+	const numbered = (list?.closed.rows ?? [])
 		.filter((row) => row.status === CheckpointStatus.Closed)
-		.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-	const numbered = ran.map((checkpoint, index) => ({
-		checkpoint,
-		number: index + 1,
-	}));
+		.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+		.map((checkpoint, index) => ({ checkpoint, number: index + 1 }));
 	const previous = numbered.at(-1) ?? null;
 
 	const requiredOpen = current.tasks.some(
 		(task) => task.required && !task.done,
 	);
-	const isLast = current.order === steps.length - 1;
+	const nextStep = steps[current.order + 1];
 	const goNext = () => {
 		if (current.equityPromises?.length) {
 			setEquityOpen(true);
@@ -127,17 +125,26 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		(sprint) => sprint.state === "done",
 	);
 
-	const historyToggle = (
+	const historyButton = (label: string, onClick: () => void) => (
 		<Button
 			type="text"
 			className={styles.quiet}
 			icon={<IconHistory size={16} />}
-			onClick={() => setBehind(behind === null ? 1 : null)}
+			onClick={onClick}
 		>
-			{behind !== null
-				? t("workflow.path.history.hide", "Hide previous path")
-				: t("workflow.path.history.show", "Show previous path")}
+			{label}
 		</Button>
+	);
+	const historyToggle = historyButton(
+		behind !== null
+			? t("workflow.path.history.hide", "Hide previous path")
+			: t("workflow.path.history.show", "Show previous path"),
+		() => setBehind(behind === null ? 1 : null),
+	);
+	const historyRow = (button: ReactNode) => (
+		<PathNode marker="none" rail="dashed" space={12}>
+			<div className={styles.earlier}>{button}</div>
+		</PathNode>
 	);
 
 	const closedNodes = (stepId: string) =>
@@ -182,7 +189,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				locale={locale}
 				defaultOpen={state === "current" && !running}
 				next={
-					state === "current" && canMove && !isLast
+					state === "current" && canMove && nextStep
 						? {
 								onClick: goNext,
 								loading: move.isPending,
@@ -205,7 +212,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const shown = behind ?? (running ? 0 : 1);
 	const historyVisible = !running || behind !== null;
 	const firstShown = Math.max(0, current.order - shown);
-	const nextStep = steps[current.order + 1];
 	// The road leads to a released game: support and completion come into view
 	// only once the project is past it.
 	const named = steps.findIndex((step) => /release/i.test(step.name));
@@ -214,23 +220,23 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const showNext =
 		!!nextStep && (!beforeRelease || nextStep.order <= releaseIndex);
 
+	const currentStage = (
+		<PathNode marker="stageCurrent" start={current.order === 0}>
+			{stageCard(current.order)}
+		</PathNode>
+	);
+
 	return (
 		<div className={styles.layout}>
 			<div>
-				{historyVisible && firstShown > 0 && (
-					<PathNode marker="none" rail="dashed" space={12}>
-						<div className={styles.earlier}>
-							<Button
-								type="text"
-								className={styles.quiet}
-								icon={<IconHistory size={16} />}
-								onClick={() => setBehind(shown + 1)}
-							>
-								{t("workflow.path.history.earlier", "Show earlier stages")}
-							</Button>
-						</div>
-					</PathNode>
-				)}
+				{historyVisible &&
+					firstShown > 0 &&
+					historyRow(
+						historyButton(
+							t("workflow.path.history.earlier", "Show earlier stages"),
+							() => setBehind(shown + 1),
+						),
+					)}
 				{historyVisible &&
 					steps.slice(firstShown, current.order).flatMap((step) => [
 						<PathNode key={step.id} marker="stageDone" start={step.order === 0}>
@@ -241,16 +247,10 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 				{running && detail ? (
 					<>
-						{!historyVisible && (
-							<PathNode marker="none" rail="dashed" space={12}>
-								<div className={styles.earlier}>{historyToggle}</div>
-							</PathNode>
-						)}
+						{!historyVisible && historyRow(historyToggle)}
 						{/* The stage stays in view with a checkpoint running on it: it is
 						    what the sprints below are working through. */}
-						<PathNode marker="stageCurrent" start={current.order === 0}>
-							{stageCard(current.order)}
-						</PathNode>
+						{currentStage}
 						{historyVisible && closedNodes(current.id)}
 						{(historyVisible || !sprintBehind) && (
 							<PathNode marker="none" space={12} inset>
@@ -274,9 +274,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 							{/* Opened past the stage just behind: offer the way back to it. */}
 							{here(hereLabel, behind !== null ? historyToggle : null)}
 						</PathNode>
-						<PathNode marker="stageCurrent" start={current.order === 0}>
-							{stageCard(current.order)}
-						</PathNode>
+						{currentStage}
 						{closedNodes(current.id)}
 					</>
 				)}

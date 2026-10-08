@@ -1,23 +1,9 @@
-import {
-	type Icon,
-	IconArrowUpRight,
-	IconFileText,
-	IconPackage,
-	IconPhoto,
-	IconVideo,
-} from "@tabler/icons-react";
+import { IconArrowUpRight } from "@tabler/icons-react";
 import { Typography } from "antd";
+import { artifactIcon } from "@/components/checkpoints/ArtifactPicker";
 import { useArtifactTypeLabel } from "@/components/checkpoints/artifactType";
-import { ProjectArtifactType } from "@/config/prisma-enums";
 import type { CheckpointArtifactRef } from "@/types/checkpoints";
 import styles from "./style.module.scss";
-
-const TYPE_ICON: Partial<Record<ProjectArtifactType, Icon>> = {
-	[ProjectArtifactType.GameplayVideo]: IconVideo,
-	[ProjectArtifactType.PrototypeVideo]: IconVideo,
-	[ProjectArtifactType.ExecutableBuild]: IconPackage,
-	[ProjectArtifactType.Art]: IconPhoto,
-};
 
 /** A done task's proof: what kind of artifact it is, opening the artifact itself. */
 export function ArtifactLink({
@@ -26,7 +12,7 @@ export function ArtifactLink({
 	artifact: CheckpointArtifactRef;
 }) {
 	const typeLabel = useArtifactTypeLabel();
-	const TypeIcon = TYPE_ICON[artifact.type] ?? IconFileText;
+	const TypeIcon = artifactIcon(artifact.type);
 
 	return (
 		<Typography.Link

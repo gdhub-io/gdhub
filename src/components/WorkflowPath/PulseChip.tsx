@@ -1,5 +1,6 @@
 import { useTranslate } from "@tolgee/react";
 import { Popover, Typography } from "antd";
+import { pulseCellLabel } from "@/components/checkpoints/SprintPanel/Signals";
 import { StatusDot, type StatusTone } from "@/components/ui";
 import type {
 	CheckpointPulseCellDto,
@@ -57,21 +58,11 @@ export type PulseChipProps = {
 /** The sprint's pulse as a small trace; opening it names who has checked in. */
 export function PulseChip({ rows, sprint }: PulseChipProps) {
 	const { t } = useTranslate();
-	const cells = rows
-		.map((row) => ({
-			row,
-			cell: row.cells.find((cell) => cell.sprint === sprint),
-		}))
-		.filter(({ cell }) => cell && cell.state !== "notOnTeam");
-	const beats = cells.filter(({ cell }) => cell?.state === "confirmed").length;
-
-	const label: Record<CheckpointPulseCellDto["state"], string> = {
-		confirmed: t("workflow.path.pulse.confirmed", "Checked in"),
-		waiting: t("workflow.path.pulse.waiting", "Not yet"),
-		missed: t("workflow.path.pulse.missed", "Missed"),
-		notAsked: t("workflow.path.pulse.not-asked", "Not asked"),
-		notOnTeam: "",
-	};
+	const cells = rows.flatMap((row) => {
+		const cell = row.cells.find((item) => item.sprint === sprint);
+		return cell && cell.state !== "notOnTeam" ? [{ row, cell }] : [];
+	});
+	const beats = cells.filter(({ cell }) => cell.state === "confirmed").length;
 
 	const content = (
 		<div className={styles.pulseTable}>
@@ -83,9 +74,10 @@ export function PulseChip({ rows, sprint }: PulseChipProps) {
 				cells.map(({ row, cell }) => (
 					<div key={row.memberId} className={styles.pulseRow}>
 						<Text>{row.name}</Text>
-						{cell && (
-							<StatusDot tone={TONE[cell.state]} label={label[cell.state]} />
-						)}
+						<StatusDot
+							tone={TONE[cell.state]}
+							label={pulseCellLabel(t, cell)}
+						/>
 					</div>
 				))
 			)}

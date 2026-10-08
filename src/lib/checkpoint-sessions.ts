@@ -1,4 +1,4 @@
-import { utcStartOfDay } from "@/lib/checkpoint-days";
+import { dateOfDay } from "@/lib/checkpoint-plan";
 import { SPRINT_DAYS, SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import type { CheckpointSessionDto } from "@/types/checkpoints";
 
@@ -6,7 +6,7 @@ import type { CheckpointSessionDto } from "@/types/checkpoints";
  * The five sessions of a checkpoint: the plan on day 1, one opening each of
  * sprints 2–4, and the final one the day after the 28 days.
  */
-export const SESSIONS_PER_CHECKPOINT = SPRINTS_PER_CHECKPOINT + 1;
+const SESSIONS_PER_CHECKPOINT = SPRINTS_PER_CHECKPOINT + 1;
 
 /** Session 1 is on day 1, session 5 on day 29. */
 export const sessionDay = (index: number) => (index - 1) * SPRINT_DAYS + 1;
@@ -31,18 +31,16 @@ export const buildSessions = (
 ): CheckpointSessionDto[] => {
 	if (!startedAt) return [];
 
-	const start = utcStartOfDay(startedAt);
-
 	return Array.from({ length: SESSIONS_PER_CHECKPOINT }, (_, offset) => {
 		const index = offset + 1;
 		const row = rows.find((session) => session.index === index);
-		const day = new Date(start);
-		day.setUTCDate(day.getUTCDate() + sessionDay(index) - 1);
 
 		return {
 			index,
 			day: sessionDay(index),
-			scheduledAt: (row?.scheduledAt ?? day).toISOString(),
+			scheduledAt: (
+				row?.scheduledAt ?? dateOfDay(startedAt, sessionDay(index))
+			).toISOString(),
 			timeKnown: !!row,
 			rescheduledAt: row?.rescheduledAt?.toISOString() ?? null,
 			curatorJoinedAt: row?.curatorJoinedAt?.toISOString() ?? null,

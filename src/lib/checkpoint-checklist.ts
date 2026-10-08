@@ -1,4 +1,5 @@
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { CheckpointDto, CheckpointSprintDto } from "@/types/checkpoints";
 
 /**
@@ -19,15 +20,6 @@ export type ChecklistItem = {
 	done: boolean;
 	/** The day it is due, as a UTC midnight. */
 	dueAt: string | null;
-	/** When it was done, where the line says so ("session 8 Oct"). */
-	doneAt: string | null;
-};
-
-const addDays = (iso: string, days: number) => {
-	const date = new Date(iso);
-	date.setUTCDate(date.getUTCDate() + days);
-
-	return date.toISOString();
 };
 
 export const sprintChecklist = (
@@ -36,17 +28,15 @@ export const sprintChecklist = (
 	hasPreviousCheckpoint: boolean,
 ): ChecklistItem[] => {
 	const items: ChecklistItem[] = [];
-	const devlogDueAt = addDays(sprint.from, sprint.devlogDay - sprint.firstDay);
-	const evidence = (checkpoint.evidence ?? []).filter(
-		(item) => item.sprint === sprint.number,
-	);
+	const devlogDueAt = checkpoint.startedAt
+		? dateOfDay(checkpoint.startedAt, sprint.devlogDay).toISOString()
+		: null;
 
 	if (sprint.number === 1 && hasPreviousCheckpoint) {
 		items.push({
 			key: "verdict",
 			done: !!checkpoint.previousVerdictReadAt,
 			dueAt: null,
-			doneAt: checkpoint.previousVerdictReadAt ?? null,
 		});
 	}
 
@@ -60,7 +50,6 @@ export const sprintChecklist = (
 			key: "priorities",
 			done: !!session?.endedAt,
 			dueAt: session?.scheduledAt ?? null,
-			doneAt: session?.endedAt ?? null,
 		});
 	}
 
@@ -71,7 +60,6 @@ export const sprintChecklist = (
 		key: "build",
 		done: !!build,
 		dueAt: null,
-		doneAt: build?.addedAt ?? null,
 	});
 
 	const devlog = checkpoint.reports?.find(
@@ -81,15 +69,15 @@ export const sprintChecklist = (
 		key: "devlog",
 		done: !!devlog,
 		dueAt: devlogDueAt,
-		doneAt: devlog?.publishedAt ?? null,
 	});
 
-	const proved = evidence.find((item) => item.itemIds.length > 0);
+	const proved = checkpoint.evidence?.find(
+		(item) => item.sprint === sprint.number && item.itemIds.length > 0,
+	);
 	items.push({
 		key: "artifacts",
 		done: !!proved,
 		dueAt: devlogDueAt,
-		doneAt: proved?.addedAt ?? null,
 	});
 
 	return items;

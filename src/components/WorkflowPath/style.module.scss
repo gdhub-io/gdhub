@@ -283,6 +283,15 @@
 	background: var(--gd-color-surface);
 }
 
+// Header toggles are native buttons; strip the browser's button look.
+.cardHead,
+.closedHead {
+	border: 0;
+	background: transparent;
+	font: inherit;
+	text-align: left;
+}
+
 .cardHead {
 	display: flex;
 	align-items: center;
@@ -336,12 +345,6 @@
 	padding: var(--gd-space-1) var(--gd-space-6) var(--gd-space-6) 80px;
 }
 
-.section {
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-1);
-}
-
 .sectionHead {
 	display: flex;
 	justify-content: space-between;
@@ -352,14 +355,6 @@
 .sectionLabel {
 	font-weight: 600;
 }
-
-.label {
-	font-size: var(--gd-font-size-body-sm);
-	font-weight: 600;
-	color: var(--gd-color-text-secondary);
-}
-
-
 
 .taskIcon {
 	flex: none;
@@ -411,12 +406,6 @@
 
 .toward {
 	font-size: var(--gd-font-size-body);
-	font-weight: 400;
-	color: var(--gd-color-text-secondary);
-}
-
-.dates {
-	font-size: var(--gd-font-size-body-sm);
 	font-weight: 400;
 	color: var(--gd-color-text-secondary);
 }
@@ -701,6 +690,7 @@ button.checklistItem {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	width: calc(100% + 2 * var(--gd-space-2));
 	gap: var(--gd-space-4);
 	margin: calc(-1 * var(--gd-space-2));
 	padding: var(--gd-space-2);

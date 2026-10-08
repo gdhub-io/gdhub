@@ -71,10 +71,6 @@ export const normalizeWorkflowSteps = (
 type EquityPromise = {
 	id: string;
 	percentage: number;
-	owner: {
-		id: string;
-		name: string;
-	};
 	allocation: {
 		owner: {
 			name: string;
@@ -85,9 +81,7 @@ type EquityPromise = {
 
 /** What `/api/user/project/workflow` returns: the steps and the current one in full. */
 export type ProjectWorkflowWithSteps = ProjectWorkflow & {
-	steps: (ProjectWorkflowStep & {
-		equityPromises?: EquityPromise[];
-	})[];
+	steps: ProjectWorkflowStep[];
 	currentStep: ProjectWorkflowStep & {
 		tasks: ProjectWorkflowTask[];
 		equityPromises?: EquityPromise[];
