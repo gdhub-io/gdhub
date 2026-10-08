@@ -607,10 +607,28 @@
 	},
 	"change": "Изменить",
 	"chat": {
+		"context": {
+			"checkpoint": {
+				"author": "Автор",
+				"checkpoint": "Чекпоинт",
+				"curator": "Куратор",
+				"dates": "Дата",
+				"openProject": "Открыть страницу проекта",
+				"sprint": "Текущий спринт",
+				"sprintValue": "Спринт {number} · {dates}",
+				"title": "Контрольная точка {number}"
+			}
+		},
+		"emptyRoom": {
+			"groupDescription": "Только люди в этом чате могут это увидеть."
+		},
 		"groups": {
 			"direct": "Личные чаты",
 			"experts": "Эксперты",
 			"offers": "Предложения"
+		},
+		"kind": {
+			"checkpoint": "Чекпоинт"
 		},
 		"topic": {
 			"openPositionPage": "Страница вакансии"
@@ -3284,6 +3302,18 @@
 			}
 		},
 		"all-steps": "Все этапы",
+		"aside": {
+			"ai": "ИИ",
+			"allArtifacts": "Все артефакты",
+			"attach": "Прикрепить артефакт",
+			"chat": "Чат контрольной точки",
+			"chatFailed": "Чат не удалось открыть",
+			"checkpoint": "Контрольная точка {number}",
+			"curator": "Куратор",
+			"goal": "Цель",
+			"industry": "Отрасль",
+			"tasks": "Задачи"
+		},
 		"create-workflow": {
 			"modal": {
 				"cancel-text": "Отмена",
@@ -3360,6 +3390,7 @@
 				"head": "Перед следующей сессией · {date}",
 				"head-final": "Перед контрольной точкой",
 				"head-review": "Перед следующим обзором · {date}",
+				"head-sprint": "К концу спринта {number} · {date}",
 				"priorities": "Установите приоритеты спринта с {name}",
 				"session-on": "сессия {date}",
 				"verdict": "Прочитайте вердикт контрольной точки {number}",
@@ -3392,9 +3423,12 @@
 			"pulse": {
 				"confirmed": "Отмечено",
 				"empty": "Пока никого не спрашивали.",
+				"hint": "Проверка — это день с девлогом, артефактом или ссылкой на пульс.",
 				"label": "Пульс",
 				"missed": "Пропущено",
 				"not-asked": "Еще не задано",
+				"quiet": "Тихий",
+				"sprint": "Спринт {number} · {dates}",
 				"title": "Пульс команды",
 				"waiting": "Еще не"
 			},

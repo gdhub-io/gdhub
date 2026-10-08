@@ -10,6 +10,7 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
+import { CheckpointAside } from "./CheckpointAside";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { CuratorAccepted } from "./CuratorAccepted";
@@ -328,6 +329,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			</div>
 
 			<aside className={styles.aside}>
+				{running && detail && (
+					<CheckpointAside
+						checkpoint={detail}
+						projectSlug={project.slug}
+						canManage={can("project.checkpoints.manage")}
+					/>
+				)}
 				<WorkflowTasksPanel
 					tasks={current.tasks.map((task) => ({
 						id: task.id,

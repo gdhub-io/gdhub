@@ -607,10 +607,28 @@
 	},
 	"change": "Edit",
 	"chat": {
+		"context": {
+			"checkpoint": {
+				"author": "Author",
+				"checkpoint": "Checkpoint",
+				"curator": "Curator",
+				"dates": "Dates",
+				"openProject": "Open project page",
+				"sprint": "Current sprint",
+				"sprintValue": "Sprint {number} · {dates}",
+				"title": "Checkpoint {number}"
+			}
+		},
+		"emptyRoom": {
+			"groupDescription": "Only the people in this chat can see it."
+		},
 		"groups": {
 			"direct": "Direct chats",
 			"experts": "Experts",
 			"offers": "Offers"
+		},
+		"kind": {
+			"checkpoint": "Checkpoint"
 		},
 		"topic": {
 			"openPositionPage": "Open position page"
@@ -3284,6 +3302,18 @@
 			}
 		},
 		"all-steps": "All steps",
+		"aside": {
+			"ai": "AI",
+			"allArtifacts": "All artifacts",
+			"attach": "Attach an artifact",
+			"chat": "Checkpoint chat",
+			"chatFailed": "The chat could not open",
+			"checkpoint": "Checkpoint {number}",
+			"curator": "Curator",
+			"goal": "Goal",
+			"industry": "Industry",
+			"tasks": "Tasks"
+		},
 		"create-workflow": {
 			"modal": {
 				"cancel-text": "Cancel",

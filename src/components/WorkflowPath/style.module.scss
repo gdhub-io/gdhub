@@ -44,6 +44,70 @@
 	gap: var(--gd-space-6);
 }
 
+// Frame 08 `RV1gV`: the running checkpoint beside the path.
+.asideCard {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.asideHead,
+.asideBlock {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.asideBlock {
+	gap: var(--gd-space-2);
+}
+
+.asideRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-2);
+}
+
+.asideTitle {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+.asideMeta {
+	display: block;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.asideOutcome {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 32px;
+}
+
+.asideDone {
+	flex: none;
+	color: var(--gd-success-solid);
+}
+
+.asideTodo {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.asideDivider.asideDivider {
+	margin: 0;
+}
+
+.asideCurator {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
 // One row of the path: a 40px gutter holding the rail and the marker, 16px, then
 // the content. Rows sit flush so the rail reads as one line.
 .node {

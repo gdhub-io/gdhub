@@ -15,13 +15,13 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Modal } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
-import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CheckpointCuratorKind,
@@ -44,6 +44,16 @@ import { daysUntil, formatShort } from "./dates";
 import { PathNode } from "./PathNode";
 import { PulseChip } from "./PulseChip";
 import styles from "./style.module.scss";
+
+// The editor's tools touch `Element` as they load, so the modal cannot be
+// rendered on the server.
+const DevLogPostModal = dynamic(
+	() =>
+		import("@/components/modals/DevLogPostModal").then(
+			(module) => module.DevLogPostModal,
+		),
+	{ ssr: false },
+);
 
 const ICON: Record<ChecklistKey, ReactNode> = {
 	verdict: <IconFileText size={20} />,
