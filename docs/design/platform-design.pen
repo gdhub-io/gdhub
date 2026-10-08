@@ -180744,7 +180744,7 @@
           "id": "xcwxi",
           "name": "L",
           "fill": "$text-primary",
-          "content": "Stage closed",
+          "content": "Stage can be closed",
           "fontFamily": "$font",
           "fontSize": 13,
           "fontWeight": "500"
@@ -184182,7 +184182,7 @@
                                   "fill": "$success-on-tint"
                                 },
                                 "xcwxi": {
-                                  "content": "Stage closed",
+                                  "content": "Stage can be closed",
                                   "fill": "$success-on-tint"
                                 }
                               }
@@ -184451,7 +184451,7 @@
                                   "fill": "$success-on-tint"
                                 },
                                 "xcwxi": {
-                                  "content": "Stage closed",
+                                  "content": "Stage can be closed",
                                   "fill": "$success-on-tint"
                                 }
                               }
@@ -186128,7 +186128,7 @@
                       "fill": "$success-on-tint"
                     },
                     "xcwxi": {
-                      "content": "Stage closed",
+                      "content": "Stage can be closed",
                       "fill": "$success-on-tint"
                     }
                   }
@@ -187370,7 +187370,7 @@
                           "fill": "$success-on-tint"
                         },
                         "xcwxi": {
-                          "content": "Stage closed",
+                          "content": "Stage can be closed",
                           "fill": "$success-on-tint"
                         }
                       }
@@ -187847,7 +187847,7 @@
                           "fill": "$success-on-tint"
                         },
                         "xcwxi": {
-                          "content": "Stage closed",
+                          "content": "Stage can be closed",
                           "fill": "$success-on-tint"
                         }
                       }
@@ -198396,7 +198396,7 @@
                                                   "id": "ncRSv",
                                                   "name": "N",
                                                   "fill": "$text-primary",
-                                                  "content": "Stage closed",
+                                                  "content": "Stage can be closed",
                                                   "fontFamily": "$font",
                                                   "fontSize": 14,
                                                   "fontWeight": "600"
@@ -198698,7 +198698,7 @@
                                       "fill": "$text-secondary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Stage closed is available because evidence is attached.",
+                                      "content": "Stage can be closed is available because evidence is attached.",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 12,
@@ -223514,7 +223514,7 @@
                       "fill": "$success"
                     },
                     "xcwxi": {
-                      "content": "Stage closed"
+                      "content": "Stage can be closed"
                     }
                   }
                 }
