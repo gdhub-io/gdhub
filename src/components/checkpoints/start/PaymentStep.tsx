@@ -1,48 +1,30 @@
 "use client";
 
 import {
-	IconAlertTriangle,
+	IconAlertCircle,
 	IconCheck,
-	IconCircleCheck,
 	IconFlag,
-	IconInfoCircle,
-	IconLock,
-	IconX,
+	IconMinus,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import {
-	App,
-	Button,
-	Card,
-	Checkbox,
-	Flex,
-	Skeleton,
-	Spin,
-	Tooltip,
-	Typography,
-} from "antd";
+import { App, Button, Card, Checkbox, Flex, Skeleton, Typography } from "antd";
 import dayjs from "dayjs";
-import { type ReactNode, useEffect, useState } from "react";
-import { EmptyState } from "@/components/ui";
+import type { ReactNode } from "react";
+import { EmptyState, IconTile } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 	curatorPrice,
 } from "@/config/checkpoint-pricing";
-import {
-	CheckpointCuratorKind,
-	CheckpointItemKind,
-} from "@/config/prisma-enums";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import {
 	useCheckpointCheckout,
 	useCheckpointCurators,
-	useGoalCheck,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
-import type { CheckpointItemDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";
@@ -52,60 +34,19 @@ import { useTeamHours } from "./teamHours";
 import { useCheckpointDraft } from "./useDraft";
 
 /**
- * Step 5: everything read back, what it costs, and what it does not promise.
+ * Frames 05 and 05.1 (`ffbRA`, `C4c18X`): everything read back, what it costs
+ * and what it does not promise.
  *
  * The terms are on this screen and nowhere else. Money is shown once, before it
- * is spent, and the checkpoint never mentions it again — so this is the only
- * place the author can read what they are and are not buying, and the only place
- * it can be refused.
+ * is spent, so this is the only place the author can read what they are and are
+ * not buying, and the only place it can be refused.
  */
-/**
- * True only once the read has been running long enough to be worth saying so.
- *
- * A kept read comes back from the database in tens of milliseconds, and flashing
- * "Reading your plan" for that long reads as a glitch; a real model call takes
- * seconds and has to announce itself.
- */
-const useSlowRead = (running: boolean) => {
-	const [slow, setSlow] = useState(false);
-
-	useEffect(() => {
-		if (!running) {
-			setSlow(false);
-			return;
-		}
-
-		const timer = setTimeout(() => setSlow(true), 400);
-
-		return () => clearTimeout(timer);
-	}, [running]);
-
-	return slow;
-};
-
 export function PaymentStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
 	const { draft, project, loading } = useCheckpointDraft();
 	const team = useTeamHours(project?.team?.id);
-	// What the curator is being asked about: the card, and the hours it has to be
-	// done in. Anything else changing — a curator picked, a date moved — is not a
-	// different question, so it does not cost another call.
-	const signature = draft
-		? [
-				draft.goal.trim(),
-				...draft.items.map((item) => `${item.kind}:${item.text}`),
-				team.hours.join("-"),
-			].join("|")
-		: undefined;
-	const {
-		data: remark,
-		isLoading: reading,
-		isError: readFailed,
-		refetch: readAgain,
-	} = useGoalCheck(draft?.id, signature);
-	const checking = useSlowRead(reading);
 	const update = useUpdateCheckpoint(draft?.id);
 	const checkout = useCheckpointCheckout(draft?.id);
 	const curators = useCheckpointCurators();
@@ -120,56 +61,29 @@ export function PaymentStep() {
 					"checkpoints.prepare.noDraft",
 					"There is no draft to continue",
 				)}
-				description={t(
-					"checkpoints.prepare.noDraftHint",
-					"Start a checkpoint from the list and the goal card opens here.",
-				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.prepare.toList", "Back to checkpoints")}
+						{t("checkpoints.prepare.toWorkflow", "Back to the workflow")}
 					</Button>
 				}
 			/>
 		);
 	}
 
-	const side = (kind: CheckpointItemKind) =>
-		draft.items.filter((item: CheckpointItemDto) => item.kind === kind);
-
-	const block = (label: string, edit: StartStep | null, body: ReactNode) => (
+	const block = (label: string, edit: StartStep, body: ReactNode) => (
 		<Flex vertical gap={8} className={styles.block}>
 			<Flex justify="space-between" align="baseline">
 				<Typography.Text className={styles.blockLabel}>{label}</Typography.Text>
-				{edit && (
-					<Button type="link" className={styles.edit} onClick={() => go(edit)}>
-						{t("checkpoints.pay.edit", "Edit")}
-					</Button>
-				)}
+				<Button type="link" className={styles.edit} onClick={() => go(edit)}>
+					{t("checkpoints.pay.edit", "Edit")}
+				</Button>
 			</Flex>
 			{body}
 		</Flex>
 	);
 
-	const list = (items: CheckpointItemDto[]) =>
-		items.length === 0 ? (
-			<Typography.Text type="secondary">
-				{t("checkpoints.goal.sideEmpty", "Nothing listed")}
-			</Typography.Text>
-		) : (
-			<Flex vertical gap={8}>
-				{items.map((item) => (
-					<Flex key={item.id} gap={8} align="baseline">
-						<span className={styles.dot} />
-						<Typography.Text>{item.text}</Typography.Text>
-					</Flex>
-				))}
-			</Flex>
-		);
-
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
-	// The price follows the chosen curator's level, and the level only exists on
-	// the list the previous step already loaded — the checkpoint itself keeps no
-	// record of what was agreed until GDHUB-42 puts one there.
+	// The level that sets the price lives on the curator list, not the draft.
 	const chosen = curators.data?.find(
 		(curator) => curator.userId === draft.curator?.id,
 	);
@@ -197,295 +111,185 @@ export function PaymentStep() {
 
 	const runsIn = [
 		draft.stageName,
-		t("checkpoints.number", "Checkpoint {number}", { number: draft.order }),
+		t("checkpoints.pay.checkpointNumber", "checkpoint {number}", {
+			number: draft.order,
+		}),
 		draft.startedAt
-			? t("checkpoints.when.runs", "Runs {from} – {to}", {
-					from: dayjs.utc(draft.startedAt).format("D MMM"),
-					to: dayjs
-						.utc(dueDateFrom(new Date(draft.startedAt)))
-						.format("D MMM YYYY"),
-				})
+			? `${dayjs.utc(draft.startedAt).format("D MMM")} – ${dayjs
+					.utc(dueDateFrom(new Date(draft.startedAt)))
+					.format("D MMM YYYY")}`
 			: t("checkpoints.pay.days", "{count} days from the start", {
 					count: CHECKPOINT_DAYS,
 				}),
 	].join(" · ");
 
-	// Advice on the plan, never a verdict on it: the author can read the warning
-	// and pay anyway. Every outcome of the read has a face, including the ones
-	// that say nothing about the plan: a block that appears and then vanishes
-	// leaves the author wondering what it decided.
-	const atRisk = !!remark && (!remark.reachable || remark.missing.length > 0);
-	const read = checking
-		? {
-				tone: "info" as const,
-				icon: <Spin size="small" />,
-				title: t("checkpoints.pay.checkingTitle", "Reading your plan"),
-				body: t(
-					"checkpoints.pay.checkingBody",
-					"The outcomes you wrote are being weighed against the hours the team has.",
-				),
-			}
-		: atRisk
-			? {
-					tone: "warning" as const,
-					icon: <IconAlertTriangle size={20} stroke={1.6} />,
-					title: t(
-						"checkpoints.pay.riskTitle",
-						"Your 28-day plan may be at risk",
+	const terms = [
+		{
+			Icon: IconCheck,
+			tone: "yes",
+			text: isAI
+				? t(
+						"checkpoints.curator.aiWritten",
+						"Written feedback every sprint, a final verdict, clear deadlines and reminders.",
+					)
+				: t(
+						"checkpoints.curator.expertCalls",
+						"A call every sprint, a final verdict, clear deadlines and reminders.",
 					),
-					body: t(
-						"checkpoints.pay.riskBody",
-						"The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
-					),
-				}
-			: readFailed || (!reading && !remark)
-				? {
-						tone: "neutral" as const,
-						icon: <IconAlertTriangle size={20} stroke={1.6} />,
-						title: t(
-							"checkpoints.pay.readFailedTitle",
-							"The plan could not be read",
-						),
-						body: t(
-							"checkpoints.pay.readFailedBody",
-							"Nothing is wrong with your checkpoint — the curator's read did not come back. You can pay without it, or ask again.",
-						),
-					}
-				: remark
-					? {
-							tone: "success" as const,
-							icon: <IconCircleCheck size={20} stroke={1.6} />,
-							title: t(
-								"checkpoints.pay.okTitle",
-								"Your 28-day plan looks reachable",
-							),
-							body:
-								remark.note ||
-								t(
-									"checkpoints.pay.okBody",
-									"The outcomes fit the hours the team stated. Nothing here is a promise that they land — only that the plan is not asking for more days than there are.",
-								),
-						}
-					: null;
-
-	// Paying while the read is still running would buy a plan nobody has looked at
-	// yet — held on the request itself, not on whether it was slow enough to show.
-	// The sentence beside the button says what is holding it, or nothing at all.
-	const payHeldBy = reading
-		? t("checkpoints.pay.waitForCheck", "Wait for the plan to be read")
-		: draft.acceptedTermsAt
-			? null
-			: t("checkpoints.pay.acceptFirst", "Accept the agreement to pay");
+		},
+		{
+			Icon: IconMinus,
+			tone: "no",
+			text: t(
+				"checkpoints.pay.termTeam",
+				"Your team does the work; the curator keeps the 28 days on track.",
+			),
+		},
+		{
+			Icon: IconMinus,
+			tone: "note",
+			text: t(
+				"checkpoints.pay.termTasks",
+				"Tasks are set together on the first call. Results are not guaranteed.",
+			),
+		},
+	];
 
 	return (
 		<StartLayout
 			step="payment"
-			hint={t(
-				"checkpoints.prepare.h4",
-				"Review your choices, complete payment, and start working toward your next Checkpoint.",
-			)}
+			title={t("checkpoints.pay.title", "Check and pay")}
 			notice={
-				read && (
-					<Flex
-						gap={16}
-						align="flex-start"
-						className={styles.suggestion}
-						data-tone={read.tone}
-					>
-						<span className={styles.suggestionIcon}>{read.icon}</span>
-						<Flex vertical gap={4} className={styles.suggestionText}>
-							<Typography.Text className={styles.suggestionLabel}>
-								{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
+				draft.paymentFailed && (
+					<Flex gap={16} align="center" className={styles.failed}>
+						<IconTile
+							icon={IconAlertCircle}
+							size="md"
+							tint="var(--gd-color-surface)"
+							ink="var(--gd-danger-solid)"
+						/>
+						<Flex vertical gap={4}>
+							<Typography.Text strong>
+								{t(
+									"checkpoints.pay.failedTitle",
+									"The payment did not go through",
+								)}
 							</Typography.Text>
-							<Typography.Text className={styles.suggestionTitle}>
-								{read.title}
-							</Typography.Text>
-							<Typography.Text className={styles.suggestionBody}>
-								{read.body}
+							<Typography.Text type="secondary">
+								{t(
+									"checkpoints.pay.failedBody",
+									"Try the payment again, or pay with another card.",
+								)}
 							</Typography.Text>
 						</Flex>
-						{read.tone === "warning" && (
-							<Button
-								className={styles.suggestionAction}
-								onClick={() => go("goal")}
-							>
-								{t("checkpoints.pay.adjustGoal", "Adjust the goal")}
-							</Button>
-						)}
-						{read.tone === "neutral" && (
-							<Button
-								className={styles.suggestionAction}
-								onClick={() => readAgain()}
-							>
-								{t("checkpoints.pay.readAgain", "Ask again")}
-							</Button>
-						)}
 					</Flex>
 				)
 			}
-			onBack={() => go("planning")}
+			onBack={() => go("curator")}
 		>
-			<Flex vertical gap={24} className={styles.summary}>
-				{block(
-					t("checkpoints.pay.runsIn", "Runs in"),
-					"planning",
-					<Typography.Text>{runsIn}</Typography.Text>,
-				)}
+			<Flex gap={48} align="flex-start" className={styles.split}>
+				<Flex vertical gap={24} className={styles.summary}>
+					{block(
+						t("checkpoints.pay.runsIn", "Runs in"),
+						"now",
+						<Typography.Text>{runsIn}</Typography.Text>,
+					)}
 
-				{block(
-					t("checkpoints.pay.capacity", "Team capacity"),
-					"planning",
-					<Typography.Text className={styles.figure}>
-						{capacity.hoursPerWeek && capacity.hoursPerRun
-							? t(
-									"checkpoints.pay.capacityHours",
-									"{week} hours per sprint · {run} hours over 28 days",
-									{
-										week: span(capacity.hoursPerWeek),
-										run: span(capacity.hoursPerRun),
-									},
-								)
-							: t(
-									"checkpoints.pay.capacityUnknown",
-									"Nobody has stated their hours yet",
-								)}
-					</Typography.Text>,
-				)}
+					{block(
+						t("checkpoints.pay.capacity", "Team capacity"),
+						"now",
+						<Typography.Text className={styles.figure}>
+							{capacity.hoursPerWeek && capacity.hoursPerRun
+								? t(
+										"checkpoints.pay.capacityHours",
+										"{week} hours per sprint · {run} hours over 28 days",
+										{
+											week: span(capacity.hoursPerWeek),
+											run: span(capacity.hoursPerRun),
+										},
+									)
+								: t(
+										"checkpoints.pay.capacityUnknown",
+										"Nobody has stated their hours yet",
+									)}
+						</Typography.Text>,
+					)}
 
-				{block(
-					t("checkpoints.pay.goal", "The goal"),
-					"goal",
-					<Typography.Text>{draft.goal}</Typography.Text>,
-				)}
+					{block(
+						t("checkpoints.pay.want", "What you want in 28 days"),
+						"now",
+						<Typography.Text>{draft.goal}</Typography.Text>,
+					)}
 
-				{block(
-					t("checkpoints.pay.whatExists", "What exists now"),
-					"now",
-					list(side(CheckpointItemKind.Input)),
-				)}
+					{block(
+						t("checkpoints.pay.curator", "Curator"),
+						"curator",
+						// Shown back as the line it was picked from, so it reads the
+						// same on both screens.
+						chosen ? (
+							<div className={styles.curator}>
+								<CuratorRow curator={chosen} />
+							</div>
+						) : (
+							<CuratorBadge kind={draft.curatorKind} curator={draft.curator} />
+						),
+					)}
+				</Flex>
 
-				{block(
-					t("checkpoints.pay.whatMustExist", "What must exist by day 28"),
-					"goal",
-					list(side(CheckpointItemKind.Outcome)),
-				)}
-
-				{block(
-					t("checkpoints.pay.curator", "Curator"),
-					"curator",
-					// The person is shown back as the line they were picked from, so
-					// the answer reads the same on both screens. A badge stays for the
-					// AI, and for a person the picker no longer lists.
-					chosen ? (
-						<div className={styles.curator}>
-							<CuratorRow curator={chosen} />
-						</div>
-					) : (
-						<CuratorBadge kind={draft.curatorKind} curator={draft.curator} />
-					),
-				)}
-			</Flex>
-
-			<Card className={styles.price}>
-				<Flex vertical gap={4}>
-					<Typography.Text className={styles.blockLabel}>
-						{t("checkpoints.pay.priceLabel", "Price")}
-					</Typography.Text>
-					<Flex gap={8} align="baseline">
+				<Card className={styles.price}>
+					<Flex justify="space-between" align="baseline">
+						<Typography.Text className={styles.priceLabel}>
+							{t("checkpoints.pay.priceLabel", "Price")}
+						</Typography.Text>
 						<Typography.Text className={styles.total}>
 							{`${CHECKPOINT_PRICE_CURRENCY}${price}`}
 						</Typography.Text>
 					</Flex>
-				</Flex>
 
-				<Flex vertical gap={8} className={styles.terms}>
-					<Typography.Text className={styles.termsHead}>
-						{t("checkpoints.pay.whatYouGet", "What the curator does")}
-					</Typography.Text>
-					{[
-						{
-							Icon: IconCheck,
-							tone: "yes",
-							text: t(
-								"checkpoints.pay.term1",
-								"Five consultations and a verdict by day 30.",
-							),
-						},
-						{
-							Icon: IconX,
-							tone: "no",
-							text: t(
-								"checkpoints.pay.term2",
-								"Not the game itself. The team builds it; the curator holds the 28 days to the goal and cannot reach it for you.",
-							),
-						},
-						{
-							Icon: IconInfoCircle,
-							tone: "note",
-							text: t(
-								"checkpoints.pay.term3",
-								"No promise that the goal is met. A checkpoint where the work did not happen ends in “goal missed”.",
-							),
-						},
-					].map(({ Icon, tone, text }) => (
-						<Flex key={tone} gap={8} align="flex-start">
-							<span className={styles.termIcon} data-tone={tone}>
-								<Icon size={16} stroke={1.8} />
-							</span>
-							<Typography.Text className={styles.termText}>
-								{text}
-							</Typography.Text>
-						</Flex>
-					))}
-				</Flex>
-
-				<Checkbox
-					checked={!!draft.acceptedTermsAt}
-					disabled={update.isPending}
-					onChange={(event) =>
-						update
-							.mutateAsync({ acceptedTerms: event.target.checked })
-							.catch(() =>
-								message.error(
-									t("checkpoints.goal.saveFailed", "Could not save"),
-								),
-							)
-					}
-				>
-					{t(
-						"checkpoints.pay.agree",
-						"I have read the checkpoint agreement and accept it — including what is not guaranteed.",
-					)}
-				</Checkbox>
-
-				{draft.acceptedTermsAt && (
-					<Typography.Text type="secondary">
-						{t("checkpoints.pay.acceptedOn", "Accepted {date}", {
-							date: dayjs(draft.acceptedTermsAt).format("D MMM YYYY"),
-						})}
-					</Typography.Text>
-				)}
-
-				{/* The action of the whole purchase sits with the sum it commits. */}
-				<Flex gap={12} align="center">
-					<Tooltip title={payHeldBy}>
-						<Button
-							type="primary"
-							loading={checkout.isPending}
-							disabled={!!payHeldBy}
-							icon={<IconLock size={16} stroke={1.6} />}
-							onClick={pay}
-						>
-							{t("checkpoints.pay.payAndStart", "Pay and start")}
-						</Button>
-					</Tooltip>
-					{payHeldBy && (
-						<Typography.Text type="secondary" className={styles.pending}>
-							{payHeldBy}
+					<Flex vertical gap={12} className={styles.terms}>
+						<Typography.Text strong>
+							{t("checkpoints.pay.whatYouGet", "What the curator does")}
 						</Typography.Text>
-					)}
-				</Flex>
-			</Card>
+						{terms.map(({ Icon, tone, text }) => (
+							<Flex key={tone} gap={12} align="flex-start">
+								<span className={styles.termIcon} data-tone={tone}>
+									<Icon size={16} />
+								</span>
+								<Typography.Text className={styles.termText}>
+									{text}
+								</Typography.Text>
+							</Flex>
+						))}
+					</Flex>
+
+					<Checkbox
+						checked={!!draft.acceptedTermsAt}
+						disabled={update.isPending}
+						onChange={(event) =>
+							update
+								.mutateAsync({ acceptedTerms: event.target.checked })
+								.catch(() =>
+									message.error(
+										t("checkpoints.goal.saveFailed", "Could not save"),
+									),
+								)
+						}
+					>
+						{t("checkpoints.pay.accept", "I accept the checkpoint agreement.")}
+					</Checkbox>
+
+					<Button
+						type="primary"
+						size="large"
+						block
+						loading={checkout.isPending}
+						disabled={!draft.acceptedTermsAt}
+						onClick={pay}
+					>
+						{t("checkpoints.pay.payAndStart", "Pay and start")}
+					</Button>
+				</Card>
+			</Flex>
 		</StartLayout>
 	);
 }

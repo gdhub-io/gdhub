@@ -7,24 +7,12 @@ import type { ReactNode } from "react";
 import styles from "./StartLayout.module.scss";
 
 /**
- * The shell every question of the purchase shares — frames `W76sA5` … `tmP5M`.
- *
- * Six bars across the top say where the purchase has got to, and nothing else
- * does: the step's name is already under the bar it belongs to, so the panel
- * never repeats it, and the count is the bars themselves rather than a sentence.
- *
- * It lives inside the checkpoint page's panel, so it takes the height its
- * content needs; the full-viewport variant is gone with the routes it belonged
- * to.
+ * The shell every question of the purchase shares — frames 03–06 (`UhPrX` …
+ * `guKLF`). Four bars across the top say where the purchase has got to; the
+ * step's name is already under its bar, so the heading says what it asks.
  */
 
-export const START_STEPS = [
-	"now",
-	"goal",
-	"curator",
-	"planning",
-	"payment",
-] as const;
+export const START_STEPS = ["now", "curator", "payment"] as const;
 
 export type StartStep = (typeof START_STEPS)[number];
 
@@ -33,7 +21,9 @@ const BARS = [...START_STEPS, "ready"] as const;
 
 export type StartLayoutProps = {
 	step: (typeof BARS)[number];
-	/** One line under the bars saying what this question is for. */
+	/** The question itself, under the bars. */
+	title?: string;
+	/** One line under the title saying what this question is for. */
 	hint?: string;
 	/** Sits above the hint: what the author has to read before the step's own words. */
 	notice?: ReactNode;
@@ -53,6 +43,7 @@ export type StartLayoutProps = {
 
 export function StartLayout({
 	step,
+	title,
 	hint,
 	notice,
 	children,
@@ -66,17 +57,15 @@ export function StartLayout({
 
 	const labels: Record<(typeof BARS)[number], string> = {
 		now: t("checkpoints.prepare.step.now", "Now"),
-		goal: t("checkpoints.prepare.step.goal", "Goal"),
 		curator: t("checkpoints.prepare.step.curator", "Curator"),
-		planning: t("checkpoints.prepare.step.planning", "Planning"),
 		payment: t("checkpoints.prepare.step.payment", "Payment"),
 		ready: t("checkpoints.prepare.step.ready", "Ready"),
 	};
 
 	return (
 		<div className={styles.flow}>
-			<Flex vertical gap={24} className={styles.content}>
-				<Flex gap={12}>
+			<Flex vertical gap={20} className={styles.content}>
+				<Flex gap={8}>
 					{BARS.map((candidate, position) => (
 						<Flex vertical gap={8} key={candidate} className={styles.segment}>
 							<span
@@ -99,11 +88,23 @@ export function StartLayout({
 
 				{notice}
 
-				{!!hint && (
-					<Typography.Text className={styles.hint}>{hint}</Typography.Text>
-				)}
-
-				<div className={styles.answer}>{children}</div>
+				<Flex vertical gap={32} className={styles.answer}>
+					{(title || hint) && (
+						<Flex vertical gap={8}>
+							{title && (
+								<Typography.Title level={2} className={styles.title}>
+									{title}
+								</Typography.Title>
+							)}
+							{hint && (
+								<Typography.Text className={styles.hint}>
+									{hint}
+								</Typography.Text>
+							)}
+						</Flex>
+					)}
+					{children}
+				</Flex>
 			</Flex>
 
 			<footer className={styles.foot}>

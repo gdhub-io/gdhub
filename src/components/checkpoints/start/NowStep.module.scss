@@ -1,0 +1,84 @@
+// Frame 03 (`UhPrX`): the answer column is one stack, 32 apart.
+
+.project,
+.previous {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.projectName {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.heading {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.info {
+	color: var(--gd-color-text-tertiary);
+	cursor: help;
+}
+
+.popover {
+	width: 520px;
+}
+
+.share {
+	padding-top: var(--gd-space-1);
+}
+
+.hours {
+	width: 64px;
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.label {
+	font-weight: 600;
+}
+
+.date {
+	width: 280px;
+}
+
+// Frame 03.2: the curator's read, warm and quiet — advice, not an error.
+.warning {
+	padding: var(--gd-space-6);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-warning-tint);
+}
+
+.warningIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	color: var(--gd-warning-solid);
+}
+
+.tag {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	margin: 0;
+	color: var(--gd-warning-on-tint);
+}
+
+// antd hangs the character count below the field; this keeps it off the foot.
+.goal {
+	padding-bottom: var(--gd-space-4);
+}

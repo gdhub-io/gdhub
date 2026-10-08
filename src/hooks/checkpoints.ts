@@ -225,25 +225,15 @@ export const useCancelCheckpoint = (id?: string, projectId?: string) => {
 };
 
 /**
- * The AI curator reading the goal card against the 28 days and the hours the
- * team has.
- *
- * Run when the payment question opens, not from a button: by then everything it
- * judges — what exists, what is promised, who curates, how many hours the team
- * put in — has been answered, and the remark lands where the author can still
- * press Edit. `signature` is those same facts: change any of them and this is a
- * different question, so it is asked again; come back without changing anything
- * and the answer is the one already paid for.
+ * The curator reads the goal against the team's hours when the author moves on
+ * from Now. The server keeps the read while nothing behind it changed, so asking
+ * twice costs one model call.
  */
-export const useGoalCheck = (id?: string, signature?: string) =>
-	useQuery<GoalCheckResult | null>({
-		queryKey: ["goal-check", id, signature],
-		queryFn: async () =>
+export const useCheckGoal = (id?: string) =>
+	useMutation({
+		mutationFn: async () =>
 			(await axios.post<GoalCheckResult>(`/api/checkpoint/${id}/goal-check`))
 				.data,
-		enabled: !!id && !!signature,
-		staleTime: Number.POSITIVE_INFINITY,
-		retry: false,
 	});
 
 /** Specialists who have said they take mentees, at an expert level. */
@@ -252,21 +242,6 @@ export const useCheckpointCurators = () =>
 		queryKey: ["checkpoint-curators"],
 		queryFn: async () =>
 			(await axios.get<CheckpointCurator[]>("/api/checkpoint/curators")).data,
-	});
-
-/**
- * The curator proposing the lines of the goal card, for an author who does not
- * know what to write. It suggests into the form; nothing is saved until the
- * author leaves the question, and every line is theirs to edit or drop.
- */
-export const useSuggestLines = (id?: string) =>
-	useMutation({
-		mutationFn: async (kind: CheckpointItemKind) =>
-			(
-				await axios.post<{ lines: string[] }>(`/api/checkpoint/${id}/suggest`, {
-					kind,
-				})
-			).data.lines,
 	});
 
 export const useCreateCheckpoint = (projectId?: string) => {
