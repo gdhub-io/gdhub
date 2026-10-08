@@ -34,7 +34,8 @@ export const GET = pipe(
 			id: paymentId,
 			payerId: payer.id,
 			provider: PaymentProvider.STRIPE,
-			status: PaymentStatus.COMPLETED,
+			// A hold already has a charge behind it, so it has a receipt too.
+			status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
 		},
 		select: { providerTransactionId: true },
 	});

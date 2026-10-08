@@ -84,7 +84,7 @@ export function AskPanel({
 									{row.title}
 								</Typography.Text>
 								{!!row.owner && (
-									<Tag bordered={false} className={styles.owner}>
+									<Tag variant="filled" className={styles.owner}>
 										{row.owner}
 									</Tag>
 								)}

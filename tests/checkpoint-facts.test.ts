@@ -31,6 +31,7 @@ const member = (
 	role: "Artist",
 	joinedAt: null,
 	leftAt: null,
+	activeDays: [],
 	cells: states.map((state, index) => ({
 		sprint: index + 1,
 		state,
@@ -47,6 +48,7 @@ const checkpoint = (over: Partial<CheckpointDto> = {}): CheckpointDto => ({
 	order: 2,
 	status: CheckpointStatus.Active,
 	declinedCuratorIds: [],
+	curatorAcceptedAt: null,
 	curatorDeclinedAt: null,
 	paymentId: null,
 	goal: "A playable slice",

@@ -65,6 +65,7 @@ const CHECKPOINT = {
 	verdictNote: null,
 	decidedAt: null,
 	acceptedTermsAt: "2026-09-18T00:00:00.000Z",
+	curatorAcceptedAt: null,
 	curatorDeclinedAt: null,
 	declinedCuratorIds: [],
 	paymentId: "pay1",

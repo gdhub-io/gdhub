@@ -84,24 +84,26 @@ export function StartLayout({
 				</Flex>
 			</Flex>
 
-			<footer className={styles.foot}>
-				<Flex gap={8}>
-					{onBack && (
-						<Button onClick={onBack}>
-							{t("checkpoints.prepare.back", "Back")}
-						</Button>
-					)}
-					{forward}
-				</Flex>
-				<Flex gap={12} align="center">
-					{footNote}
-					{saved !== null && (
-						<Typography.Text className={styles.saved}>
-							{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
-						</Typography.Text>
-					)}
-				</Flex>
-			</footer>
+			{(onBack || forward || footNote || saved !== null) && (
+				<footer className={styles.foot}>
+					<Flex gap={8}>
+						{onBack && (
+							<Button onClick={onBack}>
+								{t("checkpoints.prepare.back", "Back")}
+							</Button>
+						)}
+						{forward}
+					</Flex>
+					<Flex gap={12} align="center">
+						{footNote}
+						{saved !== null && (
+							<Typography.Text className={styles.saved}>
+								{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
+							</Typography.Text>
+						)}
+					</Flex>
+				</footer>
+			)}
 		</div>
 	);
 }

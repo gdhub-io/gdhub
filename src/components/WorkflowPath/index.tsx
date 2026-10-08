@@ -12,6 +12,7 @@ import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
+import { CuratorAccepted } from "./CuratorAccepted";
 import { formatDay, formatDayRange } from "./dates";
 import { PathBranch, PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
@@ -240,6 +241,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 	return (
 		<div className={styles.layout}>
+			{running && detail && <CuratorAccepted checkpoint={detail} />}
 			<div>
 				{historyVisible &&
 					firstShown > 0 &&

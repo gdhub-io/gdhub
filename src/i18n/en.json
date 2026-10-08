@@ -849,6 +849,7 @@
 			"dates": "{from} – {to}",
 			"declined": "This expert cannot take it on right now",
 			"declinedBody": "Pick another expert and the checkpoint goes to them instead.",
+			"downloadReceipt": "Download receipt",
 			"foot": "Nothing left to do here",
 			"held": "The money is reserved",
 			"hint": "The checkpoint is bought. What is left is not yours to do.",
@@ -978,6 +979,10 @@
 			"close": "Close",
 			"saveAndClose": "Save and close",
 			"title": "New checkpoint"
+		},
+		"ready": {
+			"declinedTitle": "Pick another curator",
+			"title": "Payment successful"
 		},
 		"result": {
 			"added": "Added on day 15",
@@ -3341,15 +3346,21 @@
 			"verdictNote": "the stage can close"
 		},
 		"path": {
+			"accepted": {
+				"sub": "Your first call with them opens Sprint 1.",
+				"title": "{name} agreed to work with you"
+			},
 			"ai-curator": "AI curator",
 			"check": {
 				"artifacts": "Attach artifacts",
 				"at-session": "at the session {date}",
+				"at-today": "at today's session",
 				"build": "Upload the current build",
 				"devlog": "Write the sprint devlog",
 				"head": "Before the next session · {date}",
 				"head-final": "Before the checkpoint",
 				"head-review": "Before the next review · {date}",
+				"head-sprint": "By the end of Sprint {number} · {date}",
 				"priorities": "Set sprint priorities with {name}",
 				"session-on": "session {date}",
 				"verdict": "Read the Checkpoint {number} verdict",
@@ -3382,9 +3393,12 @@
 			"pulse": {
 				"confirmed": "Checked in",
 				"empty": "Nobody has been asked yet.",
+				"hint": "A check is a day with a devlog, an artifact or the pulse link.",
 				"label": "Pulse",
 				"missed": "Missed",
 				"not-asked": "Not asked",
+				"quiet": "Quiet",
+				"sprint": "Sprint {number} · {dates}",
 				"title": "Team pulse",
 				"waiting": "Not yet"
 			},
@@ -3404,6 +3418,8 @@
 				"review": "Review",
 				"review-sub": "Written by the AI curator from your devlog, artifacts and activity",
 				"review-title": "Sprint {number} review",
+				"today": "today",
+				"today-label": "Today",
 				"with": "Session with {name}"
 			},
 			"sprint": {

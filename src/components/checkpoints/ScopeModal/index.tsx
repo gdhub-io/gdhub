@@ -141,12 +141,12 @@ export function ScopeModal({
 										}
 									/>
 									{isCut ? (
-										<Tag bordered={false} color="warning">
+										<Tag variant="filled" color="warning">
 											{t("checkpoints.scope.chip.cut", "Comes off")}
 										</Tag>
 									) : (
 										(text[item.id]?.trim() ?? item.text) !== item.text && (
-											<Tag bordered={false}>
+											<Tag variant="filled">
 												{t("checkpoints.scope.chip.reworded", "Reworded")}
 											</Tag>
 										)
@@ -188,7 +188,7 @@ export function ScopeModal({
 										)
 									}
 								/>
-								<Tag bordered={false} color="success">
+								<Tag variant="filled" color="success">
 									{t("checkpoints.scope.chip.added", "New")}
 								</Tag>
 							</Flex>

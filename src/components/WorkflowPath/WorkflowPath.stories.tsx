@@ -59,6 +59,7 @@ const pulses: CheckpointPulseRowDto[] = [
 	role: null,
 	joinedAt: day(-60),
 	leftAt: null,
+	activeDays: [1, 3, 7].slice(0, row + 1),
 	cells: [1, 2, 3, 4].map((n) => ({
 		sprint: n,
 		state:
@@ -101,6 +102,7 @@ const running: CheckpointDto = {
 	verdictNote: null,
 	decidedAt: null,
 	acceptedTermsAt: day(start - 2),
+	curatorAcceptedAt: null,
 	curatorDeclinedAt: null,
 	declinedCuratorIds: [],
 	paymentId: "pay1",
@@ -185,6 +187,38 @@ export const HumanCurator: StoryObj = {
 					checkpoint={running}
 					project={project}
 					previous={{ checkpoint: closed, number: 2 }}
+					canManage
+					here={null}
+				/>
+			</PathBranch>
+		</div>
+	),
+};
+
+/** Day one: the call that opens Sprint 1 is today and has not happened yet. */
+export const HumanCuratorSessionToday: StoryObj = {
+	render: () => (
+		<div style={{ maxWidth: 800 }}>
+			<PathBranch ahead>
+				<RunningCheckpoint
+					checkpoint={{
+						...running,
+						startedAt: day(0),
+						sprints: [1, 2, 3, 4].map((number) => ({
+							...sprint(number, number === 1 ? "current" : "ahead"),
+							from: day((number - 1) * 7),
+							to: day(number * 7 - 1),
+						})),
+						sessions: [1, 2, 3, 4, 5].map((index) => ({
+							...session(index),
+							scheduledAt: day((index - 1) * 7),
+						})),
+						number: 1,
+						day: 1,
+						daysLeft: 27,
+					}}
+					project={project}
+					previous={null}
 					canManage
 					here={null}
 				/>

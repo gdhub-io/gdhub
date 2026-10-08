@@ -15,6 +15,7 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceCuratorModal";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
@@ -22,7 +23,11 @@ import {
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
 import { CheckpointStatus } from "@/config/prisma-enums";
-import { useCancelCheckpoint, useDiscardCheckpoint } from "@/hooks/checkpoints";
+import {
+	useCancelCheckpoint,
+	useCheckpoint,
+	useDiscardCheckpoint,
+} from "@/hooks/checkpoints";
 import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -63,6 +68,12 @@ export function CheckpointOffer({
 	const discard = useDiscardCheckpoint();
 	const cancel = useCancelCheckpoint(draft?.id, project.id);
 	const [confirmDiscard, setConfirmDiscard] = useState(false);
+	const [replacing, setReplacing] = useState(false);
+	// The list leaves out the held price a replacement must match; only a paid
+	// checkpoint can be handed over, so only that one is read in full.
+	const { data: detail } = useCheckpoint(
+		draft?.paymentId ? draft.id : undefined,
+	);
 
 	const purchase = `/user/project/${project.slug}/workflow/cp/new`;
 
@@ -278,7 +289,7 @@ export function CheckpointOffer({
 						key: "replace",
 						icon: <IconUserCog size={16} />,
 						label: t("workflow.draft.replace", "Replace the curator"),
-						onClick: () => router.push(`${purchase}?step=ready`),
+						onClick: () => setReplacing(true),
 					},
 				]
 			: []),
@@ -394,6 +405,17 @@ export function CheckpointOffer({
 					</Flex>
 				</Flex>
 			</Modal>
+
+			{detail && (
+				<ReplaceCuratorModal
+					checkpointId={detail.id}
+					currentCuratorId={detail.curator?.id}
+					unavailable={detail.declinedCuratorIds}
+					price={detail.heldPrice}
+					open={replacing}
+					onClose={() => setReplacing(false)}
+				/>
+			)}
 		</Flex>
 	);
 }

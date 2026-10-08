@@ -110,6 +110,8 @@ export type CheckpointPulseRowDto = {
 	role: string | null;
 	joinedAt: string | null;
 	leftAt: string | null;
+	/** Checkpoint days with a devlog, an artifact or the pulse answered. */
+	activeDays: number[];
 	cells: CheckpointPulseCellDto[];
 };
 
@@ -153,6 +155,8 @@ export type CheckpointDto = {
 	verdictNote: string | null;
 	decidedAt: string | null;
 	acceptedTermsAt: string | null;
+	/** When the curator took it on; the workflow says so once. */
+	curatorAcceptedAt: string | null;
 	/** Set when a curator handed it back; the money was released with it. */
 	curatorDeclinedAt: string | null;
 	/** Everyone who could not take it: shown on the picker as unavailable. */

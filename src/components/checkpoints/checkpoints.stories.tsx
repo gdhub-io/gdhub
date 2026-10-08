@@ -54,6 +54,7 @@ const base: CheckpointDto = {
 	decidedAt: null,
 	acceptedTermsAt: "2026-09-01T08:55:00.000Z",
 	declinedCuratorIds: [],
+	curatorAcceptedAt: null,
 	curatorDeclinedAt: null,
 	paymentId: null,
 	createdAt: "2026-09-01T08:40:00.000Z",
@@ -383,6 +384,7 @@ export const TeamSignals: StoryObj = {
 						role: "Author",
 						joinedAt: null,
 						leftAt: null,
+						activeDays: [],
 						cells: ["confirmed", "confirmed", "notAsked", "notAsked"].map(
 							(state, index) => ({
 								sprint: index + 1,
@@ -401,6 +403,7 @@ export const TeamSignals: StoryObj = {
 						role: "Game designer",
 						joinedAt: null,
 						leftAt: null,
+						activeDays: [],
 						cells: ["missed", "waiting", "notAsked", "notAsked"].map(
 							(state, index) => ({
 								sprint: index + 1,
@@ -418,6 +421,7 @@ export const TeamSignals: StoryObj = {
 						role: "QA",
 						joinedAt: "2026-09-08T00:00:00.000Z",
 						leftAt: null,
+						activeDays: [],
 						cells: ["notOnTeam", "confirmed", "notAsked", "notAsked"].map(
 							(state, index) => ({
 								sprint: index + 1,

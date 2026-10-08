@@ -113,6 +113,12 @@ export function buildAntdTheme({
 			borderRadiusLG: radius.card,
 			borderRadiusSM: radius.chip,
 			borderRadiusXS: 4,
+			// Global, not per component: antd draws the arrow's clip path from the
+			// seed value, so a component override leaves a 12px box cut for 16.
+			sizePopupArrow: 12,
+			// The arrow's shoulder curve; antd derives 6 from our radii, which on a
+			// 12px arrow folds the path over itself and the triangle disappears.
+			borderRadiusOuter: 2,
 
 			controlHeight: d.controlHeight,
 			controlHeightSM: d.controlHeightSm,
@@ -294,7 +300,6 @@ export function buildAntdTheme({
 				controlHeight: 24,
 				paddingSM: space[2],
 				paddingXS: space[2],
-				sizePopupArrow: 12,
 			},
 			Checkbox: {
 				controlInteractiveSize: 18,

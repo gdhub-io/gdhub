@@ -114,7 +114,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 				</Typography.Text>
 			)}
 
-			<MoneyNotice checkpoint={checkpoint} plain />
+			<MoneyNotice checkpoint={checkpoint} inset />
 		</Flex>
 	);
 }

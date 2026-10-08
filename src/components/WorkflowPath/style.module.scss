@@ -1,6 +1,32 @@
 // Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
 // platform-design.pen.
 
+// Frame 07's one-time notice spans both columns, over the path.
+.accepted.accepted {
+	grid-column: 1 / -1;
+	align-items: center;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-3) var(--gd-space-3) var(--gd-space-3) var(--gd-space-4);
+	border-color: color-mix(in srgb, var(--gd-success-solid) 30%, transparent);
+	background: var(--gd-success-tint);
+
+	:global(.ant-alert-icon) {
+		margin: 0;
+	}
+
+	:global(.ant-alert-title) {
+		margin: 0;
+		font-size: var(--gd-font-size-body);
+		font-weight: 600;
+		color: var(--gd-color-text);
+	}
+
+	:global(.ant-alert-description) {
+		font-size: var(--gd-font-size-body-sm);
+		color: var(--gd-color-text-secondary);
+	}
+}
+
 .layout {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) 320px;
@@ -608,6 +634,17 @@ button.checklistItem {
 	}
 }
 
+// The same call inside the sprint card, on its day: no frame of its own, a
+// rule under it before the checklist.
+.sessionToday {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-6);
+	padding-bottom: var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
 .sessionWho {
 	display: flex;
 	align-items: center;
@@ -728,24 +765,135 @@ button.checklistItem {
 	color: var(--gd-color-accent);
 }
 
-.pulseTable {
+.pulseGhost {
+	stroke: var(--gd-color-border-strong);
+}
+
+// A heart monitor: the window over the red trace slides past, its tail fading.
+// From wholly before the line to wholly past it: 44px of tail, 72px of line.
+.pulseSweep {
+	animation: pulse-sweep 3s linear infinite;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: none;
+		transform: translateX(28px);
+	}
+}
+
+@keyframes pulse-sweep {
+	from {
+		transform: translateX(-44px);
+	}
+
+	to {
+		transform: translateX(72px);
+	}
+}
+
+// Frame 07.2: people by the seven days of the sprint.
+.pulsePopover.pulsePopover {
+	padding: 0;
+}
+
+.pulseMatrix {
 	display: flex;
 	flex-direction: column;
-	min-width: 240px;
+	width: 480px;
+	max-width: calc(100vw - 2 * var(--gd-space-4));
+}
+
+.pulseHead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-3);
+}
+
+.pulseTitle {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+.pulseMeta,
+.pulseRole,
+.pulseDay {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.pulseEmpty {
+	padding: 0 var(--gd-space-4) var(--gd-space-3);
 }
 
 .pulseRow {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) repeat(7, 32px);
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-2) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.pulseCols {
+	padding-top: 0;
+}
+
+.pulseDay {
+	text-align: center;
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulseToday {
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.pulsePerson {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: var(--gd-space-4);
-	padding: var(--gd-space-2) 0;
-	border-bottom: 1px solid var(--gd-color-border);
-	font-size: var(--gd-font-size-body-sm);
+	gap: var(--gd-space-3);
+	min-width: 0;
+}
 
-	&:last-child {
-		border-bottom: 0;
-	}
+.pulseWho {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.pulseName {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-weight: 500;
+}
+
+.pulseCheck {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	margin: 0 auto;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.pulseIdle {
+	display: block;
+	width: 6px;
+	height: 6px;
+	margin: 0 auto;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-border-strong);
+}
+
+.pulseFoot {
+	padding: var(--gd-space-4);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
 }
 
 // Bleeds 8px past the column so the hover reads as a row, not a box around text.

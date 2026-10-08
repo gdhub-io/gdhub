@@ -9,6 +9,10 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import {
+	type ActivityEvent,
+	activeDaysByUser,
+} from "@/lib/checkpoint-activity";
+import {
 	checkpointProgress,
 	dayNumberOn,
 	utcStartOfDay,
@@ -99,6 +103,7 @@ export const checkpointSelect = {
 	verdictNote: true,
 	decidedAt: true,
 	acceptedTermsAt: true,
+	curatorAcceptedAt: true,
 	curatorDeclinedAt: true,
 	declinedCuratorIds: true,
 	paymentId: true,
@@ -168,6 +173,7 @@ const checkpointDetailSelect = {
 		orderBy: { publishedAt: "desc" },
 		select: {
 			id: true,
+			authorId: true,
 			publishedAt: true,
 			content: true,
 			curatorFeedback: true,
@@ -310,11 +316,24 @@ const buildPulseRows = (
 	members: TeamMemberRow[],
 	pulses: PulseRow[],
 	startedAt: Date | null,
+	events: ActivityEvent[],
 ): CheckpointPulseRowDto[] => {
 	const now = new Date();
 	const byMemberAndSprint = new Map(
 		pulses.map((pulse) => [`${pulse.teamMemberId}:${pulse.week}`, pulse]),
 	);
+	const userOf = new Map(members.map((member) => [member.id, member.user.id]));
+	const active = startedAt
+		? activeDaysByUser(startedAt, [
+				...events,
+				...pulses.flatMap((pulse) => {
+					const userId = userOf.get(pulse.teamMemberId);
+					return userId && pulse.confirmedAt
+						? [{ userId, at: pulse.confirmedAt }]
+						: [];
+				}),
+			])
+		: new Map<string, number[]>();
 
 	return members.map((member) => ({
 		memberId: member.id,
@@ -324,6 +343,7 @@ const buildPulseRows = (
 		role: member.speciality?.name ?? member.position,
 		joinedAt: member.startedAt.toISOString(),
 		leftAt: member.finishedAt?.toISOString() ?? null,
+		activeDays: active.get(member.user.id) ?? [],
 		cells: startedAt
 			? Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) =>
 					pulseCell(
@@ -411,7 +431,17 @@ const toCheckpointDetail = (row: DetailRow) => {
 		})),
 		sprints: buildSprints(startedAt),
 		sessions: buildSessions(startedAt, sessions),
-		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt),
+		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt, [
+			...reports.map((report) => ({
+				userId: report.authorId,
+				at: report.publishedAt,
+			})),
+			...artifacts.flatMap((artifact) =>
+				artifact.createdByUser
+					? [{ userId: artifact.createdByUser.id, at: artifact.createdAt }]
+					: [],
+			),
+		]),
 		evidence: buildEvidence(items, artifacts, startedAt),
 	};
 };

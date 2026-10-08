@@ -78,6 +78,8 @@ export function CheckpointPurchase() {
 			(current.status === CheckpointStatus.Draft &&
 				asked === "ready" &&
 				!!current.acceptedTermsAt));
+	// A curator handed it back: the money went with them, so it is not "paid".
+	const declined = !!current?.curatorDeclinedAt && !current.curator;
 	// The curator took it on, or the AI one started it: the path shows it now.
 	const running =
 		current?.status === CheckpointStatus.Active ||
@@ -133,7 +135,15 @@ export function CheckpointPurchase() {
 	if (paid) {
 		return (
 			<div className={styles.page}>
-				<StartLayout step="ready" saved={null}>
+				<StartLayout
+					step="ready"
+					saved={null}
+					title={
+						declined
+							? t("checkpoints.ready.declinedTitle", "Pick another curator")
+							: t("checkpoints.ready.title", "Payment successful")
+					}
+				>
 					{detail && <PaidPanel checkpoint={detail} exitHref={workflow} />}
 				</StartLayout>
 			</div>
