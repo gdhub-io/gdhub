@@ -167,6 +167,7 @@
 }
 
 .markerDone {
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
@@ -177,6 +178,7 @@
 
 // A checkpoint behind the project: the gate it went through, cleared.
 .markerCleared {
+	border: 2px solid var(--gd-color-border-strong);
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
@@ -186,6 +188,7 @@
 }
 
 .markerCurrent {
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
@@ -203,8 +206,10 @@
 }
 
 // Stages are squares, sprints are circles, checkpoints are flags: the shape
-// says what the row is before the text does.
+// says what the row is before the text does. Filled markers carry the rail's own
+// 2px stroke, so they read as stops on the line rather than stickers on it.
 .markerStageDone {
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: var(--gd-radius-chip);
@@ -213,6 +218,7 @@
 }
 
 .markerStageCurrent {
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: var(--gd-radius-chip);
@@ -248,7 +254,7 @@
 .markerSession {
 	width: 32px;
 	height: 32px;
-	border: 1px solid var(--gd-color-border-strong);
+	border: 2px solid var(--gd-color-border-strong);
 	border-radius: 50%;
 	corner-shape: round;
 	background: var(--gd-color-surface);

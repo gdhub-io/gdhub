@@ -5,7 +5,6 @@ import {
 	IconInfoCircle,
 	IconLock,
 	IconMessage2,
-	IconReceipt,
 	IconRoute,
 	IconSparkles,
 	IconTrash,
@@ -359,28 +358,35 @@ export function CheckpointOffer({
 							count: SPRINTS_PER_CHECKPOINT,
 						}),
 				)}
-				{chosen &&
-					fact(
-						isAI ? (
-							<IconSparkles size={16} />
-						) : draft.curator ? (
-							<AppAvatar src={draft.curator.image} size={20}>
-								{draft.curator.name?.slice(0, 1).toUpperCase()}
-							</AppAvatar>
-						) : (
-							<IconVideo size={16} />
-						),
-						isAI
-							? t("checkpoints.curator.ai", "AI curator")
-							: (draft.curator?.name ??
-									t("workflow.offer.industry", "Industry curator")),
-					)}
-				{chosen &&
-					price !== null &&
-					fact(
-						<IconReceipt size={16} />,
-						`${CHECKPOINT_PRICE_CURRENCY}${price}`,
-					)}
+				{chosen
+					? fact(
+							isAI ? (
+								<IconSparkles size={16} />
+							) : draft.curator ? (
+								<AppAvatar src={draft.curator.image} size={20}>
+									{draft.curator.name?.slice(0, 1).toUpperCase()}
+								</AppAvatar>
+							) : (
+								<IconVideo size={16} />
+							),
+							[
+								isAI
+									? t("checkpoints.curator.ai", "AI curator")
+									: (draft.curator?.name ??
+										t("workflow.offer.industry", "Industry curator")),
+								price !== null && `${CHECKPOINT_PRICE_CURRENCY}${price}`,
+							]
+								.filter(Boolean)
+								.join(" · "),
+						)
+					: fact(
+							<IconMessage2 size={16} />,
+							t("workflow.offer.factFeedback", "Feedback that moves you"),
+						)}
+				{fact(
+					<IconRoute size={16} />,
+					t("workflow.offer.factNext", "A clear next step"),
+				)}
 			</Flex>
 
 			<Modal

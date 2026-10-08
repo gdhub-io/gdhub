@@ -313,6 +313,11 @@ export const OfferAllStates: StoryObj = {
 			{[
 				["Offer", null, false],
 				["Offer — purchase not open yet", null, true],
+				[
+					"Draft — saved at Now",
+					{ ...draft, goal: "", startedAt: null, dueAt: null, curator: null },
+					false,
+				],
 				["Draft — setup not finished", draft, false],
 				[
 					"Payment did not go through",
