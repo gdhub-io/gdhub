@@ -34,19 +34,14 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = body as IdBody;
 
-	const vacancy = await prisma.teamVacancy.findUnique({
+	// `id` is the team member's, so the project's step is read through them.
+	const current = await prisma.teamMember.findUnique({
 		where: { id },
-		include: {
+		select: {
 			team: {
 				select: {
 					project: {
-						include: {
-							workflow: {
-								select: {
-									currentStepId: true,
-								},
-							},
-						},
+						select: { workflow: { select: { currentStepId: true } } },
 					},
 				},
 			},
@@ -58,7 +53,7 @@ export const PUT = pipe(
 		data: {
 			status: TeamMemberStatus.Fired,
 			finishedAt: dayjs().toISOString(),
-			leftProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
+			leftProjectStepId: current?.team?.project?.workflow?.currentStepId,
 		},
 		select: { user: true, team: true },
 	});
