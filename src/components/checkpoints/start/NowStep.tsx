@@ -2,6 +2,7 @@
 
 import {
 	IconAlertTriangle,
+	IconCalendar,
 	IconDeviceGamepad2,
 	IconFlag,
 	IconInfoCircle,
@@ -11,7 +12,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	App,
-	Avatar,
 	Button,
 	DatePicker,
 	Flex,
@@ -29,7 +29,6 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { EmptyState, IconTile } from "@/components/ui";
-import { AppAvatar } from "@/components/ui/AppAvatar";
 import { CheckpointResult } from "@/components/WorkflowPath/ClosedCheckpoint";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import {
@@ -50,8 +49,9 @@ import { useCheckpointDraft } from "./useDraft";
 
 const DAY_FORMAT = "D MMM YYYY";
 
-const span = (hours: { from: number; to: number }) =>
-	hours.from === hours.to ? `${hours.from}` : `${hours.from}–${hours.to}`;
+/** One figure for a stated range: what the team gives on an ordinary sprint. */
+const middle = (hours: { from: number; to: number }) =>
+	Math.round((hours.from + hours.to) / 2);
 
 /**
  * Frames 03 and 03.2: what the team has, when it starts and what the 28 days
@@ -125,9 +125,6 @@ export function NowStep() {
 	const capacity = teamCapacity(
 		team.members.map((row) => ({ timeForWork: hoursOf(row) })),
 	);
-	const names = new Intl.ListFormat("en", { type: "conjunction" }).format(
-		team.members.map((row) => row.user.name?.split(" ")[0] ?? "—"),
-	);
 
 	const previous = (list?.closed.rows ?? [])
 		.filter((row) => row.status === CheckpointStatus.Closed && row.verdict)
@@ -154,6 +151,13 @@ export function NowStep() {
 		}
 		go("curator");
 	};
+
+	const stat = (label: string, value: string) => (
+		<Flex vertical gap={8} className={styles.stat}>
+			<Typography.Text className={styles.statLabel}>{label}</Typography.Text>
+			<Typography.Text className={styles.statValue}>{value}</Typography.Text>
+		</Flex>
+	);
 
 	const setShare = (index: 0 | 1, value: number | null) => {
 		const hours: [number, number] = [...myHours];
@@ -190,43 +194,35 @@ export function NowStep() {
 				</Button>
 			}
 		>
-			<Flex gap={16} align="center" className={styles.project}>
-				<IconTile icon={IconDeviceGamepad2} size="md" />
-				<Flex vertical gap={4}>
-					<Typography.Text className={styles.projectName}>
-						{project?.name}
-					</Typography.Text>
-					<Typography.Text type="secondary" className={styles.small}>
-						{isFirst
-							? t("checkpoints.now.stage", "{stage} stage", {
-									stage: draft.stageName,
-								})
-							: t(
-									"checkpoints.now.stageNumber",
-									"{stage} stage · checkpoint {number}",
-									{ stage: draft.stageName, number: draft.order },
-								)}
-					</Typography.Text>
+			<Flex vertical gap={8}>
+				<Typography.Text className={styles.label}>
+					{t("checkpoints.now.project", "Your project")}
+				</Typography.Text>
+				<Flex gap={16} align="center" className={styles.project}>
+					<IconTile icon={IconDeviceGamepad2} size="md" />
+					<Flex vertical gap={4}>
+						<Typography.Text className={styles.projectName}>
+							{project?.name}
+						</Typography.Text>
+						<Typography.Text type="secondary" className={styles.small}>
+							{isFirst
+								? t("checkpoints.now.stage", "{stage} stage", {
+										stage: draft.stageName,
+									})
+								: t(
+										"checkpoints.now.stageNumber",
+										"{stage} stage · checkpoint {number}",
+										{ stage: draft.stageName, number: draft.order },
+									)}
+						</Typography.Text>
+					</Flex>
 				</Flex>
 			</Flex>
 
-			<Flex vertical gap={12}>
+			<Flex vertical gap={8}>
 				<Flex gap={8} align="center">
-					<Typography.Text className={styles.heading}>
-						{capacity.hoursPerWeek
-							? t(
-									"checkpoints.now.team",
-									"Your team of {count} gives {hours} hours a sprint",
-									{
-										count: team.members.length,
-										hours: span(capacity.hoursPerWeek),
-									},
-								)
-							: t(
-									"checkpoints.now.teamUnknown",
-									"Your team of {count} has not stated its hours yet",
-									{ count: team.members.length },
-								)}
+					<Typography.Text className={styles.label}>
+						{t("checkpoints.now.resource", "Work resource")}
 					</Typography.Text>
 					<Popover
 						trigger="hover"
@@ -241,52 +237,69 @@ export function NowStep() {
 						<IconInfoCircle size={16} className={styles.info} />
 					</Popover>
 				</Flex>
-				<Flex gap={12} align="center">
-					<Avatar.Group>
-						{team.members.map((row) => (
-							<AppAvatar key={row.id} src={row.user.image} size={32}>
-								{row.user.name?.slice(0, 2).toUpperCase()}
-							</AppAvatar>
-						))}
-					</Avatar.Group>
-					<Typography.Text type="secondary">{names}</Typography.Text>
-				</Flex>
-				{capacity.hoursPerRun && (
-					<Typography.Text type="secondary">
-						{t(
-							"checkpoints.now.run",
-							"{hours} hours over the whole checkpoint",
-							{ hours: span(capacity.hoursPerRun) },
+				{team.isLoading ? (
+					<Skeleton active title={false} paragraph={{ rows: 2 }} />
+				) : (
+					<div className={styles.resource}>
+						<Flex vertical gap={8} className={styles.stat}>
+							<Typography.Text className={styles.statLabel}>
+								{t("checkpoints.now.yourTime", "You give a sprint")}
+							</Typography.Text>
+							<Flex gap={6} align="center">
+								<InputNumber
+									min={0}
+									max={80}
+									value={myHours[0]}
+									size="small"
+									variant="filled"
+									controls={false}
+									className={styles.hours}
+									onChange={(value) => setShare(0, value)}
+									onBlur={() => saveHours.mutate(myHours)}
+								/>
+								<Typography.Text type="secondary">–</Typography.Text>
+								<InputNumber
+									min={0}
+									max={80}
+									value={myHours[1]}
+									size="small"
+									variant="filled"
+									controls={false}
+									className={styles.hours}
+									onChange={(value) => setShare(1, value)}
+									onBlur={() => saveHours.mutate(myHours)}
+								/>
+								<Typography.Text type="secondary">
+									{t("checkpoints.now.hoursShort", "h")}
+								</Typography.Text>
+							</Flex>
+						</Flex>
+						{stat(
+							t("checkpoints.now.teamSize", "Team"),
+							t(
+								"checkpoints.now.people",
+								"{count, plural, one {# person} other {# people}}",
+								{ count: team.members.length },
+							),
 						)}
-					</Typography.Text>
+						{stat(
+							t("checkpoints.now.perSprint", "A sprint"),
+							capacity.hoursPerWeek
+								? t("checkpoints.now.hoursAbout", "~{hours} h", {
+										hours: middle(capacity.hoursPerWeek),
+									})
+								: "—",
+						)}
+						{stat(
+							t("checkpoints.now.perCheckpoint", "The checkpoint"),
+							capacity.hoursPerRun
+								? t("checkpoints.now.hoursAbout", "~{hours} h", {
+										hours: middle(capacity.hoursPerRun),
+									})
+								: "—",
+						)}
+					</div>
 				)}
-				<Flex gap={12} align="center" className={styles.share}>
-					<Typography.Text>
-						{t("checkpoints.now.share", "Your share a sprint")}
-					</Typography.Text>
-					<Flex gap={8} align="center">
-						<InputNumber
-							min={0}
-							max={80}
-							value={myHours[0]}
-							className={styles.hours}
-							onChange={(value) => setShare(0, value)}
-							onBlur={() => saveHours.mutate(myHours)}
-						/>
-						<Typography.Text type="secondary">–</Typography.Text>
-						<InputNumber
-							min={0}
-							max={80}
-							value={myHours[1]}
-							className={styles.hours}
-							onChange={(value) => setShare(1, value)}
-							onBlur={() => saveHours.mutate(myHours)}
-						/>
-					</Flex>
-					<Typography.Text type="secondary">
-						{t("checkpoints.now.hours", "hours")}
-					</Typography.Text>
-				</Flex>
 			</Flex>
 
 			{previous && (
@@ -340,6 +353,9 @@ export function NowStep() {
 						value={chosen}
 						format={DAY_FORMAT}
 						allowClear={false}
+						variant="filled"
+						prefix={<IconCalendar size={16} className={styles.dateIcon} />}
+						suffixIcon={null}
 						className={styles.date}
 						disabledDate={(date) => date.isBefore(dayjs(), "day")}
 						onChange={setPicked}
@@ -367,7 +383,7 @@ export function NowStep() {
 					value={text}
 					maxLength={CHECKPOINT_GOAL_MAX}
 					showCount
-					autoSize={{ minRows: 4 }}
+					autoSize={{ minRows: 3 }}
 					placeholder={t(
 						"checkpoints.now.goalPlaceholder",
 						"A playable greybox friends can try in 10 minutes…",

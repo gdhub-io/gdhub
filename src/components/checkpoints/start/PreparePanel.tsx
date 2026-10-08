@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslate } from "@tolgee/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -28,7 +27,6 @@ export type PreparePanelProps = {
  * lands on the same question.
  */
 export function PreparePanel({ base, paid }: PreparePanelProps) {
-	const { t } = useTranslate();
 	const router = useRouter();
 	const pathname = usePathname();
 	const search = useSearchParams();

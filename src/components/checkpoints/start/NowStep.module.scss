@@ -16,11 +16,6 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
-.heading {
-	font-size: var(--gd-font-size-body-lg);
-	font-weight: 600;
-}
-
 .info {
 	color: var(--gd-color-text-tertiary);
 	cursor: help;
@@ -30,12 +25,13 @@
 	width: 520px;
 }
 
-.share {
-	padding-top: var(--gd-space-1);
-}
-
+// Frame 03: two small fields, the figure set to the right like a number.
 .hours {
-	width: 64px;
+	width: 52px;
+
+	input {
+		text-align: right;
+	}
 }
 
 .grow {
@@ -49,6 +45,10 @@
 
 .date {
 	width: 280px;
+}
+
+.dateIcon {
+	color: var(--gd-color-text-tertiary);
 }
 
 // Frame 03.2: the curator's read, warm and quiet — advice, not an error.
@@ -78,7 +78,52 @@
 	color: var(--gd-warning-on-tint);
 }
 
-// antd hangs the character count below the field; this keeps it off the foot.
+// Frame 03 keeps the character count inside the field, bottom right.
 .goal {
-	padding-bottom: var(--gd-space-4);
+	:global(.ant-input-textarea-show-count) {
+		position: relative;
+	}
+
+	textarea {
+		padding-bottom: var(--gd-space-8);
+	}
+
+	:global(.ant-input-data-count) {
+		right: var(--gd-space-3);
+		bottom: var(--gd-space-3);
+		font-size: var(--gd-font-size-caption);
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+// The work resource: four cards, the author's own hours first and editable.
+.resource {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+
+	@media (max-width: 767px) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.stat {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.statLabel {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+// Every value sits on the line the author's fields take, so the four read across.
+.statValue {
+	display: flex;
+	align-items: center;
+	min-height: var(--gd-control-height-sm);
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	font-feature-settings: "tnum";
 }

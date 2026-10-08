@@ -5,7 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Skeleton } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { PaidPanel } from "@/components/checkpoints/PaidPanel";
 import { CuratorStep } from "@/components/checkpoints/start/CuratorStep";
 import { NowStep } from "@/components/checkpoints/start/NowStep";
@@ -19,7 +19,11 @@ import {
 import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { EmptyState } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
-import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
+import {
+	useCheckpoint,
+	useCheckpoints,
+	useCreateCheckpoint,
+} from "@/hooks/checkpoints";
 import { useCurrentProject } from "@/hooks/project";
 import styles from "./style.module.scss";
 
@@ -37,6 +41,15 @@ export function CheckpointPurchase() {
 	const { data: list, isPending } = useCheckpoints(project?.id);
 	const current = list?.current ?? null;
 	const { data: detail } = useCheckpoint(current?.id);
+	const create = useCreateCheckpoint(project?.id);
+	// This is the page of a new checkpoint: arriving without a draft starts one.
+	// Once per visit, so a remount cannot open two.
+	const started = useRef(false);
+	useEffect(() => {
+		if (started.current || isPending || current || !list?.canCreate) return;
+		started.current = true;
+		create.mutate();
+	}, [isPending, current, list?.canCreate, create]);
 
 	const workflow = `/user/project/${project?.slug}/workflow`;
 	const asked = search?.get("step");
@@ -90,7 +103,7 @@ export function CheckpointPurchase() {
 		[pathname, router, workflow],
 	);
 
-	if (isPending || !project) {
+	if (isPending || !project || create.isPending) {
 		return (
 			<div className={styles.page}>
 				<Skeleton active paragraph={{ rows: 8 }} />

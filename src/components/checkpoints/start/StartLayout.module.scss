@@ -7,44 +7,15 @@
 	padding-bottom: var(--gd-space-4);
 }
 
-.segment {
-	flex: 1;
-	min-width: 0;
-}
-
-// Three states, because "done" and "here" are different news: the bar behind you
-// is ink, the one you are on is the accent, the ones ahead are a rule.
-.bar {
-	height: var(--gd-space-1);
-	border-radius: var(--gd-radius-pill);
-	corner-shape: round;
-	background: var(--gd-color-border);
-}
-
-.barDone {
-	background: var(--gd-color-text);
-}
-
-.barCurrent {
-	background: var(--gd-color-accent);
-}
-
-.segmentLabel {
-	font-size: var(--gd-font-size-body-sm);
-	color: var(--gd-color-text);
-
-	&[data-current] {
-		font-weight: 600;
-	}
-
-	&[data-ahead] {
-		color: var(--gd-color-text-secondary);
-	}
-}
-
 // antd's h2 is the frame's 24/600; only its bottom margin has to go.
 .title.title {
 	margin: 0;
+}
+
+.stepCount {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body);
 }
 
 .hint {
@@ -58,8 +29,6 @@
 }
 
 .answer {
-	// The frame gives the answer the whole panel: the bars above it already say
-	// how wide the column is, and a narrower one leaves a gutter beside them.
 	width: 100%;
 }
 

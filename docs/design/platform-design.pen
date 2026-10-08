@@ -294044,141 +294044,6 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "HGmpN",
-                      "name": "Progress",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 10,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "cgpEP",
-                          "name": "Bars",
-                          "width": "fill_container",
-                          "gap": 10,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "jv1HC",
-                              "name": "Seg Now",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "K4kNpO",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$brand-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "F4nDRG",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Now",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "b3SyuV",
-                              "name": "Seg Curator",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "AfIRH",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "WtibF",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Curator",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "KNvG0",
-                              "name": "Seg Payment",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "zZo4r",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "NcuZz",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Payment",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "JKGKE",
-                              "name": "Seg Ready",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "ZVeuy",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "rnIbU",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Ready",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "tdITk",
                       "name": "Answer",
                       "width": "fill_container",
@@ -294194,14 +294059,35 @@
                           "gap": 8,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "UYI9k",
-                              "name": "H",
-                              "fill": "$text-primary",
-                              "content": "Glad you're heading for a checkpoint",
-                              "fontFamily": "$font",
-                              "fontSize": 24,
-                              "fontWeight": "600"
+                              "type": "frame",
+                              "id": "XUGC2",
+                              "name": "Title row",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "UYI9k",
+                                  "name": "H",
+                                  "fill": "$text-primary",
+                                  "content": "Glad you're heading for a checkpoint",
+                                  "fontFamily": "$font",
+                                  "fontSize": 24,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "yuQyI",
+                                  "name": "Step",
+                                  "fill": "$text-secondary",
+                                  "content": "Step 1/4",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             },
                             {
                               "type": "text",
@@ -294217,66 +294103,86 @@
                         },
                         {
                           "type": "frame",
-                          "id": "Z3Gs7",
-                          "name": "Project",
+                          "id": "EFH1P",
+                          "name": "Field — Project",
                           "width": "fill_container",
-                          "cornerRadius": "$radius-xl",
-                          "stroke": "$border",
-                          "strokeWidth": 1,
-                          "gap": 16,
-                          "padding": 16,
-                          "alignItems": "center",
+                          "layout": "vertical",
+                          "gap": 8,
                           "children": [
                             {
-                              "type": "frame",
-                              "id": "Ab1J1",
-                              "name": "Cover",
-                              "width": 48,
-                              "height": 48,
-                              "fill": "$neutral-100",
-                              "cornerRadius": 14,
-                              "justifyContent": "center",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "q6atLK",
-                                  "name": "Icon gamepad-2",
-                                  "width": 20,
-                                  "height": 20,
-                                  "icon": "gamepad-2",
-                                  "library": "lucide",
-                                  "fill": "$text-primary"
-                                }
-                              ]
+                              "type": "text",
+                              "id": "rS1ay",
+                              "name": "L",
+                              "fill": "$text-primary",
+                              "content": "Your project",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
                             },
                             {
                               "type": "frame",
-                              "id": "M61Xo",
-                              "name": "Text",
+                              "id": "Z3Gs7",
+                              "name": "Project",
                               "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 4,
+                              "cornerRadius": "$radius-xl",
+                              "stroke": "$border",
+                              "strokeWidth": 1,
+                              "gap": 16,
+                              "padding": 16,
+                              "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "pEtDk",
-                                  "name": "Name",
-                                  "fill": "$text-primary",
-                                  "content": "Lantern Keeper",
-                                  "fontFamily": "$font",
-                                  "fontSize": 16,
-                                  "fontWeight": "600"
+                                  "type": "frame",
+                                  "id": "Ab1J1",
+                                  "name": "Cover",
+                                  "width": 48,
+                                  "height": 48,
+                                  "fill": "$neutral-100",
+                                  "cornerRadius": 14,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "q6atLK",
+                                      "name": "Icon gamepad-2",
+                                      "width": 20,
+                                      "height": 20,
+                                      "icon": "gamepad-2",
+                                      "library": "lucide",
+                                      "fill": "$text-primary"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "O1Xl5",
-                                  "name": "Stage",
-                                  "fill": "$text-secondary",
-                                  "content": "Ideation stage",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "M61Xo",
+                                  "name": "Text",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 4,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "pEtDk",
+                                      "name": "Name",
+                                      "fill": "$text-primary",
+                                      "content": "Lantern Keeper",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "O1Xl5",
+                                      "name": "Stage",
+                                      "fill": "$text-secondary",
+                                      "content": "Ideation stage",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -294284,32 +294190,32 @@
                         },
                         {
                           "type": "frame",
-                          "id": "U7QUU",
-                          "name": "Team resource",
+                          "id": "HMsXZ",
+                          "name": "Work resource",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 12,
+                          "gap": 8,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "QIyfi",
-                              "name": "Title row",
+                              "id": "Szkh0",
+                              "name": "Label",
                               "gap": 8,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "zMJLd",
-                                  "name": "T",
+                                  "id": "f52WV",
+                                  "name": "L",
                                   "fill": "$text-primary",
-                                  "content": "Your team of 4 gives 43–52 hours a sprint",
+                                  "content": "Work resource",
                                   "fontFamily": "$font",
-                                  "fontSize": 16,
+                                  "fontSize": 14,
                                   "fontWeight": "600"
                                 },
                                 {
                                   "type": "icon",
-                                  "id": "JaXKb",
+                                  "id": "fXFdD",
                                   "name": "Icon info",
                                   "width": 16,
                                   "height": 16,
@@ -294321,258 +294227,246 @@
                             },
                             {
                               "type": "frame",
-                              "id": "e7lBp",
-                              "name": "Members",
+                              "id": "S9ll4",
+                              "name": "Cards",
+                              "width": "fill_container",
                               "gap": 12,
-                              "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "l3vaj",
-                                  "name": "Avatar stack",
-                                  "gap": 4,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "pgViS",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "By0cJ",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "SO",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "KxgTM",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "zKSPv",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "PR",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "ao744",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "ObNA5",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "TB",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "P6SWR",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "DgFyK",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "LN",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "TCrMX",
-                                  "name": "Names",
-                                  "fill": "$text-secondary",
-                                  "content": "Sam, Priya, Tom and Lena",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "u67po",
-                              "name": "Total",
-                              "fill": "$text-secondary",
-                              "content": "172–208 hours over the whole checkpoint",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "nmKW4",
-                              "name": "Your hours",
-                              "gap": 12,
-                              "padding": [
-                                4,
-                                0,
-                                0,
-                                0
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "D9Nizt",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Your share a sprint",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "MmIdI",
-                                  "name": "Week",
-                                  "width": 140,
+                                  "id": "L43LQb",
+                                  "name": "Card — You give a sprint",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
                                   "gap": 8,
-                                  "justifyContent": "end",
-                                  "alignItems": "center",
+                                  "padding": 16,
                                   "children": [
                                     {
+                                      "type": "text",
+                                      "id": "LW2P5",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "You give a sprint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
                                       "type": "frame",
-                                      "id": "fA4uw",
-                                      "name": "Hours range",
-                                      "gap": 8,
+                                      "id": "PtiJN",
+                                      "name": "Hours",
+                                      "gap": 6,
                                       "alignItems": "center",
                                       "children": [
                                         {
                                           "type": "frame",
-                                          "id": "A2UjT",
-                                          "name": "From",
-                                          "width": 52,
-                                          "height": 32,
-                                          "fill": "#FAFAF9",
-                                          "cornerRadius": 8,
-                                          "stroke": "#DCDBD8",
-                                          "strokeWidth": 1,
-                                          "strokeAlignment": "inner",
-                                          "padding": [
-                                            0,
-                                            10
-                                          ],
-                                          "justifyContent": "end",
+                                          "id": "fA4uw",
+                                          "name": "Hours range",
+                                          "gap": 8,
                                           "alignItems": "center",
                                           "children": [
                                             {
+                                              "type": "frame",
+                                              "id": "A2UjT",
+                                              "name": "From",
+                                              "width": 52,
+                                              "height": 32,
+                                              "fill": "$border",
+                                              "cornerRadius": 8,
+                                              "stroke": "#DCDBD8",
+                                              "strokeAlignment": "inner",
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "justifyContent": "end",
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "jqG9x",
+                                                  "name": "Value",
+                                                  "fill": "#1A1917",
+                                                  "content": "10",
+                                                  "textAlign": "right",
+                                                  "fontFamily": "Onest",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                }
+                                              ]
+                                            },
+                                            {
                                               "type": "text",
-                                              "id": "jqG9x",
-                                              "name": "Value",
-                                              "fill": "#1A1917",
-                                              "content": "10",
-                                              "textAlign": "right",
-                                              "fontFamily": "Onest",
-                                              "fontSize": 13,
+                                              "id": "rpU2s",
+                                              "name": "Dash",
+                                              "fill": "$text-secondary",
+                                              "content": "–",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
                                               "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "PkifB",
+                                              "name": "To",
+                                              "width": 52,
+                                              "height": 32,
+                                              "fill": "$border",
+                                              "cornerRadius": 8,
+                                              "stroke": "#DCDBD8",
+                                              "strokeAlignment": "inner",
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "justifyContent": "end",
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "o2y632",
+                                                  "name": "Value",
+                                                  "fill": "#1A1917",
+                                                  "content": "15",
+                                                  "textAlign": "right",
+                                                  "fontFamily": "Onest",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                }
+                                              ]
                                             }
                                           ]
                                         },
                                         {
                                           "type": "text",
-                                          "id": "rpU2s",
-                                          "name": "Dash",
+                                          "id": "ueP1p",
+                                          "name": "Unit",
                                           "fill": "$text-secondary",
-                                          "content": "–",
+                                          "content": "h",
                                           "fontFamily": "$font",
                                           "fontSize": 14,
                                           "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "PkifB",
-                                          "name": "To",
-                                          "width": 52,
-                                          "height": 32,
-                                          "fill": "#FAFAF9",
-                                          "cornerRadius": 8,
-                                          "stroke": "#DCDBD8",
-                                          "strokeWidth": 1,
-                                          "strokeAlignment": "inner",
-                                          "padding": [
-                                            0,
-                                            10
-                                          ],
-                                          "justifyContent": "end",
-                                          "alignItems": "center",
-                                          "children": [
-                                            {
-                                              "type": "text",
-                                              "id": "o2y632",
-                                              "name": "Value",
-                                              "fill": "#1A1917",
-                                              "content": "15",
-                                              "textAlign": "right",
-                                              "fontFamily": "Onest",
-                                              "fontSize": 13,
-                                              "fontWeight": "normal"
-                                            }
-                                          ]
                                         }
                                       ]
                                     }
                                   ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "MUj9U",
-                                  "name": "Unit",
-                                  "fill": "$text-secondary",
-                                  "content": "hours",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "k4AjmF",
+                                  "name": "Card — Team",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 16,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "bFZOz",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Team",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "prFAv",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width-height",
+                                      "width": "fill_container",
+                                      "height": 32,
+                                      "content": "4 people",
+                                      "textAlignVertical": "middle",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "sYDQq",
+                                  "name": "Card — A sprint",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 16,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "y4z5I",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "A sprint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "sdYBk",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width-height",
+                                      "width": "fill_container",
+                                      "height": 32,
+                                      "content": "~48 h",
+                                      "textAlignVertical": "middle",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "x6GDSs",
+                                  "name": "Card — The checkpoint",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 16,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "bOVtX",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "The checkpoint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "Z3JAW",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width-height",
+                                      "width": "fill_container",
+                                      "height": 32,
+                                      "content": "~190 h",
+                                      "textAlignVertical": "middle",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -294618,10 +294512,9 @@
                                       "name": "Input",
                                       "width": "fill_container",
                                       "height": 40,
-                                      "fill": "#FAFAF9",
+                                      "fill": "$border",
                                       "cornerRadius": 10,
                                       "stroke": "$card-border",
-                                      "strokeWidth": 1,
                                       "strokeAlignment": "inner",
                                       "gap": 8,
                                       "padding": [
@@ -294991,141 +294884,6 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "t1beaK",
-                      "name": "Progress",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 10,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "RAtCz",
-                          "name": "Bars",
-                          "width": "fill_container",
-                          "gap": 10,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "s6IIve",
-                              "name": "Seg Now",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "XTbqK",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$text-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "QIpeF",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Now",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "YVt0K",
-                              "name": "Seg Curator",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "ucDYw",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$brand-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "PI9AD",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Curator",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "FODED",
-                              "name": "Seg Payment",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "nMpSb",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Sp8AA",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Payment",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "y1Fcf",
-                              "name": "Seg Ready",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "oGYJg",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "id5rs",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Ready",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "R1uoJ",
                       "name": "Answer",
                       "width": "fill_container",
@@ -295141,14 +294899,35 @@
                           "gap": 8,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "V7Bbhv",
-                              "name": "H",
-                              "fill": "$text-primary",
-                              "content": "Who will take this journey with you?",
-                              "fontFamily": "$font",
-                              "fontSize": 24,
-                              "fontWeight": "600"
+                              "type": "frame",
+                              "id": "d4kUPd",
+                              "name": "Title row",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "V7Bbhv",
+                                  "name": "H",
+                                  "fill": "$text-primary",
+                                  "content": "Who will take this journey with you?",
+                                  "fontFamily": "$font",
+                                  "fontSize": 24,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "x0kFO",
+                                  "name": "Step",
+                                  "fill": "$text-secondary",
+                                  "content": "Step 2/4",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             }
                           ]
                         },
@@ -296342,141 +296121,6 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "a91moe",
-                      "name": "Progress",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 10,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "DNQCx",
-                          "name": "Bars",
-                          "width": "fill_container",
-                          "gap": 10,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "BTSVN",
-                              "name": "Seg Now",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "x6xYu",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$text-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Rjd8b",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Now",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "h8VOn",
-                              "name": "Seg Curator",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "QLIoh",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$text-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "rCjAo",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Curator",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "kEWXM",
-                              "name": "Seg Payment",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "G9fa4L",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$brand-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "C23VR",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Payment",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "OBxvi",
-                              "name": "Seg Ready",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "bTLUW",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "j2AtF",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Ready",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "d2DlM",
                       "name": "Answer",
                       "width": "fill_container",
@@ -296492,14 +296136,35 @@
                           "gap": 8,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "QjO90",
-                              "name": "H",
-                              "fill": "$text-primary",
-                              "content": "Check and pay",
-                              "fontFamily": "$font",
-                              "fontSize": 24,
-                              "fontWeight": "600"
+                              "type": "frame",
+                              "id": "x5vVVm",
+                              "name": "Title row",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "QjO90",
+                                  "name": "H",
+                                  "fill": "$text-primary",
+                                  "content": "Check and pay",
+                                  "fontFamily": "$font",
+                                  "fontSize": 24,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "QuEWY",
+                                  "name": "Step",
+                                  "fill": "$text-secondary",
+                                  "content": "Step 3/4",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             }
                           ]
                         },
@@ -297435,136 +297100,20 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "nqpbc",
-                      "name": "Progress",
+                      "id": "XWuMx",
+                      "name": "Title row",
                       "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 10,
+                      "justifyContent": "end",
                       "children": [
                         {
-                          "type": "frame",
-                          "id": "Z02y2",
-                          "name": "Bars",
-                          "width": "fill_container",
-                          "gap": 10,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "uhc8k",
-                              "name": "Seg Now",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "pNUGv",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$btn-black",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "UACbq",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Now",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "l9mei1",
-                              "name": "Seg Curator",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "QX3lJ",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$btn-black",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "QiYAy",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Curator",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "zxA3Q",
-                              "name": "Seg Payment",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "EJvSQ",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$btn-black",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "f7nR9v",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Payment",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "S6A2qE",
-                              "name": "Seg Ready",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "iZPOU",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$brand-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Ktrdc",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Ready",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            }
-                          ]
+                          "type": "text",
+                          "id": "WWUfV",
+                          "name": "Step",
+                          "fill": "$text-secondary",
+                          "content": "Step 4/4",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -297913,136 +297462,31 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "TNjma",
-                      "name": "Progress",
+                      "id": "bJY0n",
+                      "name": "Title row",
                       "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 10,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
                       "children": [
                         {
-                          "type": "frame",
-                          "id": "VOy39",
-                          "name": "Bars",
-                          "width": "fill_container",
-                          "gap": 10,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "F5VGTm",
-                              "name": "Seg Now",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "sNeRU",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$btn-black",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "jx59P",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Now",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "s72LI",
-                              "name": "Seg Curator",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "Glwbv",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$btn-black",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "zrUdn",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Curator",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "I356Y",
-                              "name": "Seg Payment",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "wkAA2",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$brand-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Xlxqm",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Payment",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "uIf05",
-                              "name": "Seg Ready",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "WLf2O",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$border",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "NcO65",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Ready",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
+                          "type": "text",
+                          "id": "b8W5Al",
+                          "name": "H",
+                          "fill": "$text-primary",
+                          "content": "Check and pay",
+                          "fontFamily": "$font",
+                          "fontSize": 24,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ZMnDd",
+                          "name": "Step",
+                          "fill": "$text-secondary",
+                          "content": "Step 3/4",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -299833,141 +299277,6 @@
                   "children": [
                     {
                       "type": "frame",
-                      "id": "c9GsV1",
-                      "name": "Progress",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 10,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "G5LMhh",
-                          "name": "Bars",
-                          "width": "fill_container",
-                          "gap": 10,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "IUiCX",
-                              "name": "Seg Now",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "qkE7D",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$brand-primary",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "zws8w",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Now",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "AXQ3o",
-                              "name": "Seg Curator",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "fEXro",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "F5RKw",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Curator",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "ChiPH",
-                              "name": "Seg Payment",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "dcjqe",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "kHp1Y",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Payment",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "sbGCt",
-                              "name": "Seg Ready",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 6,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "HU8LB",
-                                  "name": "Bar",
-                                  "width": "fill_container",
-                                  "height": 4,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": 999
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "LQ0mv",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Ready",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "VWmMT",
                       "name": "Answer",
                       "width": "fill_container",
@@ -299983,14 +299292,35 @@
                           "gap": 8,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "iQAa0",
-                              "name": "H",
-                              "fill": "$text-primary",
-                              "content": "Glad you're heading for the next checkpoint",
-                              "fontFamily": "$font",
-                              "fontSize": 24,
-                              "fontWeight": "600"
+                              "type": "frame",
+                              "id": "QcO7W",
+                              "name": "Title row",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "iQAa0",
+                                  "name": "H",
+                                  "fill": "$text-primary",
+                                  "content": "Glad you're heading for the next checkpoint",
+                                  "fontFamily": "$font",
+                                  "fontSize": 24,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "RlIiG",
+                                  "name": "Step",
+                                  "fill": "$text-secondary",
+                                  "content": "Step 1/4",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             },
                             {
                               "type": "text",
@@ -300006,66 +299336,86 @@
                         },
                         {
                           "type": "frame",
-                          "id": "yYihd",
-                          "name": "Project",
+                          "id": "cAYrQ",
+                          "name": "Field — Project",
                           "width": "fill_container",
-                          "cornerRadius": "$radius-xl",
-                          "stroke": "$border",
-                          "strokeWidth": 1,
-                          "gap": 16,
-                          "padding": 16,
-                          "alignItems": "center",
+                          "layout": "vertical",
+                          "gap": 8,
                           "children": [
                             {
-                              "type": "frame",
-                              "id": "Mf5qc",
-                              "name": "Cover",
-                              "width": 48,
-                              "height": 48,
-                              "fill": "$neutral-100",
-                              "cornerRadius": 14,
-                              "justifyContent": "center",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "TaSOi",
-                                  "name": "Icon gamepad-2",
-                                  "width": 20,
-                                  "height": 20,
-                                  "icon": "gamepad-2",
-                                  "library": "lucide",
-                                  "fill": "$text-primary"
-                                }
-                              ]
+                              "type": "text",
+                              "id": "F0cD9",
+                              "name": "L",
+                              "fill": "$text-primary",
+                              "content": "Your project",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
                             },
                             {
                               "type": "frame",
-                              "id": "q8N7AQ",
-                              "name": "Text",
+                              "id": "yYihd",
+                              "name": "Project",
                               "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 4,
+                              "cornerRadius": "$radius-xl",
+                              "stroke": "$border",
+                              "strokeWidth": 1,
+                              "gap": 16,
+                              "padding": 16,
+                              "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "KIXny",
-                                  "name": "Name",
-                                  "fill": "$text-primary",
-                                  "content": "Lantern Keeper",
-                                  "fontFamily": "$font",
-                                  "fontSize": 16,
-                                  "fontWeight": "600"
+                                  "type": "frame",
+                                  "id": "Mf5qc",
+                                  "name": "Cover",
+                                  "width": 48,
+                                  "height": 48,
+                                  "fill": "$neutral-100",
+                                  "cornerRadius": 14,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "TaSOi",
+                                      "name": "Icon gamepad-2",
+                                      "width": 20,
+                                      "height": 20,
+                                      "icon": "gamepad-2",
+                                      "library": "lucide",
+                                      "fill": "$text-primary"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "Koey6",
-                                  "name": "Stage",
-                                  "fill": "$text-secondary",
-                                  "content": "Ideation stage · checkpoint 2",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "q8N7AQ",
+                                  "name": "Text",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 4,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "KIXny",
+                                      "name": "Name",
+                                      "fill": "$text-primary",
+                                      "content": "Lantern Keeper",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "Koey6",
+                                      "name": "Stage",
+                                      "fill": "$text-secondary",
+                                      "content": "Ideation stage · checkpoint 2",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -300073,32 +299423,32 @@
                         },
                         {
                           "type": "frame",
-                          "id": "q0yU9l",
-                          "name": "Team resource",
+                          "id": "Y30mT",
+                          "name": "Work resource",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 12,
+                          "gap": 8,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "Na6y2",
-                              "name": "Title row",
+                              "id": "J1aBa",
+                              "name": "Label",
                               "gap": 8,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "qFMhT",
-                                  "name": "T",
+                                  "id": "cuExa",
+                                  "name": "L",
                                   "fill": "$text-primary",
-                                  "content": "Your team of 4 gives 43–52 hours a sprint",
+                                  "content": "Work resource",
                                   "fontFamily": "$font",
-                                  "fontSize": 16,
+                                  "fontSize": 14,
                                   "fontWeight": "600"
                                 },
                                 {
                                   "type": "icon",
-                                  "id": "h4VU3",
+                                  "id": "U2Umb",
                                   "name": "Icon info",
                                   "width": 16,
                                   "height": 16,
@@ -300110,258 +299460,246 @@
                             },
                             {
                               "type": "frame",
-                              "id": "S36q7O",
-                              "name": "Members",
+                              "id": "N0rKYf",
+                              "name": "Cards",
+                              "width": "fill_container",
                               "gap": 12,
-                              "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "LNSpP",
-                                  "name": "Avatar stack",
-                                  "gap": 4,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "tYqAJ",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "jdsQd",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "SO",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "LHiBd",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "HFFQb",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "PR",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "iEE6S",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "gmZnz",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "TB",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "OZgVg",
-                                      "name": "Avatar",
-                                      "width": 32,
-                                      "height": 32,
-                                      "fill": "$neutral-100",
-                                      "cornerRadius": 999,
-                                      "justifyContent": "center",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "hDQF6",
-                                          "name": "I",
-                                          "fill": "$text-secondary",
-                                          "content": "LN",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Z3i5Xv",
-                                  "name": "Names",
-                                  "fill": "$text-secondary",
-                                  "content": "Sam, Priya, Tom and Lena",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "eRGSS",
-                              "name": "Total",
-                              "fill": "$text-secondary",
-                              "content": "172–208 hours over the whole checkpoint",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "EFkon",
-                              "name": "Your hours",
-                              "gap": 12,
-                              "padding": [
-                                4,
-                                0,
-                                0,
-                                0
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "wigLP",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Your share a sprint",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "rGP39",
-                                  "name": "Week",
-                                  "width": 140,
+                                  "id": "jrjkf",
+                                  "name": "Card — You give a sprint",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
                                   "gap": 8,
-                                  "justifyContent": "end",
-                                  "alignItems": "center",
+                                  "padding": 16,
                                   "children": [
                                     {
+                                      "type": "text",
+                                      "id": "fqggD",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "You give a sprint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
                                       "type": "frame",
-                                      "id": "J2qKOH",
-                                      "name": "Hours range",
-                                      "gap": 8,
+                                      "id": "g2zYa",
+                                      "name": "Hours",
+                                      "gap": 6,
                                       "alignItems": "center",
                                       "children": [
                                         {
                                           "type": "frame",
-                                          "id": "apkmG",
-                                          "name": "From",
-                                          "width": 52,
-                                          "height": 32,
-                                          "fill": "#FAFAF9",
-                                          "cornerRadius": 8,
-                                          "stroke": "#DCDBD8",
-                                          "strokeWidth": 1,
-                                          "strokeAlignment": "inner",
-                                          "padding": [
-                                            0,
-                                            10
-                                          ],
-                                          "justifyContent": "end",
+                                          "id": "J2qKOH",
+                                          "name": "Hours range",
+                                          "gap": 8,
                                           "alignItems": "center",
                                           "children": [
                                             {
+                                              "type": "frame",
+                                              "id": "apkmG",
+                                              "name": "From",
+                                              "width": 52,
+                                              "height": 32,
+                                              "fill": "$border",
+                                              "cornerRadius": 8,
+                                              "stroke": "#DCDBD8",
+                                              "strokeAlignment": "inner",
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "justifyContent": "end",
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "NmfiG",
+                                                  "name": "Value",
+                                                  "fill": "#1A1917",
+                                                  "content": "10",
+                                                  "textAlign": "right",
+                                                  "fontFamily": "Onest",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                }
+                                              ]
+                                            },
+                                            {
                                               "type": "text",
-                                              "id": "NmfiG",
-                                              "name": "Value",
-                                              "fill": "#1A1917",
-                                              "content": "10",
-                                              "textAlign": "right",
-                                              "fontFamily": "Onest",
-                                              "fontSize": 13,
+                                              "id": "IsHeU",
+                                              "name": "Dash",
+                                              "fill": "$text-secondary",
+                                              "content": "–",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
                                               "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "FGm2R",
+                                              "name": "To",
+                                              "width": 52,
+                                              "height": 32,
+                                              "fill": "$border",
+                                              "cornerRadius": 8,
+                                              "stroke": "#DCDBD8",
+                                              "strokeAlignment": "inner",
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "justifyContent": "end",
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "kFEMU",
+                                                  "name": "Value",
+                                                  "fill": "#1A1917",
+                                                  "content": "15",
+                                                  "textAlign": "right",
+                                                  "fontFamily": "Onest",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                }
+                                              ]
                                             }
                                           ]
                                         },
                                         {
                                           "type": "text",
-                                          "id": "IsHeU",
-                                          "name": "Dash",
+                                          "id": "oeUA5",
+                                          "name": "Unit",
                                           "fill": "$text-secondary",
-                                          "content": "–",
+                                          "content": "h",
                                           "fontFamily": "$font",
                                           "fontSize": 14,
                                           "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "FGm2R",
-                                          "name": "To",
-                                          "width": 52,
-                                          "height": 32,
-                                          "fill": "#FAFAF9",
-                                          "cornerRadius": 8,
-                                          "stroke": "#DCDBD8",
-                                          "strokeWidth": 1,
-                                          "strokeAlignment": "inner",
-                                          "padding": [
-                                            0,
-                                            10
-                                          ],
-                                          "justifyContent": "end",
-                                          "alignItems": "center",
-                                          "children": [
-                                            {
-                                              "type": "text",
-                                              "id": "kFEMU",
-                                              "name": "Value",
-                                              "fill": "#1A1917",
-                                              "content": "15",
-                                              "textAlign": "right",
-                                              "fontFamily": "Onest",
-                                              "fontSize": 13,
-                                              "fontWeight": "normal"
-                                            }
-                                          ]
                                         }
                                       ]
                                     }
                                   ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "JyV8Z",
-                                  "name": "Unit",
-                                  "fill": "$text-secondary",
-                                  "content": "hours",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "OIuSD",
+                                  "name": "Card — Team",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 16,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "fZaEB",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Team",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "SZTWb",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width-height",
+                                      "width": "fill_container",
+                                      "height": 32,
+                                      "content": "4 people",
+                                      "textAlignVertical": "middle",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "eGtYZ",
+                                  "name": "Card — A sprint",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 16,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "UhM9E",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "A sprint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "MvGOr",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width-height",
+                                      "width": "fill_container",
+                                      "height": 32,
+                                      "content": "~48 h",
+                                      "textAlignVertical": "middle",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "rCxmM",
+                                  "name": "Card — The checkpoint",
+                                  "width": "fill_container",
+                                  "cornerRadius": 16,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": 16,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "tVd2a",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "The checkpoint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "XVdvk",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width-height",
+                                      "width": "fill_container",
+                                      "height": 32,
+                                      "content": "~190 h",
+                                      "textAlignVertical": "middle",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -300534,10 +299872,9 @@
                                       "name": "Input",
                                       "width": "fill_container",
                                       "height": 40,
-                                      "fill": "#FAFAF9",
+                                      "fill": "$border",
                                       "cornerRadius": 10,
                                       "stroke": "$card-border",
-                                      "strokeWidth": 1,
                                       "strokeAlignment": "inner",
                                       "gap": 8,
                                       "padding": [

@@ -22,11 +22,7 @@ import {
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
 import { CheckpointStatus } from "@/config/prisma-enums";
-import {
-	useCancelCheckpoint,
-	useCreateCheckpoint,
-	useDiscardCheckpoint,
-} from "@/hooks/checkpoints";
+import { useCancelCheckpoint, useDiscardCheckpoint } from "@/hooks/checkpoints";
 import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -64,7 +60,6 @@ export function CheckpointOffer({
 	const { t } = useTranslate();
 	const { message, modal } = App.useApp();
 	const router = useRouter();
-	const create = useCreateCheckpoint(project.id);
 	const discard = useDiscardCheckpoint();
 	const cancel = useCancelCheckpoint(draft?.id, project.id);
 	const [confirmDiscard, setConfirmDiscard] = useState(false);
@@ -92,16 +87,8 @@ export function CheckpointOffer({
 	);
 
 	if (!draft) {
-		const start = async () => {
-			try {
-				await create.mutateAsync();
-				router.push(purchase);
-			} catch {
-				message.error(
-					t("workflow.offer.createFailed", "Could not start a checkpoint"),
-				);
-			}
-		};
+		// The purchase page opens the draft itself.
+		const start = () => router.push(purchase);
 
 		const option = (
 			icon: ReactNode,
@@ -148,7 +135,6 @@ export function CheckpointOffer({
 						<Button
 							type="primary"
 							className={styles.offerButton}
-							loading={create.isPending}
 							disabled={locked}
 							icon={locked ? <IconLock size={16} /> : undefined}
 							onClick={start}
