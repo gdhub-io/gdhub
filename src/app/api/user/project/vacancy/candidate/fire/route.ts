@@ -11,6 +11,10 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeamMember } from "@/lib/space-ids";
+import {
+	removeFromCheckpointRooms,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -57,6 +61,13 @@ export const PUT = pipe(
 		},
 		select: { user: true, team: true },
 	});
+
+	const projectId = firedMember.team.projectId;
+	if (projectId) {
+		await syncChat(`fire ${id}`, () =>
+			removeFromCheckpointRooms(projectId, firedMember.user.id),
+		);
+	}
 
 	// Delete all equity allocations for the fired member
 	await prisma.equityPromise.deleteMany({

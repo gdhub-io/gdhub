@@ -11,6 +11,10 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeamMember } from "@/lib/space-ids";
+import {
+	addToCheckpointRooms,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -73,6 +77,13 @@ export const PUT = pipe(
 		} catch (e) {
 			console.error("[vacancy-chat] close on hire failed", e);
 		}
+	}
+
+	const projectId = member.team.projectId;
+	if (projectId) {
+		await syncChat(`hire ${member.id}`, () =>
+			addToCheckpointRooms(projectId, member.user.id),
+		);
 	}
 
 	// If vacancy has a promise, create an equity allocation for the member

@@ -429,6 +429,38 @@ export async function inviteUserToRoom(
 	throw new Error(`Failed to invite user: ${resp.status} ${text}`);
 }
 
+// Remove a user from a room on behalf of someone with the power to. Returns
+// false when Matrix refuses because they are not in it (403).
+export async function kickUserFromRoom(
+	initiatorLocalpart: string,
+	matrixRoomId: string,
+	targetLocalpart: string,
+): Promise<boolean> {
+	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
+	const DOMAIN = env("MATRIX_CHAT_HOMESERVER_DOMAIN");
+	// Backend device, separate from the user's browser session.
+	const { accessToken } = await getMatrixUserToken(
+		initiatorLocalpart,
+		"svc_backend",
+	);
+
+	const resp = await fetch(
+		`${BASE_URL}/_matrix/client/v3/rooms/${encodeURIComponent(matrixRoomId)}/kick`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${accessToken}`,
+			},
+			body: JSON.stringify({ user_id: `@${targetLocalpart}:${DOMAIN}` }),
+		},
+	);
+	if (resp.ok) return true;
+	if (resp.status === 403) return false;
+	const text = await resp.text();
+	throw new Error(`Failed to remove user: ${resp.status} ${text}`);
+}
+
 // Send a plain text message into a room on behalf of a platform user (plain
 // HTTP — no matrix-js-sdk). Used e.g. to deliver an offer message when the
 // chat room already exists and ensureChatRoom's firstMessage doesn't apply.

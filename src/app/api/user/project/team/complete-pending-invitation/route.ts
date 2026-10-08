@@ -11,6 +11,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	addToCheckpointRooms,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -103,6 +107,13 @@ export const GET = withAuth({ mode: "user" })(
 					user: { connect: { id: currentUser.id } },
 				},
 			});
+
+			const projectId = invitation?.team.project?.id;
+			if (projectId) {
+				await syncChat(`join ${teamMember.id}`, () =>
+					addToCheckpointRooms(projectId, currentUser.id),
+				);
+			}
 
 			const updatedPendingInvitations =
 				userRecord.pendingTeamInvitations.filter(

@@ -28,6 +28,7 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
@@ -445,21 +446,6 @@ const toCheckpointDetail = (row: DetailRow) => {
 		evidence: buildEvidence(items, artifacts, startedAt),
 	};
 };
-
-/**
- * The checkpoint's number through the whole project: the ones before it that
- * actually ran, plus one. Drafts and cancelled ones never took a number.
- */
-const checkpointNumber = async (row: { projectId: string; createdAt: Date }) =>
-	(await prisma.projectCheckpoint.count({
-		where: {
-			projectId: row.projectId,
-			createdAt: { lt: row.createdAt },
-			status: {
-				notIn: [CheckpointStatus.Draft, CheckpointStatus.Cancelled],
-			},
-		},
-	})) + 1;
 
 /** The project's builds uploaded inside the 28 days, each filed in its sprint. */
 const buildsDuring = async (row: {

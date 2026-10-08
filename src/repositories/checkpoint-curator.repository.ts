@@ -6,6 +6,7 @@ import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import type {
 	CuratorGoalCard,
 	CuratorLine,
@@ -463,6 +464,10 @@ export const closeCheckpoint = async (
 			decidedAt: new Date(),
 		},
 	});
+
+	await syncChat(`close ${checkpointId}`, () =>
+		closeCheckpointRoom(checkpointId),
+	);
 
 	return settled;
 };

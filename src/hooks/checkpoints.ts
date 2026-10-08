@@ -239,6 +239,13 @@ export const useCheckGoal = (id?: string) =>
 				.data,
 	});
 
+/** The room of the checkpoint's chat; the server opens it on first ask. */
+export const useCheckpointChat = (id?: string) =>
+	useMutation({
+		mutationFn: async () =>
+			(await axios.post<{ roomId: string }>(`/api/checkpoint/${id}/chat`)).data,
+	});
+
 /** Specialists who have said they take mentees, at an expert level. */
 export const useCheckpointCurators = () =>
 	useQuery({
