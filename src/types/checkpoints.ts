@@ -184,6 +184,8 @@ export type CheckpointDto = {
 	evidence?: CheckpointEvidenceDto[];
 	/** The list's current row only, and null while it is still a draft. */
 	signals?: CheckpointSignalsDto | null;
+	/** The list's current row only: a draft whose last checkout did not go through. */
+	paymentFailed?: boolean;
 	/** The list's current row only: what its author has to do next, if anything. */
 	next?: AuthorNextStep | null;
 	/** Counted in UTC on the server — see `checkpointProgress`. */

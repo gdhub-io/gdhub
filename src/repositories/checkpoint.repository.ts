@@ -2,6 +2,8 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
+	PayableType,
+	PaymentStatus,
 	type Prisma,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
@@ -512,6 +514,29 @@ const currentCheckpointSelect = {
 } as const;
 
 /** The one checkpoint a project may have on the go, `Draft` included. */
+/**
+ * A draft whose last checkout failed or expired. A `PENDING` one is not counted:
+ * it may be open in another tab, or paid with the webhook still on its way.
+ */
+const paymentFailed = async (row: {
+	id: string;
+	status: CheckpointStatus;
+	paymentId: string | null;
+}) => {
+	if (row.status !== CheckpointStatus.Draft || row.paymentId) return false;
+
+	const last = await prisma.payment.findFirst({
+		where: { payableType: PayableType.CHECKPOINT, payableId: row.id },
+		orderBy: { createdAt: "desc" },
+		select: { status: true },
+	});
+
+	return (
+		last?.status === PaymentStatus.FAILED ||
+		last?.status === PaymentStatus.CANCELED
+	);
+};
+
 export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
@@ -529,6 +554,7 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 
 	return {
 		...checkpoint,
+		paymentFailed: await paymentFailed(checkpoint),
 		curator: withCraft(curator),
 		sprints: buildSprints(startedAt),
 		// Only a running checkpoint asks anything of its author on a given day.
