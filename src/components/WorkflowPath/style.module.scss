@@ -843,10 +843,9 @@ button.checklistItem {
 	align-items: center;
 	justify-content: center;
 	flex: none;
-	width: var(--gd-space-8);
-	height: var(--gd-space-8);
-	border-radius: var(--gd-radius-chip);
-	background: var(--gd-fill-subtle);
+	width: 20px;
+	height: 20px;
+	color: var(--gd-color-accent);
 }
 
 .offerFactLabel {

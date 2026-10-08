@@ -364,7 +364,7 @@ export function CheckpointOffer({
 						isAI ? (
 							<IconSparkles size={16} />
 						) : draft.curator ? (
-							<AppAvatar src={draft.curator.image} size={32}>
+							<AppAvatar src={draft.curator.image} size={20}>
 								{draft.curator.name?.slice(0, 1).toUpperCase()}
 							</AppAvatar>
 						) : (
