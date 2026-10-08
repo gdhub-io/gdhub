@@ -206710,8 +206710,8 @@
     {
       "type": "frame",
       "id": "H3rdHi",
-      "x": 1045,
-      "y": 69256,
+      "x": 1069,
+      "y": 69428,
       "name": "02.3 · Dialog — Cancel this draft?",
       "clip": true,
       "width": 520,
@@ -262643,6 +262643,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -262685,9 +262687,9 @@
                               "id": "RR2Xw",
                               "name": "Stage panel",
                               "width": "fill_container",
+                              "fill": "$surface",
                               "cornerRadius": "$radius-xl",
                               "stroke": "$border",
-                              "strokeWidth": 1,
                               "gap": 16,
                               "padding": [
                                 16,
@@ -262788,10 +262790,44 @@
                     },
                     {
                       "type": "frame",
+                      "id": "AEgOE",
+                      "name": "Branch in",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "mpiJ2",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M1 0c0 12 24 12 24 24",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "bFzlS",
                       "name": "Row — Current sprint",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -262818,6 +262854,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -262851,7 +262889,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -263566,6 +263604,12 @@
                       "name": "Row — Session",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -263593,7 +263637,7 @@
                               "fill": "$surface",
                               "cornerRadius": 999,
                               "stroke": "$border-strong",
-                              "strokeWidth": 1,
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -263629,7 +263673,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -263814,6 +263858,12 @@
                       "name": "Row — Up next label",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -263844,7 +263894,7 @@
                             8,
                             0,
                             16,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -263867,6 +263917,12 @@
                       "name": "Row — Sprint 2",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -263915,7 +263971,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -264093,6 +264149,12 @@
                       "name": "Row — Sprint 3",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -264141,7 +264203,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -264249,6 +264311,12 @@
                       "name": "Row — Sprint 4",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -264297,7 +264365,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -264405,6 +264473,12 @@
                       "name": "Row — Checkpoint 3 gate",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -264832,7 +264906,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -264878,6 +264952,34 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "a9ldYM",
+                      "name": "Branch out",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "KreYf",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M25 0l0 0.18-0.01 0.18-0.01 0.17-0.01 0.18-0.01 0.17-0.02 0.17-0.03 0.17-0.02 0.16-0.03 0.17-0.03 0.16-0.04 0.17-0.04 0.16-0.04 0.15-0.05 0.16-0.04 0.16-0.06 0.15-0.05 0.15-0.06 0.16-0.06 0.15-0.06 0.14-0.07 0.15-0.07 0.15-0.07 0.14-0.07 0.14m-3.35 3.73l-0.15 0.11-0.14 0.1-0.15 0.11-0.14 0.11-0.15 0.1-0.15 0.11-0.16 0.1-0.15 0.11-0.15 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.17 0.1-0.16 0.09-0.17 0.1-0.17 0.1-0.16 0.09-0.17 0.1m-4.6 2.38l-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.1-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.1-0.17 0.09-0.17 0.09-0.17 0.1-0.18 0.09-0.17 0.1m-4.18 2.77l-0.13 0.11-0.14 0.11-0.13 0.12-0.13 0.11-0.12 0.12-0.13 0.12-0.12 0.12-0.12 0.12-0.12 0.12-0.11 0.12-0.12 0.12-0.11 0.12-0.11 0.13-0.11 0.13-0.1 0.12-0.11 0.13-0.1 0.13-0.09 0.13-0.1 0.14-0.09 0.13-0.09 0.13-0.09 0.14-0.09 0.14-0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
                         }
                       ]
                     },
@@ -268452,10 +268554,44 @@
                     },
                     {
                       "type": "frame",
+                      "id": "LBIY4",
+                      "name": "Branch in",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "ffYCW",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M1 0c0 12 24 12 24 24",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "a8thYT",
                       "name": "Row — Checkpoint 1 (collapsed)",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -268641,6 +268777,12 @@
                       "name": "Row — Checkpoint 2 (expanded)",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -269228,6 +269370,12 @@
                       "name": "Row — History",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -269394,6 +269542,12 @@
                       "name": "Row — Current sprint",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -269420,6 +269574,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -269453,7 +269609,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -270090,6 +270246,12 @@
                       "name": "Row — Session",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -270117,7 +270279,7 @@
                               "fill": "$surface",
                               "cornerRadius": 999,
                               "stroke": "$border-strong",
-                              "strokeWidth": 1,
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -270153,7 +270315,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -270338,6 +270500,12 @@
                       "name": "Row — Up next label",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -270368,7 +270536,7 @@
                             8,
                             0,
                             16,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -270391,6 +270559,12 @@
                       "name": "Row — Sprint 2",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -270439,7 +270613,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -270617,6 +270791,12 @@
                       "name": "Row — Sprint 3",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -270665,7 +270845,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -270773,6 +270953,12 @@
                       "name": "Row — Sprint 4",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -270821,7 +271007,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -270929,6 +271115,12 @@
                       "name": "Row — Checkpoint 3 gate",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -271356,7 +271548,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -271402,6 +271594,34 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mvmYD",
+                      "name": "Branch out",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "yqVbI",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M25 0l0 0.18-0.01 0.18-0.01 0.17-0.01 0.18-0.01 0.17-0.02 0.17-0.03 0.17-0.02 0.16-0.03 0.17-0.03 0.16-0.04 0.17-0.04 0.16-0.04 0.15-0.05 0.16-0.04 0.16-0.06 0.15-0.05 0.15-0.06 0.16-0.06 0.15-0.06 0.14-0.07 0.15-0.07 0.15-0.07 0.14-0.07 0.14m-3.35 3.73l-0.15 0.11-0.14 0.1-0.15 0.11-0.14 0.11-0.15 0.1-0.15 0.11-0.16 0.1-0.15 0.11-0.15 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.17 0.1-0.16 0.09-0.17 0.1-0.17 0.1-0.16 0.09-0.17 0.1m-4.6 2.38l-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.1-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.1-0.17 0.09-0.17 0.09-0.17 0.1-0.18 0.09-0.17 0.1m-4.18 2.77l-0.13 0.11-0.14 0.11-0.13 0.12-0.13 0.11-0.12 0.12-0.13 0.12-0.12 0.12-0.12 0.12-0.12 0.12-0.11 0.12-0.12 0.12-0.11 0.12-0.11 0.13-0.11 0.13-0.1 0.12-0.11 0.13-0.1 0.13-0.09 0.13-0.1 0.14-0.09 0.13-0.09 0.13-0.09 0.14-0.09 0.14-0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
                         }
                       ]
                     },
@@ -275169,6 +275389,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -275211,9 +275433,9 @@
                               "id": "KPg2f",
                               "name": "Stage panel",
                               "width": "fill_container",
+                              "fill": "$surface",
                               "cornerRadius": "$radius-xl",
                               "stroke": "$border",
-                              "strokeWidth": 1,
                               "gap": 16,
                               "padding": [
                                 16,
@@ -275314,10 +275536,44 @@
                     },
                     {
                       "type": "frame",
+                      "id": "y5IAjD",
+                      "name": "Branch in",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "A8w0uw",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M1 0c0 12 24 12 24 24",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "oCw80",
                       "name": "Row — Sprint 1 (done)",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -275344,6 +275600,8 @@
                               "height": 20,
                               "fill": "$success-tint",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -275379,7 +275637,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -275633,6 +275891,12 @@
                       "name": "Row — Session",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -275659,6 +275923,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -275692,7 +275958,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -276441,6 +276707,12 @@
                       "name": "Row — Up next label",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -276471,7 +276743,7 @@
                             8,
                             0,
                             16,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -276494,6 +276766,12 @@
                       "name": "Row — Sprint 3",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -276542,7 +276820,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -276650,6 +276928,12 @@
                       "name": "Row — Sprint 4",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -276698,7 +276982,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -276806,6 +277090,12 @@
                       "name": "Row — Checkpoint 3 gate",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -277233,7 +277523,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -277279,6 +277569,34 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ziFTf",
+                      "name": "Branch out",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "YWLRi",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M25 0l0 0.18-0.01 0.18-0.01 0.17-0.01 0.18-0.01 0.17-0.02 0.17-0.03 0.17-0.02 0.16-0.03 0.17-0.03 0.16-0.04 0.17-0.04 0.16-0.04 0.15-0.05 0.16-0.04 0.16-0.06 0.15-0.05 0.15-0.06 0.16-0.06 0.15-0.06 0.14-0.07 0.15-0.07 0.15-0.07 0.14-0.07 0.14m-3.35 3.73l-0.15 0.11-0.14 0.1-0.15 0.11-0.14 0.11-0.15 0.1-0.15 0.11-0.16 0.1-0.15 0.11-0.15 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.17 0.1-0.16 0.09-0.17 0.1-0.17 0.1-0.16 0.09-0.17 0.1m-4.6 2.38l-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.1-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.1-0.17 0.09-0.17 0.09-0.17 0.1-0.18 0.09-0.17 0.1m-4.18 2.77l-0.13 0.11-0.14 0.11-0.13 0.12-0.13 0.11-0.12 0.12-0.13 0.12-0.12 0.12-0.12 0.12-0.12 0.12-0.11 0.12-0.12 0.12-0.11 0.12-0.11 0.13-0.11 0.13-0.1 0.12-0.11 0.13-0.1 0.13-0.09 0.13-0.1 0.14-0.09 0.13-0.09 0.13-0.09 0.14-0.09 0.14-0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
                         }
                       ]
                     },
@@ -280608,6 +280926,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -280650,9 +280970,9 @@
                               "id": "oni2f",
                               "name": "Stage panel",
                               "width": "fill_container",
+                              "fill": "$surface",
                               "cornerRadius": "$radius-xl",
                               "stroke": "$border",
-                              "strokeWidth": 1,
                               "gap": 16,
                               "padding": [
                                 16,
@@ -280753,10 +281073,44 @@
                     },
                     {
                       "type": "frame",
+                      "id": "C1o8uC",
+                      "name": "Branch in",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "A6ejg",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M1 0c0 12 24 12 24 24",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "YKGa3",
                       "name": "Row — Current sprint",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -280783,6 +281137,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -280816,7 +281172,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -281480,6 +281836,12 @@
                       "name": "Row — Session",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -281507,7 +281869,7 @@
                               "fill": "$surface",
                               "cornerRadius": 999,
                               "stroke": "$border-strong",
-                              "strokeWidth": 1,
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -281543,7 +281905,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -281728,6 +282090,12 @@
                       "name": "Row — Up next label",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -281758,7 +282126,7 @@
                             8,
                             0,
                             16,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -281781,6 +282149,12 @@
                       "name": "Row — Sprint 3",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -281829,7 +282203,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -281937,6 +282311,12 @@
                       "name": "Row — Sprint 4",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -281985,7 +282365,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -282093,6 +282473,12 @@
                       "name": "Row — Checkpoint 3 gate",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -282520,7 +282906,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -282566,6 +282952,34 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QvzDo",
+                      "name": "Branch out",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "G5BZH",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M25 0l0 0.18-0.01 0.18-0.01 0.17-0.01 0.18-0.01 0.17-0.02 0.17-0.03 0.17-0.02 0.16-0.03 0.17-0.03 0.16-0.04 0.17-0.04 0.16-0.04 0.15-0.05 0.16-0.04 0.16-0.06 0.15-0.05 0.15-0.06 0.16-0.06 0.15-0.06 0.14-0.07 0.15-0.07 0.15-0.07 0.14-0.07 0.14m-3.35 3.73l-0.15 0.11-0.14 0.1-0.15 0.11-0.14 0.11-0.15 0.1-0.15 0.11-0.16 0.1-0.15 0.11-0.15 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.17 0.1-0.16 0.09-0.17 0.1-0.17 0.1-0.16 0.09-0.17 0.1m-4.6 2.38l-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.1-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.1-0.17 0.09-0.17 0.09-0.17 0.1-0.18 0.09-0.17 0.1m-4.18 2.77l-0.13 0.11-0.14 0.11-0.13 0.12-0.13 0.11-0.12 0.12-0.13 0.12-0.12 0.12-0.12 0.12-0.12 0.12-0.11 0.12-0.12 0.12-0.11 0.12-0.11 0.13-0.11 0.13-0.1 0.12-0.11 0.13-0.1 0.13-0.09 0.13-0.1 0.14-0.09 0.13-0.09 0.13-0.09 0.14-0.09 0.14-0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
                         }
                       ]
                     },
@@ -287493,6 +287907,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -290042,7 +290458,7 @@
                           "height": "fill_container",
                           "layout": "vertical",
                           "padding": [
-                            26,
+                            20,
                             0,
                             0,
                             0
@@ -290057,6 +290473,8 @@
                               "height": 20,
                               "fill": "$success-tint",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -290110,9 +290528,9 @@
                                   "id": "r39bJl",
                                   "name": "Head",
                                   "width": "fill_container",
-                                  "gap": 16,
+                                  "gap": 12,
                                   "padding": [
-                                    16,
+                                    12,
                                     24
                                   ],
                                   "alignItems": "center",
@@ -290121,10 +290539,10 @@
                                       "type": "frame",
                                       "id": "kwbFQ",
                                       "name": "IconTile",
-                                      "width": 40,
-                                      "height": 40,
+                                      "width": 32,
+                                      "height": 32,
                                       "fill": "$neutral-100",
-                                      "cornerRadius": 16,
+                                      "cornerRadius": 14,
                                       "justifyContent": "center",
                                       "alignItems": "center",
                                       "children": [
@@ -290132,8 +290550,8 @@
                                           "type": "icon",
                                           "id": "j8OKb",
                                           "name": "Icon lightbulb",
-                                          "width": 20,
-                                          "height": 20,
+                                          "width": 16,
+                                          "height": 16,
                                           "icon": "door-open",
                                           "library": "lucide",
                                           "fill": "$text-primary"
@@ -290146,16 +290564,15 @@
                                       "name": "Text",
                                       "width": "fill_container",
                                       "layout": "vertical",
-                                      "gap": 4,
                                       "children": [
                                         {
                                           "type": "text",
                                           "id": "y13bgL",
                                           "name": "Overline",
                                           "fill": "$text-secondary",
-                                          "content": "Stage",
+                                          "content": "Previous stage",
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 12,
                                           "fontWeight": "600"
                                         },
                                         {
@@ -290165,7 +290582,7 @@
                                           "fill": "$text-primary",
                                           "content": "Introduction",
                                           "fontFamily": "$font",
-                                          "fontSize": 16,
+                                          "fontSize": 14,
                                           "fontWeight": "600"
                                         }
                                       ]
@@ -290423,6 +290840,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -290884,7 +291303,7 @@
                             {
                               "type": "frame",
                               "id": "HFJU9",
-                              "name": "Stage panel — current, expanded",
+                              "name": "Stage panel — current, collapsed",
                               "width": "fill_container",
                               "fill": "$surface",
                               "cornerRadius": "$radius-xl",
@@ -290981,7 +291400,7 @@
                                           "name": "Icon chevron-down",
                                           "width": 16,
                                           "height": 16,
-                                          "icon": "chevron-up",
+                                          "icon": "chevron-down",
                                           "library": "lucide",
                                           "fill": "$text-primary"
                                         }
@@ -290992,8 +291411,11 @@
                                 {
                                   "type": "frame",
                                   "id": "Pf78j",
+                                  "x": 0,
+                                  "y": 73,
                                   "name": "Body",
-                                  "width": "fill_container",
+                                  "enabled": false,
+                                  "width": "fill_container(745)",
                                   "layout": "vertical",
                                   "gap": 24,
                                   "padding": [
@@ -291241,10 +291663,44 @@
                     },
                     {
                       "type": "frame",
+                      "id": "L6o9P",
+                      "name": "Branch in",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "hYs3v",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M1 0l0 0.18 0.01 0.18 0.01 0.17 0.01 0.18 0.01 0.17 0.02 0.17 0.03 0.17 0.02 0.16 0.03 0.17 0.03 0.16 0.04 0.17 0.04 0.16 0.04 0.15 0.05 0.16 0.04 0.16 0.06 0.15 0.05 0.15 0.06 0.16 0.06 0.15 0.06 0.14 0.07 0.15 0.07 0.15 0.07 0.14 0.07 0.14m3.35 3.73l0.15 0.11 0.14 0.1 0.15 0.11 0.14 0.11 0.15 0.1 0.15 0.11 0.16 0.1 0.15 0.11 0.15 0.1 0.16 0.1 0.16 0.1 0.16 0.1 0.16 0.1 0.16 0.1 0.16 0.1 0.16 0.1 0.17 0.1 0.16 0.09 0.17 0.1 0.17 0.1 0.16 0.09 0.17 0.1m4.6 2.38l0.18 0.09 0.18 0.09 0.18 0.09 0.18 0.09 0.18 0.09 0.18 0.09 0.18 0.09 0.17 0.09 0.18 0.09 0.18 0.1 0.18 0.09 0.17 0.09 0.18 0.09 0.18 0.09 0.17 0.09 0.18 0.1 0.17 0.09 0.17 0.09 0.17 0.1 0.18 0.09 0.17 0.1m4.18 2.77l0.13 0.11 0.14 0.11 0.13 0.12 0.13 0.11 0.12 0.12 0.13 0.12 0.12 0.12 0.12 0.12 0.12 0.12 0.11 0.12 0.12 0.12 0.11 0.12 0.11 0.13 0.11 0.13 0.1 0.12 0.11 0.13 0.1 0.13 0.09 0.13 0.1 0.14 0.09 0.13 0.09 0.13 0.09 0.14 0.09 0.14 0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "a7CFXD",
                       "name": "Row — Offer first checkpoint",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -291635,21 +292091,34 @@
                           "name": "Body",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "padding": [
-                            0,
-                            0,
-                            32,
-                            0
-                          ],
                           "children": [
                             {
                               "type": "frame",
                               "id": "TZnHs",
                               "name": "Checkpoint offer",
                               "width": "fill_container",
+                              "fill": {
+                                "type": "gradient",
+                                "gradientType": "linear",
+                                "enabled": true,
+                                "rotation": 118,
+                                "size": {
+                                  "height": 1
+                                },
+                                "colors": [
+                                  {
+                                    "color": "$accent-subtle",
+                                    "position": 0
+                                  },
+                                  {
+                                    "color": "$warning-tint",
+                                    "position": 1
+                                  }
+                                ]
+                              },
                               "cornerRadius": "$radius-xl",
-                              "stroke": "$text-primary",
-                              "strokeWidth": 1.5,
+                              "stroke": "$brand-primary",
+                              "strokeWidth": 1,
                               "layout": "vertical",
                               "gap": 20,
                               "padding": 24,
@@ -291698,8 +292167,9 @@
                                       "id": "u0E5pY",
                                       "name": "Button — Start a checkpoint",
                                       "height": 40,
+                                      "fill": "$brand-primary",
                                       "cornerRadius": "$radius-md",
-                                      "stroke": "$border-strong",
+                                      "stroke": "$brand-primary",
                                       "strokeWidth": 1,
                                       "padding": [
                                         0,
@@ -291711,11 +292181,11 @@
                                           "type": "text",
                                           "id": "c6wIF",
                                           "name": "L",
-                                          "fill": "$text-primary",
+                                          "fill": "$text-invert",
                                           "content": "Get started",
                                           "fontFamily": "$font",
                                           "fontSize": 14,
-                                          "fontWeight": "500"
+                                          "fontWeight": "600"
                                         }
                                       ]
                                     }
@@ -291725,83 +292195,169 @@
                                   "type": "frame",
                                   "id": "WEwQd",
                                   "name": "Facts",
-                                  "gap": 32,
+                                  "width": "fill_container",
+                                  "gap": 20,
+                                  "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "frame",
-                                      "id": "r3W2Uu",
-                                      "name": "Fact",
+                                      "id": "FHzwA",
+                                      "name": "4 weekly sprints",
+                                      "width": "fill_container",
                                       "gap": 8,
                                       "alignItems": "center",
                                       "children": [
                                         {
-                                          "type": "icon",
-                                          "id": "x8nOt",
-                                          "name": "Icon route",
-                                          "width": 16,
-                                          "height": 16,
-                                          "icon": "route",
-                                          "library": "lucide",
-                                          "fill": "$text-primary"
+                                          "type": "frame",
+                                          "id": "s2Zfi",
+                                          "name": "Icon",
+                                          "width": 20,
+                                          "height": 20,
+                                          "fill": "#FFFFFF00",
+                                          "justifyContent": "center",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "uMPl3",
+                                              "name": "calendar-check",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "calendar-check",
+                                              "library": "lucide",
+                                              "fill": "$brand-primary"
+                                            }
+                                          ]
                                         },
                                         {
-                                          "type": "text",
-                                          "id": "I0vfP4",
-                                          "name": "A",
-                                          "fill": "$text-primary",
-                                          "content": "4 sprints",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
-                                        },
-                                        {
-                                          "type": "text",
-                                          "id": "l9TiV",
-                                          "name": "B",
-                                          "fill": "$text-secondary",
-                                          "content": "a week each",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
+                                          "type": "frame",
+                                          "id": "zLpHP",
+                                          "name": "Text",
+                                          "width": "fill_container",
+                                          "layout": "vertical",
+                                          "gap": 2,
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "j3SwRJ",
+                                              "name": "Title",
+                                              "fill": "$text-primary",
+                                              "textGrowth": "fixed-width",
+                                              "width": "fill_container",
+                                              "content": "4 weekly sprints",
+                                              "fontFamily": "$font",
+                                              "fontSize": 12,
+                                              "fontWeight": "600"
+                                            }
+                                          ]
                                         }
                                       ]
                                     },
                                     {
                                       "type": "frame",
-                                      "id": "tWVd1",
-                                      "name": "Fact",
+                                      "id": "uezfj",
+                                      "name": "Feedback that moves you",
+                                      "width": "fill_container",
                                       "gap": 8,
                                       "alignItems": "center",
                                       "children": [
                                         {
-                                          "type": "icon",
-                                          "id": "yUmlN",
-                                          "name": "Icon flag",
-                                          "width": 16,
-                                          "height": 16,
-                                          "icon": "flag",
-                                          "library": "lucide",
-                                          "fill": "$text-primary"
+                                          "type": "frame",
+                                          "id": "x7CkH",
+                                          "name": "Icon",
+                                          "width": 20,
+                                          "height": 20,
+                                          "fill": "#FFFFFF00",
+                                          "justifyContent": "center",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "dhsM5",
+                                              "name": "message-square-text",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "message-square-text",
+                                              "library": "lucide",
+                                              "fill": "$brand-primary"
+                                            }
+                                          ]
                                         },
                                         {
-                                          "type": "text",
-                                          "id": "YUxF7",
-                                          "name": "A",
-                                          "fill": "$text-primary",
-                                          "content": "A verdict",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "600"
+                                          "type": "frame",
+                                          "id": "pFvxf",
+                                          "name": "Text",
+                                          "width": "fill_container",
+                                          "layout": "vertical",
+                                          "gap": 2,
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "fuJOo",
+                                              "name": "Title",
+                                              "fill": "$text-primary",
+                                              "textGrowth": "fixed-width",
+                                              "width": "fill_container",
+                                              "content": "Feedback that moves you",
+                                              "fontFamily": "$font",
+                                              "fontSize": 12,
+                                              "fontWeight": "600"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "flO0c",
+                                      "name": "A clear next step",
+                                      "width": "fill_container",
+                                      "gap": 8,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "frame",
+                                          "id": "zj7F0",
+                                          "name": "Icon",
+                                          "width": 20,
+                                          "height": 20,
+                                          "fill": "#FFFFFF00",
+                                          "justifyContent": "center",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "kKbkB",
+                                              "name": "route",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "route",
+                                              "library": "lucide",
+                                              "fill": "$brand-primary"
+                                            }
+                                          ]
                                         },
                                         {
-                                          "type": "text",
-                                          "id": "Y62ql",
-                                          "name": "B",
-                                          "fill": "$text-secondary",
-                                          "content": "the stage can close",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
+                                          "type": "frame",
+                                          "id": "HBlXQ",
+                                          "name": "Text",
+                                          "width": "fill_container",
+                                          "layout": "vertical",
+                                          "gap": 2,
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "jZReI",
+                                              "name": "Title",
+                                              "fill": "$text-primary",
+                                              "textGrowth": "fixed-width",
+                                              "width": "fill_container",
+                                              "content": "A clear next step",
+                                              "fontFamily": "$font",
+                                              "fontSize": 12,
+                                              "fontWeight": "600"
+                                            }
+                                          ]
                                         }
                                       ]
                                     }
@@ -291812,16 +292368,18 @@
                                   "id": "c8uD2",
                                   "name": "Curator options",
                                   "width": "fill_container",
-                                  "gap": 12,
+                                  "gap": 10,
+                                  "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ql0DL",
                                       "name": "Option — AI curator",
                                       "width": "fill_container",
-                                      "height": 84,
-                                      "fill": "$neutral-100",
+                                      "fill": "#FFFFFF00",
                                       "cornerRadius": "$radius-lg",
+                                      "stroke": "$border-strong",
+                                      "strokeWidth": 1,
                                       "gap": 12,
                                       "padding": [
                                         12,
@@ -291876,7 +292434,7 @@
                                               "fill": "$text-secondary",
                                               "textGrowth": "fixed-width",
                                               "width": "fill_container",
-                                              "content": "Written feedback every sprint and a final verdict",
+                                              "content": "Written feedback every sprint, a final verdict, clear deadlines and reminders.",
                                               "lineHeight": 1.4,
                                               "fontFamily": "$font",
                                               "fontSize": 13,
@@ -291898,12 +292456,36 @@
                                     },
                                     {
                                       "type": "frame",
+                                      "id": "XrXi9",
+                                      "name": "Choice separator — OR",
+                                      "width": 28,
+                                      "height": 28,
+                                      "cornerRadius": 999,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "IzUVM",
+                                          "name": "OR",
+                                          "fill": "$text-secondary",
+                                          "content": "OR",
+                                          "fontFamily": "$font",
+                                          "fontSize": 10,
+                                          "fontWeight": "600",
+                                          "letterSpacing": 0.3
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
                                       "id": "jVuc4",
                                       "name": "Option — Industry curator",
                                       "width": "fill_container",
-                                      "height": 84,
-                                      "fill": "$neutral-100",
+                                      "fill": "#FFFFFF00",
                                       "cornerRadius": "$radius-lg",
+                                      "stroke": "$border-strong",
+                                      "strokeWidth": 1,
                                       "gap": 12,
                                       "padding": [
                                         12,
@@ -291958,7 +292540,7 @@
                                               "fill": "$text-secondary",
                                               "textGrowth": "fixed-width",
                                               "width": "fill_container",
-                                              "content": "A call every sprint and a final verdict",
+                                              "content": "A call every sprint, a final verdict, clear deadlines and reminders.",
                                               "lineHeight": 1.4,
                                               "fontFamily": "$font",
                                               "fontSize": 13,
@@ -291983,6 +292565,34 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "L34KgT",
+                      "name": "Branch out",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "tDSa4",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M25 0l0 0.18-0.01 0.18-0.01 0.17-0.01 0.18-0.01 0.17-0.02 0.17-0.03 0.17-0.02 0.16-0.03 0.17-0.03 0.16-0.04 0.17-0.04 0.16-0.04 0.15-0.05 0.16-0.04 0.16-0.06 0.15-0.05 0.15-0.06 0.16-0.06 0.15-0.06 0.14-0.07 0.15-0.07 0.15-0.07 0.14-0.07 0.14m-3.35 3.73l-0.15 0.11-0.14 0.1-0.15 0.11-0.14 0.11-0.15 0.1-0.15 0.11-0.16 0.1-0.15 0.11-0.15 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.17 0.1-0.16 0.09-0.17 0.1-0.17 0.1-0.16 0.09-0.17 0.1m-4.6 2.38l-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.1-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.1-0.17 0.09-0.17 0.09-0.17 0.1-0.18 0.09-0.17 0.1m-4.18 2.77l-0.13 0.11-0.14 0.11-0.13 0.12-0.13 0.11-0.12 0.12-0.13 0.12-0.12 0.12-0.12 0.12-0.12 0.12-0.11 0.12-0.12 0.12-0.11 0.12-0.11 0.13-0.11 0.13-0.1 0.12-0.11 0.13-0.1 0.13-0.09 0.13-0.1 0.14-0.09 0.13-0.09 0.13-0.09 0.14-0.09 0.14-0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
                         }
                       ]
                     },
@@ -294657,7 +295267,7 @@
                                                   "fill": "$text-secondary",
                                                   "textGrowth": "fixed-width",
                                                   "width": "fill_container",
-                                                  "content": "A call every sprint and a final verdict.",
+                                                  "content": "A call every sprint, a final verdict, clear deadlines and reminders.",
                                                   "lineHeight": 1.45,
                                                   "fontFamily": "$font",
                                                   "fontSize": 13,
@@ -294761,7 +295371,7 @@
                                                   "fill": "$text-secondary",
                                                   "textGrowth": "fixed-width",
                                                   "width": "fill_container",
-                                                  "content": "Written feedback every sprint and a final verdict.",
+                                                  "content": "Written feedback every sprint, a final verdict, clear deadlines and reminders.",
                                                   "lineHeight": 1.45,
                                                   "fontFamily": "$font",
                                                   "fontSize": 13,
@@ -296445,7 +297055,7 @@
                                               "fill": "$text-secondary",
                                               "textGrowth": "fixed-width",
                                               "width": "fill_container",
-                                              "content": "A call every sprint and a final verdict.",
+                                              "content": "A call every sprint, a final verdict, clear deadlines and reminders.",
                                               "lineHeight": 1.45,
                                               "fontFamily": "$font",
                                               "fontSize": 12,
@@ -298142,7 +298752,7 @@
                                               "fill": "$text-secondary",
                                               "textGrowth": "fixed-width",
                                               "width": "fill_container",
-                                              "content": "A call every sprint and a final verdict.",
+                                              "content": "A call every sprint, a final verdict, clear deadlines and reminders.",
                                               "lineHeight": 1.45,
                                               "fontFamily": "$font",
                                               "fontSize": 12,
@@ -300317,152 +300927,334 @@
             },
             {
               "type": "frame",
-              "id": "Forg7",
+              "id": "IavnX",
               "name": "Checkpoint card",
               "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 118,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "$accent-subtle",
+                    "position": 0
+                  },
+                  {
+                    "color": "$warning-tint",
+                    "position": 1
+                  }
+                ]
+              },
               "cornerRadius": "$radius-xl",
-              "stroke": "$text-primary",
-              "strokeWidth": 1.5,
-              "gap": 16,
+              "stroke": "$brand-primary",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 20,
               "padding": 24,
-              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "SBcaj",
-                  "name": "IconTile",
-                  "width": 40,
-                  "height": 40,
-                  "fill": "$neutral-100",
-                  "cornerRadius": 16,
-                  "justifyContent": "center",
+                  "id": "n4fdP",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "icon",
-                      "id": "LCx9H",
-                      "name": "Icon flag",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "flag",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "WoomR",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Nu8fE",
+                          "name": "Title row",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "aqvhL",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "content": "Your first checkpoint",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "YODph",
+                              "name": "StatusDot",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "AUrjm",
+                                  "name": "Dot",
+                                  "fill": "$text-tertiary",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "RR83b",
+                                  "name": "L",
+                                  "fill": "$text-secondary",
+                                  "content": "Draft",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "hyXeH",
+                          "name": "Sub",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Saved at Curator · step 2 of 3",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "bCMm1",
+                      "name": "Button — Start a checkpoint",
+                      "height": 40,
+                      "fill": "$brand-primary",
+                      "cornerRadius": "$radius-md",
+                      "stroke": "$brand-primary",
+                      "strokeWidth": 1,
+                      "padding": [
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xAxjp",
+                          "name": "L",
+                          "fill": "$text-invert",
+                          "content": "Continue setup",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "EdLNU",
+                      "name": "More",
+                      "width": 32,
+                      "height": 32,
+                      "cornerRadius": "$radius-md",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Y7sFp",
+                          "name": "Icon ellipsis-vertical",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "ellipsis-vertical",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        }
+                      ]
                     }
                   ]
                 },
                 {
                   "type": "frame",
-                  "id": "L23e5t",
-                  "name": "Text",
+                  "id": "VWYK7",
+                  "name": "Facts",
                   "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
+                  "gap": 20,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "Nu8fE",
-                      "name": "Title row",
-                      "gap": 12,
+                      "id": "pHgaG",
+                      "name": "4 weekly sprints",
+                      "width": "fill_container",
+                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "aqvhL",
-                          "name": "Title",
-                          "fill": "$text-primary",
-                          "content": "Your first checkpoint",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "600"
-                        },
-                        {
                           "type": "frame",
-                          "id": "YODph",
-                          "name": "StatusDot",
-                          "gap": 6,
+                          "id": "Zrb0g",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "ellipse",
-                              "id": "AUrjm",
-                              "name": "Dot",
-                              "fill": "$text-tertiary",
-                              "width": 8,
-                              "height": 8
-                            },
+                              "type": "icon",
+                              "id": "ObaIW",
+                              "name": "calendar-check",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "calendar-check",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YoQEi",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
                             {
                               "type": "text",
-                              "id": "RR83b",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Draft",
+                              "id": "YajP2",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "4 weekly sprints",
                               "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
+                              "fontSize": 12,
+                              "fontWeight": "600"
                             }
                           ]
                         }
                       ]
                     },
                     {
-                      "type": "text",
-                      "id": "VzgjR",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
+                      "type": "frame",
+                      "id": "xDeLv",
+                      "name": "Feedback that moves you",
                       "width": "fill_container",
-                      "content": "Saved at Curator · step 2 of 3",
-                      "lineHeight": 1.4,
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "cXdjs",
-                  "name": "Button — Continue setup",
-                  "height": 40,
-                  "fill": "$btn-black",
-                  "cornerRadius": "$radius-md",
-                  "padding": [
-                    0,
-                    16
-                  ],
-                  "alignItems": "center",
-                  "children": [
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "XZrQV",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "EchV9",
+                              "name": "message-square-text",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-square-text",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "vCOw3",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "k1sFe",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Feedback that moves you",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
                     {
-                      "type": "text",
-                      "id": "hx6mc",
-                      "name": "L",
-                      "fill": "$text-invert",
-                      "content": "Continue setup",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "EdLNU",
-                  "name": "More",
-                  "width": 32,
-                  "height": 32,
-                  "cornerRadius": "$radius-md",
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "Y7sFp",
-                      "name": "Icon ellipsis-vertical",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "ellipsis-vertical",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "veZlt",
+                      "name": "A clear next step",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "KWMGO",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "M2Sg9",
+                              "name": "route",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "route",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "O6WehJ",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "iZpng",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A clear next step",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -300490,152 +301282,334 @@
             },
             {
               "type": "frame",
-              "id": "R3qaL",
+              "id": "moJ75",
               "name": "Checkpoint card",
               "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 118,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "$accent-subtle",
+                    "position": 0
+                  },
+                  {
+                    "color": "$warning-tint",
+                    "position": 1
+                  }
+                ]
+              },
               "cornerRadius": "$radius-xl",
-              "stroke": "$text-primary",
-              "strokeWidth": 1.5,
-              "gap": 16,
+              "stroke": "$brand-primary",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 20,
               "padding": 24,
-              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "N121XA",
-                  "name": "IconTile",
-                  "width": 40,
-                  "height": 40,
-                  "fill": "$neutral-100",
-                  "cornerRadius": 16,
-                  "justifyContent": "center",
+                  "id": "ysZK8",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "icon",
-                      "id": "yKDEK",
-                      "name": "Icon flag",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "flag",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "pcED4",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "NFief",
+                          "name": "Title row",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KukM6",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "content": "Your first checkpoint",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "kQMMH",
+                              "name": "StatusDot",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "h91rOX",
+                                  "name": "Dot",
+                                  "fill": "$error",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "H1AQnt",
+                                  "name": "L",
+                                  "fill": "$text-secondary",
+                                  "content": "Payment failed",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "KiOcf",
+                          "name": "Sub",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Try again, or pay with another card. Nothing was charged.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "n5L6uj",
+                      "name": "Button — Start a checkpoint",
+                      "height": 40,
+                      "fill": "$brand-primary",
+                      "cornerRadius": "$radius-md",
+                      "stroke": "$brand-primary",
+                      "strokeWidth": 1,
+                      "padding": [
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "SIvra",
+                          "name": "L",
+                          "fill": "$text-invert",
+                          "content": "Try again",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Ihleb",
+                      "name": "More",
+                      "width": 32,
+                      "height": 32,
+                      "cornerRadius": "$radius-md",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "jz6Mz",
+                          "name": "Icon ellipsis-vertical",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "ellipsis-vertical",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        }
+                      ]
                     }
                   ]
                 },
                 {
                   "type": "frame",
-                  "id": "hbiJI",
-                  "name": "Text",
+                  "id": "ZpIl1",
+                  "name": "Facts",
                   "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
+                  "gap": 20,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "NFief",
-                      "name": "Title row",
-                      "gap": 12,
+                      "id": "yzD3E",
+                      "name": "4 weekly sprints",
+                      "width": "fill_container",
+                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "KukM6",
-                          "name": "Title",
-                          "fill": "$text-primary",
-                          "content": "Your first checkpoint",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "600"
-                        },
-                        {
                           "type": "frame",
-                          "id": "kQMMH",
-                          "name": "StatusDot",
-                          "gap": 6,
+                          "id": "bbaUj",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "ellipse",
-                              "id": "h91rOX",
-                              "name": "Dot",
-                              "fill": "$error",
-                              "width": 8,
-                              "height": 8
-                            },
+                              "type": "icon",
+                              "id": "R4wNR",
+                              "name": "calendar-check",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "calendar-check",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WRfrw",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
                             {
                               "type": "text",
-                              "id": "H1AQnt",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Payment failed",
+                              "id": "nrI2o",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "4 weekly sprints",
                               "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
+                              "fontSize": 12,
+                              "fontWeight": "600"
                             }
                           ]
                         }
                       ]
                     },
                     {
-                      "type": "text",
-                      "id": "Ah9De",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
+                      "type": "frame",
+                      "id": "SZ321",
+                      "name": "Feedback that moves you",
                       "width": "fill_container",
-                      "content": "Try again, or pay with another card. Nothing was charged.",
-                      "lineHeight": 1.4,
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "dESqf",
-                  "name": "Button — Try again",
-                  "height": 40,
-                  "fill": "$btn-black",
-                  "cornerRadius": "$radius-md",
-                  "padding": [
-                    0,
-                    16
-                  ],
-                  "alignItems": "center",
-                  "children": [
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "aLgoI",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "FLm7J",
+                              "name": "message-square-text",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-square-text",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "fxtZy",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "sRL45",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Feedback that moves you",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
                     {
-                      "type": "text",
-                      "id": "ePvNS",
-                      "name": "L",
-                      "fill": "$text-invert",
-                      "content": "Try again",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "Ihleb",
-                  "name": "More",
-                  "width": 32,
-                  "height": 32,
-                  "cornerRadius": "$radius-md",
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "jz6Mz",
-                      "name": "Icon ellipsis-vertical",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "ellipsis-vertical",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "Cea6z",
+                      "name": "A clear next step",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GRsNE",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "JquuY",
+                              "name": "route",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "route",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GYpzv",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "VomXD",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A clear next step",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -300663,127 +301637,307 @@
             },
             {
               "type": "frame",
-              "id": "lNfGz",
+              "id": "T6rCN",
               "name": "Checkpoint card",
               "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 118,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "$accent-subtle",
+                    "position": 0
+                  },
+                  {
+                    "color": "$warning-tint",
+                    "position": 1
+                  }
+                ]
+              },
               "cornerRadius": "$radius-xl",
-              "stroke": "$text-primary",
-              "strokeWidth": 1.5,
-              "gap": 16,
+              "stroke": "$brand-primary",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 20,
               "padding": 24,
-              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "jURxJ",
-                  "name": "Curator",
-                  "width": 40,
-                  "height": 40,
-                  "fill": "$neutral-100",
-                  "cornerRadius": 999,
-                  "justifyContent": "center",
+                  "id": "IWJlO",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "text",
-                      "id": "OScB4",
-                      "name": "I",
-                      "fill": "$text-secondary",
-                      "content": "MI",
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "600"
+                      "type": "frame",
+                      "id": "ogRYz",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "hOe4O",
+                          "name": "Title row",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "HXV0B",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "content": "Your first checkpoint",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "IVO6s",
+                              "name": "StatusDot",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "U9l5Z",
+                                  "name": "Dot",
+                                  "fill": "$warning",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "f6rYSE",
+                                  "name": "L",
+                                  "fill": "$text-secondary",
+                                  "content": "Waiting for the curator",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "j2jFy",
+                          "name": "Sub",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "We'll email you as soon as Marta decides.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "oJqcI",
+                      "name": "More",
+                      "width": 32,
+                      "height": 32,
+                      "cornerRadius": "$radius-md",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "G11WDh",
+                          "name": "Icon ellipsis-vertical",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "ellipsis-vertical",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        }
+                      ]
                     }
                   ]
                 },
                 {
                   "type": "frame",
-                  "id": "aG4HL",
-                  "name": "Text",
+                  "id": "o7tAFB",
+                  "name": "Facts",
                   "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
+                  "gap": 20,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "hOe4O",
-                      "name": "Title row",
-                      "gap": 12,
+                      "id": "qr5zm",
+                      "name": "4 weekly sprints",
+                      "width": "fill_container",
+                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "HXV0B",
-                          "name": "Title",
-                          "fill": "$text-primary",
-                          "content": "Your first checkpoint",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "600"
-                        },
-                        {
                           "type": "frame",
-                          "id": "IVO6s",
-                          "name": "StatusDot",
-                          "gap": 6,
+                          "id": "o4Tms",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "ellipse",
-                              "id": "U9l5Z",
-                              "name": "Dot",
-                              "fill": "$warning",
-                              "width": 8,
-                              "height": 8
-                            },
+                              "type": "icon",
+                              "id": "g0PMNu",
+                              "name": "calendar-check",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "calendar-check",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ehsY3",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
                             {
                               "type": "text",
-                              "id": "f6rYSE",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Waiting for the curator",
+                              "id": "zjOTt",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "4 weekly sprints",
                               "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
+                              "fontSize": 12,
+                              "fontWeight": "600"
                             }
                           ]
                         }
                       ]
                     },
                     {
-                      "type": "text",
-                      "id": "P15MXp",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
+                      "type": "frame",
+                      "id": "Jow0T",
+                      "name": "Feedback that moves you",
                       "width": "fill_container",
-                      "content": "Planned for 12 Oct – 8 Nov 2026. We'll email you as soon as Marta decides.",
-                      "lineHeight": 1.4,
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "oJqcI",
-                  "name": "More",
-                  "width": 32,
-                  "height": 32,
-                  "cornerRadius": "$radius-md",
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "f36hxj",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "eb0JM",
+                              "name": "message-square-text",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-square-text",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "VfY5G",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "MQ9Dh",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Feedback that moves you",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
                     {
-                      "type": "icon",
-                      "id": "G11WDh",
-                      "name": "Icon ellipsis-vertical",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "ellipsis-vertical",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "QJRZC",
+                      "name": "A clear next step",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "eSdre",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "WkOlJ",
+                              "name": "route",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "route",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "R11HF",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "YiJZI",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A clear next step",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -300811,152 +301965,334 @@
             },
             {
               "type": "frame",
-              "id": "B9NKf",
+              "id": "P9YhRN",
               "name": "Checkpoint card",
               "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 118,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "$accent-subtle",
+                    "position": 0
+                  },
+                  {
+                    "color": "$warning-tint",
+                    "position": 1
+                  }
+                ]
+              },
               "cornerRadius": "$radius-xl",
-              "stroke": "$text-primary",
-              "strokeWidth": 1.5,
-              "gap": 16,
+              "stroke": "$brand-primary",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 20,
               "padding": 24,
-              "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "tjMyX",
-                  "name": "IconTile",
-                  "width": 40,
-                  "height": 40,
-                  "fill": "$neutral-100",
-                  "cornerRadius": 16,
-                  "justifyContent": "center",
+                  "id": "gbYQz",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "icon",
-                      "id": "u7zD4A",
-                      "name": "Icon flag",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "flag",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "sdVzx",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "V707r",
+                          "name": "Title row",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "fkeil",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "content": "Your first checkpoint",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "f0DnQ6",
+                              "name": "StatusDot",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "d8utO",
+                                  "name": "Dot",
+                                  "fill": "$error",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Owdcz",
+                                  "name": "L",
+                                  "fill": "$text-secondary",
+                                  "content": "Curator declined",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "dyDse",
+                          "name": "Sub",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Marta can't take it on right now. Pick another curator — the payment moves with it.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "JkEa6",
+                      "name": "Button — Start a checkpoint",
+                      "height": 40,
+                      "fill": "$brand-primary",
+                      "cornerRadius": "$radius-md",
+                      "stroke": "$brand-primary",
+                      "strokeWidth": 1,
+                      "padding": [
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Wtufx",
+                          "name": "L",
+                          "fill": "$text-invert",
+                          "content": "Pick another curator",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "D5sI3C",
+                      "name": "More",
+                      "width": 32,
+                      "height": 32,
+                      "cornerRadius": "$radius-md",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ZdHUi",
+                          "name": "Icon ellipsis-vertical",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "ellipsis-vertical",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        }
+                      ]
                     }
                   ]
                 },
                 {
                   "type": "frame",
-                  "id": "aEUuI",
-                  "name": "Text",
+                  "id": "qY5ki",
+                  "name": "Facts",
                   "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 4,
+                  "gap": 20,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "V707r",
-                      "name": "Title row",
-                      "gap": 12,
+                      "id": "nFxVY",
+                      "name": "4 weekly sprints",
+                      "width": "fill_container",
+                      "gap": 8,
                       "alignItems": "center",
                       "children": [
                         {
-                          "type": "text",
-                          "id": "fkeil",
-                          "name": "Title",
-                          "fill": "$text-primary",
-                          "content": "Your first checkpoint",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "600"
-                        },
-                        {
                           "type": "frame",
-                          "id": "f0DnQ6",
-                          "name": "StatusDot",
-                          "gap": 6,
+                          "id": "YfgPC",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
                           "alignItems": "center",
                           "children": [
                             {
-                              "type": "ellipse",
-                              "id": "d8utO",
-                              "name": "Dot",
-                              "fill": "$error",
-                              "width": 8,
-                              "height": 8
-                            },
+                              "type": "icon",
+                              "id": "k10AT7",
+                              "name": "calendar-check",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "calendar-check",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "gTt84",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
                             {
                               "type": "text",
-                              "id": "Owdcz",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Curator declined",
+                              "id": "Anorz",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "4 weekly sprints",
                               "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
+                              "fontSize": 12,
+                              "fontWeight": "600"
                             }
                           ]
                         }
                       ]
                     },
                     {
-                      "type": "text",
-                      "id": "z9FFg7",
-                      "name": "Line",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
+                      "type": "frame",
+                      "id": "CahCQ",
+                      "name": "Feedback that moves you",
                       "width": "fill_container",
-                      "content": "Marta can't take it on right now. Pick another curator — the payment moves with it.",
-                      "lineHeight": 1.4,
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "djv7P",
-                  "name": "Button — Pick another curator",
-                  "height": 40,
-                  "fill": "$btn-black",
-                  "cornerRadius": "$radius-md",
-                  "padding": [
-                    0,
-                    16
-                  ],
-                  "alignItems": "center",
-                  "children": [
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZWass",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "gsCOg",
+                              "name": "message-square-text",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-square-text",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ZRkuv",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "OyFrL",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Feedback that moves you",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
                     {
-                      "type": "text",
-                      "id": "J2OHq",
-                      "name": "L",
-                      "fill": "$text-invert",
-                      "content": "Pick another curator",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "D5sI3C",
-                  "name": "More",
-                  "width": 32,
-                  "height": 32,
-                  "cornerRadius": "$radius-md",
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "ZdHUi",
-                      "name": "Icon ellipsis-vertical",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "ellipsis-vertical",
-                      "library": "lucide",
-                      "fill": "$text-primary"
+                      "type": "frame",
+                      "id": "qxGZS",
+                      "name": "A clear next step",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "w4wtA0",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "l1fHTd",
+                              "name": "route",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "route",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Y5Ci9p",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "S7SjX",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A clear next step",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -300976,6 +302312,512 @@
           "fontFamily": "$font",
           "fontSize": 13,
           "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "H9FTgx",
+          "name": "State — Purchase not open yet",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "StReM",
+              "name": "Label",
+              "fill": "$text-secondary",
+              "content": "Purchase not open yet — the offer shows, Get started is locked",
+              "fontFamily": "Inter",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "T6mezm",
+              "name": "Checkpoint offer",
+              "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 118,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "$accent-subtle",
+                    "position": 0
+                  },
+                  {
+                    "color": "$warning-tint",
+                    "position": 1
+                  }
+                ]
+              },
+              "cornerRadius": "$radius-xl",
+              "stroke": "$brand-primary",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "C1dobA",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "J0PW4D",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "U04uk4",
+                          "name": "Title",
+                          "fill": "$text-primary",
+                          "content": "Head for your first checkpoint",
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "CIE8O",
+                          "name": "Sub",
+                          "fill": "$text-secondary",
+                          "content": "28 days toward one goal, with a curator beside you.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "OY4YH",
+                      "name": "Button — Start a checkpoint",
+                      "height": 40,
+                      "fill": "$neutral-100",
+                      "cornerRadius": "$radius-md",
+                      "stroke": "$neutral-100",
+                      "strokeWidth": 1,
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "rWT9n",
+                          "name": "Icon lock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "lock",
+                          "library": "lucide",
+                          "fill": "$text-tertiary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "cRvQz",
+                          "name": "L",
+                          "fill": "$text-tertiary",
+                          "content": "Get started",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "BugHq",
+                  "name": "Facts",
+                  "width": "fill_container",
+                  "gap": 20,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "nJzgy",
+                      "name": "4 weekly sprints",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "v0KLy0",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "z8Ye2",
+                              "name": "calendar-check",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "calendar-check",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "puecK",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Dyd31",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "4 weekly sprints",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Sg2YF",
+                      "name": "Feedback that moves you",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "sAvQ8",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "giFnf",
+                              "name": "message-square-text",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-square-text",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "SWYoI",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "OgEPA",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Feedback that moves you",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wgtKo",
+                      "name": "A clear next step",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fUH0M",
+                          "name": "Icon",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "#FFFFFF00",
+                          "cornerRadius": 10,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "pg1iB",
+                              "name": "route",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "route",
+                              "library": "lucide",
+                              "fill": "$brand-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "K7ftJp",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wGW53",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A clear next step",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qCa7x",
+                  "name": "Curator options",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "N7ro5F",
+                      "name": "Option — AI curator",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF00",
+                      "cornerRadius": "$radius-lg",
+                      "stroke": "$border-strong",
+                      "strokeWidth": 1,
+                      "gap": 12,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "OZorH",
+                          "name": "Icon",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "$surface",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "R9ftfW",
+                              "name": "Icon sparkles",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "sparkles",
+                              "library": "lucide",
+                              "fill": "$text-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "BpIkU",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "v4kzf",
+                              "name": "T",
+                              "fill": "$text-primary",
+                              "content": "AI curator",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ivydN",
+                              "name": "S",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Written feedback every sprint, a final verdict, clear deadlines and reminders.",
+                              "lineHeight": 1.4,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "b4aU7",
+                          "name": "Price",
+                          "fill": "$text-primary",
+                          "content": "$19",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GW8V4",
+                      "name": "Choice separator — OR",
+                      "width": 28,
+                      "height": 28,
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "LY7Ba",
+                          "name": "OR",
+                          "fill": "$text-secondary",
+                          "content": "OR",
+                          "fontFamily": "$font",
+                          "fontSize": 10,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.3
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "i48IP",
+                      "name": "Option — Industry curator",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF00",
+                      "cornerRadius": "$radius-lg",
+                      "stroke": "$border-strong",
+                      "strokeWidth": 1,
+                      "gap": 12,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "kJgRG",
+                          "name": "Icon",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "$surface",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "H5NNl",
+                              "name": "Icon video",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "video",
+                              "library": "lucide",
+                              "fill": "$text-primary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "NBjzg",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "g0XUa",
+                              "name": "T",
+                              "fill": "$text-primary",
+                              "content": "Industry curator",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "pA61s",
+                              "name": "S",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A call every sprint, a final verdict, clear deadlines and reminders.",
+                              "lineHeight": 1.4,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Gb8vo",
+                          "name": "Price",
+                          "fill": "$text-primary",
+                          "content": "from $300",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -315012,8 +316854,8 @@
     {
       "type": "frame",
       "id": "w7tXtA",
-      "x": 1045,
-      "y": 69001,
+      "x": 1627,
+      "y": 69428,
       "name": "02.2 · Menu — Checkpoint card actions (⋮)",
       "width": 220,
       "fill": "$surface",
@@ -323558,6 +325400,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": "$radius-sm",
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -323600,9 +325444,9 @@
                               "id": "gnh9G",
                               "name": "Stage panel",
                               "width": "fill_container",
+                              "fill": "$surface",
                               "cornerRadius": "$radius-xl",
                               "stroke": "$border",
-                              "strokeWidth": 1,
                               "gap": 16,
                               "padding": [
                                 16,
@@ -323703,10 +325547,44 @@
                     },
                     {
                       "type": "frame",
+                      "id": "NRifS",
+                      "name": "Branch in",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "Sr9Qh",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M1 0c0 12 24 12 24 24",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
                       "id": "AYXOr",
                       "name": "Row — Sprint 1 (done)",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -323733,6 +325611,8 @@
                               "height": 20,
                               "fill": "$success-tint",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -323768,7 +325648,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -324022,6 +325902,12 @@
                       "name": "Row — Session",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -324048,6 +325934,8 @@
                               "height": 20,
                               "fill": "$accent-subtle",
                               "cornerRadius": 999,
+                              "stroke": "$border-strong",
+                              "strokeWidth": 2,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -324081,7 +325969,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -324842,6 +326730,12 @@
                       "name": "Row — Up next label",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -324872,7 +326766,7 @@
                             8,
                             0,
                             16,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -324895,6 +326789,12 @@
                       "name": "Row — Sprint 3",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -324943,7 +326843,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -325060,6 +326960,12 @@
                       "name": "Row — Sprint 4",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -325108,7 +327014,7 @@
                             0,
                             0,
                             24,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -325225,6 +327131,12 @@
                       "name": "Row — Checkpoint 3 gate",
                       "width": "fill_container",
                       "gap": 16,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        24
+                      ],
                       "children": [
                         {
                           "type": "frame",
@@ -325652,7 +327564,7 @@
                             0,
                             0,
                             48,
-                            24
+                            0
                           ],
                           "children": [
                             {
@@ -325698,6 +327610,34 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "T5qID",
+                      "name": "Branch out",
+                      "width": "fill_container",
+                      "height": 24,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "path",
+                          "id": "Y9djJ",
+                          "x": 19,
+                          "y": 0,
+                          "name": "Curve",
+                          "geometry": "M25 0l0 0.18-0.01 0.18-0.01 0.17-0.01 0.18-0.01 0.17-0.02 0.17-0.03 0.17-0.02 0.16-0.03 0.17-0.03 0.16-0.04 0.17-0.04 0.16-0.04 0.15-0.05 0.16-0.04 0.16-0.06 0.15-0.05 0.15-0.06 0.16-0.06 0.15-0.06 0.14-0.07 0.15-0.07 0.15-0.07 0.14-0.07 0.14m-3.35 3.73l-0.15 0.11-0.14 0.1-0.15 0.11-0.14 0.11-0.15 0.1-0.15 0.11-0.16 0.1-0.15 0.11-0.15 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.16 0.1-0.17 0.1-0.16 0.09-0.17 0.1-0.17 0.1-0.16 0.09-0.17 0.1m-4.6 2.38l-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.1-0.18 0.09-0.17 0.09-0.18 0.09-0.18 0.09-0.17 0.09-0.18 0.1-0.17 0.09-0.17 0.09-0.17 0.1-0.18 0.09-0.17 0.1m-4.18 2.77l-0.13 0.11-0.14 0.11-0.13 0.12-0.13 0.11-0.12 0.12-0.13 0.12-0.12 0.12-0.12 0.12-0.12 0.12-0.11 0.12-0.12 0.12-0.11 0.12-0.11 0.13-0.11 0.13-0.1 0.12-0.11 0.13-0.1 0.13-0.09 0.13-0.1 0.14-0.09 0.13-0.09 0.13-0.09 0.14-0.09 0.14-0.08 0.14",
+                          "viewBox": [
+                            0,
+                            0,
+                            26,
+                            24
+                          ],
+                          "width": 26,
+                          "height": 24,
+                          "stroke": "$border-strong",
+                          "strokeWidth": 2
                         }
                       ]
                     },
