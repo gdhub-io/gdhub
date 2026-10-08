@@ -755,3 +755,50 @@ button.checklistItem {
 	flex-direction: column;
 	gap: var(--gd-space-6);
 }
+
+// Frames 02 and 02.1: the checkpoint offer, and the draft it becomes. The ink
+// border is what sets it apart from the stages around it.
+.offer {
+	padding: var(--gd-space-6);
+	border: 1.5px solid var(--gd-color-text);
+	border-radius: var(--gd-radius-panel);
+}
+
+.offerOptions {
+	> * {
+		flex: 1;
+		min-width: 0;
+	}
+}
+
+.offerOption {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-fill-subtle);
+}
+
+.offerOptionIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: var(--gd-space-8);
+	height: var(--gd-space-8);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-color-surface);
+}
+
+.offerPrice {
+	flex: none;
+	align-self: flex-start;
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.dialogTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+}

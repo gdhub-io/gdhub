@@ -70,13 +70,13 @@ export function StageCard({
 	const { t } = useTranslate();
 	const [open, setOpen] = useState(defaultOpen);
 	const StageIcon = STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)];
-	// Only the stage the project is on is white; one behind or ahead stays outlined, open or not.
-	const live = state === "current" && open;
+	// Only the stage the project is on is white, folded or open; the others stay outlined.
+	const live = state === "current";
 
 	const eyebrow = {
 		ahead: t("workflow.path.stage.next", "Next stage"),
 		current: t("workflow.path.stage.current", "Current stage"),
-		done: t("workflow.path.stage.label", "Stage"),
+		done: t("workflow.path.stage.previous", "Previous stage"),
 	}[state];
 
 	return (

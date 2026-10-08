@@ -10,6 +10,7 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
+import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { formatDay, formatDayRange } from "./dates";
 import { PathNode } from "./PathNode";
@@ -67,6 +68,15 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			? list.current
 			: null;
 	const { data: detail } = useCheckpoint(running?.id);
+	// A draft, or one paid and waiting on its curator: shown as the offer card.
+	const pending =
+		list?.current &&
+		(list.current.status === CheckpointStatus.Draft ||
+			list.current.status === CheckpointStatus.AwaitingCurator)
+			? list.current
+			: null;
+	const offered =
+		can("project.checkpoints.create") && (!!pending || !!list?.canCreate);
 
 	const move = useMutation({
 		mutationFn: (direction: "next") =>
@@ -276,6 +286,15 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						</PathNode>
 						{currentStage}
 						{closedNodes(current.id)}
+						{offered && (
+							<PathNode marker="none" rail="dashed" space={48}>
+								<CheckpointOffer
+									project={project}
+									draft={pending}
+									first={numbered.length === 0}
+								/>
+							</PathNode>
+						)}
 					</>
 				)}
 

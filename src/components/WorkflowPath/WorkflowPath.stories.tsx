@@ -12,6 +12,7 @@ import type {
 	CheckpointSessionDto,
 	CheckpointSprintDto,
 } from "@/types/checkpoints";
+import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
@@ -242,4 +243,51 @@ export const Markers: StoryObj = {
 			))}
 		</div>
 	),
+};
+
+const draft: CheckpointDto = {
+	...running,
+	id: "cp4",
+	status: CheckpointStatus.Draft,
+	goal: "A playable greybox five strangers can finish in 15 minutes.",
+	curator: { id: "c1", name: "Marta Ilves", image: null },
+	paymentId: null,
+	acceptedTermsAt: null,
+	startedAt: day(4),
+	dueAt: day(31),
+};
+
+const offer = (state: CheckpointDto | null) => (
+	<div style={{ maxWidth: 800 }}>
+		<CheckpointOffer project={project} draft={state} first />
+	</div>
+);
+
+/** Frames 02 and 02.1: the offer, then the four states of the draft it becomes. */
+export const Offer: StoryObj = { render: () => offer(null) };
+
+export const OfferDraft: StoryObj = { render: () => offer(draft) };
+
+export const OfferPaymentFailed: StoryObj = {
+	render: () =>
+		offer({ ...draft, acceptedTermsAt: day(0), paymentFailed: true }),
+};
+
+export const OfferWaitingForCurator: StoryObj = {
+	render: () =>
+		offer({
+			...draft,
+			status: CheckpointStatus.AwaitingCurator,
+			paymentId: "pay1",
+		}),
+};
+
+export const OfferCuratorDeclined: StoryObj = {
+	render: () =>
+		offer({
+			...draft,
+			paymentId: "pay1",
+			curator: null,
+			curatorDeclinedAt: day(0),
+		}),
 };
