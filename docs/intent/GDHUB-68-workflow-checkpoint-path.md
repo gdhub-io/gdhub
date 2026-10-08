@@ -63,3 +63,8 @@ Today workflow and checkpoints are two tabs that repeat each other: the workflow
 - **"Payment failed"** is a draft whose latest `Payment` is `FAILED` or `CANCELED`. A `PENDING` one is not failure: it may still be open in another tab.
 - **Now** merges the old Now, Goal and Planning questions: hours, start date and the goal. The goal check runs on Next and reads the goal against the team's hours and the last verdict; it warns only when the goal does not fit the time, and "Continue anyway" passes it.
 - **The purchase page drops the project tabs**: a space may set `exit` in its header config, which replaces the header's actions.
+- **Ready** is the fourth step of the same page: "Payment successful", the money as one plain line with the receipt beside it (a hold has a Stripe receipt too), and the wait for the curator under it.
+- **Replacing the curator** opens the same picker as a modal on the path card; it does not send the author back to the purchase page.
+- **Session day.** While the call that opens the current sprint is due and not ended, it heads the sprint card (frame 08) and the separate next-session stop is hidden. The checklist is headed "By the end of Sprint N · date", not by the next session.
+- **The curator accepted** notice (frame 07, `I1NIp`) shows from `curatorAcceptedAt` until the first call ends; closing it is remembered per browser.
+- **Team pulse** is people by the seven days of the sprint. A check is a day with a devlog, an artifact or the pulse answered; "a done task" from the frame is left out because a workflow task does not record who closed it.
