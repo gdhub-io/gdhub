@@ -75,8 +75,11 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			list.current.status === CheckpointStatus.AwaitingCurator)
 			? list.current
 			: null;
+	// Until purchase opens the offer still shows, its button locked.
+	const locked = list?.blocker?.reason === "purchaseClosed";
 	const offered =
-		can("project.checkpoints.create") && (!!pending || !!list?.canCreate);
+		can("project.checkpoints.create") &&
+		(!!pending || !!list?.canCreate || locked);
 
 	const move = useMutation({
 		mutationFn: (direction: "next") =>
@@ -292,6 +295,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 									project={project}
 									draft={pending}
 									first={numbered.length === 0}
+									locked={locked}
 								/>
 							</PathNode>
 						)}

@@ -257,14 +257,17 @@ const draft: CheckpointDto = {
 	dueAt: day(31),
 };
 
-const offer = (state: CheckpointDto | null) => (
+const offer = (state: CheckpointDto | null, locked = false) => (
 	<div style={{ maxWidth: 800 }}>
-		<CheckpointOffer project={project} draft={state} first />
+		<CheckpointOffer project={project} draft={state} first locked={locked} />
 	</div>
 );
 
 /** Frames 02 and 02.1: the offer, then the four states of the draft it becomes. */
 export const Offer: StoryObj = { render: () => offer(null) };
+
+/** Purchase not open yet (CHECKPOINTS_PURCHASE_OPEN off): the offer, locked. */
+export const OfferLocked: StoryObj = { render: () => offer(null, true) };
 
 export const OfferDraft: StoryObj = { render: () => offer(draft) };
 

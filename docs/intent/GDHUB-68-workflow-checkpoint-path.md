@@ -55,3 +55,11 @@ Today workflow and checkpoints are two tabs that repeat each other: the workflow
 - **The flag.** Assumed: one server-side env flag (`CHECKPOINTS_PURCHASE_OPEN`), read through `env()`, and passed to the page. Not a per-user rollout.
 - **Activity for the project space.** Assumed: generalise `getProjectCardActivities` (scout) into a project-space endpoint with cursor paging. The scout card keeps calling it as today.
 - **One PR or several into the checkpoints branch.** Assumed: three, in this order: the path (read-only), the offer card with the purchase flow, then the aside and activity feed.
+
+## Decided while building PR 2
+
+- **Payments go through Stripe** (`/api/checkpoint/[id]/pay`), not Paddle; Stripe returns to `/workflow/cp/new?step=ready` or `?step=payment`.
+- **The flag is a server env read on the server only.** Off, `getCreationBlocker` answers `purchaseClosed` and the pay route refuses; the offer card still shows, its button locked.
+- **"Payment failed"** is a draft whose latest `Payment` is `FAILED` or `CANCELED`. A `PENDING` one is not failure: it may still be open in another tab.
+- **Now** merges the old Now, Goal and Planning questions: hours, start date and the goal. The goal check runs on Next and reads the goal against the team's hours and the last verdict; it warns only when the goal does not fit the time, and "Continue anyway" passes it.
+- **The purchase page drops the project tabs**: a space may set `exit` in its header config, which replaces the header's actions.

@@ -3,6 +3,7 @@ import {
 	IconDotsVertical,
 	IconFlag,
 	IconInfoCircle,
+	IconLock,
 	IconRoute,
 	IconSparkles,
 	IconTrash,
@@ -10,7 +11,7 @@ import {
 	IconVideo,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Dropdown, Flex, Modal, Typography } from "antd";
+import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
@@ -38,6 +39,8 @@ export type CheckpointOfferProps = {
 	draft: CheckpointDto | null;
 	/** Whether any checkpoint has run before: the copy says "first" until one has. */
 	first: boolean;
+	/** Purchase is not open yet: the offer shows, its button does not work. */
+	locked?: boolean;
 };
 
 /**
@@ -49,6 +52,7 @@ export function CheckpointOffer({
 	project,
 	draft,
 	first,
+	locked = false,
 }: CheckpointOfferProps) {
 	const { t } = useTranslate();
 	const { message, modal } = App.useApp();
@@ -109,9 +113,20 @@ export function CheckpointOffer({
 							)}
 						</Typography.Text>
 					</Flex>
-					<Button loading={create.isPending} onClick={start}>
-						{t("workflow.offer.start", "Get started")}
-					</Button>
+					<Tooltip
+						title={
+							locked && t("workflow.offer.locked", "Checkpoints open soon")
+						}
+					>
+						<Button
+							loading={create.isPending}
+							disabled={locked}
+							icon={locked ? <IconLock size={16} /> : undefined}
+							onClick={start}
+						>
+							{t("workflow.offer.start", "Get started")}
+						</Button>
+					</Tooltip>
 				</Flex>
 				<Flex gap={32} wrap className={styles.small}>
 					<Flex gap={8} align="center">
