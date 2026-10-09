@@ -3052,7 +3052,16 @@
 			"download": "Download",
 			"empty": "No payments yet",
 			"gone": "No longer exists",
+			"history": {
+				"chargedRefunded": "Charged {charged} → refunded",
+				"reserved": "Reserved {date} · not charged yet",
+				"reservedCharged": "Reserved {reserved} → charged {charged}"
+			},
 			"receiptFailed": "The receipt could not be opened",
+			"status": {
+				"notCharged": "Not charged",
+				"reserved": "Reserved"
+			},
 			"subtitle": "Your payment history across the platform.",
 			"title": "Payments",
 			"vacancyFee": "Vacancy listing"

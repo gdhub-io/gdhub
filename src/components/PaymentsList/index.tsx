@@ -101,6 +101,57 @@ export default function PaymentsList() {
 		return payable;
 	};
 
+	// A Stripe hold reads as a reservation, and a cancelled row — a checkout left
+	// unfinished or a hold let go, which the row cannot tell apart — as what both
+	// mean to the payer: nothing was taken.
+	const statusLabel = (payment: UserPayment) => {
+		if (payment.status === "CANCELED")
+			return t("settings.payments.status.notCharged", "Not charged");
+		if (payment.provider === "STRIPE" && payment.status === "PROCESSING")
+			return t("settings.payments.status.reserved", "Reserved");
+
+		return t(`vacancy.payment.status.${payment.status}`, payment.status);
+	};
+
+	// What happened to the money before its current status, from the two dates
+	// the row keeps. A refund's own date is not on the row, so it goes undated.
+	const history = (payment: UserPayment) => {
+		const reserved = dayjs(payment.createdAt);
+		const charged = payment.completedAt ? dayjs(payment.completedAt) : null;
+
+		if (payment.provider === "STRIPE" && payment.status === "PROCESSING") {
+			return t(
+				"settings.payments.history.reserved",
+				"Reserved {date} · not charged yet",
+				{ date: reserved.format("ll") },
+			);
+		}
+
+		if (payment.status === "COMPLETED" && charged) {
+			return payment.provider === "STRIPE" && !charged.isSame(reserved, "day")
+				? t(
+						"settings.payments.history.reservedCharged",
+						"Reserved {reserved} → charged {charged}",
+						{ reserved: reserved.format("ll"), charged: charged.format("ll") },
+					)
+				: null;
+		}
+
+		if (
+			(payment.status === "REFUNDED" ||
+				payment.status === "PARTIALLY_REFUNDED") &&
+			charged
+		) {
+			return t(
+				"settings.payments.history.chargedRefunded",
+				"Charged {charged} → refunded",
+				{ charged: charged.format("ll") },
+			);
+		}
+
+		return null;
+	};
+
 	const columns: TableProps<UserPayment>["columns"] = [
 		{
 			title: t("settings.payments.column.date", "Date"),
@@ -140,12 +191,23 @@ export default function PaymentsList() {
 		{
 			title: t("settings.payments.column.status", "Status"),
 			key: "status",
-			render: (_v, r) => (
-				<StatusDot
-					tone={STATUS_TONES[r.status] ?? "neutral"}
-					label={t(`vacancy.payment.status.${r.status}`, r.status)}
-				/>
-			),
+			render: (_v, r) => {
+				const past = history(r);
+
+				return (
+					<div style={{ display: "flex", flexDirection: "column" }}>
+						<StatusDot
+							tone={STATUS_TONES[r.status] ?? "neutral"}
+							label={statusLabel(r)}
+						/>
+						{past && (
+							<Text type="secondary" style={{ fontSize: 12 }}>
+								{past}
+							</Text>
+						)}
+					</div>
+				);
+			},
 		},
 		{
 			title: t("settings.payments.column.receipt", "Receipt"),

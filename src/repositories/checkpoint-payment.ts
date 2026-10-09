@@ -14,6 +14,7 @@ import {
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import { prisma } from "@/services/prisma";
 import {
+	captureCheckout,
 	refundCheckout,
 	releaseCheckout,
 	retrieveCheckout,
@@ -261,6 +262,32 @@ export const settleCheckpointCheckout = async (
 	// A checkpoint deleted in the meantime keeps its hold as PROCESSING, and the
 	// holds cron lets it go like any other nobody answered for.
 	if (checkpoint?.status !== CheckpointStatus.Draft) return true;
+
+	// Nobody has to say yes to the AI curator, so the hold is taken at once —
+	// left as a hold, the holds cron would let it go and the 28 days would run
+	// unpaid. A capture Stripe refuses starts nothing: the hold is let go and the
+	// draft reads as a failed payment the author can retry.
+	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
+		const captured = await captureCheckout(session.id).catch(() => null);
+
+		if (!captured) {
+			// Written only once Stripe agrees; a hold it would not release stays
+			// PROCESSING for the holds cron to try again.
+			if (await releaseCheckout(session.id).catch(() => null)) {
+				await prisma.payment.update({
+					where: { id: payment.id },
+					data: { status: PaymentStatus.CANCELED },
+				});
+			}
+
+			return true;
+		}
+
+		await prisma.payment.update({
+			where: { id: payment.id },
+			data: { status: PaymentStatus.COMPLETED, completedAt: new Date() },
+		});
+	}
 
 	await prisma.projectCheckpoint.update({
 		where: { id: payment.payableId },
