@@ -23,7 +23,7 @@ import { prisma } from "@/services/prisma";
  * Binding an artifact to the outcomes it proves.
  *
  * Its own route rather than the goal card's `PUT`: that one replaces a whole
- * side of the card, which deletes and recreates the rows — taking the day-14
+ * side of the card, which deletes and recreates the rows — taking the day-15
  * revision, the author's notes and the curator's `acceptedNote` with them. An
  * artifact landing in week three must not cost the checkpoint its history, so
  * this writes one column on the lines that were ticked and nothing else.

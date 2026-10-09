@@ -119,17 +119,28 @@ describe("sprintFactsOf", () => {
 		});
 	});
 
-	it("shows the scope note on the sprint day 14 falls in, and only until it is answered", () => {
+	it("shows the scope note on the sprint day 15 falls in, and only until it is answered", () => {
 		const note = "Three of four outcomes have nothing claimed against them.";
 
-		expect(sprintFactsOf(checkpoint({ midNote: note }), sprint(2, "current")).scopeNote).toBe(note);
-		expect(sprintFactsOf(checkpoint({ midNote: note }), sprint(1, "done")).scopeNote).toBeNull();
+		expect(sprintFactsOf(checkpoint({ midNote: note }), sprint(3, "current")).scopeNote).toBe(note);
+		expect(sprintFactsOf(checkpoint({ midNote: note }), sprint(2, "done")).scopeNote).toBeNull();
 		expect(
 			sprintFactsOf(
-				checkpoint({ midNote: note, revisedAt: "2026-09-14T12:00:00.000Z" }),
-				sprint(2, "current"),
+				checkpoint({ midNote: note, revisedAt: "2026-09-15T12:00:00.000Z" }),
+				sprint(3, "current"),
 			).scopeNote,
 		).toBeNull();
+	});
+
+	// The note stays readable, but the day to answer it has gone.
+	it("keeps the note but closes the answer once the day after the third session is over", () => {
+		const facts = sprintFactsOf(
+			checkpoint({ midNote: "…" }),
+			sprint(3, "current"),
+		);
+
+		expect(facts.scopeNote).toBe("…");
+		expect(facts.scopeOpen).toBe(false);
 	});
 
 	it("keeps evidence that proves nothing out of what the sprint proved", () => {
@@ -187,6 +198,7 @@ describe("sprintNeedsYou", () => {
 			devlog: null,
 			review: null,
 			scopeNote: null,
+			scopeOpen: false,
 			marks: { confirmed: 0, asked: 0, missing: [] },
 			proved: [],
 			outcomesProved: [],
@@ -216,8 +228,9 @@ describe("sprintNeedsYou", () => {
 		).toBe(false);
 	});
 
-	it("marks a sprint carrying an unanswered scope note whatever the day", () => {
-		expect(sprintNeedsYou(facts({ scopeNote: "…" }), 8)).toBe(true);
+	it("marks a sprint whose scope note can still be answered, whatever the day", () => {
+		expect(sprintNeedsYou(facts({ scopeNote: "…", scopeOpen: true }), 8)).toBe(true);
+		expect(sprintNeedsYou(facts({ scopeNote: "…", scopeOpen: false }), 8)).toBe(false);
 	});
 
 	it("says nothing about a sprint that has not started", () => {

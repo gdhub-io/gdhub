@@ -4,7 +4,7 @@ import type { MidNoteInput } from "../types";
 import { CURATOR_STANCE, localeLine, renderCard } from "./card";
 
 /**
- * The day-14 note (§7).
+ * The day-15 note (§7).
  *
  * It lists the outcomes with nothing claimed against them, says how much of the
  * calendar is gone, and asks the author to decide. **It never names the cut.**

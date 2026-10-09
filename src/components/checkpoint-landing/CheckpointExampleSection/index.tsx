@@ -5,6 +5,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { StatusDot } from "@/components/ui/StatusDot";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import { CheckpointSection } from "../CheckpointSection";
 import styles from "./style.module.scss";
 
@@ -20,7 +21,11 @@ export const CheckpointExampleSection = () => {
 			),
 		},
 		{
-			label: t("checkpointLanding.example.fact2.label", "Day 15 · Re-scope"),
+			label: t(
+				"checkpointLanding.example.fact2.label",
+				"Day {day} · Re-scope",
+				{ day: CHECKPOINT_SCOPE_DAY },
+			),
 			value: t(
 				"checkpointLanding.example.fact2.value",
 				"With the curator: cut the boss and progression; finish one complete encounter",

@@ -2,7 +2,7 @@
  * The AI curator.
  *
  * Four calls the checkpoint makes on its own, at most six per checkpoint: the
- * day-1 goal check, an answer under each of the first three devlogs, the day-14
+ * day-1 goal check, an answer under each of the first three devlogs, the day-15
  * note, and the day-28 report. The fourth devlog's answer would land on day 28
  * beside the report, so it is folded into the report instead.
  *
@@ -127,7 +127,7 @@ class CheckpointCuratorService {
 		);
 	}
 
-	/** Day 14: the unclaimed outcomes and the question. Never the cut. */
+	/** Day 15: the unclaimed outcomes and the question. Never the cut. */
 	writeMidNote(input: MidNoteInput, options: CuratorOptions = {}) {
 		return this.call<MidNoteResult>(
 			MID_NOTE_FUNCTION_NAME,

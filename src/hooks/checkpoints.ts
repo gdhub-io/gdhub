@@ -100,7 +100,7 @@ const useCheckpointPost = <B>(id: string | undefined, path: string) => {
 };
 
 /**
- * The day-14 answer: cut, reword, add — or none of the three and a reason why
+ * The day-15 answer: cut, reword, add — or none of the three and a reason why
  * the list stands. It lands once, so the whole change is one request.
  */
 export const useChangeScope = (id?: string) =>

@@ -313,7 +313,7 @@ export const answerDevlog = async (
 };
 
 /**
- * Day 14: name the outcomes nothing has been claimed against and ask the author
+ * Day 15: name the outcomes nothing has been claimed against and ask the author
  * to decide. Which outcomes those are is computed here, not asked of the model.
  */
 export const writeMidNote = async (

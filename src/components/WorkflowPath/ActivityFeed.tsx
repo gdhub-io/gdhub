@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { type ReactNode, useEffect, useRef } from "react";
 import { IconTile } from "@/components/ui";
 import { useProjectActivity } from "@/hooks/checkpoints";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type {
 	ProjectActivity,
 	ProjectActivityKind,
@@ -149,7 +150,11 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 				name: row.actor ?? "",
 			}),
 		reworded: () =>
-			t("workflow.activity.reworded", "Task reworded on the day-14 revision"),
+			t(
+				"workflow.activity.reworded",
+				"Task reworded on the day-{day} revision",
+				{ day: CHECKPOINT_SCOPE_DAY },
+			),
 	};
 
 	const sub = (row: ProjectActivity) => {

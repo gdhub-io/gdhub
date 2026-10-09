@@ -8,10 +8,10 @@ import {
 import type Stripe from "stripe";
 import {
 	CHECKPOINT_AI_PRICE,
-	CURATOR_LEVELS,
 	type CuratorLevel,
 	curatorPrice,
 } from "@/config/checkpoint-pricing";
+import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import { prisma } from "@/services/prisma";
 import {
 	refundCheckout,
@@ -54,11 +54,7 @@ export const curatorCharge = async (
 	if (kind === CheckpointCuratorKind.AI) return CHECKPOINT_AI_PRICE * MINOR;
 
 	const speciality = await prisma.speciality.findFirst({
-		where: {
-			userId: curatorId ?? "",
-			isOpenForMentoring: true,
-			level: { in: CURATOR_LEVELS },
-		},
+		where: { ...curatorEligibleWhere, userId: curatorId ?? "" },
 		select: { level: true },
 	});
 

@@ -3,6 +3,7 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -44,7 +45,9 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 								)}
 								<span className={styles.tipMuted}>
 									{item.cut
-										? t("checkpoints.card.taskCut", "Cut on day 15")
+										? t("checkpoints.card.taskCut", "Cut on day {day}", {
+												day: CHECKPOINT_SCOPE_DAY,
+											})
 										: item.artifact
 											? t("checkpoints.card.taskEvidence", "Evidence: {name}", {
 													name:
@@ -88,7 +91,9 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 						<Flex gap={6} align="center">
 							<span className={styles.legendDot} />
 							<Typography.Text className={styles.muted}>
-								{t("checkpoints.card.legendReworded", "Reworded on day 15")}
+								{t("checkpoints.card.legendReworded", "Reworded on day {day}", {
+									day: CHECKPOINT_SCOPE_DAY,
+								})}
 							</Typography.Text>
 						</Flex>
 					)}
@@ -104,7 +109,13 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 								<IconMinus size={8} stroke={2} />
 							</span>
 							<Typography.Text className={styles.muted}>
-								{t("checkpoints.card.legendCut", "Cut on day 15 · not counted")}
+								{t(
+									"checkpoints.card.legendCut",
+									"Cut on day {day} · not counted",
+									{
+										day: CHECKPOINT_SCOPE_DAY,
+									},
+								)}
 							</Typography.Text>
 						</Flex>
 					)}

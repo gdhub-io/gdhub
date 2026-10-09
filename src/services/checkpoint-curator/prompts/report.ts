@@ -77,7 +77,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			${
 				input.revision
-					? `Day-14 scope change on ${input.revision.revisedAt}: ${input.revision.note ?? "(no reason given)"}`
+					? `Day-15 scope change on ${input.revision.revisedAt}: ${input.revision.note ?? "(no reason given)"}`
 					: "No day-15 scope change."
 			}
 

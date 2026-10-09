@@ -100,13 +100,28 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		expect(checkpointUpdate).not.toHaveBeenCalled();
 	});
 
+	it("refuses the author as the curator of their own checkpoint", async () => {
+		const response = await put({ curatorKind: "Human", curatorId: author.id });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "curatorIsAuthor",
+		});
+		expect(checkpointUpdate).not.toHaveBeenCalled();
+	});
+
 	it("accepts one who has, and writes them onto the draft", async () => {
 		const response = await put({ curatorKind: "Human", curatorId: "u9" });
 
 		expect(response.status).toBe(200);
+		// The level floor the list applies: Experienced or Expert, nobody below.
 		expect(specialityFindFirst).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: { userId: "u9", isOpenForMentoring: true },
+				where: {
+					userId: "u9",
+					isOpenForMentoring: true,
+					level: { in: ["Experienced", "Expert"] },
+				},
 			}),
 		);
 		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({

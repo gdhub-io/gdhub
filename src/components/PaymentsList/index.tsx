@@ -1,6 +1,10 @@
 "use client";
 
-import type { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
+import type {
+	PayableType,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Table, type TableProps, Typography } from "antd";
@@ -16,6 +20,7 @@ type UserPayment = {
 	amount: number;
 	currency: string;
 	status: PaymentStatus;
+	provider: PaymentProvider;
 	payableType: PayableType;
 	payableId: string;
 	createdAt: string;
@@ -66,7 +71,7 @@ export default function PaymentsList() {
 		setInvoiceLoadingId(payment.id);
 		try {
 			const res =
-				payment.payableType === "VACANCY"
+				payment.provider === "PADDLE"
 					? await axios.get<{ url: string }>(
 							"/api/user/project/vacancy/payment/invoice",
 							{ params: { vacancyId: payment.payableId } },

@@ -1,6 +1,20 @@
-import { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	PayableType,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
+
+/**
+ * When each provider has a receipt to show. Paddle's exists once the transaction
+ * settled; Stripe's hangs off the charge, which a hold already has — the same
+ * rule the receipt route applies.
+ */
+const RECEIPT_STATUSES: Record<PaymentProvider, PaymentStatus[]> = {
+	[PaymentProvider.PADDLE]: [PaymentStatus.COMPLETED],
+	[PaymentProvider.STRIPE]: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED],
+};
 
 /**
  * Billing history for the current user: every payment they made, newest first.
@@ -65,13 +79,14 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 			amount: p.amount,
 			currency: p.currency,
 			status: p.status,
+			provider: p.provider,
 			payableType: p.payableType,
 			payableId: p.payableId,
 			createdAt: p.createdAt,
 			completedAt: p.completedAt,
-			// A receipt is only retrievable once Paddle has settled the transaction.
 			hasInvoice:
-				p.status === PaymentStatus.COMPLETED && !!p.providerTransactionId,
+				!!p.providerTransactionId &&
+				RECEIPT_STATUSES[p.provider].includes(p.status),
 			title: vacancy?.title ?? checkpoint?.stageName ?? null,
 			/** The checkpoint's number, shown beside the word rather than under it. */
 			number: checkpoint?.order ?? null,

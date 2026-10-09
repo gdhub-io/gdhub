@@ -101,7 +101,7 @@ export type DevlogAnswerResult = {
 	untouched: string[];
 };
 
-/** Day 14: the outcomes nothing has been claimed against, and how much is gone. */
+/** Day 15: the outcomes nothing has been claimed against, and how much is gone. */
 export type MidNoteInput = {
 	card: CuratorGoalCard;
 	/** Computed in code, never by the model — it is a fact, not a judgement. */

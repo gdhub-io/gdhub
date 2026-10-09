@@ -19,6 +19,7 @@ import {
 	replaceCheckpointItems,
 	withProgress,
 } from "@/repositories/checkpoint.repository";
+import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import {
 	curatorCharge,
 	heldAmount,
@@ -68,7 +69,7 @@ export const GET = pipe(
 /**
  * A step of the start flow, saved as it is left. Only a `Draft` accepts it: once
  * the 28 days are running the goal card is what the verdict is judged against,
- * and the only way it moves after that is the day-14 scope change.
+ * and the only way it moves after that is the day-15 scope change.
  */
 export const PUT = pipe(
 	withAuth({ mode: "user" }),
@@ -117,15 +118,20 @@ export const PUT = pipe(
 
 	if (!mayEdit) return apiError.badRequest("checkpointNotDraft");
 
-	// A checkpoint is given to someone who said they take mentees; the switch is
-	// theirs to flip, so it is read here rather than trusted from the browser.
+	// The same rule the curator list shows, read here rather than trusted from
+	// the browser: open to mentees, Experienced or Expert, and never the author —
+	// the point of the 28 days is judgement from outside.
 	if (curatorId) {
-		const open = await prisma.speciality.findFirst({
-			where: { userId: curatorId, isOpenForMentoring: true },
+		if (curatorId === currentUser.id) {
+			return apiError.badRequest("curatorIsAuthor");
+		}
+
+		const eligible = await prisma.speciality.findFirst({
+			where: { ...curatorEligibleWhere, userId: curatorId },
 			select: { id: true },
 		});
 
-		if (!open) return apiError.badRequest("curatorNotOpenForMentoring");
+		if (!eligible) return apiError.badRequest("curatorNotOpenForMentoring");
 	}
 
 	// Money already held buys exactly one price: a dearer curator would need a
