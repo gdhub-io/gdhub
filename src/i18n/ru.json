@@ -3053,7 +3053,9 @@
 			"empty": "Платежей пока нет",
 			"gone": "Больше не существует",
 			"history": {
-				"reserved": "Забронировано {date} · еще не списано"
+				"chargedRefunded": "Списано {charged} → возвращено",
+				"reserved": "Забронировано {date} · еще не списано",
+				"reservedCharged": "Забронировано {reserved} → списано {charged}"
 			},
 			"receiptFailed": "Не удалось открыть квитанцию",
 			"status": {
