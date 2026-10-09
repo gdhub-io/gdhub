@@ -1,4 +1,5 @@
 import { Novu } from "@novu/api";
+import { sendLocalMail, sendsLocally } from "./local-mail";
 
 export type NovuSendArgs = {
 	to: { subscriberId: string; email?: string };
@@ -38,6 +39,9 @@ export class NovuService {
 	}
 
 	static async send({ to, payload, template }: NovuSendArgs) {
+		// Before the E2E guard: dev-signin needs that flag, and the point is to
+		// see in dev what would have gone out.
+		if (sendsLocally()) return sendLocalMail({ to, payload, template });
 		if (process.env.E2E_TEST_AUTH === "1") return;
 
 		const trigger = novuClient.trigger({

@@ -1,9 +1,9 @@
 "use client";
 
-import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import {
 	IconAlertTriangle,
 	IconArrowsShuffle,
+	IconCircleDot,
 	IconDots,
 	IconExternalLink,
 	IconFolder,
@@ -38,6 +38,7 @@ import {
 	WorkflowDifferencesModal,
 } from "@/components/admin/workflow/WorkflowDifferencesModal";
 import ModernTable from "@/components/ModernTable";
+import { ProjectStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -47,15 +48,23 @@ const { Text } = Typography;
  * for the live ones. Only states that mean "not running" are labelled — a tag on
  * every row would say nothing.
  */
-const STATUS_TAG: Partial<
-	Record<ProjectStatus, { label: string; color: string }>
-> = {
-	Registered: { label: "Not approved", color: "default" },
-	Rejected: { label: "Rejected", color: "red" },
-	Dormant: { label: "Dormant", color: "default" },
-	Archived: { label: "Archived", color: "default" },
-	Released: { label: "Released", color: "green" },
-	KilledWithDignity: { label: "Killed with dignity", color: "red" },
+const STATUS_TAG_COLOR: Partial<Record<ProjectStatus, string>> = {
+	Registered: "default",
+	Rejected: "red",
+	Dormant: "default",
+	Archived: "default",
+	Released: "green",
+	KilledWithDignity: "red",
+};
+
+const STATUS_LABEL: Record<ProjectStatus, string> = {
+	Registered: "Not approved",
+	Approved: "Approved",
+	Rejected: "Rejected",
+	Dormant: "Dormant",
+	Archived: "Archived",
+	Released: "Released",
+	KilledWithDignity: "Killed with dignity",
 };
 
 const LIVE_STATUSES: ProjectStatus[] = ["Approved", "Registered", "Released"];
@@ -65,10 +74,6 @@ const toResetTarget = (row: ProjectWorkflowRow): ResetTarget => ({
 	projectName: row.project.name,
 	templateId: row.template?.id ?? null,
 });
-
-/** Falls back to the raw value, so a status added to the enum still shows. */
-const statusTag = (status: ProjectStatus) =>
-	STATUS_TAG[status] ?? { label: status, color: "default" };
 
 export type ProjectWorkflowRow = {
 	id: string;
@@ -115,6 +120,29 @@ export function ProjectWorkflowsTable({
 			});
 		},
 	});
+
+	const { mutateAsync: changeStatus } = useMutation({
+		mutationFn: (input: { projectId: string; newStatus: ProjectStatus }) =>
+			axios.put("/api/project/status", input),
+		onSuccess: () => {
+			message.success("Project status changed");
+			queryClient.invalidateQueries({
+				queryKey: ["admin", "project-workflows"],
+			});
+		},
+	});
+
+	const confirmStatusChange = (
+		record: ProjectWorkflowRow,
+		newStatus: ProjectStatus,
+	) => {
+		modal.confirm({
+			title: `Move “${record.project.name}” to ${STATUS_LABEL[newStatus]}?`,
+			content: `It is ${STATUS_LABEL[record.project.status]} now.`,
+			okText: "Change status",
+			onOk: () => changeStatus({ projectId: record.project.id, newStatus }),
+		});
+	};
 
 	const confirmDelete = (record: ProjectWorkflowRow) => {
 		modal.confirm({
@@ -183,13 +211,13 @@ export function ProjectWorkflowsTable({
 						>
 							{record.project.name}
 						</Link>
-						{STATUS_TAG[record.project.status] && (
+						{STATUS_TAG_COLOR[record.project.status] && (
 							<Tag
-								color={STATUS_TAG[record.project.status]?.color}
+								color={STATUS_TAG_COLOR[record.project.status]}
 								variant="outlined"
 								className={styles.driftTag}
 							>
-								{STATUS_TAG[record.project.status]?.label}
+								{STATUS_LABEL[record.project.status]}
 							</Tag>
 						)}
 					</Flex>
@@ -305,6 +333,19 @@ export function ProjectWorkflowsTable({
 										id: record.id,
 										projectName: record.project.name,
 									}),
+							},
+							{ type: "divider" },
+							{
+								key: "status",
+								icon: <IconCircleDot size={16} />,
+								label: "Change project status",
+								children: Object.values(ProjectStatus)
+									.filter((status) => status !== record.project.status)
+									.map((status) => ({
+										key: `status:${status}`,
+										label: STATUS_LABEL[status],
+										onClick: () => confirmStatusChange(record, status),
+									})),
 							},
 							{ type: "divider" },
 							{
