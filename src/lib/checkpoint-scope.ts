@@ -1,3 +1,4 @@
+import { SCOPE_ANSWER_HOURS, SCOPE_SESSION } from "@/config/checkpoint";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { sessionDay } from "@/lib/checkpoint-sessions";
 
@@ -7,9 +8,7 @@ import { sessionDay } from "@/lib/checkpoint-sessions";
  * Browser-safe: the server refuses outside the window and the page hides the
  * action outside it, from the same arithmetic.
  */
-const SCOPE_SESSION = 3;
-
-const SCOPE_ANSWER_MS = 24 * 60 * 60 * 1000;
+const SCOPE_ANSWER_MS = SCOPE_ANSWER_HOURS * 60 * 60 * 1000;
 
 /** Day 15: the day the third session falls on. */
 export const CHECKPOINT_SCOPE_DAY = sessionDay(SCOPE_SESSION);

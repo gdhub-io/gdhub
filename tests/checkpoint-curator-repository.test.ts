@@ -6,7 +6,7 @@ import {
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import {
 	answerDevlog,

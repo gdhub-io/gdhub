@@ -1,4 +1,5 @@
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { CHECKPOINT_MAX_ITEMS_PER_KIND } from "@/config/checkpoint";
 import {
 	apiError,
 	json,
@@ -15,7 +16,6 @@ import {
 	withProgress,
 } from "@/repositories/checkpoint.repository";
 import {
-	CHECKPOINT_MAX_ITEMS_PER_KIND,
 	type CheckpointScopeBody,
 	type CheckpointScopeChange,
 	CheckpointScopeSchema,

@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-	currentSprint,
-	devlogDayOf,
-	SPRINTS_PER_CHECKPOINT,
-	sprintDayRange,
-	sprintOfDate,
-	sprintOfDay,
-	sprintRange,
-} from "@/lib/checkpoint-sprints";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { currentSprint, devlogDayOf, sprintDayRange, sprintOfDate, sprintOfDay, sprintRange } from "@/lib/checkpoint-sprints";
 
 /** A Tuesday, so nothing here can accidentally agree with a calendar week. */
 const started = new Date("2026-09-01T09:30:00.000Z");

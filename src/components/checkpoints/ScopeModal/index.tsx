@@ -4,13 +4,13 @@ import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Input, Modal, Tag, Typography } from "antd";
 import { useMemo, useState } from "react";
-import { CheckpointItemKind } from "@/config/prisma-enums";
-import { useChangeScope } from "@/hooks/checkpoints";
-import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import {
 	CHECKPOINT_ITEM_TEXT_MAX,
 	CHECKPOINT_REVISION_NOTE_MAX,
-} from "@/schemas/checkpoint";
+} from "@/config/checkpoint";
+import { CheckpointItemKind } from "@/config/prisma-enums";
+import { useChangeScope } from "@/hooks/checkpoints";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

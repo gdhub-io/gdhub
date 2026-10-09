@@ -25,6 +25,7 @@ import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModa
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { SESSION_MINUTES } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
@@ -37,7 +38,6 @@ import {
 	sprintChecklist,
 } from "@/lib/checkpoint-checklist";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
-import { SESSION_MINUTES } from "@/lib/checkpoint-sessions";
 import type {
 	CheckpointDto,
 	CheckpointSessionDto,

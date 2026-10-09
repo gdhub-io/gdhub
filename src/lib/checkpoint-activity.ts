@@ -1,4 +1,4 @@
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { dayNumberOn, utcStartOfDay } from "./checkpoint-days";
 
 /** Something a person did, and when: a devlog, an artifact, a pulse answered. */

@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_MIN_CURATOR_PRICE,
-	CURATOR_LEVELS,
-	curatorPrice,
-	curatorPrices,
-} from "@/config/checkpoint-pricing";
+import { CHECKPOINT_AI_PRICE } from "@/config/checkpoint";
+import { CHECKPOINT_MIN_CURATOR_PRICE, CURATOR_LEVELS, curatorPrice, curatorPrices } from "@/config/checkpoint-pricing";
 import { SkillLevel } from "@/config/prisma-enums";
 import { EXPERT_MIN_LEVEL, meetsSkillLevel } from "@/helpers/speciality";
 

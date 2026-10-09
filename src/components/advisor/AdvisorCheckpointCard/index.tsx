@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useState } from "react";
 import { IconTile } from "@/components/ui";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import { CheckpointCardModal } from "../CheckpointCardModal";
 import styles from "./style.module.scss";

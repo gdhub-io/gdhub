@@ -7,8 +7,10 @@ import { useState } from "react";
 import rumourArt from "@/assets/images/checkpoint/checkpoint-rumour.png";
 import {
 	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_MIN_CURATOR_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
+} from "@/config/checkpoint";
+import {
+	CHECKPOINT_MIN_CURATOR_PRICE,
 	CURATOR_LEVELS,
 	type CuratorLevel,
 	curatorPrices,

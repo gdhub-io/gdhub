@@ -1,6 +1,6 @@
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import {
 	currentSprint,
-	SPRINTS_PER_CHECKPOINT,
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";

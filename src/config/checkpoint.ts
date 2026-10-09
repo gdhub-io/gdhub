@@ -1,0 +1,81 @@
+import { CheckpointStatus, type SkillLevel } from "@/config/prisma-enums";
+
+/**
+ * Every number a checkpoint runs on. Code that needs one imports it from here;
+ * the arithmetic built on them (`sessionDay`, `dueDateFrom`, `curatorPrice`)
+ * lives in `lib/` and `config/checkpoint-pricing.ts`. Browser-safe.
+ */
+
+// The 28 days
+
+/** How long a checkpoint's days run. Not configurable — it is the product. */
+export const CHECKPOINT_DAYS = 28;
+export const SPRINT_DAYS = 7;
+export const SPRINTS_PER_CHECKPOINT = CHECKPOINT_DAYS / SPRINT_DAYS;
+
+/** One opening each sprint and the final one the day after the 28 days. */
+export const SESSIONS_PER_CHECKPOINT = SPRINTS_PER_CHECKPOINT + 1;
+export const FINAL_SESSION = SESSIONS_PER_CHECKPOINT;
+
+/**
+ * A guide, not a limit: a call may run two hours. Calendars and anything else
+ * that needs an end time use it.
+ */
+export const SESSION_MINUTES = 45;
+
+// The day-15 scope change
+
+/** The session that revisits the outcome list. */
+export const SCOPE_SESSION = 3;
+export const SCOPE_ANSWER_HOURS = 24;
+
+// The verdict
+
+/** Due by the end of this many days after `dueAt`, the 28th day. */
+export const VERDICT_DUE_DAYS = 3;
+/** The curator may start a draft from the first day of this sprint. */
+export const VERDICT_DRAFT_FROM_SPRINT = 4;
+/** Read by the author word for word. */
+export const VERDICT_NOTE_MAX = 1200;
+
+// The goal card
+
+export const CHECKPOINT_GOAL_MAX = 500;
+export const CHECKPOINT_ITEM_TEXT_MAX = 200;
+export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
+/** The one line saying why the scope changed. */
+export const CHECKPOINT_REVISION_NOTE_MAX = 500;
+
+// Buying one
+
+/**
+ * A checkpoint under way. `AwaitingCurator` belongs here and not with the
+ * drafts: it has been paid for, and a second one may not be started beside it.
+ */
+export const CHECKPOINT_OPEN_STATUSES = [
+	CheckpointStatus.AwaitingCurator,
+	CheckpointStatus.Active,
+	CheckpointStatus.Review,
+];
+
+/** How long a curator has to answer before the money goes back. */
+export const CURATOR_ANSWER_DAYS = 3;
+/** How long the payment webhook is given before Stripe is asked instead. */
+export const PAYMENT_WEBHOOK_GRACE_MINUTES = 60;
+
+/** The screen writes a `$`, so USD is what is charged and what the row stores. */
+export const CHECKPOINT_PRICE_CURRENCY = "$";
+export const CHECKPOINT_CURRENCY = "USD";
+
+/** The AI curator has one price and it does not move with the team. */
+export const CHECKPOINT_AI_PRICE = 19;
+
+/**
+ * A curator's price by level, at the team sizes `docs/checkpoint-standard.md`
+ * §8 prices: the author alone, then plus two, four and seven. A level with no
+ * row is not offered — see `config/checkpoint-pricing.ts`.
+ */
+export const CURATOR_PRICE = {
+	Experienced: [300, 340, 380, 440],
+	Expert: [450, 510, 570, 660],
+} as const satisfies Partial<Record<SkillLevel, readonly number[]>>;

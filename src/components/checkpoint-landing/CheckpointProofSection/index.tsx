@@ -2,7 +2,7 @@ import { useTranslate } from "@tolgee/react";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
-} from "@/config/checkpoint-pricing";
+} from "@/config/checkpoint";
 import { CheckpointSection } from "../CheckpointSection";
 import styles from "./style.module.scss";
 

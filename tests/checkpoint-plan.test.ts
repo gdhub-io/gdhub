@@ -5,15 +5,15 @@ import {
 	dateOfDay,
 } from "@/lib/checkpoint-plan";
 
-// Calls on days 1, 8, 15, 22 and 28 and the verdict by day 30, as the standard
+// Calls on days 1, 8, 15, 22 and 29 and the verdict by day 31, as the standard
 // has them; devlogs where `devlogDayOf` puts them, which is what reminds.
 describe("the curator's plan", () => {
 	const plan = checkpointPlan();
 
-	it("puts a call at the start of each sprint and a fifth on day 28", () => {
+	it("puts a call at the start of each sprint and a fifth on day 29", () => {
 		expect(
 			plan.filter((step) => step.kind === "call").map((step) => step.day),
-		).toEqual([1, 8, 15, 22, 28]);
+		).toEqual([1, 8, 15, 22, 29]);
 	});
 
 	it("has each devlog due before the call that follows it", () => {
@@ -22,8 +22,8 @@ describe("the curator's plan", () => {
 		).toEqual([6, 13, 20, 27]);
 	});
 
-	it("ends with the verdict on day 30", () => {
-		expect(plan.at(-1)).toEqual({ kind: "verdict", day: 30 });
+	it("ends with the verdict on day 31", () => {
+		expect(plan.at(-1)).toEqual({ kind: "verdict", day: 31 });
 	});
 
 	it("is in day order", () => {
@@ -81,13 +81,13 @@ describe("the author's next step", () => {
 	});
 
 	it("leaves only the verdict after the last call", () => {
-		expect(authorNextStep(29, new Set([1, 2, 3, 4]))).toEqual({
+		expect(authorNextStep(30, new Set([1, 2, 3, 4]))).toEqual({
 			kind: "verdict",
-			day: 30,
+			day: 31,
 		});
 	});
 
 	it("has nothing left once the verdict day has passed", () => {
-		expect(authorNextStep(31, new Set([1, 2, 3, 4]))).toBeNull();
+		expect(authorNextStep(32, new Set([1, 2, 3, 4]))).toBeNull();
 	});
 });

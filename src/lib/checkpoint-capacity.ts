@@ -1,4 +1,4 @@
-import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import type { CuratorTeam } from "@/services/checkpoint-curator";
 
 /**

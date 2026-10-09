@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
-import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";

@@ -1,5 +1,9 @@
+import {
+	CHECKPOINT_DAYS,
+	SPRINT_DAYS,
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
 import { dayNumberOn, utcStartOfDay } from "@/lib/checkpoint-days";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 
 /**
  * The four sprints inside a checkpoint.
@@ -10,9 +14,6 @@ import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
  * sprint number in the database is the one on `CheckpointPulse`, and everything
  * else — devlogs, artifacts — is filed by the date it landed on.
  */
-
-export const SPRINT_DAYS = 7;
-export const SPRINTS_PER_CHECKPOINT = CHECKPOINT_DAYS / SPRINT_DAYS;
 
 const clampSprint = (sprint: number) =>
 	Math.min(Math.max(sprint, 1), SPRINTS_PER_CHECKPOINT);

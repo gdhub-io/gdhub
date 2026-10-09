@@ -19,17 +19,17 @@ import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceC
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_MIN_CURATOR_PRICE,
+	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
-} from "@/config/checkpoint-pricing";
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
+import { CHECKPOINT_MIN_CURATOR_PRICE } from "@/config/checkpoint-pricing";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import {
 	useCancelCheckpoint,
 	useCheckpoint,
 	useDiscardCheckpoint,
 } from "@/hooks/checkpoints";
-import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

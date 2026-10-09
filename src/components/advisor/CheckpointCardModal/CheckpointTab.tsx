@@ -9,9 +9,9 @@ import {
 	Section,
 } from "@/components/scout/ProjectCardModal/parts";
 import scout from "@/components/scout/ProjectCardModal/style.module.scss";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { hoursSpan } from "@/lib/checkpoint-capacity";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,

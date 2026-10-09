@@ -1,5 +1,5 @@
 import { stripIndents } from "common-tags";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import type { MidNoteInput } from "../types";
 import { CURATOR_STANCE, localeLine, renderCard } from "./card";
 

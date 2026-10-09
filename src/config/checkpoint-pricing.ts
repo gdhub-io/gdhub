@@ -1,4 +1,4 @@
-import type { SkillLevel } from "@/config/prisma-enums";
+import { CURATOR_PRICE } from "@/config/checkpoint";
 
 /**
  * Who may curate a checkpoint and what they cost, in one place so both change
@@ -20,16 +20,6 @@ import type { SkillLevel } from "@/config/prisma-enums";
  * table becomes the fallback rather than the answer. Only the solo figure is
  * charged so far — a checkout by team size is still ahead.
  */
-
-export const CHECKPOINT_PRICE_CURRENCY = "$";
-
-/** The AI curator has one price and it does not move with the team. */
-export const CHECKPOINT_AI_PRICE = 19;
-
-const CURATOR_PRICE = {
-	Experienced: [300, 340, 380, 440],
-	Expert: [450, 510, 570, 660],
-} as const satisfies Partial<Record<SkillLevel, readonly number[]>>;
 
 export type CuratorLevel = keyof typeof CURATOR_PRICE;
 
