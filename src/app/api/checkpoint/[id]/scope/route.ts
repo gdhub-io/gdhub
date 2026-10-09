@@ -7,7 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { checkpointDay } from "@/lib/checkpoint-days";
+import { scopeState } from "@/lib/checkpoint-scope";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@/repositories/checkpoint.repository";
 import {
 	CHECKPOINT_MAX_ITEMS_PER_KIND,
-	CHECKPOINT_SCOPE_DAY,
 	type CheckpointScopeBody,
 	type CheckpointScopeChange,
 	CheckpointScopeSchema,
@@ -26,7 +25,7 @@ import { prisma } from "@/services/prisma";
 type OutcomeRow = { id: string; text: string; originalText: string | null };
 
 /**
- * The day-14 answer to the curator's scope note: cut, reword, add — once, in one
+ * The answer to the curator's scope note at the third session: cut, reword, add — once, in one
  * transaction, and with the reason stored beside it.
  *
  * Nothing is written over. A cut keeps its text, a rewording keeps the day-1
@@ -53,6 +52,7 @@ export const POST = pipe(
 			status: true,
 			startedAt: true,
 			revisedAt: true,
+			sessions: { select: { index: true, scheduledAt: true, endedAt: true } },
 			items: {
 				select: {
 					id: true,
@@ -77,16 +77,14 @@ export const POST = pipe(
 		return apiError.badRequest("checkpointAlreadyRevised");
 	}
 
-	// Day 14 is when the curator asks, and the answer is taken from that day
-	// until the checkpoint closes. The standard names one day, but the note is a
-	// question the author answers in their own time; refusing a day-16 reply
-	// would leave the verdict judged against a list everyone knew was wrong.
-	// `Active` is what holds the far end — a closed checkpoint never gets here.
-	const day = checkpoint.startedAt ? checkpointDay(checkpoint.startedAt) : null;
+	// The third session asks, and the author has a day after it to answer: the
+	// verdict is then judged against the list as it stands.
+	const window = checkpoint.startedAt
+		? scopeState(checkpoint.startedAt, checkpoint.sessions)
+		: "early";
 
-	if (day === null || day < CHECKPOINT_SCOPE_DAY) {
-		return apiError.badRequest("scopeChangeTooEarly");
-	}
+	if (window === "early") return apiError.badRequest("scopeChangeTooEarly");
+	if (window === "closed") return apiError.badRequest("scopeChangeClosed");
 
 	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome,

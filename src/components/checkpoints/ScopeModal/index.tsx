@@ -6,6 +6,7 @@ import { App, Button, Flex, Input, Modal, Tag, Typography } from "antd";
 import { useMemo, useState } from "react";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useChangeScope } from "@/hooks/checkpoints";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import {
 	CHECKPOINT_ITEM_TEXT_MAX,
 	CHECKPOINT_REVISION_NOTE_MAX,
@@ -118,7 +119,11 @@ export function ScopeModal({
 								"checkpoints.scope.keepNote",
 								"The outcome list stands. Say why, and the decision is recorded beside it.",
 							)
-						: t("checkpoints.scope.subtitle", "Update the scope on day 15.")}
+						: t(
+								"checkpoints.scope.subtitle",
+								"Update the scope on day {day}.",
+								{ day: CHECKPOINT_SCOPE_DAY },
+							)}
 				</Typography.Text>
 
 				{mode === "change" && (

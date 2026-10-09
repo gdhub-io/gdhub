@@ -1,6 +1,10 @@
 "use client";
 
-import type { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
+import type {
+	PayableType,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Table, type TableProps, Typography } from "antd";
@@ -16,6 +20,7 @@ type UserPayment = {
 	amount: number;
 	currency: string;
 	status: PaymentStatus;
+	provider: PaymentProvider;
 	payableType: PayableType;
 	payableId: string;
 	createdAt: string;
@@ -66,7 +71,7 @@ export default function PaymentsList() {
 		setInvoiceLoadingId(payment.id);
 		try {
 			const res =
-				payment.payableType === "VACANCY"
+				payment.provider === "PADDLE"
 					? await axios.get<{ url: string }>(
 							"/api/user/project/vacancy/payment/invoice",
 							{ params: { vacancyId: payment.payableId } },
@@ -94,6 +99,57 @@ export default function PaymentsList() {
 			return t("settings.payments.checkpoint", "Checkpoint");
 
 		return payable;
+	};
+
+	// A Stripe hold reads as a reservation, and a cancelled row — a checkout left
+	// unfinished or a hold let go, which the row cannot tell apart — as what both
+	// mean to the payer: nothing was taken.
+	const statusLabel = (payment: UserPayment) => {
+		if (payment.status === "CANCELED")
+			return t("settings.payments.status.notCharged", "Not charged");
+		if (payment.provider === "STRIPE" && payment.status === "PROCESSING")
+			return t("settings.payments.status.reserved", "Reserved");
+
+		return t(`vacancy.payment.status.${payment.status}`, payment.status);
+	};
+
+	// What happened to the money before its current status, from the two dates
+	// the row keeps. A refund's own date is not on the row, so it goes undated.
+	const history = (payment: UserPayment) => {
+		const reserved = dayjs(payment.createdAt);
+		const charged = payment.completedAt ? dayjs(payment.completedAt) : null;
+
+		if (payment.provider === "STRIPE" && payment.status === "PROCESSING") {
+			return t(
+				"settings.payments.history.reserved",
+				"Reserved {date} · not charged yet",
+				{ date: reserved.format("ll") },
+			);
+		}
+
+		if (payment.status === "COMPLETED" && charged) {
+			return payment.provider === "STRIPE" && !charged.isSame(reserved, "day")
+				? t(
+						"settings.payments.history.reservedCharged",
+						"Reserved {reserved} → charged {charged}",
+						{ reserved: reserved.format("ll"), charged: charged.format("ll") },
+					)
+				: null;
+		}
+
+		if (
+			(payment.status === "REFUNDED" ||
+				payment.status === "PARTIALLY_REFUNDED") &&
+			charged
+		) {
+			return t(
+				"settings.payments.history.chargedRefunded",
+				"Charged {charged} → refunded",
+				{ charged: charged.format("ll") },
+			);
+		}
+
+		return null;
 	};
 
 	const columns: TableProps<UserPayment>["columns"] = [
@@ -135,12 +191,23 @@ export default function PaymentsList() {
 		{
 			title: t("settings.payments.column.status", "Status"),
 			key: "status",
-			render: (_v, r) => (
-				<StatusDot
-					tone={STATUS_TONES[r.status] ?? "neutral"}
-					label={t(`vacancy.payment.status.${r.status}`, r.status)}
-				/>
-			),
+			render: (_v, r) => {
+				const past = history(r);
+
+				return (
+					<div style={{ display: "flex", flexDirection: "column" }}>
+						<StatusDot
+							tone={STATUS_TONES[r.status] ?? "neutral"}
+							label={statusLabel(r)}
+						/>
+						{past && (
+							<Text type="secondary" style={{ fontSize: 12 }}>
+								{past}
+							</Text>
+						)}
+					</div>
+				);
+			},
 		},
 		{
 			title: t("settings.payments.column.receipt", "Receipt"),

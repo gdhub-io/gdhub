@@ -121,6 +121,15 @@ export const getCheckoutReceiptUrl = async (sessionId: string) => {
 	return charge.receipt_url ?? null;
 };
 
+/** The payment intent behind a checkout, or null when the session never made one. */
+const intentOfSession = async (sessionId: string) => {
+	const session = await stripe().checkout.sessions.retrieve(sessionId);
+
+	return typeof session.payment_intent === "string"
+		? session.payment_intent
+		: (session.payment_intent?.id ?? null);
+};
+
 /**
  * Refunds a completed checkout in full, or null when the session never charged.
  *
@@ -128,15 +137,9 @@ export const getCheckoutReceiptUrl = async (sessionId: string) => {
  * caller writes its own row only once this comes back.
  */
 export const refundCheckout = async (sessionId: string) => {
-	const session = await stripe().checkout.sessions.retrieve(sessionId);
-	const intent =
-		typeof session.payment_intent === "string"
-			? session.payment_intent
-			: session.payment_intent?.id;
+	const intent = await intentOfSession(sessionId);
 
-	if (!intent) return null;
-
-	return stripe().refunds.create({ payment_intent: intent });
+	return intent ? stripe().refunds.create({ payment_intent: intent }) : null;
 };
 
 /**
@@ -152,15 +155,6 @@ export const sessionOfPaymentIntent = async (intentId: string) => {
 	});
 
 	return sessions.data[0]?.id ?? null;
-};
-
-/** The payment intent behind a checkout, or null when the session never made one. */
-const intentOfSession = async (sessionId: string) => {
-	const session = await stripe().checkout.sessions.retrieve(sessionId);
-
-	return typeof session.payment_intent === "string"
-		? session.payment_intent
-		: (session.payment_intent?.id ?? null);
 };
 
 /**

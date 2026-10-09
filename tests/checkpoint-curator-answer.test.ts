@@ -29,7 +29,8 @@ vi.mock("@/services/stripe/server", () => ({
 	captureCheckout: (...a: unknown[]) => captureCheckout(...a),
 }));
 
-vi.mock("@/repositories/checkpoint-payment", () => ({
+vi.mock("@/repositories/checkpoint-payment", async (importOriginal) => ({
+	...(await importOriginal<object>()),
 	returnCheckpointMoney: (...a: unknown[]) => returnMoney(...a),
 }));
 

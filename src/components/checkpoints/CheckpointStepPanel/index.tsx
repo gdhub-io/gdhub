@@ -6,6 +6,7 @@ import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
@@ -114,13 +115,17 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 
 							<Typography.Text className={styles.col}>
 								{item.cut
-									? t("checkpoints.result.cut", "Cut on day 15")
+									? t("checkpoints.result.cut", "Cut on day {day}", {
+											day: CHECKPOINT_SCOPE_DAY,
+										})
 									: item.originalText
 										? t("checkpoints.result.reworded", "Reworded — {text}", {
 												text: item.text,
 											})
 										: item.addedAt
-											? t("checkpoints.result.added", "Added on day 15")
+											? t("checkpoints.result.added", "Added on day {day}", {
+													day: CHECKPOINT_SCOPE_DAY,
+												})
 											: "—"}
 							</Typography.Text>
 

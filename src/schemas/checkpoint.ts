@@ -64,14 +64,8 @@ export const UpdateCheckpointSchema = z
 /** The one line saying why the scope changed, kept on the checkpoint. */
 export const CHECKPOINT_REVISION_NOTE_MAX = 500;
 
-/** The day the curator's note asks the author to settle the outcome list. */
-export const CHECKPOINT_SCOPE_DAY = 14;
-
-/** The day the author is reminded of outcomes with nothing attached to them. */
-export const CHECKPOINT_EVIDENCE_DAY = 26;
-
 /**
- * One line of the day-14 change: cut it, reword it, or both. Nothing here
+ * One line of the day-15 change: cut it, reword it, or both. Nothing here
  * deletes a line — a dropped outcome stays on the card, struck through.
  */
 export const CheckpointScopeChangeSchema = z
@@ -102,7 +96,7 @@ export const CheckpointScopeSchema = z.object({
  *
  * A list rather than a field: one artifact commonly proves more than one line,
  * and the link lives on the line. Sent on its own rather than as part of the
- * goal card, because replacing the card would take the day-14 record with it.
+ * goal card, because replacing the card would take the day-15 record with it.
  */
 export const CheckpointEvidenceSchema = z.object({
 	artifactId: z.string().min(1).nullable(),

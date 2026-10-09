@@ -3,6 +3,7 @@
 import {
 	IconClock,
 	IconExternalLink,
+	IconMessageCircle,
 	IconWorld,
 	IconX,
 } from "@tabler/icons-react";
@@ -19,11 +20,16 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useChat } from "@/components/Chat/useChat";
 import styles from "@/components/scout/ProjectCardModal/style.module.scss";
 import { AppImage } from "@/components/ui/AppImage";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { platformOptions } from "@/helpers/react-content";
-import { useAdvisorProject, useAnswerCheckpoint } from "@/hooks/checkpoints";
+import {
+	useAdvisorProject,
+	useAnswerCheckpoint,
+	useCheckpointChat,
+} from "@/hooks/checkpoints";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import { CheckpointTab } from "./CheckpointTab";
 import { DevlogsTab } from "./DevlogsTab";
@@ -63,6 +69,7 @@ export function CheckpointCardModal({
 	const [tab, setTab] = useState("checkpoint");
 	const { data: project, isLoading } = useAdvisorProject(checkpoint.id, open);
 	const answer = useAnswerCheckpoint(checkpoint.id);
+	const openChat = useCheckpointChat(checkpoint.id);
 	// Its devlogs are for the curator running it; the server sends none before.
 	const accepted =
 		checkpoint.status !== CheckpointStatus.Draft &&
@@ -82,6 +89,19 @@ export function CheckpointCardModal({
 			);
 		}
 	};
+
+	const chat = () =>
+		openChat.mutate(undefined, {
+			onSuccess: ({ roomId }) => {
+				const { setSelectedRoomId, setOpenChatModal } = useChat.getState();
+				setSelectedRoomId(roomId);
+				setOpenChatModal(true);
+			},
+			onError: () =>
+				message.error(
+					t("workflow.aside.chatFailed", "The chat could not open"),
+				),
+		});
 
 	const meta = project
 		? [project.details.genre, project.details.platform]
@@ -183,6 +203,17 @@ export function CheckpointCardModal({
 								</Title>
 								<Text className={styles.meta}>{meta}</Text>
 							</Flex>
+
+							{accepted && !answerable && (
+								<Button
+									className={styles.headerAction}
+									icon={<IconMessageCircle size={16} />}
+									loading={openChat.isPending}
+									onClick={chat}
+								>
+									{t("workflow.aside.chat", "Checkpoint chat")}
+								</Button>
+							)}
 
 							{answerable && (
 								<Flex gap={10} align="center">

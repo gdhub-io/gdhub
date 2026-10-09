@@ -72,14 +72,22 @@ export type CheckpointCurator = {
 	summary: string;
 };
 
+/**
+ * Who may curate a checkpoint: someone open to mentees at Experienced or Expert.
+ * The list, the price and the PUT that names a curator all read this one rule.
+ */
+export const curatorEligibleWhere = {
+	isOpenForMentoring: true,
+	level: { in: CURATOR_LEVELS },
+};
+
 export async function listCheckpointCurators(
 	viewerId: string,
 	limit = 50,
 ): Promise<CheckpointCurator[]> {
 	const specialities = await prisma.speciality.findMany({
 		where: {
-			isOpenForMentoring: true,
-			level: { in: CURATOR_LEVELS },
+			...curatorEligibleWhere,
 			// A curator buying a checkpoint for their own project cannot be its
 			// curator: the point of the 28 days is judgement from outside.
 			userId: { not: viewerId },

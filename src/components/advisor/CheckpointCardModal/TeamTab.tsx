@@ -12,8 +12,8 @@ import { specialityLine } from "@/components/scout/ProjectCardModal/format";
 import { Section } from "@/components/scout/ProjectCardModal/parts";
 import styles from "@/components/scout/ProjectCardModal/style.module.scss";
 import { duration } from "@/helpers/investment";
+import { hoursSpan } from "@/lib/checkpoint-capacity";
 import type { AdvisorProjectDto } from "@/types/checkpoints";
-import { span } from "./span";
 
 const { Text } = Typography;
 
@@ -79,8 +79,8 @@ export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 								"advisor.card.teamHours",
 								"{week} h a week · {run} h over 28 days",
 								{
-									week: span(capacity.hoursPerWeek),
-									run: span(capacity.hoursPerRun),
+									week: hoursSpan(capacity.hoursPerWeek),
+									run: hoursSpan(capacity.hoursPerRun),
 								},
 							)
 						: t(

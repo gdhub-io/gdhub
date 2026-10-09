@@ -42,10 +42,10 @@ vi.mock("@/services/prisma", () => ({
 
 const author = { id: "u1", roles: ["Member"], onboardingDone: true };
 
-/** Day 14 of a checkpoint that started 13 days ago. */
+/** Day 15 of a checkpoint that started 14 days ago: the third session's day. */
 const startedAt = () => {
 	const day1 = new Date();
-	day1.setUTCDate(day1.getUTCDate() - 13);
+	day1.setUTCDate(day1.getUTCDate() - 14);
 
 	return day1;
 };
@@ -63,6 +63,7 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 	status: "Active",
 	startedAt: startedAt(),
 	revisedAt: null,
+	sessions: [],
 	items: [
 		{ id: "in1", kind: "Input", order: 1, text: "a build", originalText: null },
 		outcome("out1", 1),
@@ -238,7 +239,7 @@ describe("POST /api/checkpoint/[id]/scope", () => {
 		});
 	});
 
-	it("refuses before day 14 — there is nothing to answer yet", async () => {
+	it("refuses before the third session — there is nothing to answer yet", async () => {
 		const day3 = new Date();
 		day3.setUTCDate(day3.getUTCDate() - 2);
 		checkpointFindUnique.mockResolvedValue(checkpoint({ startedAt: day3 }));
@@ -248,6 +249,19 @@ describe("POST /api/checkpoint/[id]/scope", () => {
 		expect(response.status).toBe(400);
 		await expect(response.json()).resolves.toMatchObject({
 			error: "scopeChangeTooEarly",
+		});
+	});
+
+	it("refuses once the day after the third session has run out", async () => {
+		const day17 = new Date();
+		day17.setUTCDate(day17.getUTCDate() - 16);
+		checkpointFindUnique.mockResolvedValue(checkpoint({ startedAt: day17 }));
+
+		const response = await post({ note: "Too late" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "scopeChangeClosed",
 		});
 	});
 

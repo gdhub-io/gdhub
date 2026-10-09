@@ -8,6 +8,7 @@ import { useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useWriteReview } from "@/hooks/checkpoints";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import styles from "./style.module.scss";
 
 export type ReviewProps = {
@@ -132,7 +133,9 @@ export function Review({ facts, checkpointId, writable }: ReviewProps) {
 					styles={{ body: { padding: 0 } }}
 					title={
 						<span className={styles.cardTitle}>
-							{t("checkpoints.midnote.title", "Day 15 — the scope note")}
+							{t("checkpoints.midnote.title", "Day {day} — the scope note", {
+								day: CHECKPOINT_SCOPE_DAY,
+							})}
 						</span>
 					}
 					extra={

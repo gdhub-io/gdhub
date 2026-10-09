@@ -7,7 +7,12 @@ import type { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/stripe/webhooks/route";
 import { prisma } from "@/services/prisma";
-import { sessionOfPaymentIntent, stripeEvent } from "@/services/stripe/server";
+import {
+	captureCheckout,
+	releaseCheckout,
+	sessionOfPaymentIntent,
+	stripeEvent,
+} from "@/services/stripe/server";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -24,6 +29,7 @@ vi.mock("@/services/stripe/server", () => ({
 	retrieveCheckout: vi.fn(),
 	refundCheckout: vi.fn(),
 	releaseCheckout: vi.fn(),
+	captureCheckout: vi.fn(),
 }));
 
 const post = () =>
@@ -85,6 +91,8 @@ beforeEach(() => {
 		draft() as never,
 	);
 	vi.mocked(sessionOfPaymentIntent).mockResolvedValue("cs_1");
+	vi.mocked(captureCheckout).mockResolvedValue({ id: "pi_1" } as never);
+	vi.mocked(releaseCheckout).mockResolvedValue({ id: "pi_1" } as never);
 });
 
 describe("the Stripe webhook", () => {
@@ -138,6 +146,47 @@ describe("the Stripe webhook", () => {
 				data: expect.objectContaining({ status: CheckpointStatus.Active }),
 			}),
 		);
+	});
+
+	// Nobody accepts for the AI curator, so a hold left as it is would be let go
+	// by the holds cron and the 28 days would run unpaid.
+	it("charges at once when the AI curator runs them", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft(CheckpointCuratorKind.AI) as never,
+		);
+
+		await post();
+
+		expect(captureCheckout).toHaveBeenCalledWith("cs_1");
+		expect(prisma.payment.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: { id: "pay_1" },
+				data: expect.objectContaining({ status: PaymentStatus.COMPLETED }),
+			}),
+		);
+	});
+
+	it("starts nothing and lets the hold go when the AI charge is refused", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft(CheckpointCuratorKind.AI) as never,
+		);
+		vi.mocked(captureCheckout).mockResolvedValue(null);
+
+		await post();
+
+		expect(releaseCheckout).toHaveBeenCalledWith("cs_1");
+		expect(prisma.payment.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: { status: PaymentStatus.CANCELED },
+			}),
+		);
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	it("leaves a human curator's hold uncharged until they accept", async () => {
+		await post();
+
+		expect(captureCheckout).not.toHaveBeenCalled();
 	});
 
 	it("does not rewind a checkpoint that already left Draft", async () => {

@@ -639,6 +639,13 @@
 		"error_no_connection": "No connection. Try later.",
 		"go_to_chat": "Go to chat"
 	},
+	"checkpointLanding": {
+		"example": {
+			"fact2": {
+				"label": "Day {day} · Re-scope"
+			}
+		}
+	},
 	"checkpoints": {
 		"asks": {
 			"dueOnDay": "due on day {day}",
@@ -663,7 +670,10 @@
 			"title": "Cancel this draft?"
 		},
 		"card": {
-			"awaiting": "Paid. The 28 days start when the curator takes it on."
+			"awaiting": "Paid. The 28 days start when the curator takes it on.",
+			"legendCut": "Cut on day {day} · not counted",
+			"legendReworded": "Reworded on day {day}",
+			"taskCut": "Cut on day {day}"
 		},
 		"continue": "Continue",
 		"curator": {
@@ -742,9 +752,7 @@
 			"attach": "Attach evidence",
 			"attached": "Attached this sprint",
 			"change": "Pick another artifact",
-			"choose": "Choose",
 			"confirm": "Attach",
-			"detach": "Detach it",
 			"empty": "No evidence yet",
 			"emptyNote": "Attach what proves an outcome as it lands, rather than on the last day.",
 			"failed": "The evidence could not be attached",
@@ -758,7 +766,6 @@
 			"none": "Nothing attached",
 			"notDelivered": "Nothing was attached",
 			"pick": "From this project",
-			"pickTitle": "Pick an artifact",
 			"proves": "Proves: {outcome}",
 			"search": "Search the project's artifacts",
 			"whatItProves": "What it proves"
@@ -781,11 +788,9 @@
 			"ghostLine": "Add a line, then press Enter",
 			"info": "Written on day 1 and agreed with the curator. It does not change for the rest of the checkpoint.",
 			"inputPlaceholder": "A concept document",
-			"inputs": "What the project had",
 			"inputsTitle": "What exists today",
 			"label": "Goal",
 			"outcomePlaceholder": "A playable vertical slice",
-			"outcomes": "What it owes by day 28",
 			"outcomesTitle": "What it will have by day 28",
 			"placeholder": "Ship a playable prototype a stranger can finish in 15 minutes without help.",
 			"remarkAnyway": "Go on anyway",
@@ -810,7 +815,7 @@
 		},
 		"midnote": {
 			"open": "open",
-			"title": "Day 15 — the scope note"
+			"title": "Day {day} — the scope note"
 		},
 		"name": "Checkpoint {n}",
 		"next": {
@@ -864,6 +869,7 @@
 			"cancelNote": "The reservation is let go, nothing is charged, and the checkpoint is deleted along with what you wrote for it.",
 			"cancelOk": "Cancel and refund",
 			"cancelTitle": "Cancel this checkpoint?",
+			"checkAgain": "Check again",
 			"dates": "{from} – {to}",
 			"declined": "This expert cannot take it on right now",
 			"declinedBody": "Pick another expert and the checkpoint goes to them instead.",
@@ -882,6 +888,7 @@
 			"replaceOk": "Hand it to them",
 			"replaceTitle": "Replace the curator",
 			"settling": "This settles on its own in a few seconds. Nothing else is needed from you.",
+			"slow": "The payment is taking longer than usual to confirm. If you paid, it will show up here — check again in a minute.",
 			"starting": "Payment received — starting"
 		},
 		"past": {
@@ -1003,13 +1010,13 @@
 			"title": "Payment successful"
 		},
 		"result": {
-			"added": "Added on day 15",
+			"added": "Added on day {day}",
 			"column": {
 				"came": "WHAT CAME OF IT",
 				"changed": "WHAT CHANGED",
 				"planned": "PLANNED ON DAY 1"
 			},
-			"cut": "Cut on day 15",
+			"cut": "Cut on day {day}",
 			"reworded": "Reworded — {text}",
 			"title": "The result card"
 		},
@@ -1040,7 +1047,7 @@
 			"keepNote": "The outcome list stands. Say why, and the decision is recorded beside it.",
 			"keepTitle": "Leave the list as it is",
 			"note": "The original scope remains in the checkpoint history.",
-			"subtitle": "Update the scope on day 15.",
+			"subtitle": "Update the scope on day {day}.",
 			"why": "Why"
 		},
 		"signals": {
@@ -3045,7 +3052,16 @@
 			"download": "Download",
 			"empty": "No payments yet",
 			"gone": "No longer exists",
+			"history": {
+				"chargedRefunded": "Charged {charged} → refunded",
+				"reserved": "Reserved {date} · not charged yet",
+				"reservedCharged": "Reserved {reserved} → charged {charged}"
+			},
 			"receiptFailed": "The receipt could not be opened",
+			"status": {
+				"notCharged": "Not charged",
+				"reserved": "Reserved"
+			},
 			"subtitle": "Your payment history across the platform.",
 			"title": "Payments",
 			"vacancyFee": "Vacancy listing"
@@ -3312,7 +3328,7 @@
 			"joinedInvited": "{role} · invited by {name}",
 			"left": "{name} left the team",
 			"loading": "Loading earlier activity…",
-			"reworded": "Task reworded on the day-14 revision",
+			"reworded": "Task reworded on the day-{day} revision",
 			"sprint": "Sprint {number} started · {date}",
 			"stage": "Stage finished: {name}",
 			"title": "Activity",
@@ -3457,10 +3473,12 @@
 			},
 			"review-by": "review by",
 			"session": {
+				"calendar": "Add to calendar",
 				"final": "the final one",
 				"join": "Join session",
 				"join-in": "Join in {days} days",
 				"join-tomorrow": "Join tomorrow",
+				"more": "Session actions",
 				"notes": "Notes",
 				"open-review": "Open review",
 				"opens": "opens Sprint {number}",

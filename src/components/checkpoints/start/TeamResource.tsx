@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Flex, Table, Typography } from "antd";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { teamCapacity } from "@/lib/checkpoint-capacity";
+import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
 import styles from "./TeamResource.module.scss";
 import { type TeamHoursRow, useTeamHours } from "./teamHours";
 
@@ -27,8 +27,6 @@ export function TeamResource({ teamId, hoursOf }: TeamResourceProps) {
 	const total = teamCapacity(
 		members.map((row) => ({ timeForWork: hoursOf(row) })),
 	);
-	const span = (from: number, to: number) =>
-		from === to ? `${from}` : `${from}–${to}`;
 	const run = (row: TeamHoursRow) =>
 		teamCapacity([{ timeForWork: hoursOf(row) }]).hoursPerRun;
 
@@ -69,7 +67,7 @@ export function TeamResource({ teamId, hoursOf }: TeamResourceProps) {
 						return (
 							<Typography.Text type="secondary" className={styles.figure}>
 								{hours
-									? span(hours[0], hours[1])
+									? hoursSpan({ from: hours[0], to: hours[1] })
 									: t("checkpoints.when.teamUnknown", "not stated")}
 							</Typography.Text>
 						);
@@ -83,7 +81,7 @@ export function TeamResource({ teamId, hoursOf }: TeamResourceProps) {
 						const hours = run(row);
 						return (
 							<Typography.Text className={styles.figure}>
-								{hours ? span(hours.from, hours.to) : "—"}
+								{hours ? hoursSpan(hours) : "—"}
 							</Typography.Text>
 						);
 					},
@@ -104,16 +102,12 @@ export function TeamResource({ teamId, hoursOf }: TeamResourceProps) {
 					</Table.Summary.Cell>
 					<Table.Summary.Cell index={1} align="right">
 						<Typography.Text strong className={styles.figure}>
-							{total.hoursPerWeek
-								? span(total.hoursPerWeek.from, total.hoursPerWeek.to)
-								: "—"}
+							{total.hoursPerWeek ? hoursSpan(total.hoursPerWeek) : "—"}
 						</Typography.Text>
 					</Table.Summary.Cell>
 					<Table.Summary.Cell index={2} align="right">
 						<Typography.Text strong className={styles.figure}>
-							{total.hoursPerRun
-								? span(total.hoursPerRun.from, total.hoursPerRun.to)
-								: "—"}
+							{total.hoursPerRun ? hoursSpan(total.hoursPerRun) : "—"}
 						</Typography.Text>
 					</Table.Summary.Cell>
 				</Table.Summary.Row>

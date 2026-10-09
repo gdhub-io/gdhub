@@ -1,7 +1,9 @@
 import {
 	IconArrowUpRight,
+	IconCalendarPlus,
 	IconChevronRight,
 	IconCircleCheck,
+	IconDotsVertical,
 	IconFileText,
 	IconLayoutGridAdd,
 	IconLock,
@@ -12,7 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Modal } from "antd";
+import { Button, Dropdown, Flex, Modal } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
@@ -28,12 +30,14 @@ import {
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
 import { useMarkVerdictRead } from "@/hooks/checkpoints";
+import { downloadIcs } from "@/lib/calendar";
 import {
 	type ChecklistItem,
 	type ChecklistKey,
 	sprintChecklist,
 } from "@/lib/checkpoint-checklist";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
+import { SESSION_MINUTES } from "@/lib/checkpoint-sessions";
 import type {
 	CheckpointDto,
 	CheckpointSessionDto,
@@ -99,6 +103,9 @@ export function RunningCheckpoint({
 		sprints.find((sprint) => sprint.state === "current") ?? sprints.at(-1);
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 	const curatorName = checkpoint.curator?.name?.split(" ")[0] ?? "";
+	const sessionWith = t("workflow.path.session.with", "Session with {name}", {
+		name: curatorName,
+	});
 	const number = checkpoint.number ?? 1;
 	const base = `/user/project/${project.slug}/workflow/cp${number}`;
 	const sessionHref = (session: CheckpointSessionDto) =>
@@ -319,10 +326,27 @@ export function RunningCheckpoint({
 		);
 	};
 
+	const addToCalendar = (session: CheckpointSessionDto) =>
+		downloadIcs(
+			{
+				uid: `checkpoint-${checkpoint.id}-session-${session.index}@gdhub.io`,
+				title: `${sessionWith} · ${project.name}`,
+				start: new Date(session.scheduledAt),
+				minutes: SESSION_MINUTES,
+				allDay: !session.timeKnown,
+				url: `${window.location.origin}/user/project/${project.slug}/workflow`,
+			},
+			`session-${session.index}.ics`,
+		);
+
 	/** One call or review: in its own stop on the line, or heading the sprint card on its day. */
 	const sessionBody = (session: CheckpointSessionDto, today = false) => {
 		const days = daysUntil(session.scheduledAt);
 		const when = dayjs.utc(session.scheduledAt);
+		// A known hour is a moment, read in the viewer's zone; a bare day is a
+		// UTC midnight and stays one.
+		const start = dayjs(session.scheduledAt);
+		const hours = `${start.format("HH:mm")} – ${start.add(SESSION_MINUTES, "minute").format("HH:mm")}`;
 		const ready =
 			session.contentStatus === CheckpointSessionContentStatus.Ready;
 		const opens =
@@ -396,7 +420,7 @@ export function RunningCheckpoint({
 										},
 									)
 								: session.timeKnown
-									? `${when.format("dddd")} · ${when.format("HH:mm")}`
+									? `${start.format("dddd")} · ${hours}`
 									: when.format("dddd")}
 						</span>
 						<span>
@@ -406,16 +430,43 @@ export function RunningCheckpoint({
 										"Written by the AI curator from your devlog, artifacts and activity",
 									)
 								: today
-									? t("workflow.path.session.with", "Session with {name}", {
-											name: curatorName,
-										})
-									: `${t("workflow.path.session.with", "Session with {name}", {
-											name: curatorName,
-										})} · ${opens}`}
+									? sessionWith
+									: `${sessionWith} · ${opens}`}
 						</span>
 					</div>
 				</div>
-				{action}
+				{isAI ? (
+					action
+				) : (
+					<Flex gap="small" align="center">
+						{action}
+						{/* Frame 07.3. Rescheduling waits for stored session times (GDHUB-70). */}
+						<Dropdown
+							trigger={["click"]}
+							placement="bottomRight"
+							menu={{
+								items: [
+									{
+										key: "calendar",
+										icon: <IconCalendarPlus size={16} />,
+										label: t(
+											"workflow.path.session.calendar",
+											"Add to calendar",
+										),
+										onClick: () => addToCalendar(session),
+									},
+								],
+							}}
+						>
+							<Button
+								size="large"
+								type="text"
+								icon={<IconDotsVertical size={20} />}
+								aria-label={t("workflow.path.session.more", "Session actions")}
+							/>
+						</Dropdown>
+					</Flex>
+				)}
 			</div>
 		);
 	};
@@ -510,9 +561,7 @@ export function RunningCheckpoint({
 													number: String(openingSession.index - 1),
 												},
 											)
-										: t("workflow.path.session.with", "Session with {name}", {
-												name: curatorName,
-											})}
+										: sessionWith}
 								</span>
 								<span className={`${styles.meta} ${styles.grow}`}>
 									{formatShort(openingSession.scheduledAt)}

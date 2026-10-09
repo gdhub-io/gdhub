@@ -8,6 +8,9 @@ import type { CheckpointSessionDto } from "@/types/checkpoints";
  */
 const SESSIONS_PER_CHECKPOINT = SPRINTS_PER_CHECKPOINT + 1;
 
+/** How long a call runs (docs/checkpoint-standard.md, "A call runs 45 minutes"). */
+export const SESSION_MINUTES = 45;
+
 /** Session 1 is on day 1, session 5 on day 29. */
 export const sessionDay = (index: number) => (index - 1) * SPRINT_DAYS + 1;
 

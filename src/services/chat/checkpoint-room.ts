@@ -10,7 +10,7 @@ import {
 import { prisma } from "@/services/prisma";
 import { autoJoinRoom, ensureChatRoom } from "./ensure-room";
 
-export const checkpointRoomKey = (checkpointId: string) =>
+const checkpointRoomKey = (checkpointId: string) =>
 	`checkpoint:${checkpointId}`;
 
 /**

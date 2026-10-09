@@ -39,21 +39,17 @@ export type RoadmapWorkflow = {
 export const RoadmapChart = ({
 	workflow,
 	editable = false,
-	sprint = false,
 }: {
 	workflow: RoadmapWorkflow;
 	editable?: boolean;
-	/** A checkpoint is running: its sprint is striped over the stage. Without one the marker stands at the stage's start. */
-	sprint?: boolean;
 }) => {
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 	const screens = Grid.useBreakpoint();
 	const roadmapRef = useRef<HTMLDivElement>(null);
 	const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-	// Percent of the road: where the current stage starts, and where its sprint
-	// — the first half of it, when a checkpoint is running — ends.
-	const [progress, setProgress] = useState({ done: 0, sprint: 0 });
+	// Percent of the road up to where the current stage starts.
+	const [progress, setProgress] = useState(0);
 	const steps = useMemo(
 		() => workflow.steps.slice(1).slice(0, -1),
 		[workflow.steps],
@@ -120,30 +116,20 @@ export const RoadmapChart = ({
 
 		// If current step is not in screenSteps, don't show progress
 		if (currentStepIndex === -1) {
-			setProgress({ done: 0, sprint: 0 });
+			setProgress(0);
 			return;
 		}
 
 		const road = roadmapRef.current.getBoundingClientRect();
 		const first = stepRefs.current[0]?.getBoundingClientRect();
 		const current = stepRefs.current[currentStepIndex]?.getBoundingClientRect();
-		const next =
-			stepRefs.current[currentStepIndex + 1]?.getBoundingClientRect();
 
 		// Nothing laid out yet — leave the marker where it is rather than
 		// snapping it back to the start of the road.
 		if (!first || !current || road.width === 0) return;
 
-		const start = current.left - first.left;
-		// The last stage runs to the end of the road.
-		const end = (next?.left ?? road.right) - first.left;
-		const percent = (value: number) => (value / road.width) * 100;
-
-		setProgress({
-			done: percent(start),
-			sprint: percent(sprint ? start + (end - start) / 2 : start),
-		});
-	}, [workflow.currentStep, screenSteps, sprint]);
+		setProgress(((current.left - first.left) / road.width) * 100);
+	}, [workflow.currentStep, screenSteps]);
 
 	useEffect(() => {
 		calculateProgress();
@@ -222,14 +208,11 @@ export const RoadmapChart = ({
 			>
 				<div
 					className={styles.progressDone}
-					style={{ width: `${progress.done}%` }}
+					style={{ width: `${progress}%` }}
 				/>
 				<div
 					className={styles.progressContainer}
-					style={{
-						left: `${progress.done}%`,
-						width: `${progress.sprint - progress.done}%`,
-					}}
+					style={{ left: `${progress}%` }}
 				>
 					<div className={styles.currentTime}>
 						{/* Frame `n4D6fb`: a shield with the current point in it. */}

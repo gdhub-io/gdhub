@@ -1,6 +1,6 @@
 import { CheckpointItemKind } from "@/config/prisma-enums";
+import { CHECKPOINT_SCOPE_DAY, scopeState } from "@/lib/checkpoint-scope";
 import { devlogDayOf } from "@/lib/checkpoint-sprints";
-import { CHECKPOINT_SCOPE_DAY } from "@/schemas/checkpoint";
 import type {
 	CheckpointDevlogDto,
 	CheckpointDto,
@@ -27,8 +27,10 @@ export type SprintFacts = {
 	 * devlog cannot show a review yet.
 	 */
 	review: { text: string; at: string | null } | null;
-	/** The day-14 note, on the sprint the fourteenth day falls in, until it is answered. */
+	/** The scope note, on the sprint day 15 falls in, until it is answered. */
 	scopeNote: string | null;
+	/** The note can still be answered: the day after the third session has not run out. */
+	scopeOpen: boolean;
 	marks: { confirmed: number; asked: number; missing: string[] };
 	/** Evidence that landed in this sprint and is offered against an outcome. */
 	proved: CheckpointEvidenceDto[];
@@ -65,16 +67,22 @@ export const sprintFactsOf = (
 		CHECKPOINT_SCOPE_DAY >= sprint.firstDay &&
 		CHECKPOINT_SCOPE_DAY <= sprint.lastDay;
 
+	const scopeNote =
+		carriesScopeNote && checkpoint.midNote && !checkpoint.revisedAt
+			? checkpoint.midNote
+			: null;
+
 	return {
 		sprint,
 		devlog,
 		review: devlog?.curatorFeedback
 			? { text: devlog.curatorFeedback, at: devlog.curatorFeedbackAt }
 			: null,
-		scopeNote:
-			carriesScopeNote && checkpoint.midNote && !checkpoint.revisedAt
-				? checkpoint.midNote
-				: null,
+		scopeNote,
+		scopeOpen:
+			!!scopeNote &&
+			!!checkpoint.startedAt &&
+			scopeState(checkpoint.startedAt, checkpoint.sessions) === "open",
 		marks: {
 			confirmed: confirmed.length,
 			asked: asked.length,
@@ -91,7 +99,7 @@ export const sprintFactsOf = (
 
 /** The sprint wants something from the author: the dot in the sidebar. */
 export const sprintNeedsYou = (facts: SprintFacts, day: number | null) => {
-	if (facts.scopeNote) return true;
+	if (facts.scopeOpen) return true;
 
 	const devlogDue = devlogDayOf(facts.sprint.number);
 

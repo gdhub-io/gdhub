@@ -16,8 +16,15 @@ import { MoneyNotice } from "../MoneyNotice";
 import { ReplaceCuratorModal } from "./ReplaceCuratorModal";
 import styles from "./style.module.scss";
 
-/** How often the page asks again while it waits for Stripe to call us. */
-const SETTLE_EVERY = 3000;
+/**
+ * How the page asks again while it waits for Stripe to call us: often at
+ * first, when the webhook is due, then rarely, and not at all after two
+ * minutes — a tab left open must not keep the server asking Stripe forever.
+ */
+const SETTLE_FAST = 3000;
+const SETTLE_SLOW = 10000;
+const SETTLE_FAST_FOR = 30000;
+const SETTLE_GIVE_UP = 120000;
 
 export type PaidPanelProps = {
 	checkpoint: CheckpointDto;
@@ -64,17 +71,42 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 		!!checkpoint.curatorDeclinedAt &&
 		!checkpoint.curator;
 
+	const [waitingSince, setWaitingSince] = useState(() => Date.now());
+	const [gaveUp, setGaveUp] = useState(false);
+
 	useEffect(() => {
-		if (!settling) return;
+		if (!settling || gaveUp) return;
 
-		const timer = setInterval(() => {
-			queryClient.invalidateQueries({
-				queryKey: ["checkpoint", checkpoint.id],
-			});
-		}, SETTLE_EVERY);
+		let timer: ReturnType<typeof setTimeout>;
+		const askLater = () => {
+			const waited = Date.now() - waitingSince;
 
-		return () => clearInterval(timer);
-	}, [settling, queryClient, checkpoint.id]);
+			if (waited >= SETTLE_GIVE_UP) {
+				setGaveUp(true);
+				return;
+			}
+
+			timer = setTimeout(
+				() => {
+					queryClient.invalidateQueries({
+						queryKey: ["checkpoint", checkpoint.id],
+					});
+					askLater();
+				},
+				waited < SETTLE_FAST_FOR ? SETTLE_FAST : SETTLE_SLOW,
+			);
+		};
+
+		askLater();
+
+		return () => clearTimeout(timer);
+	}, [settling, gaveUp, waitingSince, queryClient, checkpoint.id]);
+
+	const askAgain = () => {
+		setGaveUp(false);
+		setWaitingSince(Date.now());
+		queryClient.invalidateQueries({ queryKey: ["checkpoint", checkpoint.id] });
+	};
 
 	// Cancelling takes the money back and closes the checkpoint, so it asks
 	// first: the confirm is the only place a filled red button is allowed.
@@ -115,6 +147,20 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 	return (
 		<Flex vertical gap={16}>
 			<MoneyNotice checkpoint={checkpoint} starting={settling} />
+
+			{settling && gaveUp && (
+				<Flex vertical gap={8} align="center" className={styles.waitingText}>
+					<Typography.Text type="secondary">
+						{t(
+							"checkpoints.paid.slow",
+							"The payment is taking longer than usual to confirm. If you paid, it will show up here — check again in a minute.",
+						)}
+					</Typography.Text>
+					<Button onClick={askAgain}>
+						{t("checkpoints.paid.checkAgain", "Check again")}
+					</Button>
+				</Flex>
+			)}
 
 			{!settling && (
 				<Flex

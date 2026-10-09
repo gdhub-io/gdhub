@@ -79,7 +79,7 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 		});
 	}
 
-	if (facts.scopeNote) {
+	if (facts.scopeOpen && facts.scopeNote) {
 		open.push({
 			key: "scope",
 			glyph: "open",

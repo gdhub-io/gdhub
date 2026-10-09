@@ -17,12 +17,13 @@ import dayjs from "dayjs";
 import { type ReactNode, useEffect, useRef } from "react";
 import { IconTile } from "@/components/ui";
 import { useProjectActivity } from "@/hooks/checkpoints";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type {
 	ProjectActivity,
 	ProjectActivityKind,
 } from "@/repositories/project-activity.repository";
 import type { CheckpointSprintDto } from "@/types/checkpoints";
-import { formatShort } from "./dates";
+import { formatDay, formatShort } from "./dates";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -81,8 +82,9 @@ const TONE: Record<
 	},
 };
 
+// Events reach back years; a bare "19 Jan" under "18 Mar" reads as out of order.
 const when = (iso: string) =>
-	dayjs(iso).isSame(dayjs(), "day") ? null : formatShort(iso);
+	dayjs(iso).isSame(dayjs(), "day") ? null : formatDay(iso);
 
 export type ActivityFeedProps = {
 	projectId: string;
@@ -148,7 +150,11 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 				name: row.actor ?? "",
 			}),
 		reworded: () =>
-			t("workflow.activity.reworded", "Task reworded on the day-14 revision"),
+			t(
+				"workflow.activity.reworded",
+				"Task reworded on the day-{day} revision",
+				{ day: CHECKPOINT_SCOPE_DAY },
+			),
 	};
 
 	const sub = (row: ProjectActivity) => {

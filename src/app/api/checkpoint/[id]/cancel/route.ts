@@ -1,13 +1,9 @@
-import {
-	CheckpointStatus,
-	PayableType,
-	PaymentStatus,
-} from "@gdhub-io/gdhub-prisma";
+import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, pipe, withAuth } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
+import { returnCheckpointMoney } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
-import { refundCheckout, releaseCheckout } from "@/services/stripe/server";
 
 /** The two states a checkpoint can be called off from; a running one cannot. */
 const CANCELLABLE: CheckpointStatus[] = [
@@ -55,60 +51,15 @@ export const POST = pipe(
 		return apiError.badRequest("checkpointRunning");
 	}
 
-	const payment = await prisma.payment.findFirst({
-		where: {
-			payableType: PayableType.CHECKPOINT,
-			payableId: id,
-			status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
-		},
-		select: {
-			id: true,
-			amount: true,
-			currency: true,
-			status: true,
-			providerTransactionId: true,
-		},
-	});
+	const returned = await returnCheckpointMoney(id, "checkpointCancelled");
 
-	if (payment?.providerTransactionId) {
-		const charged = payment.status === PaymentStatus.COMPLETED;
-
-		if (charged) {
-			const refund = await refundCheckout(payment.providerTransactionId);
-
-			if (!refund) return apiError.internal("refundFailed");
-
-			await prisma.$transaction([
-				prisma.refund.create({
-					data: {
-						paymentId: payment.id,
-						amount: refund.amount ?? payment.amount,
-						currency: (refund.currency ?? payment.currency).toUpperCase(),
-						reason: "checkpointCancelled",
-						providerRefundId: refund.id,
-					},
-				}),
-				prisma.payment.update({
-					where: { id: payment.id },
-					data: { status: PaymentStatus.REFUNDED },
-				}),
-			]);
-		} else {
-			const released = await releaseCheckout(payment.providerTransactionId);
-
-			if (!released) return apiError.internal("holdNotReleased");
-
-			await prisma.payment.update({
-				where: { id: payment.id },
-				data: { status: PaymentStatus.CANCELED },
-			});
-		}
-	}
+	if (returned && "failed" in returned)
+		return apiError.internal(returned.failed);
 
 	await prisma.projectCheckpoint.delete({ where: { id } });
 
 	return json({
-		refunded: payment?.status === PaymentStatus.COMPLETED,
-		released: payment?.status === PaymentStatus.PROCESSING,
+		refunded: returned?.refunded ?? false,
+		released: returned?.released ?? false,
 	});
 });

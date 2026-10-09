@@ -1,13 +1,5 @@
 import { CheckpointStatus } from "@/config/prisma-enums";
-import {
-	apiError,
-	json,
-	pipe,
-	type SessionUser,
-	withAuth,
-} from "@/lib/api-handlers";
-import { withSpaceGuard } from "@/lib/space-guard";
-import { projectOfCheckpoint } from "@/lib/space-ids";
+import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { checkpointRoomFor } from "@/services/chat/checkpoint-room";
 import { prisma } from "@/services/prisma";
@@ -17,15 +9,10 @@ export const dynamic = "force-dynamic";
 
 /**
  * The checkpoint's chat for whoever opens it: the curator or someone on the
- * team. A viewer of the space who is not on the team is not let into it.
+ * team. Not behind the space guard — the curator has no role in the project,
+ * so the right comes from being on the team or named on the checkpoint.
  */
-export const POST = pipe(
-	withAuth({ mode: "user" }),
-	withSpaceGuard({
-		permission: "project.checkpoints.view",
-		idFrom: projectOfCheckpoint,
-	}),
-)(async (_req, ctx, { user }) => {
+export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const caller = user as SessionUser | undefined;
 	if (!caller) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };

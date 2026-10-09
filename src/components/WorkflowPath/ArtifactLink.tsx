@@ -1,7 +1,7 @@
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { Typography } from "antd";
 import { artifactIcon } from "@/components/checkpoints/ArtifactPicker";
-import { useArtifactTypeLabel } from "@/components/checkpoints/artifactType";
+import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
 import type { CheckpointArtifactRef } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
