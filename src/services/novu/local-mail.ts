@@ -14,7 +14,7 @@ export const sendsLocally = () =>
 
 const URL_PATTERN = /^https?:\/\/\S+$/;
 
-const escape = (text: string) =>
+const escapeHtml = (text: string) =>
 	text.replace(
 		/[&<>"]/g,
 		(char) =>
@@ -26,16 +26,16 @@ export function renderLocalMail({ to, payload, template }: NovuSendArgs) {
 		const text =
 			typeof value === "string" ? value : JSON.stringify(value, null, 2);
 		const cell = URL_PATTERN.test(text)
-			? `<a href="${escape(text)}">${escape(text)}</a>`
-			: `<pre style="margin:0;white-space:pre-wrap">${escape(text)}</pre>`;
-		return `<tr><td style="padding:4px 12px 4px 0;vertical-align:top"><b>${escape(key)}</b></td><td style="padding:4px 0">${cell}</td></tr>`;
+			? `<a href="${escapeHtml(text)}">${escapeHtml(text)}</a>`
+			: `<pre style="margin:0;white-space:pre-wrap">${escapeHtml(text)}</pre>`;
+		return `<tr><td style="padding:4px 12px 4px 0;vertical-align:top"><b>${escapeHtml(key)}</b></td><td style="padding:4px 0">${cell}</td></tr>`;
 	});
 
 	return {
 		to: to.email ?? to.subscriberId,
 		subject: `[Novu · ${template}] to ${to.subscriberId}`,
 		text: `${template}\n\n${JSON.stringify(payload, null, 2)}`,
-		html: `<p>Novu workflow <b>${escape(template)}</b>, subscriber <code>${escape(to.subscriberId)}</code></p><table>${rows.join("")}</table>`,
+		html: `<p>Novu workflow <b>${escapeHtml(template)}</b>, subscriber <code>${escapeHtml(to.subscriberId)}</code></p><table>${rows.join("")}</table>`,
 	};
 }
 
