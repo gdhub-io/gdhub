@@ -4,12 +4,16 @@
 
 ## Want
 
-When the 28 days are over, the industry curator opens the checkpoint in their
-advisor space, reads the goal card, the devlogs, the evidence and the pulse in
-one place, picks one of three verdicts and writes why. From then on the
-checkpoint is closed: the author reads the verdict on the path, the
-checkpoint's chat moves to "Closed", and the project can buy its next
-checkpoint.
+When the 28 days are over, the industry curator is told that a verdict is due,
+by when, and where to write it. They open the checkpoint from their advisor
+space and read the goal card, the last build, the devlogs and the team pulse
+side by side. Then they pick one of three verdicts and write why. They may
+draft it from sprint 4, and they send it from the start of the final call on
+day 29. Sending closes the checkpoint:
+- the author is told and reads the verdict on the path;
+- the checkpoint's chat moves to "Closed";
+- the author chooses whether to run another checkpoint or go on with the
+  stage's tasks alone.
 
 ## Why now
 
@@ -22,51 +26,54 @@ cancelled.
 
 ## Constraints
 
-- Design: `T2L8W` / `YjDna` (Write the verdict).
-  - Left: the goal card, the devlogs, the evidence and the pulse.
-  - Right: three verdicts, a required reasoning of up to 1200 characters, and
-    "Cannot be edited afterwards".
-- **What counts as delivered is decided in code.** `settleVerdict` and
-  `unprovenOutcomes` (`src/lib/checkpoint-verdict.ts`) already do this for the
-  AI curator. The human curator goes through the same rule.
-  - With an outcome still unproven, only "Goal missed" can be chosen.
-  - With every outcome proven, "Goal missed" cannot be chosen.
-  - The server settles the verdict again; it never trusts the form.
-- Only the checkpoint's own curator may write the verdict, only from `Review`,
-  and only once.
-- Closing writes the verdict, then closes the chat through `syncChat` and
-  `closeCheckpointRoom`. A Matrix failure must not undo the verdict.
-- **Active → Review** is the first step of the checkpoints cron:
-  `api/cron/checkpoints`, daily, behind `vercel_cron`. It is the route GDHUB-72
-  will grow. This step runs for both kinds of curator, because it is what makes
-  the checkpoint answerable.
+- **Design** (`docs/design/platform-design.pen`):
+  - list card `F7WRD`;
+  - modal `vC7gn` (send) and `F041BL` (draft), plus the tab `VSpKU`;
+  - author results `dR8Bu`;
+  - path after the verdict `tQa5n`;
+  - notifications `Yfr1j`.
+
+  Logic: `docs/checkpoints-verdict-flow.d2`.
+- **The curator chooses freely.** No server rule ties the verdict to the
+  evidence. "Ready for the next stage" is hidden on the workflow's last stage.
+- **Times, all in `src/config/checkpoint.ts`:**
+  - the draft opens on the first day of sprint 4;
+  - sending opens at the start of the final call;
+  - the verdict is due by `dueAt` + 3 days.
+  - The final call is session 5: its `curatorJoinedAt` or `scheduledAt`. With
+    no session row, it is the start of day 29.
+  - Overdue is still accepted.
+- **Only the checkpoint's own human curator** may draft or send, and only once.
+  Anyone else gets a 404.
+- **The draft lives in its own columns** (`verdictDraft*`). The author's
+  payloads never select it.
+- **Sending:**
+  1. writes the verdict and clears the draft;
+  2. closes the chat through `syncChat`;
+  3. notifies the author.
+
+  Neither a Matrix nor a Novu failure undoes the verdict.
+- **Active → Review** is the checkpoints cron, daily at 01:00 UTC. It moves
+  every kind of checkpoint and tells human curators that a verdict is due.
+- **Curators do not answer devlogs in writing.** They talk on the calls. The
+  route, the form and the AI's devlog answer are gone, and so is
+  `ProjectReport.curatorFeedback`.
 
 ## Done when
 
-- [ ] After day 28 the daily cron moves an Active checkpoint to Review. A
-  checkpoint still inside its 28 days is not touched.
-- [ ] The curator sees the checkpoint in Review on /advisor/checkpoints with
-  "Write the verdict". The modal offers only the verdicts the evidence allows.
-- [ ] Submitting closes the checkpoint with the verdict, the note, `decidedAt`
-  and `decidedById`. A second submit is refused.
-- [ ] Refused: another curator, the author, a checkpoint that is not in Review,
-  an AI-curated checkpoint.
-- [ ] The author's path shows the closed checkpoint and offers "Head for the
-  next checkpoint". The chat sits under "Closed".
+- [ ] After day 28 the cron moves an Active checkpoint to Review and the human
+  curator gets "verdict due by …" with a link that opens the modal.
+- [ ] From sprint 4 the curator can save a draft. Before the final call starts,
+  sending is refused. From its start, sending closes the checkpoint with the
+  verdict, the note, `decidedAt` and `decidedById`. A second send is refused.
+- [ ] Refused: another curator, the author, an AI-curated checkpoint.
+- [ ] The author is notified. The link opens the results. The path shows the
+  verdict with its meaning, plus "How do you go on?": another checkpoint, or
+  on your own. The chat sits under "Closed".
 
 ## Out of scope
 
 - The AI curator's verdict run, reminders, pulses and call notes: GDHUB-72.
-- Counting an outcome without an artifact (`acceptedNote`). The design does not
-  draw it; the rule already allows it for later.
-- Moving the stage on "Stage can be closed": GDHUB-37.
+- Moving the stage on "Ready for the next stage": GDHUB-37.
+- The "What you have now" purchase step: GDHUB-78.
 - Payout, and the author rating the curator.
-- The email to the team. The verdict shows on the path; a Novu template is GDHUB-72's.
-
-## Open questions
-
-- When does Review start: the morning after day 28, or after the final call on
-  day 29? **Assumed:** the morning after day 28, because the verdict is
-  written after the final call either way.
-- Should the curator be able to add a note to each outcome? **Assumed:** no; the
-  design has one reasoning field.

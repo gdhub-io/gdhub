@@ -286,3 +286,25 @@ export type CheckpointListResponse = {
 	canCreate: boolean;
 	blocker: CheckpointBlocker | null;
 };
+
+/** What the verdict modal reads beyond the checkpoint card (frame `vC7gn`). */
+export type VerdictContextDto = {
+	/** Null once decided; otherwise what the curator may do now. */
+	stage: "early" | "draft" | "send" | null;
+	dueAt: string | null;
+	draft: {
+		verdict: CheckpointVerdict | null;
+		note: string;
+		savedAt: string;
+	} | null;
+	finalCall: { scheduledAt: string; curatorJoinedAt: string | null } | null;
+	currentStage: { name: string; key: string | null };
+	/** Null on the workflow's last stage, which hides "Ready for the next stage". */
+	nextStage: { name: string; key: string } | null;
+	lastBuild: {
+		name: string | null;
+		link: string;
+		domain: string | null;
+		createdAt: string;
+	} | null;
+};

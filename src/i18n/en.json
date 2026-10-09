@@ -438,10 +438,14 @@
 	"Youtube": "Youtube",
 	"actual vacancies": "actual vacancies",
 	"advisor": {
+		"card": {
+			"devlogs": "Devlogs"
+		},
 		"checkpoints": {
 			"accept": "Take it on",
 			"answerFailed": "The answer was not saved",
 			"answerNote": "An author's money is held until you answer, and released after three days without one.",
+			"answerWindow": "You have three days to answer.",
 			"asked": "Waiting for your answer",
 			"closed": "Closed",
 			"decline": "Turn down",
@@ -451,6 +455,56 @@
 			"running": "Under way",
 			"subtitle": "Checkpoints assigned to you.",
 			"title": "Checkpoints"
+		},
+		"project": {
+			"role": "Role",
+			"teamEmpty": "Nobody has joined the team yet."
+		},
+		"verdict": {
+			"alreadySent": "The verdict is sent.",
+			"artifact": "Artifact",
+			"build": "Build",
+			"chipDraft": "Draft · final call {date}",
+			"chipDue": "Verdict due by {date}",
+			"chipOverdue": "Verdict overdue",
+			"confirm": "Send the verdict? It cannot be edited afterwards.",
+			"counter": "required · {n} / {max}",
+			"cut": "Cut",
+			"dates": "{from} – {to}",
+			"day": "day {n}",
+			"day1": "On day 1",
+			"devlogsCount": "{n} of {total} published",
+			"draft": "Draft the verdict",
+			"draftFailed": "The draft was not saved",
+			"draftNote": "Draft saved · {when}. Only you see it.",
+			"draftSaved": "Draft saved",
+			"dueBy": "Verdict due by {date}",
+			"finalNote": "Sending is final: the verdict cannot be edited afterwards.",
+			"goalCard": "Goal card",
+			"lastBuild": "Last build",
+			"noArtifact": "No artifact",
+			"noBuild": "No build was uploaded in these 28 days.",
+			"noDevlogs": "No devlogs were published.",
+			"noEvidence": "No evidence attached",
+			"now": "Now",
+			"openBuild": "Open the build",
+			"opensIn": "The verdict opens in sprint {n}.",
+			"overdue": "Verdict overdue",
+			"proven": "· proven",
+			"pulse": "Team pulse",
+			"pulseCount": "{confirmed} of {asked} confirmed",
+			"reasoning": "Your reasoning",
+			"saveDraft": "Save draft",
+			"send": "Send the verdict",
+			"sendFailed": "The verdict was not sent",
+			"sendIncomplete": "Choose a verdict and write your reasoning first.",
+			"sendLocked": "Sending opens when the final call starts on {date}.",
+			"sent": "The verdict is sent",
+			"title": "Write the verdict",
+			"uploaded": "Uploaded {date}",
+			"whatExisted": "What existed on day 1",
+			"windowNote": "Sending opens when the final call starts on {opens}; the verdict is due by {due}.",
+			"write": "Write the verdict"
 		}
 	},
 	"agreeWithTermsAndPrivacy": "By joining, you agree to our Terms of Service and Privacy Policy",
@@ -671,6 +725,7 @@
 		},
 		"card": {
 			"awaiting": "Paid. The 28 days start when the curator takes it on.",
+			"goal": "Checkpoint goal",
 			"legendCut": "Cut on day {day} · not counted",
 			"legendReworded": "Reworded on day {day}",
 			"taskCut": "Cut on day {day}"
@@ -1117,9 +1172,14 @@
 		"tab.status": "Status",
 		"verdict": {
 			"goalMet": "Goal met",
+			"goalMetMeaning": "Outcomes are complete. The project stays on this stage; continue with a new checkpoint.",
 			"goalMissed": "Goal missed",
+			"goalMissedMeaning": "Outcomes are incomplete. Continue with a new checkpoint.",
 			"locked": "Written on day 28",
 			"lockedNote": "{done} of {total} outcomes has evidence against it so far.",
+			"nextStage": "Ready for the next stage",
+			"nextStageMeaning": "Goal met. The project may move from {from} to {to}.",
+			"nextStageMeaningShort": "Goal met. The project may move to the next stage.",
 			"review": "The curator is writing it",
 			"reviewNote": "Waiting for the curator’s verdict.",
 			"stageClosed": "Stage can be closed",
@@ -3335,6 +3395,17 @@
 			"today": "Today, {time}",
 			"vacancyClosed": "Vacancy closed: {title}",
 			"vacancyOpened": "Vacancy opened: {title}"
+		},
+		"after": {
+			"another": "Another checkpoint",
+			"anotherBody": "28 days with a curator: a goal, four sprints and a verdict at the end.",
+			"by": "— {name}, curator",
+			"continue": "Continue with stage tasks",
+			"own": "On your own",
+			"ownBody": "Work through the {stage} tasks at your own pace, without a curator.",
+			"plan": "Plan Checkpoint {number}",
+			"title": "How do you go on?",
+			"verdictOn": "verdict {date}"
 		},
 		"all-steps": "All steps",
 		"aside": {

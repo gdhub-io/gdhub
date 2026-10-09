@@ -27,6 +27,10 @@
 		{
 			"path": "/api/cron/checkpoint-holds",
 			"schedule": "0 6 * * *"
+		},
+		{
+			"path": "/api/cron/checkpoints",
+			"schedule": "0 1 * * *"
 		}
 	],
 	"functions": {

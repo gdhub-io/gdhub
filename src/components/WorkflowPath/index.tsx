@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Modal, Typography } from "antd";
 import axios from "axios";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import WorkflowTasksPanel from "@/components/WorkflowContent/WorkflowTasksPanel";
 import { CheckpointStatus } from "@/config/prisma-enums";
@@ -11,6 +11,7 @@ import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
 import { ActivityFeed } from "./ActivityFeed";
+import { AfterVerdict } from "./AfterVerdict";
 import { CheckpointAside } from "./CheckpointAside";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
@@ -84,6 +85,14 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const offered =
 		can("project.checkpoints.create") &&
 		(!!pending || !!list?.canCreate || locked);
+	// The checkpoint whose "On your own" this viewer chose; a per-browser convenience.
+	const ownKey = `gd.workflow.own.${project.id}`;
+	const [ownFor, setOwnFor] = useState<string | null>(null);
+	useEffect(() => {
+		try {
+			setOwnFor(localStorage.getItem(ownKey));
+		} catch {}
+	}, [ownKey]);
 
 	const move = useMutation({
 		mutationFn: (direction: "next") =>
@@ -105,6 +114,22 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
 		.map((checkpoint, index) => ({ checkpoint, number: index + 1 }));
 	const previous = numbered.at(-1) ?? null;
+	// Just closed on this stage and nothing started since: the author chooses how to go on.
+	const afterVerdict =
+		previous &&
+		offered &&
+		!pending &&
+		!running &&
+		previous.checkpoint.stepId === current.id &&
+		ownFor !== previous.checkpoint.id
+			? previous
+			: null;
+	const goOwn = (checkpointId: string) => {
+		setOwnFor(checkpointId);
+		try {
+			localStorage.setItem(ownKey, checkpointId);
+		} catch {}
+	};
 
 	const requiredOpen = current.tasks.some(
 		(task) => task.required && !task.done,
@@ -167,11 +192,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const closedOn = (stepId: string) =>
 		numbered.filter(({ checkpoint }) => checkpoint.stepId === stepId);
 	const closedNodes = (stepId: string) =>
-		closedOn(stepId).map(({ checkpoint, number }) => (
-			<PathNode key={checkpoint.id} marker="cleared">
-				<ClosedCheckpoint checkpoint={checkpoint} number={number} />
-			</PathNode>
-		));
+		closedOn(stepId)
+			.filter(({ checkpoint }) => checkpoint.id !== afterVerdict?.checkpoint.id)
+			.map(({ checkpoint, number }) => (
+				<PathNode key={checkpoint.id} marker="cleared">
+					<ClosedCheckpoint checkpoint={checkpoint} number={number} />
+				</PathNode>
+			));
 
 	// A stage starts when the project moves onto it (plannedAt is stamped then)
 	// and ends when it finishes or the next one starts.
@@ -304,7 +331,18 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						{(offered || closedOn(current.id).length > 0) && (
 							<PathBranch ahead pending={closedOn(current.id).length === 0}>
 								{closedNodes(current.id)}
-								{offered && (
+								{afterVerdict && (
+									<PathNode marker="cleared">
+										<AfterVerdict
+											checkpoint={afterVerdict.checkpoint}
+											number={afterVerdict.number}
+											project={project}
+											locked={locked}
+											onOwn={() => goOwn(afterVerdict.checkpoint.id)}
+										/>
+									</PathNode>
+								)}
+								{offered && !afterVerdict && (
 									<PathNode marker="none" rail="dashed" space={0}>
 										<CheckpointOffer
 											project={project}

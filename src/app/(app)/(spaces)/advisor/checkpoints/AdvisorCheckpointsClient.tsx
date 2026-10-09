@@ -2,12 +2,18 @@
 
 import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Skeleton, Typography } from "antd";
+import { Button, Flex, Skeleton, Typography } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { AdvisorCheckpointCard } from "@/components/advisor/AdvisorCheckpointCard";
+import { VerdictModal } from "@/components/advisor/VerdictModal";
 import { CheckpointCard } from "@/components/checkpoints/CheckpointCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { EmptyState, SectionHeading } from "@/components/ui";
+import { SPRINT_DAYS, VERDICT_DRAFT_FROM_SPRINT } from "@/config/checkpoint";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { useAdvisorCheckpoints } from "@/hooks/checkpoints";
+import { verdictDueBy, verdictOverdue } from "@/lib/checkpoint-verdict-window";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -21,11 +27,57 @@ import styles from "./style.module.scss";
 export function AdvisorCheckpointsClient() {
 	const { t } = useTranslate();
 	const { data, isPending } = useAdvisorCheckpoints();
+	const [verdictId, setVerdictId] = useState<string | null>(null);
+
+	// The curator's notification links here with `?verdict=<id>`; taken once, so a reload does not reopen it.
+	useEffect(() => {
+		const url = new URL(window.location.href);
+		const asked = url.searchParams.get("verdict");
+		if (!asked) return;
+		setVerdictId(asked);
+		url.searchParams.delete("verdict");
+		window.history.replaceState(null, "", url);
+	}, []);
+
+	const verdictFor = data?.running.find((row) => row.id === verdictId);
+
+	const verdictAction = (row: AdvisorCheckpointDto) => {
+		const review = row.status === CheckpointStatus.Review;
+		const drafting =
+			row.status === CheckpointStatus.Active &&
+			(row.day ?? 0) > (VERDICT_DRAFT_FROM_SPRINT - 1) * SPRINT_DAYS;
+		if (!review && !drafting) return null;
+
+		const overdue = !!row.dueAt && verdictOverdue(row.dueAt);
+
+		return (
+			<>
+				{review && !!row.dueAt && (
+					<Typography.Text type={overdue ? "warning" : "secondary"}>
+						{overdue
+							? t("advisor.verdict.overdue", "Verdict overdue")
+							: t("advisor.verdict.dueBy", "Verdict due by {date}", {
+									date: dayjs(verdictDueBy(row.dueAt)).format("D MMM"),
+								})}
+					</Typography.Text>
+				)}
+				<Button
+					type={review ? "primary" : "default"}
+					onClick={() => setVerdictId(row.id)}
+				>
+					{review
+						? t("advisor.verdict.write", "Write the verdict")
+						: t("advisor.verdict.draft", "Draft the verdict")}
+				</Button>
+			</>
+		);
+	};
 
 	const section = (
 		title: string,
 		rows: AdvisorCheckpointDto[],
 		answerable?: boolean,
+		withVerdict?: boolean,
 	) =>
 		rows.length > 0 && (
 			<Flex vertical gap={12}>
@@ -43,6 +95,7 @@ export function AdvisorCheckpointsClient() {
 							checkpoint={row}
 							projectSlug={row.project.slug}
 							href={`/advisor/checkpoints/${row.id}`}
+							action={withVerdict ? verdictAction(row) : undefined}
 						/>
 					),
 				)}
@@ -88,6 +141,8 @@ export function AdvisorCheckpointsClient() {
 					{section(
 						t("advisor.checkpoints.running", "Under way"),
 						data?.running ?? [],
+						false,
+						true,
 					)}
 					{section(
 						t("advisor.checkpoints.closed", "Closed"),
@@ -108,6 +163,14 @@ export function AdvisorCheckpointsClient() {
 					</Typography.Text>
 				)}
 			</div>
+
+			{verdictFor && (
+				<VerdictModal
+					checkpoint={verdictFor}
+					open
+					onClose={() => setVerdictId(null)}
+				/>
+			)}
 		</div>
 	);
 }

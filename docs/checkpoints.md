@@ -394,7 +394,7 @@ Three values, and every one of them ends the checkpoint:
 
 | Verdict | Means | Next |
 |---|---|---|
-| `StageClosed` ("Stage can be closed") | Outcomes delivered and the stage's requirements met | Next unlocks; the author moves on when ready |
+| `StageClosed` ("Ready for the next stage") | Outcomes delivered and the stage's requirements met | Next unlocks; the author moves on when ready |
 | `GoalMet` | Outcomes delivered, stage needs more | New checkpoint on the same stage |
 | `GoalMissed` | Outcomes not delivered | New checkpoint, inputs recomputed from what exists |
 
@@ -583,8 +583,8 @@ checkpoint stays `Draft` until the payment webhook lands, then becomes `Active` 
 The last step states what the money buys and what it does not, and the author
 ticks a box before the pay button does anything:
 
-- **Bought:** five consultations, an answer to every devlog, and a verdict
-  written by day 30.
+- **Bought:** five consultations and a verdict written by day 31, after the
+  final call on day 29.
 - **Not bought:** the game. The team builds it; the curator holds the 28 days to
   the goal and cannot reach it for them.
 - **Not promised:** that the goal is met. A checkpoint where the work did not
@@ -670,7 +670,7 @@ Three things, in this order:
 3. **The thread — the road already travelled, collapsed.** Every event in time,
    **one line each**: the day, the date and the title, with the body behind a
    chevron. It is a record, not a working surface; the work is on the card above
-   it. Devlogs open to show the post and the curator's answer under it, the rest
+   it. Devlogs open to show the post, the rest
    are usually read as a list and never opened.
 
 **Money is shown once, before it is spent, and never again.** The price belongs
