@@ -1,11 +1,7 @@
 import { z } from "zod";
-import {
-	apiError,
-	json,
-	type SessionUser,
-	withAuth,
-	withValidation,
-} from "@/lib/api-handlers";
+import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfTeamInvitation } from "@/lib/space-ids";
 import { prisma } from "@/services/prisma";
 
 const GetInvitationQuerySchema = z.object({
@@ -42,44 +38,17 @@ export const GET = withAuth({ mode: "user" })(
 	}),
 );
 
-export const DELETE = withAuth({ mode: "user" })(
-	withValidation(
-		CancelInvitationQuerySchema,
-		"query",
-	)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const { id } = body as CancelInvitationQuery;
-
-		const invitation = await prisma.teamInvitation.findUnique({
-			where: { id },
-			include: {
-				team: {
-					include: {
-						members: {
-							where: { userId: currentUser.id },
-						},
-					},
-				},
-			},
-		});
-
-		if (!invitation) {
-			return apiError.notFound("Invitation not found");
-		}
-
-		const isTeamMember = invitation.team.members.some(
-			(member: { userId: string }) => member.userId === currentUser.id,
-		);
-
-		if (!isTeamMember) {
-			return apiError.forbidden(
-				"You do not have permission to cancel this invitation",
-			);
-		}
-
-		await prisma.teamInvitation.delete({ where: { id } });
-
-		return json({ success: true });
+export const DELETE = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.members.invite",
+		idFrom: projectOfTeamInvitation,
 	}),
-);
+	withValidation(CancelInvitationQuerySchema, "query"),
+)(async (_req, _ctx, { body }) => {
+	const { id } = body as CancelInvitationQuery;
+
+	await prisma.teamInvitation.delete({ where: { id } });
+
+	return json({ success: true });
+});
