@@ -110,6 +110,8 @@ export type CheckpointPulseRowDto = {
 	role: string | null;
 	joinedAt: string | null;
 	leftAt: string | null;
+	/** Checkpoint days with a devlog, an artifact or the pulse answered. */
+	activeDays: number[];
 	cells: CheckpointPulseCellDto[];
 };
 
@@ -153,6 +155,8 @@ export type CheckpointDto = {
 	verdictNote: string | null;
 	decidedAt: string | null;
 	acceptedTermsAt: string | null;
+	/** When the curator took it on; the workflow says so once. */
+	curatorAcceptedAt: string | null;
 	/** Set when a curator handed it back; the money was released with it. */
 	curatorDeclinedAt: string | null;
 	/** Everyone who could not take it: shown on the picker as unavailable. */
@@ -184,6 +188,8 @@ export type CheckpointDto = {
 	evidence?: CheckpointEvidenceDto[];
 	/** The list's current row only, and null while it is still a draft. */
 	signals?: CheckpointSignalsDto | null;
+	/** The list's current row only: a draft whose last checkout did not go through. */
+	paymentFailed?: boolean;
 	/** The list's current row only: what its author has to do next, if anything. */
 	next?: AuthorNextStep | null;
 	/** Counted in UTC on the server — see `checkpointProgress`. */
@@ -260,7 +266,8 @@ export type CheckpointBlocker =
 				order: number;
 			};
 	  }
-	| { reason: "noStage" };
+	| { reason: "noStage" }
+	| { reason: "purchaseClosed" };
 
 /** The three counts the card under way shows — see `checkpointSignals`. */
 export type CheckpointSignalsDto = {

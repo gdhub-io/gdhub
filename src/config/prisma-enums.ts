@@ -121,6 +121,7 @@ export const ChatRoomKind = {
 	ProjectGroup: "ProjectGroup",
 	EventGroup: "EventGroup",
 	CourseGroup: "CourseGroup",
+	Checkpoint: "Checkpoint",
 } as const satisfies Record<ChatRoomKindType, ChatRoomKindType>;
 export type ChatRoomKind = ChatRoomKindType;
 

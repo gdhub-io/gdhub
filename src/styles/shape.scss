@@ -57,6 +57,15 @@
 			corner-shape: round;
 		}
 
+		// The arrow of a popover, tooltip or dropdown is a rotated square cut by a
+		// clip-path; a superellipse corner on it bends the tip off the clip and
+		// the triangle all but vanishes.
+		:is(.ant-popover-arrow, .ant-tooltip-arrow, .ant-dropdown-arrow),
+		:is(.ant-popover-arrow, .ant-tooltip-arrow, .ant-dropdown-arrow)::before,
+		:is(.ant-popover-arrow, .ant-tooltip-arrow, .ant-dropdown-arrow)::after {
+			corner-shape: round;
+		}
+
 		// The same for a circle set through the `style` prop, which the browser
 		// serialises back into the attribute. `corner-shape` is not in csstype
 		// yet, so the alternative at each of those sites is a cast.

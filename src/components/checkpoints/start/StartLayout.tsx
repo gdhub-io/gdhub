@@ -2,38 +2,26 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Typography } from "antd";
-import clsx from "clsx";
 import type { ReactNode } from "react";
 import styles from "./StartLayout.module.scss";
 
 /**
- * The shell every question of the purchase shares — frames `W76sA5` … `tmP5M`.
- *
- * Six bars across the top say where the purchase has got to, and nothing else
- * does: the step's name is already under the bar it belongs to, so the panel
- * never repeats it, and the count is the bars themselves rather than a sentence.
- *
- * It lives inside the checkpoint page's panel, so it takes the height its
- * content needs; the full-viewport variant is gone with the routes it belonged
- * to.
+ * The shell every question of the purchase shares — frames 03–06 (`UhPrX` …
+ * `guKLF`): the question as the heading, "Step n/4" beside it.
  */
 
-export const START_STEPS = [
-	"now",
-	"goal",
-	"curator",
-	"planning",
-	"payment",
-] as const;
+export const START_STEPS = ["now", "curator", "payment"] as const;
 
 export type StartStep = (typeof START_STEPS)[number];
 
-/** The questions, then where paying lands — no question of its own. */
-const BARS = [...START_STEPS, "ready"] as const;
+/** The questions, then where paying lands — counted as a step of its own. */
+const STEPS = [...START_STEPS, "ready"] as const;
 
 export type StartLayoutProps = {
-	step: (typeof BARS)[number];
-	/** One line under the bars saying what this question is for. */
+	step: (typeof STEPS)[number];
+	/** The question itself, under the bars. */
+	title?: string;
+	/** One line under the title saying what this question is for. */
 	hint?: string;
 	/** Sits above the hint: what the author has to read before the step's own words. */
 	notice?: ReactNode;
@@ -53,6 +41,7 @@ export type StartLayoutProps = {
 
 export function StartLayout({
 	step,
+	title,
 	hint,
 	notice,
 	children,
@@ -62,68 +51,59 @@ export function StartLayout({
 	forward,
 }: StartLayoutProps) {
 	const { t } = useTranslate();
-	const index = BARS.indexOf(step);
-
-	const labels: Record<(typeof BARS)[number], string> = {
-		now: t("checkpoints.prepare.step.now", "Now"),
-		goal: t("checkpoints.prepare.step.goal", "Goal"),
-		curator: t("checkpoints.prepare.step.curator", "Curator"),
-		planning: t("checkpoints.prepare.step.planning", "Planning"),
-		payment: t("checkpoints.prepare.step.payment", "Payment"),
-		ready: t("checkpoints.prepare.step.ready", "Ready"),
-	};
+	const index = STEPS.indexOf(step);
 
 	return (
 		<div className={styles.flow}>
-			<Flex vertical gap={24} className={styles.content}>
-				<Flex gap={12}>
-					{BARS.map((candidate, position) => (
-						<Flex vertical gap={8} key={candidate} className={styles.segment}>
-							<span
-								className={clsx(
-									styles.bar,
-									position < index && styles.barDone,
-									position === index && styles.barCurrent,
-								)}
-							/>
-							<Typography.Text
-								className={styles.segmentLabel}
-								data-current={position === index || undefined}
-								data-ahead={position > index || undefined}
-							>
-								{labels[candidate]}
-							</Typography.Text>
-						</Flex>
-					))}
+			<Flex vertical gap={32} className={styles.content}>
+				<Flex vertical gap={8}>
+					<Flex justify="space-between" align="baseline" gap={16}>
+						{title ? (
+							<Typography.Title level={2} className={styles.title}>
+								{title}
+							</Typography.Title>
+						) : (
+							<span />
+						)}
+						<Typography.Text className={styles.stepCount}>
+							{t("checkpoints.prepare.stepNumber", "Step {current}/{total}", {
+								current: index + 1,
+								total: STEPS.length,
+							})}
+						</Typography.Text>
+					</Flex>
+					{hint && (
+						<Typography.Text className={styles.hint}>{hint}</Typography.Text>
+					)}
 				</Flex>
 
 				{notice}
 
-				{!!hint && (
-					<Typography.Text className={styles.hint}>{hint}</Typography.Text>
-				)}
-
-				<div className={styles.answer}>{children}</div>
+				<Flex vertical gap={32} className={styles.answer}>
+					{children}
+				</Flex>
 			</Flex>
 
-			<footer className={styles.foot}>
-				<Flex gap={8}>
-					{onBack && (
-						<Button onClick={onBack}>
-							{t("checkpoints.prepare.back", "Back")}
-						</Button>
-					)}
-					{forward}
-				</Flex>
-				<Flex gap={12} align="center">
-					{footNote}
-					{saved !== null && (
-						<Typography.Text className={styles.saved}>
-							{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
-						</Typography.Text>
-					)}
-				</Flex>
-			</footer>
+			{(onBack || forward || footNote || saved !== null) && (
+				<footer className={styles.foot}>
+					<Flex gap={8}>
+						{onBack && (
+							<Button onClick={onBack}>
+								{t("checkpoints.prepare.back", "Back")}
+							</Button>
+						)}
+						{forward}
+					</Flex>
+					<Flex gap={12} align="center">
+						{footNote}
+						{saved !== null && (
+							<Typography.Text className={styles.saved}>
+								{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
+							</Typography.Text>
+						)}
+					</Flex>
+				</footer>
+			)}
 		</div>
 	);
 }

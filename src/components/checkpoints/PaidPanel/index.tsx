@@ -19,7 +19,11 @@ import styles from "./style.module.scss";
 /** How often the page asks again while it waits for Stripe to call us. */
 const SETTLE_EVERY = 3000;
 
-export type PaidPanelProps = { checkpoint: CheckpointDto };
+export type PaidPanelProps = {
+	checkpoint: CheckpointDto;
+	/** Where a cancelled checkpoint leaves to; defaults to the page above this one. */
+	exitHref?: string;
+};
 
 /**
  * What the author sees between paying and the 28 days running.
@@ -33,7 +37,7 @@ export type PaidPanelProps = { checkpoint: CheckpointDto };
  * The screen never treats the return from Stripe as proof of anything. It shows
  * what the server says the status is, and the status only moves on the webhook.
  */
-export function PaidPanel({ checkpoint }: PaidPanelProps) {
+export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const queryClient = useQueryClient();
@@ -88,7 +92,7 @@ export function PaidPanel({ checkpoint }: PaidPanelProps) {
 				try {
 					await cancel.mutateAsync();
 					// The checkpoint no longer exists, so neither does this page.
-					router.push(pathname?.replace(/\/[^/]+$/, "") ?? "");
+					router.push(exitHref ?? pathname?.replace(/\/[^/]+$/, "") ?? "");
 				} catch {
 					message.error(
 						t(

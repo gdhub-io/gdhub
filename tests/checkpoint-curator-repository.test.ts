@@ -19,7 +19,11 @@ import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn() },
+		projectCheckpoint: {
+			findUnique: vi.fn(),
+			findFirst: vi.fn().mockResolvedValue(null),
+			update: vi.fn(),
+		},
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
 	},
@@ -113,6 +117,29 @@ describe("runGoalCheck", () => {
 						from: 15 * SPRINTS_PER_CHECKPOINT,
 						to: 28 * SPRINTS_PER_CHECKPOINT,
 					},
+				},
+			}),
+			{},
+		);
+	});
+
+	it("weighs the goal against how the last checkpoint ended", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValueOnce({
+			verdict: CheckpointVerdict.GoalMissed,
+			verdictNote: "Nobody outside the team played it.",
+		} as never);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				previous: {
+					verdict: CheckpointVerdict.GoalMissed,
+					note: "Nobody outside the team played it.",
 				},
 			}),
 			{},
@@ -477,5 +504,23 @@ describe("closeCheckpoint", () => {
 			}),
 			{},
 		);
+	});
+});
+
+describe("goal check schema", () => {
+	it("stays a valid schema before any task is written", async () => {
+		const { goalCheckSchema } = await import(
+			"@/services/checkpoint-curator/prompts/goal-check"
+		);
+		const schema = goalCheckSchema({
+			card: { goal: "A greybox", inputs: [], outcomes: [] },
+			stage: { name: "Ideation", requirements: [] },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
+			previous: null,
+		});
+
+		expect(
+			schema.properties.notes.items.properties.itemId,
+		).not.toHaveProperty("enum");
 	});
 });

@@ -25,6 +25,11 @@ export type SpaceHeaderConfig = {
 	trail?: SpaceTrailConfig;
 	menuItems?: MenuProps["items"];
 	menuSelectedKeys?: string[];
+	/**
+	 * A focused flow (buying a checkpoint): the way out replaces the header's
+	 * actions and the navigation is dropped, so the only exit is this one.
+	 */
+	exit?: ReactNode;
 };
 
 type SpaceHeaderStore = {

@@ -3,6 +3,7 @@ import {
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { env } from "@/helpers/env";
 import {
 	apiError,
@@ -45,6 +46,8 @@ export const POST = pipe(
 
 	const { id } = (await ctx.params) as { id: string };
 
+	if (!checkpointPurchaseOpen()) return apiError.badRequest("purchaseClosed");
+
 	// A checkout finished in another tab, whose webhook has not come, must not
 	// be sold a second time.
 	const earlier = await pendingCheckout(id);
@@ -64,7 +67,7 @@ export const POST = pipe(
 		"NEXT_PUBLIC_APP_URL",
 		env("NEXTAUTH_URL", "http://localhost:3000"),
 	);
-	const page = `${base}/user/project/${quote.checkpoint.project.slug}/checkpoints/${id}`;
+	const page = `${base}/user/project/${quote.checkpoint.project.slug}/workflow/cp/new`;
 
 	// A checkout left open keeps its row PENDING forever and would sit beside the
 	// new one in the author's receipts. Only one attempt is live at a time, and
@@ -103,7 +106,7 @@ export const POST = pipe(
 		name: quote.name,
 		description: quote.description,
 		customerEmail: payer.email ?? undefined,
-		successUrl: `${page}?paid=1`,
+		successUrl: `${page}?step=ready`,
 		cancelUrl: `${page}?step=payment`,
 	});
 

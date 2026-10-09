@@ -2,9 +2,16 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
+	PayableType,
+	PaymentStatus,
 	type Prisma,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
+import {
+	type ActivityEvent,
+	activeDaysByUser,
+} from "@/lib/checkpoint-activity";
 import {
 	checkpointProgress,
 	dayNumberOn,
@@ -21,6 +28,7 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
@@ -96,6 +104,7 @@ export const checkpointSelect = {
 	verdictNote: true,
 	decidedAt: true,
 	acceptedTermsAt: true,
+	curatorAcceptedAt: true,
 	curatorDeclinedAt: true,
 	declinedCuratorIds: true,
 	paymentId: true,
@@ -165,6 +174,7 @@ const checkpointDetailSelect = {
 		orderBy: { publishedAt: "desc" },
 		select: {
 			id: true,
+			authorId: true,
 			publishedAt: true,
 			content: true,
 			curatorFeedback: true,
@@ -307,11 +317,24 @@ const buildPulseRows = (
 	members: TeamMemberRow[],
 	pulses: PulseRow[],
 	startedAt: Date | null,
+	events: ActivityEvent[],
 ): CheckpointPulseRowDto[] => {
 	const now = new Date();
 	const byMemberAndSprint = new Map(
 		pulses.map((pulse) => [`${pulse.teamMemberId}:${pulse.week}`, pulse]),
 	);
+	const userOf = new Map(members.map((member) => [member.id, member.user.id]));
+	const active = startedAt
+		? activeDaysByUser(startedAt, [
+				...events,
+				...pulses.flatMap((pulse) => {
+					const userId = userOf.get(pulse.teamMemberId);
+					return userId && pulse.confirmedAt
+						? [{ userId, at: pulse.confirmedAt }]
+						: [];
+				}),
+			])
+		: new Map<string, number[]>();
 
 	return members.map((member) => ({
 		memberId: member.id,
@@ -321,6 +344,7 @@ const buildPulseRows = (
 		role: member.speciality?.name ?? member.position,
 		joinedAt: member.startedAt.toISOString(),
 		leftAt: member.finishedAt?.toISOString() ?? null,
+		activeDays: active.get(member.user.id) ?? [],
 		cells: startedAt
 			? Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) =>
 					pulseCell(
@@ -408,25 +432,20 @@ const toCheckpointDetail = (row: DetailRow) => {
 		})),
 		sprints: buildSprints(startedAt),
 		sessions: buildSessions(startedAt, sessions),
-		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt),
+		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt, [
+			...reports.map((report) => ({
+				userId: report.authorId,
+				at: report.publishedAt,
+			})),
+			...artifacts.flatMap((artifact) =>
+				artifact.createdByUser
+					? [{ userId: artifact.createdByUser.id, at: artifact.createdAt }]
+					: [],
+			),
+		]),
 		evidence: buildEvidence(items, artifacts, startedAt),
 	};
 };
-
-/**
- * The checkpoint's number through the whole project: the ones before it that
- * actually ran, plus one. Drafts and cancelled ones never took a number.
- */
-const checkpointNumber = async (row: { projectId: string; createdAt: Date }) =>
-	(await prisma.projectCheckpoint.count({
-		where: {
-			projectId: row.projectId,
-			createdAt: { lt: row.createdAt },
-			status: {
-				notIn: [CheckpointStatus.Draft, CheckpointStatus.Cancelled],
-			},
-		},
-	})) + 1;
 
 /** The project's builds uploaded inside the 28 days, each filed in its sprint. */
 const buildsDuring = async (row: {
@@ -511,6 +530,29 @@ const currentCheckpointSelect = {
 } as const;
 
 /** The one checkpoint a project may have on the go, `Draft` included. */
+/**
+ * A draft whose last checkout failed or expired. A `PENDING` one is not counted:
+ * it may be open in another tab, or paid with the webhook still on its way.
+ */
+const paymentFailed = async (row: {
+	id: string;
+	status: CheckpointStatus;
+	paymentId: string | null;
+}) => {
+	if (row.status !== CheckpointStatus.Draft || row.paymentId) return false;
+
+	const last = await prisma.payment.findFirst({
+		where: { payableType: PayableType.CHECKPOINT, payableId: row.id },
+		orderBy: { createdAt: "desc" },
+		select: { status: true },
+	});
+
+	return (
+		last?.status === PaymentStatus.FAILED ||
+		last?.status === PaymentStatus.CANCELED
+	);
+};
+
 export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
@@ -528,6 +570,7 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 
 	return {
 		...checkpoint,
+		paymentFailed: await paymentFailed(checkpoint),
 		curator: withCraft(curator),
 		sprints: buildSprints(startedAt),
 		// Only a running checkpoint asks anything of its author on a given day.
@@ -585,6 +628,8 @@ export const getCreationBlocker = async (projectId: string) => {
 	// A checkpoint belongs to exactly one stage, so a project that is not on one
 	// has nowhere to put it.
 	if (!workflow?.currentStepId) return { reason: "noStage" as const };
+
+	if (!checkpointPurchaseOpen()) return { reason: "purchaseClosed" as const };
 
 	return null;
 };

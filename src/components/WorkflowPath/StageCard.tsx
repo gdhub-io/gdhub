@@ -42,8 +42,6 @@ export type StageCardProps = {
 	/** When the project was on it: "12 Mar – 4 Jun", or "since 4 Jun" for the current one. */
 	dates?: string | null;
 	locale?: string;
-	/** Opens unfolded: the stage the project is on, when no checkpoint runs on it. */
-	defaultOpen?: boolean;
 	/** Present only on the current stage, for someone who may move it. */
 	next?: {
 		onClick: () => void;
@@ -63,24 +61,25 @@ export function StageCard({
 	title,
 	state,
 	dates,
-	defaultOpen = false,
 	locale,
 	next,
 }: StageCardProps) {
 	const { t } = useTranslate();
-	const [open, setOpen] = useState(defaultOpen);
+	const [open, setOpen] = useState(false);
 	const StageIcon = STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)];
-	// Only the stage the project is on is white; one behind or ahead stays outlined, open or not.
-	const live = state === "current" && open;
+	// Only the stage the project is on is white, folded or open; the others stay outlined.
+	const live = state === "current";
 
 	const eyebrow = {
 		ahead: t("workflow.path.stage.next", "Next stage"),
 		current: t("workflow.path.stage.current", "Current stage"),
-		done: t("workflow.path.stage.label", "Stage"),
+		done: t("workflow.path.stage.previous", "Previous stage"),
 	}[state];
 
 	return (
-		<div className={`${styles.card}${live ? ` ${styles.cardLive}` : ""}`}>
+		<div
+			className={`${styles.card}${live ? ` ${styles.cardLive}` : ""}${state === "done" ? ` ${styles.cardCompact}` : ""}`}
+		>
 			{/* ui-guard-ignore the whole header toggles; antd Collapse would restyle the card */}
 			<button
 				type="button"
@@ -88,7 +87,7 @@ export function StageCard({
 				className={styles.cardHead}
 				onClick={() => setOpen((value) => !value)}
 			>
-				<IconTile icon={StageIcon} size="md" />
+				<IconTile icon={StageIcon} size={state === "done" ? "sm" : "md"} />
 				<span className={styles.cardTitles}>
 					<span className={styles.overline}>{eyebrow}</span>
 					<span className={styles.title}>{title}</span>

@@ -14,6 +14,10 @@ import {
 } from "@/lib/api-handlers";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { returnCheckpointMoney } from "@/repositories/checkpoint-payment";
+import {
+	ensureCheckpointRoom,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { prisma } from "@/services/prisma";
 import { captureCheckout } from "@/services/stripe/server";
 
@@ -28,6 +32,9 @@ const startsOn = (wanted: Date | null) => {
 
 	return wanted && wanted > midnight ? wanted : midnight;
 };
+
+// Imports the server-side Matrix SDK via ensureChatRoom — keep dynamic
+export const dynamic = "force-dynamic";
 
 /**
  * The curator answering a checkpoint that was paid for and handed to them.
@@ -119,6 +126,12 @@ export const POST = pipe(
 					paymentId: null,
 				},
 	});
+
+	// The chat opens as the checkpoint starts, and the curator's yes is what
+	// starts it. The first click on the chat makes the room if this could not.
+	if (accept) {
+		await syncChat(`start ${id}`, () => ensureCheckpointRoom(id));
+	}
 
 	return json({ accepted: accept });
 });

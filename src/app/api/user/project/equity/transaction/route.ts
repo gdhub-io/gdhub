@@ -7,6 +7,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { ProjectEquityRepository } from "@/repositories/project-equity.repository";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 
 const TransactionQuerySchema = z.object({
@@ -36,6 +37,8 @@ export const GET = withAuth({ mode: "user" })(
 			where: {
 				userId: currentUser.id,
 				team: { project: { id: projectId } },
+				// An applicant, a rejection or a departure is no reader of the books.
+				...CONFIRMED_MEMBERS,
 			},
 		});
 

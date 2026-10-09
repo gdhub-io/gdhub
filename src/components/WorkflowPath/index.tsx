@@ -10,9 +10,13 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import type { ProjectWorkflowWithSteps } from "@/types/workflow";
+import { ActivityFeed } from "./ActivityFeed";
+import { CheckpointAside } from "./CheckpointAside";
+import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
+import { CuratorAccepted } from "./CuratorAccepted";
 import { formatDay, formatDayRange } from "./dates";
-import { PathNode } from "./PathNode";
+import { PathBranch, PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 import { StageCard } from "./StageCard";
 import styles from "./style.module.scss";
@@ -67,6 +71,18 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			? list.current
 			: null;
 	const { data: detail } = useCheckpoint(running?.id);
+	// A draft, or one paid and waiting on its curator: shown as the offer card.
+	const pending =
+		list?.current &&
+		(list.current.status === CheckpointStatus.Draft ||
+			list.current.status === CheckpointStatus.AwaitingCurator)
+			? list.current
+			: null;
+	// Until purchase opens the offer still shows, its button locked.
+	const locked = list?.blocker?.reason === "purchaseClosed";
+	const offered =
+		can("project.checkpoints.create") &&
+		(!!pending || !!list?.canCreate || locked);
 
 	const move = useMutation({
 		mutationFn: (direction: "next") =>
@@ -147,14 +163,14 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		</PathNode>
 	);
 
+	const closedOn = (stepId: string) =>
+		numbered.filter(({ checkpoint }) => checkpoint.stepId === stepId);
 	const closedNodes = (stepId: string) =>
-		numbered
-			.filter(({ checkpoint }) => checkpoint.stepId === stepId)
-			.map(({ checkpoint, number }) => (
-				<PathNode key={checkpoint.id} marker="cleared">
-					<ClosedCheckpoint checkpoint={checkpoint} number={number} />
-				</PathNode>
-			));
+		closedOn(stepId).map(({ checkpoint, number }) => (
+			<PathNode key={checkpoint.id} marker="cleared">
+				<ClosedCheckpoint checkpoint={checkpoint} number={number} />
+			</PathNode>
+		));
 
 	// A stage starts when the project moves onto it (plannedAt is stamped then)
 	// and ends when it finishes or the next one starts.
@@ -187,7 +203,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				state={state}
 				dates={stageDates(index, state)}
 				locale={locale}
-				defaultOpen={state === "current" && !running}
 				next={
 					state === "current" && canMove && nextStep
 						? {
@@ -228,6 +243,10 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 	return (
 		<div className={styles.layout}>
+			{/* It answers the one who chose the curator, not the whole team. */}
+			{running && detail && can("project.checkpoints.manage") && (
+				<CuratorAccepted checkpoint={detail} />
+			)}
 			<div>
 				{historyVisible &&
 					firstShown > 0 &&
@@ -242,7 +261,11 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						<PathNode key={step.id} marker="stageDone" start={step.order === 0}>
 							{stageCard(step.order)}
 						</PathNode>,
-						...closedNodes(step.id),
+						closedOn(step.id).length > 0 && (
+							<PathBranch key={`${step.id}-branch`}>
+								{closedNodes(step.id)}
+							</PathBranch>
+						),
 					])}
 
 				{running && detail ? (
@@ -251,22 +274,24 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						{/* The stage stays in view with a checkpoint running on it: it is
 						    what the sprints below are working through. */}
 						{currentStage}
-						{historyVisible && closedNodes(current.id)}
-						{(historyVisible || !sprintBehind) && (
-							<PathNode marker="none" space={12} inset>
-								{here(
-									sprintBehind ? <span /> : hereLabel,
-									historyVisible ? historyToggle : null,
-								)}
-							</PathNode>
-						)}
-						<RunningCheckpoint
-							checkpoint={detail}
-							project={project}
-							previous={previous}
-							canManage={can("project.checkpoints.manage")}
-							here={sprintBehind ? hereLabel : null}
-						/>
+						<PathBranch ahead>
+							{historyVisible && closedNodes(current.id)}
+							{(historyVisible || !sprintBehind) && (
+								<PathNode marker="none" space={12}>
+									{here(
+										sprintBehind ? <span /> : hereLabel,
+										historyVisible ? historyToggle : null,
+									)}
+								</PathNode>
+							)}
+							<RunningCheckpoint
+								checkpoint={detail}
+								project={project}
+								previous={previous}
+								canManage={can("project.checkpoints.manage")}
+								here={sprintBehind ? hereLabel : null}
+							/>
+						</PathBranch>
 					</>
 				) : (
 					<>
@@ -275,7 +300,21 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 							{here(hereLabel, behind !== null ? historyToggle : null)}
 						</PathNode>
 						{currentStage}
-						{closedNodes(current.id)}
+						{(offered || closedOn(current.id).length > 0) && (
+							<PathBranch ahead pending={closedOn(current.id).length === 0}>
+								{closedNodes(current.id)}
+								{offered && (
+									<PathNode marker="none" rail="dashed" space={0}>
+										<CheckpointOffer
+											project={project}
+											draft={pending}
+											first={numbered.length === 0}
+											locked={locked}
+										/>
+									</PathNode>
+								)}
+							</PathBranch>
+						)}
 					</>
 				)}
 
@@ -294,6 +333,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			</div>
 
 			<aside className={styles.aside}>
+				{running && detail && (
+					<CheckpointAside
+						checkpoint={detail}
+						projectSlug={project.slug}
+						canManage={can("project.checkpoints.manage")}
+					/>
+				)}
 				<WorkflowTasksPanel
 					tasks={current.tasks.map((task) => ({
 						id: task.id,
@@ -303,6 +349,10 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						done: task.done,
 					}))}
 					showHint={false}
+				/>
+				<ActivityFeed
+					projectId={project.id}
+					sprints={running && detail ? detail.sprints : undefined}
 				/>
 			</aside>
 

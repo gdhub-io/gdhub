@@ -1,83 +1,17 @@
-.summary {
+// Frame 05 (`ffbRA`): the read-back on the left, the price panel on the right.
+.split {
 	width: 100%;
 }
 
-// The curator's read, quiet but not hidden: it is advice the author already
-// chose to walk past once, and this is the last moment it can change anything.
-.suggestion {
-	padding: var(--gd-space-4);
-	border-radius: var(--gd-radius-card);
-	background: var(--tone-tint);
-
-	// One tone per state, bound once here: the icon and the label read it back
-	// rather than repeating the three-way choice each.
-	&[data-tone="warning"] {
-		--tone-tint: var(--gd-warning-tint);
-		--tone-solid: var(--gd-warning-solid);
-		--tone-ink: var(--gd-warning-on-tint);
-	}
-
-	&[data-tone="success"] {
-		--tone-tint: var(--gd-success-tint);
-		--tone-solid: var(--gd-success-solid);
-		--tone-ink: var(--gd-success-on-tint);
-	}
-
-	&[data-tone="info"] {
-		--tone-tint: var(--gd-info-tint);
-		--tone-solid: var(--gd-info-solid);
-		--tone-ink: var(--gd-info-on-tint);
-	}
-
-	// The read that said nothing: a state of the panel, not of the plan, so it
-	// carries no colour of its own.
-	&[data-tone="neutral"] {
-		--tone-tint: var(--gd-color-surface-sunken);
-		--tone-solid: var(--gd-color-text-secondary);
-		--tone-ink: var(--gd-color-text-secondary);
-	}
-}
-
-.suggestionIcon {
-	display: inline-flex;
-	flex: none;
-	// The glyph's box is taller than its ink, so it rides high without this.
-	margin-top: 2px;
-	color: var(--tone-solid);
-}
-
-.suggestionText {
+.summary {
 	flex: 1;
 	min-width: 0;
 }
 
-.suggestionLabel {
-	font-size: var(--gd-font-size-label);
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	color: var(--tone-ink);
-}
-
-// The way out of the warning keeps its line whatever the copy does.
-.suggestionAction {
-	flex: none;
-}
-
-.suggestionTitle {
-	font-size: var(--gd-font-size-body-lg);
-	font-weight: 600;
-}
-
-.suggestionBody {
-	color: var(--gd-color-text-secondary);
-	font-size: var(--gd-font-size-body-sm);
-	line-height: var(--gd-line-height-body);
-}
-
+// The hairline has to show on the page's own grey, which border-subtle matches.
 .block {
 	padding-bottom: var(--gd-space-4);
-	border-bottom: 1px solid var(--gd-color-border-subtle);
+	border-bottom: 1px solid var(--gd-color-border);
 
 	&:last-child {
 		border-bottom: none;
@@ -94,6 +28,8 @@
 }
 
 .edit {
+	height: auto;
+	padding: 0;
 	font-size: var(--gd-font-size-body-sm);
 }
 
@@ -101,22 +37,17 @@
 	font-feature-settings: "tnum";
 }
 
-.dot {
-	flex: none;
-	width: var(--gd-space-1);
-	height: var(--gd-space-1);
-	// Optically centred on the first line of the term beside it; half a line
-	// height would sit visibly low against a 4px dot.
-	margin-top: 7px;
-	border-radius: var(--gd-radius-pill);
-	corner-shape: round;
-	background: var(--gd-color-border-strong);
-}
-
 // The money, what it does not buy and the button that commits it sit in one
 // panel: the refusal has to be as easy to read as the total.
 .price {
-	margin-top: var(--gd-space-6);
+	flex: none;
+	width: 300px;
+
+	// Frame 05 ticks the agreement in the accent.
+	:global(.ant-checkbox-wrapper) {
+		--ant-color-primary: var(--gd-color-accent);
+		--ant-color-primary-hover: var(--gd-color-accent-hover);
+	}
 
 	:global(.ant-card-body) {
 		display: flex;
@@ -125,24 +56,21 @@
 	}
 }
 
+.priceLabel {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+}
+
 .total {
-	font-size: var(--gd-font-size-h2);
+	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
 	font-feature-settings: "tnum";
 }
 
-.vat {
-	font-size: var(--gd-font-size-body-sm);
-}
-
 .terms {
-	padding-top: var(--gd-space-4);
-	border-top: 1px solid var(--gd-color-border-subtle);
-}
-
-.termsHead {
-	font-size: var(--gd-font-size-body-sm);
-	font-weight: 600;
+	padding: var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-fill-subtle);
 }
 
 .termIcon {
@@ -166,10 +94,6 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
-.pending {
-	font-size: var(--gd-font-size-body-sm);
-}
-
 // The chosen curator sits in the same outlined panel the picker draws around
 // its list, frame `ZLEmV` — one row of it.
 .curator {
@@ -177,4 +101,12 @@
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-card);
 	background: var(--gd-color-surface);
+}
+
+// Frame 05.1 (`C4c18X`): the failed checkout, above everything it is about.
+.failed {
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border: 1px solid var(--gd-danger-solid);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-danger-tint);
 }

@@ -5,17 +5,13 @@ import { IconFlag, IconSparkles, IconUser } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Radio, Skeleton, Typography } from "antd";
 import { useState } from "react";
-import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import {
-	useCheckpointCurators,
-	useUpdateCheckpoint,
-} from "@/hooks/checkpoints";
+import { useUpdateCheckpoint } from "@/hooks/checkpoints";
 import styles from "./CuratorStep.module.scss";
 import { CuratorTable } from "./CuratorTable";
 import { usePrepareNav } from "./PrepareNav";
@@ -23,7 +19,7 @@ import { StartLayout, type StartStep } from "./StartLayout";
 import { useCheckpointDraft } from "./useDraft";
 
 /**
- * Step 3: who runs the 28 days (frame `vE1BQ`).
+ * Frame 04 (`mNWjy`): who runs the 28 days.
  *
  * The kind is chosen first and it decides what follows: a person brings the list
  * of experts to pick from, the AI curator brings one fixed price. Neither card
@@ -38,8 +34,6 @@ export function CuratorStep() {
 	const update = useUpdateCheckpoint(draft?.id);
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
-	const [preview, setPreview] = useState<string>();
-	const _curators = useCheckpointCurators();
 
 	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
@@ -51,13 +45,9 @@ export function CuratorStep() {
 					"checkpoints.prepare.noDraft",
 					"There is no draft to continue",
 				)}
-				description={t(
-					"checkpoints.prepare.noDraftHint",
-					"Start a checkpoint from the list and the goal card opens here.",
-				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.prepare.toList", "Back to checkpoints")}
+						{t("checkpoints.prepare.toWorkflow", "Back to the workflow")}
 					</Button>
 				}
 			/>
@@ -68,7 +58,6 @@ export function CuratorStep() {
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
 	const chosenPerson = person ?? draft.curator?.id ?? null;
-	const _talentCard = t("checkpoints.curator.talentCard", "Talent card");
 
 	const goTo = async (next: StartStep) => {
 		try {
@@ -96,25 +85,32 @@ export function CuratorStep() {
 			data-chosen={chosen === value || undefined}
 			onClick={() => setKind(value)}
 		>
-			<span className={styles.optionHead}>
-				<IconTile icon={icon} size="sm" />
-				<Radio checked={chosen === value} />
+			<IconTile
+				icon={icon}
+				size="lg"
+				tint={
+					chosen === value ? "var(--gd-color-surface)" : "var(--gd-fill-subtle)"
+				}
+				ink="var(--gd-color-text)"
+			/>
+			<span className={styles.optionText}>
+				<Typography.Text className={styles.optionName}>{name}</Typography.Text>
+				<Typography.Text className={styles.optionDescription}>
+					{description}
+				</Typography.Text>
 			</span>
-			<Typography.Text className={styles.optionName}>{name}</Typography.Text>
-			<Typography.Text className={styles.optionDescription}>
-				{description}
-			</Typography.Text>
+			<Radio checked={chosen === value} />
 		</button>
 	);
 
 	return (
 		<StartLayout
 			step="curator"
-			hint={t(
-				"checkpoints.prepare.h3",
-				"Choose who you want to take this journey with.",
+			title={t(
+				"checkpoints.curator.title",
+				"Who will take this journey with you?",
 			)}
-			onBack={() => goTo("goal")}
+			onBack={() => goTo("now")}
 			forward={
 				<Button
 					type="primary"
@@ -124,13 +120,13 @@ export function CuratorStep() {
 					// with `curatorKind: AI`, so it is indistinguishable from the author
 					// having picked the AI curator until the schema records the choice.
 					disabled={chosen === CheckpointCuratorKind.Human && !chosenPerson}
-					onClick={() => goTo("planning")}
+					onClick={() => goTo("payment")}
 				>
-					{t("checkpoints.prepare.next3", "Next — planning")}
+					{t("checkpoints.curator.next", "Next — payment")}
 				</Button>
 			}
 		>
-			<Flex vertical gap={24}>
+			<Flex vertical gap={24} className={styles.choices}>
 				<div>
 					<Typography.Text className={styles.label}>
 						{t("checkpoints.curator.typeLabel", "Curator type")}
@@ -141,8 +137,8 @@ export function CuratorStep() {
 							IconUser,
 							t("checkpoints.curator.expert", "Industry expert"),
 							t(
-								"checkpoints.curator.expertDescription",
-								"Live calls, written reviews and a verdict.",
+								"checkpoints.curator.expertCalls",
+								"A call every sprint, a final verdict, clear deadlines and reminders.",
 							),
 						)}
 						{option(
@@ -150,8 +146,8 @@ export function CuratorStep() {
 							IconSparkles,
 							t("checkpoints.curator.ai", "AI curator"),
 							t(
-								"checkpoints.curator.aiDescription",
-								"Written reviews and a day-28 verdict.",
+								"checkpoints.curator.aiWritten",
+								"Written feedback every sprint, a final verdict, clear deadlines and reminders.",
 							),
 						)}
 					</Flex>
@@ -196,13 +192,6 @@ export function CuratorStep() {
 					</Flex>
 				)}
 			</Flex>
-
-			<SpecialistPreviewModal
-				withOffer={false}
-				specialistId={preview}
-				open={!!preview}
-				onCancel={() => setPreview(undefined)}
-			/>
 		</StartLayout>
 	);
 }

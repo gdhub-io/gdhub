@@ -7,18 +7,15 @@
 	color: var(--gd-color-text);
 }
 
+// Frame 04: icon, what it is, and the radio on the right; the chosen one is
+// outlined in the accent and tinted with it.
 .option {
-	// Two cards side by side, equal width and equal height: the pair is compared
-	// across, so the description of one cannot sit lower than the other's.
 	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-2);
+	align-items: center;
+	gap: var(--gd-space-4);
 	flex: 1;
 	min-width: 0;
-	// The frame draws 103. A floor rather than a height, so a longer description
-	// grows both cards instead of spilling out of one.
-	min-height: 104px;
-	padding: var(--gd-space-4);
+	padding: var(--gd-space-6);
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
 	background: var(--gd-color-surface);
@@ -26,28 +23,29 @@
 	cursor: pointer;
 
 	&[data-chosen] {
-		border-color: var(--gd-color-accent);
+		border: 2px solid var(--gd-color-accent);
+		background: var(--gd-color-accent-subtle);
 	}
 }
 
-.optionHead {
+.optionText {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
 }
 
 .optionName {
-	font-size: var(--gd-font-size-body-lg);
+	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
 }
 
 .optionDescription {
 	color: var(--gd-color-text-secondary);
-	font-size: var(--gd-font-size-body-sm);
+	font-size: var(--gd-font-size-body);
 	line-height: var(--gd-line-height-body);
 }
-
-
 
 .vat {
 	font-size: var(--gd-font-size-body-sm);
@@ -79,4 +77,17 @@
 .note {
 	font-size: var(--gd-font-size-body-sm);
 	line-height: var(--gd-line-height-body);
+}
+
+// Frame 04 marks the answer in the accent, on the type cards and the list alike.
+.choices :global(.ant-radio-wrapper) {
+	--ant-color-primary: var(--gd-color-accent);
+	--ant-color-primary-hover: var(--gd-color-accent-hover);
+	--ant-color-primary-active: var(--gd-color-accent-hover);
+
+	// Inside the type card's button the hover state would paint it ink again.
+	:global(.ant-radio.ant-radio-checked) {
+		border-color: var(--gd-color-accent);
+		background: var(--gd-color-accent);
+	}
 }

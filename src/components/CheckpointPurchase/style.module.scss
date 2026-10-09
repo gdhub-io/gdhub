@@ -1,0 +1,7 @@
+// Frames 03–06: one 800px column, centred under the focus header.
+.page {
+	width: 100%;
+	max-width: 800px;
+	margin: 0 auto;
+	padding: var(--gd-space-12) var(--gd-space-4) var(--gd-space-16);
+}

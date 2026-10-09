@@ -24,7 +24,7 @@ export function CuratorRow({ curator }: { curator: CheckpointCurator }) {
 					<Typography.Text className={styles.name}>
 						{curator.name}
 					</Typography.Text>
-					<Tag bordered={false} className={styles.level}>
+					<Tag variant="filled" className={styles.level}>
 						<T keyName={curator.level} />
 					</Tag>
 				</Flex>

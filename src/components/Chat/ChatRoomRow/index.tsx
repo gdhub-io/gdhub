@@ -43,7 +43,9 @@ export function ChatRoomRow({
 			? t("chat.kind.advice", "Advice")
 			: room.kind === "VacancyOffer"
 				? t("chat.kind.offer", "Offer")
-				: null;
+				: room.kind === "Checkpoint"
+					? t("chat.kind.checkpoint", "Checkpoint")
+					: null;
 
 	const items: MenuProps["items"] = [
 		unread && {

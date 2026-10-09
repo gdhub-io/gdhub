@@ -81,6 +81,8 @@ export const GET = withAuth({ mode: "any" })(
 		if (currentUser?.id) {
 			teamMember = await prisma.teamMember.findFirst({
 				where: { vacancyId: id, userId: currentUser.id },
+				// A second application to the same vacancy is the one that counts.
+				orderBy: { createdAt: "desc" },
 			});
 		}
 

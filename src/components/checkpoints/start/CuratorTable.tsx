@@ -90,8 +90,10 @@ export function CuratorTable({
 							: ""
 				}
 				locale={{
-					emptyText:
-						price == null
+					// Said only once the list is in: under the spinner it reads as a verdict.
+					emptyText: curators.isLoading
+						? " "
+						: price == null
 							? t(
 									"checkpoints.curator.noneOpen",
 									"Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
@@ -111,7 +113,7 @@ export function CuratorTable({
 						},
 						{
 							key: "price",
-							width: 128,
+							width: 96,
 							align: "right",
 							render: (_: unknown, row: CheckpointCurator) => (
 								<Typography.Text className={styles.price}>
@@ -124,14 +126,13 @@ export function CuratorTable({
 						},
 						{
 							key: "talent",
-							width: 64,
+							width: 56,
 							align: "center",
 							render: (_: unknown, row: CheckpointCurator) => (
 								// Choosing a curator and reading about one are different
 								// intentions, so the row carries both.
 								<Tooltip title={talentCard}>
 									<Button
-										type="text"
 										aria-label={talentCard}
 										className={styles.talent}
 										icon={<IconId size={18} stroke={1.6} />}
@@ -145,7 +146,7 @@ export function CuratorTable({
 						},
 						{
 							key: "pick",
-							width: 96,
+							width: 56,
 							align: "center",
 							render: (_: unknown, row: CheckpointCurator) =>
 								cannot(row) ? (

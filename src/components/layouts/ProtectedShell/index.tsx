@@ -377,19 +377,23 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							</Space>
 						}
 						actions={
-							<HeaderActions
-								dropdownMenuItems={dropdownMenuItems}
-								onOpenMobileMenu={() => setOpenMobileMenu(true)}
-								avatarConfig={avatarConfig}
-							/>
+							spaceHeader?.exit ?? (
+								<HeaderActions
+									dropdownMenuItems={dropdownMenuItems}
+									onOpenMobileMenu={() => setOpenMobileMenu(true)}
+									avatarConfig={avatarConfig}
+								/>
+							)
 						}
 						menu={
-							<Menu
-								items={spaceHeader?.menuItems ?? menuItems}
-								mode="horizontal"
-								selectedKeys={spaceHeader?.menuSelectedKeys ?? [pathname]}
-								className={styles.appMenu}
-							/>
+							spaceHeader?.exit ? null : (
+								<Menu
+									items={spaceHeader?.menuItems ?? menuItems}
+									mode="horizontal"
+									selectedKeys={spaceHeader?.menuSelectedKeys ?? [pathname]}
+									className={styles.appMenu}
+								/>
+							)
 						}
 					/>
 					<Content ref={contentRef} className={styles.contentContainer}>

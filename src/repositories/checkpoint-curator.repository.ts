@@ -6,6 +6,7 @@ import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import type {
 	CuratorGoalCard,
 	CuratorLine,
@@ -101,6 +102,7 @@ export const goalCheckHash = (input: {
 	card: CuratorGoalCard;
 	stage: { name: string; requirements: string[] };
 	team: unknown;
+	previous: unknown;
 }) => createHash("sha256").update(JSON.stringify(input)).digest("hex");
 
 /**
@@ -122,6 +124,7 @@ export const runGoalCheck = async (
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
+			projectId: true,
 			goal: true,
 			stageName: true,
 			stepId: true,
@@ -150,6 +153,15 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
+	const previous = await prisma.projectCheckpoint.findFirst({
+		where: {
+			projectId: checkpoint.projectId,
+			status: CheckpointStatus.Closed,
+			verdict: { not: null },
+		},
+		orderBy: { decidedAt: "desc" },
+		select: { verdict: true, verdictNote: true },
+	});
 
 	const input = {
 		card: toCard(checkpoint.goal, checkpoint.items),
@@ -162,6 +174,9 @@ export const runGoalCheck = async (
 				timeForWork: member.user.profile?.timeForWork,
 			})),
 		),
+		previous: previous?.verdict
+			? { verdict: previous.verdict, note: previous.verdictNote }
+			: null,
 	};
 
 	const hash = goalCheckHash(input);
@@ -449,6 +464,10 @@ export const closeCheckpoint = async (
 			decidedAt: new Date(),
 		},
 	});
+
+	await syncChat(`close ${checkpointId}`, () =>
+		closeCheckpointRoom(checkpointId),
+	);
 
 	return settled;
 };

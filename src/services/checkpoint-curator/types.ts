@@ -60,6 +60,8 @@ export type GoalCheckInput = {
 	stage: CuratorStage;
 	/** What the promise is weighed against: the time the team actually has. */
 	team: CuratorTeam;
+	/** How the project's last checkpoint ended, with the same team behind it. */
+	previous: { verdict: CheckpointVerdict; note: string | null } | null;
 };
 
 /**

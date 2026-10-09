@@ -15,13 +15,13 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Modal } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
-import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CheckpointCuratorKind,
@@ -44,6 +44,16 @@ import { daysUntil, formatShort } from "./dates";
 import { PathNode } from "./PathNode";
 import { PulseChip } from "./PulseChip";
 import styles from "./style.module.scss";
+
+// The editor's tools touch `Element` as they load, so the modal cannot be
+// rendered on the server.
+const DevLogPostModal = dynamic(
+	() =>
+		import("@/components/modals/DevLogPostModal").then(
+			(module) => module.DevLogPostModal,
+		),
+	{ ssr: false },
+);
 
 const ICON: Record<ChecklistKey, ReactNode> = {
 	verdict: <IconFileText size={20} />,
@@ -151,9 +161,11 @@ export function RunningCheckpoint({
 				? t("workflow.path.check.session-on", "session {date}", {
 						date: formatShort(item.dueAt),
 					})
-				: t("workflow.path.check.at-session", "at the session {date}", {
-						date: formatShort(item.dueAt),
-					});
+				: daysUntil(item.dueAt) === 0
+					? t("workflow.path.check.at-today", "at today's session")
+					: t("workflow.path.check.at-session", "at the session {date}", {
+							date: formatShort(item.dueAt),
+						});
 		if (!item.done && item.dueAt) return dueLabel(item.dueAt);
 		return null;
 	};
@@ -258,7 +270,7 @@ export function RunningCheckpoint({
 		const closed = new Set(evidence.flatMap((item) => item.itemIds)).size;
 
 		return (
-			<PathNode inset key={sprint.number} marker="done">
+			<PathNode key={sprint.number} marker="done">
 				<div className={styles.summary}>
 					<span className={styles.sprintTitle}>
 						{t("workflow.path.sprint.name", "Sprint {number}", {
@@ -296,14 +308,19 @@ export function RunningCheckpoint({
 								)}
 							</span>
 						)}
-						<PulseChip rows={checkpoint.pulses ?? []} sprint={sprint.number} />
+						<PulseChip
+							rows={checkpoint.pulses ?? []}
+							sprint={sprint}
+							day={checkpoint.day}
+						/>
 					</div>
 				</div>
 			</PathNode>
 		);
 	};
 
-	const sessionCard = (session: CheckpointSessionDto) => {
+	/** One call or review: in its own stop on the line, or heading the sprint card on its day. */
+	const sessionBody = (session: CheckpointSessionDto, today = false) => {
 		const days = daysUntil(session.scheduledAt);
 		const when = dayjs.utc(session.scheduledAt);
 		const ready =
@@ -320,6 +337,7 @@ export function RunningCheckpoint({
 			action = (
 				<Button
 					type="primary"
+					size="large"
 					icon={<IconFileText size={16} />}
 					disabled={!ready}
 					onClick={() => router.push(sessionHref(session))}
@@ -329,7 +347,7 @@ export function RunningCheckpoint({
 			);
 		} else if (days > 0) {
 			action = (
-				<Button disabled icon={<IconLock size={16} />}>
+				<Button size="large" disabled icon={<IconLock size={16} />}>
 					{days === 1
 						? t("workflow.path.session.join-tomorrow", "Join tomorrow")
 						: t("workflow.path.session.join-in", "Join in {days} days", {
@@ -341,6 +359,7 @@ export function RunningCheckpoint({
 			action = (
 				<Button
 					type="primary"
+					size="large"
 					icon={<IconVideo size={16} />}
 					onClick={() => router.push(sessionHref(session))}
 				>
@@ -350,65 +369,85 @@ export function RunningCheckpoint({
 		}
 
 		return (
-			<PathNode
-				inset
-				key={`session-${session.index}`}
-				marker={isAI ? "review" : "session"}
-			>
-				<div className={styles.session}>
-					<div className={styles.sessionWho}>
-						{isAI ? (
-							<span className={`${styles.chipIcon} ${styles.aiTile}`}>
-								<IconSparkles size={24} />
-							</span>
-						) : (
-							<AppAvatar src={checkpoint.curator?.image} size={56}>
-								{curatorName[0]}
-							</AppAvatar>
-						)}
-						<div className={styles.sessionText}>
-							<span>{when.format("MMMM D")}</span>
-							<span className={styles.sessionWhen}>
-								{isAI
-									? t(
-											"workflow.path.session.review-title",
-											"Sprint {number} review",
-											{
-												number: String(session.index - 1),
-											},
-										)
-									: session.timeKnown
-										? `${when.format("dddd")} · ${when.format("HH:mm")}`
-										: when.format("dddd")}
-							</span>
-							<span>
-								{isAI
-									? t(
-											"workflow.path.session.review-sub",
-											"Written by the AI curator from your devlog, artifacts and activity",
-										)
+			<div className={today ? styles.sessionToday : styles.session}>
+				<div className={styles.sessionWho}>
+					{isAI ? (
+						<span className={`${styles.chipIcon} ${styles.aiTile}`}>
+							<IconSparkles size={24} />
+						</span>
+					) : (
+						<AppAvatar src={checkpoint.curator?.image} size={56}>
+							{curatorName[0]}
+						</AppAvatar>
+					)}
+					<div className={styles.sessionText}>
+						<span>
+							{days === 0
+								? t("workflow.path.session.today-label", "Today")
+								: when.format("MMMM D")}
+						</span>
+						<span className={styles.sessionWhen}>
+							{isAI
+								? t(
+										"workflow.path.session.review-title",
+										"Sprint {number} review",
+										{
+											number: String(session.index - 1),
+										},
+									)
+								: session.timeKnown
+									? `${when.format("dddd")} · ${when.format("HH:mm")}`
+									: when.format("dddd")}
+						</span>
+						<span>
+							{isAI
+								? t(
+										"workflow.path.session.review-sub",
+										"Written by the AI curator from your devlog, artifacts and activity",
+									)
+								: today
+									? t("workflow.path.session.with", "Session with {name}", {
+											name: curatorName,
+										})
 									: `${t("workflow.path.session.with", "Session with {name}", {
 											name: curatorName,
 										})} · ${opens}`}
-							</span>
-						</div>
+						</span>
 					</div>
-					{action}
 				</div>
-			</PathNode>
+				{action}
+			</div>
 		);
 	};
 
+	const sessionCard = (session: CheckpointSessionDto) => (
+		<PathNode
+			key={`session-${session.index}`}
+			marker={isAI ? "review" : "session"}
+		>
+			{sessionBody(session)}
+		</PathNode>
+	);
+
+	// The call that opens this sprint is due and has not happened: it is the
+	// one thing to do today, so it heads the sprint card (frame 08).
+	const sessionToday =
+		!isAI &&
+		openingSession &&
+		!openingSession.endedAt &&
+		daysUntil(openingSession.scheduledAt) <= 0
+			? openingSession
+			: null;
+
 	const nextLabel = nextSession
-		? isAI
-			? t(
-					"workflow.path.check.head-review",
-					"Before the next review · {date}",
-					{ date: formatShort(nextSession.scheduledAt) },
-				)
-			: t("workflow.path.check.head", "Before the next session · {date}", {
-					date: formatShort(nextSession.scheduledAt),
-				})
+		? t(
+				"workflow.path.check.head-sprint",
+				"By the end of Sprint {number} · {date}",
+				{
+					number: String(current.number),
+					date: formatShort(current.to),
+				},
+			)
 		: t("workflow.path.check.head-final", "Before the checkpoint");
 	const ahead = sprints.filter((sprint) => sprint.state === "ahead");
 	const gateDates = finalSession &&
@@ -423,7 +462,7 @@ export function RunningCheckpoint({
 		<>
 			{sprints.filter((sprint) => sprint.state === "done").map(doneSprint)}
 
-			<PathNode inset marker="current" offset={here ? 64 : undefined}>
+			<PathNode marker="current" offset={here ? 64 : undefined}>
 				{here && <div className={styles.hereAbove}>{here}</div>}
 				<div className={styles.sprint}>
 					<div className={styles.sprintHead}>
@@ -449,10 +488,13 @@ export function RunningCheckpoint({
 								})}`}
 							<PulseChip
 								rows={checkpoint.pulses ?? []}
-								sprint={current.number}
+								sprint={current}
+								day={checkpoint.day}
 							/>
 						</span>
 					</div>
+
+					{sessionToday && sessionBody(sessionToday, true)}
 
 					{openingSession &&
 						(openingSession.endedAt ||
@@ -502,10 +544,13 @@ export function RunningCheckpoint({
 				</div>
 			</PathNode>
 
-			{nextSession && nextSession.index <= 4 && sessionCard(nextSession)}
+			{!sessionToday &&
+				nextSession &&
+				nextSession.index <= 4 &&
+				sessionCard(nextSession)}
 
 			{ahead.length > 0 && (
-				<PathNode inset marker="none">
+				<PathNode marker="none">
 					<div role="heading" aria-level={3} className={styles.upNextTitle}>
 						{t("workflow.path.up-next", "Up next")}
 					</div>
@@ -514,7 +559,7 @@ export function RunningCheckpoint({
 			{ahead.map((sprint) => {
 				const days = daysUntil(sprint.from);
 				return (
-					<PathNode inset key={sprint.number} marker="sprint">
+					<PathNode key={sprint.number} marker="sprint">
 						<div className={styles.futureSprint}>
 							<span className={styles.futureDates}>
 								{dayRange(sprint.from, sprint.to)}
@@ -543,7 +588,7 @@ export function RunningCheckpoint({
 				);
 			})}
 
-			<PathNode inset marker="gate" rail="dashed">
+			<PathNode marker="gate" rail="dashed">
 				<div className={styles.gate}>
 					{gateDates && (
 						<span className={styles.meta}>

@@ -1,30 +1,10 @@
-// One line tall, the way frame `SwaKm` draws it: the block states a fact and
-// carries the one button that follows from it.
-.block {
-	width: 100%;
-
-	:global(.ant-card-body) {
-		padding: var(--gd-space-2);
-	}
-
-	// Settled money reads as settled: the one green thing on the page.
-	&[data-tone="paid"] {
-		border-color: var(--gd-success-solid);
-		background: var(--gd-success-tint);
-	}
-
-	// Money that went back is not bad news and not good news: it is the state
-	// of the account, said plainly.
-	&[data-tone="released"] {
-		background: var(--gd-color-surface-sunken);
-	}
+.line {
+	font-size: var(--gd-font-size-body);
 }
 
-// The same fact as a closing line under a page: no fill, no border, lined up
-// with the text inside the cards above it.
-.plain {
+// Under a page of cards: lined up with the text inside them.
+.inset {
 	padding: 0 var(--gd-space-4);
-	font-size: var(--gd-font-size-body);
 }
 
 .text {
@@ -32,7 +12,7 @@
 	min-width: 0;
 }
 
-.title {
-	font-size: var(--gd-font-size-body-lg);
-	font-weight: 600;
+.receipt {
+	height: auto;
+	padding: 0;
 }

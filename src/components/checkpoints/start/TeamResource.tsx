@@ -1,10 +1,7 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { App, Flex, InputNumber, Table, Typography } from "antd";
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import { Flex, Table, Typography } from "antd";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import styles from "./TeamResource.module.scss";
@@ -12,66 +9,28 @@ import { type TeamHoursRow, useTeamHours } from "./teamHours";
 
 export type TeamResourceProps = {
 	teamId?: string;
-	/**
-	 * The author's own hours while they are being typed. Owned by the step, so
-	 * the way forward can read them before the profile has been written.
-	 */
-	mine?: number[];
-	onMine?: (hours: number[]) => void;
+	/** The hours to show for a member: the author's own may be mid-edit. */
+	hoursOf: (row: TeamHoursRow) => [number, number] | null;
 };
 
 /**
- * What the team actually has to spend on these 28 days.
+ * Frame 03.1 (`GzkPp`): where the team's hours come from, member by member.
  *
- * Hours a sprint come from each member's own profile — the number they gave when
- * they said what they could put in — and the only one editable here is the
- * author's own: correcting somebody else's availability from a purchase screen
- * would be putting words in their mouth. The totals go through `teamCapacity`,
- * the same rule the curator is given: a member who stated nothing is unknown,
- * never zero, and must not drag the team's figure down.
+ * Read only. Each figure is the member's own statement in their profile; the
+ * totals go through `teamCapacity`, the rule the curator is given, so a member
+ * who stated nothing is unknown rather than zero.
  */
-export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
+export function TeamResource({ teamId, hoursOf }: TeamResourceProps) {
 	const { t } = useTranslate();
-	const { message } = App.useApp();
-	const { data: session } = useSession();
-	const queryClient = useQueryClient();
-
-	const { members, isLoading, statedFor } = useTeamHours(teamId);
-
-	const save = useMutation({
-		mutationFn: async (timeForWork: number[]) =>
-			axios.put("/api/user/profile", { timeForWork }),
-		onSuccess: () =>
-			queryClient.invalidateQueries({
-				queryKey: ["user-project-team", teamId],
-			}),
-		onError: () =>
-			message.error(t("checkpoints.goal.saveFailed", "Could not save")),
-	});
-
-	const hoursOf = (row: TeamHoursRow): [number, number] | null => {
-		const own = row.userId === session?.user?.id ? mine : undefined;
-
-		return own ? [own[0] ?? 0, own[1] ?? own[0] ?? 0] : statedFor(row);
-	};
+	const { members, isLoading } = useTeamHours(teamId);
 
 	const total = teamCapacity(
 		members.map((row) => ({ timeForWork: hoursOf(row) })),
 	);
-
 	const span = (from: number, to: number) =>
 		from === to ? `${from}` : `${from}–${to}`;
-
-	const unknown = t("checkpoints.when.teamUnknown", "not stated");
-
-	// Hours a sprint are what was stated; the run is what follows from it. The
-	// frame gives the first the secondary ink and keeps full weight for the
-	// second, so the eye lands on the figure the purchase is judged against.
-	const week = (text: string) => (
-		<Typography.Text type="secondary" className={styles.figure}>
-			{text}
-		</Typography.Text>
-	);
+	const run = (row: TeamHoursRow) =>
+		teamCapacity([{ timeForWork: hoursOf(row) }]).hoursPerRun;
 
 	return (
 		<Table<TeamHoursRow>
@@ -88,7 +47,7 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 					render: (_: unknown, row: TeamHoursRow) => (
 						<Flex gap={10} align="center">
 							<AppAvatar src={row.user.image} size={28}>
-								{row.user.name?.slice(0, 1).toUpperCase()}
+								{row.user.name?.slice(0, 2).toUpperCase()}
 							</AppAvatar>
 							<Flex vertical gap={1}>
 								<Typography.Text className={styles.who}>
@@ -103,59 +62,28 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 				},
 				{
 					key: "week",
-					width: 140,
 					align: "right",
 					title: t("checkpoints.when.teamWeek", "Hours / sprint"),
 					render: (_: unknown, row: TeamHoursRow) => {
-						const stated = hoursOf(row);
-						const [from, to] = stated ?? [0, 0];
-
-						if (row.userId !== session?.user?.id)
-							return week(stated ? span(from, to) : unknown);
-
-						// The author's own line is editable here: they are the one
-						// deciding whether these 28 days are worth buying.
+						const hours = hoursOf(row);
 						return (
-							<Flex gap={6} align="center" justify="flex-end">
-								<InputNumber
-									variant="filled"
-									min={0}
-									max={80}
-									value={from}
-									size="small"
-									className={styles.hours}
-									onChange={(value) => onMine?.([value ?? 0, to])}
-									onBlur={() => save.mutate([from, to])}
-								/>
-								<InputNumber
-									variant="filled"
-									min={0}
-									max={80}
-									value={to}
-									size="small"
-									className={styles.hours}
-									onChange={(value) => onMine?.([from, value ?? 0])}
-									onBlur={() => save.mutate([from, to])}
-								/>
-							</Flex>
+							<Typography.Text type="secondary" className={styles.figure}>
+								{hours
+									? span(hours[0], hours[1])
+									: t("checkpoints.when.teamUnknown", "not stated")}
+							</Typography.Text>
 						);
 					},
 				},
 				{
 					key: "run",
-					width: 150,
 					align: "right",
 					title: t("checkpoints.when.teamRun", "Over the 28 days"),
 					render: (_: unknown, row: TeamHoursRow) => {
-						const stated = hoursOf(row);
-						const run = teamCapacity([{ timeForWork: stated }]).hoursPerRun;
-
+						const hours = run(row);
 						return (
-							<Typography.Text
-								className={styles.figure}
-								type={run ? undefined : "secondary"}
-							>
-								{run ? span(run.from, run.to) : "—"}
+							<Typography.Text className={styles.figure}>
+								{hours ? span(hours.from, hours.to) : "—"}
 							</Typography.Text>
 						);
 					},
@@ -164,7 +92,7 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 			summary={() => (
 				<Table.Summary.Row>
 					<Table.Summary.Cell index={0}>
-						<Typography.Text strong className={styles.total}>
+						<Typography.Text strong>
 							{total.stated === total.members
 								? t("checkpoints.when.teamTotal", "The team")
 								: t(
@@ -175,14 +103,14 @@ export function TeamResource({ teamId, mine, onMine }: TeamResourceProps) {
 						</Typography.Text>
 					</Table.Summary.Cell>
 					<Table.Summary.Cell index={1} align="right">
-						<Typography.Text strong className={styles.total}>
+						<Typography.Text strong className={styles.figure}>
 							{total.hoursPerWeek
 								? span(total.hoursPerWeek.from, total.hoursPerWeek.to)
 								: "—"}
 						</Typography.Text>
 					</Table.Summary.Cell>
 					<Table.Summary.Cell index={2} align="right">
-						<Typography.Text strong className={styles.total}>
+						<Typography.Text strong className={styles.figure}>
 							{total.hoursPerRun
 								? span(total.hoursPerRun.from, total.hoursPerRun.to)
 								: "—"}

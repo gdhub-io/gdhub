@@ -169,3 +169,18 @@ export const projectOfTeamMemberId = async (
 
 	return member?.team?.projectId ?? null;
 };
+
+/** `id` in the body or the query is a `TeamInvitation` id. */
+export const projectOfTeamInvitation = async (
+	req: Request,
+): Promise<string | null> => {
+	const id = await fromBodyOrQuery(req, "id");
+	if (!id) return null;
+
+	const invitation = await prisma.teamInvitation.findUnique({
+		where: { id },
+		select: { team: { select: { projectId: true } } },
+	});
+
+	return invitation?.team.projectId ?? null;
+};

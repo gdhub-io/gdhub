@@ -20,9 +20,22 @@ vi.mock("@/services/prisma", () => ({
 
 beforeEach(() => {
 	vi.clearAllMocks();
+	vi.stubEnv("CHECKPOINTS_PURCHASE_OPEN", "true");
 });
 
 describe("getCreationBlocker", () => {
+	it("refuses a new checkpoint while purchase is closed", async () => {
+		vi.stubEnv("CHECKPOINTS_PURCHASE_OPEN", "");
+		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
+		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
+			currentStepId: "step-3",
+		} as never);
+
+		await expect(getCreationBlocker("p1")).resolves.toEqual({
+			reason: "purchaseClosed",
+		});
+	});
+
 	it("refuses while a checkpoint is still on the go", async () => {
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue({
 			id: "cp1",

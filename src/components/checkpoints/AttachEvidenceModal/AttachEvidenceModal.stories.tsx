@@ -53,6 +53,7 @@ const CHECKPOINT: CheckpointDto = {
 	decidedAt: null,
 	acceptedTermsAt: "2026-09-01T08:55:00.000Z",
 	declinedCuratorIds: [],
+	curatorAcceptedAt: null,
 	curatorDeclinedAt: null,
 	paymentId: null,
 	createdAt: "2026-09-01T08:40:00.000Z",

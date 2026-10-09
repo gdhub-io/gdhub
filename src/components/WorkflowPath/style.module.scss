@@ -1,6 +1,32 @@
 // Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
 // platform-design.pen.
 
+// Frame 07's one-time notice spans both columns, over the path.
+.accepted.accepted {
+	grid-column: 1 / -1;
+	align-items: center;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-3) var(--gd-space-3) var(--gd-space-3) var(--gd-space-4);
+	border-color: color-mix(in srgb, var(--gd-success-solid) 30%, transparent);
+	background: var(--gd-success-tint);
+
+	:global(.ant-alert-icon) {
+		margin: 0;
+	}
+
+	:global(.ant-alert-title) {
+		margin: 0;
+		font-size: var(--gd-font-size-body);
+		font-weight: 600;
+		color: var(--gd-color-text);
+	}
+
+	:global(.ant-alert-description) {
+		font-size: var(--gd-font-size-body-sm);
+		color: var(--gd-color-text-secondary);
+	}
+}
+
 .layout {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) 320px;
@@ -16,6 +42,177 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-6);
+}
+
+// Frame 08 `RV1gV`: outlined like the stage's Tasks panel beside it, with the
+// same ruled header.
+.asideCard {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+}
+
+.asideHead {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.asideBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-4);
+}
+
+.asideBlock {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.asideRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-2);
+}
+
+.asideTitle {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+.asideMeta {
+	display: block;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.asideOutcome {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 32px;
+}
+
+.asideDone {
+	flex: none;
+	color: var(--gd-success-solid);
+}
+
+.asideTodo {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.asideDivider.asideDivider {
+	margin: 0;
+}
+
+// Frame 08 `Dmwhm`: the feed scrolls inside its card; the page does not grow.
+.activityList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	max-height: 500px;
+	overflow-y: auto;
+	// Runs to the card's edges and up to the header's rule, so rows scroll under
+	// them rather than vanish short of them; the rows keep the card's inset.
+	margin: calc(-1 * var(--gd-space-4));
+	padding: var(--gd-space-4) 0;
+
+	// A hairline, as in the expert request modal: the standard properties only
+	// for Firefox, since in Chrome they override the 6px webkit rules below.
+	@supports (-moz-appearance: none) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--gd-color-border-strong) transparent;
+	}
+
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 3px;
+		background: var(--gd-color-border-strong);
+	}
+}
+
+.activityEvent,
+.activityBoundary,
+.activityMore {
+	padding: 0 var(--gd-space-4);
+}
+
+.activityEvent {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+}
+
+.activityText {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.activityTitle {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+.activitySub,
+.activityWhen,
+.activityBoundaryLabel,
+.activityMore {
+	font-size: var(--gd-font-size-caption);
+}
+
+.activityWhen {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.activityBoundary {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.activityLine {
+	flex: 1;
+	height: 1px;
+	background: var(--gd-color-border-strong);
+}
+
+.activityBoundaryLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-weight: 500;
+	color: var(--gd-color-text-secondary);
+}
+
+.activityMore {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--gd-space-2);
+}
+
+.asideCurator {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
 }
 
 // One row of the path: a 40px gutter holding the rail and the marker, 16px, then
@@ -79,6 +276,10 @@
 	margin-top: 6px;
 }
 
+.at18 {
+	margin-top: 18px;
+}
+
 .at24 {
 	margin-top: var(--gd-space-6);
 }
@@ -103,8 +304,35 @@
 	margin-top: 56px;
 }
 
-.inset {
-	padding-left: var(--gd-space-6);
+// A stage's checkpoints run on a branch one step right of the stage line; the
+// two curves carry the line out to it and back (26 wide: from axis 20 to 44).
+.branch {
+	position: relative;
+	padding: var(--gd-space-6) 0 var(--gd-space-6) var(--gd-space-6);
+}
+
+.branchIn,
+.branchOut {
+	position: absolute;
+	left: 19px;
+	width: 26px;
+	height: var(--gd-space-6);
+	fill: none;
+	stroke: var(--gd-color-border-strong);
+	stroke-width: 2;
+}
+
+.branchIn {
+	top: 0;
+}
+
+.branchOut {
+	bottom: 0;
+}
+
+// The way back to the stage line is still ahead, so it is dashed like the rest.
+.branchAhead {
+	stroke-dasharray: 4 5;
 }
 
 .space0 {
@@ -136,6 +364,8 @@
 }
 
 .markerDone {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
@@ -146,6 +376,8 @@
 
 // A checkpoint behind the project: the gate it went through, cleared.
 .markerCleared {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
@@ -155,6 +387,8 @@
 }
 
 .markerCurrent {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
@@ -172,8 +406,11 @@
 }
 
 // Stages are squares, sprints are circles, checkpoints are flags: the shape
-// says what the row is before the text does.
+// says what the row is before the text does. Filled markers carry the rail's own
+// 2px stroke, so they read as stops on the line rather than stickers on it.
 .markerStageDone {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: var(--gd-radius-chip);
@@ -182,6 +419,8 @@
 }
 
 .markerStageCurrent {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
 	width: 20px;
 	height: 20px;
 	border-radius: var(--gd-radius-chip);
@@ -215,9 +454,10 @@
 }
 
 .markerSession {
+	box-sizing: border-box;
 	width: 32px;
 	height: 32px;
-	border: 1px solid var(--gd-color-border-strong);
+	border: 2px solid var(--gd-color-border-strong);
 	border-radius: 50%;
 	corner-shape: round;
 	background: var(--gd-color-surface);
@@ -290,6 +530,26 @@
 	background: transparent;
 	font: inherit;
 	text-align: left;
+}
+
+// A stage behind is history: one compact line, so the road ahead keeps the room.
+.cardCompact {
+	.cardHead {
+		gap: var(--gd-space-3);
+		padding: var(--gd-space-3) var(--gd-space-6);
+	}
+
+	.cardTitles {
+		gap: 0;
+	}
+
+	.overline {
+		font-size: var(--gd-font-size-caption);
+	}
+
+	.title {
+		font-size: var(--gd-font-size-body);
+	}
 }
 
 .cardHead {
@@ -545,6 +805,17 @@ button.checklistItem {
 	}
 }
 
+// The same call inside the sprint card, on its day: no frame of its own, a
+// rule under it before the checklist.
+.sessionToday {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-6);
+	padding-bottom: var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
 .sessionWho {
 	display: flex;
 	align-items: center;
@@ -665,24 +936,135 @@ button.checklistItem {
 	color: var(--gd-color-accent);
 }
 
-.pulseTable {
+.pulseGhost {
+	stroke: var(--gd-color-border-strong);
+}
+
+// A heart monitor: the window over the red trace slides past, its tail fading.
+// From wholly before the line to wholly past it: 44px of tail, 72px of line.
+.pulseSweep {
+	animation: pulse-sweep 3s linear infinite;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: none;
+		transform: translateX(28px);
+	}
+}
+
+@keyframes pulse-sweep {
+	from {
+		transform: translateX(-44px);
+	}
+
+	to {
+		transform: translateX(72px);
+	}
+}
+
+// Frame 07.2: people by the seven days of the sprint.
+.pulsePopover.pulsePopover {
+	padding: 0;
+}
+
+.pulseMatrix {
 	display: flex;
 	flex-direction: column;
-	min-width: 240px;
+	width: 480px;
+	max-width: calc(100vw - 2 * var(--gd-space-4));
+}
+
+.pulseHead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-3);
+}
+
+.pulseTitle {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+.pulseMeta,
+.pulseRole,
+.pulseDay {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.pulseEmpty {
+	padding: 0 var(--gd-space-4) var(--gd-space-3);
 }
 
 .pulseRow {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) repeat(7, 32px);
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-2) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.pulseCols {
+	padding-top: 0;
+}
+
+.pulseDay {
+	text-align: center;
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulseToday {
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.pulsePerson {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: var(--gd-space-4);
-	padding: var(--gd-space-2) 0;
-	border-bottom: 1px solid var(--gd-color-border);
-	font-size: var(--gd-font-size-body-sm);
+	gap: var(--gd-space-3);
+	min-width: 0;
+}
 
-	&:last-child {
-		border-bottom: 0;
-	}
+.pulseWho {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.pulseName {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-weight: 500;
+}
+
+.pulseCheck {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	margin: 0 auto;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.pulseIdle {
+	display: block;
+	width: 6px;
+	height: 6px;
+	margin: 0 auto;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-border-strong);
+}
+
+.pulseFoot {
+	padding: var(--gd-space-4);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
 }
 
 // Bleeds 8px past the column so the hover reads as a row, not a box around text.
@@ -754,4 +1136,98 @@ button.checklistItem {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-6);
+}
+
+// Frames 02 and 02.1 (`TZnHs`): the checkpoint offer, and the draft it
+// becomes. A warm wash and the accent rim set it apart from the stages.
+.offer {
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-accent);
+	border-radius: var(--gd-radius-panel);
+	background: linear-gradient(
+		118deg,
+		var(--gd-color-accent-subtle),
+		var(--gd-warning-tint)
+	);
+}
+
+.offerButton.offerButton {
+	background: var(--gd-color-accent);
+	font-weight: 600;
+
+	&:not(:disabled):hover {
+		background: var(--gd-color-accent-hover);
+	}
+
+	&:disabled {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.offerFacts > * {
+	flex: 1;
+	min-width: 0;
+}
+
+.offerFactIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 20px;
+	height: 20px;
+	color: var(--gd-color-accent);
+}
+
+.offerFactLabel {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+}
+
+.offerOptions > :not(.offerOr) {
+	flex: 1;
+	min-width: 0;
+	align-self: stretch;
+}
+
+.offerOption {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+}
+
+.offerOptionIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	align-self: flex-start;
+	width: var(--gd-space-8);
+	height: var(--gd-space-8);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-color-surface);
+}
+
+.offerPrice {
+	flex: none;
+	align-self: flex-start;
+}
+
+.offerOr {
+	flex: none;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-secondary);
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.dialogTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
 }

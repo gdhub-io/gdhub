@@ -37,10 +37,14 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 			items: {
 				type: "object",
 				properties: {
-					itemId: {
-						type: "string",
-						enum: input.card.outcomes.map((item) => item.id),
-					},
+					// An empty enum is not a valid schema: before call 1 there are no
+					// tasks yet, only the goal.
+					itemId: input.card.outcomes.length
+						? {
+								type: "string",
+								enum: input.card.outcomes.map((item) => item.id),
+							}
+						: { type: "string" },
 					note: {
 						type: "string",
 						description:
@@ -74,6 +78,10 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			This is day 1. The card is still a draft and the author can change it.
 			Judge only whether it fits 28 days of work for this team, with the
 			hours it has, and whether the stage's own requirements are covered.
+			The card may hold only the goal: tasks are set with the curator on the
+			first call. Then judge the goal itself, and leave the notes empty.
+			Where the last checkpoint is given, weigh this goal against how that
+			one ended with the same team.
 
 			The hours are what the members themselves stated they have per week,
 			summed and carried over the 28 days. Weigh the list against them and
@@ -100,6 +108,12 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${renderStage(input.stage)}
 
 			${renderTeam(input.team)}
+
+			${
+				input.previous
+					? `The project's last checkpoint ended ${input.previous.verdict}${input.previous.note ? `: "${input.previous.note}"` : "."}`
+					: "This is the project's first checkpoint."
+			}
 
 			Answer via the ${GOAL_CHECK_FUNCTION_NAME} function.
 		`,
