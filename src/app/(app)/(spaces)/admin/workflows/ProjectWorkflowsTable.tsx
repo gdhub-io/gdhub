@@ -340,7 +340,12 @@ export function ProjectWorkflowsTable({
 								icon: <IconCircleDot size={16} />,
 								label: "Change project status",
 								children: Object.values(ProjectStatus)
-									.filter((status) => status !== record.project.status)
+									.filter(
+										(status) =>
+											status !== record.project.status &&
+											// Closing with dignity is the author's call, not staff's.
+											status !== ProjectStatus.KilledWithDignity,
+									)
 									.map((status) => ({
 										key: `status:${status}`,
 										label: STATUS_LABEL[status],
