@@ -168,28 +168,6 @@ export const useAdvisorProject = (checkpointId?: string, enabled = true) =>
 		enabled: !!checkpointId && enabled,
 	});
 
-/**
- * The curator writing their review of a sprint. It lands on that sprint's
- * devlog, which is where a review lives until the schema holds one of its own.
- */
-export const useWriteReview = (checkpointId?: string) => {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: async (body: { devlogId: string; text: string }) =>
-			(
-				await axios.post(
-					`/api/advisor/checkpoints/${checkpointId}/review`,
-					body,
-				)
-			).data,
-		onSuccess: () =>
-			queryClient.invalidateQueries({
-				queryKey: ["advisor-checkpoint", checkpointId],
-			}),
-	});
-};
-
 /** The checkpoints handed to the signed-in curator, in three groups. */
 export const useAdvisorCheckpoints = () =>
 	useQuery({

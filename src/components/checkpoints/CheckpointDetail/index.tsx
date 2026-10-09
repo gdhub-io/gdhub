@@ -230,7 +230,6 @@ export function CheckpointDetail({
 				{!!selected && (
 					<SprintPanel
 						checkpoint={checkpoint}
-						writable={curating}
 						facts={selected}
 						tab={tab}
 						onTab={(next) => go({ tab: next })}

@@ -11,7 +11,7 @@ import { Review, type ReviewProps } from "./Review";
  * said on it. The call is still to come, so for now it is a placeholder above
  * the notes.
  */
-export function Room({ facts, checkpointId, writable }: ReviewProps) {
+export function Room({ facts }: ReviewProps) {
 	const { t } = useTranslate();
 
 	return (
@@ -25,9 +25,7 @@ export function Room({ facts, checkpointId, writable }: ReviewProps) {
 				)}
 			/>
 			{/* Left out when empty: Review's own empty state is the AI curator's. */}
-			{(!!facts.review || !!facts.scopeNote || writable) && (
-				<Review facts={facts} checkpointId={checkpointId} writable={writable} />
-			)}
+			{!!facts.scopeNote && <Review facts={facts} />}
 		</Flex>
 	);
 }

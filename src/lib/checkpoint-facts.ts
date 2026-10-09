@@ -21,12 +21,6 @@ import type {
 export type SprintFacts = {
 	sprint: CheckpointSprintDto;
 	devlog: CheckpointDevlogDto | null;
-	/**
-	 * The curator's review of the sprint. Until the schema holds one of its own it
-	 * is the answer written on that sprint's devlog — which is why a sprint with no
-	 * devlog cannot show a review yet.
-	 */
-	review: { text: string; at: string | null } | null;
 	/** The scope note, on the sprint day 15 falls in, until it is answered. */
 	scopeNote: string | null;
 	/** The note can still be answered: the day after the third session has not run out. */
@@ -75,9 +69,6 @@ export const sprintFactsOf = (
 	return {
 		sprint,
 		devlog,
-		review: devlog?.curatorFeedback
-			? { text: devlog.curatorFeedback, at: devlog.curatorFeedbackAt }
-			: null,
 		scopeNote,
 		scopeOpen:
 			!!scopeNote &&

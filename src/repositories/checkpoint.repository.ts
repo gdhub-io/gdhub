@@ -168,8 +168,6 @@ const checkpointDetailSelect = {
 			authorId: true,
 			publishedAt: true,
 			content: true,
-			curatorFeedback: true,
-			curatorFeedbackAt: true,
 		},
 	},
 	pulses: {

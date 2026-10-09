@@ -21,8 +21,6 @@ export type SprintPanelProps = {
 	onTab: (tab: SprintTab) => void;
 	/** Moving on: the footer of the ask panel opens the next step of the path. */
 	onGo: (step: string) => void;
-	/** The curator may write the review; nobody else may write anything here. */
-	writable?: boolean;
 };
 
 /**
@@ -37,7 +35,6 @@ export function SprintPanel({
 	tab,
 	onTab,
 	onGo,
-	writable,
 }: SprintPanelProps) {
 	const { t } = useTranslate();
 
@@ -55,24 +52,12 @@ export function SprintPanel({
 			? {
 					key: "room",
 					label: label(t("checkpoints.sprintTab.room", "Room")),
-					children: (
-						<Room
-							facts={facts}
-							checkpointId={checkpoint.id}
-							writable={writable}
-						/>
-					),
+					children: <Room facts={facts} />,
 				}
 			: {
 					key: "review",
 					label: label(t("checkpoints.sprintTab.review", "Review")),
-					children: (
-						<Review
-							facts={facts}
-							checkpointId={checkpoint.id}
-							writable={writable}
-						/>
-					),
+					children: <Review facts={facts} />,
 				};
 
 	return (

@@ -40,13 +40,11 @@ export type CheckpointItemDto = {
 	artifact: CheckpointArtifactRef | null;
 };
 
-/** A devlog of this checkpoint, with the curator's answer under it. */
+/** A devlog of this checkpoint. */
 export type CheckpointDevlogDto = {
 	id: string;
 	publishedAt: string;
 	content: string;
-	curatorFeedback: string | null;
-	curatorFeedbackAt: string | null;
 	/** Which sprint it landed in, or null for one published outside the 28 days. */
 	sprint: number | null;
 };
