@@ -251,7 +251,7 @@ const meta: Meta<typeof VerdictModal> = {
 	title: "Advisor/VerdictModal",
 	component: VerdictModal,
 	parameters: { layout: "fullscreen" },
-	args: { open: true, onClose: () => {} },
+	args: { onClose: () => {} },
 };
 
 export default meta;

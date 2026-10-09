@@ -1,3 +1,4 @@
+import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import { FINAL_SESSION } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
@@ -5,7 +6,11 @@ import {
 	type CheckpointVerdict,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
-import { verdictStage } from "@/lib/checkpoint-verdict-window";
+import { utcStartOfDay } from "@/lib/checkpoint-days";
+import {
+	type VerdictStage,
+	verdictStage,
+} from "@/lib/checkpoint-verdict-window";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import {
 	notifyVerdictDue,
@@ -67,16 +72,16 @@ const stageOf = (
 		: verdictStage(row.startedAt, row.sessions[0] ?? null, now);
 
 /**
- * Sends the verdict, which closes the checkpoint (frame `vC7gn`). The curator
- * chooses freely; only the time is checked — from the start of the final call.
- * The write repeats its conditions, so two submits racing each other find
- * nothing to update the second time.
+ * Writes to the curator's own undecided checkpoint when `allowed` holds for
+ * what they may do now. The write repeats the read's conditions, so two
+ * submits racing each other find nothing to update the second time.
  */
-export async function writeCuratorVerdict(
+async function writeUndecided(
 	checkpointId: string,
 	curatorId: string,
-	{ verdict, note }: CuratorVerdictInput,
-	now = new Date(),
+	now: Date,
+	allowed: (stage: VerdictStage | null) => boolean,
+	data: Prisma.ProjectCheckpointUpdateManyMutationInput,
 ): Promise<CuratorVerdictResult> {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: curatedBy(checkpointId, curatorId),
@@ -85,7 +90,7 @@ export async function writeCuratorVerdict(
 
 	if (!row) return { ok: false, reason: "notFound" };
 	if (row.verdict) return { ok: false, reason: "alreadyDecided" };
-	if (stageOf(row, now) !== "send") return { ok: false, reason: "notOpen" };
+	if (!allowed(stageOf(row, now))) return { ok: false, reason: "notOpen" };
 
 	const { count } = await prisma.projectCheckpoint.updateMany({
 		where: {
@@ -93,7 +98,28 @@ export async function writeCuratorVerdict(
 			status: { in: UNDECIDED },
 			verdict: null,
 		},
-		data: {
+		data,
+	});
+
+	return count === 0 ? { ok: false, reason: "alreadyDecided" } : { ok: true };
+}
+
+/**
+ * Sends the verdict, which closes the checkpoint (frame `vC7gn`). The curator
+ * chooses freely; only the time is checked — from the start of the final call.
+ */
+export async function writeCuratorVerdict(
+	checkpointId: string,
+	curatorId: string,
+	{ verdict, note }: CuratorVerdictInput,
+	now = new Date(),
+): Promise<CuratorVerdictResult> {
+	const result = await writeUndecided(
+		checkpointId,
+		curatorId,
+		now,
+		(stage) => stage === "send",
+		{
 			status: CheckpointStatus.Closed,
 			verdict,
 			verdictNote: note,
@@ -103,51 +129,33 @@ export async function writeCuratorVerdict(
 			verdictDraftNote: null,
 			verdictDraftAt: null,
 		},
-	});
-
-	if (count === 0) return { ok: false, reason: "alreadyDecided" };
-
-	await syncChat(`verdict ${checkpointId}`, () =>
-		closeCheckpointRoom(checkpointId),
 	);
-	await notifyVerdictSent(checkpointId);
 
-	return { ok: true };
+	if (result.ok)
+		await Promise.all([
+			syncChat(`verdict ${checkpointId}`, () =>
+				closeCheckpointRoom(checkpointId),
+			),
+			notifyVerdictSent(checkpointId),
+		]);
+
+	return result;
 }
 
 /** Saves the unsent verdict, from sprint 4 until it is sent. Only the curator reads it. */
-export async function saveVerdictDraft(
+export const saveVerdictDraft = (
 	checkpointId: string,
 	curatorId: string,
 	{ verdict, note }: VerdictDraftInput,
 	now = new Date(),
-): Promise<CuratorVerdictResult> {
-	const row = await prisma.projectCheckpoint.findFirst({
-		where: curatedBy(checkpointId, curatorId),
-		select: windowSelect,
-	});
-
-	if (!row) return { ok: false, reason: "notFound" };
-	if (row.verdict) return { ok: false, reason: "alreadyDecided" };
-	const stage = stageOf(row, now);
-	if (stage !== "draft" && stage !== "send")
-		return { ok: false, reason: "notOpen" };
-
-	const { count } = await prisma.projectCheckpoint.updateMany({
-		where: {
-			...curatedBy(checkpointId, curatorId),
-			status: { in: UNDECIDED },
-			verdict: null,
-		},
-		data: {
-			verdictDraft: verdict,
-			verdictDraftNote: note,
-			verdictDraftAt: now,
-		},
-	});
-
-	return count === 0 ? { ok: false, reason: "alreadyDecided" } : { ok: true };
-}
+) =>
+	writeUndecided(
+		checkpointId,
+		curatorId,
+		now,
+		(stage) => stage === "draft" || stage === "send",
+		{ verdictDraft: verdict, verdictDraftNote: note, verdictDraftAt: now },
+	);
 
 const domainOf = (link: string) => {
 	try {
@@ -242,10 +250,6 @@ export async function getVerdictContext(
 	};
 }
 
-export type VerdictContext = NonNullable<
-	Awaited<ReturnType<typeof getVerdictContext>>
->;
-
 /**
  * The 28 days are over: the checkpoint waits for its verdict. Day 28 is the
  * `dueAt` day, so a checkpoint moves on the first run after that day ends,
@@ -253,12 +257,11 @@ export type VerdictContext = NonNullable<
  * moves, the project cannot buy the next one.
  */
 export async function moveFinishedToReview(now = new Date()) {
-	const today = new Date(
-		Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-	);
-
 	const moved = await prisma.projectCheckpoint.updateManyAndReturn({
-		where: { status: CheckpointStatus.Active, dueAt: { lt: today } },
+		where: {
+			status: CheckpointStatus.Active,
+			dueAt: { lt: utcStartOfDay(now) },
+		},
 		data: { status: CheckpointStatus.Review },
 		select: { id: true, curatorKind: true },
 	});

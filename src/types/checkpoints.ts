@@ -9,6 +9,7 @@ import type {
 	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
 import type { AuthorNextStep } from "@/lib/checkpoint-plan";
+import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
 
 /**
  * What the checkpoint endpoints send to the browser.
@@ -290,7 +291,7 @@ export type CheckpointListResponse = {
 /** What the verdict modal reads beyond the checkpoint card (frame `vC7gn`). */
 export type VerdictContextDto = {
 	/** Null once decided; otherwise what the curator may do now. */
-	stage: "early" | "draft" | "send" | null;
+	stage: VerdictStage | null;
 	dueAt: string | null;
 	draft: {
 		verdict: CheckpointVerdict | null;

@@ -29,12 +29,14 @@ import {
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { type ReactNode, useState } from "react";
+import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import {
 	useVerdictCopy,
 	VERDICT_ORDER,
 	VERDICT_TONE,
 } from "@/components/checkpoints/VerdictChip";
 import { IconTile, SectionHeading, StatusDot } from "@/components/ui";
+import { formatShort } from "@/components/WorkflowPath/dates";
 import {
 	SPRINTS_PER_CHECKPOINT,
 	VERDICT_DRAFT_FROM_SPRINT,
@@ -52,6 +54,7 @@ import {
 	useVerdictContext,
 } from "@/hooks/checkpoints";
 import { dayNumberOn } from "@/lib/checkpoint-days";
+import { isProven } from "@/lib/checkpoint-verdict";
 import {
 	verdictDueBy,
 	verdictOverdue,
@@ -75,13 +78,8 @@ const SPRINTS = Array.from(
 const byOrder = (a: CheckpointItemDto, b: CheckpointItemDto) =>
 	a.order - b.order;
 
-const proven = (item: CheckpointItemDto) =>
-	item.artifact?.checkStatus === ArtifactCheckStatus.Readable ||
-	!!item.acceptedNote;
-
 export type VerdictModalProps = {
 	checkpoint: AdvisorCheckpointDto;
-	open: boolean;
 	onClose: () => void;
 };
 
@@ -90,22 +88,21 @@ export type VerdictModalProps = {
  * left, the choice and its reasoning on the right. A draft can be kept from
  * sprint 4; sending opens with the final call and cannot be undone.
  */
-export function VerdictModal({ checkpoint, open, onClose }: VerdictModalProps) {
+export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 	const { t } = useTranslate();
-	const { data: context } = useVerdictContext(checkpoint.id, open);
-	const { data: project } = useAdvisorProject(checkpoint.id, open);
+	const { data: context } = useVerdictContext(checkpoint.id);
+	const { data: project } = useAdvisorProject(checkpoint.id);
 
 	const stageName = (stage: { name: string; key: string | null }) =>
 		stage.key ? t(stage.key, stage.name) : stage.name;
 
 	return (
 		<Modal
-			open={open}
+			open
 			onCancel={onClose}
 			footer={null}
 			width={1050}
 			centered
-			destroyOnHidden
 			classNames={{
 				container: styles.container,
 				header: styles.header,
@@ -131,10 +128,11 @@ export function VerdictModal({ checkpoint, open, onClose }: VerdictModalProps) {
 									? stageName(context.currentStage)
 									: checkpoint.stageName,
 								checkpoint.startedAt && checkpoint.dueAt
-									? t("advisor.verdict.dates", "{from} – {to}", {
-											from: dayjs.utc(checkpoint.startedAt).format("D MMM"),
-											to: dayjs.utc(checkpoint.dueAt).format("D MMM YYYY"),
-										})
+									? dayRange(
+											checkpoint.startedAt,
+											checkpoint.dueAt,
+											"D MMM YYYY",
+										)
 									: null,
 							]
 								.filter(Boolean)
@@ -211,17 +209,16 @@ function StageChip({
 		);
 
 	if (context.stage === "send" && context.dueAt)
-		return verdictOverdue(context.dueAt) ? (
+		return (
 			<StatusDot
 				tone="warning"
-				label={t("advisor.verdict.chipOverdue", "Verdict overdue")}
-			/>
-		) : (
-			<StatusDot
-				tone="warning"
-				label={t("advisor.verdict.chipDue", "Verdict due by {date}", {
-					date: dayjs.utc(verdictDueBy(context.dueAt)).format("D MMM"),
-				})}
+				label={
+					verdictOverdue(context.dueAt)
+						? t("advisor.verdict.chipOverdue", "Verdict overdue")
+						: t("advisor.verdict.chipDue", "Verdict due by {date}", {
+								date: formatShort(verdictDueBy(context.dueAt).toISOString()),
+							})
+				}
 			/>
 		);
 
@@ -350,16 +347,16 @@ function GoalCard({ checkpoint }: { checkpoint: AdvisorCheckpointDto }) {
 
 function OutcomeRow({ item }: { item: CheckpointItemDto }) {
 	const { t } = useTranslate();
-	const isProven = !item.cut && proven(item);
+	const proven = !item.cut && isProven(item);
 	const Icon = item.cut
 		? IconCircleMinus
-		: isProven
+		: proven
 			? IconCircleCheck
 			: IconCircle;
 
 	return (
 		<Flex align="center" gap={12} className={styles.row}>
-			<Icon size={16} className={isProven ? styles.success : styles.muted} />
+			<Icon size={16} className={proven ? styles.success : styles.muted} />
 			<Text className={clsx(styles.rowText, item.cut && styles.cut)}>
 				{item.text}
 			</Text>
@@ -368,7 +365,7 @@ function OutcomeRow({ item }: { item: CheckpointItemDto }) {
 			) : item.artifact ? (
 				<Flex align="center" gap={6} className={styles.evidence}>
 					<ArtifactLink artifact={item.artifact} />
-					{isProven && (
+					{proven && (
 						<Text className={clsx(styles.small, styles.success)}>
 							{t("advisor.verdict.proven", "· proven")}
 						</Text>
@@ -598,7 +595,7 @@ function VerdictForm({
 			)
 		: null;
 	const dueBy = context.dueAt
-		? dayjs.utc(verdictDueBy(context.dueAt)).format("D MMM")
+		? formatShort(verdictDueBy(context.dueAt).toISOString())
 		: null;
 
 	const save = () =>

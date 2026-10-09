@@ -61,6 +61,9 @@ const unprovenReason = (item: VerdictItem): UnprovenReason | null => {
 	}
 };
 
+/** Counted as delivered: a readable artifact, or the curator's own note. */
+export const isProven = (item: VerdictItem) => unprovenReason(item) === null;
+
 /** The outcomes still owed, in goal-card order. Cut lines are never owed. */
 export const unprovenOutcomes = (items: VerdictItem[]): UnprovenOutcome[] =>
 	items

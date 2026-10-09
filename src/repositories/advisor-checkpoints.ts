@@ -102,45 +102,47 @@ export const getAdvisorProject = async (
 	checkpointId: string,
 	curatorId: string,
 ) => {
-	const checkpoint = await prisma.projectCheckpoint.findFirst({
-		where: { id: checkpointId, curatorId },
-		select: {
-			project: {
-				select: {
-					name: true,
-					description: true,
-					coverImage: true,
-					videoLink: true,
-					startedAt: true,
-					updatedAt: true,
-					genre: true,
-					platform: true,
-					setting: true,
-					visualStyle: true,
-					audition: true,
-					links: true,
-					workflow: {
-						select: { currentStep: { select: { name: true } } },
-					},
-					reports: {
-						where: { isSystem: false },
-						orderBy: { publishedAt: "desc" },
-						take: LATEST_DEVLOGS,
-						select: { id: true, publishedAt: true, content: true },
-					},
-					team: {
-						select: {
-							members: {
-								where: CONFIRMED_MEMBERS,
-								orderBy: { startedAt: "asc" },
-								select: {
-									id: true,
-									position: true,
-									status: true,
-									startedAt: true,
-									speciality: { select: { name: true, level: true } },
-									user: {
-										select: { profile: { select: { timeForWork: true } } },
+	const [checkpoint, detail] = await Promise.all([
+		prisma.projectCheckpoint.findFirst({
+			where: { id: checkpointId, curatorId },
+			select: {
+				project: {
+					select: {
+						name: true,
+						description: true,
+						coverImage: true,
+						videoLink: true,
+						startedAt: true,
+						updatedAt: true,
+						genre: true,
+						platform: true,
+						setting: true,
+						visualStyle: true,
+						audition: true,
+						links: true,
+						workflow: {
+							select: { currentStep: { select: { name: true } } },
+						},
+						reports: {
+							where: { isSystem: false },
+							orderBy: { publishedAt: "desc" },
+							take: LATEST_DEVLOGS,
+							select: { id: true, publishedAt: true, content: true },
+						},
+						team: {
+							select: {
+								members: {
+									where: CONFIRMED_MEMBERS,
+									orderBy: { startedAt: "asc" },
+									select: {
+										id: true,
+										position: true,
+										status: true,
+										startedAt: true,
+										speciality: { select: { name: true, level: true } },
+										user: {
+											select: { profile: { select: { timeForWork: true } } },
+										},
 									},
 								},
 							},
@@ -148,16 +150,16 @@ export const getAdvisorProject = async (
 					},
 				},
 			},
-		},
-	});
+		}),
+		// The page's own sprints, pulse and devlog reads, so the card cannot draw a
+		// week differently from the checkpoint it describes.
+		getCheckpoint(checkpointId),
+	]);
 
 	if (!checkpoint) return null;
 
 	const { project } = checkpoint;
 	const members = project.team?.members ?? [];
-	// The page's own sprints, pulse and devlog reads, so the card cannot draw a
-	// week differently from the checkpoint it describes.
-	const detail = await getCheckpoint(checkpointId);
 	// The pulse and the checkpoint's devlogs are shown to the curator running
 	// it, not to one still deciding whether to take it.
 	const accepted =

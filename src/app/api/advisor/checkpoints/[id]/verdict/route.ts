@@ -16,11 +16,7 @@ import {
 	writeCuratorVerdict,
 } from "@/repositories/checkpoint-verdict.repository";
 
-const verdict = z.enum([
-	CheckpointVerdict.StageClosed,
-	CheckpointVerdict.GoalMet,
-	CheckpointVerdict.GoalMissed,
-]);
+const verdict = z.nativeEnum(CheckpointVerdict);
 
 const VerdictSchema = z.object({
 	verdict,

@@ -3,6 +3,7 @@ import {
 	VERDICT_DRAFT_FROM_SPRINT,
 	VERDICT_DUE_DAYS,
 } from "@/config/checkpoint";
+import { utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { sessionDay } from "@/lib/checkpoint-sessions";
 import { sprintDayRange } from "@/lib/checkpoint-sprints";
@@ -13,24 +14,17 @@ import { sprintDayRange } from "@/lib/checkpoint-sprints";
  * modal shows the same ones.
  */
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
 type FinalCall = {
 	scheduledAt: Date | string;
 	curatorJoinedAt: Date | string | null;
 } | null;
 
 /** The day the verdict is due by, at UTC midnight; it is due until that day ends. */
-export const verdictDueBy = (dueAt: Date | string) => {
-	const day = new Date(dueAt);
-	day.setUTCHours(0, 0, 0, 0);
-	day.setUTCDate(day.getUTCDate() + VERDICT_DUE_DAYS);
-
-	return day;
-};
+export const verdictDueBy = (dueAt: Date | string) =>
+	dateOfDay(dueAt, VERDICT_DUE_DAYS + 1);
 
 export const verdictOverdue = (dueAt: Date | string, now = new Date()) =>
-	now.getTime() >= verdictDueBy(dueAt).getTime() + MS_PER_DAY;
+	utcStartOfDay(now) > verdictDueBy(dueAt);
 
 export const verdictDraftOpensAt = (startedAt: Date | string) =>
 	dateOfDay(startedAt, sprintDayRange(VERDICT_DRAFT_FROM_SPRINT).firstDay);

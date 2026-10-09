@@ -8,6 +8,7 @@ import {
 	useVerdictCopy,
 	VerdictChip,
 } from "@/components/checkpoints/VerdictChip";
+import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointResult } from "./ClosedCheckpoint";
 import { formatShort } from "./dates";
@@ -41,14 +42,10 @@ export function AfterVerdict({
 	const { meaning } = useVerdictCopy();
 	const [results, setResults] = useState(false);
 
-	// Opened once from the link: the parameter goes, so a reload does not reopen it.
+	const linked = useTakeSearchParam("results");
 	useEffect(() => {
-		const url = new URL(window.location.href);
-		if (url.searchParams.get("results") !== checkpoint.id) return;
-		setResults(true);
-		url.searchParams.delete("results");
-		window.history.replaceState(null, "", url);
-	}, [checkpoint.id]);
+		if (linked === checkpoint.id) setResults(true);
+	}, [linked, checkpoint.id]);
 
 	if (!checkpoint.verdict) return null;
 

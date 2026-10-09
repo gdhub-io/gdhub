@@ -173,7 +173,7 @@ export const useAdvisorProject = (checkpointId?: string, enabled = true) =>
 	});
 
 /** The draft, the times and the last build the verdict modal reads. */
-export const useVerdictContext = (checkpointId?: string, enabled = true) =>
+export const useVerdictContext = (checkpointId?: string) =>
 	useQuery({
 		queryKey: ["verdict-context", checkpointId],
 		queryFn: async () =>
@@ -182,7 +182,7 @@ export const useVerdictContext = (checkpointId?: string, enabled = true) =>
 					`/api/advisor/checkpoints/${checkpointId}/verdict`,
 				)
 			).data,
-		enabled: !!checkpointId && enabled,
+		enabled: !!checkpointId,
 	});
 
 export type VerdictBody = { verdict: CheckpointVerdict | null; note: string };
@@ -217,13 +217,15 @@ export const useSendVerdict = (checkpointId?: string) => {
 					body,
 				)
 			).data,
-		onSuccess: () =>
-			Promise.all([
-				queryClient.invalidateQueries({ queryKey: ["advisor-checkpoints"] }),
-				queryClient.invalidateQueries({
-					queryKey: ["verdict-context", checkpointId],
-				}),
-			]),
+		// The modal closes on success; its context is never read again.
+		onSuccess: () => {
+			queryClient.removeQueries({
+				queryKey: ["verdict-context", checkpointId],
+			});
+			return queryClient.invalidateQueries({
+				queryKey: ["advisor-checkpoints"],
+			});
+		},
 	});
 };
 
