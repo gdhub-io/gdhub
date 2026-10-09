@@ -21,7 +21,13 @@ export const projectSpaceAdapter: SpaceAdapter = {
 				team: {
 					select: {
 						members: {
-							where: { userId: user.id },
+							// Someone fired and taken back has a Fired row beside the new one.
+							where: {
+								userId: user.id,
+								status: {
+									in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired],
+								},
+							},
 							select: { status: true },
 						},
 					},
