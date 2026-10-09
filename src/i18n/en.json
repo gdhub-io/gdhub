@@ -3457,10 +3457,12 @@
 			},
 			"review-by": "review by",
 			"session": {
+				"calendar": "Add to calendar",
 				"final": "the final one",
 				"join": "Join session",
 				"join-in": "Join in {days} days",
 				"join-tomorrow": "Join tomorrow",
+				"more": "Session actions",
 				"notes": "Notes",
 				"open-review": "Open review",
 				"opens": "opens Sprint {number}",
