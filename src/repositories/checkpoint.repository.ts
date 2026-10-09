@@ -49,7 +49,6 @@ import type {
  * the project.
  */
 
-/** A checkpoint that has not reached its verdict yet. */
 /**
  * A checkpoint that is under way. `AwaitingCurator` belongs here and not with
  * the drafts: it has been paid for, it is the project's one checkpoint on the
@@ -529,7 +528,6 @@ const currentCheckpointSelect = {
 	},
 } as const;
 
-/** The one checkpoint a project may have on the go, `Draft` included. */
 /**
  * A draft whose last checkout failed or expired. A `PENDING` one is not counted:
  * it may be open in another tab, or paid with the webhook still on its way.
@@ -553,6 +551,7 @@ const paymentFailed = async (row: {
 	);
 };
 
+/** The one checkpoint a project may have on the go, `Draft` included. */
 export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
@@ -756,7 +755,6 @@ export const replaceCheckpointItems = async (
 		}),
 	]);
 
-/** Stamps the day count onto a checkpoint before it leaves the server. */
 /**
  * The day counter, and only where it is true.
  *

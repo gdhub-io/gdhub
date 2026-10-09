@@ -73,11 +73,10 @@ export function CheckpointPurchase() {
 		!!current &&
 		(current.status === CheckpointStatus.AwaitingCurator ||
 			(current.status === CheckpointStatus.Draft &&
-				(!!current.paymentId || !!current.curatorDeclinedAt)) ||
-			// Back from Stripe, before the webhook: only once the terms were taken.
-			(current.status === CheckpointStatus.Draft &&
-				asked === "ready" &&
-				!!current.acceptedTermsAt));
+				(!!current.paymentId ||
+					!!current.curatorDeclinedAt ||
+					// Back from Stripe, before the webhook: only once the terms were taken.
+					(asked === "ready" && !!current.acceptedTermsAt))));
 	// A curator handed it back: the money went with them, so it is not "paid".
 	const declined = !!current?.curatorDeclinedAt && !current.curator;
 	// The curator took it on, or the AI one started it: the path shows it now.

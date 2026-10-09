@@ -5,6 +5,7 @@ import { App, Flex } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { useCreateCheckpoint } from "@/hooks/checkpoints";
 import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoint-facts";
@@ -26,21 +27,6 @@ export type CheckpointDetailProps = {
 	 * and the answers are what Inputs already shows.
 	 */
 	viewer?: "author" | "curator";
-};
-
-/**
- * "1–7 Sep", and "28 Sep – 4 Oct" when the sprint crosses a month.
- *
- * Read in UTC: the boundaries are UTC midnights, and a browser west of it would
- * otherwise print the day before — on the one surface where the dates are shown.
- */
-const range = (from: string, to: string) => {
-	const start = dayjs.utc(from);
-	const end = dayjs.utc(to);
-
-	return start.month() === end.month()
-		? `${start.format("D")}–${end.format("D MMM")}`
-		: `${start.format("D MMM")} – ${end.format("D MMM")}`;
 };
 
 /**
@@ -152,7 +138,7 @@ export function CheckpointDetail({
 			return {
 				key: `sprint-${number}`,
 				label: t("checkpoints.path.sprint", "Sprint {n}", { n: number }),
-				meta: sprint ? range(sprint.from, sprint.to) : null,
+				meta: sprint ? dayRange(sprint.from, sprint.to) : null,
 				// A sprint can only read as current once the 28 days are running. The
 				// dates exist before that — the author picked them — and drawing the
 				// first sprint in the accent against them claims a run that has not

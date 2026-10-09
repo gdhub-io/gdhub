@@ -12,8 +12,11 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { dueDateFrom } from "@/lib/checkpoint-days";
-import { returnCheckpointMoney } from "@/repositories/checkpoint-payment";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import {
+	returnCheckpointMoney,
+	returnToAuthor,
+} from "@/repositories/checkpoint-payment";
 import {
 	ensureCheckpointRoom,
 	syncChat,
@@ -25,12 +28,9 @@ const AnswerSchema = z.object({ accept: z.boolean() });
 
 /** A date already gone cannot be day one; the author's wish holds otherwise. */
 const startsOn = (wanted: Date | null) => {
-	const today = new Date();
-	const midnight = new Date(
-		Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
-	);
+	const today = utcStartOfDay(new Date());
 
-	return wanted && wanted > midnight ? wanted : midnight;
+	return wanted && wanted > today ? wanted : today;
 };
 
 // Imports the server-side Matrix SDK via ensureChatRoom — keep dynamic
@@ -100,32 +100,26 @@ export const POST = pipe(
 
 		// Money the author paid must not be left behind a checkpoint nobody is
 		// running: better to refuse the decline than to lose track of it.
-		if (!returned && held) return apiError.internal("paymentNotSettled");
+		if (held && (!returned || "failed" in returned)) {
+			return apiError.internal("paymentNotSettled");
+		}
 	}
 
 	const startedAt = startsOn(checkpoint.startedAt);
 
-	await prisma.projectCheckpoint.update({
-		where: { id },
-		data: accept
-			? {
-					status: CheckpointStatus.Active,
-					curatorAcceptedAt: new Date(),
-					startedAt,
-					dueAt: dueDateFrom(startedAt),
-				}
-			: {
-					status: CheckpointStatus.Draft,
-					curatorDeclinedAt: new Date(),
-					curatorId: null,
-					// Kept so the picker can show them as unavailable: an expert who
-					// disappears from the list is one the author picks again.
-					declinedCuratorIds: { push: curator.id },
-					// The hold is gone, so the checkpoint is unpaid again: the author
-					// picks somebody else and buys it for them.
-					paymentId: null,
-				},
-	});
+	if (accept) {
+		await prisma.projectCheckpoint.update({
+			where: { id },
+			data: {
+				status: CheckpointStatus.Active,
+				curatorAcceptedAt: new Date(),
+				startedAt,
+				dueAt: dueDateFrom(startedAt),
+			},
+		});
+	} else {
+		await returnToAuthor(id, curator.id);
+	}
 
 	// The chat opens as the checkpoint starts, and the curator's yes is what
 	// starts it. The first click on the chat makes the room if this could not.

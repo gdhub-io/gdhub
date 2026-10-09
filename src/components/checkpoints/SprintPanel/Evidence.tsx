@@ -6,12 +6,12 @@ import { Button, Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
+import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { ArtifactCheckStatus, CheckpointStatus } from "@/config/prisma-enums";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
 import type { CheckpointDto } from "@/types/checkpoints";
-import { useArtifactTypeLabel } from "../artifactType";
 import styles from "./style.module.scss";
 
 export type EvidenceProps = {

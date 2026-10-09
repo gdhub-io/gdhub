@@ -22,7 +22,7 @@ import type {
 	ProjectActivityKind,
 } from "@/repositories/project-activity.repository";
 import type { CheckpointSprintDto } from "@/types/checkpoints";
-import { formatShort } from "./dates";
+import { formatDay, formatShort } from "./dates";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -81,8 +81,9 @@ const TONE: Record<
 	},
 };
 
+// Events reach back years; a bare "19 Jan" under "18 Mar" reads as out of order.
 const when = (iso: string) =>
-	dayjs(iso).isSame(dayjs(), "day") ? null : formatShort(iso);
+	dayjs(iso).isSame(dayjs(), "day") ? null : formatDay(iso);
 
 export type ActivityFeedProps = {
 	projectId: string;

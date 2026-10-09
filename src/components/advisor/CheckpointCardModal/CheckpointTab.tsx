@@ -10,13 +10,13 @@ import {
 } from "@/components/scout/ProjectCardModal/parts";
 import scout from "@/components/scout/ProjectCardModal/style.module.scss";
 import { CheckpointItemKind } from "@/config/prisma-enums";
+import { hoursSpan } from "@/lib/checkpoint-capacity";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
 	CheckpointItemDto,
 } from "@/types/checkpoints";
-import { span } from "./span";
 import styles from "./style.module.scss";
 
 const { Text, Paragraph } = Typography;
@@ -103,7 +103,7 @@ export function CheckpointTab({
 					value={
 						capacity.hoursPerWeek
 							? t("advisor.card.hoursPerSprint", "{hours} h / sprint", {
-									hours: span(capacity.hoursPerWeek),
+									hours: hoursSpan(capacity.hoursPerWeek),
 								})
 							: "—"
 					}
@@ -111,7 +111,7 @@ export function CheckpointTab({
 					sub={
 						capacity.hoursPerRun
 							? t("advisor.card.hoursPerRun", "{hours} h over 28 days", {
-									hours: span(capacity.hoursPerRun),
+									hours: hoursSpan(capacity.hoursPerRun),
 								})
 							: t(
 									"checkpoints.pay.capacityUnknown",

@@ -22,7 +22,7 @@ import {
 	useCheckpointCurators,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
-import { teamCapacity } from "@/lib/checkpoint-capacity";
+import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import { CuratorBadge } from "../CuratorBadge";
@@ -106,8 +106,6 @@ export function PaymentStep() {
 	const capacity = teamCapacity(
 		team.members.map((row) => ({ timeForWork: team.statedFor(row) })),
 	);
-	const span = (hours: { from: number; to: number }) =>
-		hours.from === hours.to ? `${hours.from}` : `${hours.from}–${hours.to}`;
 
 	const runsIn = [
 		draft.stageName,
@@ -204,8 +202,8 @@ export function PaymentStep() {
 										"checkpoints.pay.capacityHours",
 										"{week} hours per sprint · {run} hours over 28 days",
 										{
-											week: span(capacity.hoursPerWeek),
-											run: span(capacity.hoursPerRun),
+											week: hoursSpan(capacity.hoursPerWeek),
+											run: hoursSpan(capacity.hoursPerRun),
 										},
 									)
 								: t(

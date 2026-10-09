@@ -8,6 +8,11 @@ import {
 } from "./checkpoint.repository";
 import { CONFIRMED_MEMBERS } from "./scout.games";
 
+const advisorCheckpointSelect = {
+	...checkpointSelect,
+	project: { select: { name: true, slug: true } },
+} as const;
+
 /**
  * The advisor's own board, in the order the work reaches them.
  *
@@ -26,39 +31,34 @@ import { CONFIRMED_MEMBERS } from "./scout.games";
  * others, whatever project those belong to.
  */
 export const listAdvisorCheckpoints = async (curatorId: string) => {
-	const rows = await prisma.projectCheckpoint.findMany({
-		where: {
-			curatorId,
-			status: {
-				in: [
-					CheckpointStatus.AwaitingCurator,
-					CheckpointStatus.Active,
-					CheckpointStatus.Review,
-					CheckpointStatus.Closed,
-				],
+	const [rows, declined] = await Promise.all([
+		prisma.projectCheckpoint.findMany({
+			where: {
+				curatorId,
+				status: {
+					in: [
+						CheckpointStatus.AwaitingCurator,
+						CheckpointStatus.Active,
+						CheckpointStatus.Review,
+						CheckpointStatus.Closed,
+					],
+				},
 			},
-		},
-		orderBy: { createdAt: "desc" },
-		select: {
-			...checkpointSelect,
-			project: { select: { name: true, slug: true } },
-		},
-	});
-
-	// Somebody else runs these now, or nobody does — either way they are this
-	// curator's history. A checkpoint they declined and were later given again
-	// belongs to the lists above, not here.
-	const declined = await prisma.projectCheckpoint.findMany({
-		where: {
-			declinedCuratorIds: { has: curatorId },
-			NOT: { curatorId },
-		},
-		orderBy: { updatedAt: "desc" },
-		select: {
-			...checkpointSelect,
-			project: { select: { name: true, slug: true } },
-		},
-	});
+			orderBy: { createdAt: "desc" },
+			select: advisorCheckpointSelect,
+		}),
+		// Somebody else runs these now, or nobody does — either way they are this
+		// curator's history. A checkpoint they declined and were later given again
+		// belongs to the lists above, not here.
+		prisma.projectCheckpoint.findMany({
+			where: {
+				declinedCuratorIds: { has: curatorId },
+				NOT: { curatorId },
+			},
+			orderBy: { updatedAt: "desc" },
+			select: advisorCheckpointSelect,
+		}),
+	]);
 
 	const of = (...statuses: CheckpointStatus[]) =>
 		rows.filter((row) => statuses.includes(row.status)).map(withProgress);
@@ -81,10 +81,7 @@ export const listAdvisorCheckpoints = async (curatorId: string) => {
 export const getAdvisorCheckpoint = async (id: string, curatorId: string) => {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: { id, curatorId },
-		select: {
-			...checkpointSelect,
-			project: { select: { name: true, slug: true } },
-		},
+		select: advisorCheckpointSelect,
 	});
 
 	return withProgress(row);

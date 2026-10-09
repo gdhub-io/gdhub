@@ -2,8 +2,8 @@ import { IconCheck, IconMinus } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
+import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
 import type { CheckpointItemDto } from "@/types/checkpoints";
-import { useArtifactTypeLabel } from "../artifactType";
 import styles from "./style.module.scss";
 
 /**

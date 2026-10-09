@@ -99,6 +99,9 @@ export function RunningCheckpoint({
 		sprints.find((sprint) => sprint.state === "current") ?? sprints.at(-1);
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 	const curatorName = checkpoint.curator?.name?.split(" ")[0] ?? "";
+	const sessionWith = t("workflow.path.session.with", "Session with {name}", {
+		name: curatorName,
+	});
 	const number = checkpoint.number ?? 1;
 	const base = `/user/project/${project.slug}/workflow/cp${number}`;
 	const sessionHref = (session: CheckpointSessionDto) =>
@@ -406,12 +409,8 @@ export function RunningCheckpoint({
 										"Written by the AI curator from your devlog, artifacts and activity",
 									)
 								: today
-									? t("workflow.path.session.with", "Session with {name}", {
-											name: curatorName,
-										})
-									: `${t("workflow.path.session.with", "Session with {name}", {
-											name: curatorName,
-										})} · ${opens}`}
+									? sessionWith
+									: `${sessionWith} · ${opens}`}
 						</span>
 					</div>
 				</div>
@@ -510,9 +509,7 @@ export function RunningCheckpoint({
 													number: String(openingSession.index - 1),
 												},
 											)
-										: t("workflow.path.session.with", "Session with {name}", {
-												name: curatorName,
-											})}
+										: sessionWith}
 								</span>
 								<span className={`${styles.meta} ${styles.grow}`}>
 									{formatShort(openingSession.scheduledAt)}

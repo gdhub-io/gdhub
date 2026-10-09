@@ -7,10 +7,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import axios from "axios";
-import type {
-	CheckpointCuratorKind,
-	CheckpointItemKind,
-} from "@/config/prisma-enums";
+import type { CheckpointCuratorKind } from "@/config/prisma-enums";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type { ProjectActivity } from "@/repositories/project-activity.repository";
 import type {
@@ -79,7 +76,24 @@ export const useUpdateCheckpoint = (id?: string) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
 			// Awaited: the purchase reads the list to decide which steps are open.
 			return queryClient.invalidateQueries({
-				queryKey: ["project-checkpoints"],
+				queryKey: ["project-checkpoints", checkpoint.projectId],
+			});
+		},
+	});
+};
+
+/** A POST to one of the checkpoint's sub-routes that answers with the whole checkpoint. */
+const useCheckpointPost = <B>(id: string | undefined, path: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: B) =>
+			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/${path}`, body))
+				.data,
+		onSuccess: (checkpoint) => {
+			queryClient.setQueryData(["checkpoint", id], checkpoint);
+			queryClient.invalidateQueries({
+				queryKey: ["project-checkpoints", checkpoint.projectId],
 			});
 		},
 	});
@@ -89,34 +103,12 @@ export const useUpdateCheckpoint = (id?: string) => {
  * The day-14 answer: cut, reword, add — or none of the three and a reason why
  * the list stands. It lands once, so the whole change is one request.
  */
-export const useChangeScope = (id?: string) => {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: async (body: CheckpointScopeBody) =>
-			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/scope`, body))
-				.data,
-		onSuccess: (checkpoint) => {
-			queryClient.setQueryData(["checkpoint", id], checkpoint);
-			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
-		},
-	});
-};
+export const useChangeScope = (id?: string) =>
+	useCheckpointPost<CheckpointScopeBody>(id, "scope");
 
 /** Bind an artifact to the outcomes it proves, or let one go with `artifactId: null`. */
-export const useAttachEvidence = (id?: string) => {
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: async (body: CheckpointEvidenceBody) =>
-			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/evidence`, body))
-				.data,
-		onSuccess: (checkpoint) => {
-			queryClient.setQueryData(["checkpoint", id], checkpoint);
-			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] });
-		},
-	});
-};
+export const useAttachEvidence = (id?: string) =>
+	useCheckpointPost<CheckpointEvidenceBody>(id, "evidence");
 
 /**
  * Opens Stripe Checkout for a draft and hands back where to send the author.
@@ -267,7 +259,9 @@ export const useCreateCheckpoint = (projectId?: string) => {
 		mutationFn: async () =>
 			(await axios.post<CheckpointDto>("/api/checkpoint", { projectId })).data,
 		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] }),
+			queryClient.invalidateQueries({
+				queryKey: ["project-checkpoints", projectId],
+			}),
 	});
 };
 

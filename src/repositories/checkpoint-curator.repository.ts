@@ -2,10 +2,10 @@ import { createHash } from "node:crypto";
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
+import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import type {
 	CuratorGoalCard,
@@ -153,21 +153,24 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
-	const previous = await prisma.projectCheckpoint.findFirst({
-		where: {
-			projectId: checkpoint.projectId,
-			status: CheckpointStatus.Closed,
-			verdict: { not: null },
-		},
-		orderBy: { decidedAt: "desc" },
-		select: { verdict: true, verdictNote: true },
-	});
+	const [previous, requirements] = await Promise.all([
+		prisma.projectCheckpoint.findFirst({
+			where: {
+				projectId: checkpoint.projectId,
+				status: CheckpointStatus.Closed,
+				verdict: { not: null },
+			},
+			orderBy: { decidedAt: "desc" },
+			select: { verdict: true, verdictNote: true },
+		}),
+		stageRequirements(checkpoint.stepId),
+	]);
 
 	const input = {
 		card: toCard(checkpoint.goal, checkpoint.items),
 		stage: {
 			name: checkpoint.stageName,
-			requirements: await stageRequirements(checkpoint.stepId),
+			requirements,
 		},
 		team: teamCapacity(
 			members.map((member) => ({
@@ -480,7 +483,7 @@ type PulseRow = {
 
 /** Member by week, in the shape the report reads: four booleans per person. */
 const pulseMatrix = (pulses: PulseRow[]) => {
-	const weeks = CHECKPOINT_DAYS / 7;
+	const weeks = SPRINTS_PER_CHECKPOINT;
 	const byMember = new Map<string, boolean[]>();
 
 	for (const pulse of pulses) {

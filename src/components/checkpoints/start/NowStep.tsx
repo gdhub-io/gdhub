@@ -119,7 +119,14 @@ export function NowStep() {
 	const finish = dayjs.utc(dueDateFrom(dayjs.utc(day).toDate()));
 
 	const me = team.members.find((row) => row.userId === session?.user?.id);
-	const myHours = mine ?? (me ? team.statedFor(me) : null) ?? [0, 0];
+	const stated = me ? team.statedFor(me) : null;
+	const myHours = mine ?? stated ?? [0, 0];
+	// Tabbing through the inputs must not write the profile it just read.
+	const saveMine = () => {
+		if (mine && (mine[0] !== stated?.[0] || mine[1] !== stated?.[1])) {
+			saveHours.mutate(mine);
+		}
+	};
 	const hoursOf = (row: TeamHoursRow) =>
 		row.userId === session?.user?.id ? myHours : team.statedFor(row);
 	const capacity = teamCapacity(
@@ -255,7 +262,7 @@ export function NowStep() {
 									controls={false}
 									className={styles.hours}
 									onChange={(value) => setShare(0, value)}
-									onBlur={() => saveHours.mutate(myHours)}
+									onBlur={saveMine}
 								/>
 								<Typography.Text type="secondary">–</Typography.Text>
 								<InputNumber
@@ -267,7 +274,7 @@ export function NowStep() {
 									controls={false}
 									className={styles.hours}
 									onChange={(value) => setShare(1, value)}
-									onBlur={() => saveHours.mutate(myHours)}
+									onBlur={saveMine}
 								/>
 								<Typography.Text type="secondary">
 									{t("checkpoints.now.hoursShort", "h")}

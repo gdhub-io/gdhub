@@ -23,18 +23,14 @@ import {
 const MINOR = 100;
 
 /** The screen writes a `$`, so this is what is charged and what the row stores. */
-export const CHECKPOINT_CURRENCY = "USD";
+const CHECKPOINT_CURRENCY = "USD";
 
-/**
- * Why a checkpoint cannot be paid for. Each one is a state the author can see
- * and fix, so the route answers with the reason rather than a bare 400.
- */
-export type CheckoutRefusal =
-	| "notFound"
-	| "checkpointNotDraft"
-	| "alreadyPaid"
-	| "termsNotAccepted"
-	| "curatorUnavailable";
+/** The money a checkpoint holds or has taken. */
+const heldPaymentWhere = (checkpointId: string) => ({
+	payableType: PayableType.CHECKPOINT,
+	payableId: checkpointId,
+	status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
+});
 
 /** Whether this checkpoint has been paid for, whatever state it is in now. */
 export const isCheckpointPaid = async (checkpointId: string) =>
@@ -79,11 +75,7 @@ export const curatorCharge = async (
 export const heldAmount = async (checkpointId: string) =>
 	(
 		await prisma.payment.findFirst({
-			where: {
-				payableType: PayableType.CHECKPOINT,
-				payableId: checkpointId,
-				status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
-			},
+			where: heldPaymentWhere(checkpointId),
 			select: { amount: true },
 		})
 	)?.amount ?? null;
@@ -162,18 +154,15 @@ export const checkpointCheckout = async (checkpointId: string) => {
  * once it agrees — a row claiming money went back when it did not is worse than
  * no row at all.
  *
- * Returns what happened, or null when there was nothing to give back.
+ * Returns what happened, `failed` when Stripe refused, or null when there was
+ * nothing to give back.
  */
 export const returnCheckpointMoney = async (
 	checkpointId: string,
 	reason: string,
 ) => {
 	const payment = await prisma.payment.findFirst({
-		where: {
-			payableType: PayableType.CHECKPOINT,
-			payableId: checkpointId,
-			status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
-		},
+		where: heldPaymentWhere(checkpointId),
 		select: {
 			id: true,
 			amount: true,
@@ -188,19 +177,19 @@ export const returnCheckpointMoney = async (
 	if (payment.status === PaymentStatus.PROCESSING) {
 		const released = await releaseCheckout(payment.providerTransactionId);
 
-		if (!released) return null;
+		if (!released) return { failed: "holdNotReleased" as const };
 
 		await prisma.payment.update({
 			where: { id: payment.id },
 			data: { status: PaymentStatus.CANCELED },
 		});
 
-		return { released: true, refunded: false };
+		return { released: true as const };
 	}
 
 	const refund = await refundCheckout(payment.providerTransactionId);
 
-	if (!refund) return null;
+	if (!refund) return { failed: "refundFailed" as const };
 
 	await prisma.$transaction([
 		prisma.refund.create({
@@ -218,8 +207,28 @@ export const returnCheckpointMoney = async (
 		}),
 	]);
 
-	return { released: false, refunded: true };
+	return { refunded: true as const };
 };
+
+/**
+ * Hands a checkpoint back to its author after its curator said no or never
+ * answered: unpaid again, with that curator kept so the picker shows them as
+ * unavailable — an expert who disappears from the list is one picked again.
+ */
+export const returnToAuthor = (
+	checkpointId: string,
+	curatorId: string | null,
+) =>
+	prisma.projectCheckpoint.update({
+		where: { id: checkpointId },
+		data: {
+			status: CheckpointStatus.Draft,
+			curatorId: null,
+			curatorDeclinedAt: new Date(),
+			paymentId: null,
+			...(curatorId && { declinedCuratorIds: { push: curatorId } }),
+		},
+	});
 
 /**
  * A completed checkout, applied: the payment becomes a hold and the checkpoint

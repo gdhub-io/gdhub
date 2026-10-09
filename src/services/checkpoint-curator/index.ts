@@ -155,11 +155,6 @@ class CheckpointCuratorService {
 	}
 }
 
-const globalForCurator = globalThis as unknown as {
-	checkpointCurator: CheckpointCuratorService | undefined;
-};
-
-export const checkpointCurator =
-	globalForCurator.checkpointCurator ?? new CheckpointCuratorService();
+export const checkpointCurator = new CheckpointCuratorService();
 
 export type * from "./types";

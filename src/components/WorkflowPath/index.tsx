@@ -78,6 +78,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			list.current.status === CheckpointStatus.AwaitingCurator)
 			? list.current
 			: null;
+	const canManage = can("project.checkpoints.manage");
 	// Until purchase opens the offer still shows, its button locked.
 	const locked = list?.blocker?.reason === "purchaseClosed";
 	const offered =
@@ -119,7 +120,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			projectId: project.id,
 			direction: "next",
 			currentStep: current.name,
-			nextStep: steps[current.order + 1]?.name,
+			nextStep: nextStep?.name,
 		});
 	};
 
@@ -244,7 +245,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	return (
 		<div className={styles.layout}>
 			{/* It answers the one who chose the curator, not the whole team. */}
-			{running && detail && can("project.checkpoints.manage") && (
+			{running && detail && canManage && (
 				<CuratorAccepted checkpoint={detail} />
 			)}
 			<div>
@@ -288,7 +289,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 								checkpoint={detail}
 								project={project}
 								previous={previous}
-								canManage={can("project.checkpoints.manage")}
+								canManage={canManage}
 								here={sprintBehind ? hereLabel : null}
 							/>
 						</PathBranch>
@@ -337,7 +338,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 					<CheckpointAside
 						checkpoint={detail}
 						projectSlug={project.slug}
-						canManage={can("project.checkpoints.manage")}
+						canManage={canManage}
 					/>
 				)}
 				<WorkflowTasksPanel
