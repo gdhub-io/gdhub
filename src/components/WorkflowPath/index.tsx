@@ -243,7 +243,10 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 	return (
 		<div className={styles.layout}>
-			{running && detail && <CuratorAccepted checkpoint={detail} />}
+			{/* It answers the one who chose the curator, not the whole team. */}
+			{running && detail && can("project.checkpoints.manage") && (
+				<CuratorAccepted checkpoint={detail} />
+			)}
 			<div>
 				{historyVisible &&
 					firstShown > 0 &&
