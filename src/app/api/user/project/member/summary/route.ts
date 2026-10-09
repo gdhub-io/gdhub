@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 
 const SummaryQuerySchema = z.object({
@@ -25,7 +26,13 @@ export const GET = withAuth({ mode: "user" })(
 		const { projectId } = body as SummaryQuery;
 
 		const teamMember = await prisma.teamMember.findFirst({
-			where: { userId: currentUser.id, team: { project: { id: projectId } } },
+			// Someone taken back after leaving has their old row too; the summary is
+			// of the place they hold now.
+			where: {
+				userId: currentUser.id,
+				team: { project: { id: projectId } },
+				...CONFIRMED_MEMBERS,
+			},
 			include: {
 				user: { select: { profile: true } },
 				team: true,

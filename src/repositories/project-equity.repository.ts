@@ -3,6 +3,7 @@ import {
 	type ProjectEquity,
 } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
+import { CONFIRMED_MEMBERS } from "./scout.games";
 
 /**
  * Interface for transferring shares between participants
@@ -463,6 +464,7 @@ export class ProjectEquityRepository {
 					where: {
 						userId: toUserId,
 						teamId: equity.project.team?.id,
+						...CONFIRMED_MEMBERS,
 					},
 				});
 
