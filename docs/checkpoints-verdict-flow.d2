@@ -1,0 +1,114 @@
+# GDHub — Checkpoint: from day 28 to the verdict (GDHUB-77)
+# Rendered with https://d2lang.com/  (`d2 checkpoints-verdict-flow.d2 checkpoints-verdict-flow.svg`)
+# Frames: list card F7WRD, verdict modal vC7gn (final) / F041BL (draft) + tab VSpKU,
+#         author results dR8Bu, path after the verdict tQa5n, notifications Yfr1j.
+# Day 29 is the final call; the verdict is due by dueAt + 3 days (day 31).
+# Sending opens when the final call starts; before that, even on day 29, only a draft.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 4
+  }
+}
+
+direction: right
+
+status: CheckpointStatus {
+  grid-columns: 1
+  active: Active
+  review: Review {style.fill: "#fff4e5"}
+  closed: Closed {style.fill: "#e8f5e9"}
+}
+
+cron: "⏰ cron /api/cron/checkpoints" {
+  shape: hexagon
+  tooltip: daily 01:00 UTC, vercel_cron
+}
+cron -> status.active: "dueAt < today (UTC)\nfor every curator kind"
+status.active -> status.review: moveFinishedToReview()
+
+notify_curator: "🔔✉ Curator: «Your verdict on <project> is due by <dueAt + 3 days>»\n→ [Write the verdict] (/advisor/checkpoints?verdict=<id>)" {
+  shape: page
+}
+cron -> notify_curator: "human curator,\nonce, on the move to Review"
+
+curator: Human curator {
+  shape: person
+}
+
+list: /advisor/checkpoints {
+  card: "Card in Review\n«Awaiting verdict» + [Write the verdict]\n(F7WRD)"
+}
+curator -> list.card: opens
+
+modal: Verdict modal (vC7gn) {
+  study: Study (scrolls) {
+    grid-columns: 1
+    goal: "Goal card\nNow: outcomes + evidence / cut\nOn day 1: inputs + artifacts (VSpKU)"
+    build: "Last build\nlatest ExecutableBuild of the 28 days\nname · domain · [Open the build]"
+    devlogs: "Devlogs\nread-only, «N of 4 published»"
+    pulse: "Team pulse\n✓ per member per sprint S1–S4"
+  }
+  decide: Decide (fixed) {
+    grid-columns: 1
+    options: "Goal met\nGoal missed\nReady for the next stage → «<next stage>»\n(hidden on the last stage)"
+    note: "Your reasoning\nrequired, ≤ 1200"
+    draft: "[Save draft]\nfrom sprint 4 (Active) and in Review\nonly the curator sees it"
+    send: "[Send the verdict]\nfrom the start of the final call (day 29)\ndue by dueAt + 3 days, overdue still allowed\nfinal, cannot be edited"
+  }
+}
+list.card -> modal: Write the verdict
+
+api: "POST /api/advisor/checkpoints/[id]/verdict" {
+  direction: down
+  v1: "withAuth(user) + zod {verdict, note}"
+  v2: "find id + curatorId = me + Human\nelse 404"
+  v3: "status = Review, not decided,\nfinal call has started\nelse 400"
+  v4: "updateMany guarded by the same where\n→ Closed, verdict, verdictNote,\ndecidedAt, decidedById"
+  v5: "syncChat → closeCheckpointRoom\n(failure logged, verdict stays)"
+  v1 -> v2 -> v3 -> v4 -> v5
+}
+modal.decide.send -> api.v1: "free choice:\nno server rule on verdict"
+draft_api: "PUT /api/advisor/checkpoints/[id]/verdict-draft" {
+  d1: "curatorId = me + Human, status Active (sprint 4) or Review, not decided"
+  d2: "store verdict + note as the draft; author never sees it"
+  d1 -> d2
+}
+modal.decide.draft -> draft_api.d1
+api.v4 -> status.review: writes
+status.review -> status.closed: verdict written
+
+author: Author / team {
+  shape: person
+}
+path: Project path {
+  grid-columns: 1
+  closed: "Closed checkpoint\nVerdictChip + meaning + note (dR8Bu)"
+  next: "getCreationBlocker lifts. How do you go on? (tQa5n)\n• Another checkpoint → purchase flow\n• On your own → stage tasks only, no sprints"
+  chat: Chat under «Closed»
+}
+status.closed -> path.closed
+status.closed -> path.next
+api.v5 -> path.chat
+notify_author: "🔔✉ Author: «<curator> sent the verdict on Checkpoint N»\n→ [View the verdict] (path, results modal)" {
+  shape: page
+}
+api.v5 -> notify_author: "after the write"
+author -> path.closed: reads
+
+removed: Removed: curator answers on devlogs {
+  style.stroke-dash: 4
+  grid-columns: 1
+  r1: "POST advisor/checkpoints/[id]/review + useWriteReview"
+  r2: "SprintPanel Review form and display"
+  r3: "AI answerDevlog + devlog-answer prompt"
+}
+
+out: Not here {
+  style.stroke-dash: 4
+  grid-columns: 1
+  o1: "Moving the project to the next stage — GDHUB-37"
+  o2: "AI verdict run, pulses, reminders — GDHUB-72"
+  o3: "«What you have now» purchase step — GDHUB-78"
+}
