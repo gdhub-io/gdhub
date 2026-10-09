@@ -87,20 +87,6 @@ export type GoalCheckResult = {
 	note: string;
 };
 
-/** The day after a devlog: what it moves, what it leaves untouched. */
-export type DevlogAnswerInput = {
-	devlog: { publishedAt: string; content: string; hasVideo: boolean };
-	outcomes: CuratorLine[];
-};
-
-export type DevlogAnswerResult = {
-	/** What is written under the post. It never replaces the post. */
-	answer: string;
-	/** Outcome ids this devlog moves, and ones still untouched. */
-	moves: string[];
-	untouched: string[];
-};
-
 /** Day 15: the outcomes nothing has been claimed against, and how much is gone. */
 export type MidNoteInput = {
 	card: CuratorGoalCard;

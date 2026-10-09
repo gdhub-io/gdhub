@@ -13,9 +13,10 @@ import type { ReactNode } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
-	curatorPrice,
-} from "@/config/checkpoint-pricing";
+} from "@/config/checkpoint";
+import { curatorPrice } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import {
 	useCheckpointCheckout,
@@ -24,7 +25,6 @@ import {
 } from "@/hooks/checkpoints";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom } from "@/lib/checkpoint-days";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import { CuratorBadge } from "../CuratorBadge";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";

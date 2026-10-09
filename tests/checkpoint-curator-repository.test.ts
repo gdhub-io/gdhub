@@ -6,10 +6,9 @@ import {
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import {
-	answerDevlog,
 	closeCheckpoint,
 	runGoalCheck,
 	writeMidNote,
@@ -32,7 +31,6 @@ vi.mock("@/services/prisma", () => ({
 vi.mock("@/services/checkpoint-curator", () => ({
 	checkpointCurator: {
 		checkGoal: vi.fn(),
-		answerDevlog: vi.fn(),
 		writeMidNote: vi.fn(),
 		writeReport: vi.fn(),
 	},
@@ -292,73 +290,6 @@ describe("runGoalCheck", () => {
 
 		await expect(runGoalCheck("cp1")).resolves.toBeNull();
 		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
-	});
-});
-
-describe("answerDevlog", () => {
-	it("writes the answer under the post and stamps the time", async () => {
-		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
-			content: "Tide states are in.",
-			video: null,
-			publishedAt: new Date("2026-09-08T10:00:00.000Z"),
-			curatorFeedbackAt: null,
-			checkpoint: { goal: "g", items: [outcome("o1")] },
-		} as never);
-		vi.mocked(checkpointCurator.answerDevlog).mockResolvedValue({
-			answer: "This moves the tide work.",
-			moves: ["o1"],
-			untouched: [],
-		});
-
-		await answerDevlog("r1");
-
-		expect(prisma.projectReport.update).toHaveBeenCalledWith(
-			expect.objectContaining({
-				data: expect.objectContaining({
-					curatorFeedback: "This moves the tide work.",
-				}),
-			}),
-		);
-	});
-
-	it("does not answer a post that already carries one", async () => {
-		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
-			content: "x",
-			video: null,
-			publishedAt: new Date(),
-			curatorFeedbackAt: new Date(),
-			checkpoint: { goal: "g", items: [] },
-		} as never);
-
-		await expect(answerDevlog("r1")).resolves.toBeNull();
-		expect(checkpointCurator.answerDevlog).not.toHaveBeenCalled();
-	});
-
-	it("ignores a devlog that belongs to no checkpoint", async () => {
-		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
-			content: "x",
-			video: null,
-			publishedAt: new Date(),
-			curatorFeedbackAt: null,
-			checkpoint: null,
-		} as never);
-
-		await expect(answerDevlog("r1")).resolves.toBeNull();
-		expect(checkpointCurator.answerDevlog).not.toHaveBeenCalled();
-	});
-
-	it("writes nothing when the model fails", async () => {
-		vi.mocked(prisma.projectReport.findUnique).mockResolvedValue({
-			content: "x",
-			video: null,
-			publishedAt: new Date(),
-			curatorFeedbackAt: null,
-			checkpoint: { goal: "g", items: [] },
-		} as never);
-		vi.mocked(checkpointCurator.answerDevlog).mockResolvedValue(null);
-
-		await expect(answerDevlog("r1")).resolves.toBeNull();
-		expect(prisma.projectReport.update).not.toHaveBeenCalled();
 	});
 });
 

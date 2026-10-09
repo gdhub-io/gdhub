@@ -7,7 +7,10 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
-import { VerdictChip } from "@/components/checkpoints/VerdictChip";
+import {
+	useVerdictCopy,
+	VerdictChip,
+} from "@/components/checkpoints/VerdictChip";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -76,6 +79,7 @@ export function CheckpointResult({
 	checkpoint: CheckpointDto;
 }) {
 	const { t } = useTranslate();
+	const { meaning } = useVerdictCopy();
 	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
 	);
@@ -138,6 +142,9 @@ export function CheckpointResult({
 									· {formatShort(checkpoint.decidedAt)}
 								</span>
 							)}
+						</span>
+						<span className={styles.secondary}>
+							{meaning(checkpoint.verdict)}
 						</span>
 						{checkpoint.verdictNote && (
 							<span className={styles.prose}>{checkpoint.verdictNote}</span>

@@ -10,17 +10,17 @@ import {
 } from "@/components/scout/ProjectCardModal/parts";
 import scout from "@/components/scout/ProjectCardModal/style.module.scss";
 import {
+	CHECKPOINT_DAYS,
+	SPRINT_DAYS,
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
+import {
 	type CheckpointPlanStep,
 	checkpointPlan,
 	dateOfDay,
 	VERDICT_DAY,
 } from "@/lib/checkpoint-plan";
-import {
-	SPRINT_DAYS,
-	SPRINTS_PER_CHECKPOINT,
-	sprintDayRange,
-} from "@/lib/checkpoint-sprints";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { sprintDayRange } from "@/lib/checkpoint-sprints";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

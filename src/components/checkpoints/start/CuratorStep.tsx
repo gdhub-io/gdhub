@@ -9,7 +9,7 @@ import { EmptyState, IconTile } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
-} from "@/config/checkpoint-pricing";
+} from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { useUpdateCheckpoint } from "@/hooks/checkpoints";
 import styles from "./CuratorStep.module.scss";

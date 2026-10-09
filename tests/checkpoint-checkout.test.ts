@@ -1,6 +1,7 @@
 import { CheckpointCuratorKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CHECKPOINT_AI_PRICE, curatorPrice } from "@/config/checkpoint-pricing";
+import { CHECKPOINT_AI_PRICE } from "@/config/checkpoint";
+import { curatorPrice } from "@/config/checkpoint-pricing";
 import { SkillLevel } from "@/config/prisma-enums";
 import { checkpointCheckout } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";

@@ -4,6 +4,7 @@ import { IconArrowRight, IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";
@@ -17,6 +18,8 @@ export type CheckpointCardProps = {
 	projectSlug: string;
 	/** Where the button leads. Defaults to the author's page inside the project. */
 	href?: string;
+	/** Placed before the button: what the viewer owes this checkpoint, if anything. */
+	action?: ReactNode;
 };
 
 /**
@@ -28,6 +31,7 @@ export function CheckpointCard({
 	checkpoint,
 	projectSlug,
 	href,
+	action,
 }: CheckpointCardProps) {
 	const { t } = useTranslate();
 
@@ -90,7 +94,8 @@ export function CheckpointCard({
 
 			{outcomes.length > 0 && <TaskSquares items={outcomes} />}
 
-			<Flex justify="flex-end">
+			<Flex justify="flex-end" align="center" gap={12} wrap>
+				{action}
 				<Link
 					href={
 						href ?? `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`

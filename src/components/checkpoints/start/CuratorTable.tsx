@@ -6,10 +6,8 @@ import { Button, Radio, Table, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
-import {
-	CHECKPOINT_PRICE_CURRENCY,
-	curatorPrice,
-} from "@/config/checkpoint-pricing";
+import { CHECKPOINT_PRICE_CURRENCY } from "@/config/checkpoint";
+import { curatorPrice } from "@/config/checkpoint-pricing";
 import { useCheckpointCurators } from "@/hooks/checkpoints";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import { CuratorRow } from "./CuratorRow";

@@ -30,6 +30,7 @@ import { useState } from "react";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { EmptyState, IconTile } from "@/components/ui";
 import { CheckpointResult } from "@/components/WorkflowPath/ClosedCheckpoint";
+import { CHECKPOINT_DAYS, CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import {
 	useCheckGoal,
@@ -38,7 +39,6 @@ import {
 } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom } from "@/lib/checkpoint-days";
-import { CHECKPOINT_DAYS, CHECKPOINT_GOAL_MAX } from "@/schemas/checkpoint";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import styles from "./NowStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";

@@ -7,7 +7,7 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { SPRINT_DAYS } from "@/lib/checkpoint-sprints";
+import { SPRINT_DAYS } from "@/config/checkpoint";
 import type { CheckpointSprintDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

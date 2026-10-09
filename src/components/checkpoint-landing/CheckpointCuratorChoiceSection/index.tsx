@@ -3,9 +3,9 @@ import { useTranslate } from "@tolgee/react";
 import { useState } from "react";
 import {
 	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_MIN_CURATOR_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
-} from "@/config/checkpoint-pricing";
+} from "@/config/checkpoint";
+import { CHECKPOINT_MIN_CURATOR_PRICE } from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";

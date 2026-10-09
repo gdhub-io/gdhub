@@ -1,15 +1,6 @@
+import { SESSIONS_PER_CHECKPOINT, SPRINT_DAYS } from "@/config/checkpoint";
 import { dateOfDay } from "@/lib/checkpoint-plan";
-import { SPRINT_DAYS, SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import type { CheckpointSessionDto } from "@/types/checkpoints";
-
-/**
- * The five sessions of a checkpoint: the plan on day 1, one opening each of
- * sprints 2–4, and the final one the day after the 28 days.
- */
-const SESSIONS_PER_CHECKPOINT = SPRINTS_PER_CHECKPOINT + 1;
-
-/** How long a call runs (docs/checkpoint-standard.md, "A call runs 45 minutes"). */
-export const SESSION_MINUTES = 45;
 
 /** Session 1 is on day 1, session 5 on day 29. */
 export const sessionDay = (index: number) => (index - 1) * SPRINT_DAYS + 1;

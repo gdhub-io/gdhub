@@ -82,23 +82,19 @@ describe("sprintFactsOf", () => {
 					id: "r1",
 					publishedAt: "2026-09-06T10:00:00.000Z",
 					content: "one",
-					curatorFeedback: null,
-					curatorFeedbackAt: null,
 					sprint: 1,
 				},
 				{
 					id: "r2",
 					publishedAt: "2026-09-13T10:00:00.000Z",
 					content: "two",
-					curatorFeedback: "Good",
-					curatorFeedbackAt: "2026-09-14T08:00:00.000Z",
 					sprint: 2,
 				},
 			],
 		});
 
 		expect(sprintFactsOf(data, sprint(1, "done")).devlog?.id).toBe("r1");
-		expect(sprintFactsOf(data, sprint(2, "current")).review?.text).toBe("Good");
+		expect(sprintFactsOf(data, sprint(2, "current")).devlog?.id).toBe("r2");
 	});
 
 	it("counts a mark only where someone was actually asked", () => {
@@ -196,7 +192,6 @@ describe("sprintNeedsYou", () => {
 		({
 			sprint: sprint(2, "current"),
 			devlog: null,
-			review: null,
 			scopeNote: null,
 			scopeOpen: false,
 			marks: { confirmed: 0, asked: 0, missing: [] },
@@ -218,8 +213,6 @@ describe("sprintNeedsYou", () => {
 						id: "r",
 						publishedAt: "2026-09-13T10:00:00.000Z",
 						content: "",
-						curatorFeedback: null,
-						curatorFeedbackAt: null,
 						sprint: 2,
 					},
 				}),

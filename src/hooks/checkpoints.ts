@@ -7,7 +7,10 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import axios from "axios";
-import type { CheckpointCuratorKind } from "@/config/prisma-enums";
+import type {
+	CheckpointCuratorKind,
+	CheckpointVerdict,
+} from "@/config/prisma-enums";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type { ProjectActivity } from "@/repositories/project-activity.repository";
 import type {
@@ -21,6 +24,7 @@ import type {
 	AdvisorProjectDto,
 	CheckpointDto,
 	CheckpointListResponse,
+	VerdictContextDto,
 } from "@/types/checkpoints";
 
 const listKey = (projectId?: string, page = 1, limit?: number) => [
@@ -168,25 +172,60 @@ export const useAdvisorProject = (checkpointId?: string, enabled = true) =>
 		enabled: !!checkpointId && enabled,
 	});
 
-/**
- * The curator writing their review of a sprint. It lands on that sprint's
- * devlog, which is where a review lives until the schema holds one of its own.
- */
-export const useWriteReview = (checkpointId?: string) => {
+/** The draft, the times and the last build the verdict modal reads. */
+export const useVerdictContext = (checkpointId?: string) =>
+	useQuery({
+		queryKey: ["verdict-context", checkpointId],
+		queryFn: async () =>
+			(
+				await axios.get<VerdictContextDto>(
+					`/api/advisor/checkpoints/${checkpointId}/verdict`,
+				)
+			).data,
+		enabled: !!checkpointId,
+	});
+
+export type VerdictBody = { verdict: CheckpointVerdict | null; note: string };
+
+export const useSaveVerdictDraft = (checkpointId?: string) => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (body: { devlogId: string; text: string }) =>
+		mutationFn: async (body: VerdictBody) =>
 			(
-				await axios.post(
-					`/api/advisor/checkpoints/${checkpointId}/review`,
+				await axios.put(
+					`/api/advisor/checkpoints/${checkpointId}/verdict`,
 					body,
 				)
 			).data,
 		onSuccess: () =>
 			queryClient.invalidateQueries({
-				queryKey: ["advisor-checkpoint", checkpointId],
+				queryKey: ["verdict-context", checkpointId],
 			}),
+	});
+};
+
+/** Sending is final: it closes the checkpoint and tells the author. */
+export const useSendVerdict = (checkpointId?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: { verdict: CheckpointVerdict; note: string }) =>
+			(
+				await axios.post(
+					`/api/advisor/checkpoints/${checkpointId}/verdict`,
+					body,
+				)
+			).data,
+		// The modal closes on success; its context is never read again.
+		onSuccess: () => {
+			queryClient.removeQueries({
+				queryKey: ["verdict-context", checkpointId],
+			});
+			return queryClient.invalidateQueries({
+				queryKey: ["advisor-checkpoints"],
+			});
+		},
 	});
 };
 

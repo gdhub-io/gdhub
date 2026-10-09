@@ -9,6 +9,7 @@ import type {
 	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
 import type { AuthorNextStep } from "@/lib/checkpoint-plan";
+import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
 
 /**
  * What the checkpoint endpoints send to the browser.
@@ -40,13 +41,11 @@ export type CheckpointItemDto = {
 	artifact: CheckpointArtifactRef | null;
 };
 
-/** A devlog of this checkpoint, with the curator's answer under it. */
+/** A devlog of this checkpoint. */
 export type CheckpointDevlogDto = {
 	id: string;
 	publishedAt: string;
 	content: string;
-	curatorFeedback: string | null;
-	curatorFeedbackAt: string | null;
 	/** Which sprint it landed in, or null for one published outside the 28 days. */
 	sprint: number | null;
 };
@@ -287,4 +286,26 @@ export type CheckpointListResponse = {
 	};
 	canCreate: boolean;
 	blocker: CheckpointBlocker | null;
+};
+
+/** What the verdict modal reads beyond the checkpoint card (frame `vC7gn`). */
+export type VerdictContextDto = {
+	/** Null once decided; otherwise what the curator may do now. */
+	stage: VerdictStage | null;
+	dueAt: string | null;
+	draft: {
+		verdict: CheckpointVerdict | null;
+		note: string;
+		savedAt: string;
+	} | null;
+	finalCall: { scheduledAt: string; curatorJoinedAt: string | null } | null;
+	currentStage: { name: string; key: string | null };
+	/** Null on the workflow's last stage, which hides "Ready for the next stage". */
+	nextStage: { name: string; key: string } | null;
+	lastBuild: {
+		name: string | null;
+		link: string;
+		domain: string | null;
+		createdAt: string;
+	} | null;
 };

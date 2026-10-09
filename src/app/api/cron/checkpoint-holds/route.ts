@@ -4,6 +4,10 @@ import {
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import {
+	CURATOR_ANSWER_DAYS,
+	PAYMENT_WEBHOOK_GRACE_MINUTES,
+} from "@/config/checkpoint";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import {
@@ -13,11 +17,7 @@ import {
 import { prisma } from "@/services/prisma";
 import { releaseCheckout } from "@/services/stripe/server";
 
-/** How long a curator has to answer before the money goes back. */
-const CURATOR_ANSWER_DAYS = 3;
-
-/** How long the webhook is given before Stripe is asked instead. */
-const WEBHOOK_GRACE_MS = 60 * 60 * 1000;
+const WEBHOOK_GRACE_MS = PAYMENT_WEBHOOK_GRACE_MINUTES * 60 * 1000;
 
 /**
  * Checkouts still `PENDING` here after the webhook had its chance. Nobody may

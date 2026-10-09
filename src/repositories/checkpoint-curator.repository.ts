@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
-import { SPRINTS_PER_CHECKPOINT } from "@/lib/checkpoint-sprints";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
@@ -256,60 +256,6 @@ export const suggestCardLines = async (
 		},
 		options,
 	);
-};
-
-/**
- * The answer under one devlog, written the day after it was posted.
- *
- * Returns null and writes nothing when the post already carries an answer, when
- * it belongs to no checkpoint, or when the model failed — a devlog with no
- * curator answer is a devlog, and the author loses nothing.
- */
-export const answerDevlog = async (
-	reportId: string,
-	options: CuratorOptions = {},
-) => {
-	const report = await prisma.projectReport.findUnique({
-		where: { id: reportId },
-		select: {
-			content: true,
-			video: true,
-			publishedAt: true,
-			curatorFeedbackAt: true,
-			checkpoint: {
-				select: {
-					goal: true,
-					items: { select: curatorItemSelect, orderBy: { order: "asc" } },
-				},
-			},
-		},
-	});
-
-	if (!report?.checkpoint || report.curatorFeedbackAt) return null;
-
-	const answer = await checkpointCurator.answerDevlog(
-		{
-			devlog: {
-				publishedAt: report.publishedAt.toISOString().slice(0, 10),
-				content: report.content,
-				hasVideo: !!report.video,
-			},
-			outcomes: toCard(
-				report.checkpoint.goal,
-				report.checkpoint.items,
-			).outcomes.filter((item) => !item.cut),
-		},
-		options,
-	);
-
-	if (!answer) return null;
-
-	await prisma.projectReport.update({
-		where: { id: reportId },
-		data: { curatorFeedback: answer.answer, curatorFeedbackAt: new Date() },
-	});
-
-	return answer;
 };
 
 /**

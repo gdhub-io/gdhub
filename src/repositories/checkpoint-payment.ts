@@ -6,11 +6,8 @@ import {
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import type Stripe from "stripe";
-import {
-	CHECKPOINT_AI_PRICE,
-	type CuratorLevel,
-	curatorPrice,
-} from "@/config/checkpoint-pricing";
+import { CHECKPOINT_AI_PRICE, CHECKPOINT_CURRENCY } from "@/config/checkpoint";
+import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import { prisma } from "@/services/prisma";
 import {
@@ -22,9 +19,6 @@ import {
 
 /** Prices are written in whole units; Stripe and `Payment.amount` want minor ones. */
 const MINOR = 100;
-
-/** The screen writes a `$`, so this is what is charged and what the row stores. */
-const CHECKPOINT_CURRENCY = "USD";
 
 /** The money a checkpoint holds or has taken. */
 const heldPaymentWhere = (checkpointId: string) => ({

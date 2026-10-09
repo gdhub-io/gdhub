@@ -7,6 +7,11 @@ import {
 	type Prisma,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
+import {
+	CHECKPOINT_DAYS,
+	CHECKPOINT_OPEN_STATUSES,
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import {
 	type ActivityEvent,
@@ -23,7 +28,6 @@ import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
 	currentSprint,
 	devlogDayOf,
-	SPRINTS_PER_CHECKPOINT,
 	sprintDayRange,
 	sprintOfDate,
 	sprintRange,
@@ -31,7 +35,6 @@ import {
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,
@@ -48,17 +51,6 @@ import type {
  * a time per project, the stage it belongs to, and the number it carries through
  * the project.
  */
-
-/**
- * A checkpoint that is under way. `AwaitingCurator` belongs here and not with
- * the drafts: it has been paid for, it is the project's one checkpoint on the
- * go, and a second one may not be started beside it.
- */
-const OPEN_STATUSES = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 const checkpointItemSelect = {
 	id: true,
@@ -176,8 +168,6 @@ const checkpointDetailSelect = {
 			authorId: true,
 			publishedAt: true,
 			content: true,
-			curatorFeedback: true,
-			curatorFeedbackAt: true,
 		},
 	},
 	pulses: {
@@ -556,7 +546,7 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
 			projectId,
-			status: { in: [CheckpointStatus.Draft, ...OPEN_STATUSES] },
+			status: { in: [CheckpointStatus.Draft, ...CHECKPOINT_OPEN_STATUSES] },
 		},
 		orderBy: { createdAt: "desc" },
 		select: currentCheckpointSelect,
@@ -606,7 +596,7 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
  */
 export const getCreationBlocker = async (projectId: string) => {
 	const open = await prisma.projectCheckpoint.findFirst({
-		where: { projectId, status: { in: OPEN_STATUSES } },
+		where: { projectId, status: { in: CHECKPOINT_OPEN_STATUSES } },
 		orderBy: { createdAt: "desc" },
 		select: {
 			id: true,

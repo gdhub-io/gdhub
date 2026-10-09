@@ -1,5 +1,11 @@
 import { z } from "zod";
 import {
+	CHECKPOINT_GOAL_MAX,
+	CHECKPOINT_ITEM_TEXT_MAX,
+	CHECKPOINT_MAX_ITEMS_PER_KIND,
+	CHECKPOINT_REVISION_NOTE_MAX,
+} from "@/config/checkpoint";
+import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
@@ -9,13 +15,6 @@ import {
  * everything here is optional: a `Draft` holds whatever has been answered so far
  * and the server never demands the rest until the checkpoint is paid for.
  */
-
-/** How long a checkpoint's days run. Not configurable — it is the product. */
-export const CHECKPOINT_DAYS = 28;
-
-export const CHECKPOINT_ITEM_TEXT_MAX = 200;
-export const CHECKPOINT_GOAL_MAX = 500;
-export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
 
 const itemText = z.string().trim().min(1).max(CHECKPOINT_ITEM_TEXT_MAX);
 
@@ -60,9 +59,6 @@ export const UpdateCheckpointSchema = z
 		startedAt: z.coerce.date().nullable(),
 	})
 	.partial();
-
-/** The one line saying why the scope changed, kept on the checkpoint. */
-export const CHECKPOINT_REVISION_NOTE_MAX = 500;
 
 /**
  * One line of the day-15 change: cut it, reword it, or both. Nothing here

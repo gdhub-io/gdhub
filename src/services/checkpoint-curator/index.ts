@@ -1,30 +1,23 @@
 /**
  * The AI curator.
  *
- * Four calls the checkpoint makes on its own, at most six per checkpoint: the
- * day-1 goal check, an answer under each of the first three devlogs, the day-15
- * note, and the day-28 report. The fourth devlog's answer would land on day 28
- * beside the report, so it is folded into the report instead.
+ * Three calls the checkpoint makes on its own: the day-1 goal check, the day-15
+ * note, and the day-28 report. Curators do not answer devlogs in writing.
  *
- * A fifth is pressed by the author while the card is a draft — suggested lines
+ * A fourth is pressed by the author while the card is a draft — suggested lines
  * for one side of it — and may be pressed twice or never.
  *
  * Shaped like `src/services/ai-validation`: typed in, typed out, prompts in
  * their own folder, a forced tool call, and nothing anywhere that parses prose.
  * Every call returns `null` when the model fails — what that means is the
- * caller's to decide, and it differs: a missing devlog answer is a shrug, a
- * missing report must not close a checkpoint.
+ * caller's to decide, and it differs: a missing note is a shrug, a missing
+ * report must not close a checkpoint.
  *
  * What the model is shown is only ever what the platform could already show the
  * author. The verdict it proposes is settled by `settleVerdict`, in code.
  */
 
 import { isValidJSON } from "@/helpers/format";
-import {
-	DEVLOG_ANSWER_FUNCTION_NAME,
-	devlogAnswerMessages,
-	devlogAnswerSchema,
-} from "./prompts/devlog-answer";
 import {
 	GOAL_CHECK_FUNCTION_NAME,
 	goalCheckMessages,
@@ -47,8 +40,6 @@ import {
 } from "./prompts/suggest-lines";
 import type {
 	CuratorOptions,
-	DevlogAnswerInput,
-	DevlogAnswerResult,
 	GoalCheckInput,
 	GoalCheckResult,
 	MidNoteInput,
@@ -115,15 +106,6 @@ class CheckpointCuratorService {
 			GOAL_CHECK_FUNCTION_NAME,
 			goalCheckSchema(input),
 			goalCheckMessages(input, options.locale),
-		);
-	}
-
-	/** The day after a devlog: what it moves, what it leaves untouched. */
-	answerDevlog(input: DevlogAnswerInput, options: CuratorOptions = {}) {
-		return this.call<DevlogAnswerResult>(
-			DEVLOG_ANSWER_FUNCTION_NAME,
-			devlogAnswerSchema(input),
-			devlogAnswerMessages(input, options.locale),
 		);
 	}
 

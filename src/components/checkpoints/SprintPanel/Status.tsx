@@ -138,17 +138,6 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 		});
 	}
 
-	if (facts.review) {
-		happened.push({
-			key: "review",
-			glyph: "done",
-			title: t("checkpoints.review.in", "The review for the sprint is in"),
-			meta: facts.review.at
-				? dayjs(facts.review.at).format("D MMM")
-				: undefined,
-		});
-	}
-
 	if (facts.marks.confirmed > 0) {
 		happened.push({
 			key: "marks",

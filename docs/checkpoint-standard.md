@@ -84,7 +84,7 @@ on the project.
   goal they can actually reach — a slice, a loop, one level.
 - On day 15 says plainly what is not going to fit, and what to cut.
 - On day 28 says out loud whether the checkpoint was reached.
-- Writes the result card and the verdict by day 30.
+- Writes the result card and the verdict by day 31 (three days after day 28).
 - May count an outcome no artefact covers — playtest notes, a conversation with a
   publisher, something shown live on the call — and writes one line saying why.
   It stands beside that outcome for the author to read.
@@ -101,7 +101,7 @@ and about 9.5 for a team of five, so two to three hours a week.
 | **Devlogs** | days 6, 13, 20, 27 | What got done, what is next, what is in the way. Public unless the checkpoint is private. |
 | **Scope change** | day 15, if any | What came off, what was reworded — with the day-1 wording kept beside it — what was added, and why. Written beside the original, never over it. |
 | **Artefacts** | by day 26 | One per line of the outcome list: a link or an upload, screenshots and a short description. A line with nothing attached is a line that did not get done. |
-| **Result card** | by day 30 | What of the list got done and what proves it, what was cut, the verdict and the reasoning. |
+| **Result card** | by day 31 | What of the list got done and what proves it, what was cut, the verdict and the reasoning. |
 | **Rating** | after the verdict, if the author wants to | Stars and a comment on the assessment. Optional and internal; a checkpoint closes and the next one starts without it. |
 
 The result card of one checkpoint is the starting card of the next. A new curator
@@ -142,7 +142,7 @@ inside a checkpoint: 28 days always end in a verdict.
   is never quietly deleted and retyped.
 - **What is not attached is not done.** An outcome with nothing against it on day
   28 counts as missed, unless the curator counts it themselves and writes why.
-- **Silence is not a verdict.** No verdict by day 30 and an administrator closes
+- **Silence is not a verdict.** No verdict by day 31 and an administrator closes
   the checkpoint; money for calls that did not happen goes back.
 - **A curator who disappears.** Two missed calls in a row and the platform
   replaces them inside the checkpoint and returns the money for what did not happen.

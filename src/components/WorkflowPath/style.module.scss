@@ -1231,3 +1231,16 @@ button.checklistItem {
 	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
 }
+
+// Frame tQa5n: after the verdict, the two ways on.
+.afterOptions {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: var(--gd-space-3);
+}
+
+.afterOption {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}

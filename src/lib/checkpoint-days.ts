@@ -1,4 +1,4 @@
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 
 /**
  * The 28 days, counted once.

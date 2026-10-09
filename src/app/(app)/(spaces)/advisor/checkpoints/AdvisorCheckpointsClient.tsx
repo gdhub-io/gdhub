@@ -2,12 +2,22 @@
 
 import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Skeleton, Typography } from "antd";
+import { Button, Flex, Skeleton, Typography } from "antd";
+import { useEffect, useState } from "react";
 import { AdvisorCheckpointCard } from "@/components/advisor/AdvisorCheckpointCard";
+import { VerdictModal } from "@/components/advisor/VerdictModal";
 import { CheckpointCard } from "@/components/checkpoints/CheckpointCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { EmptyState, SectionHeading } from "@/components/ui";
+import { formatShort } from "@/components/WorkflowPath/dates";
+import { CheckpointStatus } from "@/config/prisma-enums";
 import { useAdvisorCheckpoints } from "@/hooks/checkpoints";
+import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
+import {
+	verdictDraftOpensAt,
+	verdictDueBy,
+	verdictOverdue,
+} from "@/lib/checkpoint-verdict-window";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -21,11 +31,53 @@ import styles from "./style.module.scss";
 export function AdvisorCheckpointsClient() {
 	const { t } = useTranslate();
 	const { data, isPending } = useAdvisorCheckpoints();
+	const [verdictId, setVerdictId] = useState<string | null>(null);
+
+	// The curator's notification links here with `?verdict=<id>`.
+	const linked = useTakeSearchParam("verdict");
+	useEffect(() => {
+		if (linked) setVerdictId(linked);
+	}, [linked]);
+
+	const verdictFor = data?.running.find((row) => row.id === verdictId);
+
+	const verdictAction = (row: AdvisorCheckpointDto) => {
+		const review = row.status === CheckpointStatus.Review;
+		const drafting =
+			row.status === CheckpointStatus.Active &&
+			!!row.startedAt &&
+			new Date() >= verdictDraftOpensAt(row.startedAt);
+		if (!review && !drafting) return null;
+
+		const overdue = !!row.dueAt && verdictOverdue(row.dueAt);
+
+		return (
+			<>
+				{review && !!row.dueAt && (
+					<Typography.Text type={overdue ? "warning" : "secondary"}>
+						{overdue
+							? t("advisor.verdict.overdue", "Verdict overdue")
+							: t("advisor.verdict.dueBy", "Verdict due by {date}", {
+									date: formatShort(verdictDueBy(row.dueAt).toISOString()),
+								})}
+					</Typography.Text>
+				)}
+				<Button
+					type={review ? "primary" : "default"}
+					onClick={() => setVerdictId(row.id)}
+				>
+					{review
+						? t("advisor.verdict.write", "Write the verdict")
+						: t("advisor.verdict.draft", "Draft the verdict")}
+				</Button>
+			</>
+		);
+	};
 
 	const section = (
 		title: string,
 		rows: AdvisorCheckpointDto[],
-		answerable?: boolean,
+		{ answerable = false, withVerdict = false } = {},
 	) =>
 		rows.length > 0 && (
 			<Flex vertical gap={12}>
@@ -43,6 +95,7 @@ export function AdvisorCheckpointsClient() {
 							checkpoint={row}
 							projectSlug={row.project.slug}
 							href={`/advisor/checkpoints/${row.id}`}
+							action={withVerdict ? verdictAction(row) : undefined}
 						/>
 					),
 				)}
@@ -83,11 +136,12 @@ export function AdvisorCheckpointsClient() {
 					{section(
 						t("advisor.checkpoints.asked", "Waiting for your answer"),
 						data?.asked ?? [],
-						true,
+						{ answerable: true },
 					)}
 					{section(
 						t("advisor.checkpoints.running", "Under way"),
 						data?.running ?? [],
+						{ withVerdict: true },
 					)}
 					{section(
 						t("advisor.checkpoints.closed", "Closed"),
@@ -108,6 +162,13 @@ export function AdvisorCheckpointsClient() {
 					</Typography.Text>
 				)}
 			</div>
+
+			{verdictFor && (
+				<VerdictModal
+					checkpoint={verdictFor}
+					onClose={() => setVerdictId(null)}
+				/>
+			)}
 		</div>
 	);
 }

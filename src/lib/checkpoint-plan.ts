@@ -1,12 +1,13 @@
-import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import {
-	devlogDayOf,
+	CHECKPOINT_DAYS,
+	FINAL_SESSION,
 	SPRINTS_PER_CHECKPOINT,
-	sprintDayRange,
-} from "./checkpoint-sprints";
+	VERDICT_DUE_DAYS,
+} from "@/config/checkpoint";
+import { devlogDayOf, sprintDayRange } from "./checkpoint-sprints";
 
-/** The written verdict is due two days after the last call. */
-export const VERDICT_DAY = CHECKPOINT_DAYS + 2;
+/** The day the written verdict is due by. */
+export const VERDICT_DAY = CHECKPOINT_DAYS + VERDICT_DUE_DAYS;
 
 export type CheckpointPlanStep =
 	/** `call` 1–4 opens its sprint; call 5 decides the checkpoint. */
@@ -17,7 +18,7 @@ export type CheckpointPlanStep =
 /**
  * The curator's calendar from `docs/checkpoint-standard.md` §3, in day order:
  * a call opens each sprint, a devlog closes it, a fifth call decides it and the
- * verdict is written by day 30. Days, not dates — the dates follow from the
+ * verdict is written by `VERDICT_DAY`. Days, not dates — the dates follow from the
  * start, and a checkpoint not yet started still has a plan.
  */
 export const checkpointPlan = (): CheckpointPlanStep[] => {
@@ -38,8 +39,8 @@ export const checkpointPlan = (): CheckpointPlanStep[] => {
 	steps.push(
 		{
 			kind: "call",
-			call: SPRINTS_PER_CHECKPOINT + 1,
-			day: CHECKPOINT_DAYS,
+			call: FINAL_SESSION,
+			day: CHECKPOINT_DAYS + 1,
 			sprint: null,
 		},
 		{ kind: "verdict", day: VERDICT_DAY },

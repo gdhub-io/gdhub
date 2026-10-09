@@ -581,23 +581,16 @@ export const SprintEvidenceEmpty: StoryObj = {
 	),
 };
 
-const reviewed: CheckpointDto = {
+/** Day 15 falls in sprint 3: the scope note waits there until it is answered. */
+const scoped: CheckpointDto = {
 	...withItems,
-	reports: [
-		{
-			id: "d1",
-			publishedAt: "2026-09-13T09:00:00.000Z",
-			content: "Tides are in. The boss is blocked on the second phase.",
-			curatorFeedback:
-				"The tide read is the win of the sprint. Cut the second phase before it eats sprint 3 — one phase finished beats two unfinished.",
-			curatorFeedbackAt: "2026-09-14T09:00:00.000Z",
-			sprint: 2,
-		},
-	],
+	midNote:
+		"Nothing is claimed against the second boss phase yet. Keep it, cut it, or reword it before sprint 3 eats it.",
+	revisedAt: null,
 };
 
 export const SprintReview: StoryObj = {
-	render: () => <Review facts={sprintFactsOf(reviewed, sprints[1])} />,
+	render: () => <Review facts={sprintFactsOf(scoped, sprints[2])} />,
 };
 
 export const SprintReviewEmpty: StoryObj = {
@@ -606,7 +599,7 @@ export const SprintReviewEmpty: StoryObj = {
 
 /** A person curates: the call's placeholder, with the notes of it underneath. */
 export const SprintRoom: StoryObj = {
-	render: () => <Room facts={sprintFactsOf(reviewed, sprints[1])} />,
+	render: () => <Room facts={sprintFactsOf(scoped, sprints[2])} />,
 };
 
 export const SprintRoomEmpty: StoryObj = {
