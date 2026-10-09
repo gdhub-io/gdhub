@@ -152,6 +152,10 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 	};
 
 	const sub = (row: ProjectActivity) => {
+		if (row.kind === "joined" && row.invitedBy && !row.subject)
+			return t("workflow.activity.invitedBy", "Invited by {name}", {
+				name: row.invitedBy,
+			});
 		if (!row.subject) return null;
 		if (row.kind === "devlog")
 			return t("workflow.activity.devlogNumber", "Devlog {number}", {
@@ -159,6 +163,12 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 			});
 		if (row.kind === "reworded" || row.kind === "artifact")
 			return `“${row.subject}”`;
+		if (row.kind === "joined" && row.invitedBy)
+			return t(
+				"workflow.activity.joinedInvited",
+				"{role} · invited by {name}",
+				{ role: row.subject, name: row.invitedBy },
+			);
 		if (row.kind === "joined" || row.kind === "left") return row.subject;
 		return null;
 	};

@@ -1,4 +1,8 @@
-import { CheckpointItemKind, TeamMemberStatus } from "@/config/prisma-enums";
+import {
+	CheckpointItemKind,
+	InvitationStatus,
+	TeamMemberStatus,
+} from "@/config/prisma-enums";
 import { prisma } from "@/services/prisma";
 
 export type ProjectActivityKind =
@@ -20,6 +24,8 @@ export type ProjectActivity = {
 	actor: string | null;
 	/** What it was about: a post's number, an artifact, a role, a title. */
 	subject: string | null;
+	/** Who invited a member who joined; absent for a hire from a vacancy. */
+	invitedBy?: string | null;
 };
 
 /**
@@ -74,13 +80,17 @@ export async function getProjectActivity(
 		prisma.teamMember.findMany({
 			where: {
 				team: { projectId },
-				status: TeamMemberStatus.Hired,
+				// A member fired since still joined once; the history keeps both.
+				status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Fired] },
 				startedAt: { lt: before },
 			},
 			orderBy: { startedAt: "desc" },
 			take,
 			select: {
 				id: true,
+				userId: true,
+				vacancyId: true,
+				createdAt: true,
 				startedAt: true,
 				position: true,
 				user: { select: { name: true } },
@@ -138,10 +148,37 @@ export async function getProjectActivity(
 		}),
 	]);
 
+	// A member who came by invitation: the accepted invitation made just before
+	// their membership row. Someone invited twice has one per joining.
+	const invitations = await prisma.teamInvitation.findMany({
+		where: {
+			team: { projectId },
+			status: InvitationStatus.Accepted,
+			userId: {
+				in: joined.filter((row) => !row.vacancyId).map((row) => row.userId),
+			},
+		},
+		orderBy: { acceptedAt: "desc" },
+		select: {
+			userId: true,
+			acceptedAt: true,
+			invitedBy: { select: { name: true } },
+		},
+	});
+	const inviterOf = (member: { userId: string; createdAt: Date }) =>
+		invitations.find(
+			(invitation) =>
+				invitation.userId === member.userId &&
+				invitation.acceptedAt &&
+				invitation.acceptedAt <= member.createdAt,
+		)?.invitedBy.name ?? null;
+
+	// The position is what the project calls the role; the speciality is the
+	// member's own and may be another one they already had.
 	const role = (member: {
 		position: string | null;
 		speciality: { name: string } | null;
-	}) => member.speciality?.name ?? member.position ?? null;
+	}) => member.position || member.speciality?.name || null;
 
 	const events: ProjectActivity[] = [
 		...(project
@@ -175,6 +212,7 @@ export async function getProjectActivity(
 			kind: "joined" as const,
 			actor: row.user.name,
 			subject: role(row),
+			invitedBy: row.vacancyId ? null : inviterOf(row),
 		})),
 		...left.flatMap((row) =>
 			row.finishedAt
