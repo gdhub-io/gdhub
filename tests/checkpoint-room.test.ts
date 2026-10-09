@@ -13,13 +13,17 @@ vi.mock("../src/services/matrix/admin", () => ({
 	makeRoomReadOnly: vi.fn(),
 }));
 
-vi.mock("../src/services/chat/ensure-room", () => ({ ensureChatRoom: vi.fn() }));
+vi.mock("../src/services/chat/ensure-room", () => ({
+	autoJoinRoom: vi.fn(),
+	ensureChatRoom: vi.fn(),
+}));
 
 import {
 	addToCheckpointRooms,
 	closeCheckpointRoom,
 	removeFromCheckpointRooms,
 } from "../src/services/chat/checkpoint-room";
+import { autoJoinRoom } from "../src/services/chat/ensure-room";
 import {
 	inviteUserToRoom,
 	kickUserFromRoom,
@@ -57,7 +61,7 @@ describe("checkpoint chat follows the team", () => {
 		);
 	});
 
-	it("invites a new member through the curator and records them", async () => {
+	it("invites a new member through the curator, joins them and records them", async () => {
 		vi.mocked(prisma.chatRoom.findMany).mockResolvedValue([
 			room(["curator", "author"]),
 		] as never);
@@ -65,6 +69,8 @@ describe("checkpoint chat follows the team", () => {
 		await addToCheckpointRooms("p1", "newbie");
 
 		expect(inviteUserToRoom).toHaveBeenCalledWith("curator", "!room", "newbie");
+		// The team at the start never saw an invite screen; a newcomer does not either.
+		expect(autoJoinRoom).toHaveBeenCalledWith("!room", "newbie");
 		expect(writtenUserIds()).toEqual(["curator", "author", "newbie"]);
 	});
 
@@ -76,6 +82,7 @@ describe("checkpoint chat follows the team", () => {
 		await addToCheckpointRooms("p1", "author");
 
 		expect(inviteUserToRoom).not.toHaveBeenCalled();
+		expect(autoJoinRoom).not.toHaveBeenCalled();
 		expect(prisma.chatRoom.update).not.toHaveBeenCalled();
 	});
 

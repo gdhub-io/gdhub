@@ -8,7 +8,7 @@ import {
 	makeRoomReadOnly,
 } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
-import { ensureChatRoom } from "./ensure-room";
+import { autoJoinRoom, ensureChatRoom } from "./ensure-room";
 
 export const checkpointRoomKey = (checkpointId: string) =>
 	`checkpoint:${checkpointId}`;
@@ -35,6 +35,12 @@ const writeUserIds = (
 		where: { id },
 		data: { context: { ...context, userIds } as Prisma.InputJsonValue },
 	});
+
+/** Let into the room as the team was at the start: invited and joined at once. */
+const letIn = async (curatorId: string, roomId: string, userId: string) => {
+	await inviteUserToRoom(curatorId, roomId, userId);
+	await autoJoinRoom(roomId, userId);
+};
 
 /**
  * The checkpoint's chat: its curator and the project's current team. Opened as
@@ -109,7 +115,7 @@ export async function checkpointRoomFor(checkpointId: string, userId: string) {
 	const curatorId = context.userIds?.[0];
 
 	if (curatorId && !context.userIds?.includes(userId)) {
-		await inviteUserToRoom(curatorId, room.roomId, userId);
+		await letIn(curatorId, room.roomId, userId);
 		await writeUserIds(room.chatRoomId, context, [
 			...(context.userIds ?? []),
 			userId,
@@ -139,7 +145,7 @@ export async function addToCheckpointRooms(projectId: string, userId: string) {
 		if (!curatorId || !room.matrixRoomId || context.userIds?.includes(userId))
 			continue;
 
-		await inviteUserToRoom(curatorId, room.matrixRoomId, userId);
+		await letIn(curatorId, room.matrixRoomId, userId);
 		await writeUserIds(room.id, context, [...(context.userIds ?? []), userId]);
 	}
 }
