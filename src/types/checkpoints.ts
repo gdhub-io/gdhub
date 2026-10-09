@@ -2,6 +2,7 @@ import type {
 	ArtifactCheckStatus,
 	CheckpointCuratorKind,
 	CheckpointItemKind,
+	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	CheckpointVerdict,
 	ProjectArtifactType,
@@ -67,6 +68,24 @@ export type CheckpointSprintDto = {
 	/** The day the sprint's devlog is due. */
 	devlogDay: number;
 	state: "done" | "current" | "ahead";
+};
+
+/**
+ * One of the five sessions: a call with a human curator, a written review with
+ * the AI one. Built from the stored row, or from the calendar before one exists.
+ */
+export type CheckpointSessionDto = {
+	/** 1 is the plan, 2–4 open sprints 2–4, 5 is the final one. */
+	index: number;
+	/** The checkpoint day it falls on: 1, 8, 15, 22 or 29. */
+	day: number;
+	scheduledAt: string;
+	/** False while only the calendar day is known, not the hour. */
+	timeKnown: boolean;
+	rescheduledAt: string | null;
+	curatorJoinedAt: string | null;
+	endedAt: string | null;
+	contentStatus: CheckpointSessionContentStatus | null;
 };
 
 /**
@@ -149,6 +168,18 @@ export type CheckpointDto = {
 	reports?: CheckpointDevlogDto[];
 	/** Empty until the checkpoint starts: there are no dates to divide yet. */
 	sprints?: CheckpointSprintDto[];
+	/** Detail only, and empty until the checkpoint starts. */
+	sessions?: CheckpointSessionDto[];
+	/**
+	 * Builds the project uploaded during the 28 days, whether or not they were
+	 * offered as evidence: uploading one is what a sprint asks, proving with it
+	 * is a separate step. Detail only.
+	 */
+	builds?: { id: string; addedAt: string; sprint: number }[];
+	/** Counted through the project, not the stage: the third checkpoint is 3. Detail only. */
+	number?: number;
+	/** When the team first opened the previous checkpoint's verdict. */
+	previousVerdictReadAt?: string | null;
 	pulses?: CheckpointPulseRowDto[];
 	evidence?: CheckpointEvidenceDto[];
 	/** The list's current row only, and null while it is still a draft. */

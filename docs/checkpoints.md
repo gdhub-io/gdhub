@@ -394,7 +394,7 @@ Three values, and every one of them ends the checkpoint:
 
 | Verdict | Means | Next |
 |---|---|---|
-| `StageClosed` | Outcomes delivered and the stage's requirements met | The stage can be left |
+| `StageClosed` ("Stage can be closed") | Outcomes delivered and the stage's requirements met | Next unlocks; the author moves on when ready |
 | `GoalMet` | Outcomes delivered, stage needs more | New checkpoint on the same stage |
 | `GoalMissed` | Outcomes not delivered | New checkpoint, inputs recomputed from what exists |
 
@@ -412,6 +412,10 @@ for. The AI curator has no such tick: it can only see what it can open.
 The next checkpoint's inputs are pre-filled from the outcomes that were proven,
 carrying their artifacts across — the demo that proved day 28 is what exists on
 day 1 of the next one, already attached.
+
+The verdict is a green light, not a move. The curator says the stage can be
+closed; the project stays on it until the author presses Next, because the team
+may still want to finish something inside the stage first.
 
 The stage is not opened by a button. A new condition source joins the eleven in
 `src/schemas/workflowTaskCondition.ts`:

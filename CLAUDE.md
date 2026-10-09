@@ -196,10 +196,13 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   A longer block is for a file or an exported function whose *why* is genuinely
   not obvious. Delete anything that restates its code, and do a pass over the diff
   before committing.
-- **Simplify before opening a pull request.** Re-read the diff for what can be
+- **Simplify before opening a pull request.** Run `/simplify` (Claude Code's
+  built-in, which reviews the diff with parallel agents) and look for what can be
   deleted: state a library already keeps, helpers used once, options nothing
-  passes, branches nothing reaches, comments that restate their code. Say what
-  came out — or that nothing did.
+  passes, branches nothing reaches, comments that restate their code. Do not
+  simplify away a comment carrying a *why*, a guard on a boundary (the `where`
+  scoping one user's rows, a transition that must refuse), a test, or a constant
+  or type other code relies on. Say what came out — or that nothing did.
 - **Markup is antd, icons are Tabler.** If antd ships it, use it — `<button>` is
   `Button`, `<p>`/`<h2>` are `Typography`, `<ul>` is `List`, `<table>` is `Table`,
   `<img>` is `AppImage`, `<a href>` is next/link, `<hr>` is `Divider`. The **antd

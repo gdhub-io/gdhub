@@ -5,6 +5,7 @@ import { prisma } from "@/services/prisma";
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		projectCheckpoint: { findUnique: vi.fn(), findFirst: vi.fn(), count: vi.fn() },
+		projectArtifact: { findMany: vi.fn(async () => []) },
 	},
 }));
 
@@ -67,6 +68,7 @@ const detailRow = (overrides: Row = {}): Row => ({
 	reports: [],
 	pulses: [],
 	artifacts: [],
+	sessions: [],
 	project: { team: { members: [] } },
 	...overrides,
 });

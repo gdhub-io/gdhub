@@ -20,23 +20,24 @@ import type {
 	CheckpointListResponse,
 } from "@/types/checkpoints";
 
-const listKey = (projectId?: string, page = 1) => [
+const listKey = (projectId?: string, page = 1, limit?: number) => [
 	"project-checkpoints",
 	projectId,
 	page,
+	limit,
 ];
 
 /**
  * What is on the go, what is behind, and whether another one can be started —
  * one request, because the tab shows all three at once.
  */
-export const useCheckpoints = (projectId?: string, page = 1) =>
+export const useCheckpoints = (projectId?: string, page = 1, limit?: number) =>
 	useQuery({
-		queryKey: listKey(projectId, page),
+		queryKey: listKey(projectId, page, limit),
 		queryFn: async () =>
 			(
 				await axios.get<CheckpointListResponse>("/api/checkpoint", {
-					params: { projectId, page },
+					params: { projectId, page, limit },
 				})
 			).data,
 		enabled: !!projectId,
@@ -286,5 +287,18 @@ export const useDiscardCheckpoint = () => {
 		mutationFn: (id: string) => axios.delete(`/api/checkpoint/${id}`),
 		onSuccess: () =>
 			queryClient.invalidateQueries({ queryKey: ["project-checkpoints"] }),
+	});
+};
+
+/** The team opened the previous checkpoint's verdict; ticks sprint 1's first line. */
+export const useMarkVerdictRead = (id?: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async () => {
+			await axios.post(`/api/checkpoint/${id}/verdict-read`);
+		},
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ["checkpoint", id] }),
 	});
 };

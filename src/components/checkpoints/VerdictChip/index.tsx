@@ -24,7 +24,7 @@ export function VerdictChip({ verdict, className }: VerdictChipProps) {
 	const label = {
 		[CheckpointVerdict.StageClosed]: t(
 			"checkpoints.verdict.stageClosed",
-			"Stage closed",
+			"Stage can be closed",
 		),
 		[CheckpointVerdict.GoalMet]: t("checkpoints.verdict.goalMet", "Goal met"),
 		[CheckpointVerdict.GoalMissed]: t(

@@ -3,13 +3,15 @@ import {
 	CheckpointItemKind,
 	CheckpointStatus,
 	type Prisma,
+	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
 import {
 	checkpointProgress,
 	dayNumberOn,
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
-import { authorNextStep } from "@/lib/checkpoint-plan";
+import { authorNextStep, dateOfDay } from "@/lib/checkpoint-plan";
+import { buildSessions } from "@/lib/checkpoint-sessions";
 import { checkpointSignals } from "@/lib/checkpoint-signals";
 import {
 	currentSprint,
@@ -21,6 +23,7 @@ import {
 } from "@/lib/checkpoint-sprints";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
+import { CHECKPOINT_DAYS } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,
@@ -84,6 +87,7 @@ export const checkpointSelect = {
 	startedAt: true,
 	dueAt: true,
 	goalAgreedAt: true,
+	previousVerdictReadAt: true,
 	revisedAt: true,
 	revisedNote: true,
 	midNote: true,
@@ -176,6 +180,17 @@ const checkpointDetailSelect = {
 		},
 	},
 	artifacts: { select: evidenceArtifactSelect },
+	// The write-up and the transcript stay on the session page that reads them.
+	sessions: {
+		select: {
+			index: true,
+			scheduledAt: true,
+			rescheduledAt: true,
+			curatorJoinedAt: true,
+			endedAt: true,
+			contentStatus: true,
+		},
+	},
 	project: {
 		select: {
 			team: {
@@ -368,8 +383,16 @@ export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
 /** The row as the checkpoint page reads it; the artifact joins stay behind. */
 const toCheckpointDetail = (row: DetailRow) => {
-	const { artifacts, curator, items, project, pulses, reports, ...checkpoint } =
-		row;
+	const {
+		artifacts,
+		curator,
+		items,
+		project,
+		pulses,
+		reports,
+		sessions,
+		...checkpoint
+	} = row;
 	const { startedAt } = checkpoint;
 
 	return {
@@ -384,9 +407,60 @@ const toCheckpointDetail = (row: DetailRow) => {
 			sprint: startedAt ? sprintOfDate(startedAt, report.publishedAt) : null,
 		})),
 		sprints: buildSprints(startedAt),
+		sessions: buildSessions(startedAt, sessions),
 		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt),
 		evidence: buildEvidence(items, artifacts, startedAt),
 	};
+};
+
+/**
+ * The checkpoint's number through the whole project: the ones before it that
+ * actually ran, plus one. Drafts and cancelled ones never took a number.
+ */
+const checkpointNumber = async (row: { projectId: string; createdAt: Date }) =>
+	(await prisma.projectCheckpoint.count({
+		where: {
+			projectId: row.projectId,
+			createdAt: { lt: row.createdAt },
+			status: {
+				notIn: [CheckpointStatus.Draft, CheckpointStatus.Cancelled],
+			},
+		},
+	})) + 1;
+
+/** The project's builds uploaded inside the 28 days, each filed in its sprint. */
+const buildsDuring = async (row: {
+	projectId: string;
+	startedAt: Date | null;
+}) => {
+	const { startedAt } = row;
+	if (!startedAt) return [];
+
+	const artifacts = await prisma.projectArtifact.findMany({
+		where: {
+			projectId: row.projectId,
+			type: ProjectArtifactType.ExecutableBuild,
+			createdAt: {
+				gte: utcStartOfDay(startedAt),
+				lt: dateOfDay(startedAt, CHECKPOINT_DAYS + 1),
+			},
+		},
+		select: { id: true, createdAt: true },
+	});
+
+	return artifacts.flatMap((artifact) => {
+		const sprint = sprintOfDate(startedAt, artifact.createdAt);
+
+		return sprint === null
+			? []
+			: [
+					{
+						id: artifact.id,
+						addedAt: artifact.createdAt.toISOString(),
+						sprint,
+					},
+				];
+	});
 };
 
 export const getCheckpoint = async (id: string) => {
@@ -398,10 +472,17 @@ export const getCheckpoint = async (id: string) => {
 	if (!row) return null;
 
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
-	const held = row.paymentId ? await heldAmount(id) : null;
+	const [held, number, builds] = await Promise.all([
+		row.paymentId ? heldAmount(id) : null,
+		// A draft has no number yet and no sprints to file builds in.
+		row.status === CheckpointStatus.Draft ? undefined : checkpointNumber(row),
+		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
+	]);
 
 	return {
 		...toCheckpointDetail(row),
+		number,
+		builds,
 		heldPrice: held === null ? null : toWholePrice(held),
 	};
 };

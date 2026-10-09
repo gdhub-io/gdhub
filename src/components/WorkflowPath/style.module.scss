@@ -1,0 +1,757 @@
+// Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
+// platform-design.pen.
+
+.layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: var(--gd-space-12);
+	align-items: start;
+
+	@media (max-width: 991px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.aside {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+// One row of the path: a 40px gutter holding the rail and the marker, 16px, then
+// the content. Rows sit flush so the rail reads as one line.
+.node {
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr);
+	column-gap: var(--gd-space-4);
+}
+
+.rail {
+	position: relative;
+	display: flex;
+	justify-content: center;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: calc(50% - 1px);
+		width: 2px;
+		background: var(--gd-color-border-strong);
+	}
+}
+
+// The road ahead: 4px dots, 5px apart.
+.railDashed::before {
+	background: repeating-linear-gradient(
+		to bottom,
+		var(--gd-color-border-strong) 0 4px,
+		transparent 4px 9px
+	);
+}
+
+.railNone::before {
+	display: none;
+}
+
+// The project's first stage: nothing came before it, so the line starts at its
+// marker (26px down, 10px to the centre of a 20px marker).
+.railStart::before {
+	top: 36px;
+}
+
+.body {
+	min-width: 0;
+}
+
+// Where the marker sits on the rail, measured from the top of the row so it
+// lines up with the row's first line — a stage head, a sprint title, a date.
+.at0 {
+	margin-top: 0;
+}
+
+.at4 {
+	margin-top: var(--gd-space-1);
+}
+
+.at6 {
+	margin-top: 6px;
+}
+
+.at24 {
+	margin-top: var(--gd-space-6);
+}
+
+.at64 {
+	margin-top: var(--gd-space-16);
+}
+
+.at26 {
+	margin-top: 26px;
+}
+
+.at28 {
+	margin-top: 28px;
+}
+
+.at30 {
+	margin-top: 30px;
+}
+
+.at56 {
+	margin-top: 56px;
+}
+
+.inset {
+	padding-left: var(--gd-space-6);
+}
+
+.space0 {
+	padding-bottom: 0;
+}
+
+.space12 {
+	padding-bottom: var(--gd-space-3);
+}
+
+.space24 {
+	padding-bottom: var(--gd-space-6);
+}
+
+.space32 {
+	padding-bottom: var(--gd-space-8);
+}
+
+.space48 {
+	padding-bottom: var(--gd-space-12);
+}
+
+.marker {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+}
+
+.markerDone {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+// A checkpoint behind the project: the gate it went through, cleared.
+.markerCleared {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.markerCurrent {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-accent-subtle);
+
+	&::after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		corner-shape: round;
+		background: var(--gd-color-accent);
+	}
+}
+
+// Stages are squares, sprints are circles, checkpoints are flags: the shape
+// says what the row is before the text does.
+.markerStageDone {
+	width: 20px;
+	height: 20px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.markerStageCurrent {
+	width: 20px;
+	height: 20px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-color-accent-subtle);
+
+	&::after {
+		content: "";
+		width: 8px;
+		height: 8px;
+		border-radius: 3px;
+		background: var(--gd-color-accent);
+	}
+}
+
+// A stage ahead and the release: a small rounded square, not a dot.
+.markerTodo {
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--gd-color-text-tertiary);
+	border-radius: 3px;
+	background: var(--gd-color-bg);
+}
+
+.markerSprint {
+	width: 10px;
+	height: 10px;
+	border: 2px solid var(--gd-color-text-tertiary);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-bg);
+}
+
+.markerSession {
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+}
+
+.markerGate {
+	width: 40px;
+	height: 40px;
+	border: 2px solid var(--gd-color-text);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+}
+
+.hereRow {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	min-height: 44px;
+}
+
+.hereAbove {
+	padding-bottom: var(--gd-space-3);
+}
+
+.here {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text);
+
+	svg {
+		color: var(--gd-success-on-tint);
+	}
+}
+
+.earlier {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.quiet {
+	height: 32px;
+	padding: 0 var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+// Stage panel: outlined when the project is not on it, filled when it is.
+.card {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.cardLive {
+	border-color: transparent;
+	background: var(--gd-color-surface);
+}
+
+// Header toggles are native buttons; strip the browser's button look.
+.cardHead,
+.closedHead {
+	border: 0;
+	background: transparent;
+	font: inherit;
+	text-align: left;
+}
+
+.cardHead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	width: 100%;
+	padding: var(--gd-space-4) var(--gd-space-6);
+	cursor: pointer;
+	color: inherit;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.cardTitles {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.overline {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	flex: none;
+	color: var(--gd-color-text);
+}
+
+// Under the head, lined up with the stage name: 24 + 40 tile + 16 gap.
+.cardBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-1) var(--gd-space-6) var(--gd-space-6) 80px;
+}
+
+.sectionHead {
+	display: flex;
+	justify-content: space-between;
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.sectionLabel {
+	font-weight: 600;
+}
+
+.taskIcon {
+	flex: none;
+	color: var(--gd-color-border-strong);
+}
+
+.taskIconDone {
+	flex: none;
+	color: var(--gd-success-solid);
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.meta {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+// The sprint under way: the one filled card on the page.
+.sprint {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.sprintHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	flex-wrap: wrap;
+}
+
+.sprintTitle {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.toward {
+	font-size: var(--gd-font-size-body);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+.sprintMeta {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.sessionDone {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-neutral-100);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.link {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+}
+
+.checklistHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.checklistItem {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 52px;
+	width: 100%;
+	padding: 0;
+	border: 0;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: none;
+	text-align: left;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+
+	&:last-child {
+		border-bottom: 0;
+	}
+}
+
+button.checklistItem {
+	cursor: pointer;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.itemText {
+	display: flex;
+	flex: 1;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+}
+
+.viewResults {
+	height: 32px;
+	padding: 0 var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+.sep {
+	color: var(--gd-color-text-tertiary);
+}
+
+.secondary {
+	color: var(--gd-color-text-secondary);
+}
+
+.chevron {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}
+
+// A sprint behind: outlined, one line of what it came to.
+.summary {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-4)
+		var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.summaryMeta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-6);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.metaItem {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+// The next session: outlined dark, because it is the one appointment on the page.
+.session {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border: 1.5px solid var(--gd-color-text);
+	border-radius: var(--gd-radius-panel);
+
+	@media (max-width: 575px) {
+		flex-wrap: wrap;
+	}
+}
+
+.sessionWho {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	min-width: 0;
+}
+
+.sessionText {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text-secondary);
+}
+
+.sessionWhen {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+}
+
+.upNextTitle {
+	padding: var(--gd-space-2) 0 var(--gd-space-4);
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.futureSprint {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.futureDates {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.with {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding-top: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: 2px var(--gd-space-2) 2px 2px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-neutral-100);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text);
+}
+
+.chipIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+}
+
+.aiTile {
+	width: 56px;
+	height: 56px;
+	flex: none;
+}
+
+.gate {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.gateTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.finish {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulse {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-1) var(--gd-space-3);
+	border: 0;
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: transparent;
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+	cursor: pointer;
+	transition: background-color 0.15s;
+
+	// The trace says enough; the pill shows itself only when it can be opened.
+	&:hover,
+	&:focus-visible {
+		background: var(--gd-neutral-100);
+	}
+}
+
+.pulseLine {
+	color: var(--gd-color-accent);
+}
+
+.pulseTable {
+	display: flex;
+	flex-direction: column;
+	min-width: 240px;
+}
+
+.pulseRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-2) 0;
+	border-bottom: 1px solid var(--gd-color-border);
+	font-size: var(--gd-font-size-body-sm);
+
+	&:last-child {
+		border-bottom: 0;
+	}
+}
+
+// Bleeds 8px past the column so the hover reads as a row, not a box around text.
+.closedHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: calc(100% + 2 * var(--gd-space-2));
+	gap: var(--gd-space-4);
+	margin: calc(-1 * var(--gd-space-2));
+	padding: var(--gd-space-2);
+	border-radius: var(--gd-radius-card);
+	cursor: pointer;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.closedTitle {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	margin-top: var(--gd-space-4);
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.prose {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text);
+}
+
+.outcome {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 32px;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+}
+
+.tertiary {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+.divider {
+	height: 1px;
+	background: var(--gd-color-border);
+}
+
+.result {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}

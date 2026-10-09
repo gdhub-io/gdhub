@@ -9,6 +9,7 @@ import type {
 	ChatRoomStatus as ChatRoomStatusType,
 	CheckpointCuratorKind as CheckpointCuratorKindType,
 	CheckpointItemKind as CheckpointItemKindType,
+	CheckpointSessionContentStatus as CheckpointSessionContentStatusType,
 	CheckpointStatus as CheckpointStatusType,
 	CheckpointVerdict as CheckpointVerdictType,
 	ContentViewSubject as ContentViewSubjectType,
@@ -168,6 +169,15 @@ export const CheckpointVerdict = {
 	GoalMissed: "GoalMissed",
 } as const satisfies Record<CheckpointVerdictType, CheckpointVerdictType>;
 export type CheckpointVerdict = CheckpointVerdictType;
+
+export const CheckpointSessionContentStatus = {
+	Pending: "Pending",
+	Ready: "Ready",
+} as const satisfies Record<
+	CheckpointSessionContentStatusType,
+	CheckpointSessionContentStatusType
+>;
+export type CheckpointSessionContentStatus = CheckpointSessionContentStatusType;
 
 export const ContentViewSubject = {
 	ProjectReport: "ProjectReport",
