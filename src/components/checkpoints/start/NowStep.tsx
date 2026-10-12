@@ -2,7 +2,6 @@
 
 import {
 	IconAlertTriangle,
-	IconCalendar,
 	IconDeviceGamepad2,
 	IconFlag,
 	IconInfoCircle,
@@ -13,7 +12,6 @@ import { useTranslate } from "@tolgee/react";
 import {
 	App,
 	Button,
-	DatePicker,
 	Flex,
 	Input,
 	InputNumber,
@@ -24,7 +22,6 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import dayjs, { type Dayjs } from "dayjs";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
@@ -38,7 +35,6 @@ import {
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
-import { dueDateFrom } from "@/lib/checkpoint-days";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import styles from "./NowStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
@@ -46,8 +42,6 @@ import { StartLayout } from "./StartLayout";
 import { TeamResource } from "./TeamResource";
 import { type TeamHoursRow, useTeamHours } from "./teamHours";
 import { useCheckpointDraft } from "./useDraft";
-
-const DAY_FORMAT = "D MMM YYYY";
 
 /** One figure for a stated range: what the team gives on an ordinary sprint. */
 const middle = (hours: { from: number; to: number }) =>
@@ -73,7 +67,6 @@ export function NowStep() {
 	const check = useCheckGoal(draft?.id);
 
 	const [goal, setGoal] = useState<string>();
-	const [picked, setPicked] = useState<Dayjs | null>(null);
 	const [mine, setMine] = useState<[number, number]>();
 	// The goal the curator warned about: unchanged, Next goes on regardless.
 	const [warned, setWarned] = useState<{
@@ -113,10 +106,6 @@ export function NowStep() {
 	}
 
 	const text = goal ?? draft.goal;
-	const chosen =
-		picked ?? (draft.startedAt ? dayjs.utc(draft.startedAt) : dayjs());
-	const day = chosen.format("YYYY-MM-DD");
-	const finish = dayjs.utc(dueDateFrom(dayjs.utc(day).toDate()));
 
 	const me = team.members.find((row) => row.userId === session?.user?.id);
 	const stated = me ? team.statedFor(me) : null;
@@ -142,7 +131,7 @@ export function NowStep() {
 
 	const next = async () => {
 		try {
-			await update.mutateAsync({ goal: text.trim(), startedAt: day });
+			await update.mutateAsync({ goal: text.trim() });
 		} catch {
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
 			return;
@@ -350,30 +339,6 @@ export function NowStep() {
 					</Modal>
 				</Flex>
 			)}
-
-			<Flex vertical gap={8}>
-				<Typography.Text className={styles.label}>
-					{t("checkpoints.now.when", "When would you like to start?")}
-				</Typography.Text>
-				<Flex gap={16} align="center">
-					<DatePicker
-						value={chosen}
-						format={DAY_FORMAT}
-						allowClear={false}
-						variant="filled"
-						prefix={<IconCalendar size={16} className={styles.dateIcon} />}
-						suffixIcon={null}
-						className={styles.date}
-						disabledDate={(date) => date.isBefore(dayjs(), "day")}
-						onChange={setPicked}
-					/>
-					<Typography.Text type="secondary">
-						{t("checkpoints.now.ends", "Ends around {date}", {
-							date: finish.format(DAY_FORMAT),
-						})}
-					</Typography.Text>
-				</Flex>
-			</Flex>
 
 			<Flex vertical gap={8} className={styles.goal}>
 				<Typography.Text className={styles.label}>

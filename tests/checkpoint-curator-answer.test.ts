@@ -1,6 +1,7 @@
 import { CheckpointStatus, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { prisma } from "@/services/prisma";
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
@@ -12,8 +13,16 @@ const returnMoney = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
+vi.mock("@/repositories/advisor-availability", () => ({
+	isFirstCallFree: vi.fn(async () => true),
+	bookSessions: vi.fn(async () => undefined),
+	SlotTakenError: class SlotTakenError extends Error {},
+}));
+
 vi.mock("@/services/prisma", () => ({
 	prisma: {
+		$transaction: vi.fn(),
+		checkpointSession: { deleteMany: vi.fn() },
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
@@ -50,6 +59,10 @@ const answer = async (accept: boolean) => {
 };
 
 beforeEach(() => {
+	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
+		typeof arg === "function"
+			? (arg as (tx: typeof prisma) => unknown)(prisma)
+			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: curator });
 	checkpointFindUnique.mockResolvedValue({

@@ -53,13 +53,14 @@ beforeEach(() => {
 });
 
 describe("advisor space definition", () => {
-	it("declares the three sections the space is made of", () => {
+	it("declares the sections the space is made of", () => {
 		expect(permissionsOf(advisorSpace)).toEqual(
 			expect.arrayContaining([
 				"advisor.requests.view",
 				"advisor.requests.manage",
 				"advisor.checkpoints.view",
 				"advisor.checkpoints.manage",
+				"advisor.calendar.view",
 				"advisor.settings.manage",
 			]),
 		);

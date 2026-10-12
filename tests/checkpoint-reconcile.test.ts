@@ -8,8 +8,16 @@ import { reconcileCheckout } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
 import { retrieveCheckout } from "@/services/stripe/server";
 
+vi.mock("@/repositories/advisor-availability", () => ({
+	isFirstCallFree: vi.fn(async () => true),
+	bookSessions: vi.fn(async () => undefined),
+	SlotTakenError: class SlotTakenError extends Error {},
+}));
+
 vi.mock("@/services/prisma", () => ({
 	prisma: {
+		$transaction: vi.fn(),
+		checkpointSession: { deleteMany: vi.fn() },
 		payment: { updateMany: vi.fn() },
 		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn() },
 	},
@@ -31,6 +39,10 @@ const session = (status: string) =>
 	({ id: "cs_1", status, customer: null }) as never;
 
 beforeEach(() => {
+	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
+		typeof arg === "function"
+			? (arg as (tx: typeof prisma) => unknown)(prisma)
+			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 1 });
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({

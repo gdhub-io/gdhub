@@ -1,5 +1,6 @@
 import type {
 	AdviceRequestStatus as AdviceRequestStatusType,
+	AdvisorAvailabilityStatus as AdvisorAvailabilityStatusType,
 	AIThreadStatus as AIThreadStatusType,
 	ApplauseActivityType as ApplauseActivityTypeType,
 	ArtifactCheckStatus as ArtifactCheckStatusType,
@@ -170,6 +171,16 @@ export const CheckpointVerdict = {
 	GoalMissed: "GoalMissed",
 } as const satisfies Record<CheckpointVerdictType, CheckpointVerdictType>;
 export type CheckpointVerdict = CheckpointVerdictType;
+
+export const AdvisorAvailabilityStatus = {
+	Open: "Open",
+	ConsultationsOnly: "ConsultationsOnly",
+	Away: "Away",
+} as const satisfies Record<
+	AdvisorAvailabilityStatusType,
+	AdvisorAvailabilityStatusType
+>;
+export type AdvisorAvailabilityStatus = AdvisorAvailabilityStatusType;
 
 export const CheckpointSessionContentStatus = {
 	Pending: "Pending",

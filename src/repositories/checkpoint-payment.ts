@@ -8,6 +8,11 @@ import {
 import type Stripe from "stripe";
 import { CHECKPOINT_AI_PRICE, CHECKPOINT_CURRENCY } from "@/config/checkpoint";
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
+import {
+	bookSessions,
+	isFirstCallFree,
+	SlotTakenError,
+} from "@/repositories/advisor-availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import { prisma } from "@/services/prisma";
 import {
@@ -91,6 +96,7 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			status: true,
 			curatorKind: true,
 			curatorId: true,
+			startedAt: true,
 			acceptedTermsAt: true,
 			curator: { select: { name: true } },
 			project: { select: { slug: true, name: true } },
@@ -116,6 +122,22 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	}
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
+
+	// Said before the card is asked: the payment confirming is where the five
+	// calls are actually booked, and it checks again.
+	if (
+		!isAI &&
+		(!checkpoint.curatorId ||
+			!checkpoint.startedAt ||
+			!(await isFirstCallFree(
+				checkpoint.curatorId,
+				checkpoint.startedAt,
+				checkpointId,
+			)))
+	) {
+		return { ok: false as const, reason: "slotTaken" as const };
+	}
+
 	const amount = await curatorCharge(
 		checkpoint.curatorKind,
 		checkpoint.curatorId,
@@ -210,16 +232,22 @@ export const returnToAuthor = (
 	checkpointId: string,
 	curatorId: string | null,
 ) =>
-	prisma.projectCheckpoint.update({
-		where: { id: checkpointId },
-		data: {
-			status: CheckpointStatus.Draft,
-			curatorId: null,
-			curatorDeclinedAt: new Date(),
-			paymentId: null,
-			...(curatorId && { declinedCuratorIds: { push: curatorId } }),
-		},
-	});
+	prisma.$transaction([
+		// The calls were that curator's hours; the next one is booked afresh.
+		prisma.checkpointSession.deleteMany({ where: { checkpointId } }),
+		prisma.projectCheckpoint.update({
+			where: { id: checkpointId },
+			data: {
+				status: CheckpointStatus.Draft,
+				curatorId: null,
+				curatorDeclinedAt: new Date(),
+				paymentId: null,
+				startedAt: null,
+				dueAt: null,
+				...(curatorId && { declinedCuratorIds: { push: curatorId } }),
+			},
+		}),
+	]);
 
 /**
  * A completed checkout, applied: the payment becomes a hold and the checkpoint
@@ -283,16 +311,42 @@ export const settleCheckpointCheckout = async (
 		});
 	}
 
-	await prisma.projectCheckpoint.update({
-		where: { id: payment.payableId },
-		data: {
-			status:
-				checkpoint.curatorKind === CheckpointCuratorKind.AI
-					? CheckpointStatus.Active
-					: CheckpointStatus.AwaitingCurator,
-			paymentId: payment.id,
-		},
-	});
+	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
+		await prisma.projectCheckpoint.update({
+			where: { id: payment.payableId },
+			data: { status: CheckpointStatus.Active, paymentId: payment.id },
+		});
+		return true;
+	}
+
+	// The five calls are booked with the money, so the curator's hours are held
+	// while they decide. Someone else may have taken the hour since the author
+	// picked it: then the hold is let go and the draft asks for another time.
+	try {
+		await prisma.$transaction(async (tx) => {
+			await bookSessions(tx, payment.payableId);
+			await tx.projectCheckpoint.update({
+				where: { id: payment.payableId },
+				data: {
+					status: CheckpointStatus.AwaitingCurator,
+					paymentId: payment.id,
+				},
+			});
+		});
+	} catch (error) {
+		if (!(error instanceof SlotTakenError)) throw error;
+
+		if (await releaseCheckout(session.id).catch(() => null)) {
+			await prisma.payment.update({
+				where: { id: payment.id },
+				data: { status: PaymentStatus.CANCELED },
+			});
+		}
+		await prisma.projectCheckpoint.update({
+			where: { id: payment.payableId },
+			data: { startedAt: null, dueAt: null },
+		});
+	}
 
 	return true;
 };

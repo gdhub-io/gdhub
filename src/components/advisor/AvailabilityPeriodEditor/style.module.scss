@@ -1,0 +1,24 @@
+// The editor opens in place of a row, so it keeps the row's outline and grows it.
+.editor {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-control);
+}
+
+.item {
+	margin-bottom: var(--gd-space-4);
+}
+
+.inline {
+	margin-bottom: 0;
+}
+
+// Centred on the 40-high picker beside it, not on the error line under it.
+.dash {
+	line-height: var(--gd-control-height);
+}
+
+.addRange {
+	align-self: flex-start;
+	padding-inline: 0;
+}

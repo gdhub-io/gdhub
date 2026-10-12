@@ -1,0 +1,50 @@
+.label {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.zone,
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.box {
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+// A day of the strip: its weekday, its date and how many hours it offers.
+.day:global(.ant-btn) {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+	height: auto;
+	min-width: 0;
+	padding: var(--gd-space-2) 0;
+}
+
+.weekday,
+.count {
+	font-size: var(--gd-font-size-caption);
+	opacity: 0.75;
+}
+
+.date {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.summary {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-subtle);
+}
+
+.summaryIcon {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}

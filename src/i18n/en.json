@@ -438,6 +438,93 @@
 	"Youtube": "Youtube",
 	"actual vacancies": "actual vacancies",
 	"advisor": {
+		"availability": {
+			"addPeriod": "Add period",
+			"awayUntil": "Away until",
+			"awayUntilRequired": "Pick the day you're back.",
+			"checkpoints": "Checkpoints",
+			"confirmed": "Hours confirmed on {date}. We'll ask you to check them again on {next}.",
+			"consultations": "Consultations",
+			"deletePeriod": "Delete period",
+			"editPeriod": "Edit period",
+			"editor": {
+				"addRange": "Add hours",
+				"cancel": "Cancel",
+				"days": "Days",
+				"daysRequired": "Pick at least one day.",
+				"everyWeek": "Every week, no end",
+				"from": "From",
+				"hours": "Hours",
+				"hoursOrder": "Hours must end after they start.",
+				"hoursRequired": "Set both times.",
+				"monthFrom": "From",
+				"monthTo": "To",
+				"months": "Months",
+				"monthsRequired": "Pick the months, or repeat every week.",
+				"openFor": "Open for",
+				"openForRequired": "Open the hours for at least one of them.",
+				"removeRange": "Remove these hours",
+				"save": "Save period",
+				"to": "To"
+			},
+			"error": {
+				"load": "Your hours could not be loaded.",
+				"retry": "Try again",
+				"save": "That did not go through."
+			},
+			"everyWeek": "Every week",
+			"hours": {
+				"hint": "A period with months replaces the weekly hours, and a shorter period a longer one, in its months. Checkpoint calls can't fall outside your hours: move the call first.",
+				"subtitle": "When teams can book you — consultations and checkpoint calls alike. A period without months repeats every week. Anything booked takes that time for everything else.",
+				"title": "Available hours"
+			},
+			"notConfirmed": "Your hours are not confirmed yet.",
+			"perMonth": {
+				"after": "consultations a month",
+				"before": "At most",
+				"hint": "· leave empty for no limit",
+				"label": "Consultations a month"
+			},
+			"refused": {
+				"calendar": "Move them in the Calendar",
+				"call": "Call {index} · {project}",
+				"text": "A checkpoint's calls are agreed with the team and don't move with your hours. Move each one with the author first, then you can save.",
+				"title": "{count, plural, one {# checkpoint call falls outside these hours} other {# checkpoint calls fall outside these hours}}"
+			},
+			"save": "Save",
+			"saved": "Saved",
+			"status": {
+				"away": "Away",
+				"awayHint": "Nobody can book you until a date",
+				"consultationsOnly": "Consultations only",
+				"consultationsOnlyHint": "No new checkpoints for now",
+				"open": "Open",
+				"openHint": "Consultations and new checkpoints",
+				"subtitle": "Whether new teams can book you. Checkpoints you already curate go on as planned.",
+				"title": "Status"
+			},
+			"stillCorrect": "Still correct",
+			"timeZone": "Time zone"
+		},
+		"calendar": {
+			"callTitle": "Call {index} · {project}",
+			"checkpointCall": "Checkpoint call",
+			"empty": {
+				"past": "No past calls.",
+				"upcoming": "No calls booked yet."
+			},
+			"error": {
+				"load": "The calendar could not be loaded.",
+				"retry": "Try again"
+			},
+			"finalCall": "The final call — your verdict follows",
+			"join": "Join",
+			"past": "Past",
+			"subtitle": "Every call booked with you, in {timeZone} time.",
+			"title": "Calendar",
+			"today": "Today · {date}",
+			"upcoming": "Upcoming"
+		},
 		"card": {
 			"devlogs": "Devlogs"
 		},
@@ -459,6 +546,13 @@
 		"project": {
 			"role": "Role",
 			"teamEmpty": "Nobody has joined the team yet."
+		},
+		"settings": {
+			"menu": {
+				"availability": "Availability"
+			},
+			"subtitle": "What you advise on and how teams reach you.",
+			"title": "Advisor settings"
 		},
 		"verdict": {
 			"alreadySent": "The verdict is sent.",
@@ -745,6 +839,7 @@
 			"expertDescription": "Live calls, written reviews and a verdict.",
 			"expertsLabel": "Industry experts",
 			"fixedPrice": "Fixed price for AI curator",
+			"freeFrom": "· free from {date}",
 			"humanDescription": "Five live calls, written reviews and a verdict.",
 			"humanName": "A person, on five calls",
 			"humanPrice": "from {currency}{price}",
@@ -754,6 +849,12 @@
 			"pickerLabel": "Curators for this stage",
 			"pickerNote": "The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
 			"pickerPending": "Choosing your own curator is not open yet — the platform assigns one for the stage. The 28 days start when they take the checkpoint on, not when you pay; if they turn it down you pick another or get your money back.",
+			"price": "Price",
+			"priceHint": "once, for the 28 days · + VAT",
+			"reviews": "Reviews",
+			"reviewsHint": "the verdict comes with the last",
+			"start": "Start",
+			"startHint": "from the start of the day · ends around {date}",
 			"talentCard": "Talent card",
 			"title": "Who will take this journey with you?",
 			"typeLabel": "Curator type",
@@ -824,6 +925,18 @@
 			"proves": "Proves: {outcome}",
 			"search": "Search the project's artifacts",
 			"whatItProves": "What it proves"
+		},
+		"firstCall": {
+			"label": "First call with {name}",
+			"next": "Next week",
+			"noneThisWeek": "No free hours this week — try the next one.",
+			"prev": "Previous week",
+			"slots": "{count, plural, one {# slot} other {# slots}}",
+			"summary": "{weekday}s at {time} · {from} – {to}",
+			"summaryNote": "Call 1 plans the checkpoint on {first}; calls 2–5 follow on {rest}. Any call can be moved later.",
+			"taken": "That time was just taken. Pick another one.",
+			"takenPay": "That first call was just taken. Pick another time.",
+			"zone": "Times in your zone · {zone}"
 		},
 		"forward": {
 			"locked": "Answer what is open and finish this sprint to open the next one.",
@@ -940,6 +1053,7 @@
 			"released": "The reservation was let go — nothing was charged",
 			"replace": "Replace the curator",
 			"replaceNote": "The 28 days will wait for whoever you pick. Nothing is charged again.",
+			"replaceNoteFirstCall": "The 28 days will wait for whoever you pick, from the first call you book with them. Nothing is charged again.",
 			"replaceOk": "Hand it to them",
 			"replaceTitle": "Replace the curator",
 			"settling": "This settles on its own in a few seconds. Nothing else is needed from you.",
@@ -977,6 +1091,8 @@
 			"adjustGoal": "Adjust the goal",
 			"agree": "I have read the checkpoint agreement and accept it — including what is not guaranteed.",
 			"aiSuggestion": "AI suggestion",
+			"calls": "Calls with {name}",
+			"callsWhen": "{weekday}s at {time} · {from} – {to} · five calls",
 			"capacity": "Team capacity",
 			"capacityHours": "{week} hours per sprint · {run} hours over 28 days",
 			"capacityUnknown": "Nobody has stated their hours yet",

@@ -1,6 +1,7 @@
 import { CURATOR_LEVELS, type CuratorLevel } from "@/config/checkpoint-pricing";
 import type { SkillLevel } from "@/config/prisma-enums";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
+import { earliestFirstCalls } from "@/repositories/advisor-availability";
 import { prisma } from "@/services/prisma";
 
 export type FeaturedCurator = {
@@ -70,6 +71,8 @@ export type CheckpointCurator = {
 	specialization: string;
 	level: CuratorLevel;
 	summary: string;
+	/** The earliest first call that opens five free weekly calls with them. */
+	firstCallFrom: string;
 };
 
 /**
@@ -111,16 +114,29 @@ export async function listCheckpointCurators(
 		},
 	});
 
-	return specialities.map((speciality) => ({
-		userId: speciality.user.id,
-		specialityId: speciality.id,
-		name: speciality.user.profile?.name ?? speciality.user.name ?? "",
-		image: speciality.user.image,
-		role: speciality.name,
-		specialization: speciality.specialization,
-		// The `where` above is what narrows it: a level with no price is never
-		// selected, so it can never reach this row.
-		level: speciality.level as CuratorLevel,
-		summary: speciality.summary ?? "",
-	}));
+	// Only someone with five free weeks in a row can be picked, however far ahead.
+	const earliest = await earliestFirstCalls([
+		...new Set(specialities.map((speciality) => speciality.user.id)),
+	]);
+
+	return specialities.flatMap((speciality) => {
+		const firstCallFrom = earliest.get(speciality.user.id);
+		if (!firstCallFrom) return [];
+
+		return [
+			{
+				userId: speciality.user.id,
+				specialityId: speciality.id,
+				name: speciality.user.profile?.name ?? speciality.user.name ?? "",
+				image: speciality.user.image,
+				role: speciality.name,
+				specialization: speciality.specialization,
+				// The `where` above is what narrows it: a level with no price is never
+				// selected, so it can never reach this row.
+				level: speciality.level as CuratorLevel,
+				summary: speciality.summary ?? "",
+				firstCallFrom,
+			},
+		];
+	});
 }

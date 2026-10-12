@@ -3,11 +3,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CHECKPOINT_AI_PRICE } from "@/config/checkpoint";
 import { curatorPrice } from "@/config/checkpoint-pricing";
 import { SkillLevel } from "@/config/prisma-enums";
+import { isFirstCallFree } from "@/repositories/advisor-availability";
 import { checkpointCheckout } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
 
+vi.mock("@/repositories/advisor-availability", () => ({
+	isFirstCallFree: vi.fn(async () => true),
+	bookSessions: vi.fn(async () => undefined),
+	SlotTakenError: class SlotTakenError extends Error {},
+}));
+
 vi.mock("@/services/prisma", () => ({
 	prisma: {
+		$transaction: vi.fn(),
+		checkpointSession: { deleteMany: vi.fn() },
 		projectCheckpoint: { findUnique: vi.fn() },
 		speciality: { findFirst: vi.fn() },
 		payment: { count: vi.fn() },
@@ -22,12 +31,17 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 	curatorKind: CheckpointCuratorKind.Human,
 	curatorId: "u1",
 	acceptedTermsAt: new Date("2026-09-17T00:00:00.000Z"),
+	startedAt: new Date("2026-09-21T09:00:00.000Z"),
 	curator: { name: "Marta Ilves" },
 	project: { slug: "tide", name: "Tide" },
 	...over,
 });
 
 beforeEach(() => {
+	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
+		typeof arg === "function"
+			? (arg as (tx: typeof prisma) => unknown)(prisma)
+			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 		checkpoint() as never,
@@ -95,6 +109,17 @@ describe("what a checkpoint checkout would charge", () => {
 
 	// Someone who has since stopped taking mentees cannot be bought, whatever
 	// the draft still says.
+	// The hour may have been booked by someone else since it was picked; the
+	// card is not asked for a series that is no longer free.
+	it("refuses a first call that no longer opens a free series", async () => {
+		vi.mocked(isFirstCallFree).mockResolvedValueOnce(false);
+
+		await expect(checkpointCheckout("cp1")).resolves.toMatchObject({
+			ok: false,
+			reason: "slotTaken",
+		});
+	});
+
 	it("refuses a curator who is no longer open for mentoring", async () => {
 		vi.mocked(prisma.speciality.findFirst).mockResolvedValue(null as never);
 

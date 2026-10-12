@@ -60,6 +60,17 @@ export const CHECKPOINT_OPEN_STATUSES = [
 
 /** How long a curator has to answer before the money goes back. */
 export const CURATOR_ANSWER_DAYS = 3;
+/** The first call is booked at least this many days ahead. */
+export const FIRST_CALL_MIN_DAYS = 3;
+
+// An advisor's hours
+
+/** How often an advisor is asked whether their hours still hold. */
+export const AVAILABILITY_REMIND_DAYS = 30;
+/** Hours left unconfirmed this long are not offered for new checkpoints. */
+export const AVAILABILITY_STALE_DAYS = 60;
+/** How far ahead a free series is looked for when nothing ends it sooner. */
+export const AVAILABILITY_SEARCH_DAYS = 365;
 /** How long the payment webhook is given before Stripe is asked instead. */
 export const PAYMENT_WEBHOOK_GRACE_MINUTES = 60;
 

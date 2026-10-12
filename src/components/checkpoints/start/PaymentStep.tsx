@@ -18,13 +18,14 @@ import {
 } from "@/config/checkpoint";
 import { curatorPrice } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { isSlotTaken } from "@/hooks/advisor-availability";
 import {
 	useCheckpointCheckout,
 	useCheckpointCurators,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
-import { dueDateFrom } from "@/lib/checkpoint-days";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import { CuratorBadge } from "../CuratorBadge";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";
@@ -96,7 +97,17 @@ export function PaymentStep() {
 		try {
 			const { url } = await checkout.mutateAsync();
 			window.location.href = url;
-		} catch {
+		} catch (error) {
+			if (isSlotTaken(error)) {
+				message.warning(
+					t(
+						"checkpoints.firstCall.takenPay",
+						"That first call was just taken. Pick another time.",
+					),
+				);
+				go("curator");
+				return;
+			}
 			message.error(
 				t("checkpoints.pay.checkoutFailed", "Could not open the checkout"),
 			);
@@ -107,6 +118,8 @@ export function PaymentStep() {
 		team.members.map((row) => ({ timeForWork: team.statedFor(row) })),
 	);
 
+	const firstCall = draft.startedAt ? dayjs(draft.startedAt) : null;
+
 	const runsIn = [
 		draft.stageName,
 		t("checkpoints.pay.checkpointNumber", "checkpoint {number}", {
@@ -114,7 +127,7 @@ export function PaymentStep() {
 		}),
 		draft.startedAt
 			? `${dayjs.utc(draft.startedAt).format("D MMM")} – ${dayjs
-					.utc(dueDateFrom(new Date(draft.startedAt)))
+					.utc(dueDateFrom(utcStartOfDay(new Date(draft.startedAt))))
 					.format("D MMM YYYY")}`
 			: t("checkpoints.pay.days", "{count} days from the start", {
 					count: CHECKPOINT_DAYS,
@@ -189,9 +202,30 @@ export function PaymentStep() {
 				<Flex vertical gap={24} className={styles.summary}>
 					{block(
 						t("checkpoints.pay.runsIn", "Runs in"),
-						"now",
+						"curator",
 						<Typography.Text>{runsIn}</Typography.Text>,
 					)}
+
+					{!isAI &&
+						firstCall &&
+						block(
+							t("checkpoints.pay.calls", "Calls with {name}", {
+								name: draft.curator?.name?.split(" ")[0] ?? "",
+							}),
+							"curator",
+							<Typography.Text>
+								{t(
+									"checkpoints.pay.callsWhen",
+									"{weekday}s at {time} · {from} – {to} · five calls",
+									{
+										weekday: firstCall.format("dddd"),
+										time: firstCall.format("HH:mm"),
+										from: firstCall.format("D MMM"),
+										to: firstCall.add(CHECKPOINT_DAYS, "day").format("D MMM"),
+									},
+								)}
+							</Typography.Text>,
+						)}
 
 					{block(
 						t("checkpoints.pay.capacity", "Team capacity"),
