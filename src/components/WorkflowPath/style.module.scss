@@ -91,25 +91,11 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
-.asideOutcome {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-3);
-	min-height: 32px;
-}
-
-.asideDone {
-	flex: none;
-	color: var(--gd-success-solid);
-}
-
-.asideTodo {
-	flex: none;
-	color: var(--gd-color-text-tertiary);
-}
-
-.asideDivider.asideDivider {
-	margin: 0;
+// The stage's task rows, edge to edge of the card.
+.asideTasks {
+	margin: 0 calc(-1 * var(--gd-space-4));
+	border-top: 1px solid var(--gd-color-border);
+	border-bottom: 1px solid var(--gd-color-border);
 }
 
 // Frame 08 `Dmwhm`: the feed scrolls inside its card; the page does not grow.
@@ -276,6 +262,10 @@
 	margin-top: 6px;
 }
 
+.at14 {
+	margin-top: 14px;
+}
+
 .at18 {
 	margin-top: 18px;
 }
@@ -395,6 +385,7 @@
 	corner-shape: round;
 	background: var(--gd-color-accent-subtle);
 
+	// Where you are: a ring spreads out from under the red dot and fades.
 	&::after {
 		content: "";
 		width: 10px;
@@ -402,6 +393,23 @@
 		border-radius: 50%;
 		corner-shape: round;
 		background: var(--gd-color-accent);
+		animation: marker-ripple 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
+	}
+}
+
+// A beat: the ring leaps out, slows as it spreads, and rests before the next.
+@keyframes marker-ripple {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--gd-color-accent) 45%, transparent);
+	}
+
+	70%,
+	100% {
+		box-shadow: 0 0 0 9px color-mix(in srgb, var(--gd-color-accent) 0%, transparent);
 	}
 }
 
@@ -659,15 +667,9 @@
 	display: flex;
 	align-items: baseline;
 	gap: var(--gd-space-2);
-	font-size: var(--gd-font-size-body-lg);
+	font-size: var(--gd-font-size-h3);
 	font-weight: 600;
 	color: var(--gd-color-text);
-}
-
-.toward {
-	font-size: var(--gd-font-size-body);
-	font-weight: 400;
-	color: var(--gd-color-text-secondary);
 }
 
 .sprintMeta {
@@ -703,18 +705,20 @@
 	align-items: center;
 	justify-content: space-between;
 	padding-bottom: var(--gd-space-2);
-	font-size: var(--gd-font-size-body-lg);
+	font-size: var(--gd-font-size-body);
 	font-weight: 600;
 	color: var(--gd-color-text);
 }
 
+// Rows run edge to edge of the sprint card, so a row's hover is not cut at its text.
 .checklistItem {
 	display: flex;
 	align-items: center;
 	gap: var(--gd-space-3);
 	min-height: 52px;
-	width: 100%;
-	padding: 0;
+	width: calc(100% + 2 * var(--gd-space-6));
+	margin: 0 calc(-1 * var(--gd-space-6));
+	padding: 0 var(--gd-space-6);
 	border: 0;
 	border-bottom: 1px solid var(--gd-color-border);
 	background: none;
@@ -722,9 +726,16 @@
 	font-size: var(--gd-font-size-body);
 	color: var(--gd-color-text);
 
+	// The list closes the card: its last row sits on the card's bottom edge.
 	&:last-child {
+		margin-bottom: calc(-1 * var(--gd-space-6));
 		border-bottom: 0;
+		border-radius: 0 0 var(--gd-radius-panel) var(--gd-radius-panel);
 	}
+}
+
+.checklistHead + .checklistItem {
+	border-top: 1px solid var(--gd-color-border);
 }
 
 button.checklistItem {
@@ -751,8 +762,17 @@ button.checklistItem {
 	font-weight: 500;
 }
 
-.sep {
-	color: var(--gd-color-text-tertiary);
+.itemDue {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+
+	:global(.ant-tag) {
+		margin: 0;
+	}
 }
 
 .secondary {
@@ -768,26 +788,62 @@ button.checklistItem {
 .summary {
 	display: flex;
 	flex-direction: column;
-	gap: var(--gd-space-3);
-	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-4)
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-3) var(--gd-space-4) var(--gd-space-3)
 		var(--gd-space-6);
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-panel);
 }
 
-.summaryMeta {
+.summaryHead {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
-	gap: var(--gd-space-6);
-	font-size: var(--gd-font-size-body-sm);
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--gd-space-4);
+	cursor: pointer;
+}
+
+.summaryFolded {
+	cursor: pointer;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.summaryTitle {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.summaryDates {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 400;
 	color: var(--gd-color-text-secondary);
 }
 
-.metaItem {
+.stat {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--gd-space-2);
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+
+	svg {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.summaryMeta {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
 }
 
 // The next session: outlined dark, because it is the one appointment on the page.
@@ -812,8 +868,6 @@ button.checklistItem {
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--gd-space-6);
-	padding-bottom: var(--gd-space-6);
-	border-bottom: 1px solid var(--gd-color-border);
 }
 
 .sessionWho {
@@ -856,11 +910,22 @@ button.checklistItem {
 	color: var(--gd-color-text-secondary);
 }
 
+.futureLine {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.futureTitle {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
 .with {
 	display: flex;
 	align-items: center;
 	gap: var(--gd-space-2);
-	padding-top: var(--gd-space-1);
 	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-secondary);
 }
@@ -934,6 +999,17 @@ button.checklistItem {
 
 .pulseLine {
 	color: var(--gd-color-accent);
+}
+
+.pulseStill {
+	color: var(--gd-color-text-tertiary);
+}
+
+// The pill keeps its padding for the hover without making the row taller.
+.pulseQuiet {
+	margin-block: calc(-1 * var(--gd-space-1));
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
 }
 
 .pulseGhost {
@@ -1091,14 +1167,43 @@ button.checklistItem {
 	gap: var(--gd-space-3);
 }
 
+.closedName {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.closedDates {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+.boundaryLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	color: var(--gd-color-text-secondary);
+
+	svg {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+// A checkpoint behind: framed, so what comes after it on the branch reads as separate.
+.closedCard {
+	padding: var(--gd-space-3) var(--gd-space-4) var(--gd-space-3)
+		var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
 .panel {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-6);
 	margin-top: var(--gd-space-4);
-	padding: var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-panel);
 }
 
 .block {

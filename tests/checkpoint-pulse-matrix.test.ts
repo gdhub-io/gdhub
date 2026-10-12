@@ -105,7 +105,7 @@ describe("sprints", () => {
 			to: "2026-09-07T00:00:00.000Z",
 			firstDay: 1,
 			lastDay: 7,
-			devlogDay: 6,
+			devlogDay: 7,
 			state: "done",
 		});
 		expect(sprints.map((sprint) => sprint.state)).toEqual([

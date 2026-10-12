@@ -1,19 +1,13 @@
 "use client";
 
-import {
-	IconArrowRight,
-	IconCircle,
-	IconCircleCheck,
-	IconMessageCircle,
-	IconPaperclip,
-} from "@tabler/icons-react";
+import { IconMessageCircle, IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Divider, Tag, Tooltip, Typography } from "antd";
-import Link from "next/link";
+import { App, Button, Tag, Tooltip, Typography } from "antd";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import WorkflowTaskCard from "@/components/WorkflowContent/WorkflowTaskCard";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
@@ -28,7 +22,6 @@ const { Text } = Typography;
 
 export type CheckpointAsideProps = {
 	checkpoint: CheckpointDto;
-	projectSlug: string;
 	canManage: boolean;
 };
 
@@ -38,7 +31,6 @@ export type CheckpointAsideProps = {
  */
 export function CheckpointAside({
 	checkpoint,
-	projectSlug,
 	canManage,
 }: CheckpointAsideProps) {
 	const { t } = useTranslate();
@@ -80,11 +72,7 @@ export function CheckpointAside({
 							number: String(checkpoint.number ?? 1),
 						})}
 					</Text>
-					<Tag variant="filled">
-						{isAI
-							? t("workflow.aside.ai", "AI")
-							: t("workflow.aside.industry", "Industry")}
-					</Tag>
+					{isAI && <Tag variant="filled">{t("workflow.aside.ai", "AI")}</Tag>}
 				</div>
 				{checkpoint.startedAt && checkpoint.dueAt && (
 					<Text type="secondary" className={styles.asideMeta}>
@@ -115,82 +103,67 @@ export function CheckpointAside({
 									})}
 								</Text>
 							</div>
-							{outcomes.map((item) => {
-								const proof = proofOf(item.id);
-								return (
-									<div key={item.id} className={styles.asideOutcome}>
-										{proof ? (
-											<IconCircleCheck size={16} className={styles.asideDone} />
-										) : (
-											<IconCircle size={16} className={styles.asideTodo} />
-										)}
-										<Text
-											type={proof ? undefined : "secondary"}
-											className={styles.grow}
-											ellipsis={{ tooltip: item.text }}
-										>
-											{item.text}
-										</Text>
-										{proof ? (
-											<ArtifactLink artifact={proof} />
-										) : (
-											canManage && (
-												<Tooltip
-													title={t(
-														"workflow.aside.attach",
-														"Attach an artifact",
-													)}
-												>
-													<Button
-														type="text"
-														icon={<IconPaperclip size={16} />}
-														aria-label={t(
-															"workflow.aside.attach",
-															"Attach an artifact",
-														)}
-														onClick={() => setAttaching(true)}
-													/>
-												</Tooltip>
-											)
-										)}
-									</div>
-								);
-							})}
+							<div className={styles.asideTasks}>
+								{outcomes.map((item) => {
+									const proof = proofOf(item.id);
+									return (
+										<WorkflowTaskCard
+											key={item.id}
+											label={item.text}
+											completed={!!proof}
+											action={
+												proof ? (
+													<ArtifactLink artifact={proof} compact />
+												) : (
+													canManage && (
+														<Tooltip
+															title={t(
+																"workflow.aside.attach",
+																"Attach an artifact",
+															)}
+														>
+															<Button
+																type="text"
+																icon={<IconPaperclip size={16} />}
+																aria-label={t(
+																	"workflow.aside.attach",
+																	"Attach an artifact",
+																)}
+																onClick={() => setAttaching(true)}
+															/>
+														</Tooltip>
+													)
+												)
+											}
+										/>
+									);
+								})}
+							</div>
 						</>
 					)}
-					<Link
-						href={`/user/project/${projectSlug}/artifacts`}
-						className={styles.link}
-					>
-						{t("workflow.aside.allArtifacts", "All artifacts")}
-						<IconArrowRight size={14} />
-					</Link>
 				</div>
 
 				{curator && (
-					<>
-						<Divider className={styles.asideDivider} />
-						<div className={styles.asideCurator}>
-							<AppAvatar src={curator.image} size={40}>
-								{curator.name?.[0]}
-							</AppAvatar>
-							<div className={styles.grow}>
-								<Text strong>{curator.name}</Text>
-								<Text type="secondary" className={styles.asideMeta}>
-									{t("workflow.aside.curator", "Curator")}
-								</Text>
-							</div>
-							<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
-								<Button
-									size="large"
-									icon={<IconMessageCircle size={20} />}
-									loading={openChat.isPending}
-									onClick={chat}
-									aria-label={t("workflow.aside.chat", "Checkpoint chat")}
-								/>
-							</Tooltip>
+					<div className={styles.asideCurator}>
+						<AppAvatar src={curator.image} size={40}>
+							{curator.name?.[0]}
+						</AppAvatar>
+						<div className={styles.grow}>
+							<Text strong>{curator.name}</Text>
+							<Text type="secondary" className={styles.asideMeta}>
+								{t("workflow.aside.curator", "Curator")}
+							</Text>
 						</div>
-					</>
+						<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
+							<Button
+								size="large"
+								icon={<IconMessageCircle size={20} />}
+								loading={openChat.isPending}
+								onClick={chat}
+								aria-label={t("workflow.aside.chat", "Checkpoint chat")}
+							/>
+						</Tooltip>
+					</div>
 				)}
 			</div>
 

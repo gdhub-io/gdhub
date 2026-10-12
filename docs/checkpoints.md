@@ -806,7 +806,7 @@ New Novu workflows beside the existing ones:
 | Key | To | When |
 |---|---|---|
 | `checkpoint-pulse-request` | Each member | Days 3, 10, 17, 24 |
-| `checkpoint-devlog-reminder` | Author and publishers | Days 6, 13, 20, 27, if the week has no devlog |
+| `checkpoint-devlog-reminder` | Author and publishers | Days 7, 14, 21, 28 — the sprint's last day, when its devlog is due — if the week has no devlog |
 | `checkpoint-devlog-feedback` | Author | The day after a devlog, when the curator's answer lands |
 | `checkpoint-mid-note` | Author | Day 14 |
 | `checkpoint-evidence-reminder` | Author | Day 26, only if an outcome has an empty slot |

@@ -34,7 +34,7 @@ const TAIL = 44;
  * Frame `X9H3O`: a heart-rate trace, one beat per member who confirmed the
  * sprint. A flat line is a sprint nobody has answered yet, not a dead team.
  */
-function PulseTrace({ beats }: { beats: number }) {
+function PulseTrace({ beats, still }: { beats: number; still?: boolean }) {
 	const step = WIDTH / (beats + 1);
 	const path = Array.from({ length: beats }, (_, index) => {
 		const x = step * (index + 1);
@@ -44,6 +44,19 @@ function PulseTrace({ beats }: { beats: number }) {
 
 	const d = `M 0 ${BASELINE} ${path} L ${WIDTH} ${BASELINE}`;
 	const id = useId();
+
+	if (still)
+		return (
+			<svg
+				width={WIDTH}
+				height={20}
+				viewBox={`0 0 ${WIDTH} 20`}
+				className={styles.pulseStill}
+				aria-hidden="true"
+			>
+				<path d={d} fill="none" stroke="currentColor" strokeWidth={1} />
+			</svg>
+		);
 
 	return (
 		<svg
@@ -132,13 +145,15 @@ export type PulseChipProps = {
 	sprint: CheckpointSprintDto;
 	/** The checkpoint's day today; null before it starts. */
 	day: number | null;
+	/** A sprint behind: the trace it ended with, grey and not moving. */
+	still?: boolean;
 };
 
 /**
  * The sprint's pulse as a small trace; opening it shows who did something on
  * which day of the sprint — frame `kMsaL`.
  */
-export function PulseChip({ rows, sprint, day }: PulseChipProps) {
+export function PulseChip({ rows, sprint, day, still }: PulseChipProps) {
 	const { t } = useTranslate();
 	const cells = rows.flatMap((row) => {
 		const cell = row.cells.find((item) => item.sprint === sprint.number);
@@ -239,9 +254,14 @@ export function PulseChip({ rows, sprint, day }: PulseChipProps) {
 			classNames={{ container: styles.pulsePopover }}
 		>
 			{/* ui-guard-ignore a pill holding a drawn trace; antd Button would square it off */}
-			<button type="button" className={styles.pulse}>
+			<button
+				type="button"
+				className={
+					still ? `${styles.pulse} ${styles.pulseQuiet}` : styles.pulse
+				}
+			>
 				{t("workflow.path.pulse.label", "Pulse")}
-				<PulseTrace beats={Math.min(beats, 6)} />
+				<PulseTrace beats={Math.min(beats, 6)} still={still} />
 			</button>
 		</Popover>
 	);

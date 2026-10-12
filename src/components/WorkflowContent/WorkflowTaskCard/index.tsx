@@ -7,8 +7,11 @@ import styles from "./style.module.scss";
 export type TaskCardProps = {
 	label: string;
 	description?: string | null;
-	required: boolean;
+	/** Omitted where every task counts the same, as on a checkpoint. */
+	required?: boolean;
 	completed: boolean;
+	/** What sits on the right instead of the Required/Optional chip. */
+	action?: React.ReactNode;
 };
 
 /**
@@ -21,6 +24,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 	description,
 	required,
 	completed,
+	action,
 }) => {
 	const { t } = useTranslate();
 
@@ -38,11 +42,14 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 				</div>
 				{description && <div className={styles.description}>{description}</div>}
 			</div>
-			<Tag className={styles.tag}>
-				{required
-					? t("workflow.tasks.required", "Required")
-					: t("workflow.tasks.optional", "Optional")}
-			</Tag>
+			{action}
+			{required !== undefined && (
+				<Tag className={styles.tag}>
+					{required
+						? t("workflow.tasks.required", "Required")
+						: t("workflow.tasks.optional", "Optional")}
+				</Tag>
+			)}
 		</div>
 	);
 };

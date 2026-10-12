@@ -31,21 +31,22 @@ export const sprintChecklist = (
 	const devlogDueAt = checkpoint.startedAt
 		? dateOfDay(checkpoint.startedAt, sprint.devlogDay).toISOString()
 		: null;
+	// The session that opens a sprint has its number: session 2 opens sprint 2.
+	const session = checkpoint.sessions?.find(
+		(item) => item.index === sprint.number,
+	);
 
 	if (sprint.number === 1 && hasPreviousCheckpoint) {
 		items.push({
 			key: "verdict",
 			done: !!checkpoint.previousVerdictReadAt,
-			dueAt: null,
+			// Read before the call that sets the new sprint's priorities.
+			dueAt: session?.scheduledAt ?? devlogDueAt,
 		});
 	}
 
-	// The session that opens a sprint has its number: session 2 opens sprint 2.
 	// Only a person holds a call; the AI curator's review is read, not attended.
 	if (checkpoint.curatorKind === CheckpointCuratorKind.Human) {
-		const session = checkpoint.sessions?.find(
-			(item) => item.index === sprint.number,
-		);
 		items.push({
 			key: "priorities",
 			done: !!session?.endedAt,
@@ -59,7 +60,7 @@ export const sprintChecklist = (
 	items.push({
 		key: "build",
 		done: !!build,
-		dueAt: null,
+		dueAt: devlogDueAt,
 	});
 
 	const devlog = checkpoint.reports?.find(

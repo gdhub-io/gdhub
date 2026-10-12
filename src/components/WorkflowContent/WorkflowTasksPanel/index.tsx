@@ -39,7 +39,7 @@ const WorkflowTasksPanel = ({
 			<div className={styles.panel}>
 				<div className={styles.header}>
 					<span className={styles.title}>
-						{t("workflow.tasks.title", "Tasks")}
+						{t("workflow.tasks.stageTitle", "Stage tasks")}
 					</span>
 					{requiredTasks.length > 0 && (
 						<span className={styles.progress}>

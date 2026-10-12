@@ -30,11 +30,10 @@ export const sprintDayRange = (sprint: number) => {
 };
 
 /**
- * The devlog of a sprint is due on its sixth day — the day before the next
- * sprint opens, so the curator has read it before the call that opens it.
+ * The devlog of a sprint is due on its last day, with everything else the
+ * sprint asks: the call that opens the next one is the day after at the earliest.
  */
-export const devlogDayOf = (sprint: number) =>
-	sprintDayRange(sprint).lastDay - 1;
+export const devlogDayOf = (sprint: number) => sprintDayRange(sprint).lastDay;
 
 /** The dates a sprint covers, both at UTC midnight and both inclusive. */
 export const sprintRange = (startedAt: Date, sprint: number) => {

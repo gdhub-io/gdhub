@@ -3476,8 +3476,10 @@
 			"sprintsNote": "a week each",
 			"start": "Get started",
 			"subtitle": "{days} days toward one goal, with a curator beside you.",
+			"subtitleAfter": "Checkpoint {number} closed: {verdict}. Set the next goal.",
 			"title": "Head for your first checkpoint",
 			"titleNext": "Head for the next checkpoint",
+			"titleNumber": "Head for Checkpoint {number}",
 			"verdict": "A verdict",
 			"verdictNote": "the stage can close"
 		},
@@ -3505,6 +3507,7 @@
 			"checkpoint": {
 				"goal": "Goal",
 				"not-delivered": "Not delivered",
+				"started": "Checkpoint {number} started · {date}",
 				"tasks": "Tasks",
 				"title": "Checkpoint {number}"
 			},
@@ -3514,8 +3517,10 @@
 				"on": "due {date}",
 				"overdue": "overdue since {date}",
 				"today": "due today",
+				"todayTag": "Today",
 				"tomorrow": "due tomorrow"
 			},
+			"earlierCheckpoints": "{count, plural, one {# earlier checkpoint} other {# earlier checkpoints}}",
 			"gate": {
 				"ai": "{date} · final review · verdict by {verdict}",
 				"human": "{date} · call with {name} · verdict by {verdict}"
@@ -3563,12 +3568,18 @@
 			"sprint": {
 				"added": "{count, plural, one {# artifact added} other {# artifacts added}}",
 				"artifacts": "Artifacts {done} of {total}",
+				"artifactsAdded": "Artifacts added",
 				"closed": "{count, plural, one {# task closed} other {# tasks closed}}",
+				"closedThis": "{count, plural, one {# task closed this sprint} other {# tasks closed this sprint}}",
 				"day": "day {day}",
+				"details": "Sprint details",
 				"devlog": "Devlog",
+				"devlogOf": "Sprint {number} devlog",
+				"empty": "Nothing was added in this sprint.",
 				"name": "Sprint {number}",
 				"of": "Sprint {number} of 4",
 				"tasks": "{done} of {total} tasks",
+				"tasksClosed": "Tasks closed",
 				"toward": "toward Checkpoint {number}"
 			},
 			"stage": {
@@ -3594,6 +3605,7 @@
 			"optional": "Optional",
 			"required": "Required",
 			"required-progress": "{done} of {total} required",
+			"stageTitle": "Stage tasks",
 			"title": "Tasks"
 		}
 	},

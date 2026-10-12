@@ -1,7 +1,9 @@
 import {
 	IconArrowUpRight,
 	IconCalendarPlus,
+	IconChevronDown,
 	IconChevronRight,
+	IconChevronUp,
 	IconCircleCheck,
 	IconDotsVertical,
 	IconFileText,
@@ -14,7 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Dropdown, Flex, Modal } from "antd";
+import { Button, Dropdown, Flex, Modal, Tag, Tooltip, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
@@ -43,6 +45,7 @@ import type {
 	CheckpointSessionDto,
 	CheckpointSprintDto,
 } from "@/types/checkpoints";
+import { ArtifactLink } from "./ArtifactLink";
 import { CheckpointResult } from "./ClosedCheckpoint";
 import { daysUntil, formatShort } from "./dates";
 import { PathNode } from "./PathNode";
@@ -96,6 +99,7 @@ export function RunningCheckpoint({
 		"results" | "build" | "devlog" | "artifacts" | null
 	>(null);
 	const markRead = useMarkVerdictRead(checkpoint.id);
+	const [opened, setOpened] = useState<number[]>([]);
 
 	const sprints = checkpoint.sprints ?? [];
 	const sessions = checkpoint.sessions ?? [];
@@ -134,17 +138,6 @@ export function RunningCheckpoint({
 	);
 	const finalSession = sessions.at(-1);
 
-	const dueLabel = (iso: string) => {
-		const days = daysUntil(iso);
-		if (days === 0) return t("workflow.path.due.today", "due today");
-		if (days === 1) return t("workflow.path.due.tomorrow", "due tomorrow");
-		if (days < 0)
-			return t("workflow.path.due.overdue", "overdue since {date}", {
-				date: formatShort(iso),
-			});
-		return t("workflow.path.due.on", "due {date}", { date: formatShort(iso) });
-	};
-
 	const itemLabel = (item: ChecklistItem) =>
 		({
 			verdict: t(
@@ -162,19 +155,32 @@ export function RunningCheckpoint({
 			artifacts: t("workflow.path.check.artifacts", "Attach artifacts"),
 		})[item.key];
 
-	const itemMeta = (item: ChecklistItem) => {
-		if (item.key === "priorities" && item.dueAt)
-			return item.done
-				? t("workflow.path.check.session-on", "session {date}", {
-						date: formatShort(item.dueAt),
-					})
-				: daysUntil(item.dueAt) === 0
-					? t("workflow.path.check.at-today", "at today's session")
-					: t("workflow.path.check.at-session", "at the session {date}", {
-							date: formatShort(item.dueAt),
-						});
-		if (!item.done && item.dueAt) return dueLabel(item.dueAt);
-		return null;
+	/** The line's date on the right; today's is marked, a missed one is red. */
+	const itemDue = (item: ChecklistItem) => {
+		if (!item.dueAt) return null;
+		const days = daysUntil(item.dueAt);
+		const date = formatShort(item.dueAt);
+		if (item.done) return <span className={styles.tertiary}>{date}</span>;
+		if (days < 0)
+			return (
+				<Typography.Text type="danger">
+					{t("workflow.path.due.overdue", "overdue since {date}", { date })}
+				</Typography.Text>
+			);
+		const label =
+			item.key === "priorities" || item.key === "verdict"
+				? t("workflow.path.check.at-session", "at the session {date}", { date })
+				: t("workflow.path.due.on", "due {date}", { date });
+		return (
+			<>
+				{days === 0 && (
+					<Tag color="red" variant="filled">
+						{t("workflow.path.due.todayTag", "Today")}
+					</Tag>
+				)}
+				{label}
+			</>
+		);
 	};
 
 	const openItem = (key: ChecklistKey) => {
@@ -183,17 +189,21 @@ export function RunningCheckpoint({
 			if (!checkpoint.previousVerdictReadAt) markRead.mutate();
 			return;
 		}
+		if (key === "priorities" && openingSession) {
+			router.push(sessionHref(openingSession));
+			return;
+		}
 		if (key === "build" || key === "devlog" || key === "artifacts")
 			setModal(key);
 	};
 
 	const checklistRow = (item: ChecklistItem) => {
+		// The priorities are set in the call: the line opens it, as Join session does.
 		const actionable =
-			canManage &&
-			!item.done &&
-			item.key !== "priorities" &&
-			item.key !== "verdict";
-		const meta = itemMeta(item);
+			item.key === "priorities"
+				? !!openingSession
+				: canManage && !item.done && item.key !== "verdict";
+		const due = itemDue(item);
 		const body = (
 			<>
 				{item.done ? (
@@ -201,17 +211,12 @@ export function RunningCheckpoint({
 				) : (
 					ICON[item.key]
 				)}
-				<span className={styles.itemText}>
-					<span className={item.done ? styles.secondary : undefined}>
-						{itemLabel(item)}
-					</span>
-					{meta && (
-						<>
-							<span className={styles.sep}>·</span>
-							<span className={styles.secondary}>{meta}</span>
-						</>
-					)}
+				<span
+					className={`${styles.itemText}${item.done ? ` ${styles.secondary}` : ""}`}
+				>
+					{itemLabel(item)}
 				</span>
+				{due && <span className={styles.itemDue}>{due}</span>}
 				{item.key === "verdict" && (
 					<Button
 						type="text"
@@ -259,6 +264,46 @@ export function RunningCheckpoint({
 		</span>
 	);
 
+	const sessionHeld = (session: CheckpointSessionDto) =>
+		!!session.endedAt || (isAI && !!session.contentStatus);
+	/** A call or review already behind: one line, linking to its notes. */
+	const sessionDone = (session: CheckpointSessionDto) => (
+		<div className={styles.sessionDone}>
+			{isAI ? <IconSparkles size={16} /> : <IconVideo size={16} />}
+			<span>
+				{isAI
+					? t("workflow.path.session.review-title", "Sprint {number} review", {
+							number: String(session.index - 1),
+						})
+					: sessionWith}
+			</span>
+			<span className={`${styles.meta} ${styles.grow}`}>
+				{formatShort(session.scheduledAt)}
+			</span>
+			<Link href={sessionHref(session)} className={styles.link}>
+				{isAI
+					? t("workflow.path.session.review", "Review")
+					: t("workflow.path.session.notes", "Notes")}
+				<IconArrowUpRight size={14} />
+			</Link>
+		</div>
+	);
+
+	const stat = (icon: ReactNode, count: number, title: string) => (
+		<Tooltip title={title}>
+			<span className={styles.stat}>
+				{icon}
+				{count}
+			</span>
+		</Tooltip>
+	);
+	const section = (label: string, rows: ReactNode) => (
+		<div className={styles.block}>
+			<span className={styles.sectionLabel}>{label}</span>
+			{rows}
+		</div>
+	);
+
 	const doneSprint = (sprint: CheckpointSprintDto) => {
 		const devlog = checkpoint.reports?.find(
 			(report) => report.sprint === sprint.number,
@@ -274,53 +319,174 @@ export function RunningCheckpoint({
 				.filter((build) => build.sprint === sprint.number)
 				.map((build) => build.id),
 		]).size;
-		const closed = new Set(evidence.flatMap((item) => item.itemIds)).size;
+		const open = opened.includes(sprint.number);
+		const session = sessions.find(
+			(item) => item.index === sprint.number && sessionHeld(item),
+		);
+		const proofOf = new Map(
+			evidence.flatMap((item) =>
+				item.itemIds.map((id) => [id, item.artifact] as const),
+			),
+		);
+		const closed = proofOf.size;
+		const tasks = checkpoint.items.filter((item) => proofOf.has(item.id));
+		// What the sprint added beyond the proof of a closed task.
+		const others = [
+			...new Map(
+				evidence
+					.filter((item) => item.itemIds.length === 0)
+					.map((item) => [item.artifact.id, item.artifact]),
+			).values(),
+		];
+
+		const toggle = () =>
+			setOpened((list) =>
+				open
+					? list.filter((item) => item !== sprint.number)
+					: [...list, sprint.number],
+			);
 
 		return (
 			<PathNode key={sprint.number} marker="done">
-				<div className={styles.summary}>
-					<span className={styles.sprintTitle}>
-						{t("workflow.path.sprint.name", "Sprint {number}", {
-							number: String(sprint.number),
-						})}
-						<span className={styles.meta}>
-							{dayRange(sprint.from, sprint.to)}
+				{/* biome-ignore lint/a11y/noStaticElementInteractions: folded, the whole card opens it; open, the head folds it back; the chevron is the keyboard control */}
+				<div
+					className={
+						open ? styles.summary : `${styles.summary} ${styles.summaryFolded}`
+					}
+					onClick={open ? undefined : toggle}
+				>
+					{/* biome-ignore lint/a11y/noStaticElementInteractions: see the card above */}
+					<div
+						className={styles.summaryHead}
+						onClick={open ? toggle : undefined}
+					>
+						<span className={styles.summaryTitle}>
+							{t("workflow.path.sprint.name", "Sprint {number}", {
+								number: String(sprint.number),
+							})}
+							<span className={styles.summaryDates}>
+								{dayRange(sprint.from, sprint.to)}
+							</span>
 						</span>
-					</span>
-					<div className={styles.summaryMeta}>
-						{devlog && (
-							<Link href={`/devlog/${devlog.id}`} className={styles.link}>
-								<IconNotebook size={16} className={styles.secondary} />
-								{t("workflow.path.sprint.devlog", "Devlog")}
-								<IconArrowUpRight size={14} />
-							</Link>
-						)}
-						{added > 0 && (
-							<span className={styles.metaItem}>
-								<IconLayoutGridAdd size={16} />
-								{t(
-									"workflow.path.sprint.added",
-									"{count, plural, one {# artifact added} other {# artifacts added}}",
-									{ count: added },
+						<div className={styles.summaryMeta}>
+							{devlog &&
+								stat(
+									<IconNotebook size={14} />,
+									1,
+									t("workflow.path.sprint.devlog", "Devlog"),
 								)}
-							</span>
-						)}
-						{closed > 0 && (
-							<span className={styles.metaItem}>
-								<IconCircleCheck size={16} />
-								{t(
-									"workflow.path.sprint.closed",
-									"{count, plural, one {# task closed} other {# tasks closed}}",
-									{ count: closed },
+							{added > 0 &&
+								stat(
+									<IconLayoutGridAdd size={14} />,
+									added,
+									t(
+										"workflow.path.sprint.added",
+										"{count, plural, one {# artifact added} other {# artifacts added}}",
+										{ count: added },
+									),
 								)}
+							{closed > 0 &&
+								stat(
+									<IconCircleCheck size={14} />,
+									closed,
+									t(
+										"workflow.path.sprint.closedThis",
+										"{count, plural, one {# task closed this sprint} other {# tasks closed this sprint}}",
+										{ count: closed },
+									),
+								)}
+							{/* biome-ignore lint/a11y/noStaticElementInteractions: only keeps the pulse's click from folding the sprint */}
+							<span onClick={(event) => event.stopPropagation()}>
+								<PulseChip
+									rows={checkpoint.pulses ?? []}
+									sprint={sprint}
+									day={checkpoint.day}
+									still
+								/>
 							</span>
-						)}
-						<PulseChip
-							rows={checkpoint.pulses ?? []}
-							sprint={sprint}
-							day={checkpoint.day}
-						/>
+							<Button
+								type="text"
+								size="small"
+								aria-expanded={open}
+								aria-label={t("workflow.path.sprint.details", "Sprint details")}
+								icon={
+									open ? (
+										<IconChevronUp size={16} />
+									) : (
+										<IconChevronDown size={16} />
+									)
+								}
+								onClick={(event) => {
+									event.stopPropagation();
+									toggle();
+								}}
+							/>
+						</div>
 					</div>
+
+					{open && (
+						<>
+							{session && sessionDone(session)}
+							{tasks.length > 0 &&
+								section(
+									t("workflow.path.sprint.tasksClosed", "Tasks closed"),
+									tasks.map((item) => {
+										const proof = proofOf.get(item.id);
+										return (
+											<div key={item.id} className={styles.outcome}>
+												<IconCircleCheck
+													size={16}
+													className={styles.taskIconDone}
+												/>
+												<span className={styles.grow}>{item.text}</span>
+												{proof && <ArtifactLink artifact={proof} />}
+											</div>
+										);
+									}),
+								)}
+							{others.length > 0 &&
+								section(
+									t("workflow.path.sprint.artifactsAdded", "Artifacts added"),
+									others.map((artifact) => (
+										<Typography.Link
+											key={artifact.id}
+											href={artifact.link}
+											target="_blank"
+											rel="noreferrer"
+											className={styles.link}
+										>
+											<IconLayoutGridAdd size={16} />
+											{artifact.name ?? artifact.link}
+											<IconArrowUpRight size={14} />
+										</Typography.Link>
+									)),
+								)}
+							{devlog && (
+								<Link href={`/devlog/${devlog.id}`} className={styles.link}>
+									<IconNotebook size={16} />
+									{t(
+										"workflow.path.sprint.devlogOf",
+										"Sprint {number} devlog",
+										{
+											number: String(sprint.number),
+										},
+									)}
+									<IconArrowUpRight size={14} />
+								</Link>
+							)}
+							{!session &&
+								!devlog &&
+								others.length === 0 &&
+								tasks.length === 0 && (
+									<span className={styles.secondary}>
+										{t(
+											"workflow.path.sprint.empty",
+											"Nothing was added in this sprint.",
+										)}
+									</span>
+								)}
+						</>
+					)}
 				</div>
 			</PathNode>
 		);
@@ -521,22 +687,9 @@ export function RunningCheckpoint({
 							{t("workflow.path.sprint.name", "Sprint {number}", {
 								number: String(current.number),
 							})}
-							<span className={styles.toward}>
-								{t(
-									"workflow.path.sprint.toward",
-									"toward Checkpoint {number}",
-									{
-										number: String(number),
-									},
-								)}
-							</span>
 						</span>
 						<span className={styles.sprintMeta}>
 							{dayRange(current.from, current.to)}
-							{checkpoint.day !== null &&
-								` · ${t("workflow.path.sprint.day", "day {day}", {
-									day: String(checkpoint.day - current.firstDay + 1),
-								})}`}
 							<PulseChip
 								rows={checkpoint.pulses ?? []}
 								sprint={current}
@@ -548,35 +701,8 @@ export function RunningCheckpoint({
 					{sessionToday && sessionBody(sessionToday, true)}
 
 					{openingSession &&
-						(openingSession.endedAt ||
-							(isAI && openingSession.contentStatus)) && (
-							<div className={styles.sessionDone}>
-								{isAI ? <IconSparkles size={16} /> : <IconVideo size={16} />}
-								<span>
-									{isAI
-										? t(
-												"workflow.path.session.review-title",
-												"Sprint {number} review",
-												{
-													number: String(openingSession.index - 1),
-												},
-											)
-										: sessionWith}
-								</span>
-								<span className={`${styles.meta} ${styles.grow}`}>
-									{formatShort(openingSession.scheduledAt)}
-								</span>
-								<Link
-									href={sessionHref(openingSession)}
-									className={styles.link}
-								>
-									{isAI
-										? t("workflow.path.session.review", "Review")
-										: t("workflow.path.session.notes", "Notes")}
-									<IconArrowUpRight size={14} />
-								</Link>
-							</div>
-						)}
+						sessionHeld(openingSession) &&
+						sessionDone(openingSession)}
 
 					<div>
 						<div className={styles.checklistHead}>
@@ -621,16 +747,18 @@ export function RunningCheckpoint({
 												})
 									}`}
 							</span>
-							<span className={styles.title}>
-								{t("workflow.path.sprint.name", "Sprint {number}", {
-									number: String(sprint.number),
-								})}
-							</span>
-							<div className={styles.with}>
-								{isAI
-									? t("workflow.path.review-by", "review by")
-									: t("workflow.path.with", "with")}
-								{who}
+							<div className={styles.futureLine}>
+								<span className={styles.futureTitle}>
+									{t("workflow.path.sprint.name", "Sprint {number}", {
+										number: String(sprint.number),
+									})}
+								</span>
+								<span className={styles.with}>
+									{isAI
+										? t("workflow.path.review-by", "review by")
+										: t("workflow.path.with", "with")}
+									{who}
+								</span>
 							</div>
 						</div>
 					</PathNode>
