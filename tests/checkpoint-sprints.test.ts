@@ -26,8 +26,8 @@ describe("sprintDayRange and devlogDayOf", () => {
 		expect(sprintDayRange(4)).toEqual({ firstDay: 22, lastDay: 28 });
 	});
 
-	it("puts the devlog on the sixth day of the sprint", () => {
-		expect([1, 2, 3, 4].map(devlogDayOf)).toEqual([6, 13, 20, 27]);
+	it("puts the devlog on the last day of the sprint", () => {
+		expect([1, 2, 3, 4].map(devlogDayOf)).toEqual([7, 14, 21, 28]);
 	});
 });
 

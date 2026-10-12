@@ -13,7 +13,7 @@ const sprint2: CheckpointSprintDto = {
 	to: "2026-10-14T00:00:00.000Z",
 	firstDay: 8,
 	lastDay: 14,
-	devlogDay: 13,
+	devlogDay: 14,
 	state: "current",
 };
 
@@ -24,7 +24,7 @@ const sprint1: CheckpointSprintDto = {
 	to: "2026-10-07T00:00:00.000Z",
 	firstDay: 1,
 	lastDay: 7,
-	devlogDay: 6,
+	devlogDay: 7,
 };
 
 const evidence = (
@@ -127,11 +127,35 @@ describe("sprint checklist", () => {
 		});
 	});
 
-	it("dates the devlog on the sprint's sixth day", () => {
+	it("dates the devlog on the sprint's last day", () => {
 		const devlog = sprintChecklist(checkpoint(), sprint2, false).find(
 			(item) => item.key === "devlog",
 		);
 
-		expect(devlog?.dueAt).toBe("2026-10-13T00:00:00.000Z");
+		expect(devlog?.dueAt).toBe("2026-10-14T00:00:00.000Z");
+	});
+
+	it("gives every line a date: the verdict and the priorities the call, the rest the sprint's last day", () => {
+		const items = sprintChecklist(
+			checkpoint({
+				sessions: [
+					{
+						index: 1,
+						scheduledAt: "2026-10-01T14:00:00.000Z",
+					} as NonNullable<CheckpointDto["sessions"]>[number],
+				],
+			}),
+			sprint1,
+			true,
+		);
+		const due = Object.fromEntries(items.map((item) => [item.key, item.dueAt]));
+
+		expect(due).toEqual({
+			verdict: "2026-10-01T14:00:00.000Z",
+			priorities: "2026-10-01T14:00:00.000Z",
+			build: "2026-10-07T00:00:00.000Z",
+			devlog: "2026-10-07T00:00:00.000Z",
+			artifacts: "2026-10-07T00:00:00.000Z",
+		});
 	});
 });

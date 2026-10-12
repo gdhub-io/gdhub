@@ -35,7 +35,7 @@ export function ClosedCheckpoint({
 	const [open, setOpen] = useState(false);
 
 	return (
-		<div>
+		<div className={styles.closedCard}>
 			{/* ui-guard-ignore the header row toggles the details below it */}
 			<button
 				type="button"
@@ -45,12 +45,12 @@ export function ClosedCheckpoint({
 			>
 				<span className={styles.cardTitles}>
 					{checkpoint.startedAt && checkpoint.dueAt && (
-						<span className={styles.meta}>
+						<span className={styles.closedDates}>
 							{dayRange(checkpoint.startedAt, checkpoint.dueAt)}
 						</span>
 					)}
 					<span className={styles.closedTitle}>
-						<span className={styles.title}>
+						<span className={styles.closedName}>
 							{t("workflow.path.checkpoint.title", "Checkpoint {number}", {
 								number: String(number),
 							})}

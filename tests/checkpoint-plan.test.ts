@@ -19,7 +19,7 @@ describe("the curator's plan", () => {
 	it("has each devlog due before the call that follows it", () => {
 		expect(
 			plan.filter((step) => step.kind === "devlog").map((step) => step.day),
-		).toEqual([6, 13, 20, 27]);
+		).toEqual([7, 14, 21, 28]);
 	});
 
 	it("ends with the verdict on day 31", () => {
@@ -54,18 +54,17 @@ describe("the author's next step", () => {
 		expect(authorNextStep(2, none)).toEqual({
 			kind: "devlog",
 			sprint: 1,
-			day: 6,
+			day: 7,
 			overdue: false,
 		});
 	});
 
 	it("still asks for a late devlog until the next call, marked late", () => {
-		expect(authorNextStep(7, none)).toMatchObject({
+		expect(authorNextStep(8, none)).toMatchObject({
 			kind: "devlog",
 			sprint: 1,
 			overdue: true,
 		});
-		expect(authorNextStep(8, none)).toMatchObject({ kind: "devlog", sprint: 1 });
 	});
 
 	it("moves on to the call once the devlog is published", () => {

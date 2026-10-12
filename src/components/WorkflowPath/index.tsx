@@ -1,7 +1,12 @@
-import { IconHistory, IconShieldCheck } from "@tabler/icons-react";
+import {
+	IconFlag,
+	IconHistory,
+	IconSelector,
+	IconShieldCheck,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, Typography } from "antd";
+import { Button, Divider, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
@@ -16,7 +21,7 @@ import { CheckpointAside } from "./CheckpointAside";
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { CuratorAccepted } from "./CuratorAccepted";
-import { formatDay, formatDayRange } from "./dates";
+import { formatDay, formatDayRange, formatShort } from "./dates";
 import { PathBranch, PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 import { StageCard } from "./StageCard";
@@ -47,6 +52,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	// opens one more; null is the running-checkpoint default, nothing behind.
 	const [behind, setBehind] = useState<number | null>(null);
 	const [equityOpen, setEquityOpen] = useState(false);
+	const [earlierOpen, setEarlierOpen] = useState(false);
 
 	const { data: workflow, refetch } = useQuery({
 		// VacancyModal caches the raw response under ["project-workflow", id].
@@ -183,22 +189,53 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			: t("workflow.path.history.show", "Show previous path"),
 		() => setBehind(behind === null ? 1 : null),
 	);
-	const historyRow = (button: ReactNode) => (
-		<PathNode marker="none" rail="dashed" space={12}>
+	const historyRow = (
+		button: ReactNode,
+		rail: "solid" | "dashed" = "dashed",
+	) => (
+		<PathNode marker="none" rail={rail} space={12}>
 			<div className={styles.earlier}>{button}</div>
 		</PathNode>
 	);
 
 	const closedOn = (stepId: string) =>
 		numbered.filter(({ checkpoint }) => checkpoint.stepId === stepId);
-	const closedNodes = (stepId: string) =>
-		closedOn(stepId)
-			.filter(({ checkpoint }) => checkpoint.id !== afterVerdict?.checkpoint.id)
-			.map(({ checkpoint, number }) => (
-				<PathNode key={checkpoint.id} marker="cleared">
+	// On the current stage only the latest stays in view, so what is under way
+	// is not pushed below the fold; the older ones open behind one line.
+	const closedNodes = (stepId: string, fold = false) => {
+		const rows = closedOn(stepId).filter(
+			({ checkpoint }) => checkpoint.id !== afterVerdict?.checkpoint.id,
+		);
+		const kept = afterVerdict?.checkpoint.stepId === stepId ? 0 : 1;
+		const hidden = fold && !earlierOpen ? Math.max(0, rows.length - kept) : 0;
+
+		return [
+			hidden > 0 && (
+				<PathNode key="earlier" marker="none" space={12}>
+					<Divider plain>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconSelector size={12} />}
+							className={styles.boundaryLabel}
+							onClick={() => setEarlierOpen(true)}
+						>
+							{t(
+								"workflow.path.earlierCheckpoints",
+								"{count, plural, one {# earlier checkpoint} other {# earlier checkpoints}}",
+								{ count: hidden },
+							)}
+						</Button>
+					</Divider>
+				</PathNode>
+			),
+			...rows.slice(hidden).map(({ checkpoint, number }) => (
+				<PathNode key={checkpoint.id} marker="cleared" offset={18}>
 					<ClosedCheckpoint checkpoint={checkpoint} number={number} />
 				</PathNode>
-			));
+			)),
+		];
+	};
 
 	// A stage starts when the project moves onto it (plannedAt is stamped then)
 	// and ends when it finishes or the next one starts.
@@ -298,18 +335,33 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 				{running && detail ? (
 					<>
-						{!historyVisible && historyRow(historyToggle)}
+						{/* Shown or hidden, the way back sits right above the stage. */}
+						{historyRow(historyToggle, historyVisible ? "solid" : "dashed")}
 						{/* The stage stays in view with a checkpoint running on it: it is
 						    what the sprints below are working through. */}
 						{currentStage}
 						<PathBranch ahead>
-							{historyVisible && closedNodes(current.id)}
-							{(historyVisible || !sprintBehind) && (
+							{historyVisible && closedNodes(current.id, true)}
+							{detail.startedAt && (
 								<PathNode marker="none" space={12}>
-									{here(
-										sprintBehind ? <span /> : hereLabel,
-										historyVisible ? historyToggle : null,
-									)}
+									<Divider plain>
+										<span className={styles.boundaryLabel}>
+											<IconFlag size={12} />
+											{t(
+												"workflow.path.checkpoint.started",
+												"Checkpoint {number} started · {date}",
+												{
+													number: String(detail.number ?? 1),
+													date: formatShort(detail.startedAt),
+												},
+											)}
+										</span>
+									</Divider>
+								</PathNode>
+							)}
+							{!sprintBehind && (
+								<PathNode marker="none" space={12}>
+									{here(hereLabel)}
 								</PathNode>
 							)}
 							<RunningCheckpoint
@@ -330,7 +382,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						{currentStage}
 						{(offered || closedOn(current.id).length > 0) && (
 							<PathBranch ahead pending={closedOn(current.id).length === 0}>
-								{closedNodes(current.id)}
+								{closedNodes(current.id, true)}
 								{afterVerdict && (
 									<PathNode marker="cleared">
 										<AfterVerdict
@@ -347,7 +399,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 										<CheckpointOffer
 											project={project}
 											draft={pending}
-											first={numbered.length === 0}
+											previous={previous}
 											locked={locked}
 										/>
 									</PathNode>
@@ -373,11 +425,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 			<aside className={styles.aside}>
 				{running && detail && (
-					<CheckpointAside
-						checkpoint={detail}
-						projectSlug={project.slug}
-						canManage={canManage}
-					/>
+					<CheckpointAside checkpoint={detail} canManage={canManage} />
 				)}
 				<WorkflowTasksPanel
 					tasks={current.tasks.map((task) => ({

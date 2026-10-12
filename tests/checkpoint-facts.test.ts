@@ -16,7 +16,7 @@ const sprint = (
 	to: `2026-09-${String(number * 7).padStart(2, "0")}T00:00:00.000Z`,
 	firstDay: (number - 1) * 7 + 1,
 	lastDay: number * 7,
-	devlogDay: number * 7 - 1,
+	devlogDay: number * 7,
 	state,
 });
 
@@ -201,8 +201,8 @@ describe("sprintNeedsYou", () => {
 		}) as ReturnType<typeof sprintFactsOf>;
 
 	it("marks a sprint whose devlog is due and missing", () => {
-		expect(sprintNeedsYou(facts({}), 13)).toBe(true);
-		expect(sprintNeedsYou(facts({}), 12)).toBe(false);
+		expect(sprintNeedsYou(facts({}), 14)).toBe(true);
+		expect(sprintNeedsYou(facts({}), 13)).toBe(false);
 	});
 
 	it("leaves a sprint alone once its devlog is in", () => {

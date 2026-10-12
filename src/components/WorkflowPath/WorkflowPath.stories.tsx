@@ -32,7 +32,7 @@ const sprint = (number: number, state: CheckpointSprintDto["state"]) => ({
 	to: day(start + number * 7 - 1),
 	firstDay: (number - 1) * 7 + 1,
 	lastDay: number * 7,
-	devlogDay: number * 7 - 1,
+	devlogDay: number * 7,
 	state,
 });
 
@@ -261,7 +261,7 @@ export const ClosedOne: StoryObj = {
 const MARKER_CENTRE = {
 	stageDone: 28,
 	stageCurrent: 36,
-	done: 34,
+	done: 28,
 	current: 38,
 	session: 72,
 	review: 72,
@@ -312,9 +312,18 @@ const draft: CheckpointDto = {
 	dueAt: day(31),
 };
 
-const offer = (state: CheckpointDto | null, locked = false) => (
+const offer = (
+	state: CheckpointDto | null,
+	locked = false,
+	previous: { checkpoint: CheckpointDto; number: number } | null = null,
+) => (
 	<div style={{ maxWidth: 800 }}>
-		<CheckpointOffer project={project} draft={state} first locked={locked} />
+		<CheckpointOffer
+			project={project}
+			draft={state}
+			previous={previous}
+			locked={locked}
+		/>
 	</div>
 );
 
@@ -323,6 +332,15 @@ export const Offer: StoryObj = { render: () => offer(null) };
 
 /** Purchase not open yet (CHECKPOINTS_PURCHASE_OPEN off): the offer, locked. */
 export const OfferLocked: StoryObj = { render: () => offer(null, true) };
+
+/** Frame 02.4 (`fEOsj`): a checkpoint closed on this stage, the next one offered. */
+export const OfferNext: StoryObj = {
+	render: () =>
+		offer(null, false, {
+			checkpoint: { ...closed, verdict: CheckpointVerdict.GoalMet },
+			number: 3,
+		}),
+};
 
 export const OfferDraft: StoryObj = { render: () => offer(draft) };
 
@@ -400,7 +418,7 @@ export const OfferAllStates: StoryObj = {
 					<CheckpointOffer
 						project={project}
 						draft={state as CheckpointDto | null}
-						first
+						previous={null}
 						locked={locked as boolean}
 					/>
 				</div>

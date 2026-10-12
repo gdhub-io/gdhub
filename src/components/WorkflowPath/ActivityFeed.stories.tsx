@@ -44,7 +44,7 @@ const sprints: CheckpointSprintDto[] = [1, 2, 3, 4].map((number) => ({
 	to: day(-22 + number * 7 - 1, 0),
 	firstDay: (number - 1) * 7 + 1,
 	lastDay: number * 7,
-	devlogDay: number * 7 - 1,
+	devlogDay: number * 7,
 	state: number === 4 ? "current" : "done",
 }));
 

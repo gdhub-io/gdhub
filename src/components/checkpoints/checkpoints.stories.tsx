@@ -360,7 +360,7 @@ const sprints = [1, 2, 3, 4].map((number) => ({
 	to: `2026-09-${String(number * 7).padStart(2, "0")}T00:00:00.000Z`,
 	firstDay: (number - 1) * 7 + 1,
 	lastDay: number * 7,
-	devlogDay: number * 7 - 1,
+	devlogDay: number * 7,
 	state: (number < 2 ? "done" : number === 2 ? "current" : "ahead") as
 		| "done"
 		| "current"

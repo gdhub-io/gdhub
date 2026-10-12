@@ -16,6 +16,7 @@ import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceCuratorModal";
+import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
@@ -45,24 +46,25 @@ export type CheckpointOfferProps = {
 	project: { id: string; slug: string };
 	/** The project's unfinished checkpoint: a draft, or one paid and not yet running. */
 	draft: CheckpointDto | null;
-	/** Whether any checkpoint has run before: the copy says "first" until one has. */
-	first: boolean;
+	/** The last closed checkpoint; until one exists the copy says "first". */
+	previous: { checkpoint: CheckpointDto; number: number } | null;
 	/** Purchase is not open yet: the offer shows, its button does not work. */
 	locked?: boolean;
 };
 
 /**
- * Frames 02 and 02.1 (`xBn27`, `X63RjU`): the way into a checkpoint from the
+ * Frames 02, 02.1 and 02.4 (`xBn27`, `X63RjU`, `fEOsj`): the way into a checkpoint from the
  * current stage. With nothing started it is the offer; once a draft exists it
  * is that draft, in whichever of its four states it is, with the ⋮ menu (02.2).
  */
 export function CheckpointOffer({
 	project,
 	draft,
-	first,
+	previous,
 	locked = false,
 }: CheckpointOfferProps) {
 	const { t } = useTranslate();
+	const { label: verdictLabel } = useVerdictCopy();
 	const { message, modal } = App.useApp();
 	const router = useRouter();
 	const discard = useDiscardCheckpoint();
@@ -126,16 +128,31 @@ export function CheckpointOffer({
 				<Flex gap={16} align="center">
 					<Flex vertical gap={4} className={styles.grow}>
 						<span className={styles.title}>
-							{first
-								? t("workflow.offer.title", "Head for your first checkpoint")
-								: t("workflow.offer.titleNext", "Head for the next checkpoint")}
+							{previous
+								? t(
+										"workflow.offer.titleNumber",
+										"Head for Checkpoint {number}",
+										{
+											number: String(previous.number + 1),
+										},
+									)
+								: t("workflow.offer.title", "Head for your first checkpoint")}
 						</span>
 						<Typography.Text type="secondary">
-							{t(
-								"workflow.offer.subtitle",
-								"{days} days toward one goal, with a curator beside you.",
-								{ days: CHECKPOINT_DAYS },
-							)}
+							{previous?.checkpoint.verdict
+								? t(
+										"workflow.offer.subtitleAfter",
+										"Checkpoint {number} closed: {verdict}. Set the next goal.",
+										{
+											number: String(previous.number),
+											verdict: verdictLabel(previous.checkpoint.verdict),
+										},
+									)
+								: t(
+										"workflow.offer.subtitle",
+										"{days} days toward one goal, with a curator beside you.",
+										{ days: CHECKPOINT_DAYS },
+									)}
 						</Typography.Text>
 					</Flex>
 					<Tooltip
@@ -150,7 +167,11 @@ export function CheckpointOffer({
 							icon={locked ? <IconLock size={16} /> : undefined}
 							onClick={start}
 						>
-							{t("workflow.offer.start", "Get started")}
+							{previous
+								? t("workflow.after.plan", "Plan Checkpoint {number}", {
+										number: String(previous.number + 1),
+									})
+								: t("workflow.offer.start", "Get started")}
 						</Button>
 					</Tooltip>
 				</Flex>
@@ -308,7 +329,7 @@ export function CheckpointOffer({
 				<Flex vertical gap={4} className={styles.grow}>
 					<Flex gap={12} align="center" wrap>
 						<span className={styles.title}>
-							{first
+							{!previous
 								? t("workflow.draft.first", "Your first checkpoint")
 								: t("workflow.draft.next", "Your next checkpoint")}
 						</span>
