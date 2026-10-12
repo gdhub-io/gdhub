@@ -1,0 +1,19 @@
+.row {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.chips {
+	flex: none;
+}
+
+.add {
+	align-self: flex-start;
+	padding-inline: 0;
+}

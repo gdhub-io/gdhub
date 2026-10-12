@@ -156,6 +156,8 @@ Entering a space is not guarded by a permission — any role gets you in
 | `advisor.checkpoints.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `advisor.checkpoints.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
+| `advisor.calendar.view` | ✅ | ✅ | ✅ | — | read & take part |
+| | | | | | |
 | `advisor.settings.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `advisor.settings.manage` | ✅ | ✅ | — | — | manage |
 

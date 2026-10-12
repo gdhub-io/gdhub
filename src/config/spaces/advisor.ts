@@ -15,6 +15,8 @@ export const advisorSpace = defineSpace({
 		// The 28-day runs handed to them: the ones waiting for an answer, the ones
 		// under way, and the ones already decided.
 		checkpoints: ["view", "manage"],
+		// Every call booked with them, in their own zone.
+		calendar: ["view"],
 		settings: ["view", "manage"],
 	},
 });

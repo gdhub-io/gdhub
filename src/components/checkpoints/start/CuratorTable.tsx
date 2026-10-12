@@ -106,7 +106,7 @@ export function CuratorTable({
 						{
 							key: "who",
 							render: (_: unknown, row: CheckpointCurator) => (
-								<CuratorRow curator={row} />
+								<CuratorRow curator={row} freeFrom={row.firstCallFrom} />
 							),
 						},
 						{

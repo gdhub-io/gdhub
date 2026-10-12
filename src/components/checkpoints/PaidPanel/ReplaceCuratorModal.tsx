@@ -4,8 +4,13 @@ import { useTranslate } from "@tolgee/react";
 import { App, Flex, Modal, Typography } from "antd";
 import { useState } from "react";
 import { CuratorTable } from "@/components/checkpoints/start/CuratorTable";
+import { FirstCallPicker } from "@/components/checkpoints/start/FirstCallPicker";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { useUpdateCheckpoint } from "@/hooks/checkpoints";
+import { isSlotTaken } from "@/hooks/advisor-availability";
+import {
+	useCheckpointCurators,
+	useUpdateCheckpoint,
+} from "@/hooks/checkpoints";
 import styles from "./style.module.scss";
 
 export type ReplaceCuratorModalProps = {
@@ -41,18 +46,32 @@ export function ReplaceCuratorModal({
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const update = useUpdateCheckpoint(checkpointId);
+	const curators = useCheckpointCurators();
 	const [picked, setPicked] = useState<string>();
+	const [firstCall, setFirstCall] = useState<string | null>(null);
+	const curator = curators.data?.find((row) => row.userId === picked);
 
 	const replace = async () => {
-		if (!picked) return;
+		if (!picked || !firstCall) return;
 
 		try {
 			await update.mutateAsync({
 				curatorKind: CheckpointCuratorKind.Human,
 				curatorId: picked,
+				startedAt: firstCall,
 			});
 			onClose();
-		} catch {
+		} catch (error) {
+			if (isSlotTaken(error)) {
+				setFirstCall(null);
+				message.warning(
+					t(
+						"checkpoints.firstCall.taken",
+						"That time was just taken. Pick another one.",
+					),
+				);
+				return;
+			}
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
 		}
 	};
@@ -63,15 +82,18 @@ export function ReplaceCuratorModal({
 			width={820}
 			onCancel={onClose}
 			onOk={replace}
-			okButtonProps={{ disabled: !picked, loading: update.isPending }}
+			okButtonProps={{
+				disabled: !picked || !firstCall,
+				loading: update.isPending,
+			}}
 			okText={t("checkpoints.paid.replaceOk", "Hand it to them")}
 			title={t("checkpoints.paid.replaceTitle", "Replace the curator")}
 		>
 			<Flex vertical gap={12}>
 				<Typography.Text type="secondary" className={styles.body}>
 					{t(
-						"checkpoints.paid.replaceNote",
-						"The 28 days will wait for whoever you pick. Nothing is charged again.",
+						"checkpoints.paid.replaceNoteFirstCall",
+						"The 28 days will wait for whoever you pick, from the first call you book with them. Nothing is charged again.",
 					)}{" "}
 					{price != null &&
 						t(
@@ -82,11 +104,25 @@ export function ReplaceCuratorModal({
 
 				<CuratorTable
 					value={picked}
-					onChange={setPicked}
+					onChange={(userId) => {
+						setPicked(userId);
+						setFirstCall(null);
+					}}
 					exclude={currentCuratorId}
 					unavailable={unavailable}
 					price={price}
 				/>
+
+				{curator && (
+					<FirstCallPicker
+						key={curator.userId}
+						curatorId={curator.userId}
+						curatorName={curator.name.split(" ")[0]}
+						earliest={curator.firstCallFrom}
+						value={firstCall}
+						onChange={setFirstCall}
+					/>
+				)}
 			</Flex>
 		</Modal>
 	);

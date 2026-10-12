@@ -47,26 +47,6 @@
 	line-height: var(--gd-line-height-body);
 }
 
-.vat {
-	font-size: var(--gd-font-size-body-sm);
-}
-
-
-.fixed {
-	// Small: the panel says one figure, so it takes the width of the figure and
-	// not the width of the question above it.
-	width: fit-content;
-	min-width: 240px;
-	padding: var(--gd-space-4);
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-panel);
-}
-
-.fixedLabel {
-	font-size: var(--gd-font-size-body);
-	color: var(--gd-color-text-secondary);
-}
-
 .fixedAmount {
 	font-size: var(--gd-font-size-h2);
 	font-weight: 600;
@@ -90,4 +70,28 @@
 		border-color: var(--gd-color-accent);
 		background: var(--gd-color-accent);
 	}
+}
+
+// Frame 04.1: start, reviews and price as rows of one card.
+.summary {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.summaryRow {
+	padding: var(--gd-space-4) var(--gd-space-6);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.summaryLabel {
+	flex: none;
+	width: 96px;
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
 }

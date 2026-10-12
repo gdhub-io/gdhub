@@ -1,25 +1,71 @@
 "use client";
 
 import type { Icon } from "@tabler/icons-react";
-import { IconFlag, IconSparkles, IconUser } from "@tabler/icons-react";
+import {
+	IconCalendar,
+	IconFlag,
+	IconSparkles,
+	IconUser,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Radio, Skeleton, Typography } from "antd";
-import { useState } from "react";
+import {
+	App,
+	Button,
+	DatePicker,
+	Flex,
+	Radio,
+	Skeleton,
+	Tag,
+	Typography,
+} from "antd";
+import dayjs, { type Dayjs } from "dayjs";
+import { type ReactNode, useState } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { useUpdateCheckpoint } from "@/hooks/checkpoints";
+import { isSlotTaken } from "@/hooks/advisor-availability";
+import {
+	useCheckpointCurators,
+	useUpdateCheckpoint,
+} from "@/hooks/checkpoints";
+import { dueDateFrom } from "@/lib/checkpoint-days";
+import { dateOfDay } from "@/lib/checkpoint-plan";
+import { sessionDay } from "@/lib/checkpoint-sessions";
 import styles from "./CuratorStep.module.scss";
 import { CuratorTable } from "./CuratorTable";
+import { FirstCallPicker } from "./FirstCallPicker";
 import { usePrepareNav } from "./PrepareNav";
 import { StartLayout, type StartStep } from "./StartLayout";
 import { useCheckpointDraft } from "./useDraft";
 
+/** A row of frame 04.1's card: a label, what it says, and a quiet note. */
+function SummaryRow({
+	label,
+	hint,
+	children,
+}: {
+	label: string;
+	hint: string;
+	children: ReactNode;
+}) {
+	return (
+		<Flex gap={16} align="center" className={styles.summaryRow}>
+			<Typography.Text type="secondary" className={styles.summaryLabel}>
+				{label}
+			</Typography.Text>
+			{children}
+			<Typography.Text type="secondary" className={styles.small}>
+				{hint}
+			</Typography.Text>
+		</Flex>
+	);
+}
+
 /**
- * Frame 04 (`mNWjy`): who runs the 28 days.
+ * Frames 04 (`Ha8mK`) and 04.1 (`nhoB1`): who runs the 28 days, and from when.
  *
  * The kind is chosen first and it decides what follows: a person brings the list
  * of experts to pick from, the AI curator brings one fixed price. Neither card
@@ -32,8 +78,12 @@ export function CuratorStep() {
 	const { draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
+	const curators = useCheckpointCurators();
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
+	// Undefined until touched: the draft's own answer stands until then.
+	const [slot, setSlot] = useState<string | null>();
+	const [aiDay, setAiDay] = useState<Dayjs | null>(null);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
@@ -58,6 +108,24 @@ export function CuratorStep() {
 	// until the author touches it.
 	const chosen = kind ?? draft.curatorKind;
 	const chosenPerson = person ?? draft.curator?.id ?? null;
+	const isHuman = chosen === CheckpointCuratorKind.Human;
+	const curator = curators.data?.find((row) => row.userId === chosenPerson);
+	// A first call belongs to the curator it was booked with.
+	const firstCall =
+		slot !== undefined
+			? slot
+			: draft.curatorKind === CheckpointCuratorKind.Human &&
+					draft.curator?.id === chosenPerson
+				? draft.startedAt
+				: null;
+	const startDay =
+		aiDay ??
+		(draft.curatorKind === CheckpointCuratorKind.AI && draft.startedAt
+			? dayjs.utc(draft.startedAt)
+			: dayjs());
+	const reviewDays = [2, 3, 4, 5].map((index) =>
+		dayjs.utc(dateOfDay(startDay.format("YYYY-MM-DD"), sessionDay(index))),
+	);
 
 	const goTo = async (next: StartStep) => {
 		try {
@@ -65,10 +133,21 @@ export function CuratorStep() {
 				curatorKind: chosen,
 				// The AI curator is nobody in particular, so choosing it lets the
 				// person go rather than leaving a stale name on the draft.
-				curatorId: chosen === CheckpointCuratorKind.AI ? null : chosenPerson,
+				curatorId: isHuman ? chosenPerson : null,
+				startedAt: isHuman ? firstCall : startDay.format("YYYY-MM-DD"),
 			});
 			go(next);
-		} catch {
+		} catch (error) {
+			if (isSlotTaken(error)) {
+				setSlot(null);
+				message.warning(
+					t(
+						"checkpoints.firstCall.taken",
+						"That time was just taken. Pick another one.",
+					),
+				);
+				return;
+			}
 			message.error(t("checkpoints.goal.saveFailed", "Could not save"));
 		}
 	};
@@ -119,7 +198,7 @@ export function CuratorStep() {
 					// "Nothing chosen at all" cannot be blocked here: a draft is created
 					// with `curatorKind: AI`, so it is indistinguishable from the author
 					// having picked the AI curator until the schema records the choice.
-					disabled={chosen === CheckpointCuratorKind.Human && !chosenPerson}
+					disabled={isHuman && (!chosenPerson || !firstCall)}
 					onClick={() => goTo("payment")}
 				>
 					{t("checkpoints.curator.next", "Next — payment")}
@@ -160,28 +239,85 @@ export function CuratorStep() {
 								{t("checkpoints.curator.expertsLabel", "Industry experts")}
 							</Typography.Text>
 
-							<CuratorTable value={chosenPerson} onChange={setPerson} />
+							<CuratorTable
+								value={chosenPerson}
+								onChange={(userId) => {
+									setPerson(userId);
+									if (userId !== chosenPerson) setSlot(null);
+								}}
+							/>
 						</div>
+						{curator && (
+							<FirstCallPicker
+								key={curator.userId}
+								curatorId={curator.userId}
+								curatorName={curator.name.split(" ")[0]}
+								earliest={curator.firstCallFrom}
+								value={firstCall}
+								onChange={setSlot}
+							/>
+						)}
 					</Flex>
 				) : (
 					<Flex vertical gap={12}>
-						<Flex vertical gap={4} className={styles.fixed}>
-							<Typography.Text className={styles.fixedLabel}>
-								{t(
-									"checkpoints.curator.fixedPrice",
-									"Fixed price for AI curator",
+						{/* Frame 04.1 (`nhoB1`): when it starts, when the reviews come, what it costs. */}
+						<div className={styles.summary}>
+							<SummaryRow
+								label={t("checkpoints.curator.start", "Start")}
+								hint={t(
+									"checkpoints.curator.startHint",
+									"from the start of the day · ends around {date}",
+									{
+										date: dayjs
+											.utc(
+												dueDateFrom(
+													dayjs.utc(startDay.format("YYYY-MM-DD")).toDate(),
+												),
+											)
+											.format("D MMM"),
+									},
 								)}
-							</Typography.Text>
-							<Typography.Text className={styles.fixedAmount}>
-								{t("checkpoints.curator.amount", "{currency}{price}", {
-									currency: CHECKPOINT_PRICE_CURRENCY,
-									price: CHECKPOINT_AI_PRICE,
-								})}
-							</Typography.Text>
-							<Typography.Text type="secondary" className={styles.vat}>
-								{t("checkpoints.curator.vat", "+ VAT")}
-							</Typography.Text>
-						</Flex>
+							>
+								<DatePicker
+									value={startDay}
+									format="ddd D MMM YYYY"
+									allowClear={false}
+									prefix={<IconCalendar size={16} />}
+									suffixIcon={null}
+									disabledDate={(date) => date.isBefore(dayjs(), "day")}
+									onChange={(date) => date && setAiDay(date)}
+								/>
+							</SummaryRow>
+							<SummaryRow
+								label={t("checkpoints.curator.reviews", "Reviews")}
+								hint={t(
+									"checkpoints.curator.reviewsHint",
+									"the verdict comes with the last",
+								)}
+							>
+								<Flex gap={8} wrap>
+									{reviewDays.map((date) => (
+										<Tag key={date.toISOString()} variant="filled">
+											{date.format("D MMM")}
+										</Tag>
+									))}
+								</Flex>
+							</SummaryRow>
+							<SummaryRow
+								label={t("checkpoints.curator.price", "Price")}
+								hint={t(
+									"checkpoints.curator.priceHint",
+									"once, for the 28 days · + VAT",
+								)}
+							>
+								<Typography.Text className={styles.fixedAmount}>
+									{t("checkpoints.curator.amount", "{currency}{price}", {
+										currency: CHECKPOINT_PRICE_CURRENCY,
+										price: CHECKPOINT_AI_PRICE,
+									})}
+								</Typography.Text>
+							</SummaryRow>
+						</div>
 
 						<Typography.Text type="secondary" className={styles.note}>
 							{t(

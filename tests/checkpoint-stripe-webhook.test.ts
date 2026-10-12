@@ -6,6 +6,10 @@ import {
 import type { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/stripe/webhooks/route";
+import {
+	bookSessions,
+	SlotTakenError,
+} from "@/repositories/advisor-availability";
 import { prisma } from "@/services/prisma";
 import {
 	captureCheckout,
@@ -14,8 +18,16 @@ import {
 	stripeEvent,
 } from "@/services/stripe/server";
 
+vi.mock("@/repositories/advisor-availability", () => ({
+	isFirstCallFree: vi.fn(async () => true),
+	bookSessions: vi.fn(async () => undefined),
+	SlotTakenError: class SlotTakenError extends Error {},
+}));
+
 vi.mock("@/services/prisma", () => ({
 	prisma: {
+		$transaction: vi.fn(),
+		checkpointSession: { deleteMany: vi.fn() },
 		payment: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
 		paymentEvent: { create: vi.fn() },
 		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
@@ -78,6 +90,10 @@ const draft = (
 });
 
 beforeEach(() => {
+	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
+		typeof arg === "function"
+			? (arg as (tx: typeof prisma) => unknown)(prisma)
+			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	vi.mocked(stripeEvent).mockReturnValue(
 		completed({ paymentId: "pay_1", checkpointId: "cp1" }) as never,
@@ -130,6 +146,32 @@ describe("the Stripe webhook", () => {
 			expect.objectContaining({
 				where: { id: "pay_1", status: PaymentStatus.PENDING },
 				data: expect.objectContaining({ status: PaymentStatus.PROCESSING }),
+			}),
+		);
+	});
+
+	// Someone booked the hour while this author was paying: nothing is held for
+	// a series that cannot run, and the draft asks for another time.
+	it("lets the hold go when the first call was taken meanwhile", async () => {
+		vi.mocked(bookSessions).mockRejectedValueOnce(new SlotTakenError());
+		vi.mocked(releaseCheckout).mockResolvedValue({} as never);
+
+		await post();
+
+		expect(releaseCheckout).toHaveBeenCalledWith("cs_1");
+		expect(prisma.payment.update).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: { status: PaymentStatus.CANCELED },
+			}),
+		);
+		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+			expect.objectContaining({ data: { startedAt: null, dueAt: null } }),
+		);
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: expect.objectContaining({
+					status: CheckpointStatus.AwaitingCurator,
+				}),
 			}),
 		);
 	});

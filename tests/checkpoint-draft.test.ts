@@ -1,5 +1,10 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	bookSessions,
+	isFirstCallFree,
+} from "@/repositories/advisor-availability";
+import { prisma } from "@/services/prisma";
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
@@ -23,8 +28,16 @@ vi.mock("@/repositories/checkpoint.repository", () => ({
 	replaceCheckpointItems: vi.fn(),
 }));
 
+vi.mock("@/repositories/advisor-availability", () => ({
+	isFirstCallFree: vi.fn(async () => true),
+	bookSessions: vi.fn(async () => undefined),
+	SlotTakenError: class SlotTakenError extends Error {},
+}));
+
 vi.mock("@/services/prisma", () => ({
 	prisma: {
+		$transaction: vi.fn(),
+		checkpointSession: { deleteMany: vi.fn() },
 		projectCheckpoint: {
 			findUnique: (...args: unknown[]) => checkpointFindUnique(...args),
 			update: (...args: unknown[]) => checkpointUpdate(...args),
@@ -55,6 +68,10 @@ const put = async (body: unknown) => {
 };
 
 beforeEach(() => {
+	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
+		typeof arg === "function"
+			? (arg as (tx: typeof prisma) => unknown)(prisma)
+			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: author });
 	checkpointFindUnique.mockResolvedValue({ status: "Draft" });
@@ -160,12 +177,61 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		paymentFindFirst.mockResolvedValue({ amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
-		const response = await put({ curatorKind: "Human", curatorId: "u9" });
+		const response = await put({
+			curatorKind: "Human",
+			curatorId: "u9",
+			startedAt: "2026-10-21T09:00:00.000Z",
+		});
 
 		expect(response.status).toBe(200);
 		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
 			status: "AwaitingCurator",
 			curatorId: "u9",
+		});
+		// The money is held already, so the new curator's calls are booked now.
+		expect(bookSessions).toHaveBeenCalledWith(prisma, "cp1");
+	});
+
+	// While it waits the money is only held, not taken: the new curator's
+	// calls are booked all the same.
+	it("books the new curator's calls on a checkpoint waiting on a hold", async () => {
+		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
+		paymentCount.mockResolvedValue(0);
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+
+		const response = await put({
+			curatorKind: "Human",
+			curatorId: "u9",
+			startedAt: "2026-10-20T14:00:00.000Z",
+		});
+
+		expect(response.status).toBe(200);
+		expect(bookSessions).toHaveBeenCalledWith(prisma, "cp1");
+	});
+
+	it("refuses a first call that no longer opens a free series", async () => {
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+		vi.mocked(isFirstCallFree).mockResolvedValueOnce(false);
+
+		const response = await put({
+			curatorKind: "Human",
+			curatorId: "u9",
+			startedAt: "2026-10-21T09:00:00.000Z",
+		});
+
+		expect(response.status).toBe(400);
+		expect(checkpointUpdate).not.toHaveBeenCalled();
+	});
+
+	// A first call is booked in one curator's hours; with another it means nothing.
+	it("lets the first call go when the curator changes", async () => {
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+
+		await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+			startedAt: null,
+			dueAt: null,
 		});
 	});
 

@@ -11,9 +11,14 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { dueDateFrom } from "@/lib/checkpoint-days";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
+import {
+	bookSessions,
+	isFirstCallFree,
+	SlotTakenError,
+} from "@/repositories/advisor-availability";
 import {
 	getCheckpoint,
 	replaceCheckpointItems,
@@ -100,15 +105,19 @@ export const PUT = pipe(
 
 	if (!checkpoint) return apiError.notFound();
 
+	const kind = curatorKind ?? checkpoint.curatorKind;
+	const curator = curatorId === undefined ? checkpoint.curatorId : curatorId;
+	const human = kind === CheckpointCuratorKind.Human;
+
 	// A draft is the author's to rewrite. A checkpoint that is paid for and
-	// waiting is not — except for who runs it: a curator can decline, or sit on
-	// it, and naming somebody else is the only way out that does not cost the
-	// author their money.
+	// waiting is not — except for who runs it and when they first meet: a
+	// curator can decline, or sit on it, and naming somebody else is the only
+	// way out that does not cost the author their money.
+	// The first call comes with them: it is booked in that curator's hours.
 	const onlyTheCurator =
 		curatorId !== undefined &&
 		goal === undefined &&
 		acceptedTerms === undefined &&
-		startedAt === undefined &&
 		!inputs &&
 		!outcomes;
 
@@ -151,6 +160,22 @@ export const PUT = pipe(
 		}
 	}
 
+	// With a person the start is their first call, so it must still open a free
+	// series of five with them; the hour belongs to that curator alone.
+	if (human && startedAt) {
+		if (!curator || !(await isFirstCallFree(curator, startedAt, id))) {
+			return apiError.badRequest("slotTaken");
+		}
+	}
+	const curatorChanged =
+		curatorId !== undefined && curatorId !== checkpoint.curatorId;
+	const start =
+		startedAt !== undefined
+			? startedAt
+			: human && curatorChanged
+				? null
+				: undefined;
+
 	// A curator who declined leaves a paid checkpoint back in Draft. Naming
 	// someone else sends it to them rather than asking the author to pay again.
 	const rehomed =
@@ -165,27 +190,48 @@ export const PUT = pipe(
 		curatorKind ||
 		curatorId !== undefined ||
 		acceptedTerms !== undefined ||
-		startedAt !== undefined
+		start !== undefined
 	) {
-		await prisma.projectCheckpoint.update({
-			where: { id },
-			data: {
-				...(rehomed && { status: rehomed }),
-				...(goal !== undefined && { goal }),
-				...(curatorKind && { curatorKind }),
-				...(curatorId !== undefined && { curatorId }),
-				// The moment it was accepted is the record; unticking withdraws it.
-				...(acceptedTerms !== undefined && {
-					acceptedTermsAt: acceptedTerms ? new Date() : null,
-				}),
-				// The day the author picked. `dueAt` follows from it rather than
-				// being sent, so the two can never disagree by a day.
-				...(startedAt !== undefined && {
-					startedAt,
-					dueAt: startedAt ? dueDateFrom(startedAt) : null,
-				}),
-			},
-		});
+		const data = {
+			...(rehomed && { status: rehomed }),
+			...(goal !== undefined && { goal }),
+			...(curatorKind && { curatorKind }),
+			...(curatorId !== undefined && { curatorId }),
+			// The moment it was accepted is the record; unticking withdraws it.
+			...(acceptedTerms !== undefined && {
+				acceptedTermsAt: acceptedTerms ? new Date() : null,
+			}),
+			// The first call with a person, the start of the day with the AI.
+			// `dueAt` follows from it rather than being sent, so the two can
+			// never disagree by a day.
+			...(start !== undefined && {
+				startedAt: start,
+				dueAt: start ? dueDateFrom(utcStartOfDay(start)) : null,
+			}),
+		};
+
+		// The money is held for this checkpoint — on a hold while it waits, or
+		// taken already — so its calls are booked now, as a payment books them.
+		const books =
+			human &&
+			(rehomed === CheckpointStatus.AwaitingCurator ||
+				(checkpoint.status === CheckpointStatus.AwaitingCurator &&
+					start !== undefined));
+
+		if (books) {
+			try {
+				await prisma.$transaction(async (tx) => {
+					await tx.projectCheckpoint.update({ where: { id }, data });
+					await bookSessions(tx, id);
+				});
+			} catch (error) {
+				if (error instanceof SlotTakenError)
+					return apiError.badRequest("slotTaken");
+				throw error;
+			}
+		} else {
+			await prisma.projectCheckpoint.update({ where: { id }, data });
+		}
 	}
 
 	if (inputs) {

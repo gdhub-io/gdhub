@@ -2,6 +2,7 @@
 
 import { T } from "@tolgee/react";
 import { Flex, Tag, Typography } from "antd";
+import dayjs from "dayjs";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import styles from "./CuratorRow.module.scss";
@@ -13,7 +14,14 @@ import styles from "./CuratorRow.module.scss";
  * before paying, so it lives in one place: a curator that reads differently in
  * the two screens reads as a different curator.
  */
-export function CuratorRow({ curator }: { curator: CheckpointCurator }) {
+export function CuratorRow({
+	curator,
+	freeFrom,
+}: {
+	curator: CheckpointCurator;
+	/** The earliest first call, when the row is picked from. */
+	freeFrom?: string;
+}) {
 	return (
 		<Flex gap={12} align="center" className={styles.row}>
 			<AppAvatar src={curator.image} size={40}>
@@ -27,6 +35,15 @@ export function CuratorRow({ curator }: { curator: CheckpointCurator }) {
 					<Tag variant="filled" className={styles.level}>
 						<T keyName={curator.level} />
 					</Tag>
+					{freeFrom && (
+						<Typography.Text type="secondary" className={styles.freeFrom}>
+							<T
+								keyName="checkpoints.curator.freeFrom"
+								defaultValue="· free from {date}"
+								params={{ date: dayjs(freeFrom).format("ddd D MMM") }}
+							/>
+						</Typography.Text>
+					)}
 				</Flex>
 				<Typography.Text
 					type="secondary"

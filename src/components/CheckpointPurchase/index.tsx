@@ -56,7 +56,9 @@ export function CheckpointPurchase() {
 	// The furthest question the draft has earned: a step is not skipped by URL.
 	const reachable: StartStep = !current?.goal.trim()
 		? "now"
-		: current.curatorKind === CheckpointCuratorKind.AI || current.curator
+		: // Payment needs a start: the AI's day, or the first call with a person.
+			current.startedAt &&
+				(current.curatorKind === CheckpointCuratorKind.AI || current.curator)
 			? "payment"
 			: "curator";
 	const wanted: StartStep =
