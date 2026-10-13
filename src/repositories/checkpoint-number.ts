@@ -18,3 +18,22 @@ export const checkpointNumber = async (row: {
 			},
 		},
 	})) + 1;
+
+/** The checkpoint a project's `cpN` address names: the Nth that actually ran. */
+export const checkpointIdByNumber = async (
+	projectSlug: string,
+	number: number,
+) =>
+	(
+		await prisma.projectCheckpoint.findFirst({
+			where: {
+				project: { slug: projectSlug },
+				status: {
+					notIn: [CheckpointStatus.Draft, CheckpointStatus.Cancelled],
+				},
+			},
+			orderBy: { createdAt: "asc" },
+			skip: number - 1,
+			select: { id: true },
+		})
+	)?.id ?? null;

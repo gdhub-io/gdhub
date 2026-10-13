@@ -23,6 +23,16 @@ export const FINAL_SESSION = SESSIONS_PER_CHECKPOINT;
  */
 export const SESSION_MINUTES = 45;
 
+// The call room
+
+/** The room opens this long before a call and closes this long after its start. */
+export const CALL_OPENS_MINUTES = 15;
+export const CALL_CLOSES_MINUTES = 180;
+/** The curator and up to ten people of the team. */
+export const CALL_MAX_PARTICIPANTS = 11;
+/** How often a team waiting for the curator asks whether they have joined. */
+export const CALL_WAIT_POLL_SECONDS = 5;
+
 // The day-15 scope change
 
 /** The session that revisits the outcome list. */
