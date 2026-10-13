@@ -10,7 +10,9 @@ import { EmptyState } from "@/components/ui";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import { CallHeader, callTime } from "./CallHeader";
+import { CallNotes } from "./CallNotes";
 import { CallClosed, CallLayout } from "./CallParts";
+import { CallPlan } from "./CallPlan";
 
 // Daily touches the browser's media APIs as it loads.
 const OpenCall = dynamic(
@@ -80,6 +82,13 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 		onCopyLink: copyLink,
 	};
 
+	const below = (
+		<>
+			<CallPlan call={call} />
+			<CallNotes call={call} />
+		</>
+	);
+
 	if (call.state === "open") {
 		return (
 			<OpenCall
@@ -87,6 +96,7 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 				header={header}
 				onJoinedChange={setJoined}
 				refetch={refetch}
+				below={below}
 			/>
 		);
 	}
@@ -105,6 +115,7 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 					}
 				/>
 			}
+			below={below}
 		/>
 	);
 }

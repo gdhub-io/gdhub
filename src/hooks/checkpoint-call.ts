@@ -3,7 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { CALL_WAIT_POLL_SECONDS } from "@/config/checkpoint";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type {
+	CallNotesDto,
+	CheckpointCallDto,
+} from "@/repositories/checkpoint-call";
+import type { PlanChange } from "@/schemas/checkpoint";
 
 /** An early room is asked again this often, so the page opens on time. */
 const EARLY_POLL_MS = 30_000;
@@ -67,3 +71,25 @@ export const useEndCall = (id: string, index: number) => {
 			queryClient.invalidateQueries({ queryKey: callKey(id, index) }),
 	});
 };
+
+/** One change to the plan; the call re-reads it before the promise settles. */
+export const useChangePlan = (id: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (change: PlanChange) => {
+			await axios.patch(`/api/checkpoint/${id}/plan`, change);
+		},
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ["checkpoint-call", id] }),
+	});
+};
+
+/** A held call's summary and transcript; `index` null while no call is held. */
+export const useCallNotes = (id: string, index: number | null) =>
+	useQuery({
+		queryKey: ["checkpoint-call-notes", id, index],
+		queryFn: async () =>
+			(await axios.get<CallNotesDto>(`${callUrl(id, index ?? 0)}/notes`)).data,
+		enabled: index !== null,
+	});

@@ -6,9 +6,11 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Card, Flex, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { useState } from "react";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SCOPE_SESSION } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useCurrentProject } from "@/hooks/project";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
@@ -16,7 +18,6 @@ import { devlogDayOf } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { AskPanel, type AskRow } from "../AskPanel";
 import { GoalStrip } from "../GoalStrip";
-import { ScopeModal } from "../ScopeModal";
 import styles from "./style.module.scss";
 
 export type StatusProps = {
@@ -33,7 +34,6 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 	const [writing, setWriting] = useState(false);
-	const [scope, setScope] = useState<"change" | "keep" | null>(null);
 	const { project } = useCurrentProject();
 	// Same key and shape as the Devlog tab, so an open tab shares the list.
 	const { data: reports } = useQuery<{ number: number | null }[]>({
@@ -79,24 +79,28 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 		});
 	}
 
-	if (facts.scopeOpen && facts.scopeNote) {
+	if (facts.scopeOpen) {
+		// The tasks change on call 3 itself, with the curator; the row leads there.
+		const callHref = project?.slug
+			? `/user/project/${project.slug}/workflow/cp${checkpoint.number ?? 1}/call/${SCOPE_SESSION}`
+			: `/advisor/checkpoints/${checkpoint.id}/call/${SCOPE_SESSION}`;
 		open.push({
 			key: "scope",
 			glyph: "open",
-			title: t("checkpoints.scope.check", "Check the scope"),
+			title: t("checkpoints.scope.onCall", "Tasks can change on call 3"),
 			owner: t("checkpoints.asks.owner.you", "You"),
 			due: t("checkpoints.asks.dueToday", "due today"),
 			dueUrgent: true,
-			meta: facts.scopeNote,
+			meta: t(
+				"checkpoints.scope.onCallMeta",
+				"The last chance to change this checkpoint's tasks. Done tasks stay as they are.",
+			),
 			actions: (
-				<>
-					<Button type="primary" onClick={() => setScope("change")}>
-						{t("checkpoints.scope.cta", "Change the outcomes")}
+				<Link href={callHref}>
+					<Button type="primary">
+						{t("checkpoints.scope.openCall", "Open call 3")}
 					</Button>
-					<Button onClick={() => setScope("keep")}>
-						{t("checkpoints.scope.keep", "Leave the list as it is")}
-					</Button>
-				</>
+				</Link>
 			),
 		});
 	}
@@ -186,13 +190,6 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 	return (
 		<Flex vertical gap={16}>
 			<GoalStrip goal={checkpoint.goal} curatorKind={checkpoint.curatorKind} />
-
-			<ScopeModal
-				open={!!scope}
-				mode={scope ?? "change"}
-				checkpoint={checkpoint}
-				onClose={() => setScope(null)}
-			/>
 
 			<DevLogPostModal
 				projectId={checkpoint.projectId}

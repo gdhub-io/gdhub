@@ -21,7 +21,13 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { App, Skeleton } from "antd";
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import {
 	isCallRefusal,
 	useEndCall,
@@ -52,6 +58,8 @@ export type OpenCallProps = {
 	header: Omit<CallHeaderProps, "call" | "joined" | "onLeave" | "onEnd">;
 	onJoinedChange: (joined: boolean) => void;
 	refetch: () => void;
+	/** Under the stage in every state of the room. */
+	below?: ReactNode;
 };
 
 /** The open room: one Daily call object for the page, from preview to leaving. */
@@ -65,7 +73,7 @@ export function OpenCall(props: OpenCallProps) {
 	);
 }
 
-function Room({ call, header, onJoinedChange, refetch }: OpenCallProps) {
+function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const daily = useDaily();
@@ -128,6 +136,7 @@ function Room({ call, header, onJoinedChange, refetch }: OpenCallProps) {
 					header={headerNode}
 					stage={<Live call={call} />}
 					aside={<People call={call} />}
+					below={below}
 				/>
 				<DailyAudio />
 			</>
@@ -144,6 +153,7 @@ function Room({ call, header, onJoinedChange, refetch }: OpenCallProps) {
 					joining={join.isPending || meetingState === "joining-meeting"}
 				/>
 			}
+			below={below}
 		/>
 	);
 }

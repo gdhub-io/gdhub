@@ -309,3 +309,19 @@ export type VerdictContextDto = {
 		createdAt: string;
 	} | null;
 };
+
+/**
+ * A call's notes, written by the cron from the transcript (GDHUB-72). Nobody is
+ * named: the recording is one track, so who said what is not known. Tasks are
+ * referenced by id so their wording comes from the plan as it stands.
+ */
+export type CallNotes = {
+	inShort: string;
+	/** In plan order. */
+	discussed: { itemId: string; text: string }[];
+	notDiscussed: string[];
+	outsidePlan: string[];
+	/** `itemId` null is outside the plan; `dueDay` is a day of the checkpoint. */
+	agreed: { text: string; itemId: string | null; dueDay: number | null }[];
+	questions: string[];
+};

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoint-facts";
 import type {
@@ -137,6 +137,17 @@ describe("sprintFactsOf", () => {
 
 		expect(facts.scopeNote).toBe("…");
 		expect(facts.scopeOpen).toBe(false);
+	});
+
+	// The tasks change on call 3 itself, with or without a written note.
+	it("opens the scope ask in the call-3 window without a note", () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date("2026-09-15T12:00:00.000Z"));
+		const facts = sprintFactsOf(checkpoint(), sprint(3, "current"));
+		vi.useRealTimers();
+
+		expect(facts.scopeNote).toBeNull();
+		expect(facts.scopeOpen).toBe(true);
 	});
 
 	it("keeps evidence that proves nothing out of what the sprint proved", () => {

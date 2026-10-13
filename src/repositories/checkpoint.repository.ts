@@ -222,13 +222,16 @@ type TeamMemberRow = NonNullable<
 	DetailRow["project"]["team"]
 >["members"][number];
 
-const toArtifactRef = ({
+export const toArtifactRef = ({
 	id,
 	name,
 	type,
 	link,
 	checkStatus,
-}: EvidenceArtifact): CheckpointArtifactRef => ({
+}: Pick<
+	EvidenceArtifact,
+	"id" | "name" | "type" | "link" | "checkStatus"
+>): CheckpointArtifactRef => ({
 	id,
 	name,
 	type,
