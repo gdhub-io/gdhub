@@ -53,8 +53,6 @@ export const VERDICT_NOTE_MAX = 1200;
 export const CHECKPOINT_GOAL_MAX = 500;
 export const CHECKPOINT_ITEM_TEXT_MAX = 200;
 export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
-/** The one line saying why the scope changed. */
-export const CHECKPOINT_REVISION_NOTE_MAX = 500;
 
 // Buying one
 

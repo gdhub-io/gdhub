@@ -16,7 +16,6 @@ import type { ProjectActivity } from "@/repositories/project-activity.repository
 import type {
 	CheckpointEvidenceBody,
 	CheckpointItemInput,
-	CheckpointScopeBody,
 } from "@/schemas/checkpoint";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import type {
@@ -102,13 +101,6 @@ const useCheckpointPost = <B>(id: string | undefined, path: string) => {
 		},
 	});
 };
-
-/**
- * The day-15 answer: cut, reword, add — or none of the three and a reason why
- * the list stands. It lands once, so the whole change is one request.
- */
-export const useChangeScope = (id?: string) =>
-	useCheckpointPost<CheckpointScopeBody>(id, "scope");
 
 /** Bind an artifact to the outcomes it proves, or let one go with `artifactId: null`. */
 export const useAttachEvidence = (id?: string) =>

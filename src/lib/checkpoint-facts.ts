@@ -23,7 +23,7 @@ export type SprintFacts = {
 	devlog: CheckpointDevlogDto | null;
 	/** The scope note, on the sprint day 15 falls in, until it is answered. */
 	scopeNote: string | null;
-	/** The note can still be answered: the day after the third session has not run out. */
+	/** The call-3 window is open: the tasks can change on the call. */
 	scopeOpen: boolean;
 	marks: { confirmed: number; asked: number; missing: string[] };
 	/** Evidence that landed in this sprint and is offered against an outcome. */
@@ -71,7 +71,7 @@ export const sprintFactsOf = (
 		devlog,
 		scopeNote,
 		scopeOpen:
-			!!scopeNote &&
+			carriesScopeNote &&
 			!!checkpoint.startedAt &&
 			scopeState(checkpoint.startedAt, checkpoint.sessions) === "open",
 		marks: {

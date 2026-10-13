@@ -1,0 +1,144 @@
+import { CHECKPOINT_MAX_ITEMS_PER_KIND } from "@/config/checkpoint";
+import { CheckpointItemKind } from "@/config/prisma-enums";
+import { planEdit } from "@/lib/checkpoint-call";
+import type { PlanChange } from "@/schemas/checkpoint";
+import { prisma } from "@/services/prisma";
+
+export type PlanRefusal =
+	| "notFound"
+	| "forbidden"
+	| "planClosed"
+	| "goalLocked"
+	| "taskDone"
+	| "tooManyTasks";
+
+const loadPlan = (checkpointId: string) =>
+	prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			curatorId: true,
+			startedAt: true,
+			goalAgreedAt: true,
+			project: { select: { authorId: true } },
+			sessions: { select: { index: true, scheduledAt: true, endedAt: true } },
+			items: {
+				where: { kind: CheckpointItemKind.Outcome },
+				select: {
+					id: true,
+					order: true,
+					text: true,
+					originalText: true,
+					artifactId: true,
+				},
+			},
+		},
+	});
+
+/** The plan's editors: its curator and the project's author, nobody else on the team. */
+export const canEditPlan = (
+	checkpoint: { curatorId: string | null; project: { authorId: string } },
+	userId: string,
+) => checkpoint.curatorId === userId || checkpoint.project.authorId === userId;
+
+/**
+ * One change to the plan, made on a call. Call 1 writes freely; call 3 keeps
+ * the record — the first wording in `originalText`, a removed task cut rather
+ * than deleted, an added one dated — and stamps `revisedAt` on its first change.
+ */
+export const changePlan = async (
+	checkpointId: string,
+	userId: string,
+	change: PlanChange,
+	now = new Date(),
+): Promise<PlanRefusal | null> => {
+	const checkpoint = await loadPlan(checkpointId);
+	if (!checkpoint) return "notFound";
+	if (!canEditPlan(checkpoint, userId)) return "forbidden";
+
+	const edit = planEdit(checkpoint, now);
+	if (!edit) return "planClosed";
+	const revising = edit === "tasks";
+
+	if (change.op === "goal") {
+		if (revising) return "goalLocked";
+		await prisma.projectCheckpoint.update({
+			where: { id: checkpointId },
+			data: { goal: change.goal },
+		});
+		return null;
+	}
+
+	if (change.op === "add") {
+		if (checkpoint.items.length >= CHECKPOINT_MAX_ITEMS_PER_KIND) {
+			return "tooManyTasks";
+		}
+		const order =
+			checkpoint.items.reduce((max, item) => Math.max(max, item.order), 0) + 1;
+		await prisma.$transaction([
+			prisma.checkpointItem.create({
+				data: {
+					checkpointId,
+					kind: CheckpointItemKind.Outcome,
+					order,
+					text: change.text,
+					...(revising && { addedAt: now }),
+				},
+			}),
+			...(revising ? [stampRevised(checkpointId, now)] : []),
+		]);
+		return null;
+	}
+
+	const item = checkpoint.items.find((row) => row.id === change.itemId);
+	if (!item) return "notFound";
+	// A task proven by an artifact is done: the plan keeps it as it was.
+	if (revising && item.artifactId) return "taskDone";
+
+	if (change.op === "edit") {
+		await prisma.$transaction([
+			prisma.checkpointItem.update({
+				where: { id: item.id },
+				data: {
+					text: change.text,
+					// Written once: a second rewording must not erase the first.
+					...(revising &&
+						item.originalText === null && { originalText: item.text }),
+				},
+			}),
+			...(revising ? [stampRevised(checkpointId, now)] : []),
+		]);
+		return null;
+	}
+
+	if (!revising) {
+		await prisma.checkpointItem.delete({ where: { id: item.id } });
+		return null;
+	}
+	await prisma.$transaction([
+		prisma.checkpointItem.update({
+			where: { id: item.id },
+			data: { cut: true },
+		}),
+		stampRevised(checkpointId, now),
+	]);
+	return null;
+};
+
+const stampRevised = (checkpointId: string, now: Date) =>
+	prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, revisedAt: null },
+		data: { revisedAt: now },
+	});
+
+/** Call 1 has ended: the goal is the one agreed with the curator. */
+export const agreeGoal = async (checkpointId: string, now = new Date()) => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: { curatorId: true },
+	});
+	if (!checkpoint) return;
+	await prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, goalAgreedAt: null },
+		data: { goalAgreedAt: now, goalAgreedById: checkpoint.curatorId },
+	});
+};

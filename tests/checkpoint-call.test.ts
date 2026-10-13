@@ -6,6 +6,23 @@ import { callState, parseCallRoomName } from "@/lib/checkpoint-call";
 const sessionFindUnique = vi.fn();
 const sessionUpdate = vi.fn();
 const sessionUpdateMany = vi.fn();
+const checkpointUpdateMany = vi.fn();
+const planFind = vi.fn(async () => ({
+	curatorId: "curator",
+	goal: "A greybox",
+	goalAgreedAt: null,
+	startedAt: new Date("2026-10-21T00:00:00Z"),
+	project: { authorId: "author" },
+	sessions: [
+		{
+			index: 1,
+			scheduledAt: new Date("2026-10-21T14:00:00Z"),
+			endedAt: null,
+			contentStatus: null,
+		},
+	],
+	items: [],
+}));
 const callRoom = vi.fn(async () => "https://gdhub.daily.co/cp-abc-2");
 const callToken = vi.fn(async () => "token");
 const closeCallRoom = vi.fn(async () => undefined);
@@ -20,7 +37,12 @@ vi.mock("@/services/prisma", () => ({
 			update: (...a: unknown[]) => sessionUpdate(...a),
 			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
 		},
-		projectCheckpoint: { count: vi.fn(async () => 2) },
+		projectCheckpoint: {
+			count: vi.fn(async () => 2),
+			findUnique: vi.fn(async () => ({ curatorId: "curator" })),
+			findUniqueOrThrow: () => planFind(),
+			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
+		},
 	},
 }));
 
@@ -113,6 +135,17 @@ describe("who may see the call", () => {
 		expect((await getCall("abc", 2, "marta", during))?.role).toBe("team");
 	});
 
+	it("opens call 1's plan to the curator and the author, not the rest of the team", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect((await getCall("abc", 1, "marta", during))?.plan.edit).toBeNull();
+		expect((await getCall("abc", 1, "author", during))?.plan.edit).toBe(
+			"goalAndTasks",
+		);
+		expect((await getCall("abc", 1, "curator", during))?.plan.edit).toBe(
+			"goalAndTasks",
+		);
+	});
+
 	it("scopes the team lookup to the caller", async () => {
 		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
 		await getCall("abc", 2, "marta", during);
@@ -185,6 +218,16 @@ describe("endCall", () => {
 			data: { endedAt: during },
 		});
 		expect(closeCallRoom).toHaveBeenCalledWith("cp-abc-2");
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
+	});
+
+	it("agrees the goal when call 1 ends", async () => {
+		sessionFindUnique.mockResolvedValue(row({}));
+		await endCall("abc", 1, "curator", during);
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "abc", goalAgreedAt: null },
+			data: { goalAgreedAt: during, goalAgreedById: "curator" },
+		});
 	});
 });
 

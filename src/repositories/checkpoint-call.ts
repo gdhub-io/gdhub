@@ -1,12 +1,20 @@
-import { CheckpointStatus } from "@/config/prisma-enums";
+import {
+	CheckpointItemKind,
+	type CheckpointSessionContentStatus,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
 import {
 	type CallState,
 	callRoomName,
 	callState,
 	callWindow,
+	type PlanEdit,
 	parseCallRoomName,
+	planEdit,
 } from "@/lib/checkpoint-call";
+import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
+import { agreeGoal, canEditPlan } from "@/repositories/checkpoint-plan-edit";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
 	callRoom,
@@ -17,6 +25,7 @@ import {
 	transcriptOfJob,
 } from "@/services/daily";
 import { prisma } from "@/services/prisma";
+import type { CallNotes, CheckpointArtifactRef } from "@/types/checkpoints";
 
 /** Calls are held while the checkpoint runs, the final one while it is judged. */
 const CALL_STATUSES: CheckpointStatus[] = [
@@ -38,6 +47,26 @@ export type CheckpointCallDto = {
 	state: CallState;
 	curatorJoinedAt: string | null;
 	role: CallRole;
+	plan: {
+		goal: string;
+		goalAgreedAt: string | null;
+		/** What the caller may change now; null for those who only read. */
+		edit: PlanEdit;
+		tasks: {
+			id: string;
+			text: string;
+			cut: boolean;
+			addedAt: string | null;
+			artifact: CheckpointArtifactRef | null;
+		}[];
+	};
+	/** The five calls for the notes switcher; `held` once a call is over. */
+	sessions: {
+		index: number;
+		scheduledAt: string;
+		held: boolean;
+		contentStatus: CheckpointSessionContentStatus | null;
+	}[];
 };
 
 const user = { select: { id: true, name: true, image: true } };
@@ -111,10 +140,52 @@ export const getCall = async (
 	if (!call) return null;
 	const { session, checkpoint, curator } = call;
 
+	const [number, plan] = await Promise.all([
+		checkpointNumber(checkpoint),
+		prisma.projectCheckpoint.findUniqueOrThrow({
+			where: { id: checkpointId },
+			select: {
+				curatorId: true,
+				goal: true,
+				goalAgreedAt: true,
+				startedAt: true,
+				project: { select: { authorId: true } },
+				sessions: {
+					orderBy: { index: "asc" },
+					select: {
+						index: true,
+						scheduledAt: true,
+						endedAt: true,
+						contentStatus: true,
+					},
+				},
+				items: {
+					where: { kind: CheckpointItemKind.Outcome },
+					orderBy: { order: "asc" },
+					select: {
+						id: true,
+						text: true,
+						cut: true,
+						addedAt: true,
+						artifact: {
+							select: {
+								id: true,
+								name: true,
+								type: true,
+								link: true,
+								checkStatus: true,
+							},
+						},
+					},
+				},
+			},
+		}),
+	]);
+
 	return {
 		checkpointId,
 		index,
-		number: await checkpointNumber(checkpoint),
+		number,
 		stageName: checkpoint.stageName,
 		project: { name: checkpoint.project.name, slug: checkpoint.project.slug },
 		curator: { id: curator.id, name: curator.name ?? "", image: curator.image },
@@ -123,6 +194,54 @@ export const getCall = async (
 		state: callState(session.scheduledAt, session.endedAt, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
 		role: call.role,
+		plan: {
+			goal: plan.goal,
+			goalAgreedAt: plan.goalAgreedAt?.toISOString() ?? null,
+			edit: canEditPlan(plan, userId) ? planEdit(plan, now) : null,
+			tasks: plan.items.map((item) => ({
+				id: item.id,
+				text: item.text,
+				cut: item.cut,
+				addedAt: item.addedAt?.toISOString() ?? null,
+				artifact: item.artifact ? toArtifactRef(item.artifact) : null,
+			})),
+		},
+		sessions: plan.sessions.map((row) => ({
+			index: row.index,
+			scheduledAt: row.scheduledAt.toISOString(),
+			held: callState(row.scheduledAt, row.endedAt, now) === "over",
+			contentStatus: row.contentStatus,
+		})),
+	};
+};
+
+export type CallNotesDto = {
+	contentStatus: CheckpointSessionContentStatus | null;
+	content: CallNotes | null;
+	/** The transcript's parts joined in order; null until one is saved. */
+	transcript: string | null;
+};
+
+/** A held call's notes, for its curator and its team. */
+export const getCallNotes = async (
+	checkpointId: string,
+	index: number,
+	userId: string,
+): Promise<CallNotesDto | null> => {
+	if (!(await loadCall(checkpointId, index, userId))) return null;
+
+	const session = await prisma.checkpointSession.findUniqueOrThrow({
+		where: { checkpointId_index: { checkpointId, index } },
+		select: { contentStatus: true, content: true, transcript: true },
+	});
+	const parts = (session.transcript ?? []) as TranscriptPart[];
+
+	return {
+		contentStatus: session.contentStatus,
+		content: (session.content as CallNotes | null) ?? null,
+		transcript: parts.length
+			? parts.map((part) => part.text.trim()).join("\n\n")
+			: null,
 	};
 };
 
@@ -188,6 +307,7 @@ export const endCall = async (
 		data: { endedAt: now },
 	});
 	await closeCallRoom(callRoomName(checkpointId, index)).catch(() => undefined);
+	if (index === 1) await agreeGoal(checkpointId, now);
 	return true;
 };
 
@@ -212,6 +332,7 @@ export const recordMeetingEnded = async (room: string, endedAt: Date) => {
 			participantMinutes: await roomParticipantMinutes(room),
 		},
 	});
+	if (call.index === 1) await agreeGoal(call.checkpointId, endedAt);
 };
 
 export const transcribeRecording = async (

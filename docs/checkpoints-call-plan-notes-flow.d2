@@ -1,0 +1,69 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-83 — the plan block and the call notes" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+page: "The call room page (GDHUB-70), under the video" {
+  plan: "Checkpoint plan block"
+  notes: "Call notes block"
+}
+
+plan: "Which plan this call shows" {
+  which: "Call index?" {shape: diamond}
+  one: "Call 1 (08.6): goal + tasks editable\nwhile the call's window is open"
+  three: "Call 3 (08.7): goal locked, tasks editable\nfrom the call's start to SCOPE_ANSWER_HOURS after it ended;\ndone tasks (with an artifact) stay"
+  read: "Calls 2, 4, 5: read only;\ndone tasks link to their artifact"
+  which -> one: "1"
+  which -> three: "3"
+  which -> read: "2, 4, 5"
+}
+page.plan -> plan.which
+
+who: "Who may edit: the curator or the project's author;\nthe rest of the team reads" {shape: diamond}
+plan.one -> who
+plan.three -> who
+
+save: "PATCH /api/checkpoint/[id]/plan (saved as you type)" {
+  ops: "One change per request:\ngoal · add task · edit task · remove task"
+  call1: "Call 1: edits in place; remove deletes the line"
+  call3: "Call 3: goal refused; a task with an artifact refused;\nedit keeps originalText (first wording, once);\nadd stamps addedAt; remove sets cut (stays, struck through);\nthe first change stamps revisedAt"
+  refuse: "Outside the window, wrong call, not curator/author: 403;\nmore than CHECKPOINT_MAX_ITEMS_PER_KIND tasks: 400"
+  ops -> call1
+  ops -> call3
+  ops -> refuse
+}
+who -> save.ops: "yes"
+
+lock: "Call 1 ends (End call, or Daily's meeting.ended)\n→ goalAgreedAt = now, goalAgreedById = the curator\n(only if not set yet)"
+save.call1 -> lock: "the goal stops being editable"
+
+notes: "Call notes block" {
+  switcher: "Switcher: Call 1…5 with dates;\ncalls still ahead are locked"
+  state: "The selected call?" {shape: diamond}
+  ahead: "Locked (not selectable)"
+  pending: "08.4: The summary is on its way —\nready within 24 hours, we'll email you"
+  ready: "08.5 (no speakers): In short · What was discussed by task ·\nNot discussed · Outside the plan · Agreed for the next call ·\nOpen questions"
+  transcript: "Transcript tab: the transcript parts' text, in order;\nempty while none"
+  switcher -> state
+  state -> ahead: "not held yet"
+  state -> pending: "held, content not Ready"
+  state -> ready: "contentStatus = Ready"
+  ready -> transcript
+  pending -> transcript
+}
+page.notes -> notes.switcher
+
+api: "GET /api/checkpoint/[id]/sessions/[K]/notes\n(curator or team) → { contentStatus, content, transcript }"
+notes.state -> api
+
+producer: "GDHUB-72 (later): the cron turns the transcript\ninto content and sets contentStatus = Ready, emails the team" {style.stroke-dash: 3}
+producer -> api: "writes content"

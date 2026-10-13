@@ -25,26 +25,38 @@ export const initials = (name: string) =>
 		.map((word) => word[0]?.toUpperCase() ?? "")
 		.join("");
 
-/** The header over the stage and, beside it once in the call, the people. */
+/**
+ * The header over the stage and, beside it once in the call, the people.
+ * `below` follows the stage in the main column: the plan and the notes.
+ */
 export function CallLayout({
 	header,
 	stage,
 	aside,
+	below,
 }: {
 	header: ReactNode;
 	stage: ReactNode;
 	aside?: ReactNode;
+	below?: ReactNode;
 }) {
+	const main = (
+		<div className={styles.main}>
+			{stage}
+			{below}
+		</div>
+	);
+
 	return (
 		<div className={styles.page}>
 			{header}
 			{aside ? (
 				<div className={styles.split}>
-					{stage}
+					{main}
 					{aside}
 				</div>
 			) : (
-				stage
+				main
 			)}
 		</div>
 	);
