@@ -102,7 +102,9 @@ export function AdvisorCallList({
 											</Typography.Text>
 										</Flex>
 										{upcoming && isToday ? (
-											<Link href={`/advisor/checkpoints/${call.checkpointId}`}>
+											<Link
+												href={`/advisor/checkpoints/${call.checkpointId}/call/${call.index}`}
+											>
 												<Button type="primary">
 													{t("advisor.calendar.join", "Join")}
 												</Button>

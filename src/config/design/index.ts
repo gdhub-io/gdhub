@@ -1,6 +1,7 @@
 export {
 	type BuildThemeOptions,
 	buildAntdTheme,
+	inverseProductTheme,
 	inverseTheme,
 	productTheme,
 	publicTheme,

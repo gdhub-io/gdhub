@@ -350,4 +350,11 @@ export const inverseTheme = buildAntdTheme({
 	cssVarKey: "gd-inverse",
 });
 
+/** A dark surface inside the product — the call stage — at product sizes. */
+export const inverseProductTheme = buildAntdTheme({
+	mode: "inverse",
+	density: "product",
+	cssVarKey: "gd-inverse-product",
+});
+
 export const paletteReference = { brand, neutral, semantic };

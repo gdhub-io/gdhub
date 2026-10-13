@@ -217,29 +217,40 @@ export const ProjectSpace = ({
 					})}
 				</div>
 			)}
-			<Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
-				<Flex gap={12} align="center">
-					{!!backHref && (
-						<Link href={backHref}>
-							{/* The same way back the protected pages draw: a text button on
+			{/* A page that draws its own header passes none of these. */}
+			{(!!backHref ||
+				!!title ||
+				!!titleExtra ||
+				!!description ||
+				!!actions) && (
+				<Flex
+					justify="space-between"
+					align="center"
+					style={{ marginBottom: 24 }}
+				>
+					<Flex gap={12} align="center">
+						{!!backHref && (
+							<Link href={backHref}>
+								{/* The same way back the protected pages draw: a text button on
 							    the left of the title, at the control size antd already is. */}
-							<Button
-								type="text"
-								aria-label={t("common.back", "Back")}
-								icon={<IconArrowLeft />}
-							/>
-						</Link>
-					)}
-					<Space orientation="vertical" size={0}>
-						<Flex gap={10} align="center" wrap>
-							{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
-							{titleExtra}
-						</Flex>
-						{!!description && <Text type="secondary">{description}</Text>}
-					</Space>
+								<Button
+									type="text"
+									aria-label={t("common.back", "Back")}
+									icon={<IconArrowLeft />}
+								/>
+							</Link>
+						)}
+						<Space orientation="vertical" size={0}>
+							<Flex gap={10} align="center" wrap>
+								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+								{titleExtra}
+							</Flex>
+							{!!description && <Text type="secondary">{description}</Text>}
+						</Space>
+					</Flex>
+					{actions}
 				</Flex>
-				{actions}
-			</Flex>
+			)}
 
 			{children}
 		</ProjectContext.Provider>
