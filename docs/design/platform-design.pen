@@ -357099,7 +357099,7 @@
                   "name": "Btn Yes",
                   "width": "fill_container",
                   "height": 44,
-                  "fill": "#E53E3E",
+                  "fill": "#1C1B19",
                   "cornerRadius": 10,
                   "gap": 8,
                   "justifyContent": "center",
