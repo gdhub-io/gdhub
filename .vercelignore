@@ -1,8 +1,7 @@
 # Development-only files, kept out of the Vercel build.
-# scripts/ must stay: prebuild runs scripts/import-translations.js.
+# scripts/ and tests/ must stay: prebuild runs scripts/, and the type check follows scripts/test-env.ts into tests/.
 
 /docs/
-/tests/
 /.storybook/
 /playwright.config.ts
 /vitest.config.mts
