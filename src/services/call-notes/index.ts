@@ -26,7 +26,9 @@ export type CallNotesInput = {
 const schema = z.object({
 	inShort: z
 		.string()
-		.describe("Two or three sentences: what the call settled."),
+		.describe(
+			"Two or three sentences. On calls 2–5: how the sprint just ended went, as the call described it — what landed, what did not, the main risk. On call 1: what the plan settled.",
+		),
 	discussed: z
 		.array(z.object({ itemId: z.string(), text: z.string() }))
 		.describe("Per task that came up, in plan order: what was said about it."),
@@ -86,6 +88,10 @@ export const writeCallNotes = async (
 			Retell neutrally ("The loop was shown…", "It was agreed…"). Nobody is
 			named and no speaker is attributed: the transcript cannot tell voices
 			apart, and a wrong name is worse than none.
+
+			The short summary on calls 2–5 is the verdict on the sprint that just
+			ended, drawn from the whole conversation; the per-task notes carry the
+			detail.
 
 			Write only what was said on the call. The plan, the devlog and the
 			artifacts are context to recognise what people refer to, not things

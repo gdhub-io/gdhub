@@ -9,10 +9,10 @@ import { useChat } from "@/components/Chat/useChat";
 import { EmptyState } from "@/components/ui";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
+import { CallGoal } from "./CallGoal";
 import { CallHeader, callTime } from "./CallHeader";
-import { CallNotes } from "./CallNotes";
+import { CallPanel } from "./CallPanel";
 import { CallClosed, CallLayout } from "./CallParts";
-import { CallPlan } from "./CallPlan";
 
 // Daily touches the browser's media APIs as it loads.
 const OpenCall = dynamic(
@@ -84,8 +84,8 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 
 	const below = (
 		<>
-			<CallPlan call={call} />
-			<CallNotes call={call} />
+			<CallGoal call={call} />
+			<CallPanel call={call} />
 		</>
 	);
 
@@ -105,15 +105,30 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 		<CallLayout
 			header={<CallHeader {...header} call={call} joined={false} />}
 			stage={
-				<CallClosed
-					text={
-						call.state === "early"
-							? t("checkpoints.call.opensAt", "The room opens at {time}", {
-									time: callTime(call.opensAt),
-								})
-							: t("checkpoints.call.over", "This call is over")
-					}
-				/>
+				call.state === "early" ? (
+					<CallClosed
+						over={false}
+						title={t("checkpoints.call.opensAt", "The room opens at {time}", {
+							time: callTime(call.opensAt),
+						})}
+						text={t(
+							"checkpoints.call.startsAtLine",
+							"The call starts at {time}.",
+							{
+								time: callTime(call.scheduledAt),
+							},
+						)}
+					/>
+				) : (
+					<CallClosed
+						over
+						title={t("checkpoints.call.over", "This call is over")}
+						text={t(
+							"checkpoints.call.overLine",
+							"The plan and the notes from it are below.",
+						)}
+					/>
+				)
 			}
 			below={below}
 		/>
