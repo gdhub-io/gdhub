@@ -268,10 +268,10 @@ const buildSprints = (startedAt: Date | null): CheckpointSprintDto[] => {
 	});
 };
 
-const pulseCell = (
+export const pulseCell = (
 	sprint: number,
-	member: TeamMemberRow,
-	pulse: PulseRow | undefined,
+	member: Pick<TeamMemberRow, "startedAt" | "finishedAt">,
+	pulse: Pick<PulseRow, "confirmedAt" | "source"> | undefined,
 	startedAt: Date,
 	now: Date,
 ): CheckpointPulseCellDto => {
