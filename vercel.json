@@ -31,6 +31,10 @@
 		{
 			"path": "/api/cron/checkpoints",
 			"schedule": "0 1 * * *"
+		},
+		{
+			"path": "/api/cron/checkpoint-calls",
+			"schedule": "0 * * * *"
 		}
 	],
 	"functions": {

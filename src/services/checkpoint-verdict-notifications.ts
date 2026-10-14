@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
-import { NovuService } from "./novu";
+import { appUrl, notify } from "./checkpoint-notifications";
 import { prisma } from "./prisma";
 
 /**
@@ -9,23 +9,6 @@ import { prisma } from "./prisma";
  * email with the same link (frame `Yfr1j`). A failure is logged and swallowed:
  * neither the move to Review nor the verdict waits on Novu.
  */
-
-const appUrl = () => process.env.NEXT_PUBLIC_APP_URL ?? "";
-
-const send = async (
-	to: { id: string; email: string | null },
-	payload: { title: string; message: string; redirectUrl: string },
-) => {
-	try {
-		await NovuService.send({
-			template: "default-message",
-			to: { subscriberId: to.id, email: to.email ?? undefined },
-			payload,
-		});
-	} catch (error) {
-		console.error("[checkpoint-verdict] notification failed", to.id, error);
-	}
-};
 
 /** The 28 days are over: the curator is told what is due and by when. */
 export const notifyVerdictDue = async (checkpointIds: string[]) => {
@@ -49,7 +32,7 @@ export const notifyVerdictDue = async (checkpointIds: string[]) => {
 			const due = dayjs(verdictDueBy(row.dueAt)).format("D MMM");
 			const number = await checkpointNumber(row);
 
-			return send(row.curator, {
+			return notify(row.curator, `cp-verdict-due-${row.id}`, {
 				title: `Your verdict on ${row.project.name} is due by ${due}`,
 				message: `Checkpoint ${number} has ended. Talk it through on the final call; you can send the verdict once the call starts, by ${due}.`,
 				redirectUrl: `${appUrl()}/advisor/checkpoints?verdict=${row.id}`,
@@ -86,7 +69,7 @@ export const notifyVerdictSent = async (checkpointId: string) => {
 	if (!row?.verdict) return;
 	const number = await checkpointNumber(row);
 
-	await send(row.project.author, {
+	await notify(row.project.author, `cp-verdict-sent-${checkpointId}`, {
 		title: `${row.curator?.name ?? "Your curator"} sent the verdict on Checkpoint ${number}`,
 		message: `${VERDICT_LABEL[row.verdict]}. Read the curator's reasoning and choose how to go on.`,
 		redirectUrl: `${appUrl()}/user/project/${row.project.slug}/workflow?results=${row.id}`,

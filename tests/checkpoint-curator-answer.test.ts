@@ -13,6 +13,11 @@ const returnMoney = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
+const notifyAuthor = vi.fn();
+vi.mock("@/services/checkpoint-notifications", () => ({
+	notifyAuthorOfAnswer: (...a: unknown[]) => notifyAuthor(...a),
+}));
+
 vi.mock("@/repositories/advisor-availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
@@ -85,6 +90,7 @@ describe("a curator answering", () => {
 	// checkpoint only held the money on their card.
 	it("takes the held money and starts the 28 days", async () => {
 		expect((await answer(true)).status).toBe(200);
+		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "accepted");
 
 		expect(captureCheckout).toHaveBeenCalledWith("cs_1");
 		expect(paymentUpdate).toHaveBeenCalledWith(
@@ -105,6 +111,7 @@ describe("a curator answering", () => {
 		await answer(false);
 
 		expect(returnMoney).toHaveBeenCalledWith("cp1", "curatorDeclined");
+		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "declined");
 		expect(captureCheckout).not.toHaveBeenCalled();
 		expect(checkpointUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({
