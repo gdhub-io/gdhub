@@ -20,7 +20,13 @@ export const CheckpointExampleSection = () => {
 			),
 		},
 		{
-			label: t("checkpointLanding.example.fact2.label", "Day 15 · Re-scope"),
+			label: t(
+				"checkpointLanding.example.fact2.label",
+				"Day {day} · Re-scope",
+				{
+					day: 15,
+				},
+			),
 			value: t(
 				"checkpointLanding.example.fact2.value",
 				"With the curator: cut the boss and progression; finish one complete encounter",
