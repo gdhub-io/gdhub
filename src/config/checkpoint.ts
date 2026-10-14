@@ -32,6 +32,8 @@ export const CALL_CLOSES_MINUTES = 180;
 export const CALL_MAX_PARTICIPANTS = 11;
 /** How often a team waiting for the curator asks whether they have joined. */
 export const CALL_WAIT_POLL_SECONDS = 5;
+/** Notes wait this long after a call so every part of its recording is in. */
+export const CALL_NOTES_DELAY_MINUTES = 30;
 
 // The day-15 scope change
 
