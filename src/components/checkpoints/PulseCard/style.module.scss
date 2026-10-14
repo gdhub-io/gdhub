@@ -1,0 +1,143 @@
+.card {
+	width: 100%;
+	max-width: 456px;
+	margin: 0 auto;
+	padding: var(--gd-space-16) var(--gd-space-4);
+	text-align: center;
+}
+
+.kicker {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.title.title {
+	margin: 0;
+	font-size: var(--gd-font-size-h2);
+	line-height: var(--gd-line-height-heading);
+	text-wrap: balance;
+}
+
+.accent {
+	color: var(--gd-color-accent);
+}
+
+.period {
+	font-size: var(--gd-font-size-body);
+}
+
+.text.text {
+	margin: 0;
+	font-size: var(--gd-font-size-body-lg);
+	line-height: var(--gd-line-height-body);
+	text-wrap: pretty;
+}
+
+// Outlined, not filled: the page ground differs between shells, a hairline reads on both.
+.strip {
+	width: 100%;
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	border: 1px solid var(--gd-color-border);
+}
+
+.stripTitle {
+	font-size: var(--gd-font-size-caption);
+}
+
+.col {
+	width: 48px;
+}
+
+// Two classes, so these win over PulseCell's own state look whatever the load order.
+.cell.missed {
+	background: var(--gd-neutral-100);
+	color: var(--gd-color-text-tertiary);
+}
+
+.cell.empty {
+	background: var(--gd-neutral-100);
+}
+
+.cell.ahead {
+	background: var(--gd-color-surface);
+	border-color: var(--gd-color-border);
+}
+
+.cell.ownWaiting {
+	background: var(--gd-color-surface);
+	border-color: var(--gd-color-accent);
+	color: var(--gd-color-accent);
+}
+
+.cell.ownConfirmed {
+	border-color: var(--gd-success-solid);
+}
+
+// The cell remounts with the confirmed state, so it plays from the waiting look.
+.cell.landed {
+	animation: landed 0.32s ease-out;
+
+	svg {
+		animation: tick 0.32s ease-out;
+	}
+}
+
+@keyframes landed {
+	from {
+		background: var(--gd-color-surface);
+		border-color: var(--gd-color-accent);
+	}
+}
+
+@keyframes tick {
+	from {
+		opacity: 0;
+		transform: scale(0.4);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cell.landed,
+	.cell.landed svg {
+		animation: none;
+	}
+}
+
+.sprint.sprint {
+	font-size: var(--gd-font-size-label);
+	color: var(--gd-color-text-secondary);
+	white-space: nowrap;
+}
+
+.sprint.sprintAhead {
+	color: var(--gd-color-text-tertiary);
+}
+
+.sprint.sprintOwn {
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.sprint.sprintWaiting {
+	color: var(--gd-color-accent);
+}
+
+.hint {
+	width: 100%;
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	border: 1px solid var(--gd-color-border);
+	text-align: left;
+}
+
+.hintIcon {
+	flex: none;
+	// The icon box is shorter than the line: drop it to the first line's centre.
+	margin-top: calc((var(--gd-font-size-body) * var(--gd-line-height-body) - 16px) / 2);
+	color: var(--gd-color-text-secondary);
+}
+
+.hintText.hintText {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+}

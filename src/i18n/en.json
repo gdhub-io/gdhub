@@ -825,6 +825,10 @@
 			"endOk": "End call",
 			"fullscreen": "Full screen",
 			"fullscreenExit": "Exit full screen",
+			"goal": {
+				"hint": "Agree it on this call — it locks when the call ends.",
+				"label": "Checkpoint goal"
+			},
 			"inCall": "In the call",
 			"inCallCount": "{count} in the call",
 			"join": "Join call",
@@ -842,25 +846,37 @@
 				"goal": "Goal: {goal}",
 				"inShort": "In short",
 				"lockedCall": "Notes appear after this call",
+				"noQuestions": "No open questions were left on the call.",
 				"noTranscript": "No transcript yet.",
 				"noneHeld": "Notes appear after the first call.",
 				"notDiscussed": "Not discussed: {task}",
+				"notDiscussedTitle": "Not discussed on this call",
+				"nothingOutside": "Nothing came up beyond the plan.",
 				"option": "Call {index} · {date}",
 				"outsidePlan": "Outside the plan",
 				"pendingText": "The transcript and summary of this call are ready within 24 hours. We'll email you when they are.",
 				"pendingTitle": "The summary is on its way",
 				"questions": "Open questions",
+				"sprintWent": "How Sprint {sprint} went",
 				"summary": "Summary",
 				"title": "Call notes",
 				"transcript": "Transcript"
 			},
 			"opensAt": "The room opens at {time}",
 			"over": "This call is over",
+			"overLine": "The plan and the notes from it are below.",
+			"panel": {
+				"ahead": "This call is still ahead",
+				"notes": "Notes",
+				"plan": "Plan",
+				"today": "Call {index} · today"
+			},
 			"plan": {
 				"addTask": "Add task",
 				"callOneHint": "Agree the goal and the checkpoint tasks with {curator} on this call. The goal locks when the call ends; tasks can change once more on call 3.",
 				"callThreeHint": "This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
 				"closed": "The plan can no longer change",
+				"doneCount": "{done} of {total} done",
 				"failed": "The change was not saved",
 				"goal": "Goal",
 				"goalAgreed": "Goal · agreed on call 1",
@@ -884,6 +900,7 @@
 			"share": "Share screen",
 			"shareStop": "Stop sharing",
 			"speakers": "Speakers",
+			"startsAtLine": "The call starts at {time}.",
 			"status": {
 				"live": "Live",
 				"over": "Ended",
@@ -3291,6 +3308,42 @@
 		"for-specialists": "For Specialists",
 		"jobs": "Open positions",
 		"video-games": "Video Games"
+	},
+	"pulse": {
+		"cell": {
+			"ahead": "Not yet",
+			"confirmed": "Confirmed",
+			"missed": "Missed",
+			"notAsked": "Not asked",
+			"waiting": "Waiting for your answer"
+		},
+		"closed": {
+			"kicker": "Pulse link",
+			"open": "Open GDHub",
+			"text": "A pulse can be answered until the sprint’s next call. This one has passed, or the link was changed on the way.",
+			"title": "This link no longer works"
+		},
+		"confirmed": {
+			"open": "Open {project}",
+			"text": "You are marked as working on {project} in Sprint {sprint}. Opening this link again changes nothing.",
+			"title": "Thanks, {name} — noted",
+			"titleNoName": "Thanks — noted"
+		},
+		"error": "Could not save — try again",
+		"kicker": "{project} · Checkpoint {number}",
+		"kickerSprint": "{project} · Checkpoint {number} · Sprint {sprint}",
+		"open": {
+			"confirm": "Yes, I was",
+			"hint": "If you weren’t working on it this sprint, just close this page. Nothing is recorded.",
+			"text": "Saying yes marks you in the team’s pulse, which your curator reads at the next call.",
+			"title": "Were you working on <accent>{project}</accent> this sprint?"
+		},
+		"period": "Sprint {sprint} · {dates}",
+		"strip": {
+			"joined": "You joined the team in Sprint {sprint}",
+			"sprint": "Sprint {sprint}",
+			"title": "Your pulse in this checkpoint"
+		}
 	},
 	"refresh_token_expired": "Your session has expired. Please sign in again.",
 	"relevant for": "relevant for",
