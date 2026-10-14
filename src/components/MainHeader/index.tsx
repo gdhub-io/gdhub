@@ -191,18 +191,6 @@ export const MainHeader = ({ className }: { className?: string }) => {
 			{
 				label: (
 					<Link
-						href="/checkpoint"
-						title={t("public-menu.checkpoint", "Checkpoint")}
-						onClick={(e) => scrollToTopIfHere(e, "/checkpoint")}
-					>
-						{t("public-menu.checkpoint", "Checkpoint")}
-					</Link>
-				),
-				key: "/checkpoint",
-			},
-			{
-				label: (
-					<Link
 						href="/projects"
 						title={t("Video Games")}
 						onClick={(e) => scrollToTopIfHere(e, "/projects")}
