@@ -33,13 +33,9 @@ const LOGO_PATH = path.join(
 	"src/assets/images/gdhub-logo-black.png",
 );
 
-const FONTS_DIR = path.join(process.cwd(), "src/assets/fonts/mulish");
-const FONT_FILES = {
-	regular: path.join(FONTS_DIR, "Mulish-Regular.ttf"),
-	bold: path.join(FONTS_DIR, "Mulish-Bold.ttf"),
-	italic: path.join(FONTS_DIR, "Mulish-Italic.ttf"),
-	boldItalic: path.join(FONTS_DIR, "Mulish-BoldItalic.ttf"),
-} as const;
+// The folder stays a literal so the bundler traces only these fonts, not the whole project.
+const readFont = (file: string) =>
+	readFile(path.join(process.cwd(), "src/assets/fonts/mulish", file));
 
 // Page geometry. Documenso expects field coordinates as percentages of
 // page width/height with the origin at the top-left corner.
@@ -137,10 +133,10 @@ export async function renderEventCertificatePdf({
 
 	const [regularBytes, boldBytes, italicBytes, boldItalicBytes] =
 		await Promise.all([
-			readFile(FONT_FILES.regular),
-			readFile(FONT_FILES.bold),
-			readFile(FONT_FILES.italic),
-			readFile(FONT_FILES.boldItalic),
+			readFont("Mulish-Regular.ttf"),
+			readFont("Mulish-Bold.ttf"),
+			readFont("Mulish-Italic.ttf"),
+			readFont("Mulish-BoldItalic.ttf"),
 		]);
 	const sans = await doc.embedFont(regularBytes, { subset: true });
 	const sansBold = await doc.embedFont(boldBytes, { subset: true });
