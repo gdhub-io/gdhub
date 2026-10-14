@@ -52,20 +52,18 @@ export default meta;
 
 type Story = StoryObj<typeof PulseChip>;
 
-/** Two confirmed beats; click it for the team matrix. */
+/** Beats on days 1, 3, 4, 6 and 7; click it for the team matrix. */
 export const Default: Story = {};
 
-/** The trace at every count the chip draws — a flat line is nobody yet. */
+/** A beat sits on the day the activity happened: last day, spread out, none. */
 export const Beats: Story = {
 	render: (args) => (
 		<Flex vertical gap={16} align="flex-start">
-			{[0, 1, 2, 4, 6].map((beats) => (
+			{[[7], [2, 5], [1, 3, 4, 6, 7], []].map((activeDays) => (
 				<PulseChip
-					key={beats}
+					key={activeDays.join() || "none"}
 					{...args}
-					rows={Array.from({ length: beats }, (_, index) =>
-						member(`Member ${index + 1}`, "Team", [1], "confirmed"),
-					)}
+					rows={[member("Marta Ilves", "Author", activeDays, "confirmed")]}
 				/>
 			))}
 		</Flex>
