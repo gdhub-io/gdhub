@@ -429,13 +429,28 @@
 .planList {
 	display: flex;
 	flex-direction: column;
-	gap: var(--gd-space-2);
+	margin-top: var(--gd-space-2);
 }
 
+// Rows run edge to edge of the panel, so the hover is not cut at the text, and
+// the last one sits on the panel's bottom edge.
 .taskLine {
 	display: flex;
 	align-items: center;
 	gap: var(--gd-space-2);
+	min-height: 44px;
+	margin: 0 calc(-1 * var(--gd-space-6));
+	padding: var(--gd-space-2) var(--gd-space-6);
+	border-top: 1px solid var(--gd-color-border);
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+
+	&:last-child {
+		margin-bottom: calc(-1 * var(--gd-space-6));
+		border-radius: 0 0 var(--gd-radius-panel) var(--gd-radius-panel);
+	}
 }
 
 .lockedRow {
