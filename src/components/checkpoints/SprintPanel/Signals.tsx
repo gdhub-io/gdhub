@@ -1,10 +1,11 @@
 "use client";
 
-import { IconCheck, IconUsers } from "@tabler/icons-react";
+import { IconUsers } from "@tabler/icons-react";
 import { type TFnType, useTranslate } from "@tolgee/react";
 import { Card, Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { PulseCell } from "@/components/checkpoints/PulseCell";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type {
@@ -133,20 +134,10 @@ export function Signals({ checkpoint, sprint }: SignalsProps) {
 							return (
 								<span key={item.number} className={styles.col}>
 									<Tooltip title={pulseCellLabel(t, cell)}>
-										<span
-											className={clsx(
-												styles.cell,
-												cell && styles[cell.state],
-												item.number === sprint.number && styles.cellCurrent,
-											)}
-										>
-											{cell?.state === "confirmed" && (
-												<IconCheck size={14} stroke={2.4} />
-											)}
-											{cell?.state === "waiting" && (
-												<span className={styles.waitingDot} />
-											)}
-										</span>
+										<PulseCell
+											state={cell?.state}
+											current={item.number === sprint.number}
+										/>
 									</Tooltip>
 								</span>
 							);

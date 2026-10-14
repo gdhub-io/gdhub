@@ -24,23 +24,26 @@ const initials = (name: string | null) =>
 		.toUpperCase();
 
 const BASELINE = 12;
-/** Each beat's height against the tallest: a live trace is never even. */
-const PEAKS = [1, 0.3, 0.65, 0.25, 0.85, 0.4];
 const WIDTH = 72;
 /** How far back the fading tail reaches behind the head. */
 const TAIL = 44;
 
 /**
- * Frame `X9H3O`: a heart-rate trace, one beat per member who confirmed the
- * sprint. A flat line is a sprint nobody has answered yet, not a dead team.
+ * Frame `X9H3O`: a heart-rate trace across the sprint's seven days, a beat on
+ * each day someone did something, taller the more people did. A flat line is a
+ * sprint nobody has been active in yet, not a dead team.
  */
-function PulseTrace({ beats, still }: { beats: number; still?: boolean }) {
-	const step = WIDTH / (beats + 1);
-	const path = Array.from({ length: beats }, (_, index) => {
-		const x = step * (index + 1);
-		const h = PEAKS[index % PEAKS.length];
-		return `L ${x - 4} ${BASELINE} L ${x - 2.5} ${BASELINE + 2 * h} L ${x} ${BASELINE - 10 * h} L ${x + 2} ${BASELINE + 3 * h} L ${x + 4} ${BASELINE}`;
-	}).join(" ");
+function PulseTrace({ beats, still }: { beats: number[]; still?: boolean }) {
+	const step = WIDTH / beats.length;
+	const most = Math.max(1, ...beats);
+	const path = beats
+		.map((count, index) => {
+			if (!count) return "";
+			const x = step * (index + 0.5);
+			const h = 0.45 + (0.55 * count) / most;
+			return `L ${x - 4} ${BASELINE} L ${x - 2.5} ${BASELINE + 2 * h} L ${x} ${BASELINE - 10 * h} L ${x + 2} ${BASELINE + 3 * h} L ${x + 4} ${BASELINE}`;
+		})
+		.join(" ");
 
 	const d = `M 0 ${BASELINE} ${path} L ${WIDTH} ${BASELINE}`;
 	const id = useId();
@@ -159,10 +162,12 @@ export function PulseChip({ rows, sprint, day, still }: PulseChipProps) {
 		const cell = row.cells.find((item) => item.sprint === sprint.number);
 		return cell && cell.state !== "notOnTeam" ? [{ row, cell }] : [];
 	});
-	const beats = cells.filter(({ cell }) => cell.state === "confirmed").length;
 	const days = Array.from(
 		{ length: sprint.lastDay - sprint.firstDay + 1 },
 		(_, index) => sprint.firstDay + index,
+	);
+	const beats = days.map(
+		(value) => cells.filter(({ row }) => row.activeDays.includes(value)).length,
 	);
 
 	const content = (
@@ -261,7 +266,7 @@ export function PulseChip({ rows, sprint, day, still }: PulseChipProps) {
 				}
 			>
 				{t("workflow.path.pulse.label", "Pulse")}
-				<PulseTrace beats={Math.min(beats, 6)} still={still} />
+				<PulseTrace beats={beats} still={still} />
 			</button>
 		</Popover>
 	);

@@ -12,6 +12,7 @@ import type {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
+import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
 import type { ProjectActivity } from "@/repositories/project-activity.repository";
 import type {
 	CheckpointEvidenceBody,
@@ -333,4 +334,11 @@ export const useProjectActivity = (projectId?: string) =>
 		initialPageParam: null as string | null,
 		getNextPageParam: (page) => page.next,
 		enabled: !!projectId,
+	});
+
+/** The pulse page's one button; the signed token stands in for a session. */
+export const useConfirmPulse = (token: string) =>
+	useMutation({
+		mutationFn: async () =>
+			(await axios.post<PulseViewDto>(`/api/pulse/${token}`)).data,
 	});
