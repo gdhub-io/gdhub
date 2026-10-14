@@ -77,3 +77,9 @@ backup-tolgee
 # storybook
 storybook-static
 *.storybook.log
+
+# python
+__pycache__/
+
+# debug logs
+debug-*.log
