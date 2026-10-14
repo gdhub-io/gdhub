@@ -3292,6 +3292,42 @@
 		"jobs": "Open positions",
 		"video-games": "Video Games"
 	},
+	"pulse": {
+		"cell": {
+			"ahead": "Not yet",
+			"confirmed": "Confirmed",
+			"missed": "Missed",
+			"notAsked": "Not asked",
+			"waiting": "Waiting for your answer"
+		},
+		"closed": {
+			"kicker": "Pulse link",
+			"open": "Open GDHub",
+			"text": "A pulse can be answered until the sprint’s next call. This one has passed, or the link was changed on the way.",
+			"title": "This link no longer works"
+		},
+		"confirmed": {
+			"open": "Open {project}",
+			"text": "You are marked as working on {project} in Sprint {sprint}. Opening this link again changes nothing.",
+			"title": "Thanks, {name} — noted",
+			"titleNoName": "Thanks — noted"
+		},
+		"error": "Could not save — try again",
+		"kicker": "{project} · Checkpoint {number}",
+		"kickerSprint": "{project} · Checkpoint {number} · Sprint {sprint}",
+		"open": {
+			"confirm": "Yes, I was",
+			"hint": "If you weren’t working on it this sprint, just close this page. Nothing is recorded.",
+			"text": "Saying yes marks you in the team’s pulse, which your curator reads at the next call.",
+			"title": "Were you working on <accent>{project}</accent> this sprint?"
+		},
+		"period": "Sprint {sprint} · {dates}",
+		"strip": {
+			"joined": "You joined the team in Sprint {sprint}",
+			"sprint": "Sprint {sprint}",
+			"title": "Your pulse in this checkpoint"
+		}
+	},
 	"refresh_token_expired": "Your session has expired. Please sign in again.",
 	"relevant for": "relevant for",
 	"resources": "Recources",
