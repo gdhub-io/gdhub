@@ -1,0 +1,22 @@
+# Development-only files, kept out of the Vercel build.
+# scripts/ must stay: prebuild runs scripts/import-translations.js.
+
+/docs/
+/tests/
+/.storybook/
+/playwright.config.ts
+/vitest.config.mts
+
+/.claude/
+/.cursor/
+/.vscode/
+/.github/
+/.mcp.json
+
+/docker/
+/Dockerfile
+/docker-compose.yml
+/.dockerignore
+/.env.*.example
+
+/*.md
