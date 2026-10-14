@@ -14,6 +14,7 @@ import {
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
+import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import {
 	captureCheckout,
@@ -333,6 +334,7 @@ export const settleCheckpointCheckout = async (
 				},
 			});
 		});
+		await notifyCuratorAsked(payment.payableId);
 	} catch (error) {
 		if (!(error instanceof SlotTakenError)) throw error;
 

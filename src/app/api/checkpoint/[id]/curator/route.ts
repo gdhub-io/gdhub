@@ -21,6 +21,7 @@ import {
 	ensureCheckpointRoom,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
+import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import { captureCheckout } from "@/services/stripe/server";
 
@@ -126,6 +127,12 @@ export const POST = pipe(
 	if (accept) {
 		await syncChat(`start ${id}`, () => ensureCheckpointRoom(id));
 	}
+
+	await notifyAuthorOfAnswer(
+		id,
+		curator.name ?? "",
+		accept ? "accepted" : "declined",
+	);
 
 	return json({ accepted: accept });
 });

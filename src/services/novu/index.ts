@@ -4,6 +4,8 @@ export type NovuSendArgs = {
 	to: { subscriberId: string; email?: string };
 	payload: Record<string, any>;
 	template: string;
+	/** Novu drops a second trigger with the same id: a retried run sends once. */
+	transactionId?: string;
 };
 
 const novuClient = new Novu({
@@ -37,7 +39,7 @@ export class NovuService {
 		);
 	}
 
-	static async send({ to, payload, template }: NovuSendArgs) {
+	static async send({ to, payload, template, transactionId }: NovuSendArgs) {
 		if (process.env.E2E_TEST_AUTH === "1") return;
 
 		const trigger = novuClient.trigger({
@@ -47,6 +49,7 @@ export class NovuService {
 				email: to.email,
 			},
 			payload: { app: "main", ...payload },
+			transactionId,
 		});
 		const timeout = new Promise<never>((_, reject) =>
 			setTimeout(() => reject(new Error("Novu send timeout")), 5_000),

@@ -14,6 +14,7 @@ import {
 	reconcileCheckout,
 	returnToAuthor,
 } from "@/repositories/checkpoint-payment";
+import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import { releaseCheckout } from "@/services/stripe/server";
 
@@ -103,12 +104,17 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 					id: payment.payableId,
 					status: CheckpointStatus.AwaitingCurator,
 				},
-				select: { curatorId: true },
+				select: { curatorId: true, curator: { select: { name: true } } },
 			});
 
 			if (!waiting) continue;
 
 			await returnToAuthor(payment.payableId, waiting.curatorId);
+			await notifyAuthorOfAnswer(
+				payment.payableId,
+				waiting.curator?.name ?? "",
+				"silent",
+			);
 
 			released += 1;
 		}
