@@ -4,8 +4,9 @@ import type {
 	CallNotesDto,
 	CheckpointCallDto,
 } from "@/repositories/checkpoint-call";
+import { GoalCard } from "./CallGoal";
 import { CallHeader, type CallHeaderProps } from "./CallHeader";
-import { NotesBlock } from "./CallNotes";
+import { PanelBlock, type PanelTab } from "./CallPanel";
 import {
 	CallClosed,
 	CallLayout,
@@ -14,7 +15,6 @@ import {
 	LiveStage,
 	ParticipantTile,
 } from "./CallParts";
-import { PlanBlock } from "./CallPlan";
 import { type CallDevices, PreJoin, type PreJoinProps } from "./PreJoin";
 
 const NOW = new Date("2026-10-08T11:50:00.000Z");
@@ -160,7 +160,13 @@ type Story = StoryObj<typeof CallLayout>;
 export const Early: Story = {
 	args: {
 		header: header({ state: "early" }),
-		stage: <CallClosed text="The room opens at 13:45" />,
+		stage: (
+			<CallClosed
+				over={false}
+				title="The room opens at 13:45"
+				text="The call starts at 14:00."
+			/>
+		),
 	},
 };
 
@@ -188,7 +194,13 @@ export const CuratorReady: Story = {
 export const Over: Story = {
 	args: {
 		header: header({ state: "over" }),
-		stage: <CallClosed text="This call is over" />,
+		stage: (
+			<CallClosed
+				over
+				title="This call is over"
+				text="The plan and the notes from it are below."
+			/>
+		),
 	},
 };
 
@@ -238,44 +250,12 @@ export const LiveGrid: Story = {
 	},
 };
 
-export const PlanCallOneEditable: Story = {
-	render: () => (
-		<PlanBlock
-			curatorName="Patrick"
-			onChange={saved}
-			plan={{
-				goal: GOAL,
-				goalAgreedAt: null,
-				edit: "goalAndTasks",
-				tasks: [
-					{ id: "t1", text: "Core loop one-pager" },
-					{ id: "t2", text: "Greybox build on itch.io" },
-					{ id: "t3", text: "5 playtest recordings" },
-				].map((task) => ({
-					...task,
-					cut: false,
-					addedAt: null,
-					artifact: null,
-				})),
-			}}
-		/>
-	),
+export const GoalReadOnly: Story = {
+	render: () => <GoalCard goal={GOAL} editable={false} onSave={saved} />,
 };
 
-export const PlanCallThree: Story = {
-	render: () => (
-		<PlanBlock
-			curatorName="Patrick"
-			onChange={saved}
-			plan={{ ...plan, edit: "tasks" }}
-		/>
-	),
-};
-
-export const PlanReadOnly: Story = {
-	render: () => (
-		<PlanBlock curatorName="Patrick" onChange={saved} plan={plan} />
-	),
+export const GoalEditable: Story = {
+	render: () => <GoalCard goal={GOAL} editable onSave={saved} />,
 };
 
 const notesReady: CallNotesDto = {
@@ -309,34 +289,109 @@ const notesReady: CallNotesDto = {
 		"We start with the core loop. The one-pager reads well.\n\nThe second tide is the problem — it comes too fast.",
 };
 
-function NotesStory({ held, notes }: { held: number; notes?: CallNotesDto }) {
-	const sessions = sessionsHeld(held);
-	const [selected, setSelected] = useState<number | null>(held || null);
+function PanelStory({
+	current,
+	held,
+	tab: initialTab,
+	panelPlan = plan,
+	notes,
+}: {
+	current: number;
+	held: number;
+	tab: PanelTab;
+	panelPlan?: CheckpointCallDto["plan"];
+	notes?: CallNotesDto;
+}) {
+	const [selected, setSelected] = useState(current);
+	const [tab, setTab] = useState(initialTab);
 	return (
-		<NotesBlock
-			sessions={sessions}
-			plan={plan}
+		<PanelBlock
+			sessions={sessionsHeld(held)}
+			current={current}
 			selected={selected}
 			onSelect={setSelected}
+			tab={tab}
+			onTab={setTab}
+			plan={panelPlan}
+			onChange={saved}
 			notes={notes}
-			loading={false}
+			notesLoading={false}
+			now={new Date(sessionDates[current - 1])}
 		/>
 	);
 }
 
-export const NotesPending: Story = {
+export const PanelPlanCallThree: Story = {
 	render: () => (
-		<NotesStory
+		<PanelStory
+			current={3}
 			held={2}
-			notes={{ contentStatus: "Pending", content: null, transcript: null }}
+			tab="plan"
+			panelPlan={{ ...plan, edit: "tasks" }}
 		/>
 	),
 };
 
-export const NotesReady: Story = {
-	render: () => <NotesStory held={2} notes={notesReady} />,
+export const PanelPlanCallOne: Story = {
+	render: () => (
+		<PanelStory
+			current={1}
+			held={0}
+			tab="plan"
+			panelPlan={{
+				goal: GOAL,
+				goalAgreedAt: null,
+				edit: "goalAndTasks",
+				tasks: [
+					{ id: "t1", text: "Core loop one-pager" },
+					{ id: "t2", text: "Greybox build on itch.io" },
+					{ id: "t3", text: "5 playtest recordings" },
+				].map((task) => ({
+					...task,
+					cut: false,
+					addedAt: null,
+					artifact: null,
+				})),
+			}}
+		/>
+	),
 };
 
-export const NotesNothingHeldYet: Story = {
-	render: () => <NotesStory held={0} />,
+export const PanelPlanReadOnly: Story = {
+	render: () => <PanelStory current={2} held={1} tab="plan" />,
+};
+
+export const PanelNotesReady: Story = {
+	render: () => (
+		<PanelStory current={3} held={2} tab="notes" notes={notesReady} />
+	),
+};
+
+export const PanelNotesEmptySections: Story = {
+	render: () => (
+		<PanelStory
+			current={3}
+			held={2}
+			tab="notes"
+			notes={{
+				...notesReady,
+				content: notesReady.content && {
+					...notesReady.content,
+					outsidePlan: [],
+					questions: [],
+				},
+			}}
+		/>
+	),
+};
+
+export const PanelNotesPending: Story = {
+	render: () => (
+		<PanelStory
+			current={3}
+			held={3}
+			tab="notes"
+			notes={{ contentStatus: "Pending", content: null, transcript: null }}
+		/>
+	),
 };
