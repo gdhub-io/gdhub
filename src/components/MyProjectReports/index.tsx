@@ -5,8 +5,13 @@ import { Button, Grid, message, Popconfirm, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import ProjectReportModal from "@/components/modals/ProjectReportModal";
+
+const ProjectReportModal = dynamic(
+	() => import("@/components/modals/ProjectReportModal"),
+	{ ssr: false },
+);
 
 interface MyProjectReportsArgs {
 	project: any;

@@ -234,3 +234,8 @@ export function relativeStamp(
 
 	return { unit: "date", sameYear: date.getFullYear() === now.getFullYear() };
 }
+
+// Offered compensation is entered and displayed in EUR but stored in minor units.
+export const toCents = (eur: number) => Math.round(eur * 100);
+export const fromCents = (cents: number | null | undefined) =>
+	cents != null ? cents / 100 : null;

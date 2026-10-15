@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import { AccessProvider } from "@/components/access/AccessProvider";
 import type { Permission, SpaceType } from "@/config/spaces";
 import {
@@ -42,7 +42,7 @@ export function createSpaceGate(
 		const raw = options.param ? routeParams?.[options.param] : undefined;
 		const param = Array.isArray(raw) ? (raw[0] ?? null) : (raw ?? null);
 
-		const session = await auth();
+		const session = await getSession();
 		const access = await getSpaceAccess(
 			type,
 			param,
@@ -82,7 +82,7 @@ export function createPermissionGate(
 		const raw = options.param ? routeParams?.[options.param] : undefined;
 		const param = Array.isArray(raw) ? (raw[0] ?? null) : (raw ?? null);
 
-		const session = await auth();
+		const session = await getSession();
 		const access = await getSpaceAccess(
 			type,
 			param,

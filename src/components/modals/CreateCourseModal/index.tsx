@@ -1,10 +1,6 @@
-import type { Course, Language, WorkDirection } from "@gdhub-io/gdhub-prisma";
-import {
-	IconBookmark,
-	IconCoinEuro,
-	IconCurrencyEuro,
-} from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import type { Course, Language } from "@gdhub-io/gdhub-prisma";
+import { IconCurrencyEuro } from "@tabler/icons-react";
+import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Checkbox,
@@ -21,7 +17,7 @@ import {
 import axios from "axios";
 import { useRef } from "react";
 import slugify from "slugify";
-import styles from "./style.module.scss";
+import { useWorkDirections } from "@/hooks/library";
 
 const { Text } = Typography;
 
@@ -50,14 +46,8 @@ const CreateCourseModal = ({
 	const [form] = Form.useForm<CreateCourseFormValues>();
 	const slugManuallyEditedRef = useRef(false);
 
-	const { data: directions = [], isLoading: isLoadingDirections } = useQuery({
-		queryKey: ["dictionary", "work-directions"],
-		queryFn: () =>
-			axios
-				.get<WorkDirection[]>("/api/dictionary/work-directions")
-				.then((res) => res.data),
-		staleTime: 5 * 60 * 1000,
-	});
+	const { data: directions = [], isLoading: isLoadingDirections } =
+		useWorkDirections();
 
 	const { mutateAsync: createCourse, isPending } = useMutation({
 		mutationFn: (data: CreateCourseFormValues) =>

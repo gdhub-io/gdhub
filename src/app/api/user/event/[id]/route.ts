@@ -1,6 +1,5 @@
 import { Language, Prisma } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
-import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import {
 	apiError,
 	json,
@@ -10,6 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { deleteSpaceMembership } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";

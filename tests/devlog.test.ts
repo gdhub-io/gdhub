@@ -20,7 +20,7 @@ describe("GET /api/devlog/[projectReportId]", () => {
 		const mockPost = {
 			id: "post1",
 			content: "content",
-			publishedAt: "2024-01-01",
+			publishedAt: new Date("2024-01-01"),
 			video: null,
 			project: {
 				name: "Project",
@@ -51,7 +51,7 @@ describe("GET /api/devlog/[projectReportId]", () => {
 			id: "system1",
 			content: "Registration of the project on the service",
 			isSystem: true,
-			publishedAt: "2024-01-01",
+			publishedAt: new Date("2024-01-01"),
 			video: null,
 			project: {
 				name: "Project",

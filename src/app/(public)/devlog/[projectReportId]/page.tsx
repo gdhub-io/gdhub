@@ -1,6 +1,5 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import {
@@ -9,6 +8,7 @@ import {
 	getPageCover,
 } from "@/helpers/content";
 import { devlogTitle } from "@/helpers/devlog";
+import { loadPublicDevlogPost } from "@/repositories/devlog-post";
 import { devlogOgImage } from "@/services/telegram/messages";
 import { DevlogPostClient, type Post } from "./DevlogPostClient";
 
@@ -18,36 +18,30 @@ const loadPost = cache(
 	async (
 		projectReportId: string,
 	): Promise<{ post: Post; contentLength: number } | null> => {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const cookieHeader = (await headers()).get("cookie") ?? "";
+		const post = (await loadPublicDevlogPost(projectReportId)) as Post | null;
+		if (!post) return null;
 
-		try {
-			const response = await fetch(`${baseUrl}/api/devlog/${projectReportId}`, {
-				cache: "no-store",
-				headers: cookieHeader ? { cookie: cookieHeader } : undefined,
-			});
-			if (!response.ok) return null;
-			const post = (await response.json()) as Post;
-			if (!post?.id) return null;
-
-			if (post.contentEditor) {
-				post.pageCover =
-					getEditorjsPageCover(post.contentEditor as any) ?? undefined;
-			} else {
-				post.pageCover = getPageCover(post as any) ?? undefined;
-			}
-
-			const contentLength = post.contentEditor
-				? getEditorjsShortContent(post.contentEditor as any, 1000).length
-				: post.content.length;
-
-			return { post, contentLength };
-		} catch (error) {
-			console.error("Error fetching post:", error);
-			return null;
+		if (post.contentEditor) {
+			post.pageCover =
+				getEditorjsPageCover(post.contentEditor as any) ?? undefined;
+		} else {
+			post.pageCover = getPageCover(post as any) ?? undefined;
 		}
+
+		const contentLength = post.contentEditor
+			? getEditorjsShortContent(post.contentEditor as any, 1000).length
+			: post.content.length;
+
+		return { post, contentLength };
 	},
 );
+
+export const revalidate = 60;
+
+// Empty: each page is built on its first request, not during `next build`.
+export async function generateStaticParams() {
+	return [];
+}
 
 export async function generateMetadata({
 	params,

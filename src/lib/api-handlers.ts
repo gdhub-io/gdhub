@@ -318,3 +318,13 @@ export function pipe<H extends Handler<any>>(
 export function json<T>(data: T, init?: ResponseInit): Response {
 	return NextResponse.json(data, init);
 }
+
+/**
+ * Lets the CDN serve a public, viewer-independent API response for `seconds`.
+ * Unlike a route's `revalidate`, it keeps the query out of `next build`.
+ */
+export const sharedCache = (seconds: number): ResponseInit => ({
+	headers: {
+		"Cache-Control": `public, s-maxage=${seconds}, stale-while-revalidate=${seconds * 10}`,
+	},
+});

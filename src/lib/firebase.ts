@@ -1,5 +1,5 @@
 import { type FirebaseApp, getApps, initializeApp } from "@firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { hasGoogleConsent } from "@/helpers/googleConsent";
 
 type FirebaseClientConfig = {
 	apiKey: string;
@@ -45,7 +45,17 @@ export function getFirebaseApp(): FirebaseApp {
 	}
 
 	firebaseApp = initializeApp(createFirebaseConfig());
-	getAnalytics(firebaseApp);
+
+	// Notification analytics are Google cookies like GTM's, so they wait for the
+	// same consent; CookieConsent reloads the page once it is given.
+	if (hasGoogleConsent()) {
+		const app = firebaseApp;
+		import("firebase/analytics")
+			.then(({ getAnalytics }) => getAnalytics(app))
+			.catch((error) =>
+				console.warn("[firebase] analytics unavailable", error),
+			);
+	}
 
 	return firebaseApp;
 }

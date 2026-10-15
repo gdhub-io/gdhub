@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 
 /**
  * Server-side guard: returns the session, or redirects to /signin.
@@ -9,7 +9,7 @@ import { auth } from "@/auth";
  *                     Without it they land on /hub.
  */
 export async function requireSession(callbackUrl?: string) {
-	const session = await auth();
+	const session = await getSession();
 
 	if (!session) {
 		const target = callbackUrl

@@ -1,5 +1,3 @@
-"use client";
-
 import { Render } from "@9gustin/react-notion-render";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import styles from "@/styles/cookie-policy.module.scss";

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { auth } from "@/auth";
 import { prisma } from "@/services/prisma";
 import { ExpertPageClient } from "./ExpertPageClient";
 
@@ -27,6 +26,13 @@ const loadExpert = cache(async (specialityId: string) => {
 	const { specialities, ...rest } = expert;
 	return { ...rest, speciality: specialities[0] };
 });
+
+export const revalidate = 300;
+
+// Empty: each page is built on its first request, not during `next build`.
+export async function generateStaticParams() {
+	return [];
+}
 
 export async function generateMetadata({
 	params,
@@ -56,14 +62,12 @@ export async function generateMetadata({
 
 export default async function ExpertPage({ params }: { params: Params }) {
 	const { specialityId } = await params;
-	const session = await auth();
 	const expert = await loadExpert(specialityId);
 	if (!expert) notFound();
 
 	return (
 		<ExpertPageClient
 			expert={expert}
-			isAuthenticated={!!session}
 			seo={{
 				title: (expert as any).profile?.name || expert.name || null,
 				description: (expert as any).profile?.motivation || null,
