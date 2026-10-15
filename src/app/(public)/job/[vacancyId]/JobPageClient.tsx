@@ -11,7 +11,7 @@ import {
 	IconInfoCircle,
 	IconMapPin,
 } from "@tabler/icons-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { T, useTranslate } from "@tolgee/react";
 import {
 	Alert,
@@ -71,14 +71,12 @@ export interface JobPageProps {
 		team: { project: VacancyProject } | null;
 		promisePercentage: number;
 		promiseStep: ProjectWorkflowStep | null;
-		myTeamMemberId?: string;
 		offeredAmount?: number | null;
 		offeredRateType?: PaymentRateType | null;
 		/** Work direction, used by the share card for its colour and icon. */
 		direction?: { name: string } | null;
 	};
 	pageCover: string | null;
-	isAuthenticated: boolean;
 }
 
 export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
@@ -92,6 +90,25 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		useState(false);
 
 	const project = vacancy.team?.project;
+
+	// The page itself is cached and the same for everyone; whether this viewer
+	// has already applied is asked for separately.
+	const queryClient = useQueryClient();
+	const myApplicationKey = [
+		"vacancy-my-application",
+		vacancy.id,
+		session?.user.id,
+	];
+	const { data: myTeamMemberId } = useQuery({
+		queryKey: myApplicationKey,
+		queryFn: () =>
+			axios
+				.get<{ myTeamMemberId?: string }>("/api/project/vacancy", {
+					params: { id: vacancy.id },
+				})
+				.then((response) => response.data.myTeamMemberId ?? null),
+		enabled: !!session,
+	});
 
 	const { mutateAsync: withdrawApply } = useMutation({
 		mutationFn: (data: { teamMemberId: string }) =>
@@ -123,7 +140,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 	const withdrawApplyHandler = async (data: { teamMemberId: string }) => {
 		try {
 			await withdrawApply(data);
-			router.refresh();
+			await queryClient.invalidateQueries({ queryKey: myApplicationKey });
 			message.success(
 				t("page.vacancy.withdrawSuccess", "Your response is withdrawn"),
 			);
@@ -139,14 +156,14 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 			return;
 		}
 
-		return vacancy?.myTeamMemberId
-			? withdrawApplyHandler({ teamMemberId: vacancy.myTeamMemberId })
+		return myTeamMemberId
+			? withdrawApplyHandler({ teamMemberId: myTeamMemberId })
 			: setShowSpecialitySelectModal(true);
 	};
 
 	const statusOkButton = () => {
 		if (!session) return t("signin", "Signin");
-		return vacancy?.myTeamMemberId
+		return myTeamMemberId
 			? t("modal.vacancy.cancelMyResponse", "Cancel my response")
 			: t("page.vacancy.applyAction", "Apply");
 	};
@@ -167,7 +184,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 				vacancyId: vacancy.id,
 			});
 
-			router.refresh();
+			await queryClient.invalidateQueries({ queryKey: myApplicationKey });
 			message.success(t("page.vacancy.applySuccess", "Your response is sent"));
 			setShowSpecialitySelectModal(false);
 		} catch (error: any) {
@@ -282,7 +299,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 
 									<div className={styles.headActions}>
 										<Button
-											type={vacancy?.myTeamMemberId ? "default" : "primary"}
+											type={myTeamMemberId ? "default" : "primary"}
 											size="large"
 											onClick={functionOkButton}
 										>
@@ -324,7 +341,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 										</Text>
 									)}
 
-									{vacancy.myTeamMemberId && (
+									{myTeamMemberId && (
 										<Alert
 											type="warning"
 											title={t(

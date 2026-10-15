@@ -107,6 +107,14 @@ const loadEvent = cache(
 	},
 );
 
+// Rendered on the first visit, then served from cache and refreshed at most
+// every 60 seconds.
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+	return [];
+}
+
 export async function generateMetadata({
 	params,
 }: {

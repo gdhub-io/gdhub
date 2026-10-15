@@ -1,29 +1,17 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { getSession } from "@/auth";
+import { findPublicVacancy } from "@/repositories/vacancy.repository";
 import { JobPageClient, type JobPageProps } from "./JobPageClient";
 
 type Params = Promise<{ vacancyId: string }>;
 
 const loadVacancy = cache(
 	async (vacancyId: string): Promise<JobPageProps["vacancy"] | null> => {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const cookieHeader = (await headers()).get("cookie") ?? "";
 		try {
-			const response = await fetch(
-				`${baseUrl}/api/project/vacancy?id=${encodeURIComponent(vacancyId)}`,
-				{
-					cache: "no-store",
-					headers: cookieHeader ? { cookie: cookieHeader } : undefined,
-				},
-			);
-			if (!response.ok) return null;
-			const data = (await response.json()) as JobPageProps["vacancy"] | null;
-			// A body without an id is not a vacancy, whatever the status said.
-			if (!data?.id) return null;
-			return data;
+			const vacancy = await findPublicVacancy(vacancyId);
+			// Dates as strings, the shape the client was written against.
+			return vacancy ? JSON.parse(JSON.stringify(vacancy)) : null;
 		} catch (error) {
 			console.error("Error fetching vacancy:", error);
 			return null;
@@ -67,6 +55,14 @@ const buildJobOgImage = (vacancy: NonNullable<JobPageProps["vacancy"]>) => {
 	return `${appUrl}/api/og-job?${params.toString()}`;
 };
 
+// Rendered on the first visit, then served from cache and refreshed at most
+// every 60 seconds.
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+	return [];
+}
+
 export async function generateMetadata({
 	params,
 }: {
@@ -97,17 +93,13 @@ export default async function JobPage({ params }: { params: Params }) {
 	const { vacancyId } = await params;
 	if (!vacancyId) notFound();
 
-	const [vacancy, session] = await Promise.all([
-		loadVacancy(vacancyId),
-		getSession(),
-	]);
+	const vacancy = await loadVacancy(vacancyId);
 	if (!vacancy) notFound();
 
 	return (
 		<JobPageClient
 			vacancy={vacancy}
 			pageCover={vacancy.team?.project?.coverImage ?? null}
-			isAuthenticated={!!session}
 		/>
 	);
 }

@@ -1,6 +1,5 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import {
@@ -9,6 +8,7 @@ import {
 	getPageCover,
 } from "@/helpers/content";
 import { devlogTitle } from "@/helpers/devlog";
+import { loadPublicDevlogPost } from "@/repositories/devlog-post";
 import { devlogOgImage } from "@/services/telegram/messages";
 import { DevlogPostClient, type Post } from "./DevlogPostClient";
 
@@ -18,17 +18,9 @@ const loadPost = cache(
 	async (
 		projectReportId: string,
 	): Promise<{ post: Post; contentLength: number } | null> => {
-		const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-		const cookieHeader = (await headers()).get("cookie") ?? "";
-
 		try {
-			const response = await fetch(`${baseUrl}/api/devlog/${projectReportId}`, {
-				cache: "no-store",
-				headers: cookieHeader ? { cookie: cookieHeader } : undefined,
-			});
-			if (!response.ok) return null;
-			const post = (await response.json()) as Post;
-			if (!post?.id) return null;
+			const post = (await loadPublicDevlogPost(projectReportId)) as Post | null;
+			if (!post) return null;
 
 			if (post.contentEditor) {
 				post.pageCover =
@@ -48,6 +40,14 @@ const loadPost = cache(
 		}
 	},
 );
+
+// Rendered on the first visit, then served from cache and refreshed at most
+// every 60 seconds.
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+	return [];
+}
 
 export async function generateMetadata({
 	params,

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { getSession } from "@/auth";
 import { prisma } from "@/services/prisma";
 import { ExpertPageClient } from "./ExpertPageClient";
 
@@ -27,6 +26,14 @@ const loadExpert = cache(async (specialityId: string) => {
 	const { specialities, ...rest } = expert;
 	return { ...rest, speciality: specialities[0] };
 });
+
+// Rendered on the first visit, then served from cache and refreshed at most
+// every 300 seconds.
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+	return [];
+}
 
 export async function generateMetadata({
 	params,
@@ -56,14 +63,12 @@ export async function generateMetadata({
 
 export default async function ExpertPage({ params }: { params: Params }) {
 	const { specialityId } = await params;
-	const session = await getSession();
 	const expert = await loadExpert(specialityId);
 	if (!expert) notFound();
 
 	return (
 		<ExpertPageClient
 			expert={expert}
-			isAuthenticated={!!session}
 			seo={{
 				title: (expert as any).profile?.name || expert.name || null,
 				description: (expert as any).profile?.motivation || null,
