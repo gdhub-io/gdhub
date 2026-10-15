@@ -357,9 +357,11 @@ const final: CuratorReview = {
 function AiPage({
 	review,
 	index,
+	advising = false,
 }: {
 	review: CheckpointReviewDto;
 	index: number;
+	advising?: boolean;
 }) {
 	return (
 		<AiReviewView
@@ -368,7 +370,7 @@ function AiPage({
 			backHref="/user/project/hollow-tide/workflow"
 			onChange={saved}
 			onAdvise={noop}
-			advising={false}
+			advising={advising}
 		/>
 	);
 }
@@ -387,6 +389,19 @@ const meta: Meta = {
 export default meta;
 
 type Story = StoryObj;
+
+/** Day 1, the page opened for the first time: call 1 is ahead, and it sets the tasks. */
+export const ProDay1: Story = {
+	name: "Pro · day 1, first open",
+	render: () => (
+		<ProPage
+			call={proCall(1, "early", 0, [])}
+			now="2026-10-01T09:00:00.000Z"
+			shown={1}
+			tab="plan"
+		/>
+	),
+};
 
 /** Day 3: call 1 set the plan; the last checkpoint's verdict still frames it. */
 export const ProSprint1: Story = {
@@ -437,6 +452,28 @@ export const ProDay29: Story = {
 			now="2026-10-29T15:00:00.000Z"
 			shown={5}
 			tab="notes"
+		/>
+	),
+};
+
+/**
+ * Day 1, the page opened for the first time: only the goal was bought, so
+ * there are no tasks yet — the curator greets the team and its first
+ * suggestions are on their way.
+ */
+export const AiDay1: Story = {
+	name: "AI · day 1, first open",
+	render: () => (
+		<AiPage
+			index={1}
+			advising
+			review={aiReview(
+				1,
+				[],
+				{ edit: "plan", editUntil: "2026-10-03T00:00:00.000Z" },
+				[],
+				{ previous },
+			)}
 		/>
 	),
 };
