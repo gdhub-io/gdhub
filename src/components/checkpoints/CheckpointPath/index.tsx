@@ -76,9 +76,9 @@ export function CheckpointPath({
 					onClick={() => onSelect(step.key)}
 				>
 					<span className={clsx(styles.glyph, styles[step.glyph])}>
-						{step.glyph === "done" && <IconCheck size={13} stroke={2.4} />}
-						{step.glyph === "start" && <IconFlag size={13} />}
-						{step.glyph === "locked" && <IconLock size={12} />}
+						{step.glyph === "done" && <IconCheck size={14} />}
+						{step.glyph === "start" && <IconFlag size={14} />}
+						{step.glyph === "locked" && <IconLock size={14} />}
 						{step.glyph === "current" && <span className={styles.dot} />}
 					</span>
 

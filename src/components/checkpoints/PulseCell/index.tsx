@@ -27,6 +27,7 @@ export function PulseCell({
 }: PulseCellProps) {
 	const glyph =
 		state === "confirmed" ? (
+			// A tick under 16px inside a box needs the heavier stroke to read.
 			<IconCheck size={14} stroke={2.4} />
 		) : state === "waiting" ? (
 			<span className={styles.waitingDot} />

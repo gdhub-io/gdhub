@@ -256,7 +256,7 @@ export function RunningCheckpoint({
 		<span className={styles.chip}>
 			{isAI ? (
 				<span className={styles.chipIcon}>
-					<IconSparkles size={12} />
+					<IconSparkles size={14} />
 				</span>
 			) : (
 				<AppAvatar src={checkpoint.curator?.image} size={20}>

@@ -97,7 +97,7 @@ export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 			open
 			onCancel={onClose}
 			footer={null}
-			width={1050}
+			width={1048}
 			centered
 			classNames={{
 				container: styles.container,
@@ -105,7 +105,7 @@ export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 				body: styles.body,
 			}}
 			title={
-				<Flex vertical gap={6}>
+				<Flex vertical gap={8}>
 					<Flex align="center" gap={12} wrap>
 						<Text className={styles.title}>
 							{t("advisor.verdict.title", "Write the verdict")}
@@ -359,7 +359,7 @@ function OutcomeRow({ item }: { item: CheckpointItemDto }) {
 			{item.cut ? (
 				<StatusDot tone="warning" label={t("advisor.verdict.cut", "Cut")} />
 			) : item.artifact ? (
-				<Flex align="center" gap={6} className={styles.evidence}>
+				<Flex align="center" gap={8} className={styles.evidence}>
 					<ArtifactLink artifact={item.artifact} />
 					{proven && (
 						<Text className={clsx(styles.small, styles.success)}>
@@ -413,7 +413,7 @@ function LastBuild({
 			{build ? (
 				<Flex align="center" gap={16} className={styles.build}>
 					<IconTile icon={IconCube} size="md" />
-					<Flex vertical gap={2} className={styles.rowText}>
+					<Flex vertical gap={4} className={styles.rowText}>
 						<Text strong ellipsis>
 							{build.name ?? t("advisor.verdict.build", "Build")}
 						</Text>
@@ -545,6 +545,7 @@ function TeamPulse({ team }: { team: AdvisorProjectDto["team"] }) {
 							seat.pulse.find((cell) => cell.sprint === sprint)?.state ===
 							"confirmed" ? (
 								<span className={styles.confirmed}>
+									{/* A tick under 16px inside a box needs the heavier stroke to read. */}
 									<IconCheck size={14} stroke={2.4} />
 								</span>
 							) : (
@@ -686,7 +687,7 @@ function VerdictForm({
 							label: styles.optionBody,
 						}}
 					>
-						<Flex vertical gap={6}>
+						<Flex vertical gap={8}>
 							<StatusDot
 								tone={VERDICT_TONE[option]}
 								label={label(option)}

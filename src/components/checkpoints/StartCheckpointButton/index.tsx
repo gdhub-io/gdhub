@@ -70,7 +70,7 @@ export function StartCheckpointButton({
 		<Tooltip title={reason}>
 			<Button
 				type="primary"
-				icon={reason ? <IconLock size={15} /> : undefined}
+				icon={reason ? <IconLock size={16} /> : undefined}
 				disabled={!data?.canCreate}
 				loading={createCheckpoint.isPending}
 				onClick={start}

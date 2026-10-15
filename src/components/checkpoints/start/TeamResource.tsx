@@ -43,11 +43,11 @@ export function TeamResource({ teamId, hoursOf }: TeamResourceProps) {
 					key: "who",
 					title: t("checkpoints.when.teamMember", "Who"),
 					render: (_: unknown, row: TeamHoursRow) => (
-						<Flex gap={10} align="center">
+						<Flex gap={12} align="center">
 							<AppAvatar src={row.user.image} size={28}>
 								{row.user.name?.slice(0, 2).toUpperCase()}
 							</AppAvatar>
-							<Flex vertical gap={1}>
+							<Flex vertical gap={4}>
 								<Typography.Text className={styles.who}>
 									{row.user.name}
 								</Typography.Text>

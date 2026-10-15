@@ -133,7 +133,7 @@ export function CuratorTable({
 									<Button
 										aria-label={talentCard}
 										className={styles.talent}
-										icon={<IconId size={18} stroke={1.6} />}
+										icon={<IconId size={16} />}
 										onClick={(event) => {
 											event.stopPropagation();
 											setPreview(row.specialityId);

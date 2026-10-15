@@ -164,7 +164,7 @@ export function FirstCallPicker({
 				{calls.length > 0 && (
 					<Flex gap={12} align="center" className={styles.summary}>
 						<IconCalendarEvent size={16} className={styles.summaryIcon} />
-						<Flex vertical gap={2}>
+						<Flex vertical gap={4}>
 							<Typography.Text strong>
 								{t(
 									"checkpoints.firstCall.summary",

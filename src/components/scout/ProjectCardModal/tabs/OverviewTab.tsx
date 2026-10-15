@@ -59,7 +59,7 @@ export function OverviewTab({
 	].filter(([, value]) => value);
 
 	return (
-		<Flex vertical gap={18}>
+		<Flex vertical gap={16}>
 			{project.description && (
 				<section className={styles.sectionTight}>
 					<Text className={styles.sectionTitle}>
@@ -155,7 +155,7 @@ export function OverviewTab({
 					label={t("scout.card.summary.stage", "STAGE")}
 					onClick={() => onOpenTab("workflow")}
 				>
-					<Flex align="center" gap={6}>
+					<Flex align="center" gap={8}>
 						<span className={styles.stageDot} />
 						<Text className={styles.summaryValue}>{project.stage ?? "—"}</Text>
 					</Flex>
@@ -195,7 +195,7 @@ export function OverviewTab({
 					label={t("scout.card.summary.author", "AUTHOR")}
 					onClick={() => onOpenTab("team")}
 				>
-					<Flex align="center" gap={10}>
+					<Flex align="center" gap={12}>
 						<AppAvatar size={34} src={project.author.image}>
 							{project.author.name?.charAt(0)}
 						</AppAvatar>
@@ -274,7 +274,7 @@ export function OverviewTab({
 								rel="noreferrer"
 							>
 								<Text className={styles.eyebrow}>{file.type}</Text>
-								<Flex align="center" gap={10}>
+								<Flex align="center" gap={12}>
 									<span className={styles.fileTile}>{fileIcon(file.type)}</span>
 									<span className={styles.fileName}>
 										{file.name ?? file.type}

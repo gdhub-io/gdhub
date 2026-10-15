@@ -197,7 +197,7 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 					className={styles.activityBoundary}
 				>
 					<span className={styles.activityBoundaryLabel}>
-						<IconFlag size={12} />
+						<IconFlag size={14} />
 						{t("workflow.activity.sprint", "Sprint {number} started · {date}", {
 							number: String(sprint.number),
 							date: formatShort(sprint.from),

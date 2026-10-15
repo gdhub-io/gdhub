@@ -43,7 +43,7 @@ export function ProjectTab({
 	].filter(([, value]) => value);
 
 	return (
-		<Flex vertical gap={18}>
+		<Flex vertical gap={16}>
 			{project.description && (
 				<section className={styles.sectionTight}>
 					<Text className={styles.sectionTitle}>

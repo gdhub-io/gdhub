@@ -162,7 +162,6 @@ export function CheckpointOffer({
 					>
 						<Button
 							type="primary"
-							className={styles.offerButton}
 							disabled={locked}
 							icon={locked ? <IconLock size={16} /> : undefined}
 							onClick={start}
@@ -338,11 +337,7 @@ export function CheckpointOffer({
 					<Typography.Text type="secondary">{state.note}</Typography.Text>
 				</Flex>
 				{action && (
-					<Button
-						type="primary"
-						className={styles.offerButton}
-						onClick={() => router.push(action.href)}
-					>
+					<Button type="primary" onClick={() => router.push(action.href)}>
 						{action.label}
 					</Button>
 				)}

@@ -74,7 +74,7 @@ export function AskPanel({
 				{rows.map((row) => (
 					<div key={row.key} className={styles.row}>
 						<span className={clsx(styles.glyph, styles[row.glyph])}>
-							{row.glyph === "done" && <IconCheck size={12} stroke={2.4} />}
+							{row.glyph === "done" && <IconCheck size={14} />}
 							{row.glyph === "open" && <span className={styles.dot} />}
 						</span>
 

@@ -24,7 +24,7 @@ export function CuratorBadge({ kind, curator, className }: CuratorBadgeProps) {
 		<span className={`${styles.badge}${className ? ` ${className}` : ""}`}>
 			{isAI ? (
 				<span className={styles.tile}>
-					<IconSparkles size={15} stroke={1.6} />
+					<IconSparkles size={16} />
 				</span>
 			) : (
 				<AppAvatar size={26} src={curator?.image ?? undefined}>

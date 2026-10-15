@@ -51,7 +51,7 @@
 	}
 
 	:global(.ant-table-summary > tr > td) {
-		height: 52px;
+		height: 56px;
 		border-top: 1px solid var(--gd-color-border);
 	}
 }
@@ -76,6 +76,6 @@
 }
 
 .hours {
-	width: 52px;
+	width: 56px;
 	font-feature-settings: "tnum";
 }

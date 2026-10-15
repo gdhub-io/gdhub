@@ -85,7 +85,7 @@ export function DraftCard({
 								{
 									key: "discard",
 									danger: true,
-									icon: <IconTrash size={16} stroke={1.6} />,
+									icon: <IconTrash size={16} />,
 									label: t("checkpoints.draft.discard", "Discard draft"),
 									disabled: discarding,
 								},
@@ -96,7 +96,7 @@ export function DraftCard({
 						<Button
 							type="text"
 							loading={discarding}
-							icon={<IconDotsVertical size={18} stroke={1.6} />}
+							icon={<IconDotsVertical size={16} />}
 							aria-label={t("checkpoints.draft.more", "More")}
 						/>
 					</Dropdown>

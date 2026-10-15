@@ -71,9 +71,7 @@ function Strip({ view, animate }: { view: PulseViewDto; animate: boolean }) {
 									own && animate && styles.landed,
 								)}
 							>
-								{cell.state === "missed" ? (
-									<IconMinus size={14} stroke={2} />
-								) : undefined}
+								{cell.state === "missed" ? <IconMinus size={14} /> : undefined}
 							</PulseCell>
 							<Text
 								className={clsx(
@@ -262,14 +260,14 @@ export function PulseCard({ view: initial, token }: PulseCardProps) {
 				type="primary"
 				size="large"
 				block
-				icon={<IconCheck size={20} stroke={2} />}
+				icon={<IconCheck size={20} />}
 				loading={confirm.isPending}
 				onClick={onConfirm}
 			>
 				{t("pulse.open.confirm", "Yes, I was")}
 			</Button>
 			<Flex gap={8} className={styles.hint}>
-				<IconInfoCircle size={16} stroke={2} className={styles.hintIcon} />
+				<IconInfoCircle size={16} className={styles.hintIcon} />
 				<Text type="secondary" className={styles.hintText}>
 					{t(
 						"pulse.open.hint",

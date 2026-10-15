@@ -133,7 +133,7 @@ export function ArtifactPicker({
 					action={
 						<Button
 							type="primary"
-							icon={<IconPlus size={16} stroke={2} />}
+							icon={<IconPlus size={16} />}
 							onClick={() => setAddOpen(true)}
 						>
 							{t("checkpoints.evidence.add", "Add new")}
@@ -150,14 +150,14 @@ export function ArtifactPicker({
 						allowClear
 						value={search}
 						onChange={(event) => setSearch(event.target.value)}
-						prefix={<IconSearch size={16} stroke={1.6} />}
+						prefix={<IconSearch size={16} />}
 						placeholder={t(
 							"checkpoints.evidence.search",
 							"Search the project's artifacts",
 						)}
 					/>
 					<Button
-						icon={<IconPlus size={16} stroke={2} />}
+						icon={<IconPlus size={16} />}
 						onClick={() => setAddOpen(true)}
 					>
 						{t("checkpoints.evidence.add", "Add new")}

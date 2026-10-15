@@ -57,7 +57,7 @@ export function CuratorMessage({
 				</AppAvatar>
 			) : (
 				<span className={styles.avatar}>
-					<IconSparkles size={22} />
+					<IconSparkles size={24} />
 				</span>
 			)}
 			<div className={styles.body}>

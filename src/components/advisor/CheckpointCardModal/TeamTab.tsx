@@ -59,6 +59,7 @@ export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 						)}
 					>
 						{cell?.state === "confirmed" && (
+							// A tick under 16px inside a box needs the heavier stroke to read.
 							<IconCheck size={14} stroke={2.4} />
 						)}
 						{cell?.state === "waiting" && <span className={pulse.waitingDot} />}
@@ -109,7 +110,7 @@ export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 						title: t("advisor.project.role", "Role"),
 						key: "role",
 						render: (_: unknown, member: Member) => (
-							<Flex vertical gap={2}>
+							<Flex vertical gap={4}>
 								<Flex align="center" gap={8}>
 									<Text ellipsis>{member.position ?? "—"}</Text>
 									{member.isFounder && (

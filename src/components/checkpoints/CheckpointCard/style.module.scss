@@ -127,8 +127,8 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 	border: 1.5px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-chip);
 	color: var(--gd-color-surface);
@@ -157,10 +157,10 @@
 
 .reworded {
 	position: absolute;
-	top: -5px;
-	right: -5px;
-	width: 10px;
-	height: 10px;
+	top: calc(var(--gd-space-3) / -2);
+	right: calc(var(--gd-space-3) / -2);
+	width: var(--gd-space-3);
+	height: var(--gd-space-3);
 	box-shadow: 0 0 0 2px var(--gd-color-surface);
 }
 
@@ -169,8 +169,8 @@
 }
 
 .legendSquare {
-	width: 12px;
-	height: 12px;
+	width: var(--gd-space-3);
+	height: var(--gd-space-3);
 	border-width: 1px;
 }
 

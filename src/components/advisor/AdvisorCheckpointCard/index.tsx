@@ -43,8 +43,8 @@ export function AdvisorCheckpointCard({
 			<Flex gap={12} align="flex-start">
 				<IconTile icon={IconDeviceGamepad2} size="lg" />
 
-				<Flex vertical gap={6} className={styles.text}>
-					<Flex vertical gap={2}>
+				<Flex vertical gap={8} className={styles.text}>
+					<Flex vertical gap={4}>
 						<Typography.Text className={styles.project}>
 							{checkpoint.project.name}
 						</Typography.Text>

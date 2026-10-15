@@ -21,7 +21,7 @@
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--gd-space-1);
 	height: auto;
 	min-width: 0;
 	padding: var(--gd-space-2) 0;

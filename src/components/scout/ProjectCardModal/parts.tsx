@@ -54,7 +54,7 @@ export function Person({
 	size?: number;
 }) {
 	return (
-		<Flex align="center" gap={10} className={styles.person}>
+		<Flex align="center" gap={12} className={styles.person}>
 			<AppAvatar size={size} src={image}>
 				{name?.charAt(0)}
 			</AppAvatar>

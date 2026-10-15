@@ -48,7 +48,7 @@ export function SprintTrack({
 				);
 
 				return (
-					<Flex key={sprint.number} vertical gap={10} className={styles.sprint}>
+					<Flex key={sprint.number} vertical gap={12} className={styles.sprint}>
 						{/* ui-guard-ignore a two-part bar with a striped remainder; antd Progress draws one fill */}
 						<div className={clsx(styles.bar, styles[sprint.state])}>
 							{sprint.state === "current" && (
@@ -60,12 +60,11 @@ export function SprintTrack({
 						</div>
 						<Flex gap={8} align="flex-start">
 							<Icon
-								size={18}
-								stroke={1.8}
+								size={16}
 								className={clsx(styles.sprintIcon, styles[sprint.state])}
 							/>
-							<Flex vertical gap={2}>
-								<Flex gap={6} align="baseline" wrap>
+							<Flex vertical gap={4}>
+								<Flex gap={8} align="baseline" wrap>
 									<Typography.Text strong className={styles.sprintName}>
 										{t("checkpoints.card.sprint", "Sprint {n}", {
 											n: sprint.number,

@@ -191,7 +191,9 @@ heights, control sizes: all multiples of 4, off the scale above.
 - **Type** — 13 / 14 / 16 / 20 / 24 / 32, with line heights as ratios. Type is
   sized by reading distance, not by a grid.
 - **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes
-  follow the set (14 / 16 / 20 / 24), not the spacing scale.
+  follow the set (14 / 16 / 20 / 24), not the spacing scale. Icons use Tabler's
+  default stroke 2; a heavier stroke only on a tick under 16px inside a box (a task
+  square, a pulse check).
 
 Optical beats mathematical where they disagree. An icon centred by its bounding
 box next to text usually sits a fraction low; trust the eye, then write the

@@ -203,7 +203,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						<Button
 							type="text"
 							size="small"
-							icon={<IconSelector size={12} />}
+							icon={<IconSelector size={14} />}
 							className={styles.boundaryLabel}
 							onClick={() => setEarlierOpen(true)}
 						>
@@ -333,7 +333,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 								<PathNode marker="none" space={12}>
 									<Divider plain>
 										<span className={styles.boundaryLabel}>
-											<IconFlag size={12} />
+											<IconFlag size={14} />
 											{t(
 												"workflow.path.checkpoint.started",
 												"Checkpoint {number} started · {date}",
