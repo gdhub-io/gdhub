@@ -54,8 +54,8 @@ export function ClosedStage({
 								"The call is over. The plan and the review of it are below.",
 							)
 						: t(
-								"checkpoints.call.overText",
-								"The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready.",
+								"checkpoints.call.overSoon",
+								"The call is over. The plan is below, and the review of the call will be here within two hours — everyone gets a letter when it's ready.",
 							)
 				}
 				actions={

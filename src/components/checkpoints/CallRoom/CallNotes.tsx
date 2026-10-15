@@ -58,12 +58,12 @@ export function NotesBody({
 			<EmptyState
 				icon={IconHourglass}
 				title={t(
-					"checkpoints.call.notes.pendingTitle",
-					"The summary is on its way",
+					"checkpoints.call.notes.pendingReviewTitle",
+					"The review is on its way",
 				)}
 				description={t(
-					"checkpoints.call.notes.pendingText",
-					"The transcript and summary of this call are ready within 24 hours. We'll email you when they are.",
+					"checkpoints.call.notes.pendingSoon",
+					"The review of this call is written from its recording within two hours. We'll email you when it's ready.",
 				)}
 			/>
 		);

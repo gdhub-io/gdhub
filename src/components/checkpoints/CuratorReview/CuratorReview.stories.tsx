@@ -200,7 +200,7 @@ function ProPage({
 				) : (
 					<ClosedStage
 						call={call}
-						notesReady={call.sessions[call.index - 1].held}
+						notesReady={call.sessions[call.index - 1].contentStatus === "Ready"}
 						onChat={noop}
 						onOpenReview={() => setTab("notes")}
 						now={new Date(now)}
@@ -229,7 +229,7 @@ function ProPage({
 						notes={
 							held
 								? {
-										contentStatus: "Ready",
+										contentStatus: call.sessions[selected - 1].contentStatus,
 										content: notes(selected - 1, selected === 5),
 										transcript: null,
 									}
@@ -440,6 +440,23 @@ export const ProDay1Call: Story = {
 			live
 		/>
 	),
+};
+
+/** Day 1, right after call 1: the plan is agreed, its notes are still being written. */
+export const ProDay1AfterCall: Story = {
+	name: "Pro · day 1, after call 1",
+	render: () => {
+		const call = proCall(1, "over", 1, startTasks);
+		call.sessions[0].contentStatus = null;
+		return (
+			<ProPage
+				call={call}
+				now="2026-10-01T13:10:00.000Z"
+				shown={1}
+				tab="notes"
+			/>
+		);
+	},
 };
 
 /** Day 3: call 1 set the plan; the last checkpoint's verdict still frames it. */

@@ -862,6 +862,8 @@
 				"nothingOutside": "Nothing came up beyond the plan.",
 				"option": "Call {index} · {date}",
 				"outsidePlan": "Outside the plan",
+				"pendingReviewTitle": "The review is on its way",
+				"pendingSoon": "The review of this call is written from its recording within two hours. We'll email you when it's ready.",
 				"pendingText": "The transcript and summary of this call are ready within 24 hours. We'll email you when they are.",
 				"pendingTitle": "The summary is on its way",
 				"questions": "Open questions",
@@ -877,6 +879,7 @@
 			"overLine": "The plan and the notes from it are below.",
 			"overReady": "The call is over. The plan and the notes from it are below.",
 			"overReadyReview": "The call is over. The plan and the review of it are below.",
+			"overSoon": "The call is over. The plan is below, and the review of the call will be here within two hours — everyone gets a letter when it's ready.",
 			"overText": "The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready.",
 			"panel": {
 				"ahead": "This call is still ahead",
