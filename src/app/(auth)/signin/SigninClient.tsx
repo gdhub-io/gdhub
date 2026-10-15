@@ -8,6 +8,10 @@ import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
+import {
+	CHECKPOINT_ENTRY_HREF,
+	CHECKPOINT_INTENT,
+} from "@/components/checkpoint-landing/constants";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
 
@@ -111,7 +115,14 @@ export function SigninClient() {
 								>
 									{t("signin.google.title", "Log in with Google")}
 								</Button>
-								<Link href="/registration" className={styles.createAccountLink}>
+								<Link
+									href={
+										callbackUrl.startsWith(CHECKPOINT_ENTRY_HREF)
+											? `/registration?intent=${CHECKPOINT_INTENT}`
+											: "/registration"
+									}
+									className={styles.createAccountLink}
+								>
 									{t("signin.createAccount.title", "Create new account")}
 								</Link>
 								<Link href={`/`}>

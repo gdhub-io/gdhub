@@ -1,0 +1,87 @@
+.panel {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	// Same height in every state: the action slot keeps a control's height even
+	// when it only holds the lock.
+	min-height: calc(var(--gd-control-height) + 2 * var(--gd-space-4));
+	padding: var(--gd-space-4) var(--gd-space-6);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.title {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+}
+
+.line.line {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body);
+}
+
+.row[data-state="locked"] {
+	.title {
+		color: var(--gd-color-text-secondary);
+	}
+
+	.line {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.action {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.lock {
+	color: var(--gd-color-text-tertiary);
+}
+
+.projectLine {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+}
+
+.ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@media screen and (max-width: 599px) {
+	.row {
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
+
+	.body {
+		flex-basis: calc(100% - var(--gd-space-6) - var(--gd-space-4));
+	}
+
+	.action {
+		width: 100%;
+		justify-content: flex-start;
+		padding-left: calc(var(--gd-space-6) + var(--gd-space-4));
+	}
+}
