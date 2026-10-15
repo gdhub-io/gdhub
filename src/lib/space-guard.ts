@@ -109,8 +109,9 @@ export function withSpaceGuard(options: SpaceGuardOptions) {
 		handler: Handler<L & { access: SpaceAccess; user: SessionUser }>,
 	): Handler<L> {
 		return async (req, ctx, locals) => {
-			const session = await auth();
-			const user = (locals.user ?? session?.user ?? null) as MaybeAccessUser;
+			const user = (locals.user ??
+				(await auth())?.user ??
+				null) as MaybeAccessUser;
 
 			if (!user) return apiError.unauthorized();
 

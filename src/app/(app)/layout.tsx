@@ -1,5 +1,5 @@
+import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
-import { auth } from "@/auth";
 import { AccessProvider } from "@/components/access/AccessProvider";
 import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { ProtectedShell } from "@/components/layouts/ProtectedShell";
@@ -20,9 +20,7 @@ import { toSnapshot } from "@/services/access/snapshot";
  * Per-space access checks live in the space's own layout via `createSpaceGate`.
  */
 export default async function AppLayout({ children }: { children: ReactNode }) {
-	await requireSession();
-
-	const session = await auth();
+	const session = await requireSession();
 	const user = (session?.user ?? null) as MaybeAccessUser;
 
 	const [hub, admin] = await Promise.all([
@@ -30,15 +28,20 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 		getSpaceAccess("admin", null, user),
 	]);
 
+	// The root provider has no session to start with and fetches it after
+	// hydration; handing over the one read here lets every query gated on the
+	// user start straight away.
 	return (
-		<ChatProvider>
-			<AccessProvider
-				value={{ hub: toSnapshot(hub), admin: toSnapshot(admin) }}
-			>
-				<SpaceHeaderProvider>
-					<ProtectedShell>{children}</ProtectedShell>
-				</SpaceHeaderProvider>
-			</AccessProvider>
-		</ChatProvider>
+		<SessionProvider session={session}>
+			<ChatProvider>
+				<AccessProvider
+					value={{ hub: toSnapshot(hub), admin: toSnapshot(admin) }}
+				>
+					<SpaceHeaderProvider>
+						<ProtectedShell>{children}</ProtectedShell>
+					</SpaceHeaderProvider>
+				</AccessProvider>
+			</ChatProvider>
+		</SessionProvider>
 	);
 }

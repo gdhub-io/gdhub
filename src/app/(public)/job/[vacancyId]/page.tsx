@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import { JobPageClient, type JobPageProps } from "./JobPageClient";
 
 type Params = Promise<{ vacancyId: string }>;
@@ -99,7 +99,7 @@ export default async function JobPage({ params }: { params: Params }) {
 
 	const [vacancy, session] = await Promise.all([
 		loadVacancy(vacancyId),
-		auth(),
+		getSession(),
 	]);
 	if (!vacancy) notFound();
 

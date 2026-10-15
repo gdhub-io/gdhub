@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import { prisma } from "@/services/prisma";
 import { ExpertPageClient } from "./ExpertPageClient";
 
@@ -56,7 +56,7 @@ export async function generateMetadata({
 
 export default async function ExpertPage({ params }: { params: Params }) {
 	const { specialityId } = await params;
-	const session = await auth();
+	const session = await getSession();
 	const expert = await loadExpert(specialityId);
 	if (!expert) notFound();
 
