@@ -205,7 +205,11 @@ function ProPage({
 					{call.previous && (
 						<PreviousVerdict previous={call.previous} resultsHref="#" />
 					)}
-					<GoalCard goal={GOAL} editable={false} />
+					<GoalCard
+						goal={GOAL}
+						editable={call.plan.edit === "goalAndTasks"}
+						onSave={saved}
+					/>
 					<PanelBlock
 						sessions={call.sessions}
 						current={call.index}
@@ -399,6 +403,20 @@ export const ProDay1: Story = {
 			now="2026-10-01T09:00:00.000Z"
 			shown={1}
 			tab="plan"
+		/>
+	),
+};
+
+/** Day 1, in call 1: the goal and the tasks are agreed together, edited as they talk. */
+export const ProDay1Call: Story = {
+	name: "Pro · day 1, in call 1",
+	render: () => (
+		<ProPage
+			call={proCall(1, "open", 0, startTasks.slice(0, 2), "goalAndTasks")}
+			now="2026-10-01T12:20:00.000Z"
+			shown={1}
+			tab="plan"
+			live
 		/>
 	),
 };
