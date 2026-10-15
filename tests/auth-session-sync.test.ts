@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.hoisted(() => {
-	process.env.NEXTAUTH_SECRET ??= "test-secret";
+	process.env.NEXTAUTH_SECRET ||= "test-secret";
 });
 
 const findUnique = vi.fn();
@@ -13,6 +13,10 @@ vi.mock("next-auth", () => ({
 	default: () => ({ handlers: {}, auth: vi.fn(), signIn: vi.fn(), signOut: vi.fn() }),
 }));
 vi.mock("@auth/prisma-adapter", () => ({ PrismaAdapter: () => ({}) }));
+// CI copies .env.example, where provider settings are empty; only the jwt
+// callback is under test.
+vi.mock("next-auth/providers/nodemailer", () => ({ default: () => ({}) }));
+vi.mock("next-auth/providers/google", () => ({ default: () => ({}) }));
 vi.mock("@/services/brevo", () => ({ brevoApi: {} }));
 vi.mock("@/services/matrix/admin", () => ({
 	ensureMatrixUser: (...args: unknown[]) => ensureMatrixUser(...args),
