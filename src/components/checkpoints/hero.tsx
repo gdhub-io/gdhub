@@ -58,7 +58,7 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 		}),
 		titleExtra: (
 			<>
-				<Tag variant="filled">{checkpoint.stageName}</Tag>
+				<Tag className="gd-tag-on-page">{checkpoint.stageName}</Tag>
 				{!running && <CheckpointStatusSlot checkpoint={checkpoint} />}
 			</>
 		),

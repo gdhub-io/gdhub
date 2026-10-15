@@ -6,8 +6,15 @@ import {
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import type Stripe from "stripe";
-import { CHECKPOINT_AI_PRICE, CHECKPOINT_CURRENCY } from "@/config/checkpoint";
+import {
+	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_CURRENCY,
+	SESSIONS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { dateOfDay } from "@/lib/checkpoint-plan";
+import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	bookSessions,
 	isFirstCallFree,
@@ -313,10 +320,7 @@ export const settleCheckpointCheckout = async (
 	}
 
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
-		await prisma.projectCheckpoint.update({
-			where: { id: payment.payableId },
-			data: { status: CheckpointStatus.Active, paymentId: payment.id },
-		});
+		await startAiCheckpoint(payment.payableId, payment.id);
 		return true;
 	}
 
@@ -351,6 +355,47 @@ export const settleCheckpointCheckout = async (
 	}
 
 	return true;
+};
+
+/**
+ * The AI curator starts on payment. The day picked may have passed while the
+ * draft waited to be paid, so it starts today at the earliest; the goal is the
+ * one paid for; and its five review days are written like a person's calls.
+ */
+export const startAiCheckpoint = async (
+	checkpointId: string,
+	paymentId: string,
+	now = new Date(),
+) => {
+	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
+		where: { id: checkpointId },
+		select: { startedAt: true },
+	});
+	const today = utcStartOfDay(now);
+	const picked = checkpoint.startedAt && utcStartOfDay(checkpoint.startedAt);
+	const startedAt = picked && picked > today ? picked : today;
+
+	await prisma.$transaction([
+		prisma.projectCheckpoint.update({
+			where: { id: checkpointId },
+			data: {
+				status: CheckpointStatus.Active,
+				paymentId,
+				startedAt,
+				dueAt: dueDateFrom(startedAt),
+				goalAgreedAt: now,
+				goalAgreedById: null,
+			},
+		}),
+		prisma.checkpointSession.deleteMany({ where: { checkpointId } }),
+		prisma.checkpointSession.createMany({
+			data: Array.from({ length: SESSIONS_PER_CHECKPOINT }, (_, offset) => ({
+				checkpointId,
+				index: offset + 1,
+				scheduledAt: dateOfDay(startedAt, sessionDay(offset + 1)),
+			})),
+		}),
+	]);
 };
 
 type PendingCheckout = {

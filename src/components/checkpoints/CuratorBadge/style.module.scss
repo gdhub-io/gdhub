@@ -4,7 +4,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--gd-space-2);
-	padding: 4px var(--gd-space-3) 4px 4px;
+	padding: var(--gd-space-1) var(--gd-space-3) var(--gd-space-1) var(--gd-space-1);
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-pill);
 	corner-shape: round;
@@ -18,7 +18,7 @@
 	flex: none;
 	width: 26px;
 	height: 26px;
-	border-radius: var(--gd-space-2);
+	border-radius: var(--gd-radius-chip);
 	background: var(--gd-color-surface-sunken);
 	color: var(--gd-color-text);
 }

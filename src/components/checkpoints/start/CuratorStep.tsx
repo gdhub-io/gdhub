@@ -158,6 +158,7 @@ export function CuratorStep() {
 		name: string,
 		description: string,
 	) => (
+		// ui-guard-ignore frame 04 type card: a whole-card choice with a tile, two lines and a radio
 		<button
 			type="button"
 			className={styles.option}
@@ -205,7 +206,7 @@ export function CuratorStep() {
 				</Button>
 			}
 		>
-			<Flex vertical gap={24} className={styles.choices}>
+			<Flex vertical gap={24}>
 				<div>
 					<Typography.Text className={styles.label}>
 						{t("checkpoints.curator.typeLabel", "Curator type")}
@@ -297,9 +298,7 @@ export function CuratorStep() {
 							>
 								<Flex gap={8} wrap>
 									{reviewDays.map((date) => (
-										<Tag key={date.toISOString()} variant="filled">
-											{date.format("D MMM")}
-										</Tag>
+										<Tag key={date.toISOString()}>{date.format("D MMM")}</Tag>
 									))}
 								</Flex>
 							</SummaryRow>

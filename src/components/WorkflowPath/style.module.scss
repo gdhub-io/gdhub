@@ -147,7 +147,7 @@
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--gd-space-1);
 	min-width: 0;
 }
 
@@ -158,7 +158,6 @@
 
 .activitySub,
 .activityWhen,
-.activityBoundaryLabel,
 .activityMore {
 	font-size: var(--gd-font-size-caption);
 }
@@ -168,24 +167,9 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-.activityBoundary {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-3);
-}
-
-.activityLine {
-	flex: 1;
-	height: 1px;
-	background: var(--gd-color-border-strong);
-}
-
-.activityBoundaryLabel {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gd-space-2);
-	font-weight: 500;
-	color: var(--gd-color-text-secondary);
+// The list's own gap spaces it; antd's divider margin would double it.
+.activityBoundary.activityBoundary {
+	margin: 0;
 }
 
 .activityMore {
@@ -513,9 +497,6 @@
 }
 
 .quiet {
-	height: 32px;
-	padding: 0 var(--gd-space-2);
-	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-secondary);
 }
 
@@ -756,9 +737,6 @@ button.checklistItem {
 }
 
 .viewResults {
-	height: 32px;
-	padding: 0 var(--gd-space-2);
-	font-size: var(--gd-font-size-body-sm);
 	font-weight: 500;
 }
 
@@ -769,10 +747,6 @@ button.checklistItem {
 	gap: var(--gd-space-2);
 	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-secondary);
-
-	:global(.ant-tag) {
-		margin: 0;
-	}
 }
 
 .secondary {
@@ -894,9 +868,6 @@ button.checklistItem {
 
 .upNextTitle {
 	padding: var(--gd-space-2) 0 var(--gd-space-4);
-	font-size: var(--gd-font-size-h3);
-	font-weight: 600;
-	color: var(--gd-color-text);
 }
 
 .futureSprint {
@@ -1104,7 +1075,7 @@ button.checklistItem {
 .pulseWho {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--gd-space-1);
 	min-width: 0;
 }
 
@@ -1232,9 +1203,9 @@ button.checklistItem {
 	color: var(--gd-color-text-tertiary);
 }
 
-.divider {
-	height: 1px;
-	background: var(--gd-color-border);
+// Spaced by the column's gap, not antd's divider margin.
+.divider.divider {
+	margin: 0;
 }
 
 .result {
@@ -1254,19 +1225,6 @@ button.checklistItem {
 		var(--gd-color-accent-subtle),
 		var(--gd-warning-tint)
 	);
-}
-
-.offerButton.offerButton {
-	background: var(--gd-color-accent);
-	font-weight: 600;
-
-	&:not(:disabled):hover {
-		background: var(--gd-color-accent-hover);
-	}
-
-	&:disabled {
-		background: var(--gd-fill-subtle);
-	}
 }
 
 .offerFacts > * {
@@ -1348,4 +1306,12 @@ button.checklistItem {
 	padding: var(--gd-space-4);
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-card);
+}
+
+// Frame 07.7 (i0ia1Y): a "Ready for the next stage" verdict opens the next stage.
+.afterNextStage {
+	padding: var(--gd-space-4);
+	border: 1px solid color-mix(in srgb, var(--gd-success-solid) 30%, transparent);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-success-tint);
 }

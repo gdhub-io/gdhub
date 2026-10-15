@@ -4,6 +4,7 @@ import { IconCheck, IconInfoCircle } from "@tabler/icons-react";
 import { Card, Flex, Tag, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import { BOX_TICK_STROKE } from "@/components/ui";
 import styles from "./style.module.scss";
 
 export type AskGlyph = "open" | "todo" | "done";
@@ -74,7 +75,9 @@ export function AskPanel({
 				{rows.map((row) => (
 					<div key={row.key} className={styles.row}>
 						<span className={clsx(styles.glyph, styles[row.glyph])}>
-							{row.glyph === "done" && <IconCheck size={12} stroke={2.4} />}
+							{row.glyph === "done" && (
+								<IconCheck size={14} stroke={BOX_TICK_STROKE} />
+							)}
 							{row.glyph === "open" && <span className={styles.dot} />}
 						</span>
 
@@ -83,11 +86,7 @@ export function AskPanel({
 								<Typography.Text className={styles.name}>
 									{row.title}
 								</Typography.Text>
-								{!!row.owner && (
-									<Tag variant="filled" className={styles.owner}>
-										{row.owner}
-									</Tag>
-								)}
+								{!!row.owner && <Tag>{row.owner}</Tag>}
 								<span className={styles.spacer} />
 								{!!row.due && (
 									<span

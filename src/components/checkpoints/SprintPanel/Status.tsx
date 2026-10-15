@@ -82,8 +82,8 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 	if (facts.scopeOpen) {
 		// The tasks change on call 3 itself, with the curator; the row leads there.
 		const callHref = project?.slug
-			? `/user/project/${project.slug}/workflow/cp${checkpoint.number ?? 1}/call/${SCOPE_SESSION}`
-			: `/advisor/checkpoints/${checkpoint.id}/call/${SCOPE_SESSION}`;
+			? `/user/project/${project.slug}/workflow/cp${checkpoint.number ?? 1}/review/${SCOPE_SESSION}`
+			: `/advisor/checkpoints/${checkpoint.id}/review/${SCOPE_SESSION}`;
 		open.push({
 			key: "scope",
 			glyph: "open",

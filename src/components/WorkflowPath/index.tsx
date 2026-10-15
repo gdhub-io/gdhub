@@ -4,20 +4,18 @@ import {
 	IconSelector,
 	IconShieldCheck,
 } from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
-import WorkflowTasksPanel from "@/components/WorkflowContent/WorkflowTasksPanel";
-import { CheckpointStatus } from "@/config/prisma-enums";
+import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
-import type { ProjectWorkflowWithSteps } from "@/types/workflow";
-import { ActivityFeed } from "./ActivityFeed";
+
 import { AfterVerdict } from "./AfterVerdict";
-import { CheckpointAside } from "./CheckpointAside";
+
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { CuratorAccepted } from "./CuratorAccepted";
@@ -26,6 +24,7 @@ import { PathBranch, PathNode } from "./PathNode";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 import { StageCard } from "./StageCard";
 import styles from "./style.module.scss";
+import { useProjectWorkflow, WorkflowAside } from "./WorkflowAside";
 
 const { Text } = Typography;
 
@@ -54,20 +53,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const [equityOpen, setEquityOpen] = useState(false);
 	const [earlierOpen, setEarlierOpen] = useState(false);
 
-	const { data: workflow, refetch } = useQuery({
-		// VacancyModal caches the raw response under ["project-workflow", id].
-		queryKey: ["project-workflow", project.id, "path"],
-		queryFn: async () =>
-			(
-				await axios.get<ProjectWorkflowWithSteps>(
-					"/api/user/project/workflow",
-					{
-						params: { projectId: project.id },
-					},
-				)
-			).data,
-		refetchOnWindowFocus: false,
-	});
+	const { data: workflow, refetch } = useProjectWorkflow(project.id);
 	const { data: list } = useCheckpoints(
 		can("project.checkpoints.view") ? project.id : undefined,
 		1,
@@ -176,6 +162,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const historyButton = (label: string, onClick: () => void) => (
 		<Button
 			type="text"
+			size="small"
 			className={styles.quiet}
 			icon={<IconHistory size={16} />}
 			onClick={onClick}
@@ -216,7 +203,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						<Button
 							type="text"
 							size="small"
-							icon={<IconSelector size={12} />}
+							icon={<IconSelector size={14} />}
 							className={styles.boundaryLabel}
 							onClick={() => setEarlierOpen(true)}
 						>
@@ -346,7 +333,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 								<PathNode marker="none" space={12}>
 									<Divider plain>
 										<span className={styles.boundaryLabel}>
-											<IconFlag size={12} />
+											<IconFlag size={14} />
 											{t(
 												"workflow.path.checkpoint.started",
 												"Checkpoint {number} started · {date}",
@@ -391,6 +378,24 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 											project={project}
 											locked={locked}
 											onOwn={() => goOwn(afterVerdict.checkpoint.id)}
+											move={
+												afterVerdict.checkpoint.verdict ===
+													CheckpointVerdict.StageClosed &&
+												canMove &&
+												nextStep
+													? {
+															stage: stepName(current.order + 1),
+															onClick: goNext,
+															loading: move.isPending,
+															lockedReason: requiredOpen
+																? t(
+																		"workflow.path.stage.locked",
+																		"Finish the required tasks to move on",
+																	)
+																: null,
+														}
+													: undefined
+											}
 										/>
 									</PathNode>
 								)}
@@ -423,25 +428,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				)}
 			</div>
 
-			<aside className={styles.aside}>
-				{running && detail && (
-					<CheckpointAside checkpoint={detail} canManage={canManage} />
-				)}
-				<WorkflowTasksPanel
-					tasks={current.tasks.map((task) => ({
-						id: task.id,
-						label: task.name || task.description || "",
-						description: task.name ? task.description : null,
-						required: task.required,
-						done: task.done,
-					}))}
-					showHint={false}
-				/>
-				<ActivityFeed
-					projectId={project.id}
-					sprints={running && detail ? detail.sprints : undefined}
-				/>
-			</aside>
+			<WorkflowAside projectId={project.id} checkpointId={running?.id} />
 
 			<Modal
 				centered

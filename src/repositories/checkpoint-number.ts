@@ -1,5 +1,7 @@
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { currentSprint } from "@/lib/checkpoint-sprints";
 import { prisma } from "@/services/prisma";
+import type { PreviousVerdict } from "@/types/checkpoints";
 
 /**
  * The checkpoint's number through the whole project: the ones before it that
@@ -37,3 +39,40 @@ export const checkpointIdByNumber = async (
 			select: { id: true },
 		})
 	)?.id ?? null;
+
+/**
+ * The verdict of the checkpoint before this one, while this one is in its
+ * first sprint — where it is the starting position. Null after that, or when
+ * there was none.
+ */
+export const previousVerdict = async (
+	checkpoint: { projectId: string; createdAt: Date; startedAt: Date | null },
+	now = new Date(),
+): Promise<PreviousVerdict | null> => {
+	if (!checkpoint.startedAt || currentSprint(checkpoint.startedAt, now) > 1) {
+		return null;
+	}
+	const previous = await prisma.projectCheckpoint.findFirst({
+		where: {
+			projectId: checkpoint.projectId,
+			createdAt: { lt: checkpoint.createdAt },
+			status: CheckpointStatus.Closed,
+			verdict: { not: null },
+		},
+		orderBy: { createdAt: "desc" },
+		select: {
+			id: true,
+			projectId: true,
+			createdAt: true,
+			verdict: true,
+			verdictNote: true,
+		},
+	});
+	if (!previous?.verdict) return null;
+	return {
+		checkpointId: previous.id,
+		number: await checkpointNumber(previous),
+		verdict: previous.verdict,
+		note: previous.verdictNote,
+	};
+};

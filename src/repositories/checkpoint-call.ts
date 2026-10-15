@@ -13,7 +13,10 @@ import {
 	planEdit,
 } from "@/lib/checkpoint-call";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
+import {
+	checkpointNumber,
+	previousVerdict,
+} from "@/repositories/checkpoint-number";
 import { agreeGoal, canEditPlan } from "@/repositories/checkpoint-plan-edit";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
@@ -25,7 +28,13 @@ import {
 	transcriptOfJob,
 } from "@/services/daily";
 import { prisma } from "@/services/prisma";
-import type { CallNotes, CheckpointArtifactRef } from "@/types/checkpoints";
+import type {
+	CallNotes,
+	CheckpointArtifactRef,
+	CuratorReview,
+	PlanAdvice,
+	PreviousVerdict,
+} from "@/types/checkpoints";
 
 /** Calls are held while the checkpoint runs, the final one while it is judged. */
 const CALL_STATUSES: CheckpointStatus[] = [
@@ -36,20 +45,23 @@ const CALL_STATUSES: CheckpointStatus[] = [
 export type CallRole = "curator" | "team";
 
 export type CheckpointCallDto = {
+	/** The last checkpoint's verdict, through this one's first sprint. */
+	previous: PreviousVerdict | null;
 	checkpointId: string;
 	index: number;
 	number: number;
 	stageName: string;
-	project: { name: string; slug: string };
+	project: { id: string; name: string; slug: string };
 	curator: { id: string; name: string; image: string | null };
 	scheduledAt: string;
-	opensAt: string;
 	state: CallState;
 	curatorJoinedAt: string | null;
 	role: CallRole;
 	plan: {
 		goal: string;
 		goalAgreedAt: string | null;
+		/** The AI's advice on the author's draft, before call 1. */
+		advice: PlanAdvice | null;
 		/** What the caller may change now; null for those who only read. */
 		edit: PlanEdit;
 		tasks: {
@@ -90,6 +102,7 @@ const loadCall = async (
 				select: {
 					projectId: true,
 					createdAt: true,
+					startedAt: true,
 					stageName: true,
 					status: true,
 					curator: user,
@@ -140,12 +153,14 @@ export const getCall = async (
 	if (!call) return null;
 	const { session, checkpoint, curator } = call;
 
-	const [number, plan] = await Promise.all([
+	const [number, previous, plan] = await Promise.all([
 		checkpointNumber(checkpoint),
+		previousVerdict(checkpoint, now),
 		prisma.projectCheckpoint.findUniqueOrThrow({
 			where: { id: checkpointId },
 			select: {
 				curatorId: true,
+				curatorKind: true,
 				goal: true,
 				goalAgreedAt: true,
 				startedAt: true,
@@ -157,6 +172,7 @@ export const getCall = async (
 						scheduledAt: true,
 						endedAt: true,
 						contentStatus: true,
+						content: true,
 					},
 				},
 				items: {
@@ -182,22 +198,34 @@ export const getCall = async (
 		}),
 	]);
 
+	const edit = canEditPlan(plan, userId) ? planEdit(plan, now) : null;
+	// The draft advice lives on session 1 until call 1's notes replace it.
+	const draft =
+		edit === "plan" && !plan.sessions[0]?.contentStatus
+			? ((plan.sessions[0]?.content as CuratorReview | null)?.advice ?? null)
+			: null;
+
 	return {
 		checkpointId,
 		index,
 		number,
+		previous,
 		stageName: checkpoint.stageName,
-		project: { name: checkpoint.project.name, slug: checkpoint.project.slug },
+		project: {
+			id: checkpoint.projectId,
+			name: checkpoint.project.name,
+			slug: checkpoint.project.slug,
+		},
 		curator: { id: curator.id, name: curator.name ?? "", image: curator.image },
 		scheduledAt: session.scheduledAt.toISOString(),
-		opensAt: callWindow(session.scheduledAt).opensAt.toISOString(),
 		state: callState(session.scheduledAt, session.endedAt, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
 		role: call.role,
 		plan: {
 			goal: plan.goal,
 			goalAgreedAt: plan.goalAgreedAt?.toISOString() ?? null,
-			edit: canEditPlan(plan, userId) ? planEdit(plan, now) : null,
+			advice: draft,
+			edit,
 			tasks: plan.items.map((item) => ({
 				id: item.id,
 				text: item.text,

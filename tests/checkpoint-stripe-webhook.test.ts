@@ -27,10 +27,15 @@ vi.mock("@/repositories/advisor-availability", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		$transaction: vi.fn(),
-		checkpointSession: { deleteMany: vi.fn() },
+		checkpointSession: { deleteMany: vi.fn(), createMany: vi.fn() },
 		payment: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
 		paymentEvent: { create: vi.fn() },
-		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
+		projectCheckpoint: {
+			findUnique: vi.fn(),
+			findUniqueOrThrow: vi.fn(async () => ({ startedAt: null })),
+			update: vi.fn(),
+			updateMany: vi.fn(),
+		},
 		refund: { upsert: vi.fn() },
 	},
 }));

@@ -66,8 +66,8 @@ const SPACE: Record<PathMarker, 0 | 12 | 24 | 32 | 48> = {
 };
 
 const MARKER_ICON: Partial<Record<PathMarker, ReactNode>> = {
-	done: <IconCheck size={12} />,
-	stageDone: <IconCheck size={12} />,
+	done: <IconCheck size={14} />,
+	stageDone: <IconCheck size={14} />,
 	session: <IconVideo size={16} />,
 	review: <IconSparkles size={16} />,
 	gate: <IconFlag size={20} />,

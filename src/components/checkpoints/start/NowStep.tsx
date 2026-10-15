@@ -241,7 +241,7 @@ export function NowStep() {
 							<Typography.Text className={styles.statLabel}>
 								{t("checkpoints.now.yourTime", "You give a sprint")}
 							</Typography.Text>
-							<Flex gap={6} align="center">
+							<Flex gap={8} align="center">
 								<InputNumber
 									min={0}
 									max={80}
@@ -366,9 +366,12 @@ export function NowStep() {
 
 			{remark && (
 				<Flex gap={16} align="flex-start" className={styles.warning}>
-					<span className={styles.warningIcon}>
-						<IconAlertTriangle size={20} />
-					</span>
+					<IconTile
+						icon={IconAlertTriangle}
+						size="md"
+						tint="var(--gd-color-surface)"
+						ink="var(--gd-warning-solid)"
+					/>
 					<Flex vertical gap={4}>
 						<Flex gap={8} align="center" wrap>
 							<Typography.Text strong>
@@ -377,7 +380,7 @@ export function NowStep() {
 									"This goal may not fit the time you have",
 								)}
 							</Typography.Text>
-							<Tag icon={<IconSparkles size={12} />} className={styles.tag}>
+							<Tag icon={<IconSparkles size={14} />}>
 								{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
 							</Tag>
 						</Flex>

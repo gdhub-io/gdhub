@@ -4,6 +4,7 @@ import { IconCheck, IconFlag, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Tooltip, Typography } from "antd";
 import clsx from "clsx";
+import { BOX_TICK_STROKE } from "@/components/ui";
 import styles from "./style.module.scss";
 
 export type PathGlyph = "start" | "done" | "current" | "ahead" | "locked";
@@ -63,6 +64,7 @@ export function CheckpointPath({
 			</Typography.Text>
 
 			{steps.map((step) => (
+				// ui-guard-ignore a path row carries a state glyph, dates and a dot; antd Menu items are one line of text
 				<button
 					key={step.key}
 					type="button"
@@ -75,9 +77,11 @@ export function CheckpointPath({
 					onClick={() => onSelect(step.key)}
 				>
 					<span className={clsx(styles.glyph, styles[step.glyph])}>
-						{step.glyph === "done" && <IconCheck size={13} stroke={2.4} />}
-						{step.glyph === "start" && <IconFlag size={13} />}
-						{step.glyph === "locked" && <IconLock size={12} />}
+						{step.glyph === "done" && (
+							<IconCheck size={14} stroke={BOX_TICK_STROKE} />
+						)}
+						{step.glyph === "start" && <IconFlag size={14} />}
+						{step.glyph === "locked" && <IconLock size={14} />}
 						{step.glyph === "current" && <span className={styles.dot} />}
 					</span>
 

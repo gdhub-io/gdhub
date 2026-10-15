@@ -105,11 +105,7 @@ export function CheckpointsList() {
 				width: 48,
 				align: "center",
 				render: () => (
-					<IconChevronRight
-						size={18}
-						stroke={1.6}
-						className={styles.openHint}
-					/>
+					<IconChevronRight size={16} className={styles.openHint} />
 				),
 			},
 		],

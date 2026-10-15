@@ -72,7 +72,7 @@ export const useEndCall = (id: string, index: number) => {
 	});
 };
 
-/** One change to the plan; the call re-reads it before the promise settles. */
+/** One change to the plan; the page re-reads it before the promise settles. */
 export const useChangePlan = (id: string) => {
 	const queryClient = useQueryClient();
 
@@ -81,7 +81,10 @@ export const useChangePlan = (id: string) => {
 			await axios.patch(`/api/checkpoint/${id}/plan`, change);
 		},
 		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["checkpoint-call", id] }),
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["checkpoint-call", id] }),
+				queryClient.invalidateQueries({ queryKey: ["checkpoint-review", id] }),
+			]),
 	});
 };
 

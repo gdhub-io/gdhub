@@ -56,14 +56,14 @@ export function CheckpointCard({
 		// ui-guard-ignore the card keeps its own section: antd Card adds a body padding the frame does not have
 		<section className={styles.card}>
 			<Flex justify="space-between" align="center" gap={24} wrap>
-				<Flex vertical gap={6} className={styles.identity}>
-					<Flex gap={10} align="center" wrap>
+				<Flex vertical gap={8} className={styles.identity}>
+					<Flex gap={12} align="center" wrap>
 						<Typography.Text className={styles.title}>
 							{t("checkpoints.number", "Checkpoint {number}", {
 								number: checkpoint.order,
 							})}
 						</Typography.Text>
-						<Tag variant="filled">{checkpoint.stageName}</Tag>
+						<Tag>{checkpoint.stageName}</Tag>
 						{!running && <CheckpointStatusSlot checkpoint={checkpoint} />}
 					</Flex>
 					<Typography.Text className={styles.muted}>
@@ -78,9 +78,9 @@ export function CheckpointCard({
 				<SprintTrack sprints={checkpoint.sprints} day={checkpoint.day} />
 			)}
 
-			<Flex vertical gap={6} className={styles.goal}>
-				<Flex gap={6} align="center" className={styles.goalLabel}>
-					<IconFlag size={14} stroke={1.6} />
+			<Flex vertical gap={8} className={styles.goal}>
+				<Flex gap={8} align="center" className={styles.goalLabel}>
+					<IconFlag size={14} />
 					{t("checkpoints.card.goal", "Checkpoint goal")}
 				</Flex>
 				<Typography.Paragraph
@@ -101,10 +101,7 @@ export function CheckpointCard({
 						href ?? `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`
 					}
 				>
-					<Button
-						icon={<IconArrowRight size={18} stroke={1.6} />}
-						iconPlacement="end"
-					>
+					<Button icon={<IconArrowRight size={16} />} iconPlacement="end">
 						{t("checkpoints.open", "Open checkpoint")}
 					</Button>
 				</Link>

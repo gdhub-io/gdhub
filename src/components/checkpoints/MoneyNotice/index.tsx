@@ -93,13 +93,13 @@ export function MoneyNotice({ checkpoint, starting, inset }: MoneyNoticeProps) {
 			align="center"
 			className={`${styles.line}${inset ? ` ${styles.inset}` : ""}`}
 		>
-			<money.icon size={16} stroke={2} color={money.ink} />
+			<money.icon size={16} color={money.ink} />
 			<Typography.Text className={styles.text}>{money.title}</Typography.Text>
 			{hasReceipt && (
 				<Button
 					type="link"
 					size="small"
-					icon={<IconReceipt size={16} stroke={1.6} />}
+					icon={<IconReceipt size={16} />}
 					loading={fetching}
 					onClick={openReceipt}
 					className={styles.receipt}

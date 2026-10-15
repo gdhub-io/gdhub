@@ -29,6 +29,10 @@ import {
 	useState,
 } from "react";
 import {
+	CuratorAside,
+	teamProject,
+} from "@/components/checkpoints/CuratorReview/CuratorAside";
+import {
 	isCallRefusal,
 	useEndCall,
 	useJoinCall,
@@ -135,7 +139,14 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 				<CallLayout
 					header={headerNode}
 					stage={<Live call={call} />}
-					aside={<People call={call} />}
+					aside={
+						<CuratorAside
+							projectId={teamProject(call)}
+							checkpointId={call.checkpointId}
+						>
+							<People call={call} />
+						</CuratorAside>
+					}
 					below={below}
 				/>
 				<DailyAudio />
@@ -151,6 +162,12 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 					call={call}
 					onJoin={onJoin}
 					joining={join.isPending || meetingState === "joining-meeting"}
+				/>
+			}
+			aside={
+				<CuratorAside
+					projectId={teamProject(call)}
+					checkpointId={call.checkpointId}
 				/>
 			}
 			below={below}

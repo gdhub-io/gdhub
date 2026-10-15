@@ -39,7 +39,7 @@ export function CheckpointCurator({
 
 	return (
 		<Flex gap={12} align="center">
-			<Flex gap={10} align="center">
+			<Flex gap={12} align="center">
 				<Flex vertical align="flex-end" className={styles.curatorText}>
 					<Typography.Text strong ellipsis>
 						{isAI
@@ -58,9 +58,9 @@ export function CheckpointCurator({
 					</Typography.Text>
 				</Flex>
 				{isAI ? (
-					<AppAvatar size={36} icon={<IconSparkles size={18} stroke={1.6} />} />
+					<AppAvatar size={40} icon={<IconSparkles size={20} />} />
 				) : (
-					<AppAvatar size={36} src={curator?.image ?? undefined}>
+					<AppAvatar size={40} src={curator?.image ?? undefined}>
 						{curator?.name?.[0]}
 					</AppAvatar>
 				)}
@@ -72,7 +72,7 @@ export function CheckpointCurator({
 						href={`/user/project/${projectSlug}/checkpoints/${checkpoint.id}?tab=room`}
 					>
 						<Button
-							icon={<IconVideo size={18} stroke={1.6} />}
+							icon={<IconVideo size={16} />}
 							aria-label={t("checkpoints.card.room", "Open the room")}
 						/>
 					</Link>
@@ -80,7 +80,7 @@ export function CheckpointCurator({
 			)}
 			<Tooltip title={t("checkpoints.card.chat", "Chat with curator")}>
 				<Button
-					icon={<IconMessageCircle size={18} stroke={1.6} />}
+					icon={<IconMessageCircle size={16} />}
 					aria-label={t("checkpoints.card.chat", "Chat with curator")}
 					onClick={() => setOpenChatModal(true)}
 				/>

@@ -119,7 +119,7 @@ export function PlanTab({ checkpoint }: { checkpoint: AdvisorCheckpointDto }) {
 	};
 
 	return (
-		<Flex vertical gap={18}>
+		<Flex vertical gap={16}>
 			<div className={scout.headline}>
 				<HeadlineCard
 					label={t("advisor.plan.calls", "Calls")}
@@ -157,7 +157,7 @@ export function PlanTab({ checkpoint }: { checkpoint: AdvisorCheckpointDto }) {
 
 						return {
 							key: `${step.kind}-${step.day}`,
-							icon: <Icon size={16} stroke={1.8} className={styles.planIcon} />,
+							icon: <Icon size={16} className={styles.planIcon} />,
 							title: (
 								<Flex vertical className={styles.planWhen}>
 									<Text strong>{when(step.day)}</Text>
@@ -169,7 +169,7 @@ export function PlanTab({ checkpoint }: { checkpoint: AdvisorCheckpointDto }) {
 								</Flex>
 							),
 							content: (
-								<Flex vertical gap={2}>
+								<Flex vertical gap={4}>
 									<Text strong>{title}</Text>
 									<Text type="secondary">{body}</Text>
 									{meta && <Text className={scout.summarySub}>{meta}</Text>}

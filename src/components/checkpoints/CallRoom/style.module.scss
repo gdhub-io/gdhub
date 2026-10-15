@@ -65,25 +65,6 @@
 	min-width: 0;
 }
 
-.closed {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-4);
-	padding: var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
-}
-
-.closedTitle,
-.closedText {
-	display: block;
-}
-
-.closedTitle {
-	font-size: var(--gd-font-size-body-lg);
-}
-
 // The video stage is dark in both themes: an InverseBand re-declares the roles.
 .stage {
 	border-radius: var(--gd-radius-panel);
@@ -483,6 +464,18 @@
 	color: var(--gd-color-text-tertiary);
 }
 
+.listActions {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	flex-wrap: wrap;
+}
+
+// The AI's action wears its colour, like its advice.
+.suggestTasks.suggestTasks {
+	color: var(--gd-direction-game-design-ink);
+}
+
 .addTask.addTask {
 	align-self: flex-start;
 	color: var(--gd-color-text-secondary);
@@ -610,4 +603,42 @@
 	flex: none;
 	margin-top: var(--gd-space-1);
 	color: var(--gd-warning-solid);
+}
+
+// 10.1b / 10.5: a task and the AI curator's line under it, without an icon so
+// the line never reads as another task.
+.advisedTask {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+// Frames 08.7 / 10.5: the editable list breathes; the read-only one is ruled rows.
+.planForm {
+	gap: var(--gd-space-3);
+}
+
+// The AI's colour: the game-design direction's ink, the purple the AI tag wears.
+.advice {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-2);
+	padding-inline: var(--gd-space-3);
+	color: var(--gd-direction-game-design-ink);
+}
+
+// Optical: centres the icon on the first line.
+.adviceIcon {
+	flex: none;
+	margin-top: calc(var(--gd-space-1) - 1px);
+}
+
+.adviceText.adviceText {
+	color: inherit;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// On call 1 the goal is edited in place: no field outline, the text where it reads.
+.goalInput.goalInput {
+	padding: 0;
 }

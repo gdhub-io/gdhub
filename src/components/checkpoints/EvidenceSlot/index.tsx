@@ -82,7 +82,7 @@ export function EvidenceSlot({
 
 		return (
 			<span className={styles.plain}>
-				<Icon size={14} stroke={1.6} />
+				<Icon size={14} />
 				<Typography.Text className={styles.label} ellipsis>
 					{artifact ? artifactLabel(artifact) : empty}
 				</Typography.Text>
@@ -94,7 +94,7 @@ export function EvidenceSlot({
 		if (!artifact) {
 			return (
 				<span className={styles.slot} data-empty>
-					<IconPaperclip size={14} stroke={1.6} />
+					<IconPaperclip size={14} />
 					<Typography.Text className={styles.label}>{empty}</Typography.Text>
 				</span>
 			);
@@ -104,13 +104,14 @@ export function EvidenceSlot({
 
 		return (
 			<Tooltip title={artifactLabel(artifact)}>
+				{/* ui-guard-ignore an external artifact drawn as the slot; Typography.Link would recolour it as a link */}
 				<a
 					href={artifact.link}
 					target="_blank"
 					rel="noreferrer"
 					className={styles.slot}
 				>
-					<Icon size={14} stroke={1.6} />
+					<Icon size={14} />
 					<Typography.Text className={styles.label} ellipsis>
 						{artifactLabel(artifact)}
 					</Typography.Text>
@@ -127,7 +128,7 @@ export function EvidenceSlot({
 			disabled={disabled}
 			value={artifact?.id ?? undefined}
 			onChange={(value) => onChange(value ?? null)}
-			suffixIcon={<IconPaperclip size={14} stroke={1.6} />}
+			suffixIcon={<IconPaperclip size={14} />}
 			placeholder={empty}
 			options={options.map((option) => ({
 				value: option.id,

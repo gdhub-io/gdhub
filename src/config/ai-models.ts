@@ -4,4 +4,5 @@
  */
 export const AI_MODELS = {
 	callNotes: "gpt-6-sol",
+	curatorReview: "gpt-6-sol",
 } as const;

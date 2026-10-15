@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CallRoom } from "@/components/checkpoints/CallRoom";
+import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { checkpointIdByNumber } from "@/repositories/checkpoint-number";
+import { curatorKindOf } from "@/repositories/checkpoint-review";
 
 export const metadata: Metadata = {
-	title: "Call",
+	title: "Curator's Review",
 	robots: { index: false, follow: false },
 };
 
-export default async function ProjectCallPage({
+export default async function ProjectReviewPage({
 	params,
 }: {
 	params: Promise<{ slug: string; cp: string; index: string }>;
@@ -29,11 +30,13 @@ export default async function ProjectCallPage({
 	}
 
 	const checkpointId = await checkpointIdByNumber(slug, number);
-	if (!checkpointId) notFound();
+	const kind = checkpointId && (await curatorKindOf(checkpointId));
+	if (!checkpointId || !kind) notFound();
 
 	return (
 		<ProjectSpace>
-			<CallRoom
+			<CuratorReview
+				kind={kind}
 				checkpointId={checkpointId}
 				index={session}
 				backHref={`/user/project/${slug}/workflow`}

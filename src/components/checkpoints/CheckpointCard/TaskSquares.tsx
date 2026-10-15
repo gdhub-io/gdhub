@@ -3,6 +3,7 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
+import { BOX_TICK_STROKE } from "@/components/ui";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
@@ -27,7 +28,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 			<Typography.Text strong>
 				{t("checkpoints.card.tasks", "Checkpoint tasks")}
 			</Typography.Text>
-			<Flex gap={6} align="center">
+			<Flex gap={8} align="center">
 				{items.map((item) => (
 					<Tooltip
 						key={item.id}
@@ -68,9 +69,11 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 							)}
 						>
 							{item.cut ? (
-								<IconMinus size={12} stroke={2} />
+								<IconMinus size={14} />
 							) : (
-								item.artifact && <IconCheck size={12} stroke={2.5} />
+								item.artifact && (
+									<IconCheck size={14} stroke={BOX_TICK_STROKE} />
+								)
 							)}
 							{item.originalText && !item.cut && (
 								<span className={styles.reworded} />
@@ -88,7 +91,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 			{(reworded || cut) && (
 				<Flex gap={16} align="center" className={styles.legend}>
 					{reworded && (
-						<Flex gap={6} align="center">
+						<Flex gap={8} align="center">
 							<span className={styles.legendDot} />
 							<Typography.Text className={styles.muted}>
 								{t("checkpoints.card.legendReworded", "Reworded on day {day}", {
@@ -98,7 +101,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 						</Flex>
 					)}
 					{cut && (
-						<Flex gap={6} align="center">
+						<Flex gap={8} align="center">
 							<span
 								className={clsx(
 									styles.square,
@@ -106,7 +109,8 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 									styles.legendSquare,
 								)}
 							>
-								<IconMinus size={8} stroke={2} />
+								{/* The legend square is 12px; a 14px glyph would fill it. */}
+								<IconMinus size={8} />
 							</span>
 							<Typography.Text className={styles.muted}>
 								{t(

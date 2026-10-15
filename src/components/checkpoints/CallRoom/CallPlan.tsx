@@ -5,11 +5,13 @@ import {
 	IconCircle,
 	IconCircleCheck,
 	IconPlus,
+	IconSparkles,
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Input, Tooltip, Typography } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import { type ReactNode, useRef, useState } from "react";
 import { ArtifactLink } from "@/components/WorkflowPath/ArtifactLink";
 import {
@@ -19,9 +21,11 @@ import {
 import { useChangePlan } from "@/hooks/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
+import type { PlanAdvice, TaskAdvice } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
-type Plan = CheckpointCallDto["plan"];
+/** What the plan editor needs, from a call or from an AI review page. */
+type Plan = Pick<CheckpointCallDto["plan"], "edit" | "tasks">;
 type Task = Plan["tasks"][number];
 
 /**
@@ -65,39 +69,134 @@ export type PlanBodyProps = {
 	plan: Plan;
 	/** Settles once the change is saved and the plan re-read; rejects on refusal. */
 	onChange: (change: PlanChange) => Promise<void>;
+	/** The AI curator's read of the tasks, shown under each one. */
+	advice?: PlanAdvice | null;
+	/** Above the tasks while they can change; call 3's rule by default. */
+	hint?: ReactNode;
+	/** Under the tasks while they can change; "saved as you type" by default. */
+	footer?: ReactNode;
+	/** Beside "Add task": the AI's "Suggest tasks". */
+	listAction?: ReactNode;
 };
 
-/** The Plan tab: frames Ovz5i (call 3), NBWf6 (call 1) and, without inputs, NBTnm. */
-export function PlanBody({ plan, onChange }: PlanBodyProps) {
+/**
+ * The Plan tab: frames Ovz5i (call 3), NBWf6 (call 1) and, without inputs,
+ * NBTnm. The AI review page (10.1, 10.5) brings its own hint, footer and advice.
+ */
+export function PlanBody({
+	plan,
+	onChange,
+	advice,
+	hint,
+	footer,
+	listAction,
+}: PlanBodyProps) {
 	const { t } = useTranslate();
 	const { edit } = plan;
+	let lead = hint;
+	if (lead === undefined && edit === "plan") {
+		// The first sprint reads the same with either curator.
+		lead = t(
+			"checkpoints.review.plan.startHint",
+			"Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+		);
+	} else if (lead === undefined && edit === "tasks") {
+		lead = t(
+			"checkpoints.call.plan.callThreeHint",
+			"This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
+		);
+	}
 
 	return (
 		<div className={styles.tabBody}>
-			{edit === "tasks" && (
-				<Typography.Text type="secondary">
-					{t(
-						"checkpoints.call.plan.callThreeHint",
-						"This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
-					)}
-				</Typography.Text>
+			{edit && lead && (
+				<Typography.Text type="secondary">{lead}</Typography.Text>
 			)}
 			{edit ? (
-				<PlanForm plan={plan} onChange={onChange} />
+				<PlanForm
+					plan={plan}
+					onChange={onChange}
+					advice={advice}
+					listAction={listAction}
+				/>
 			) : (
 				<PlanView plan={plan} />
 			)}
-			{edit && (
-				<div className={styles.planFooter}>
-					<IconCheck size={14} className={styles.success} />
-					<Typography.Text type="secondary" className={styles.small}>
-						{t(
-							"checkpoints.call.plan.saved",
-							"Saved as you type · the team sees this plan on Workflow",
-						)}
-					</Typography.Text>
-				</div>
-			)}
+			{edit &&
+				(footer ?? (
+					<div className={styles.planFooter}>
+						<IconCheck size={14} className={styles.success} />
+						<Typography.Text type="secondary" className={styles.small}>
+							{t(
+								"checkpoints.call.plan.saved",
+								"Saved as you type · the team sees this plan on Workflow",
+							)}
+						</Typography.Text>
+					</div>
+				))}
+		</div>
+	);
+}
+
+/**
+ * The AI's two ways in, for any plan it reads: "Suggest tasks" beside "Add
+ * task", and "Save changes" — the tasks save as typed; this asks for the read.
+ */
+export const adviceSlots = ({
+	until,
+	loading,
+	onAdvise,
+}: {
+	until: string | null;
+	loading: boolean;
+	onAdvise: () => void;
+}): Pick<PlanBodyProps, "listAction" | "footer"> => ({
+	listAction: <SuggestTasks loading={loading} onClick={onAdvise} />,
+	footer: <AdviseFooter until={until} loading={loading} onClick={onAdvise} />,
+});
+
+function SuggestTasks({
+	loading,
+	onClick,
+}: {
+	loading: boolean;
+	onClick: () => void;
+}) {
+	const { t } = useTranslate();
+	return (
+		<Button
+			type="text"
+			icon={<IconSparkles size={16} />}
+			loading={loading}
+			onClick={onClick}
+			className={styles.suggestTasks}
+		>
+			{t("checkpoints.review.plan.suggest", "Suggest tasks")}
+		</Button>
+	);
+}
+
+function AdviseFooter({
+	until,
+	loading,
+	onClick,
+}: {
+	until: string | null;
+	loading: boolean;
+	onClick: () => void;
+}) {
+	const { t } = useTranslate();
+	return (
+		<div className={styles.planFooter}>
+			<Typography.Text type="secondary" className={styles.grow}>
+				{until &&
+					t("checkpoints.review.plan.until", "Open until {date}", {
+						date: dayjs(until).format("ddd D MMM, HH:mm"),
+					})}
+			</Typography.Text>
+			<Button type="primary" loading={loading} onClick={onClick}>
+				{t("checkpoints.review.plan.save", "Save changes")}
+			</Button>
 		</div>
 	);
 }
@@ -202,9 +301,13 @@ function LockedRow({
 function PlanForm({
 	plan,
 	onChange,
+	advice,
+	listAction,
 }: {
 	plan: Plan;
 	onChange: PlanBodyProps["onChange"];
+	advice?: PlanAdvice | null;
+	listAction?: ReactNode;
 }) {
 	const { t } = useTranslate();
 	const [drafts, setDrafts] = useState<number[]>([]);
@@ -233,10 +336,25 @@ function PlanForm({
 
 	return (
 		<Field label={t("checkpoints.call.plan.tasks", "Tasks")}>
-			<div className={styles.planList}>
+			<div className={`${styles.planList} ${styles.planForm}`}>
 				{plan.tasks.map((task) => (
-					<TaskRow key={task.id} task={task} onChange={onChange} />
+					<TaskRow
+						key={task.id}
+						task={task}
+						onChange={onChange}
+						advice={advice?.tasks.find((row) => row.itemId === task.id)}
+					/>
 				))}
+				{advice?.add
+					.filter((text) => !plan.tasks.some((task) => task.text === text))
+					.map((text) => (
+						<SuggestedTask
+							key={text}
+							text={text}
+							disabled={full}
+							onAdd={() => onChange({ op: "add", text })}
+						/>
+					))}
 				{drafts.map((draft) => (
 					<TaskInput
 						key={`draft-${draft}`}
@@ -248,19 +366,22 @@ function PlanForm({
 						onEmpty={() => dropDraft(draft)}
 					/>
 				))}
-				{full ? (
-					<Tooltip
-						title={t(
-							"checkpoints.call.plan.tooMany",
-							"A checkpoint holds at most {max} tasks",
-							{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
-						)}
-					>
-						{addButton}
-					</Tooltip>
-				) : (
-					addButton
-				)}
+				<div className={styles.listActions}>
+					{full ? (
+						<Tooltip
+							title={t(
+								"checkpoints.call.plan.tooMany",
+								"A checkpoint holds at most {max} tasks",
+								{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
+							)}
+						>
+							{addButton}
+						</Tooltip>
+					) : (
+						addButton
+					)}
+					{listAction}
+				</div>
 			</div>
 		</Field>
 	);
@@ -269,9 +390,11 @@ function PlanForm({
 function TaskRow({
 	task,
 	onChange,
+	advice,
 }: {
 	task: Task;
 	onChange: PlanBodyProps["onChange"];
+	advice?: TaskAdvice;
 }) {
 	const { t } = useTranslate();
 
@@ -295,23 +418,98 @@ function TaskRow({
 		);
 	}
 
-	return (
+	const remove = () =>
+		onChange({ op: "remove", itemId: task.id }).catch(() => undefined);
+	const input = (
 		<TaskInput
 			key={task.text}
 			text={task.text}
+			warning={!!advice && WARNING_KINDS.has(advice.kind)}
 			onSave={(text) => onChange({ op: "edit", itemId: task.id, text })}
-			onRemove={() =>
-				onChange({ op: "remove", itemId: task.id }).catch(() => undefined)
-			}
+			onRemove={remove}
 			removeLabel={t("checkpoints.call.plan.removeTask", "Remove task")}
 		/>
 	);
+	// Taken already: the line has nothing left to say until the plan is read again.
+	if (!advice || advice.suggestion === task.text) return input;
+
+	const suggestion = advice.suggestion?.replace(/[.\s]+$/, "");
+
+	return (
+		<div className={styles.advisedTask}>
+			{input}
+			<AdviceLine>
+				{suggestion
+					? t(
+							"checkpoints.review.plan.adviceTry",
+							"{note} Try: “{suggestion}”.",
+							{
+								note: advice.note,
+								suggestion,
+							},
+						)
+					: advice.note}
+			</AdviceLine>
+		</div>
+	);
 }
+
+/**
+ * The AI curator's word under a task, marked as its own: advice to read, not
+ * a button — the author decides and edits the task themselves.
+ */
+function AdviceLine({ children }: { children: ReactNode }) {
+	return (
+		<div className={styles.advice}>
+			<IconSparkles size={14} className={styles.adviceIcon} />
+			<Typography.Text className={styles.adviceText}>
+				{children}
+			</Typography.Text>
+		</div>
+	);
+}
+
+/** A task the AI curator proposes adding: frame r5hAR. */
+function SuggestedTask({
+	text,
+	disabled,
+	onAdd,
+}: {
+	text: string;
+	disabled: boolean;
+	onAdd: () => Promise<void>;
+}) {
+	const { t } = useTranslate();
+
+	return (
+		<div className={styles.lockedRow}>
+			<IconSparkles size={16} className={styles.tertiary} />
+			<span className={styles.grow}>{text}</span>
+			<Button
+				type="text"
+				size="small"
+				disabled={disabled}
+				onClick={() => onAdd().catch(() => undefined)}
+			>
+				{t("checkpoints.review.plan.add", "Add")}
+			</Button>
+		</div>
+	);
+}
+
+/** The curator's advice that asks for a change marks its task. */
+const WARNING_KINDS = new Set<TaskAdvice["kind"]>([
+	"risky",
+	"vague",
+	"shorten",
+	"cut",
+]);
 
 /** Saved on blur or Enter; an emptied or refused field goes back to what was saved. */
 function TaskInput({
 	text,
 	autoFocus,
+	warning,
 	onSave,
 	onEmpty,
 	onRemove,
@@ -319,6 +517,7 @@ function TaskInput({
 }: {
 	text: string;
 	autoFocus?: boolean;
+	warning?: boolean;
 	onSave: (text: string) => Promise<void>;
 	onEmpty?: () => void;
 	onRemove?: () => void;
@@ -341,6 +540,7 @@ function TaskInput({
 		<Input
 			value={value}
 			autoFocus={autoFocus}
+			status={warning ? "warning" : undefined}
 			maxLength={CHECKPOINT_ITEM_TEXT_MAX}
 			onChange={(event) => setValue(event.target.value)}
 			onBlur={commit}

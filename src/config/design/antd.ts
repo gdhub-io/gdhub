@@ -41,9 +41,19 @@ export function buildAntdTheme({
 	density = "product",
 	cssVarKey,
 }: BuildThemeOptions = {}): ThemeConfig {
-	const r = roles[mode];
-	const d = densities[density];
 	const isInverse = mode === "inverse";
+	// The brand fills a button only on a marketing band; a dark panel inside the
+	// product commits with a light button, the mirror of the graphite one.
+	const lightAction = isInverse && density === "product";
+	const r = lightAction
+		? {
+				...roles.inverse,
+				action: neutral[0],
+				actionHover: neutral[100],
+				onAction: neutral[900],
+			}
+		: roles[mode];
+	const d = densities[density];
 	const fills = isInverse ? fillInverse : fill;
 
 	return {
@@ -160,6 +170,12 @@ export function buildAntdTheme({
 				borderColorDisabled: r.border,
 				textHoverBg: fills.base,
 				primaryColor: r.onAction,
+				// The dark algorithm would grey a white primary; set it as drawn.
+				...(lightAction && {
+					colorPrimary: r.action,
+					colorPrimaryHover: r.actionHover,
+					colorPrimaryActive: r.actionHover,
+				}),
 			},
 			Input: {
 				paddingInline: space[3],

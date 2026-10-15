@@ -1,19 +1,14 @@
 "use client";
 
-import {
-	IconChevronLeft,
-	IconLink,
-	IconMessageCircle,
-	IconPhoneOff,
-} from "@tabler/icons-react";
+import { IconLink, IconMessageCircle, IconPhoneOff } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Popconfirm, Typography } from "antd";
+import { Button, Popconfirm } from "antd";
 import dayjs from "dayjs";
-import Link from "next/link";
-import { StatusDot, type StatusTone } from "@/components/ui";
+import { CuratorHeader } from "@/components/checkpoints/CuratorReview/CuratorHeader";
+import type { StatusTone } from "@/components/ui";
 import { FINAL_SESSION } from "@/config/checkpoint";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
-import styles from "./style.module.scss";
 
 export type CallHeaderProps = {
 	call: Pick<
@@ -51,7 +46,7 @@ export const callTime = (at: string, now = new Date()) => {
 		: time.format("D MMM, HH:mm");
 };
 
-/** Frame `DjZqC`: the way back, who the call is with, and what it is for. */
+/** Frame `DjZqC` for pro: who the call is with, what it is for, and the call's own buttons. */
 export function CallHeader({
 	call,
 	backHref,
@@ -103,76 +98,61 @@ export function CallHeader({
 	}
 
 	return (
-		<div className={styles.header}>
-			<div className={styles.headerLead}>
-				<Link href={backHref}>
+		<CuratorHeader
+			backHref={backHref}
+			kind={CheckpointCuratorKind.Human}
+			status={status}
+			subtitle={t(
+				"checkpoints.call.subtitleWith",
+				"Call {index} with {name} · {purpose} · Checkpoint {number} · {stage} · {when}",
+				{
+					index: call.index,
+					// The curator talks to the project, the team to the curator.
+					name:
+						call.role === "curator"
+							? call.project.name
+							: firstName(call.curator.name),
+					purpose,
+					number: call.number,
+					stage: call.stageName,
+					when: scheduled.format("D MMM YYYY, HH:mm"),
+				},
+			)}
+			actions={
+				<>
 					<Button
-						type="text"
-						aria-label={t("common.back", "Back")}
-						icon={<IconChevronLeft size={20} />}
-					/>
-				</Link>
-				<div className={styles.titles}>
-					<div className={styles.titleRow}>
-						<Typography.Title level={2} className={styles.title}>
-							{t("checkpoints.call.title", "Call with {name}", {
-								// The curator talks to the project, the team to the curator.
-								name:
-									call.role === "curator"
-										? call.project.name
-										: firstName(call.curator.name),
-							})}
-						</Typography.Title>
-						<StatusDot tone={status.tone} label={status.label} />
-					</div>
-					<Typography.Text className={styles.subtitle}>
-						{t(
-							"checkpoints.call.subtitle",
-							"{purpose} · Checkpoint {number} · {stage} · {when}",
-							{
-								purpose,
-								number: call.number,
-								stage: call.stageName,
-								when: scheduled.format("D MMM YYYY, HH:mm"),
-							},
-						)}
-					</Typography.Text>
-				</div>
-			</div>
-
-			<Flex gap={8} align="center" wrap>
-				<Button
-					icon={<IconMessageCircle size={16} />}
-					loading={chatLoading}
-					onClick={onChat}
-				>
-					{t("checkpoints.call.chat", "Chat")}
-				</Button>
-				<Button icon={<IconLink size={16} />} onClick={onCopyLink}>
-					{t("checkpoints.call.copyLink", "Copy link")}
-				</Button>
-				{joined && onLeave && (
-					<Button danger icon={<IconPhoneOff size={16} />} onClick={onLeave}>
-						{t("checkpoints.call.leave", "Leave call")}
-					</Button>
-				)}
-				{joined && onEnd && (
-					<Popconfirm
-						title={t(
-							"checkpoints.call.endConfirm",
-							"End the call for everyone?",
-						)}
-						okText={t("checkpoints.call.endOk", "End call")}
-						okButtonProps={{ danger: true }}
-						cancelText={t("common.cancel", "Cancel")}
-						onConfirm={onEnd}
+						icon={<IconMessageCircle size={16} />}
+						loading={chatLoading}
+						onClick={onChat}
 					>
-						<Button danger type="text" loading={ending}>
-							{t("checkpoints.call.end", "End call for everyone")}
+						{t("checkpoints.call.chat", "Chat")}
+					</Button>
+					<Button icon={<IconLink size={16} />} onClick={onCopyLink}>
+						{t("checkpoints.call.copyLink", "Copy link")}
+					</Button>
+					{joined && onLeave && (
+						<Button danger icon={<IconPhoneOff size={16} />} onClick={onLeave}>
+							{t("checkpoints.call.leave", "Leave call")}
 						</Button>
-					</Popconfirm>
-				)}
-			</Flex>
-		</div>
+					)}
+					{joined && onEnd && (
+						<Popconfirm
+							title={t(
+								"checkpoints.call.endConfirm",
+								"End the call for everyone?",
+							)}
+							okText={t("checkpoints.call.endOk", "End call")}
+							okButtonProps={{ danger: true }}
+							cancelText={t("common.cancel", "Cancel")}
+							onConfirm={onEnd}
+						>
+							<Button danger type="text" loading={ending}>
+								{t("checkpoints.call.end", "End call for everyone")}
+							</Button>
+						</Popconfirm>
+					)}
+				</>
+			}
+		/>
 	);
 }

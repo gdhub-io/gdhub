@@ -1,6 +1,6 @@
-import { IconLock } from "@tabler/icons-react";
+import { IconArrowRight, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, Tooltip, Typography } from "antd";
+import { Button, Divider, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
@@ -22,6 +22,13 @@ export type AfterVerdictProps = {
 	locked?: boolean;
 	/** The author goes on with the stage's tasks; the regular offer takes this place. */
 	onOwn: () => void;
+	/** "Ready for the next stage" with a stage to go to: the path's own move, its checks included. */
+	move?: {
+		stage: string;
+		onClick: () => void;
+		loading: boolean;
+		lockedReason: string | null;
+	};
 };
 
 /**
@@ -36,6 +43,7 @@ export function AfterVerdict({
 	project,
 	locked,
 	onOwn,
+	move,
 }: AfterVerdictProps) {
 	const { t } = useTranslate();
 	const router = useRouter();
@@ -74,8 +82,8 @@ export function AfterVerdict({
 	);
 
 	return (
-		<Flex vertical gap={20} className={`${styles.card} ${styles.cardBody}`}>
-			<Flex vertical gap={6}>
+		<Flex vertical gap={24} className={`${styles.card} ${styles.cardBody}`}>
+			<Flex vertical gap={8}>
 				<span className={styles.closedTitle}>
 					<span className={styles.title}>
 						{t("workflow.path.checkpoint.title", "Checkpoint {number}", {
@@ -105,12 +113,57 @@ export function AfterVerdict({
 				</Flex>
 			</Flex>
 
-			<div className={styles.divider} />
+			<Divider className={styles.divider} />
 
 			<Flex vertical gap={12}>
 				<Typography.Text strong>
 					{t("workflow.after.title", "How do you go on?")}
 				</Typography.Text>
+				{move && (
+					<>
+						<Flex
+							justify="space-between"
+							align="center"
+							gap={16}
+							wrap
+							className={styles.afterNextStage}
+						>
+							<Flex vertical gap={4} className={styles.grow}>
+								<Typography.Text strong>
+									{t("workflow.after.stageOpen", "{stage} is open", {
+										stage: move.stage,
+									})}
+								</Typography.Text>
+								<Typography.Text type="secondary" className={styles.small}>
+									{t(
+										"workflow.after.stageOpenBody",
+										"The verdict lets the project move on. Its tasks and the next checkpoint will be for {stage}.",
+										{ stage: move.stage },
+									)}
+								</Typography.Text>
+							</Flex>
+							<Tooltip title={move.lockedReason}>
+								<Button
+									type="primary"
+									disabled={!!move.lockedReason}
+									loading={move.loading}
+									icon={<IconArrowRight size={16} />}
+									iconPlacement="end"
+									onClick={move.onClick}
+								>
+									{t("workflow.after.move", "Move to {stage}", {
+										stage: move.stage,
+									})}
+								</Button>
+							</Tooltip>
+						</Flex>
+						<Typography.Text type="secondary" className={styles.small}>
+							{t("workflow.after.stay", "Or stay in {stage}", {
+								stage: checkpoint.stageName,
+							})}
+						</Typography.Text>
+					</>
+				)}
 				<div className={styles.afterOptions}>
 					{option(
 						t("workflow.after.another", "Another checkpoint"),

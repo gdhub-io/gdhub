@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
+import { CuratorMessage } from "@/components/checkpoints/CuratorReview/CuratorMessage";
+import { CuratorReviewSkeleton } from "@/components/checkpoints/CuratorReview/CuratorReviewSkeleton";
 import type {
 	CallNotesDto,
 	CheckpointCallDto,
@@ -8,7 +10,6 @@ import { GoalCard } from "./CallGoal";
 import { CallHeader, type CallHeaderProps } from "./CallHeader";
 import { PanelBlock, type PanelTab } from "./CallPanel";
 import {
-	CallClosed,
 	CallLayout,
 	CallPersonRow,
 	CallTeamPanel,
@@ -27,6 +28,7 @@ const GOAL =
 const plan: CheckpointCallDto["plan"] = {
 	goal: GOAL,
 	goalAgreedAt: "2026-10-01T13:00:00.000Z",
+	advice: null,
 	edit: null,
 	tasks: [
 		{
@@ -84,13 +86,13 @@ const sessionsHeld = (held: number): CheckpointCallDto["sessions"] =>
 
 const call: CheckpointCallDto = {
 	checkpointId: "cp1",
+	previous: null,
 	index: 2,
 	number: 3,
 	stageName: "Concepting",
-	project: { name: "Hollow Tide", slug: "hollow-tide" },
+	project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
 	curator: { id: "u-curator", name: "Patrick Novak", image: null },
 	scheduledAt: "2026-10-08T12:00:00.000Z",
-	opensAt: "2026-10-08T11:45:00.000Z",
 	state: "open",
 	curatorJoinedAt: null,
 	role: "team",
@@ -161,10 +163,19 @@ export const Early: Story = {
 	args: {
 		header: header({ state: "early" }),
 		stage: (
-			<CallClosed
-				over={false}
-				title="The room opens at 13:45"
-				text="The call starts at 14:00."
+			<CuratorMessage
+				curator={{ name: "Patrick Novak", image: null }}
+				date="8 Oct, 14:00"
+				message="Our call is on Thursday 8 Oct at 14:00. The room opens 15 minutes before; you'll be let in as soon as I join."
+				actions={[
+					{
+						key: "calendar",
+						label: "Add to calendar",
+						primary: true,
+						onClick: noop,
+					},
+					{ key: "chat", label: "Message Patrick", onClick: noop },
+				]}
 			/>
 		),
 	},
@@ -195,10 +206,18 @@ export const Over: Story = {
 	args: {
 		header: header({ state: "over" }),
 		stage: (
-			<CallClosed
-				over
-				title="This call is over"
-				text="The plan and the notes from it are below."
+			<CuratorMessage
+				curator={{ name: "Patrick Novak", image: null }}
+				date="8 Oct"
+				message="The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready."
+				actions={[
+					{
+						key: "notes",
+						label: "Open the notes",
+						primary: true,
+						onClick: noop,
+					},
+				]}
 			/>
 		),
 	},
@@ -341,6 +360,7 @@ export const PanelPlanCallOne: Story = {
 			panelPlan={{
 				goal: GOAL,
 				goalAgreedAt: null,
+				advice: null,
 				edit: "goalAndTasks",
 				tasks: [
 					{ id: "t1", text: "Core loop one-pager" },
@@ -394,4 +414,9 @@ export const PanelNotesPending: Story = {
 			notes={{ contentStatus: "Pending", content: null, transcript: null }}
 		/>
 	),
+};
+
+/** Curator's Review while it loads — pro and ai share it. */
+export const Loading: Story = {
+	render: () => <CuratorReviewSkeleton />,
 };

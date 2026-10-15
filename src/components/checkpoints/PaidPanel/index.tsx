@@ -165,7 +165,7 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 			{!settling && (
 				<Flex
 					vertical
-					gap={14}
+					gap={16}
 					align="center"
 					className={styles.waiting}
 					data-testid="awaiting-curator"
@@ -205,7 +205,7 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 								{t("checkpoints.paid.pickAnother", "Pick another curator")}
 							</Button>
 						) : (
-							<Flex gap={10} align="center" wrap justify="center">
+							<Flex gap={12} align="center" wrap justify="center">
 								<CuratorBadge
 									kind={checkpoint.curatorKind}
 									curator={checkpoint.curator}

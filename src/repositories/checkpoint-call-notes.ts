@@ -8,12 +8,57 @@ import { dateOfDay } from "@/lib/checkpoint-plan";
 import { sprintRange } from "@/lib/checkpoint-sprints";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
-import { writeCallNotes } from "@/services/call-notes";
-import { appUrl, notify } from "@/services/checkpoint-notifications";
+import { toCuratorTask, writeCallNotes } from "@/services/call-notes";
+import {
+	appUrl,
+	notify,
+	recipient,
+	reviewUrl,
+} from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import type { CallNotes } from "@/types/checkpoints";
 
-const recipient = { select: { id: true, email: true } } as const;
+/**
+ * What a sprint left to read: its latest devlog and the artifacts added in it.
+ * The day after the sprint counts — a devlog posted the next morning is its.
+ */
+export const sprintEvidence = async (
+	projectId: string,
+	startedAt: Date,
+	sprint: number,
+) => {
+	const range = sprintRange(startedAt, sprint);
+	const inSprint = { gte: range.from, lt: dateOfDay(range.to, 2) };
+	const [devlog, artifacts] = await Promise.all([
+		prisma.projectReport.findFirst({
+			where: { projectId, isSystem: false, publishedAt: inSprint },
+			orderBy: { publishedAt: "desc" },
+			select: { content: true },
+		}),
+		prisma.projectArtifact.findMany({
+			where: { projectId, createdAt: inSprint },
+			select: { type: true, name: true },
+		}),
+	]);
+	return { devlog: devlog?.content ?? null, artifacts };
+};
+
+/** A task id the model made up points at nothing on the page: drop it. */
+export const knownOnly = (
+	notes: CallNotes,
+	items: { id: string }[],
+): CallNotes => {
+	const known = new Set(items.map((item) => item.id));
+	return {
+		...notes,
+		discussed: notes.discussed.filter((row) => known.has(row.itemId)),
+		notDiscussed: notes.notDiscussed.filter((itemId) => known.has(itemId)),
+		agreed: notes.agreed.map((row) => ({
+			...row,
+			itemId: row.itemId && known.has(row.itemId) ? row.itemId : null,
+		})),
+	};
+};
 
 /**
  * The hourly run: a call that ended a while ago and has its transcript gets
@@ -106,29 +151,14 @@ const writeNotesFor = async (sessionId: string) => {
 
 	// Call K opens sprint K, so it looks back at sprint K - 1.
 	const reviewed = session.index - 1;
-	const range =
-		reviewed >= 1 ? sprintRange(checkpoint.startedAt, reviewed) : null;
-	const inSprint = range && {
-		gte: range.from,
-		lt: dateOfDay(range.to, 2),
-	};
-	const [devlog, artifacts] = inSprint
-		? await Promise.all([
-				prisma.projectReport.findFirst({
-					where: {
-						projectId: checkpoint.projectId,
-						isSystem: false,
-						publishedAt: inSprint,
-					},
-					orderBy: { publishedAt: "desc" },
-					select: { content: true },
-				}),
-				prisma.projectArtifact.findMany({
-					where: { projectId: checkpoint.projectId, createdAt: inSprint },
-					select: { type: true, name: true },
-				}),
-			])
-		: [null, []];
+	const { devlog, artifacts } =
+		reviewed >= 1
+			? await sprintEvidence(
+					checkpoint.projectId,
+					checkpoint.startedAt,
+					reviewed,
+				)
+			: { devlog: null, artifacts: [] };
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === session.index - 1,
 	)?.content as CallNotes | null | undefined;
@@ -136,31 +166,15 @@ const writeNotesFor = async (sessionId: string) => {
 	const notes = await writeCallNotes({
 		callIndex: session.index,
 		goal: checkpoint.goal,
-		tasks: checkpoint.items.map((item) => ({
-			id: item.id,
-			text: item.text,
-			done: item.artifact,
-			cut: item.cut,
-			firstWording: item.originalText,
-		})),
+		tasks: checkpoint.items.map(toCuratorTask),
 		transcript: parts.map((part) => part.text.trim()).join("\n\n"),
-		devlog: devlog?.content ?? null,
+		devlog,
 		artifacts,
 		agreedLastCall: previous?.agreed.map((line) => line.text) ?? [],
 	});
 	if (!notes) return false;
 
-	// A task id the model made up points at nothing on the page: drop it.
-	const known = new Set(checkpoint.items.map((item) => item.id));
-	const content: CallNotes = {
-		...notes,
-		discussed: notes.discussed.filter((row) => known.has(row.itemId)),
-		notDiscussed: notes.notDiscussed.filter((itemId) => known.has(itemId)),
-		agreed: notes.agreed.map((row) => ({
-			...row,
-			itemId: row.itemId && known.has(row.itemId) ? row.itemId : null,
-		})),
-	};
+	const content = knownOnly(notes, checkpoint.items);
 	await prisma.checkpointSession.update({
 		where: { id: sessionId },
 		data: { content, contentStatus: CheckpointSessionContentStatus.Ready },
@@ -174,8 +188,8 @@ const writeNotesFor = async (sessionId: string) => {
 		]),
 	);
 	if (checkpoint.curator) people.set(checkpoint.curator.id, checkpoint.curator);
-	const teamUrl = `${appUrl()}/user/project/${checkpoint.project.slug}/workflow/cp${number}/call/${session.index}`;
-	const curatorUrl = `${appUrl()}/advisor/checkpoints/${checkpoint.id}/call/${session.index}`;
+	const teamUrl = reviewUrl(checkpoint.project.slug, number, session.index);
+	const curatorUrl = `${appUrl()}/advisor/checkpoints/${checkpoint.id}/review/${session.index}`;
 	for (const person of people.values()) {
 		await notify(person, `cp-notes-${sessionId}-${person.id}`, {
 			title: `Notes from call ${session.index} on ${checkpoint.project.name} are ready`,

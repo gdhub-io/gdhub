@@ -70,7 +70,7 @@ export const notifyVerdictSent = async (checkpointId: string) => {
 	const number = await checkpointNumber(row);
 
 	await notify(row.project.author, `cp-verdict-sent-${checkpointId}`, {
-		title: `${row.curator?.name ?? "Your curator"} sent the verdict on Checkpoint ${number}`,
+		title: `${row.curator?.name ?? "The AI curator"} sent the verdict on Checkpoint ${number}`,
 		message: `${VERDICT_LABEL[row.verdict]}. Read the curator's reasoning and choose how to go on.`,
 		redirectUrl: `${appUrl()}/user/project/${row.project.slug}/workflow?results=${row.id}`,
 	});

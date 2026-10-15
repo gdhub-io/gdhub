@@ -67,7 +67,7 @@ export function CheckpointTab({
 	);
 
 	return (
-		<Flex vertical gap={18}>
+		<Flex vertical gap={16}>
 			<div className={scout.headline}>
 				<HeadlineCard
 					label={t("checkpoints.pay.runsIn", "Runs in")}

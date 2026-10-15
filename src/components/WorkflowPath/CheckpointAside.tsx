@@ -72,7 +72,9 @@ export function CheckpointAside({
 							number: String(checkpoint.number ?? 1),
 						})}
 					</Text>
-					{isAI && <Tag variant="filled">{t("workflow.aside.ai", "AI")}</Tag>}
+					{isAI && (
+						<Tag className="gd-tag-on-page">{t("workflow.aside.ai", "AI")}</Tag>
+					)}
 				</div>
 				{checkpoint.startedAt && checkpoint.dueAt && (
 					<Text type="secondary" className={styles.asideMeta}>

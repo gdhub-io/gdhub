@@ -4,10 +4,10 @@
 	align-items: center;
 	flex: none;
 	gap: var(--gd-space-1);
-	height: 36px;
-	padding: 0 10px;
+	height: var(--gd-control-height-sm);
+	padding: 0 var(--gd-space-3);
 	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-space-2);
+	border-radius: var(--gd-radius-chip);
 	color: var(--gd-color-text);
 }
 
@@ -34,5 +34,5 @@
 
 .picker {
 	width: 180px;
-	padding: 0 4px 0 10px;
+	padding: 0 var(--gd-space-1) 0 var(--gd-space-3);
 }

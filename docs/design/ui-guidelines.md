@@ -26,6 +26,9 @@ heavier weight — a coloured tab on a bar the user reads all day stops meaning
 A wall of brand-coloured buttons reads as errors, which is why the split exists.
 Filled brand is allowed on marketing surfaces (`inverse` mode) — there it carries
 an ink label, not a white one.
+A dark panel inside the product (`InverseBand density="product"`: the call
+stage, the curator's message) is not marketing: its committing button is white
+with an ink label, the mirror of the graphite one.
 
 **Marketing has a second accent.** The landing speaks to two audiences and tells
 them apart by colour: authors get the brand, specialists get amber
@@ -93,6 +96,12 @@ belongs to a token.
    across the canvas — radius 7, 8, 10, 13, 16 and 999, four different fills —
    because the rule was never written down; anything that does not match the
    theme's Tag is a bug, not a variant.
+
+   The one exception is where the chip stands: the theme's fill is the page
+   background's own colour, so a chip placed straight on the page (a page
+   header, not a card) takes one step darker, `--gd-neutral-100`, through the
+   global `gd-tag-on-page` class. Same look, still neutral — it only stops the
+   chip from disappearing.
 
    **Which of the two you need is a question about the word, not the styling.**
    "Video", "Expert", "Programming", "Week 2" name what a thing *is* and stay
@@ -186,7 +195,10 @@ heights, control sizes: all multiples of 4, off the scale above.
 - **Type** — 13 / 14 / 16 / 20 / 24 / 32, with line heights as ratios. Type is
   sized by reading distance, not by a grid.
 - **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes
-  follow the set (14 / 16 / 20 / 24), not the spacing scale.
+  follow the set (14 / 16 / 20 / 24), not the spacing scale. Icons use Tabler's
+  default stroke 2, with two named exceptions in `src/components/ui`:
+  `BOX_TICK_STROKE` (2.4) for a tick under 16px inside a box, and
+  `META_ICON_STROKE` (1.75) for meta-row glyphs.
 
 Optical beats mathematical where they disagree. An icon centred by its bounding
 box next to text usually sits a fraction low; trust the eye, then write the

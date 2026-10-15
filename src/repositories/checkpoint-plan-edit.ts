@@ -17,6 +17,7 @@ const loadPlan = (checkpointId: string) =>
 		where: { id: checkpointId },
 		select: {
 			curatorId: true,
+			curatorKind: true,
 			startedAt: true,
 			goalAgreedAt: true,
 			project: { select: { authorId: true } },
@@ -41,7 +42,8 @@ export const canEditPlan = (
 ) => checkpoint.curatorId === userId || checkpoint.project.authorId === userId;
 
 /**
- * One change to the plan, made on a call. Call 1 writes freely; call 3 keeps
+ * One change to the plan, made on a call or, with the AI curator, on its
+ * review page. Call 1 and the AI's first days write freely; call 3 keeps
  * the record — the first wording in `originalText`, a removed task cut rather
  * than deleted, an added one dated — and stamps `revisedAt` on its first change.
  */
@@ -60,7 +62,7 @@ export const changePlan = async (
 	const revising = edit === "tasks";
 
 	if (change.op === "goal") {
-		if (revising) return "goalLocked";
+		if (edit !== "goalAndTasks") return "goalLocked";
 		await prisma.projectCheckpoint.update({
 			where: { id: checkpointId },
 			data: { goal: change.goal },

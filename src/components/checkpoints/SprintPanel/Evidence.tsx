@@ -59,7 +59,7 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 
 	const attachButton = (
 		<Button
-			icon={<IconPaperclip size={16} stroke={1.6} />}
+			icon={<IconPaperclip size={16} />}
 			onClick={() => setAttaching(true)}
 		>
 			{t("checkpoints.evidence.attach", "Attach evidence")}

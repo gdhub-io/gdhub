@@ -35,18 +35,19 @@ import {
 	VERDICT_ORDER,
 	VERDICT_TONE,
 } from "@/components/checkpoints/VerdictChip";
-import { IconTile, SectionHeading, StatusDot } from "@/components/ui";
+import {
+	BOX_TICK_STROKE,
+	IconTile,
+	SectionHeading,
+	StatusDot,
+} from "@/components/ui";
 import { formatShort } from "@/components/WorkflowPath/dates";
 import {
 	SPRINTS_PER_CHECKPOINT,
 	VERDICT_DRAFT_FROM_SPRINT,
 	VERDICT_NOTE_MAX,
 } from "@/config/checkpoint";
-import {
-	ArtifactCheckStatus,
-	CheckpointItemKind,
-	CheckpointVerdict,
-} from "@/config/prisma-enums";
+import { CheckpointItemKind, CheckpointVerdict } from "@/config/prisma-enums";
 import {
 	useAdvisorProject,
 	useSaveVerdictDraft,
@@ -101,7 +102,7 @@ export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 			open
 			onCancel={onClose}
 			footer={null}
-			width={1050}
+			width={1048}
 			centered
 			classNames={{
 				container: styles.container,
@@ -109,11 +110,11 @@ export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 				body: styles.body,
 			}}
 			title={
-				<Flex vertical gap={6}>
+				<Flex vertical gap={8}>
 					<Flex align="center" gap={12} wrap>
-						<span className={styles.title}>
+						<Text className={styles.title}>
 							{t("advisor.verdict.title", "Write the verdict")}
-						</span>
+						</Text>
 						{context && <StageChip checkpoint={checkpoint} context={context} />}
 					</Flex>
 					<Flex align="center" gap={8} className={styles.meta}>
@@ -363,7 +364,7 @@ function OutcomeRow({ item }: { item: CheckpointItemDto }) {
 			{item.cut ? (
 				<StatusDot tone="warning" label={t("advisor.verdict.cut", "Cut")} />
 			) : item.artifact ? (
-				<Flex align="center" gap={6} className={styles.evidence}>
+				<Flex align="center" gap={8} className={styles.evidence}>
 					<ArtifactLink artifact={item.artifact} />
 					{proven && (
 						<Text className={clsx(styles.small, styles.success)}>
@@ -417,7 +418,7 @@ function LastBuild({
 			{build ? (
 				<Flex align="center" gap={16} className={styles.build}>
 					<IconTile icon={IconCube} size="md" />
-					<Flex vertical gap={2} className={styles.rowText}>
+					<Flex vertical gap={4} className={styles.rowText}>
 						<Text strong ellipsis>
 							{build.name ?? t("advisor.verdict.build", "Build")}
 						</Text>
@@ -549,7 +550,7 @@ function TeamPulse({ team }: { team: AdvisorProjectDto["team"] }) {
 							seat.pulse.find((cell) => cell.sprint === sprint)?.state ===
 							"confirmed" ? (
 								<span className={styles.confirmed}>
-									<IconCheck size={14} stroke={2.4} />
+									<IconCheck size={14} stroke={BOX_TICK_STROKE} />
 								</span>
 							) : (
 								<span className={styles.muted}>—</span>
@@ -690,7 +691,7 @@ function VerdictForm({
 							label: styles.optionBody,
 						}}
 					>
-						<Flex vertical gap={6}>
+						<Flex vertical gap={8}>
 							<StatusDot
 								tone={VERDICT_TONE[option]}
 								label={label(option)}

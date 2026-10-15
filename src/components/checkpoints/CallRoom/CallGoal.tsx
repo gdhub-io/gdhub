@@ -27,26 +27,17 @@ export type GoalCardProps = {
 	goal: string;
 	/** Call 1 while the plan is open: the goal is still being agreed. */
 	editable: boolean;
-	onSave: (goal: string) => Promise<void>;
+	/** Needed only while `editable`. */
+	onSave?: (goal: string) => Promise<void>;
 };
 
-/** Frames tMANJ (read-only) and I3JHtO (call 1). */
+/** Frame CUPxr: read the same on every call and every AI review; on call 1 the text itself is editable. */
 export function GoalCard({ goal, editable, onSave }: GoalCardProps) {
 	const { t } = useTranslate();
 
 	let value: ReactNode;
-	if (editable) {
-		value = (
-			<>
-				<GoalInput key={goal} goal={goal} onSave={onSave} />
-				<Typography.Text className={`${styles.small} ${styles.tertiary}`}>
-					{t(
-						"checkpoints.call.goal.hint",
-						"Agree it on this call — it locks when the call ends.",
-					)}
-				</Typography.Text>
-			</>
-		);
+	if (editable && onSave) {
+		value = <GoalInput key={goal} goal={goal} onSave={onSave} />;
 	} else if (goal) {
 		value = (
 			<Typography.Text className={styles.goalValue}>{goal}</Typography.Text>
@@ -73,7 +64,13 @@ export function GoalCard({ goal, editable, onSave }: GoalCardProps) {
 }
 
 /** Saved on blur or Enter; an emptied or refused goal goes back to what was saved. */
-function GoalInput({ goal, onSave }: Pick<GoalCardProps, "goal" | "onSave">) {
+function GoalInput({
+	goal,
+	onSave,
+}: {
+	goal: string;
+	onSave: (goal: string) => Promise<void>;
+}) {
 	const [value, setValue] = useState(goal);
 
 	const commit = () => {
@@ -87,6 +84,8 @@ function GoalInput({ goal, onSave }: Pick<GoalCardProps, "goal" | "onSave">) {
 
 	return (
 		<Input.TextArea
+			variant="borderless"
+			className={`${styles.goalValue} ${styles.goalInput}`}
 			value={value}
 			autoSize={{ minRows: 1 }}
 			maxLength={CHECKPOINT_GOAL_MAX}

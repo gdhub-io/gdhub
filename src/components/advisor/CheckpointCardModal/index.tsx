@@ -197,7 +197,7 @@ export function CheckpointCardModal({
 							gap={16}
 							className={styles.headerBottom}
 						>
-							<Flex vertical gap={6} className={styles.titleWrap}>
+							<Flex vertical gap={8} className={styles.titleWrap}>
 								<Title level={2} className={styles.title}>
 									{project.name}
 								</Title>
@@ -216,7 +216,7 @@ export function CheckpointCardModal({
 							)}
 
 							{answerable && (
-								<Flex gap={10} align="center">
+								<Flex gap={12} align="center">
 									<Button
 										className={styles.headerAction}
 										onClick={() => reply(false)}
@@ -277,7 +277,7 @@ export function CheckpointCardModal({
 					/>
 
 					<footer className={styles.footer}>
-						<Flex align="center" gap={6}>
+						<Flex align="center" gap={8}>
 							<IconClock size={14} />
 							<span>
 								{t("scout.card.updated", "Updated {when}", {
