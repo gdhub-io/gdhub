@@ -8,7 +8,7 @@ import axios from "axios";
 import { useMemo } from "react";
 
 export const useWorkDirections = () => {
-	const { data: records } = useQuery({
+	const { data: records, isLoading } = useQuery({
 		queryKey: ["workDirections"],
 		queryFn: () =>
 			axios.get<WorkDirection[]>("/api/dictionary/work-directions"),
@@ -24,7 +24,7 @@ export const useWorkDirections = () => {
 	const getDirectionName = (workDirectionId: string) =>
 		records?.data.find((r) => r.id == workDirectionId)?.name;
 
-	return { data: records?.data, options, getDirectionName };
+	return { data: records?.data, options, getDirectionName, isLoading };
 };
 
 export const useGameGenres = () => {
@@ -67,7 +67,7 @@ export const useGameSettings = () => {
 
 export const useGameDifficulties = () => {
 	const { data: records } = useQuery({
-		queryKey: ["gameDifficulties"],
+		queryKey: ["gameLevels"],
 		queryFn: () => axios.get<GameGenre[]>("/api/dictionary/game-levels"),
 		staleTime: Infinity,
 	});

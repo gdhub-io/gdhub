@@ -22,7 +22,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { genConfig } from "react-nice-avatar";
 import { useAccess } from "@/components/access/AccessProvider";
 import { signOutWithChat } from "@/components/Chat/session";
 import { Header as AppHeader } from "@/components/layouts/Header";
@@ -74,16 +73,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 			axios.get<UserSpaces>("/api/user/spaces").then((res) => res.data),
 		staleTime: 60 * 1000,
 	});
-
-	/** Fallback avatar for users without an uploaded image. */
-	const avatarConfig = useMemo(() => {
-		if (!session?.user.email) return;
-
-		const config = genConfig(session.user.email);
-		config.hairStyle = "normal";
-
-		return config;
-	}, [session?.user.email]);
 
 	// The scroll container is the shell's own content, not the document, so route
 	// changes no longer reset the scroll position by themselves.
@@ -377,7 +366,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							<HeaderActions
 								dropdownMenuItems={dropdownMenuItems}
 								onOpenMobileMenu={() => setOpenMobileMenu(true)}
-								avatarConfig={avatarConfig}
+								avatarSeed={session?.user.email ?? undefined}
 							/>
 						}
 						menu={

@@ -196,20 +196,32 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		if (!chatClient) return;
 
-		const recompute = () => tryComputeUnreadTotal(chatClient);
+		// A sync can deliver hundreds of events at once, and each count walks every
+		// room — so events only schedule one count, and a hidden tab skips it.
+		let scheduled: ReturnType<typeof setTimeout> | undefined;
+		const recompute = () => {
+			if (scheduled || document.hidden) return;
+			scheduled = setTimeout(() => {
+				scheduled = undefined;
+				tryComputeUnreadTotal(chatClient);
+			}, 300);
+		};
 
 		chatClient.on(MatrixEvents.receipt, recompute);
 		chatClient.on(MatrixEvents.timeline, recompute);
 		chatClient.on(MatrixEvents.myMembership, recompute);
+		document.addEventListener("visibilitychange", recompute);
 
 		const interval = setInterval(recompute, 60_000);
-		recompute();
+		tryComputeUnreadTotal(chatClient);
 
 		return () => {
 			chatClient.removeListener(MatrixEvents.receipt, recompute);
 			chatClient.removeListener(MatrixEvents.timeline, recompute);
 			chatClient.removeListener(MatrixEvents.myMembership, recompute);
+			document.removeEventListener("visibilitychange", recompute);
 			clearInterval(interval);
+			clearTimeout(scheduled);
 		};
 	}, [chatClient, tryComputeUnreadTotal]);
 
