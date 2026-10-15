@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { SpaceRole } from "@/config/permissions/roles";
 import type { SpaceType } from "@/config/spaces";
 import { prisma } from "@/services/prisma";
@@ -13,22 +14,24 @@ export type StoredMembership = {
  * Kept apart from the resolver so the membership read is one obvious query: it
  * runs on every space gate, and a revoked row must never grant anything.
  */
-export const storedMembership = async (
-	type: SpaceType,
-	spaceId: string,
-	userId: string,
-): Promise<StoredMembership | null> => {
-	const membership = await prisma.spaceMember.findUnique({
-		where: {
-			spaceType_spaceId_userId: { spaceType: type, spaceId, userId },
-		},
-		select: { role: true, customRoleKey: true, revokedAt: true },
-	});
+export const storedMembership = cache(
+	async (
+		type: SpaceType,
+		spaceId: string,
+		userId: string,
+	): Promise<StoredMembership | null> => {
+		const membership = await prisma.spaceMember.findUnique({
+			where: {
+				spaceType_spaceId_userId: { spaceType: type, spaceId, userId },
+			},
+			select: { role: true, customRoleKey: true, revokedAt: true },
+		});
 
-	if (!membership || membership.revokedAt) return null;
+		if (!membership || membership.revokedAt) return null;
 
-	return { role: membership.role, customRoleKey: membership.customRoleKey };
-};
+		return { role: membership.role, customRoleKey: membership.customRoleKey };
+	},
+);
 
 /** Just the role, for the paths that do not care about custom roles. */
 export const storedRole = async (

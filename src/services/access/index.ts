@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
 	roleAtLeast,
 	SpaceRole,
@@ -107,7 +108,7 @@ const resolveHubRole = async (
  *  3. permissions come from the matrix for that role;
  *  4. the entity's state takes permissions away.
  */
-export async function getSpaceAccess(
+async function resolveSpaceAccess(
 	type: SpaceType,
 	param: string | null,
 	user: MaybeAccessUser,
@@ -147,8 +148,6 @@ export async function getSpaceAccess(
 
 	// Membership is the source of truth; the adapter is what is left of the old
 	// domain-table checks and disappears once the backfill has run everywhere.
-	const membership = await storedMembership(type, spaceId, user.id);
-	const memberRole = membership?.role ?? null;
 
 	// A space may take its role from another one: `admin` and `dev` are run by
 	// platform staff from the hub.
@@ -158,23 +157,32 @@ export async function getSpaceAccess(
 	// someone's project are different things, and the only identity that crosses
 	// that line is the super-admin — on purpose, loudly, and with an audit entry.
 	const inherit = space.inheritRoleFrom;
-	const inheritedRole: SpaceRole | null = inherit
-		? await (async () => {
-				const hubRole =
-					inherit.space === "hub" ? await resolveHubRole(user) : null;
+	const [membership, inheritedRole] = await Promise.all([
+		storedMembership(type, spaceId, user.id),
+		inherit
+			? (async () => {
+					const hubRole =
+						inherit.space === "hub" ? await resolveHubRole(user) : null;
 
-				return hubRole && roleAtLeast(hubRole, inherit.atLeast)
-					? hubRole
-					: null;
-			})()
-		: null;
+					return hubRole && roleAtLeast(hubRole, inherit.atLeast)
+						? hubRole
+						: null;
+				})()
+			: null,
+	]);
 
-	const role = strongestRole([memberRole, resolved?.role, inheritedRole]);
+	const role = strongestRole([
+		membership?.role ?? null,
+		resolved?.role,
+		inheritedRole,
+	]);
 
 	if (!role) return noAccess(type, spaceId);
 
-	const granted = await grantedPermissions({ type, spaceId, role, membership });
-	const revoked = adapter?.revoked ? await adapter.revoked(spaceId, user) : [];
+	const [granted, revoked] = await Promise.all([
+		grantedPermissions({ type, spaceId, role, membership }),
+		adapter?.revoked ? adapter.revoked(spaceId, user) : [],
+	]);
 
 	const permissions = new Set<string>();
 	const scopes = new Map<string, "own">();
@@ -195,6 +203,12 @@ export async function getSpaceAccess(
  * allowed through, so switching enforcement on is a configuration change rather
  * than a deploy.
  */
+/**
+ * One resolution per server render: the app layout, a space gate and the page
+ * itself all ask, and they get the same session object, so the same answer.
+ */
+export const getSpaceAccess = cache(resolveSpaceAccess);
+
 export function can(access: SpaceAccess, permission: string): boolean {
 	if (access.permissions.has(permission)) return true;
 
