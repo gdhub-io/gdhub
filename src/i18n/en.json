@@ -1325,6 +1325,8 @@
 			"curator": "AI curator",
 			"empty": "No review yet",
 			"emptyNote": "The curator writes one for every sprint, after its devlog.",
+			"firstSprintText": "Sprint 1 is for the work itself. On {date} the AI curator writes the first review, from what the sprint showed: the devlog, the artifacts and the team's pulse.",
+			"firstSprintTitle": "No review in the first sprint",
 			"in": "The review for the sprint is in",
 			"kindAi": "AI",
 			"kindPro": "Pro",

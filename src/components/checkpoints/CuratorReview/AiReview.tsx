@@ -3,6 +3,7 @@
 import {
 	IconArrowDown,
 	IconArrowRight,
+	IconCalendarEvent,
 	IconCalendarPlus,
 	IconHourglass,
 	IconLock,
@@ -147,7 +148,9 @@ export function AiReviewView({
 	// Review by default; the start and sprint 2's review are where the plan is changed.
 	const tab =
 		pickedTab ??
-		(selected === 1 || selected === SCOPE_SESSION ? "plan" : "review");
+		(current === 1 || selected === 1 || selected === SCOPE_SESSION
+			? "plan"
+			: "review");
 	const reviewTasks = () => {
 		if (editing) setPicked(editing);
 		setTab("plan");
@@ -371,14 +374,22 @@ function ReviewBody({
 	const session = sessionOf(review, index);
 	const notes = session?.content?.notes;
 
+	// Sprint 1 has no review: the first is written once it has ended.
 	if (index === 1) {
+		const first = sessionOf(review, 2)?.scheduledAt;
 		return (
-			<Typography.Text type="secondary">
-				{t(
-					"checkpoints.review.noReviewYet",
-					"The start sets the tasks; the first review comes after Sprint 1.",
+			<EmptyState
+				icon={IconCalendarEvent}
+				title={t(
+					"checkpoints.review.firstSprintTitle",
+					"No review in the first sprint",
 				)}
-			</Typography.Text>
+				description={t(
+					"checkpoints.review.firstSprintText",
+					"Sprint 1 is for the work itself. On {date} the AI curator writes the first review, from what the sprint showed: the devlog, the artifacts and the team's pulse.",
+					{ date: dayjs(first).format("D MMM") },
+				)}
+			/>
 		);
 	}
 
