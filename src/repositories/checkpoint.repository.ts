@@ -34,6 +34,7 @@ import {
 } from "@/lib/checkpoint-sprints";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
+import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 import type {
@@ -614,12 +615,15 @@ export const getCreationBlocker = async (projectId: string) => {
 
 	const workflow = await prisma.projectWorkflow.findUnique({
 		where: { projectId },
-		select: { currentStepId: true },
+		select: { _count: { select: { steps: true } } },
 	});
 
-	// A checkpoint belongs to exactly one stage, so a project that is not on one
-	// has nowhere to put it.
-	if (!workflow?.currentStepId) return { reason: "noStage" as const };
+	// A checkpoint belongs to exactly one stage. Drafting one puts a project
+	// without a workflow, or still on the first stage, on Ideation — only a
+	// workflow with no stages at all leaves it nowhere to sit.
+	if (workflow && workflow._count.steps === 0) {
+		return { reason: "noStage" as const };
+	}
 
 	if (!checkpointPurchaseOpen()) return { reason: "purchaseClosed" as const };
 
@@ -663,18 +667,14 @@ export const listClosedCheckpoints = async (
 };
 
 /**
- * Opens a `Draft` on the stage the project is on now.
+ * Opens a `Draft` on the stage the project is on now — Ideation for a project
+ * still on Introduction (see `ensureCheckpointStage`).
  *
  * The stage is snapshotted by name as well as by id: an admin can delete the
  * step later, and a closed checkpoint still has to say which stage it ran in.
  */
 export const createDraftCheckpoint = async (projectId: string) => {
-	const workflow = await prisma.projectWorkflow.findUnique({
-		where: { projectId },
-		select: { currentStep: { select: { id: true, name: true } } },
-	});
-
-	const step = workflow?.currentStep;
+	const step = await ensureCheckpointStage(projectId);
 	if (!step) throw new Error("Project is not on a workflow stage");
 
 	// The number runs through the project, not through the stage: a reader tells

@@ -15,6 +15,11 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import {
+	DEFAULT_PROJECT_STAGE,
+	placeProjectOnStage,
+	selectableStageNames,
+} from "@/repositories/project-workflow";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { cacheDelete } from "@/services/cache";
@@ -24,6 +29,7 @@ import {
 	getProjectLifecycleNotificationSnapshot,
 	notifyProjectLifecycleRecipients,
 } from "@/services/projectLifecycleNotifications";
+import { matchKey } from "@/services/workflow/matchKey";
 
 const GetProjectQuerySchema = z.object({
 	slug: z.string(),
@@ -36,6 +42,9 @@ const CreateProjectSchema = z.object({
 	// themselves and that this form is not an AI prompt. Never persisted.
 	understandsNotAi: z.boolean(),
 	description: z.string().optional(),
+	genre: z.string().trim().min(1).optional(),
+	/** A stage name of the default template; Ideation when omitted. */
+	stage: z.string().trim().min(1).optional(),
 });
 
 const UpdateProjectSchema = z.object({
@@ -94,14 +103,25 @@ export const POST = withAuth({ mode: "user" })(
 	withValidation(CreateProjectSchema)(async (_req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
-		const { name, description, agree, understandsNotAi } =
-			body as CreateProjectBody;
+		const {
+			name,
+			description,
+			genre,
+			stage = DEFAULT_PROJECT_STAGE,
+			agree,
+			understandsNotAi,
+		} = body as CreateProjectBody;
 
 		if (!agree) return apiError.badRequest("Should accept requirements");
 		if (!understandsNotAi)
 			return apiError.badRequest(
 				"Should confirm the game is made by the author, not generated",
 			);
+
+		const stages = await selectableStageNames();
+		if (!stages.some((name) => matchKey(name) === matchKey(stage))) {
+			return apiError.badRequest("Unknown stage", { stages });
+		}
 
 		// AI checks: no offensive/forbidden content, name looks like a real
 		// project title, and the description (if any) is on-topic.
@@ -153,6 +173,7 @@ export const POST = withAuth({ mode: "user" })(
 					agree,
 					slug: projectSlug,
 					description,
+					genre,
 					author: { connect: { id: currentUser.id } },
 					status: ProjectStatus.Approved,
 					team: {
@@ -205,6 +226,13 @@ export const POST = withAuth({ mode: "user" })(
 			);
 		}
 
+		// Not in the creation's transaction: the project extension that copies the
+		// template writes `currentStepId` through its own client, outside any `tx`,
+		// so the workflow has to be committed before it can be moved.
+		const currentStep = await prisma.$transaction((tx) =>
+			placeProjectOnStage(tx, project.id, stage),
+		);
+
 		// Membership is what the space gates read; a project without its owner row
 		// would be unreachable for its own author.
 		await joinSpace({
@@ -221,7 +249,7 @@ export const POST = withAuth({ mode: "user" })(
 		// `UserRole.Author` used to be stamped on the user here. Owning a project
 		// is the `SpaceMember(project, Owner)` row written just above — a fact,
 		// not a label that has to be kept in sync.
-		return json({ ...project, validation });
+		return json({ ...project, stage: currentStep.name, validation });
 	}),
 );
 

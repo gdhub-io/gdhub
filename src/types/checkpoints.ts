@@ -402,3 +402,49 @@ export type NewPromoCode = {
 	maxRedemptions?: number | null;
 	firstPurchaseOnly: boolean;
 };
+
+/** A project the checkpoint entry hub can be headed for from. */
+export type EntryProjectDto = {
+	id: string;
+	slug: string;
+	name: string;
+	cover: string | null;
+	/** The workflow stage's name, null when the project has no workflow yet. */
+	stage: string | null;
+	/** An open checkpoint (awaiting a curator, active or in review): no new purchase. */
+	running: boolean;
+};
+
+/** One "what's done so far" line: the day-1 state the 28 days are measured from. */
+export type EntryItemDto = {
+	text: string;
+	artifact: CheckpointArtifactRef | null;
+};
+
+/** Everything the hub at /checkpoint/new needs, in one call. */
+export type EntryStatusDto = {
+	/** Profile basics and a speciality are in place. */
+	aboutDone: boolean;
+	/** The user has paid for a checkpoint before: the hub heads for the "next" one. */
+	hadCheckpoint: boolean;
+	projects: EntryProjectDto[];
+	/** The draft checkpoint item 2 was saved into, if any. */
+	draft: {
+		id: string;
+		projectId: string;
+		items: EntryItemDto[];
+	} | null;
+};
+
+/** What item 2 saves: the project and 1–5 lines, each with an optional artifact. */
+export type EntryProjectInput = {
+	projectId: string;
+	items: { text: string; artifactId: string | null }[];
+};
+
+/** Item 2 opened for a project: its saved lines, or ones carried over from its last checkpoint. */
+export type EntryProjectPrefillDto = {
+	items: EntryItemDto[];
+	/** The number of the checkpoint the lines came from, when they were carried over. */
+	carriedFrom: number | null;
+};

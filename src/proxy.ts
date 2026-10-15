@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
+/**
+ * The checkpoint entry hub is its own way in: its "About you" item finishes
+ * onboarding, so sending an unfinished user from it to onboarding would loop.
+ */
+const isCheckpointEntry = (pathname: string) =>
+	pathname === "/checkpoint/new" || pathname.startsWith("/checkpoint/new/");
+
 export default auth((req) => {
 	const session = req.auth;
 
@@ -32,7 +39,8 @@ export default auth((req) => {
 
 	if (
 		!onboardingDone &&
-		!req.nextUrl.pathname.startsWith("/registration/onboarding")
+		!req.nextUrl.pathname.startsWith("/registration/onboarding") &&
+		!isCheckpointEntry(req.nextUrl.pathname)
 	) {
 		return NextResponse.redirect(new URL("/registration/onboarding", req.url));
 	}
@@ -66,5 +74,7 @@ export const config = {
 		"/live/:path*",
 		"/admin/:path*",
 		"/dev/:path*",
+		"/checkpoint/new",
+		"/checkpoint/new/:path*",
 	],
 };
