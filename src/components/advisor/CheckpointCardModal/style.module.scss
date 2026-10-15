@@ -11,7 +11,7 @@
 // Rows bleed to the card's edges divided by its own border, like Game details.
 .itemRow {
 	min-width: 0;
-	padding: 10px 20px;
+	padding: var(--gd-space-3) var(--gd-card-padding);
 
 	& + & {
 		border-top: 1px solid var(--gd-color-border-strong);
@@ -25,7 +25,7 @@
 
 .itemEmpty {
 	display: block;
-	padding: 16px 20px;
+	padding: var(--gd-space-4) var(--gd-card-padding);
 }
 
 // A devlog is read, not scanned: a card per post.
@@ -42,7 +42,6 @@
 	margin: 0 !important;
 	white-space: pre-line;
 }
-
 
 // The date column is the thing scanned first, so it keeps one width down the
 // whole plan rather than following each label's length.
@@ -61,7 +60,7 @@
 
 // The scout's round link chip, widened to carry its label.
 .projectLink {
-	height: 32px;
+	height: var(--gd-control-height-sm);
 	padding: 0 var(--gd-space-3);
 	border: none;
 	border-radius: var(--gd-radius-pill);

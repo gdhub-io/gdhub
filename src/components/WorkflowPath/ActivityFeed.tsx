@@ -4,6 +4,7 @@ import {
 	type Icon,
 	IconBriefcase,
 	IconFlag,
+	IconHistory,
 	IconNotebook,
 	IconPaperclip,
 	IconPencil,
@@ -12,10 +13,10 @@ import {
 	IconUserPlus,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Spin, Typography } from "antd";
+import { Divider, Spin, Typography } from "antd";
 import dayjs from "dayjs";
 import { type ReactNode, useEffect, useRef } from "react";
-import { IconTile } from "@/components/ui";
+import { EmptyState, IconTile } from "@/components/ui";
 import { useProjectActivity } from "@/hooks/checkpoints";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type {
@@ -190,11 +191,11 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 		while (next < starts.length && row.at < starts[next].from) {
 			const sprint = starts[next];
 			rows.push(
-				<div
+				<Divider
 					key={`sprint-${sprint.number}`}
+					plain
 					className={styles.activityBoundary}
 				>
-					<span className={styles.activityLine} />
 					<span className={styles.activityBoundaryLabel}>
 						<IconFlag size={12} />
 						{t("workflow.activity.sprint", "Sprint {number} started · {date}", {
@@ -202,8 +203,7 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 							date: formatShort(sprint.from),
 						})}
 					</span>
-					<span className={styles.activityLine} />
-				</div>,
+				</Divider>,
 			);
 			next += 1;
 		}
@@ -242,9 +242,14 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 				{isPending ? (
 					<Spin size="small" />
 				) : events.length === 0 ? (
-					<Text type="secondary">
-						{t("workflow.activity.empty", "Nothing has happened here yet.")}
-					</Text>
+					<EmptyState
+						size="compact"
+						icon={IconHistory}
+						description={t(
+							"workflow.activity.empty",
+							"Nothing has happened here yet.",
+						)}
+					/>
 				) : (
 					<div
 						ref={scroller}

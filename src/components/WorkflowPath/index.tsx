@@ -162,6 +162,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const historyButton = (label: string, onClick: () => void) => (
 		<Button
 			type="text"
+			size="small"
 			className={styles.quiet}
 			icon={<IconHistory size={16} />}
 			onClick={onClick}

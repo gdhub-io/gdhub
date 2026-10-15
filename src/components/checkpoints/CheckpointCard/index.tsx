@@ -63,7 +63,7 @@ export function CheckpointCard({
 								number: checkpoint.order,
 							})}
 						</Typography.Text>
-						<Tag variant="filled">{checkpoint.stageName}</Tag>
+						<Tag>{checkpoint.stageName}</Tag>
 						{!running && <CheckpointStatusSlot checkpoint={checkpoint} />}
 					</Flex>
 					<Typography.Text className={styles.muted}>

@@ -5,6 +5,7 @@ import {
 	IconCircleCheck,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
+import { Divider } from "antd";
 import { useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import {
@@ -133,7 +134,7 @@ export function CheckpointResult({
 
 			{checkpoint.verdict && (
 				<>
-					<div className={styles.divider} />
+					<Divider className={styles.divider} />
 					<div className={styles.block}>
 						<span className={styles.closedTitle}>
 							<VerdictChip verdict={checkpoint.verdict} />

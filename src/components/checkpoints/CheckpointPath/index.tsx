@@ -63,6 +63,7 @@ export function CheckpointPath({
 			</Typography.Text>
 
 			{steps.map((step) => (
+				// ui-guard-ignore a path row carries a state glyph, dates and a dot; antd Menu items are one line of text
 				<button
 					key={step.key}
 					type="button"

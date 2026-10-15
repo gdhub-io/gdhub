@@ -83,11 +83,7 @@ export function AskPanel({
 								<Typography.Text className={styles.name}>
 									{row.title}
 								</Typography.Text>
-								{!!row.owner && (
-									<Tag variant="filled" className={styles.owner}>
-										{row.owner}
-									</Tag>
-								)}
+								{!!row.owner && <Tag className={styles.owner}>{row.owner}</Tag>}
 								<span className={styles.spacer} />
 								{!!row.due && (
 									<span

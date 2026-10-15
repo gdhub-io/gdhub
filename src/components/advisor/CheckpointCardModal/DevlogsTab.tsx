@@ -23,6 +23,7 @@ export function DevlogsTab({
 		return (
 			<EmptyState
 				icon={IconNotebook}
+				size="compact"
 				description={t(
 					"advisor.card.devlogsEmpty",
 					"No devlogs in this checkpoint yet. The team writes one a sprint.",

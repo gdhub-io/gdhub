@@ -366,9 +366,12 @@ export function NowStep() {
 
 			{remark && (
 				<Flex gap={16} align="flex-start" className={styles.warning}>
-					<span className={styles.warningIcon}>
-						<IconAlertTriangle size={20} />
-					</span>
+					<IconTile
+						icon={IconAlertTriangle}
+						size="md"
+						tint="var(--gd-color-surface)"
+						ink="var(--gd-warning-solid)"
+					/>
 					<Flex vertical gap={4}>
 						<Flex gap={8} align="center" wrap>
 							<Typography.Text strong>

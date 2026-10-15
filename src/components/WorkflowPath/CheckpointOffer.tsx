@@ -81,7 +81,7 @@ export function CheckpointOffer({
 
 	// What a checkpoint is, the same three lines on the offer and on its draft.
 	const facts = (
-		<Flex gap={20} className={styles.offerFacts}>
+		<Flex gap={24} className={styles.offerFacts}>
 			{fact(
 				<IconCalendarCheck size={16} />,
 				t("workflow.offer.factSprints", "{count} weekly sprints", {
@@ -124,7 +124,7 @@ export function CheckpointOffer({
 		);
 
 		return (
-			<Flex vertical gap={20} className={styles.offer}>
+			<Flex vertical gap={24} className={styles.offer}>
 				<Flex gap={16} align="center">
 					<Flex vertical gap={4} className={styles.grow}>
 						<span className={styles.title}>
@@ -176,7 +176,7 @@ export function CheckpointOffer({
 					</Tooltip>
 				</Flex>
 				{facts}
-				<Flex gap={10} align="center" className={styles.offerOptions}>
+				<Flex gap={12} align="center" className={styles.offerOptions}>
 					{option(
 						<IconSparkles size={16} />,
 						t("checkpoints.curator.ai", "AI curator"),
@@ -324,7 +324,7 @@ export function CheckpointOffer({
 	];
 
 	return (
-		<Flex vertical gap={20} className={styles.offer}>
+		<Flex vertical gap={24} className={styles.offer}>
 			<Flex gap={16} align="flex-start">
 				<Flex vertical gap={4} className={styles.grow}>
 					<Flex gap={12} align="center" wrap>

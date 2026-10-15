@@ -16,7 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Dropdown, Flex, Modal, Tag, Tooltip, Typography } from "antd";
+import { Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
@@ -26,6 +26,7 @@ import { type ReactNode, useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
+import { SectionHeading, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { SESSION_MINUTES } from "@/config/checkpoint";
 import {
@@ -174,9 +175,10 @@ export function RunningCheckpoint({
 		return (
 			<>
 				{days === 0 && (
-					<Tag color="red" variant="filled">
-						{t("workflow.path.due.todayTag", "Today")}
-					</Tag>
+					<StatusDot
+						tone="danger"
+						label={t("workflow.path.due.todayTag", "Today")}
+					/>
 				)}
 				{label}
 			</>
@@ -220,6 +222,7 @@ export function RunningCheckpoint({
 				{item.key === "verdict" && (
 					<Button
 						type="text"
+						size="small"
 						className={styles.viewResults}
 						onClick={() => openItem("verdict")}
 					>
@@ -728,9 +731,11 @@ export function RunningCheckpoint({
 
 			{ahead.length > 0 && (
 				<PathNode marker="none">
-					<div role="heading" aria-level={3} className={styles.upNextTitle}>
-						{t("workflow.path.up-next", "Up next")}
-					</div>
+					<SectionHeading
+						level={3}
+						title={t("workflow.path.up-next", "Up next")}
+						className={styles.upNextTitle}
+					/>
 				</PathNode>
 			)}
 			{ahead.map((sprint) => {

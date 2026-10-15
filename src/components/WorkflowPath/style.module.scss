@@ -86,6 +86,12 @@
 	font-size: var(--gd-font-size-body-lg);
 }
 
+// The card is transparent, so the chip sits on the page: the page-background fill.
+.asideTag.asideTag {
+	margin-inline-end: 0;
+	background: var(--gd-neutral-100);
+}
+
 .asideMeta {
 	display: block;
 	font-size: var(--gd-font-size-body-sm);
@@ -168,16 +174,9 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-.activityBoundary {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-3);
-}
-
-.activityLine {
-	flex: 1;
-	height: 1px;
-	background: var(--gd-color-border-strong);
+// The list's own gap spaces it; antd's divider margin would double it.
+.activityBoundary.activityBoundary {
+	margin: 0;
 }
 
 .activityBoundaryLabel {
@@ -513,7 +512,6 @@
 }
 
 .quiet {
-	height: 32px;
 	padding: 0 var(--gd-space-2);
 	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-secondary);
@@ -756,7 +754,6 @@ button.checklistItem {
 }
 
 .viewResults {
-	height: 32px;
 	padding: 0 var(--gd-space-2);
 	font-size: var(--gd-font-size-body-sm);
 	font-weight: 500;
@@ -769,10 +766,6 @@ button.checklistItem {
 	gap: var(--gd-space-2);
 	font-size: var(--gd-font-size-body-sm);
 	color: var(--gd-color-text-secondary);
-
-	:global(.ant-tag) {
-		margin: 0;
-	}
 }
 
 .secondary {
@@ -894,9 +887,6 @@ button.checklistItem {
 
 .upNextTitle {
 	padding: var(--gd-space-2) 0 var(--gd-space-4);
-	font-size: var(--gd-font-size-h3);
-	font-weight: 600;
-	color: var(--gd-color-text);
 }
 
 .futureSprint {
@@ -1232,9 +1222,10 @@ button.checklistItem {
 	color: var(--gd-color-text-tertiary);
 }
 
-.divider {
-	height: 1px;
-	background: var(--gd-color-border);
+// Spaced by the column's gap, not antd's divider margin.
+.divider.divider {
+	margin: 0;
+	border-color: var(--gd-color-border);
 }
 
 .result {

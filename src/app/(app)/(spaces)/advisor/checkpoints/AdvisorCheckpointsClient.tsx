@@ -8,7 +8,7 @@ import { AdvisorCheckpointCard } from "@/components/advisor/AdvisorCheckpointCar
 import { VerdictModal } from "@/components/advisor/VerdictModal";
 import { CheckpointCard } from "@/components/checkpoints/CheckpointCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
-import { EmptyState, SectionHeading } from "@/components/ui";
+import { EmptyState, SectionHeading, StatusDot } from "@/components/ui";
 import { formatShort } from "@/components/WorkflowPath/dates";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { useAdvisorCheckpoints } from "@/hooks/checkpoints";
@@ -54,13 +54,16 @@ export function AdvisorCheckpointsClient() {
 		return (
 			<>
 				{review && !!row.dueAt && (
-					<Typography.Text type={overdue ? "warning" : "secondary"}>
-						{overdue
-							? t("advisor.verdict.overdue", "Verdict overdue")
-							: t("advisor.verdict.dueBy", "Verdict due by {date}", {
-									date: formatShort(verdictDueBy(row.dueAt).toISOString()),
-								})}
-					</Typography.Text>
+					<StatusDot
+						tone={overdue ? "warning" : "neutral"}
+						label={
+							overdue
+								? t("advisor.verdict.overdue", "Verdict overdue")
+								: t("advisor.verdict.dueBy", "Verdict due by {date}", {
+										date: formatShort(verdictDueBy(row.dueAt).toISOString()),
+									})
+						}
+					/>
 				)}
 				<Button
 					type={review ? "primary" : "default"}

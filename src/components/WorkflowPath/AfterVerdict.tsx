@@ -1,6 +1,6 @@
 import { IconArrowRight, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, Tooltip, Typography } from "antd";
+import { Button, Divider, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
@@ -82,8 +82,8 @@ export function AfterVerdict({
 	);
 
 	return (
-		<Flex vertical gap={20} className={`${styles.card} ${styles.cardBody}`}>
-			<Flex vertical gap={6}>
+		<Flex vertical gap={24} className={`${styles.card} ${styles.cardBody}`}>
+			<Flex vertical gap={8}>
 				<span className={styles.closedTitle}>
 					<span className={styles.title}>
 						{t("workflow.path.checkpoint.title", "Checkpoint {number}", {
@@ -113,7 +113,7 @@ export function AfterVerdict({
 				</Flex>
 			</Flex>
 
-			<div className={styles.divider} />
+			<Divider className={styles.divider} />
 
 			<Flex vertical gap={12}>
 				<Typography.Text strong>

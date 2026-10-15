@@ -42,11 +42,7 @@ import {
 	VERDICT_DRAFT_FROM_SPRINT,
 	VERDICT_NOTE_MAX,
 } from "@/config/checkpoint";
-import {
-	ArtifactCheckStatus,
-	CheckpointItemKind,
-	CheckpointVerdict,
-} from "@/config/prisma-enums";
+import { CheckpointItemKind, CheckpointVerdict } from "@/config/prisma-enums";
 import {
 	useAdvisorProject,
 	useSaveVerdictDraft,
@@ -111,9 +107,9 @@ export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 			title={
 				<Flex vertical gap={6}>
 					<Flex align="center" gap={12} wrap>
-						<span className={styles.title}>
+						<Text className={styles.title}>
 							{t("advisor.verdict.title", "Write the verdict")}
-						</span>
+						</Text>
 						{context && <StageChip checkpoint={checkpoint} context={context} />}
 					</Flex>
 					<Flex align="center" gap={8} className={styles.meta}>

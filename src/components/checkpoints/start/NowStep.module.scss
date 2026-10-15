@@ -50,24 +50,11 @@
 	background: var(--gd-warning-tint);
 }
 
-.warningIcon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex: none;
-	width: 40px;
-	height: 40px;
-	border-radius: var(--gd-radius-card);
-	background: var(--gd-color-surface);
-	color: var(--gd-warning-solid);
-}
-
 .tag {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--gd-space-1);
 	margin: 0;
-	color: var(--gd-warning-on-tint);
 }
 
 // Frame 03 keeps the character count inside the field, bottom right.

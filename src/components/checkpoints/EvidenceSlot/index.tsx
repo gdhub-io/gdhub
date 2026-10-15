@@ -104,6 +104,7 @@ export function EvidenceSlot({
 
 		return (
 			<Tooltip title={artifactLabel(artifact)}>
+				{/* ui-guard-ignore an external artifact drawn as the slot; Typography.Link would recolour it as a link */}
 				<a
 					href={artifact.link}
 					target="_blank"
