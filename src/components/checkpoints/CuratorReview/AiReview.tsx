@@ -10,7 +10,7 @@ import {
 	IconSparkles,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Segmented, Tabs, Tooltip, Typography } from "antd";
+import { App, Segmented, Tabs, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -18,6 +18,7 @@ import { GoalCard } from "@/components/checkpoints/CallRoom/CallGoal";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { CallLayout } from "@/components/checkpoints/CallRoom/CallParts";
 import {
+	adviceSlots,
 	PlanBody,
 	usePlanChange,
 } from "@/components/checkpoints/CallRoom/CallPlan";
@@ -227,46 +228,11 @@ export function AiReviewView({
 													: null
 											}
 											hint={planHint(t, plan.edit)}
-											listAction={
-												<Button
-													type="text"
-													icon={<IconSparkles size={16} />}
-													loading={advising}
-													onClick={onAdvise}
-													className={callStyles.suggestTasks}
-												>
-													{t(
-														"checkpoints.review.plan.suggest",
-														"Suggest tasks",
-													)}
-												</Button>
-											}
-											footer={
-												<div className={callStyles.planFooter}>
-													<Typography.Text
-														type="secondary"
-														className={callStyles.grow}
-													>
-														{plan.editUntil &&
-															t(
-																"checkpoints.review.plan.until",
-																"Open until {date}",
-																{
-																	date: dayjs(plan.editUntil).format(
-																		"ddd D MMM, HH:mm",
-																	),
-																},
-															)}
-													</Typography.Text>
-													<Button
-														type="primary"
-														loading={advising}
-														onClick={onAdvise}
-													>
-														{t("checkpoints.review.plan.save", "Save changes")}
-													</Button>
-												</div>
-											}
+											{...adviceSlots({
+												until: plan.editUntil,
+												loading: advising,
+												onAdvise,
+											})}
 										/>
 									),
 								},
@@ -284,19 +250,14 @@ export function AiReviewView({
 	);
 }
 
-/** What the plan asks of the author, while it is open. */
-const planHint = (t: ReturnType<typeof useTranslate>["t"], edit: PlanEdit) => {
-	if (edit === "plan") {
-		return t(
-			"checkpoints.review.plan.startHint",
-			"Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
-		);
-	}
-	return t(
-		"checkpoints.review.plan.midHint",
-		"Change the tasks yourself or take the curator's suggestions. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
-	);
-};
+/** Day 15's ask; the start's is the plan editor's own. */
+const planHint = (t: ReturnType<typeof useTranslate>["t"], edit: PlanEdit) =>
+	edit === "tasks"
+		? t(
+				"checkpoints.review.plan.midHint",
+				"Change the tasks yourself or take the curator's suggestions. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
+			)
+		: undefined;
 
 const sessionOf = (review: CheckpointReviewDto, index: number) =>
 	review.sessions.find((session) => session.index === index);

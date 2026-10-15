@@ -284,8 +284,9 @@ const editUntil = (
 export type AdviceRefusal = "notFound" | "forbidden" | "planClosed" | "failed";
 
 /**
- * The curator's read of the tasks as saved, written on the session the plan
- * is open on. The same plan is not read twice: the answer is kept with the
+ * The AI's read of the tasks as saved, written on the session the plan is open
+ * on — the AI curator's start and day 15, or a pro checkpoint's draft before
+ * call 1. The same plan is not read twice: the answer is kept with the
  * hash of what it answered.
  */
 export const adviseOnPlan = async (
@@ -315,9 +316,13 @@ export const adviseOnPlan = async (
 			items: taskSelect,
 		},
 	});
-	if (checkpoint?.curatorKind !== CheckpointCuratorKind.AI) return "notFound";
+	if (!checkpoint) return "notFound";
 	if (!canEditPlan(checkpoint, userId)) return "forbidden";
-	const index = planSession(planEdit(checkpoint, now));
+	const ai = checkpoint.curatorKind === CheckpointCuratorKind.AI;
+	const edit = planEdit(checkpoint, now);
+	// A pro curator agrees the plan on the calls; the AI reads the author's draft before call 1.
+	if (!ai && edit !== "plan") return "planClosed";
+	const index = planSession(edit);
 	const session = checkpoint.sessions.find((row) => row.index === index);
 	if (!session) return "planClosed";
 
@@ -344,7 +349,9 @@ export const adviseOnPlan = async (
 				notes: content?.notes ?? null,
 				advice: written.advice,
 			} satisfies CuratorReview,
-			contentStatus: CheckpointSessionContentStatus.Ready,
+			// With a pro curator the session stays unwritten: call 1's notes
+			// claim it by a null status, and they replace this draft advice.
+			...(ai && { contentStatus: CheckpointSessionContentStatus.Ready }),
 		},
 	});
 	return null;

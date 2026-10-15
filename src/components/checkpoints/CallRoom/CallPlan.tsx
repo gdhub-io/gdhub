@@ -11,6 +11,7 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Input, Tooltip, Typography } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import { type ReactNode, useRef, useState } from "react";
 import { ArtifactLink } from "@/components/WorkflowPath/ArtifactLink";
 import {
@@ -94,9 +95,10 @@ export function PlanBody({
 	const { edit } = plan;
 	let lead = hint;
 	if (lead === undefined && edit === "plan") {
+		// The first sprint reads the same with either curator.
 		lead = t(
-			"checkpoints.call.plan.beforeCallHint",
-			"Add the tasks you have in mind now — on call 1 you'll go through them with the curator and agree the plan.",
+			"checkpoints.review.plan.startHint",
+			"Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
 		);
 	} else if (lead === undefined && edit === "tasks") {
 		lead = t(
@@ -132,6 +134,69 @@ export function PlanBody({
 						</Typography.Text>
 					</div>
 				))}
+		</div>
+	);
+}
+
+/**
+ * The AI's two ways in, for any plan it reads: "Suggest tasks" beside "Add
+ * task", and "Save changes" — the tasks save as typed; this asks for the read.
+ */
+export const adviceSlots = ({
+	until,
+	loading,
+	onAdvise,
+}: {
+	until: string | null;
+	loading: boolean;
+	onAdvise: () => void;
+}): Pick<PlanBodyProps, "listAction" | "footer"> => ({
+	listAction: <SuggestTasks loading={loading} onClick={onAdvise} />,
+	footer: <AdviseFooter until={until} loading={loading} onClick={onAdvise} />,
+});
+
+function SuggestTasks({
+	loading,
+	onClick,
+}: {
+	loading: boolean;
+	onClick: () => void;
+}) {
+	const { t } = useTranslate();
+	return (
+		<Button
+			type="text"
+			icon={<IconSparkles size={16} />}
+			loading={loading}
+			onClick={onClick}
+			className={styles.suggestTasks}
+		>
+			{t("checkpoints.review.plan.suggest", "Suggest tasks")}
+		</Button>
+	);
+}
+
+function AdviseFooter({
+	until,
+	loading,
+	onClick,
+}: {
+	until: string | null;
+	loading: boolean;
+	onClick: () => void;
+}) {
+	const { t } = useTranslate();
+	return (
+		<div className={styles.planFooter}>
+			<Typography.Text type="secondary" className={styles.grow}>
+				{until &&
+					t("checkpoints.review.plan.until", "Open until {date}", {
+						date: dayjs(until).format("ddd D MMM, HH:mm"),
+					})}
+			</Typography.Text>
+			<Button type="primary" loading={loading} onClick={onClick}>
+				{t("checkpoints.review.plan.save", "Save changes")}
+			</Button>
 		</div>
 	);
 }

@@ -129,7 +129,13 @@ const proCall = (
 	state,
 	curatorJoinedAt: state === "open" ? `${DAYS[index - 1]}T11:58:00.000Z` : null,
 	role: "team",
-	plan: { goal: GOAL, goalAgreedAt: "2026-10-01T12:45:00.000Z", edit, tasks },
+	plan: {
+		goal: GOAL,
+		goalAgreedAt: "2026-10-01T12:45:00.000Z",
+		advice: null,
+		edit,
+		tasks,
+	},
 	sessions: DAYS.map((day, offset) => ({
 		index: offset + 1,
 		scheduledAt: `${day}T12:00:00.000Z`,
@@ -230,6 +236,11 @@ function ProPage({
 								: undefined
 						}
 						notesLoading={false}
+						advise={{
+							advice: call.plan.advice,
+							loading: false,
+							onAdvise: noop,
+						}}
 						now={new Date(now)}
 					/>
 				</>
@@ -396,14 +407,20 @@ export default meta;
 type Story = StoryObj;
 
 /**
- * Day 1, the page opened for the first time: call 1 is ahead. The author can
- * already draft the tasks; the call goes through them and agrees the plan.
+ * Day 1, before call 1: the author has drafted the tasks and the AI has read
+ * them, as on the AI's start — the call goes through them and agrees the plan.
  */
 export const ProDay1: Story = {
-	name: "Pro · day 1, first open",
+	name: "Pro · day 1, before call 1",
 	render: () => (
 		<ProPage
-			call={proCall(1, "early", 0, [], "plan")}
+			call={{
+				...proCall(1, "early", 0, startTasks, "plan"),
+				plan: {
+					...proCall(1, "early", 0, startTasks, "plan").plan,
+					advice: startContent.advice,
+				},
+			}}
 			now="2026-10-01T09:00:00.000Z"
 			shown={1}
 			tab="plan"

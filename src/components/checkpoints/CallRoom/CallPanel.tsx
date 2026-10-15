@@ -7,12 +7,19 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
+import { useAdvisePlan } from "@/hooks/checkpoint-review";
 import type {
 	CallNotesDto,
 	CheckpointCallDto,
 } from "@/repositories/checkpoint-call";
+import type { PlanAdvice } from "@/types/checkpoints";
 import { NotesBody, NotesTranscript } from "./CallNotes";
-import { PlanBody, type PlanBodyProps, usePlanChange } from "./CallPlan";
+import {
+	adviceSlots,
+	PlanBody,
+	type PlanBodyProps,
+	usePlanChange,
+} from "./CallPlan";
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
@@ -36,6 +43,7 @@ export function CallPanel({
 }) {
 	const [selected, setSelected] = useState(call.index);
 	const onChange = usePlanChange(call.checkpointId);
+	const advise = useAdvisePlan(call.checkpointId);
 	const held =
 		call.sessions.find((session) => session.index === selected)?.held ?? false;
 	const notes = useCallNotes(call.checkpointId, held ? selected : null);
@@ -53,6 +61,11 @@ export function CallPanel({
 			onTab={onPick}
 			plan={call.plan}
 			onChange={onChange}
+			advise={{
+				advice: call.plan.advice,
+				loading: advise.isPending,
+				onAdvise: () => advise.mutate(),
+			}}
 			notes={notes.data}
 			notesLoading={held && notes.isPending}
 		/>
@@ -71,6 +84,12 @@ export type PanelBlockProps = {
 	onChange: PlanBodyProps["onChange"];
 	notes?: CallNotesDto;
 	notesLoading: boolean;
+	/** The AI's read of the draft before call 1. */
+	advise?: {
+		advice: PlanAdvice | null;
+		loading: boolean;
+		onAdvise: () => void;
+	};
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -87,6 +106,7 @@ export function PanelBlock({
 	onChange,
 	notes,
 	notesLoading,
+	advise,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -143,6 +163,20 @@ export function PanelBlock({
 					// One plan for every call; only the page's own call may change it.
 					plan={selected === current ? plan : { ...plan, edit: null }}
 					onChange={onChange}
+					// Before call 1 the AI reads the author's draft.
+					{...(advise &&
+						selected === current &&
+						plan.edit === "plan" && {
+							advice: advise.advice,
+							...adviceSlots({
+								// The draft is free until call 1; on it, the plan is agreed.
+								until:
+									sessions.find((session) => session.index === current)
+										?.scheduledAt ?? null,
+								loading: advise.loading,
+								onAdvise: advise.onAdvise,
+							}),
+						})}
 				/>
 			),
 		},

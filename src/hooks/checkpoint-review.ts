@@ -18,7 +18,7 @@ export const useCheckpointReview = (id: string) =>
 			count < 2,
 	});
 
-/** The curator reads the tasks as saved; the page re-reads its advice. */
+/** The AI reads the tasks as saved; the page — review or call — re-reads its advice. */
 export const useAdvisePlan = (id: string) => {
 	const queryClient = useQueryClient();
 
@@ -27,6 +27,9 @@ export const useAdvisePlan = (id: string) => {
 			await axios.post(`/api/checkpoint/${id}/plan/advice`);
 		},
 		onSuccess: () =>
-			queryClient.invalidateQueries({ queryKey: ["checkpoint-review", id] }),
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["checkpoint-review", id] }),
+				queryClient.invalidateQueries({ queryKey: ["checkpoint-call", id] }),
+			]),
 	});
 };

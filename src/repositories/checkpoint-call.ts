@@ -31,6 +31,8 @@ import { prisma } from "@/services/prisma";
 import type {
 	CallNotes,
 	CheckpointArtifactRef,
+	CuratorReview,
+	PlanAdvice,
 	PreviousVerdict,
 } from "@/types/checkpoints";
 
@@ -58,6 +60,8 @@ export type CheckpointCallDto = {
 	plan: {
 		goal: string;
 		goalAgreedAt: string | null;
+		/** The AI's advice on the author's draft, before call 1. */
+		advice: PlanAdvice | null;
 		/** What the caller may change now; null for those who only read. */
 		edit: PlanEdit;
 		tasks: {
@@ -168,6 +172,7 @@ export const getCall = async (
 						scheduledAt: true,
 						endedAt: true,
 						contentStatus: true,
+						content: true,
 					},
 				},
 				items: {
@@ -193,6 +198,13 @@ export const getCall = async (
 		}),
 	]);
 
+	const edit = canEditPlan(plan, userId) ? planEdit(plan, now) : null;
+	// The draft advice lives on session 1 until call 1's notes replace it.
+	const draft =
+		edit === "plan" && !plan.sessions[0]?.contentStatus
+			? ((plan.sessions[0]?.content as CuratorReview | null)?.advice ?? null)
+			: null;
+
 	return {
 		checkpointId,
 		index,
@@ -212,7 +224,8 @@ export const getCall = async (
 		plan: {
 			goal: plan.goal,
 			goalAgreedAt: plan.goalAgreedAt?.toISOString() ?? null,
-			edit: canEditPlan(plan, userId) ? planEdit(plan, now) : null,
+			advice: draft,
+			edit,
 			tasks: plan.items.map((item) => ({
 				id: item.id,
 				text: item.text,

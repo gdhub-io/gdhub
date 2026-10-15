@@ -360,6 +360,28 @@ describe("adviseOnPlan", () => {
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 	});
 
+	it("reads a pro checkpoint's draft before call 1, leaving the session to its notes", async () => {
+		const call1 = new Date("2026-10-01T14:00:00Z");
+		checkpointFindUnique.mockResolvedValue({
+			...plan(),
+			curatorId: "patrick",
+			curatorKind: CheckpointCuratorKind.Human,
+			goalAgreedAt: null,
+			sessions: [{ id: "s1", index: 1, scheduledAt: call1, endedAt: null, content: null }],
+		});
+		writePlanAdvice.mockResolvedValue(advice);
+		expect(await adviseOnPlan("cp", "author", onDay1)).toBeNull();
+		const { data } = sessionUpdate.mock.calls[0][0];
+		expect(data.content.advice.tasks).toHaveLength(1);
+		expect(data).not.toHaveProperty("contentStatus");
+
+		vi.clearAllMocks();
+		expect(
+			await adviseOnPlan("cp", "author", new Date("2026-10-01T14:05:00Z")),
+		).toBe("planClosed");
+		expect(writePlanAdvice).not.toHaveBeenCalled();
+	});
+
 	it("refuses once the plan is closed", async () => {
 		checkpointFindUnique.mockResolvedValue(plan());
 		expect(

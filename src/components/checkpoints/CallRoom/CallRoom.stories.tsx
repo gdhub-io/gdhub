@@ -28,6 +28,7 @@ const GOAL =
 const plan: CheckpointCallDto["plan"] = {
 	goal: GOAL,
 	goalAgreedAt: "2026-10-01T13:00:00.000Z",
+	advice: null,
 	edit: null,
 	tasks: [
 		{
@@ -359,6 +360,7 @@ export const PanelPlanCallOne: Story = {
 			panelPlan={{
 				goal: GOAL,
 				goalAgreedAt: null,
+				advice: null,
 				edit: "goalAndTasks",
 				tasks: [
 					{ id: "t1", text: "Core loop one-pager" },
