@@ -217,19 +217,16 @@ export const authConfig: NextAuthConfig = {
 				return token;
 			}
 
-			// `auth()` in a server component or route handler drops the refreshed
-			// cookie, so the token above stays stale and this point is reached on
-			// every call until the browser next rewrites it. Redis keeps that to
-			// one read per interval instead of a full resync each time.
+			// Bare `auth()` drops the refreshed cookie, so a stale token lands here
+			// on every call; Redis keeps that to one database read per interval.
 			const key = `session-user:${token.email}`;
 			const ttl = USER_SYNC_INTERVAL_MS / 1000;
-			let synced: Awaited<ReturnType<typeof readSessionUser>>;
-			if (trigger) {
-				synced = await readSessionUser(token);
-				await cacheSet(key, synced, ttl);
-			} else {
-				synced = await cached(key, ttl, () => readSessionUser(token));
-			}
+			const synced = trigger
+				? await readSessionUser(token).then(async (fresh) => {
+						await cacheSet(key, fresh, ttl);
+						return fresh;
+					})
+				: await cached(key, ttl, () => readSessionUser(token));
 
 			if (!synced) return token;
 

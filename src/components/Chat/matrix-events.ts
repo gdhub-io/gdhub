@@ -6,11 +6,8 @@ import type {
 	SyncState,
 } from "matrix-js-sdk";
 
-/**
- * The SDK enum values ChatProvider needs, spelled out: it is mounted on every
- * page of the app, and importing the enums would put the whole SDK into that
- * bundle. `tests/matrix-events.test.ts` keeps them equal to the SDK's own.
- */
+// SDK enum values spelled out so the always-mounted ChatProvider does not
+// bundle the SDK; tests/matrix-events.test.ts keeps them in sync.
 export const MatrixEvents = {
 	sync: "sync" as ClientEvent.Sync,
 	sessionLoggedOut: "Session.logged_out" as HttpApiEvent.SessionLoggedOut,

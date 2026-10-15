@@ -103,10 +103,11 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		queryKey: myApplicationKey,
 		queryFn: () =>
 			axios
-				.get<{ myTeamMemberId?: string }>("/api/project/vacancy", {
-					params: { id: vacancy.id },
-				})
-				.then((response) => response.data.myTeamMemberId ?? null),
+				.get<{ myTeamMemberId: string | null }>(
+					"/api/project/vacancy/application",
+					{ params: { id: vacancy.id } },
+				)
+				.then((response) => response.data.myTeamMemberId),
 		enabled: !!session,
 	});
 

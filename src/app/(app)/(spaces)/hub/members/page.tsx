@@ -20,10 +20,13 @@ export default async function HubMembersPage() {
 	const [access, { usersCount, specialitiesCount }, ownApprovedProjects] =
 		await Promise.all([
 			getSpaceAccess("hub", null, user),
-			cached("stats:hub-members", 300, async () => ({
-				usersCount: await prisma.user.count(),
-				specialitiesCount: await prisma.speciality.count(),
-			})),
+			cached("stats:hub-members", 300, async () => {
+				const [usersCount, specialitiesCount] = await Promise.all([
+					prisma.user.count(),
+					prisma.speciality.count(),
+				]);
+				return { usersCount, specialitiesCount };
+			}),
 			prisma.project.count({
 				where: {
 					authorId: session?.user?.id,

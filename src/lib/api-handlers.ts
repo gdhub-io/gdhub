@@ -320,9 +320,8 @@ export function json<T>(data: T, init?: ResponseInit): Response {
 }
 
 /**
- * Lets the CDN serve a public, viewer-independent response for `seconds`, then
- * stale while it refetches. Preferred over a route's `revalidate`, which makes
- * `next build` run the query and fails the deploy when the database is behind.
+ * Lets the CDN serve a public, viewer-independent API response for `seconds`.
+ * Unlike a route's `revalidate`, it keeps the query out of `next build`.
  */
 export const sharedCache = (seconds: number): ResponseInit => ({
 	headers: {

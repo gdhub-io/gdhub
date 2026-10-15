@@ -1,3 +1,4 @@
+import { fromCents } from "@/helpers/format";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -57,11 +58,8 @@ export async function findPublicVacancy(id: string) {
 
 	if (!data) return null;
 
-	// `offeredAmount` is stored in minor units (cents) to match the Payment
-	// money convention, and every consumer renders it as euros. The write path
-	// in /api/user/project/vacancy does the mirror image of this.
 	return {
 		...data,
-		offeredAmount: data.offeredAmount != null ? data.offeredAmount / 100 : null,
+		offeredAmount: fromCents(data.offeredAmount),
 	};
 }

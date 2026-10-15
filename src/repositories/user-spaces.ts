@@ -171,11 +171,6 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 /** Cache key for one user's switcher list. Writes that change it drop it. */
 export const userSpacesCacheKey = (userId: string) => `user-spaces:${userId}`;
 
-/**
- * Read on every header render, so it is cached — but briefly: joining a project
- * or creating an event should show up without the person wondering why it has
- * not. Writes drop the key outright; the TTL is the backstop for the ones that
- * forget to.
- */
+// Brief, because joining a project should show up at once; writes also drop it.
 export const getCachedUserSpaces = (userId: string) =>
 	cached(userSpacesCacheKey(userId), 60, () => loadUserSpaces(userId));

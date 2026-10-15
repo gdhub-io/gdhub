@@ -98,6 +98,17 @@ const resolveHubRole = async (
 	return strongestRole([stored, resolved?.role]);
 };
 
+const inheritedRoleFor = async (
+	inherit: (typeof SPACES)[SpaceType]["inheritRoleFrom"],
+	user: NonNullable<MaybeAccessUser>,
+): Promise<SpaceRole | null> => {
+	if (inherit?.space !== "hub") return null;
+
+	const hubRole = await resolveHubRole(user);
+
+	return hubRole && roleAtLeast(hubRole, inherit.atLeast) ? hubRole : null;
+};
+
 /**
  * Resolves who the user is inside one space instance and what they may do.
  *
@@ -146,9 +157,6 @@ async function resolveSpaceAccess(
 
 	const spaceId = resolved?.spaceId ?? fallbackId;
 
-	// Membership is the source of truth; the adapter is what is left of the old
-	// domain-table checks and disappears once the backfill has run everywhere.
-
 	// A space may take its role from another one: `admin` and `dev` are run by
 	// platform staff from the hub.
 	//
@@ -156,19 +164,12 @@ async function resolveSpaceAccess(
 	// project, event or course. Administering the platform and taking part in
 	// someone's project are different things, and the only identity that crosses
 	// that line is the super-admin — on purpose, loudly, and with an audit entry.
-	const inherit = space.inheritRoleFrom;
+	//
+	// Membership is the source of truth; the adapter is what is left of the old
+	// domain-table checks and disappears once the backfill has run everywhere.
 	const [membership, inheritedRole] = await Promise.all([
 		storedMembership(type, spaceId, user.id),
-		inherit
-			? (async () => {
-					const hubRole =
-						inherit.space === "hub" ? await resolveHubRole(user) : null;
-
-					return hubRole && roleAtLeast(hubRole, inherit.atLeast)
-						? hubRole
-						: null;
-				})()
-			: null,
+		inheritedRoleFor(space.inheritRoleFrom, user),
 	]);
 
 	const role = strongestRole([
@@ -198,17 +199,14 @@ async function resolveSpaceAccess(
 	return { type, id: spaceId, role, permissions, scopes, viaSuperAdmin: false };
 }
 
+/** One resolution per server render: layout, gate and page share the answer. */
+export const getSpaceAccess = cache(resolveSpaceAccess);
+
 /**
  * The only place permissions are checked. In shadow mode a denial is logged and
  * allowed through, so switching enforcement on is a configuration change rather
  * than a deploy.
  */
-/**
- * One resolution per server render: the app layout, a space gate and the page
- * itself all ask, and they get the same session object, so the same answer.
- */
-export const getSpaceAccess = cache(resolveSpaceAccess);
-
 export function can(access: SpaceAccess, permission: string): boolean {
 	if (access.permissions.has(permission)) return true;
 

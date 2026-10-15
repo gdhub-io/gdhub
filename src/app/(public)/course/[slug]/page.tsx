@@ -8,10 +8,9 @@ type Params = Promise<{ slug: string }>;
 
 const loadCourse = cache(findPublishedCourse);
 
-// Rendered on the first visit, then served from cache and refreshed at most
-// every 5 minutes.
 export const revalidate = 300;
 
+// Empty: each page is built on its first request, not during `next build`.
 export async function generateStaticParams() {
 	return [];
 }
@@ -34,6 +33,7 @@ export default async function CoursePage({ params }: { params: Params }) {
 	const course = await loadCourse((await params).slug);
 	if (!course) notFound();
 
-	// Dates as strings, the shape the client was written against.
-	return <CoursePageClient course={JSON.parse(JSON.stringify(course))} />;
+	// Only what the page shows; curriculums and groups stay out of the payload.
+	const { id, image, description } = course;
+	return <CoursePageClient course={{ id, image, description }} />;
 }

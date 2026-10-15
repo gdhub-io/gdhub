@@ -51,6 +51,5 @@ export const mockVacancy: Record<string, unknown> = {
 	offeredRateType: null,
 	promisePercentage: 5,
 	promiseStep: { name: "Vertical slice" },
-	myTeamMemberId: undefined,
 	team: { project: mockProject },
 };

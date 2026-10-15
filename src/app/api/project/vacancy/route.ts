@@ -23,17 +23,18 @@ export const GET = withAuth({ mode: "any" })(
 		const { id } = body as VacancyQuery;
 		const currentUser = user as SessionUser | undefined;
 
-		const data = await findPublicVacancy(id);
+		const [data, teamMember] = await Promise.all([
+			findPublicVacancy(id),
+			currentUser?.id
+				? prisma.teamMember.findFirst({
+						where: { vacancyId: id, userId: currentUser.id },
+					})
+				: null,
+		]);
 
 		// Spreading a missing record would answer `200 {}`, which reads as a hit to
 		// every caller — the job page then rendered instead of returning a 404.
 		if (!data) return apiError.notFound("Vacancy not found");
-
-		const teamMember = currentUser?.id
-			? await prisma.teamMember.findFirst({
-					where: { vacancyId: id, userId: currentUser.id },
-				})
-			: null;
 
 		return json({ ...data, myTeamMemberId: teamMember?.id });
 	}),

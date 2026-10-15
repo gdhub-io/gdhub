@@ -3,7 +3,7 @@ import { prisma } from "@/services/prisma";
 
 /** A published course as its public page shows it, or `null`. */
 export async function findPublishedCourse(slug: string) {
-	const course = await prisma.course.findFirst({
+	return prisma.course.findFirst({
 		where: {
 			slug,
 			status: CourseStatus.Published,
@@ -47,6 +47,4 @@ export async function findPublishedCourse(slug: string) {
 			},
 		},
 	});
-
-	return course;
 }

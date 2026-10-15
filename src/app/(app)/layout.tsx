@@ -10,6 +10,7 @@ import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { ProtectedShell } from "@/components/layouts/ProtectedShell";
 import { SpaceHeaderProvider } from "@/components/layouts/SpaceHeader";
 import { requireSession } from "@/helpers/require-session";
+import { USER_SPACES_QUERY_KEY } from "@/hooks/useUserSpaces";
 import { getCachedUserSpaces } from "@/repositories/user-spaces";
 import { getSpaceAccess, type MaybeAccessUser } from "@/services/access";
 import { toSnapshot } from "@/services/access/snapshot";
@@ -36,14 +37,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 		getSpaceAccess("admin", null, user),
 		user &&
 			queryClient.prefetchQuery({
-				queryKey: ["user-spaces"],
+				queryKey: USER_SPACES_QUERY_KEY,
 				queryFn: () => getCachedUserSpaces(user.id),
 			}),
 	]);
 
-	// The root provider has no session to start with and fetches it after
-	// hydration; handing over the one read here lets every query gated on the
-	// user start straight away.
+	// Handing over the session read here lets every query gated on the user
+	// start without waiting for /api/auth/session.
 	return (
 		<SessionProvider session={session}>
 			<HydrationBoundary state={dehydrate(queryClient)}>

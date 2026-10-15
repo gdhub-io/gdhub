@@ -1,15 +1,14 @@
+import type { OutputData } from "@editorjs/editorjs";
 import { BlogPostStatus } from "@gdhub-io/gdhub-prisma";
+import { getEditorjsFirstParagraph } from "@/helpers/content";
 import { prisma } from "@/services/prisma";
 
 const authors = { select: { name: true, image: true } } as const;
 
-function firstParagraphExcerpt(content: unknown): string {
-	const text: string | undefined = (content as any)?.blocks?.find(
-		(block: any) => block.type === "paragraph",
-	)?.data?.text;
-	if (!text) return "";
-	return text.length > 100 ? `${text.slice(0, 100)}...` : text;
-}
+const toAuthor = (author: { name: string | null; image: string | null }) => ({
+	name: author.name ?? "",
+	image: author.image ?? undefined,
+});
 
 /** The blog index: no post bodies, only the excerpt cut from each. */
 export async function listPublishedBlogPosts() {
@@ -27,9 +26,14 @@ export async function listPublishedBlogPosts() {
 		orderBy: { publishedAt: "desc" },
 	});
 
-	return posts.map(({ content, ...post }) => ({
-		...post,
-		description: firstParagraphExcerpt(content),
+	return posts.map((post) => ({
+		id: post.id,
+		title: post.title,
+		slug: post.slug ?? "",
+		image: post.image ?? undefined,
+		publishedAt: post.publishedAt?.toISOString() ?? "",
+		description: getEditorjsFirstParagraph(post.content as OutputData),
+		authors: post.authors.map(toAuthor),
 	}));
 }
 
@@ -40,5 +44,13 @@ export async function findPublishedBlogPost(slug: string) {
 	});
 	if (!post) return null;
 
-	return { ...post, description: firstParagraphExcerpt(post.content) };
+	return {
+		...post,
+		slug: post.slug ?? slug,
+		createdAt: post.createdAt.toISOString(),
+		updatedAt: post.updatedAt.toISOString(),
+		publishedAt: post.publishedAt?.toISOString() ?? "",
+		description: getEditorjsFirstParagraph(post.content as OutputData),
+		authors: post.authors.map(toAuthor),
+	};
 }

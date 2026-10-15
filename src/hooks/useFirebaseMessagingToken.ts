@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type FirebaseMessagingState = {
 	token: string | null;
@@ -59,24 +59,14 @@ async function bootstrapMessaging(): Promise<FirebaseMessagingState> {
 	return state;
 }
 
-// Shared by every caller: the chat and the notification bell both need the
-// token, and each asking on its own meant two permission prompts and two
-// service-worker registrations per page.
-let messaging: Promise<FirebaseMessagingState> | undefined;
-
+// One bootstrap per tab, shared by the chat and the notification bell.
 export function useFirebaseMessagingToken(): FirebaseMessagingState {
-	const [state, setState] = useState(initialState);
+	const { data } = useQuery({
+		queryKey: ["fcm-token"],
+		queryFn: bootstrapMessaging,
+		staleTime: Number.POSITIVE_INFINITY,
+		retry: false,
+	});
 
-	useEffect(() => {
-		let cancelled = false;
-		messaging ??= bootstrapMessaging();
-		messaging.then((result) => {
-			if (!cancelled) setState(result);
-		});
-		return () => {
-			cancelled = true;
-		};
-	}, []);
-
-	return state;
+	return data ?? initialState;
 }

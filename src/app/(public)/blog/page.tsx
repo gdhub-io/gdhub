@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { listPublishedBlogPosts } from "@/repositories/blog.repository";
-import { BlogClient, type BlogPost } from "./BlogClient";
+import { BlogClient } from "./BlogClient";
 
 export const revalidate = 300;
 
@@ -11,21 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-	const posts = await listPublishedBlogPosts();
-	return (
-		<BlogClient
-			posts={posts.map(
-				(post): BlogPost => ({
-					...post,
-					slug: post.slug ?? "",
-					image: post.image ?? undefined,
-					publishedAt: post.publishedAt?.toISOString() ?? "",
-					authors: post.authors.map((author) => ({
-						name: author.name ?? "",
-						image: author.image ?? undefined,
-					})),
-				}),
-			)}
-		/>
-	);
+	return <BlogClient posts={await listPublishedBlogPosts()} />;
 }

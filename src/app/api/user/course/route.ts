@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { CourseStatus, Language } from "@gdhub-io/gdhub-prisma";
 import slugify from "slugify";
 import { z } from "zod";
-import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -11,6 +10,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";

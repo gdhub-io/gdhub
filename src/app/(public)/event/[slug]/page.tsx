@@ -107,10 +107,9 @@ const loadEvent = cache(
 	},
 );
 
-// Rendered on the first visit, then served from cache and refreshed at most
-// every 60 seconds.
 export const revalidate = 60;
 
+// Empty: each page is built on its first request, not during `next build`.
 export async function generateStaticParams() {
 	return [];
 }

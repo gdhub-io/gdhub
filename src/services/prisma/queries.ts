@@ -124,16 +124,13 @@ export const getPublishedStoreProjects = async ({
 	});
 
 	const projectIds = projects.map((project) => project.id);
-	const [workflows, projectIdsWithOpenPositions] = await Promise.all([
-		prisma.projectWorkflow.findMany({
-			where: { projectId: { in: projectIds } },
-			select: {
-				projectId: true,
-				currentStep: { select: { name: true, order: true } },
-			},
-		}),
-		projectsWithOpenPositions(projectIds),
-	]);
+	const workflows = await prisma.projectWorkflow.findMany({
+		where: { projectId: { in: projectIds } },
+		select: {
+			projectId: true,
+			currentStep: { select: { name: true, order: true } },
+		},
+	});
 	const workflowByProjectId = new Map(
 		workflows.map((workflow) => [
 			workflow.projectId,
@@ -141,8 +138,8 @@ export const getPublishedStoreProjects = async ({
 		]),
 	);
 
-	// Filter and cut to the page size *before* counting applause, so the
-	// counter query only touches the projects that are actually returned.
+	// Filter and cut to the page size first, so the per-project queries below
+	// only touch the projects that are actually returned.
 	const eligible = projects
 		.flatMap((project) => {
 			const workflow = workflowByProjectId.get(project.id);
@@ -158,10 +155,12 @@ export const getPublishedStoreProjects = async ({
 		.slice(0, limit);
 
 	const eligibleIds = eligible.map(({ project }) => project.id);
-	const [applauseCounts, cardFacts] = await Promise.all([
-		prisma.project.getApplauseCounts({ projectIds: eligibleIds }),
-		getProjectCardFacts(eligibleIds),
-	]);
+	const [projectIdsWithOpenPositions, applauseCounts, cardFacts] =
+		await Promise.all([
+			projectsWithOpenPositions(eligibleIds),
+			prisma.project.getApplauseCounts({ projectIds: eligibleIds }),
+			getProjectCardFacts(eligibleIds),
+		]);
 
 	return eligible.map(({ project, currentStep }) => ({
 		id: project.id,

@@ -10,7 +10,7 @@ type Params = Promise<{ slug: string }>;
 
 export const revalidate = 300;
 
-// Built on first request, then served from cache; admin edits revalidate /blog.
+// Empty: each page is built on its first request, not during `next build`.
 export async function generateStaticParams() {
 	return [];
 }
@@ -21,16 +21,8 @@ const fetchPost = cache(async (slug: string): Promise<BlogPost | null> => {
 
 	return {
 		...post,
-		slug: post.slug ?? slug,
 		coverImage: getEditorjsPageCover(post.content as OutputData) ?? undefined,
 		content: JSON.stringify(post.content),
-		createdAt: post.createdAt.toISOString(),
-		updatedAt: post.updatedAt.toISOString(),
-		publishedAt: post.publishedAt?.toISOString() ?? "",
-		authors: post.authors.map((author) => ({
-			name: author.name ?? "",
-			image: author.image ?? undefined,
-		})),
 	};
 });
 

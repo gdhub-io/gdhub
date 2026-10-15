@@ -1,7 +1,6 @@
 "use client";
 
 import { IconExternalLink, IconX } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Button,
@@ -16,8 +15,6 @@ import {
 } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
-import axios from "axios";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -32,7 +29,7 @@ import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
 import type { Permission } from "@/config/spaces";
 import { useTelegram } from "@/helpers/useTelegram";
-import type { UserSpaces } from "@/repositories/user-spaces";
+import { useUserSpaces } from "@/hooks/useUserSpaces";
 import styles from "./style.module.scss";
 
 const { Content } = Layout;
@@ -67,12 +64,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	// The scout link cannot come from a permission: the shell sits outside the
 	// scout gate, so it holds no access snapshot for that space. Having a
 	// cabinet is the same answer — it is what the space gate checks.
-	const { data: userSpaces } = useQuery<UserSpaces>({
-		queryKey: ["user-spaces"],
-		queryFn: () =>
-			axios.get<UserSpaces>("/api/user/spaces").then((res) => res.data),
-		staleTime: 60 * 1000,
-	});
+	const { data: userSpaces } = useUserSpaces();
 
 	// The scroll container is the shell's own content, not the document, so route
 	// changes no longer reset the scroll position by themselves.
