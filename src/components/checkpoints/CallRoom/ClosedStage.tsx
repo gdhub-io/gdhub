@@ -3,6 +3,7 @@
 import {
 	IconCalendarPlus,
 	IconFileText,
+	IconLock,
 	IconMessageCircle,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
@@ -10,6 +11,7 @@ import dayjs from "dayjs";
 import { CuratorMessage } from "@/components/checkpoints/CuratorReview/CuratorMessage";
 import { SESSION_MINUTES } from "@/config/checkpoint";
 import { downloadIcs } from "@/lib/calendar";
+import { callWindow } from "@/lib/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import { firstName } from "./CallHeader";
 
@@ -20,6 +22,8 @@ export type ClosedStageProps = {
 	onChat: () => void;
 	chatLoading?: boolean;
 	onOpenReview: () => void;
+	/** Fixed in stories so the countdown stays put. */
+	now?: Date;
 };
 
 /**
@@ -32,6 +36,7 @@ export function ClosedStage({
 	onChat,
 	chatLoading,
 	onOpenReview,
+	now = new Date(),
 }: ClosedStageProps) {
 	const { t } = useTranslate();
 	const scheduled = dayjs(call.scheduledAt);
@@ -90,6 +95,26 @@ export function ClosedStage({
 		time: scheduled.format("HH:mm"),
 	};
 
+	// Locked until the room opens; the page asks again while it waits.
+	const opensIn = dayjs(callWindow(scheduled.toDate()).opensAt).diff(
+		now,
+		"minute",
+	);
+	let joinLabel: string;
+	if (opensIn >= 24 * 60) {
+		joinLabel = t("checkpoints.call.joinOn", "Join on {date}", {
+			date: scheduled.format("D MMM"),
+		});
+	} else if (opensIn >= 60) {
+		joinLabel = t("checkpoints.call.joinInHours", "Join in {n} h", {
+			n: Math.round(opensIn / 60),
+		});
+	} else {
+		joinLabel = t("checkpoints.call.joinInMinutes", "Join in {n} min", {
+			n: Math.max(opensIn, 1),
+		});
+	}
+
 	return (
 		<CuratorMessage
 			curator={call.curator}
@@ -119,10 +144,16 @@ export function ClosedStage({
 			}
 			actions={[
 				{
+					key: "join",
+					label: joinLabel,
+					icon: <IconLock size={16} />,
+					primary: true,
+					disabled: true,
+				},
+				{
 					key: "calendar",
 					label: t("workflow.path.session.calendar", "Add to calendar"),
 					icon: <IconCalendarPlus size={16} />,
-					primary: true,
 					onClick: addToCalendar,
 				},
 				...(team

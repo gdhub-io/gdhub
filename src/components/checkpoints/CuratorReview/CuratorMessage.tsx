@@ -20,7 +20,8 @@ export type CuratorAction = {
 	icon?: ReactNode;
 	primary?: boolean;
 	loading?: boolean;
-	onClick: () => void;
+	disabled?: boolean;
+	onClick?: () => void;
 };
 
 export type CuratorMessageProps = {
@@ -91,6 +92,7 @@ export function CuratorMessage({
 								type={action.primary ? "primary" : "default"}
 								icon={action.icon}
 								loading={action.loading}
+								disabled={action.disabled}
 								onClick={action.onClick}
 							>
 								{action.label}

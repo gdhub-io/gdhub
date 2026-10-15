@@ -197,6 +197,7 @@ function ProPage({
 						notesReady={call.sessions[call.index - 1].held}
 						onChat={noop}
 						onOpenReview={() => setTab("notes")}
+						now={new Date(now)}
 					/>
 				)
 			}
