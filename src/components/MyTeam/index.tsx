@@ -37,6 +37,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useContext, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
@@ -44,7 +45,6 @@ import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import EquityShareModal from "@/components/modals/EquityShareModal";
 import InviteMemberModal from "@/components/modals/InviteMemberModal";
-import MemberEquityPromiseModal from "@/components/modals/MemberEquityPromiseModal";
 import TeamMemberCard from "@/components/TeamMemberCard";
 import { EmptyState } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -54,6 +54,11 @@ import { gtmEventTrigger } from "@/helpers/gtm";
 import EquitySection from "./EquitySection";
 import InvestorModal from "./InvestorModal";
 import ProjectAdviceArchiveModal from "./ProjectAdviceArchiveModal";
+
+const MemberEquityPromiseModal = dynamic(
+	() => import("@/components/modals/MemberEquityPromiseModal"),
+	{ ssr: false },
+);
 
 const { Paragraph, Text } = Typography;
 

@@ -15,7 +15,7 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import { trim } from "lodash";
+import trim from "lodash/trim";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BlogPostStatus } from "@/config/prisma-enums";
