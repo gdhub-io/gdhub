@@ -325,3 +325,53 @@ export type CallNotes = {
 	agreed: { text: string; itemId: string | null; dueDay: number | null }[];
 	questions: string[];
 };
+
+/** How the project's last checkpoint ended, read again through the next one's first sprint. */
+export type PreviousVerdict = {
+	checkpointId: string;
+	number: number;
+	verdict: CheckpointVerdict;
+	note: string | null;
+};
+
+/**
+ * The AI curator on one task. `suggestion` is a wording to take as it is;
+ * `cut` advises dropping the task, `add` lives on `PlanAdvice` instead.
+ */
+export const TASK_ADVICE_KINDS = [
+	"clear",
+	"risky",
+	"vague",
+	"shorten",
+	"cut",
+	"onTrack",
+] as const;
+
+export type TaskAdviceKind = (typeof TASK_ADVICE_KINDS)[number];
+
+export type TaskAdvice = {
+	itemId: string;
+	kind: TaskAdviceKind;
+	note: string;
+	suggestion: string | null;
+};
+
+/** The AI curator's read of the tasks, given when the plan is saved. */
+export type PlanAdvice = {
+	tasks: TaskAdvice[];
+	/** New tasks it proposes. */
+	add: string[];
+	/** What the advice answers; an unchanged plan is not read twice. */
+	hash: string;
+};
+
+/**
+ * An AI curator's session: a letter to the team, and on review days the review
+ * itself in the call notes' shape — `discussed` is by task, `notDiscussed` what
+ * has nothing to show, `agreed` the focus for the next sprint.
+ */
+export type CuratorReview = {
+	message: string;
+	notes: CallNotes | null;
+	advice: PlanAdvice | null;
+};

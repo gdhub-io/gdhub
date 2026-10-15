@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { planEdit } from "@/lib/checkpoint-call";
 
 const checkpointFindUnique = vi.fn();
@@ -42,8 +43,11 @@ const duringCall1 = new Date("2026-10-05T14:10:00Z");
 const duringCall3 = new Date("2026-10-19T14:10:00Z");
 const between = new Date("2026-10-12T10:00:00Z");
 
+const human = CheckpointCuratorKind.Human;
+
 const plan = (overrides: Record<string, unknown> = {}) => ({
 	curatorId: "curator",
+	curatorKind: human,
 	startedAt,
 	goalAgreedAt: null,
 	project: { authorId: "author" },
@@ -59,7 +63,7 @@ beforeEach(() => vi.clearAllMocks());
 
 describe("planEdit", () => {
 	it("opens the goal and tasks on call 1, the tasks alone on call 3, nothing between", () => {
-		const checkpoint = { startedAt, goalAgreedAt: null, sessions };
+		const checkpoint = { curatorKind: human, startedAt, goalAgreedAt: null, sessions };
 		expect(planEdit(checkpoint, duringCall1)).toBe("goalAndTasks");
 		expect(planEdit(checkpoint, between)).toBeNull();
 		expect(planEdit(checkpoint, duringCall3)).toBe("tasks");
@@ -67,8 +71,53 @@ describe("planEdit", () => {
 
 	it("closes call 1 once the goal is agreed, even inside its window", () => {
 		expect(
-			planEdit({ startedAt, goalAgreedAt: duringCall1, sessions }, duringCall1),
+			planEdit(
+				{ curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions },
+				duringCall1,
+			),
 		).toBeNull();
+	});
+
+	describe("with the AI curator", () => {
+		// No calls: its sessions are review days at UTC midnight, the goal agreed at payment.
+		const aiSessions = [
+			{ index: 1, scheduledAt: startedAt, endedAt: null as Date | null },
+			{
+				index: 3,
+				scheduledAt: new Date("2026-10-19T00:00:00Z"),
+				endedAt: new Date("2026-10-19T01:00:00Z"),
+			},
+		];
+		const ai = {
+			curatorKind: CheckpointCuratorKind.AI,
+			startedAt,
+			goalAgreedAt: startedAt,
+			sessions: aiSessions,
+		};
+
+		it("opens the tasks freely through day 2, never the goal", () => {
+			expect(planEdit(ai, new Date("2026-10-05T09:00:00Z"))).toBe("plan");
+			expect(planEdit(ai, new Date("2026-10-06T23:59:00Z"))).toBe("plan");
+			expect(planEdit(ai, new Date("2026-10-07T00:00:00Z"))).toBeNull();
+		});
+
+		it("opens them on the record for a day after the sprint 2 review", () => {
+			expect(planEdit(ai, new Date("2026-10-19T12:00:00Z"))).toBe("tasks");
+			expect(planEdit(ai, new Date("2026-10-20T00:59:00Z"))).toBe("tasks");
+			expect(planEdit(ai, new Date("2026-10-20T01:00:00Z"))).toBeNull();
+		});
+
+		it("writes the start freely but keeps the goal paid for", async () => {
+			const start = new Date("2026-10-05T09:00:00Z");
+			checkpointFindUnique.mockResolvedValue(
+				plan({ ...ai, curatorId: null }),
+			);
+			expect(
+				await changePlan("cp", "author", { op: "goal", goal: "Other" }, start),
+			).toBe("goalLocked");
+			await changePlan("cp", "author", { op: "remove", itemId: "open" }, start);
+			expect(itemDelete).toHaveBeenCalledWith({ where: { id: "open" } });
+		});
 	});
 });
 

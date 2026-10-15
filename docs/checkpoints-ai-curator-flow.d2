@@ -1,0 +1,80 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-86 — the AI curator, from payment to the verdict" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+pay: "Payment settles (settleCheckpointCheckout, AI)\nhold captured at once"
+
+start: "Start the checkpoint" {
+  date: "startedAt = max(chosen day, today) → dueAt recomputed\n(fixes a start in the past)"
+  goal: "goalAgreedAt = now, goalAgreedById = null\n(the goal is agreed at payment)"
+  rows: "Create 5 CheckpointSession rows, scheduledAt = day 1, 8, 15, 22, 29\n(00:00 UTC; for AI they are review days, not calls)"
+}
+pay -> start
+
+page: "Curator's Review /workflow/cpN/review/K — one page for pro and ai\ncurator message (dark, the moment now) → goal → panel: tabs Plan | Review\n+ switcher Start · Sprint 1–3 · Verdict (changes the panel only; later ones locked)\nsidebar = the Workflow sidebar" {shape: page}
+
+setup: "K = 1, Start: planEdit = \"plan\"\nfrom payment to the end of day AI_PLAN_DAYS (2)\ntasks free to add / edit / delete, goal locked"
+start -> setup
+setup -> page
+
+save: "Save changes\nPATCH /plan (changePlan) → POST /plan/advice (adviseOnPlan)"
+setup -> save
+
+feedback: "Model: per task {itemId, kind, note = what to do and why, suggestion?}\n+ message + suggested new tasks\nstored on the session's content.advice (hash: no repeat call for an unchanged plan)"
+save -> feedback
+feedback -> page: "a purple ✨ line under each task (advice only, the author edits);\nsuggested tasks as rows with Add → changePlan"
+
+cron: "Daily cron /api/cron/checkpoints (01:00 UTC)\nnew step: writeDueReviews"
+
+due: "AI sessions K = 2..4 with scheduledAt ≤ now,\ncontentStatus null → claim Pending (updateMany)"
+cron -> due
+
+input: "What the model reads" {
+  plan: "Goal + tasks: id, wording, done (readable artifact), cut, reworded"
+  dev: "The sprint's devlog text"
+  art: "The sprint's artifacts: name + type + readable"
+  pulse: "Pulses: who worked, who was missing"
+  prev: "The previous review: focus for this sprint"
+}
+due -> input
+
+review: "Model (AI SDK, ai-models.curatorReview)\n= CallNotes shape (inShort, byTask, notShown, outsidePlan, focus, questions)\n+ message (letter to the team)\n+ on K = 3: task advice (same shape as the plan feedback)"
+input -> review
+
+ok: "Usable?" {shape: diamond}
+review -> ok
+ready: "content = review (unknown ids dropped),\ncontentStatus = Ready, endedAt = now"
+retry: "contentStatus back to null → the next run tries again"
+ok -> ready: yes
+ok -> retry: no
+
+letter: "Letter to the team (bell + email): 'Sprint N review is ready' → /review/K"
+ready -> letter
+ready -> page
+
+mid: "K = 3: planEdit = \"tasks\" (existing day-15 rules)\nopen from the review until endedAt + 24h\nedit keeps originalText, remove = cut, done tasks locked"
+ready -> mid: "K = 3"
+mid -> save: "save again → fresh feedback"
+
+final: "Day 29: moveFinishedToReview, then the AI checkpoint in Review\n→ closeCheckpoint (writeReport + settleVerdict) → Closed\n+ session 5 content = final review + message"
+cron -> final
+
+verdict: "notifyVerdictSent → the author's letter\n10.4: verdict line in the curator message"
+final -> verdict
+
+after: "Verdict StageClosed ('Ready for the next stage')" {shape: diamond}
+verdict -> after
+move: "Move to <next stage> (curator message, AfterVerdict, path Next stage row)\n→ PUT /api/project/move (refuses when required stage tasks are open)"
+stay: "Plan Checkpoint N+1 on this stage / on your own\n(always offered)"
+after -> move: yes
+after -> stay: "always"

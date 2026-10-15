@@ -94,6 +94,11 @@ belongs to a token.
    because the rule was never written down; anything that does not match the
    theme's Tag is a bug, not a variant.
 
+   The one exception is where the chip stands: the theme's fill is the page
+   background's own colour, so a chip placed straight on the page (a page
+   header, not a card) takes one step darker, `--gd-neutral-100`. Same look,
+   still neutral — it only stops the chip from disappearing.
+
    **Which of the two you need is a question about the word, not the styling.**
    "Video", "Expert", "Programming", "Week 2" name what a thing *is* and stay
    chips. "Awaiting verdict", "Draft", "Quiet", "Cut on day 14", "Held" say what

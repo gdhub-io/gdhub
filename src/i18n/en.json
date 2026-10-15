@@ -811,6 +811,9 @@
 			"titleCheckpoint": "What this checkpoint asks of you"
 		},
 		"call": {
+			"aheadCurator": "The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
+			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
+			"calendarTitle": "Call {index} · {project}",
 			"camOff": "Turn off camera",
 			"camOn": "Turn on camera",
 			"camera": "Camera",
@@ -835,6 +838,7 @@
 			"joinFailed": "Could not join the call",
 			"leave": "Leave call",
 			"linkCopied": "Link copied",
+			"message": "Message {name}",
 			"micOff": "Turn off microphone",
 			"micOn": "Turn on microphone",
 			"microphone": "Microphone",
@@ -862,13 +866,19 @@
 				"title": "Call notes",
 				"transcript": "Transcript"
 			},
+			"openNotes": "Open the notes",
+			"openReview": "Open the review",
 			"opensAt": "The room opens at {time}",
 			"over": "This call is over",
 			"overLine": "The plan and the notes from it are below.",
+			"overReady": "The call is over. The plan and the notes from it are below.",
+			"overReadyReview": "The call is over. The plan and the review of it are below.",
+			"overText": "The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready.",
 			"panel": {
 				"ahead": "This call is still ahead",
 				"notes": "Notes",
 				"plan": "Plan",
+				"review": "Review",
 				"today": "Call {index} · today"
 			},
 			"plan": {
@@ -908,6 +918,8 @@
 				"startsOn": "Starts {date}"
 			},
 			"subtitle": "{purpose} · Checkpoint {number} · {stage} · {when}",
+			"subtitlePro": "Pro · Call {index} with {name} · {purpose} · Checkpoint {number} · {stage} · {when}",
+			"subtitleWith": "Call {index} with {name} · {purpose} · Checkpoint {number} · {stage} · {when}",
 			"team": "Team",
 			"teamWaits": "The team is let in once you join",
 			"testSound": "Play a test sound",
@@ -1299,14 +1311,70 @@
 			"title": "The result card"
 		},
 		"review": {
+			"action": {
+				"acceptAll": "Accept all {n} suggestions",
+				"move": "Move to {stage}",
+				"plan": "Plan Checkpoint {n}",
+				"reviewTasks": "Review the tasks"
+			},
+			"curator": "AI curator",
 			"empty": "No review yet",
 			"emptyNote": "The curator writes one for every sprint, after its devlog.",
 			"in": "The review for the sprint is in",
+			"kindAi": "AI",
+			"kindPro": "Pro",
+			"message": {
+				"reading": "The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
+				"start": "Hi, I'm your curator for the next four weeks. Let's set the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check."
+			},
+			"missing": "This review is not one of yours, or its checkpoint is not run by the AI curator.",
 			"noDevlog": "There is no devlog for this sprint yet, and a review is written under one.",
+			"noReviewYet": "The start sets the tasks; the first review comes after Sprint 1.",
+			"notes": {
+				"byTask": "By task",
+				"focus": "Focus for Sprint {n}",
+				"noQuestions": "No open questions for the team.",
+				"nothingYet": "Nothing to show yet"
+			},
+			"option": {
+				"ahead": "This review is still ahead",
+				"sprint": "Sprint {n} · {date}",
+				"start": "Start · {date}",
+				"verdict": "Verdict · {date}"
+			},
+			"pageTitle": "Curator's Review",
+			"panel": {
+				"final": "Final review",
+				"plan": "Plan",
+				"sprint": "Sprint review"
+			},
+			"pendingText": "The AI curator reads the sprint's devlog, artifacts and activity. Ready on the review day — we'll email you.",
+			"pendingTitle": "The Sprint {n} review is on its way",
 			"placeholder": "What moved, what is in the way, what you would do next.",
+			"plan": {
+				"add": "Add",
+				"adviceAdd": "Worth adding: “{task}”.",
+				"adviceFailed": "The curator could not read the tasks. Try again in a minute.",
+				"adviceTry": "{note} Try: “{suggestion}”.",
+				"advise": "Save and get feedback",
+				"midHint": "Change the tasks yourself or take the curator's suggestions. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
+				"midTitle": "Tasks for sprints 3–4",
+				"remove": "Remove",
+				"save": "Save changes",
+				"startHint": "Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+				"until": "Open until {date}",
+				"useThis": "Use this"
+			},
+			"previous": {
+				"label": "Checkpoint {number} · the verdict"
+			},
+			"proCurator": "{name} · curator",
 			"publish": "Publish the review",
 			"saveFailed": "The review was not saved",
+			"subtitle": "Checkpoint {number} · {stage} · {from} – {to}",
+			"subtitleAi": "AI · Checkpoint {number} · {stage} · {from} – {to}",
 			"title": "The curator's review of the sprint",
+			"verdict": "Verdict",
 			"write": "Your review of this sprint"
 		},
 		"scope": {
@@ -3663,9 +3731,13 @@
 			"anotherBody": "28 days with a curator: a goal, four sprints and a verdict at the end.",
 			"by": "— {name}, curator",
 			"continue": "Continue with stage tasks",
+			"move": "Move to {stage}",
 			"own": "On your own",
 			"ownBody": "Work through the {stage} tasks at your own pace, without a curator.",
 			"plan": "Plan Checkpoint {number}",
+			"stageOpen": "{stage} is open",
+			"stageOpenBody": "The verdict lets the project move on. Its tasks and the next checkpoint will be for {stage}.",
+			"stay": "Or stay in {stage}",
 			"title": "How do you go on?",
 			"verdictOn": "verdict {date}"
 		},
@@ -3811,6 +3883,8 @@
 			},
 			"review-by": "review by",
 			"session": {
+				"ai-start": "Set the tasks",
+				"ai-start-sub": "The AI curator reads your tasks and says which fit the four weeks",
 				"calendar": "Add to calendar",
 				"final": "the final one",
 				"join": "Join session",
@@ -3818,6 +3892,7 @@
 				"join-tomorrow": "Join tomorrow",
 				"more": "Session actions",
 				"notes": "Notes",
+				"open-plan": "Open the plan",
 				"open-review": "Open review",
 				"opens": "opens Sprint {number}",
 				"review": "Review",

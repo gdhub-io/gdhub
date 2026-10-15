@@ -113,7 +113,7 @@ export function RunningCheckpoint({
 	const number = checkpoint.number ?? 1;
 	const base = `/user/project/${project.slug}/workflow/cp${number}`;
 	const sessionHref = (session: CheckpointSessionDto) =>
-		`${base}/${isAI ? "review" : "call"}/${session.index}`;
+		`${base}/review/${session.index}`;
 
 	const { data: reports } = useQuery<{ number: number | null }[]>({
 		queryKey: ["project-reports", project.id],
@@ -264,19 +264,20 @@ export function RunningCheckpoint({
 		</span>
 	);
 
+	// The AI's first session is the start, where the tasks are set: open from day 1.
+	const reviewTitle = (session: CheckpointSessionDto) =>
+		session.index === 1
+			? t("workflow.path.session.ai-start", "Set the tasks")
+			: t("workflow.path.session.review-title", "Sprint {number} review", {
+					number: String(session.index - 1),
+				});
 	const sessionHeld = (session: CheckpointSessionDto) =>
 		!!session.endedAt || (isAI && !!session.contentStatus);
 	/** A call or review already behind: one line, linking to its notes. */
 	const sessionDone = (session: CheckpointSessionDto) => (
 		<div className={styles.sessionDone}>
 			{isAI ? <IconSparkles size={16} /> : <IconVideo size={16} />}
-			<span>
-				{isAI
-					? t("workflow.path.session.review-title", "Sprint {number} review", {
-							number: String(session.index - 1),
-						})
-					: sessionWith}
-			</span>
+			<span>{isAI ? reviewTitle(session) : sessionWith}</span>
 			<span className={`${styles.meta} ${styles.grow}`}>
 				{formatShort(session.scheduledAt)}
 			</span>
@@ -529,10 +530,12 @@ export function RunningCheckpoint({
 					type="primary"
 					size="large"
 					icon={<IconFileText size={16} />}
-					disabled={!ready}
+					disabled={!ready && session.index !== 1}
 					onClick={() => router.push(sessionHref(session))}
 				>
-					{t("workflow.path.session.open-review", "Open review")}
+					{session.index === 1
+						? t("workflow.path.session.open-plan", "Open the plan")
+						: t("workflow.path.session.open-review", "Open review")}
 				</Button>
 			);
 		} else if (days > 0) {
@@ -578,23 +581,22 @@ export function RunningCheckpoint({
 						</span>
 						<span className={styles.sessionWhen}>
 							{isAI
-								? t(
-										"workflow.path.session.review-title",
-										"Sprint {number} review",
-										{
-											number: String(session.index - 1),
-										},
-									)
+								? reviewTitle(session)
 								: session.timeKnown
 									? `${start.format("dddd")} · ${hours}`
 									: when.format("dddd")}
 						</span>
 						<span>
 							{isAI
-								? t(
-										"workflow.path.session.review-sub",
-										"Written by the AI curator from your devlog, artifacts and activity",
-									)
+								? session.index === 1
+									? t(
+											"workflow.path.session.ai-start-sub",
+											"The AI curator reads your tasks and says which fit the four weeks",
+										)
+									: t(
+											"workflow.path.session.review-sub",
+											"Written by the AI curator from your devlog, artifacts and activity",
+										)
 								: today
 									? sessionWith
 									: `${sessionWith} · ${opens}`}

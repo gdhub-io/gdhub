@@ -5,17 +5,34 @@ import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import type { CallNotes } from "@/types/checkpoints";
 
+/** A plan task as every curator prompt reads it. */
+export type CuratorTask = {
+	id: string;
+	text: string;
+	done: { type: string; name: string | null } | null;
+	cut: boolean;
+	firstWording: string | null;
+};
+
+export const toCuratorTask = (item: {
+	id: string;
+	text: string;
+	cut: boolean;
+	originalText: string | null;
+	artifact: { type: string; name: string | null } | null;
+}): CuratorTask => ({
+	id: item.id,
+	text: item.text,
+	done: item.artifact && { type: item.artifact.type, name: item.artifact.name },
+	cut: item.cut,
+	firstWording: item.originalText,
+});
+
 export type CallNotesInput = {
 	/** 1 sets the plan, 2–4 open that sprint, 5 is the final call. */
 	callIndex: number;
 	goal: string;
-	tasks: {
-		id: string;
-		text: string;
-		done: { type: string; name: string | null } | null;
-		cut: boolean;
-		firstWording: string | null;
-	}[];
+	tasks: CuratorTask[];
 	transcript: string;
 	devlog: string | null;
 	artifacts: { type: string; name: string | null }[];
@@ -59,7 +76,7 @@ const callLine = (index: number) => {
 	return `Call ${index}: it reviews sprint ${index - 1} and opens sprint ${index}.`;
 };
 
-const taskLine = (task: CallNotesInput["tasks"][number]) =>
+export const taskLine = (task: CuratorTask) =>
 	[
 		`- [${task.id}] ${task.text}`,
 		task.firstWording && `(first worded: ${task.firstWording})`,
@@ -69,6 +86,14 @@ const taskLine = (task: CallNotesInput["tasks"][number]) =>
 	]
 		.filter(Boolean)
 		.join(" ");
+
+/** The sprint's artifacts for a prompt, or nothing when it added none. */
+export const artifactLines = (
+	artifacts: { type: string; name: string | null }[],
+) =>
+	artifacts.length
+		? `Artifacts added in the sprint:\n${artifacts.map((a) => `- ${a.type}${a.name ? `: ${a.name}` : ""}`).join("\n")}`
+		: "";
 
 /**
  * The notes of one curator call, from its transcript. The transcript is one
@@ -111,7 +136,7 @@ export const writeCallNotes = async (
 
 			${input.devlog ? `The sprint's devlog:\n${input.devlog}` : "No devlog for the sprint."}
 
-			${input.artifacts.length ? `Artifacts added in the sprint:\n${input.artifacts.map((a) => `- ${a.type}${a.name ? `: ${a.name}` : ""}`).join("\n")}` : ""}
+			${artifactLines(input.artifacts)}
 
 			Transcript:
 			${input.transcript}

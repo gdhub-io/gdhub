@@ -2,22 +2,30 @@
 
 import { IconVideoOff } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Skeleton } from "antd";
+import { App } from "antd";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
+import {
+	CuratorAside,
+	teamProject,
+} from "@/components/checkpoints/CuratorReview/CuratorAside";
+import { CuratorReviewSkeleton } from "@/components/checkpoints/CuratorReview/CuratorReviewSkeleton";
+import { PreviousVerdict } from "@/components/checkpoints/CuratorReview/PreviousVerdict";
 import { EmptyState } from "@/components/ui";
+import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import { CallGoal } from "./CallGoal";
-import { CallHeader, callTime } from "./CallHeader";
-import { CallPanel } from "./CallPanel";
-import { CallClosed, CallLayout } from "./CallParts";
+import { CallHeader } from "./CallHeader";
+import { CallPanel, type PanelTab } from "./CallPanel";
+import { CallLayout } from "./CallParts";
+import { ClosedStage } from "./ClosedStage";
 
 // Daily touches the browser's media APIs as it loads.
 const OpenCall = dynamic(
 	() => import("./DailyRoom").then((module) => module.OpenCall),
-	{ ssr: false, loading: () => <Skeleton active paragraph={{ rows: 8 }} /> },
+	{ ssr: false, loading: () => <CuratorReviewSkeleton /> },
 );
 
 export type CallRoomProps = {
@@ -34,6 +42,7 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [joined, setJoined] = useState(false);
+	const [tab, setTab] = useState<PanelTab | null>(null);
 	const {
 		data: call,
 		isPending,
@@ -41,7 +50,7 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 	} = useCheckpointCall(checkpointId, index, { poll: !joined });
 	const openChat = useCheckpointChat(checkpointId);
 
-	if (isPending) return <Skeleton active paragraph={{ rows: 8 }} />;
+	if (isPending) return <CuratorReviewSkeleton />;
 
 	if (!call) {
 		return (
@@ -84,8 +93,18 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 
 	const below = (
 		<>
+			{call.previous && (
+				<PreviousVerdict
+					previous={call.previous}
+					resultsHref={
+						call.role === "team"
+							? `/user/project/${call.project.slug}/workflow?results=${call.previous.checkpointId}`
+							: undefined
+					}
+				/>
+			)}
 			<CallGoal call={call} />
-			<CallPanel call={call} />
+			<CallPanel call={call} picked={tab} onPick={setTab} />
 		</>
 	);
 
@@ -101,34 +120,27 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 		);
 	}
 
+	const notesReady =
+		call.sessions.find((session) => session.index === call.index)
+			?.contentStatus === CheckpointSessionContentStatus.Ready;
+
 	return (
 		<CallLayout
 			header={<CallHeader {...header} call={call} joined={false} />}
 			stage={
-				call.state === "early" ? (
-					<CallClosed
-						over={false}
-						title={t("checkpoints.call.opensAt", "The room opens at {time}", {
-							time: callTime(call.opensAt),
-						})}
-						text={t(
-							"checkpoints.call.startsAtLine",
-							"The call starts at {time}.",
-							{
-								time: callTime(call.scheduledAt),
-							},
-						)}
-					/>
-				) : (
-					<CallClosed
-						over
-						title={t("checkpoints.call.over", "This call is over")}
-						text={t(
-							"checkpoints.call.overLine",
-							"The plan and the notes from it are below.",
-						)}
-					/>
-				)
+				<ClosedStage
+					call={call}
+					notesReady={notesReady}
+					onChat={chat}
+					chatLoading={openChat.isPending}
+					onOpenReview={() => setTab("notes")}
+				/>
+			}
+			aside={
+				<CuratorAside
+					projectId={teamProject(call)}
+					checkpointId={call.checkpointId}
+				/>
 			}
 			below={below}
 		/>

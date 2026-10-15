@@ -13,7 +13,7 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { Button, Tooltip, Typography } from "antd";
 import type { CSSProperties, ReactNode, Ref } from "react";
-import { IconTile, InverseBand, StatusDot } from "@/components/ui";
+import { InverseBand, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./style.module.scss";
 
@@ -58,32 +58,6 @@ export function CallLayout({
 			) : (
 				main
 			)}
-		</div>
-	);
-}
-
-/** Before the room opens and after it closes: one line, nothing to press. */
-/** The room before it opens or after it ended: a card that still reads as a call. */
-export function CallClosed({
-	over,
-	title,
-	text,
-}: {
-	over: boolean;
-	title: string;
-	text: string;
-}) {
-	return (
-		<div className={styles.closed}>
-			<IconTile icon={over ? IconVideoOff : IconVideo} />
-			<div>
-				<Typography.Text strong className={styles.closedTitle}>
-					{title}
-				</Typography.Text>
-				<Typography.Text type="secondary" className={styles.closedText}>
-					{text}
-				</Typography.Text>
-			</div>
 		</div>
 	);
 }

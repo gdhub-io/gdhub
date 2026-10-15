@@ -48,7 +48,11 @@ export const notify = async (
 const workflowUrl = (slug: string) =>
 	`${appUrl()}/user/project/${slug}/workflow`;
 
-const recipient = { select: { id: true, email: true } } as const;
+export const recipient = { select: { id: true, email: true } } as const;
+
+/** Curator's Review for the team: one session of one checkpoint. */
+export const reviewUrl = (slug: string, number: number, index: number) =>
+	`${workflowUrl(slug)}/cp${number}/review/${index}`;
 
 /** A paid checkpoint waits for its human curator's answer. */
 export const notifyCuratorAsked = async (checkpointId: string) => {
@@ -193,7 +197,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 		await notify(curator, `cp-call-${session.id}-${curator.id}`, {
 			title,
 			message: `Call ${session.index} of Checkpoint ${number}, at ${at(curatorZone)}. The team is let in once you join.`,
-			redirectUrl: `${appUrl()}/advisor/checkpoints/${session.checkpointId}/call/${session.index}`,
+			redirectUrl: `${appUrl()}/advisor/checkpoints/${session.checkpointId}/review/${session.index}`,
 		});
 
 		const team = new Map<string, Recipient>();
@@ -207,7 +211,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 			await notify(person, `cp-call-${session.id}-${person.id}`, {
 				title,
 				message: `Call ${session.index} of Checkpoint ${number}, at ${at("UTC")}. You can join once your curator opens the room.`,
-				redirectUrl: `${workflowUrl(checkpoint.project.slug)}/cp${number}/call/${session.index}`,
+				redirectUrl: reviewUrl(checkpoint.project.slug, number, session.index),
 			});
 		}
 		sent += 1 + team.size;

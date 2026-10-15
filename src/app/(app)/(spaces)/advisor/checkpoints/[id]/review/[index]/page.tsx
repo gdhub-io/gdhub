@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CallRoom } from "@/components/checkpoints/CallRoom";
+import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { AdvisorSpace } from "@/components/spaces/AdvisorSpace";
 import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { curatorKindOf } from "@/repositories/checkpoint-review";
 
 export const metadata: Metadata = {
-	title: "Call",
+	title: "Curator's Review",
 	robots: { index: false, follow: false },
 };
 
-export default async function AdvisorCallPage({
+export default async function AdvisorReviewPage({
 	params,
 }: {
 	params: Promise<{ id: string; index: string }>;
@@ -23,10 +24,13 @@ export default async function AdvisorCallPage({
 	) {
 		notFound();
 	}
+	const kind = await curatorKindOf(id);
+	if (!kind) notFound();
 
 	return (
 		<AdvisorSpace>
-			<CallRoom
+			<CuratorReview
+				kind={kind}
 				checkpointId={id}
 				index={session}
 				backHref="/advisor/calendar"

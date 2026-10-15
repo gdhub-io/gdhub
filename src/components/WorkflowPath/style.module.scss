@@ -1349,3 +1349,11 @@ button.checklistItem {
 	border: 1px solid var(--gd-color-border);
 	border-radius: var(--gd-radius-card);
 }
+
+// Frame 07.7 (i0ia1Y): a "Ready for the next stage" verdict opens the next stage.
+.afterNextStage {
+	padding: var(--gd-space-4);
+	border: 1px solid color-mix(in srgb, var(--gd-success-solid) 30%, transparent);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-success-tint);
+}

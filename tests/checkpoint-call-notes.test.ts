@@ -8,12 +8,16 @@ const findUniqueOrThrow = vi.fn();
 const writeCallNotes = vi.fn();
 const notify = vi.fn();
 
-vi.mock("@/services/call-notes", () => ({
+vi.mock("@/services/call-notes", async (original) => ({
+	...(await original<typeof import("@/services/call-notes")>()),
 	writeCallNotes: (...a: unknown[]) => writeCallNotes(...a),
 }));
 vi.mock("@/services/checkpoint-notifications", () => ({
 	appUrl: () => "https://gdhub.test",
 	notify: (...a: unknown[]) => notify(...a),
+	recipient: { select: { id: true, email: true } },
+	reviewUrl: (slug: string, number: number, index: number) =>
+		`https://gdhub.test/user/project/${slug}/workflow/cp${number}/review/${index}`,
 }));
 vi.mock("@/repositories/checkpoint-number", () => ({
 	checkpointNumber: vi.fn(async () => 1),
@@ -111,10 +115,10 @@ describe("writeDueCallNotes", () => {
 		);
 		expect(Object.keys(letters).sort()).toEqual(["curator", "marta"]);
 		expect(letters.marta.url).toBe(
-			"https://gdhub.test/user/project/hollow-tide/workflow/cp1/call/2",
+			"https://gdhub.test/user/project/hollow-tide/workflow/cp1/review/2",
 		);
 		expect(letters.curator.url).toBe(
-			"https://gdhub.test/advisor/checkpoints/cp/call/2",
+			"https://gdhub.test/advisor/checkpoints/cp/review/2",
 		);
 		expect(letters.marta.id).toBe("cp-notes-s2-marta");
 	});

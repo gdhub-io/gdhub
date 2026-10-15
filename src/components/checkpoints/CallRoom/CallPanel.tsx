@@ -21,10 +21,20 @@ export type PanelTab = "plan" | "notes" | "transcript";
 // The transcript tab is built but not shown yet.
 const SHOW_TRANSCRIPT = false;
 
-/** The plan and the notes under the stage, for whichever call is picked. */
-export function CallPanel({ call }: { call: CheckpointCallDto }) {
+/**
+ * The plan and the notes under the stage, for whichever call is picked. The
+ * tab is the room's, so the curator's message can open the notes.
+ */
+export function CallPanel({
+	call,
+	picked,
+	onPick,
+}: {
+	call: CheckpointCallDto;
+	picked: PanelTab | null;
+	onPick: (tab: PanelTab) => void;
+}) {
 	const [selected, setSelected] = useState(call.index);
-	const [picked, setPicked] = useState<PanelTab | null>(null);
 	const onChange = usePlanChange(call.checkpointId);
 	const held =
 		call.sessions.find((session) => session.index === selected)?.held ?? false;
@@ -40,7 +50,7 @@ export function CallPanel({ call }: { call: CheckpointCallDto }) {
 			selected={selected}
 			onSelect={setSelected}
 			tab={picked ?? (ownReady ? "notes" : "plan")}
-			onTab={setPicked}
+			onTab={onPick}
 			plan={call.plan}
 			onChange={onChange}
 			notes={notes.data}
@@ -138,7 +148,7 @@ export function PanelBlock({
 		},
 		{
 			key: "notes",
-			label: t("checkpoints.call.panel.notes", "Notes"),
+			label: t("checkpoints.call.panel.review", "Review"),
 			children: (
 				<NotesBody
 					index={selected}

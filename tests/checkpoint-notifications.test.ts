@@ -82,11 +82,11 @@ describe("remindCallsSoon", () => {
 		expect(Object.keys(byUser).sort()).toEqual(["author", "curator", "oleg"]);
 		expect(byUser.curator.payload.message).toContain("17:00 (Europe/Minsk)");
 		expect(byUser.curator.payload.redirectUrl).toMatch(
-			/\/advisor\/checkpoints\/cp\/call\/2$/,
+			/\/advisor\/checkpoints\/cp\/review\/2$/,
 		);
 		expect(byUser.oleg.payload.message).toContain("14:00 (UTC)");
 		expect(byUser.oleg.payload.redirectUrl).toMatch(
-			/\/user\/project\/hollow-tide\/workflow\/cp2\/call\/2$/,
+			/\/user\/project\/hollow-tide\/workflow\/cp2\/review\/2$/,
 		);
 		expect(byUser.oleg.transactionId).toBe("cp-call-s2-oleg");
 	});

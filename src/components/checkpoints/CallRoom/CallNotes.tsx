@@ -19,7 +19,7 @@ import type { CallNotes as CallNotesContent } from "@/types/checkpoints";
 import { TaskIcon } from "./CallPlan";
 import styles from "./style.module.scss";
 
-type Plan = CheckpointCallDto["plan"];
+type Plan = Pick<CheckpointCallDto["plan"], "tasks">;
 type Agreed = CallNotesContent["agreed"][number];
 
 export type NotesBodyProps = {
@@ -114,17 +114,51 @@ function Group({
 	);
 }
 
-/** gP5gH: the summary, its task references read back from the plan. */
-function NotesSummary({
+/**
+ * gP5gH: the summary, its task references read back from the plan. `review`
+ * is the AI curator's: the same shape, read from what the team showed rather
+ * than from a call (10.3).
+ */
+export function NotesSummary({
 	index,
 	content,
 	plan,
+	review,
 }: {
 	index: number;
 	content: CallNotesContent;
 	plan: Plan;
+	review?: boolean;
 }) {
 	const { t } = useTranslate();
+	// The AI's review has the call notes' shape; only what each part is called differs.
+	const label = review
+		? {
+				discussed: t("checkpoints.review.notes.byTask", "By task"),
+				notDiscussed: t(
+					"checkpoints.review.notes.nothingYet",
+					"Nothing to show yet",
+				),
+				agreed: t("checkpoints.review.notes.focus", "Focus for Sprint {n}", {
+					n: index,
+				}),
+				noQuestions: t(
+					"checkpoints.review.notes.noQuestions",
+					"No open questions for the team.",
+				),
+			}
+		: {
+				discussed: t("checkpoints.call.notes.discussed", "What was discussed"),
+				notDiscussed: t(
+					"checkpoints.call.notes.notDiscussedTitle",
+					"Not discussed on this call",
+				),
+				agreed: t("checkpoints.call.notes.agreed", "Agreed for the next call"),
+				noQuestions: t(
+					"checkpoints.call.notes.noQuestions",
+					"No open questions were left on the call.",
+				),
+			};
 	const taskOf = (itemId: string | null) =>
 		plan.tasks.find((task) => task.id === itemId);
 	const notDiscussed = content.notDiscussed.flatMap((itemId) => {
@@ -154,9 +188,7 @@ function NotesSummary({
 			)}
 
 			{content.discussed.length > 0 && (
-				<Group
-					label={t("checkpoints.call.notes.discussed", "What was discussed")}
-				>
+				<Group label={label.discussed}>
 					<div>
 						{content.discussed.map((item, position) => {
 							const task = taskOf(item.itemId);
@@ -188,13 +220,7 @@ function NotesSummary({
 			)}
 
 			{notDiscussed.length > 0 && (
-				<Group
-					quiet
-					label={t(
-						"checkpoints.call.notes.notDiscussedTitle",
-						"Not discussed on this call",
-					)}
-				>
+				<Group quiet label={label.notDiscussed}>
 					{notDiscussed.map((task) => (
 						<div key={task.id} className={styles.notDiscussed}>
 							<IconCircleDashed size={16} />
@@ -223,9 +249,7 @@ function NotesSummary({
 			</Group>
 
 			{content.agreed.length > 0 && (
-				<Group
-					label={t("checkpoints.call.notes.agreed", "Agreed for the next call")}
-				>
+				<Group label={label.agreed}>
 					<Table<Agreed & { key: number }>
 						showHeader={false}
 						pagination={false}
@@ -274,10 +298,7 @@ function NotesSummary({
 					))
 				) : (
 					<Typography.Text className={styles.tertiary}>
-						{t(
-							"checkpoints.call.notes.noQuestions",
-							"No open questions were left on the call.",
-						)}
+						{label.noQuestions}
 					</Typography.Text>
 				)}
 			</Group>

@@ -41,6 +41,11 @@ export const CALL_NOTES_DELAY_MINUTES = 30;
 export const SCOPE_SESSION = 3;
 export const SCOPE_ANSWER_HOURS = 24;
 
+// The AI curator
+
+/** With the AI curator the tasks are set on the review page, open this many days from the start. */
+export const AI_PLAN_DAYS = 2;
+
 // The verdict
 
 /** Due by the end of this many days after `dueAt`, the 28th day. */
