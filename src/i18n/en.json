@@ -884,6 +884,7 @@
 			},
 			"plan": {
 				"addTask": "Add task",
+				"beforeCallHint": "Add the tasks you have in mind now — on call 1 you'll go through them with the curator and agree the plan.",
 				"callOneHint": "Agree the goal and the checkpoint tasks with {curator} on this call. The goal locks when the call ends; tasks can change once more on call 3.",
 				"callThreeHint": "This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
 				"closed": "The plan can no longer change",

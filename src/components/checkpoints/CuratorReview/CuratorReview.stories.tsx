@@ -394,12 +394,15 @@ export default meta;
 
 type Story = StoryObj;
 
-/** Day 1, the page opened for the first time: call 1 is ahead, and it sets the tasks. */
+/**
+ * Day 1, the page opened for the first time: call 1 is ahead. The author can
+ * already draft the tasks; the call goes through them and agrees the plan.
+ */
 export const ProDay1: Story = {
 	name: "Pro · day 1, first open",
 	render: () => (
 		<ProPage
-			call={proCall(1, "early", 0, [])}
+			call={proCall(1, "early", 0, [], "plan")}
 			now="2026-10-01T09:00:00.000Z"
 			shown={1}
 			tab="plan"

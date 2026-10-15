@@ -92,13 +92,18 @@ export function PlanBody({
 }: PlanBodyProps) {
 	const { t } = useTranslate();
 	const { edit } = plan;
-	const lead =
-		hint ??
-		(edit === "tasks" &&
-			t(
-				"checkpoints.call.plan.callThreeHint",
-				"This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
-			));
+	let lead = hint;
+	if (lead === undefined && edit === "plan") {
+		lead = t(
+			"checkpoints.call.plan.beforeCallHint",
+			"Add the tasks you have in mind now — on call 1 you'll go through them with the curator and agree the plan.",
+		);
+	} else if (lead === undefined && edit === "tasks") {
+		lead = t(
+			"checkpoints.call.plan.callThreeHint",
+			"This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
+		);
+	}
 
 	return (
 		<div className={styles.tabBody}>

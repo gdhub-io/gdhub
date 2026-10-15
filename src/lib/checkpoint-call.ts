@@ -39,10 +39,10 @@ export const parseCallRoomName = (name: string) => {
 };
 
 /**
- * What the plan lets its editors change now: the goal and the tasks on call 1
- * until it ends; with the AI curator, whose goal is agreed at payment, the
- * tasks freely in its first days (`plan`); the tasks alone, on the record, in
- * the call-3 window; nothing otherwise.
+ * What the plan lets its editors change now: the tasks freely, goal locked
+ * (`plan`) — before call 1, or in the AI curator's first days; the goal and
+ * the tasks on call 1 until it ends; the tasks alone, on the record, in the
+ * call-3 window; nothing otherwise.
  */
 export type PlanEdit = "goalAndTasks" | "plan" | "tasks" | null;
 
@@ -67,17 +67,17 @@ export const planEdit = (
 		return "plan";
 	}
 	const first = checkpoint.sessions.find((session) => session.index === 1);
-	if (
+	const firstCall =
 		first &&
 		!checkpoint.goalAgreedAt &&
 		callState(
 			new Date(first.scheduledAt),
 			first.endedAt ? new Date(first.endedAt) : null,
 			now,
-		) === "open"
-	) {
-		return "goalAndTasks";
-	}
+		);
+	if (firstCall === "open") return "goalAndTasks";
+	// Before call 1 the author drafts the tasks; the call agrees them, and the goal.
+	if (firstCall === "early") return "plan";
 	if (
 		checkpoint.startedAt &&
 		scopeState(checkpoint.startedAt, checkpoint.sessions, now) === "open"

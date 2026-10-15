@@ -62,8 +62,9 @@ const plan = (overrides: Record<string, unknown> = {}) => ({
 beforeEach(() => vi.clearAllMocks());
 
 describe("planEdit", () => {
-	it("opens the goal and tasks on call 1, the tasks alone on call 3, nothing between", () => {
+	it("drafts the tasks before call 1, opens the goal and tasks on it, the tasks alone on call 3, nothing between", () => {
 		const checkpoint = { curatorKind: human, startedAt, goalAgreedAt: null, sessions };
+		expect(planEdit(checkpoint, new Date("2026-10-05T09:00:00Z"))).toBe("plan");
 		expect(planEdit(checkpoint, duringCall1)).toBe("goalAndTasks");
 		expect(planEdit(checkpoint, between)).toBeNull();
 		expect(planEdit(checkpoint, duringCall3)).toBe("tasks");
@@ -130,6 +131,17 @@ describe("changePlan", () => {
 		);
 		expect(await changePlan("cp", "author", change, duringCall1)).toBeNull();
 		expect(await changePlan("cp", "curator", change, duringCall1)).toBeNull();
+	});
+
+	it("lets the author draft tasks before call 1, never the goal", async () => {
+		checkpointFindUnique.mockResolvedValue(plan());
+		const before = new Date("2026-10-05T09:00:00Z");
+		expect(
+			await changePlan("cp", "author", { op: "goal", goal: "Other" }, before),
+		).toBe("goalLocked");
+		expect(
+			await changePlan("cp", "author", { op: "add", text: "Draft" }, before),
+		).toBeNull();
 	});
 
 	it("refuses outside the calls' windows", async () => {
