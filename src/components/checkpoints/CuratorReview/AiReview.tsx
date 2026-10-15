@@ -340,6 +340,7 @@ function ReviewBody({
 		const first = sessionOf(review, 2)?.scheduledAt;
 		return (
 			<EmptyState
+				size="compact"
 				icon={IconCalendarEvent}
 				title={t(
 					"checkpoints.review.firstSprintTitle",
@@ -360,6 +361,7 @@ function ReviewBody({
 	) {
 		return (
 			<EmptyState
+				size="compact"
 				icon={IconHourglass}
 				title={t(
 					"checkpoints.review.pendingTitle",

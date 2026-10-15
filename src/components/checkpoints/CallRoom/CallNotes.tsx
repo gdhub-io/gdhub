@@ -56,6 +56,7 @@ export function NotesBody({
 	) {
 		return (
 			<EmptyState
+				size="compact"
 				icon={IconHourglass}
 				title={t(
 					"checkpoints.call.notes.pendingReviewTitle",
