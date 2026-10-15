@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import slugify from "slugify";
 import { z } from "zod";
 import {
@@ -46,6 +47,8 @@ export const POST = pipe(
 			},
 		},
 	});
+
+	revalidatePath("/blog", "layout");
 
 	return json({ id: post.id });
 });

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { listPublishedBlogPosts } from "@/repositories/blog.repository";
 import { BlogClient, type BlogPost } from "./BlogClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = {
 	title: "Blog | gdhub.io",
@@ -9,19 +10,22 @@ export const metadata: Metadata = {
 	openGraph: { type: "website", url: "/blog", title: "Blog | gdhub.io" },
 };
 
-async function fetchBlogPosts(): Promise<BlogPost[]> {
-	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-	try {
-		const response = await fetch(`${baseUrl}/api/blog`, { cache: "no-store" });
-		if (!response.ok) return [];
-		return (await response.json()) ?? [];
-	} catch (error) {
-		console.error("Error fetching blog posts:", error);
-		return [];
-	}
-}
-
 export default async function BlogPage() {
-	const posts = await fetchBlogPosts();
-	return <BlogClient posts={posts} />;
+	const posts = await listPublishedBlogPosts();
+	return (
+		<BlogClient
+			posts={posts.map(
+				(post): BlogPost => ({
+					...post,
+					slug: post.slug ?? "",
+					image: post.image ?? undefined,
+					publishedAt: post.publishedAt?.toISOString() ?? "",
+					authors: post.authors.map((author) => ({
+						name: author.name ?? "",
+						image: author.image ?? undefined,
+					})),
+				}),
+			)}
+		/>
+	);
 }
