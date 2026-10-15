@@ -1,0 +1,25 @@
+// The stepper is a quiet line under the facts, not a progress bar: an 8px dot
+// beside a 13px label, the accent marking what has been reached.
+.steps {
+	:global(.ant-steps-item-title) {
+		font-size: var(--gd-font-size-body-sm);
+	}
+}
+
+.dot {
+	display: block;
+	width: var(--gd-space-2);
+	height: var(--gd-space-2);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-color-border-strong);
+
+	&[data-reached] {
+		background: var(--gd-color-accent);
+	}
+}
+
+.compact {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}

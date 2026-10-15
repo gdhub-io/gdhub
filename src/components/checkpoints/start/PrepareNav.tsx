@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { StartStep } from "./StartLayout";
+import type { PurchaseStep } from "./PurchaseLayout";
 
 export type PrepareNav = {
 	/** Move to another question of the purchase. */
-	go: (step: StartStep) => void;
+	go: (step: PurchaseStep) => void;
 	/** Leave the purchase entirely — the draft stays where it is. */
 	exit: () => void;
 };

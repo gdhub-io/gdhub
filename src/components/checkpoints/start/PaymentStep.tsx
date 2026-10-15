@@ -12,16 +12,14 @@ import dayjs from "dayjs";
 import type { ReactNode } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
-	CHECKPOINT_AI_PRICE,
+	AI_PLAN_DAYS,
 	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
-import { curatorPrice } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { isSlotTaken } from "@/hooks/advisor-availability";
 import {
 	useCheckpointCheckout,
-	useCheckpointCurators,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
@@ -30,9 +28,9 @@ import { CuratorBadge } from "../CuratorBadge";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
-import { StartLayout, type StartStep } from "./StartLayout";
+import { PurchaseLayout, type PurchaseStep } from "./PurchaseLayout";
 import { useTeamHours } from "./teamHours";
-import { useCheckpointDraft } from "./useDraft";
+import { useCheckpointDraft, useCheckpointPrice } from "./useDraft";
 
 /**
  * Frames 05 and 05.1 (`ffbRA`, `C4c18X`): everything read back, what it costs
@@ -50,7 +48,7 @@ export function PaymentStep() {
 	const team = useTeamHours(project?.team?.id);
 	const update = useUpdateCheckpoint(draft?.id);
 	const checkout = useCheckpointCheckout(draft?.id);
-	const curators = useCheckpointCurators();
+	const { price, curator: chosen } = useCheckpointPrice(draft);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -71,7 +69,7 @@ export function PaymentStep() {
 		);
 	}
 
-	const block = (label: string, edit: StartStep, body: ReactNode) => (
+	const block = (label: string, edit: PurchaseStep, body: ReactNode) => (
 		<Flex vertical gap={8} className={styles.block}>
 			<Flex justify="space-between" align="baseline">
 				<Typography.Text className={styles.blockLabel}>{label}</Typography.Text>
@@ -84,12 +82,7 @@ export function PaymentStep() {
 	);
 
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
-	// The level that sets the price lives on the curator list, not the draft.
-	const chosen = curators.data?.find(
-		(curator) => curator.userId === draft.curator?.id,
-	);
-	const price =
-		isAI || !chosen ? CHECKPOINT_AI_PRICE : curatorPrice(chosen.level);
+	const amount = `${CHECKPOINT_PRICE_CURRENCY}${price}`;
 
 	// Stripe hosts the payment, so leaving the app is the last thing this step
 	// does; what comes back is a webhook, not this tab.
@@ -129,7 +122,7 @@ export function PaymentStep() {
 			? `${dayjs.utc(draft.startedAt).format("D MMM")} – ${dayjs
 					.utc(dueDateFrom(utcStartOfDay(new Date(draft.startedAt))))
 					.format("D MMM YYYY")}`
-			: t("checkpoints.pay.days", "{count} days from the start", {
+			: t("checkpoints.pay.daysFromDayOne", "{count} days from day 1", {
 					count: CHECKPOINT_DAYS,
 				}),
 	].join(" · ");
@@ -159,17 +152,24 @@ export function PaymentStep() {
 		{
 			Icon: IconMinus,
 			tone: "note",
-			text: t(
-				"checkpoints.pay.termTasks",
-				"Tasks are set together on the first call. Results are not guaranteed.",
-			),
+			// The AI curator holds no calls: its tasks come from the review page.
+			text: isAI
+				? t(
+						"checkpoints.pay.termTasksAi",
+						"Tasks are set in the first {days} days, with the AI's advice. Results are not guaranteed.",
+						{ days: AI_PLAN_DAYS },
+					)
+				: t(
+						"checkpoints.pay.termTasks",
+						"Tasks are set together on the first call. Results are not guaranteed.",
+					),
 		},
 	];
 
 	return (
-		<StartLayout
-			step="payment"
+		<PurchaseLayout
 			title={t("checkpoints.pay.title", "Check and pay")}
+			hint={t("checkout.payment.hint", "Nothing is charged until you confirm.")}
 			notice={
 				draft.paymentFailed && (
 					<Flex gap={16} align="center" className={styles.failed}>
@@ -229,7 +229,7 @@ export function PaymentStep() {
 
 					{block(
 						t("checkpoints.pay.capacity", "Team capacity"),
-						"now",
+						"goal",
 						<Typography.Text className={styles.figure}>
 							{capacity.hoursPerWeek && capacity.hoursPerRun
 								? t(
@@ -249,7 +249,7 @@ export function PaymentStep() {
 
 					{block(
 						t("checkpoints.pay.want", "What you want in 28 days"),
-						"now",
+						"goal",
 						<Typography.Text>{draft.goal}</Typography.Text>,
 					)}
 
@@ -273,9 +273,7 @@ export function PaymentStep() {
 						<Typography.Text className={styles.priceLabel}>
 							{t("checkpoints.pay.priceLabel", "Price")}
 						</Typography.Text>
-						<Typography.Text className={styles.total}>
-							{`${CHECKPOINT_PRICE_CURRENCY}${price}`}
-						</Typography.Text>
+						<Typography.Text className={styles.total}>{amount}</Typography.Text>
 					</Flex>
 
 					<Flex vertical gap={12} className={styles.terms}>
@@ -318,10 +316,10 @@ export function PaymentStep() {
 						disabled={!draft.acceptedTermsAt}
 						onClick={pay}
 					>
-						{t("checkpoints.pay.payAndStart", "Pay and start")}
+						{t("checkout.payment.pay", "Pay {amount}", { amount })}
 					</Button>
 				</Card>
 			</Flex>
-		</StartLayout>
+		</PurchaseLayout>
 	);
 }

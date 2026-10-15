@@ -3,6 +3,7 @@ import {
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { checkoutHref } from "@/components/checkpoint-landing/constants";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { env } from "@/helpers/env";
 import {
@@ -67,7 +68,7 @@ export const POST = pipe(
 		"NEXT_PUBLIC_APP_URL",
 		env("NEXTAUTH_URL", "http://localhost:3000"),
 	);
-	const page = `${base}/user/project/${quote.checkpoint.project.slug}/workflow/cp/new`;
+	const slug = quote.checkpoint.project.slug;
 
 	// A checkout left open keeps its row PENDING forever and would sit beside the
 	// new one in the author's receipts. Only one attempt is live at a time, and
@@ -106,8 +107,8 @@ export const POST = pipe(
 		name: quote.name,
 		description: quote.description,
 		customerEmail: payer.email ?? undefined,
-		successUrl: `${page}?step=ready`,
-		cancelUrl: `${page}?step=payment`,
+		successUrl: `${base}${checkoutHref(slug, "ready")}`,
+		cancelUrl: `${base}${checkoutHref(slug, "payment")}`,
 	});
 
 	if (!session.url) return apiError.internal("checkoutUnavailable");

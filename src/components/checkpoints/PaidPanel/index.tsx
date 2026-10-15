@@ -1,14 +1,21 @@
 "use client";
 
-import { IconHourglassHigh, IconUserX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import {
+	IconCheck,
+	IconHourglassHigh,
+	IconMail,
+	IconUserX,
+} from "@tabler/icons-react";
+import { type QueryClient, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Modal, Typography } from "antd";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
-import { CheckpointStatus } from "@/config/prisma-enums";
+import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
@@ -26,25 +33,44 @@ const SETTLE_SLOW = 10000;
 const SETTLE_FAST_FOR = 30000;
 const SETTLE_GIVE_UP = 120000;
 
+// The list is what the purchase page reads paid and running from, so it has to
+// move with the checkpoint, not only the checkpoint itself.
+const refresh = (
+	queryClient: QueryClient,
+	{ id, projectId }: Pick<CheckpointDto, "id" | "projectId">,
+) => {
+	queryClient.invalidateQueries({ queryKey: ["checkpoint", id] });
+	queryClient.invalidateQueries({
+		queryKey: ["project-checkpoints", projectId],
+	});
+};
+
 export type PaidPanelProps = {
 	checkpoint: CheckpointDto;
-	/** Where a cancelled checkpoint leaves to; defaults to the page above this one. */
+	/** The project's workflow: "Go to the workflow", and where a cancelled checkpoint leaves to. */
 	exitHref?: string;
+	/** The project's settings, offered while a person decides whether to take it on. */
+	projectHref?: string;
 };
 
 /**
- * What the author sees between paying and the 28 days running.
+ * What the author sees between paying and the 28 days running — frames 12.6
+ * (`hl76Z`, AI curator) and 12.7 (`YgVnb`, a person), one centred column.
  *
- * Two waits, one panel. Stripe returns the author faster than it calls the
- * webhook, so for a few seconds a paid checkpoint is still a draft — that is
- * shown as starting, not as an error, and the panel settles itself by asking
- * again. Then, when a person is curating, the longer wait: they have to take it
- * on before day one exists.
+ * Stripe returns the author faster than it calls the webhook, so for a few
+ * seconds a paid checkpoint is still a draft — shown as on its way, not as an
+ * error, and the panel settles itself by asking again. The AI curator then
+ * runs it at once; a person has to take it on first, and until then the money
+ * is only held.
  *
  * The screen never treats the return from Stripe as proof of anything. It shows
  * what the server says the status is, and the status only moves on the webhook.
  */
-export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
+export function PaidPanel({
+	checkpoint,
+	exitHref,
+	projectHref,
+}: PaidPanelProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const queryClient = useQueryClient();
@@ -60,16 +86,17 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 		checkpoint.status === CheckpointStatus.Draft &&
 		!checkpoint.paymentId &&
 		!checkpoint.curatorDeclinedAt;
-	// The money is held on the card and not yet taken: it becomes a charge when
-	// the curator accepts, and saying "paid" before that is a lie the author
-	// finds out about when the hold drops off.
-	const held = checkpoint.status === CheckpointStatus.AwaitingCurator;
 	// Paid for, a draft again and carrying nobody: the only way a checkpoint
 	// reaches that is a curator handing it back.
 	const declined =
 		checkpoint.status === CheckpointStatus.Draft &&
 		!!checkpoint.curatorDeclinedAt &&
 		!checkpoint.curator;
+	// The AI curator needs nobody's yes: once the webhook lands the days run.
+	const onTheWay =
+		checkpoint.curatorKind === CheckpointCuratorKind.AI &&
+		(checkpoint.status === CheckpointStatus.Active ||
+			checkpoint.status === CheckpointStatus.Review);
 
 	const [waitingSince, setWaitingSince] = useState(() => Date.now());
 	const [gaveUp, setGaveUp] = useState(false);
@@ -88,8 +115,9 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 
 			timer = setTimeout(
 				() => {
-					queryClient.invalidateQueries({
-						queryKey: ["checkpoint", checkpoint.id],
+					refresh(queryClient, {
+						id: checkpoint.id,
+						projectId: checkpoint.projectId,
 					});
 					askLater();
 				},
@@ -100,12 +128,19 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 		askLater();
 
 		return () => clearTimeout(timer);
-	}, [settling, gaveUp, waitingSince, queryClient, checkpoint.id]);
+	}, [
+		settling,
+		gaveUp,
+		waitingSince,
+		queryClient,
+		checkpoint.id,
+		checkpoint.projectId,
+	]);
 
 	const askAgain = () => {
 		setGaveUp(false);
 		setWaitingSince(Date.now());
-		queryClient.invalidateQueries({ queryKey: ["checkpoint", checkpoint.id] });
+		refresh(queryClient, checkpoint);
 	};
 
 	// Cancelling takes the money back and closes the checkpoint, so it asks
@@ -136,109 +171,183 @@ export function PaidPanel({ checkpoint, exitHref }: PaidPanelProps) {
 			},
 		});
 
-	const dates =
-		checkpoint.startedAt && checkpoint.dueAt
-			? t("checkpoints.paid.dates", "{from} – {to}", {
-					from: dayjs(checkpoint.startedAt).format("D MMM"),
-					to: dayjs(checkpoint.dueAt).format("D MMM YYYY"),
-				})
-			: null;
+	const heading = (title: string, sub?: string | null) => (
+		<Flex vertical gap={4} align="center">
+			<Typography.Title level={3} className={styles.title}>
+				{title}
+			</Typography.Title>
+			{sub && (
+				<Typography.Text type="secondary" className={styles.sub}>
+					{sub}
+				</Typography.Text>
+			)}
+		</Flex>
+	);
 
-	return (
-		<Flex vertical gap={16}>
-			<MoneyNotice checkpoint={checkpoint} starting={settling} />
+	const toWorkflow = exitHref && (
+		<Link href={exitHref}>
+			<Button type="primary">
+				{t("checkpoints.paid.toWorkflow", "Go to the workflow")}
+			</Button>
+		</Link>
+	);
 
-			{settling && gaveUp && (
-				<Flex vertical gap={8} align="center" className={styles.waitingText}>
-					<Typography.Text type="secondary">
+	const quietCancel = (
+		<Button
+			type="link"
+			size="small"
+			className={styles.quiet}
+			loading={cancel.isPending}
+			onClick={askToCancel}
+		>
+			{t("checkpoints.paid.cancel", "Cancel and refund")}
+		</Button>
+	);
+
+	const number = checkpoint.number ?? checkpoint.order;
+	// A day 1 chosen for later is not today, and "Day 1 of 28" would say it is.
+	const firstDayAhead =
+		!!checkpoint.startedAt &&
+		dayjs.utc(checkpoint.startedAt).isAfter(dayjs.utc(), "day");
+
+	let body: ReactNode;
+
+	if (settling) {
+		body = (
+			<>
+				<IconTile icon={IconHourglassHigh} size="lg" />
+				{heading(t("checkpoints.ready.title", "Payment successful"))}
+				<MoneyNotice checkpoint={checkpoint} settling centered />
+				{gaveUp && (
+					<Flex vertical gap={8} align="center">
+						<Typography.Text type="secondary" className={styles.sub}>
+							{t(
+								"checkpoints.paid.slow",
+								"The payment is taking longer than usual to confirm. If you paid, it will show up here — check again in a minute.",
+							)}
+						</Typography.Text>
+						<Button onClick={askAgain}>
+							{t("checkpoints.paid.checkAgain", "Check again")}
+						</Button>
+					</Flex>
+				)}
+			</>
+		);
+	} else if (declined) {
+		body = (
+			<>
+				<IconTile icon={IconUserX} size="lg" />
+				{heading(
+					t(
+						"checkpoints.paid.declined",
+						"This expert cannot take it on right now",
+					),
+					t(
+						"checkpoints.paid.declinedBody",
+						"Pick another expert and the checkpoint goes to them instead.",
+					),
+				)}
+				<MoneyNotice checkpoint={checkpoint} centered />
+				{/* Declined, picking someone else is the only thing left to do, so it is the button. */}
+				<Button type="primary" onClick={() => setReplacing(true)}>
+					{t("checkpoints.paid.pickAnother", "Pick another curator")}
+				</Button>
+				{quietCancel}
+			</>
+		);
+	} else if (onTheWay) {
+		body = (
+			<>
+				<IconTile
+					icon={IconCheck}
+					size="lg"
+					tint="var(--gd-success-tint)"
+					ink="var(--gd-success-on-tint)"
+				/>
+				{heading(
+					t("checkpoints.paid.onYourWay", "You're on your way"),
+					firstDayAhead
+						? t(
+								"checkpoints.paid.onYourWayFrom",
+								"Day 1 on {date} · Checkpoint {number} · AI curator",
+								{
+									date: dayjs.utc(checkpoint.startedAt).format("D MMM"),
+									number,
+								},
+							)
+						: t(
+								"checkpoints.paid.onYourWayLine",
+								"Day {day} of {days} · Checkpoint {number} · AI curator",
+								{ day: checkpoint.day ?? 1, days: CHECKPOINT_DAYS, number },
+							),
+				)}
+				<MoneyNotice checkpoint={checkpoint} centered />
+				{toWorkflow}
+			</>
+		);
+	} else {
+		// Bought, and the person asked to run it has not answered: the money is
+		// held, not taken, and saying "paid" before they accept is a lie the
+		// author finds out about when the hold drops off.
+		body = (
+			<>
+				<IconTile icon={IconHourglassHigh} size="lg" />
+				{heading(
+					t("checkpoints.paid.reservedTitle", "Payment reserved"),
+					t(
+						"checkpoints.paid.reservedSub",
+						"Charged when the curator accepts.",
+					),
+				)}
+				<Flex gap={8} align="center" justify="center">
+					<IconMail size={16} className={styles.mail} />
+					<Typography.Text className={styles.sub}>
 						{t(
-							"checkpoints.paid.slow",
-							"The payment is taking longer than usual to confirm. If you paid, it will show up here — check again in a minute.",
+							"checkpoints.paid.emailWhenAnswers",
+							"We'll email you when {curator} answers — usually within {days} days.",
+							{
+								curator:
+									checkpoint.curator?.name?.split(" ")[0] ??
+									t("checkpoints.paid.theCurator", "the curator"),
+								days: CURATOR_ANSWER_DAYS,
+							},
 						)}
 					</Typography.Text>
-					<Button onClick={askAgain}>
-						{t("checkpoints.paid.checkAgain", "Check again")}
-					</Button>
 				</Flex>
-			)}
-
-			{!settling && (
-				<Flex
-					vertical
-					gap={16}
-					align="center"
-					className={styles.waiting}
-					data-testid="awaiting-curator"
-				>
-					<IconTile icon={declined ? IconUserX : IconHourglassHigh} />
-					<Flex vertical gap={12} align="center" className={styles.waitingText}>
-						<Flex vertical gap={4} align="center">
-							<Typography.Text className={styles.title}>
-								{declined
-									? t(
-											"checkpoints.paid.declined",
-											"This expert cannot take it on right now",
-										)
-									: t(
-											"checkpoints.paid.awaiting",
-											"Waiting for the curator to take it on",
-										)}
-							</Typography.Text>
-							<Typography.Text type="secondary" className={styles.dates}>
-								{declined
-									? t(
-											"checkpoints.paid.declinedBody",
-											"Pick another expert and the checkpoint goes to them instead.",
-										)
-									: dates &&
-										t("checkpoints.paid.planned", "Planned for {dates}", {
-											dates,
-										})}
-							</Typography.Text>
-						</Flex>
-
-						{/* Waiting, the way out sits quietly beside the curator — it is
-						    rarely what the author wants. Declined, it is the only thing
-						    left to do, so it is the button. */}
-						{declined ? (
-							<Button type="primary" onClick={() => setReplacing(true)}>
-								{t("checkpoints.paid.pickAnother", "Pick another curator")}
+				<CuratorBadge
+					kind={checkpoint.curatorKind}
+					curator={checkpoint.curator}
+				/>
+				<MoneyNotice checkpoint={checkpoint} centered />
+				<Flex gap={8} justify="center" wrap>
+					{toWorkflow}
+					{projectHref && (
+						<Link href={projectHref}>
+							<Button>
+								{t("checkpoints.paid.fillProject", "Fill in your project")}
 							</Button>
-						) : (
-							<Flex gap={12} align="center" wrap justify="center">
-								<CuratorBadge
-									kind={checkpoint.curatorKind}
-									curator={checkpoint.curator}
-								/>
-								<Button
-									type="link"
-									size="small"
-									className={styles.quiet}
-									onClick={() => setReplacing(true)}
-								>
-									{t("checkpoints.paid.replace", "Replace the curator")}
-								</Button>
-							</Flex>
-						)}
-					</Flex>
+						</Link>
+					)}
 				</Flex>
-			)}
-
-			{!settling && (
-				<Flex justify="center">
+				{/* Present and findable, rarely what the author came to do. */}
+				<Flex gap={16} justify="center" wrap>
 					<Button
 						type="link"
 						size="small"
 						className={styles.quiet}
-						loading={cancel.isPending}
-						onClick={askToCancel}
+						onClick={() => setReplacing(true)}
 					>
-						{held
-							? t("checkpoints.paid.cancelHold", "Cancel and release the money")
-							: t("checkpoints.paid.cancel", "Cancel and refund")}
+						{t("checkpoints.paid.replace", "Replace the curator")}
 					</Button>
+					{quietCancel}
 				</Flex>
-			)}
+			</>
+		);
+	}
+
+	return (
+		<Flex vertical gap={24} align="center" className={styles.column}>
+			{body}
 
 			<ReplaceCuratorModal
 				checkpointId={checkpoint.id}

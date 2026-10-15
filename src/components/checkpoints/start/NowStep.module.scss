@@ -1,20 +1,4 @@
-// Frame 03 (`UhPrX`): the answer column is one stack, 32 apart.
-
-.project,
-.previous {
-	padding: var(--gd-space-4);
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-panel);
-}
-
-.projectName {
-	font-size: var(--gd-font-size-body-lg);
-	font-weight: 600;
-}
-
-.small {
-	font-size: var(--gd-font-size-body-sm);
-}
+// Frame 12.3 (`mfAfN`): the answer column is one stack, 32 apart.
 
 .info {
 	color: var(--gd-color-text-tertiary);
@@ -32,11 +16,6 @@
 	input {
 		text-align: right;
 	}
-}
-
-.grow {
-	flex: 1;
-	min-width: 0;
 }
 
 .label {

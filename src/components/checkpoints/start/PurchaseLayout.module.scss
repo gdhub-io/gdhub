@@ -7,15 +7,11 @@
 	padding-bottom: var(--gd-space-4);
 }
 
-// antd's h2 is the frame's 24/600; only its bottom margin has to go.
+// The question reads 24/700 under the page's 32/700 title.
 .title.title {
 	margin: 0;
-}
-
-.stepCount {
-	flex: none;
-	color: var(--gd-color-text-secondary);
-	font-size: var(--gd-font-size-body);
+	font-size: var(--gd-font-size-h2);
+	font-weight: 700;
 }
 
 .hint {

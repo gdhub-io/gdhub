@@ -2,7 +2,6 @@
 
 import {
 	IconAlertTriangle,
-	IconDeviceGamepad2,
 	IconFlag,
 	IconInfoCircle,
 	IconSparkles,
@@ -15,7 +14,6 @@ import {
 	Flex,
 	Input,
 	InputNumber,
-	Modal,
 	Popover,
 	Skeleton,
 	Tag,
@@ -24,21 +22,14 @@ import {
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { EmptyState, IconTile } from "@/components/ui";
-import { CheckpointResult } from "@/components/WorkflowPath/ClosedCheckpoint";
 import { CHECKPOINT_DAYS, CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
-import { CheckpointStatus } from "@/config/prisma-enums";
-import {
-	useCheckGoal,
-	useCheckpoints,
-	useUpdateCheckpoint,
-} from "@/hooks/checkpoints";
+import { useCheckGoal, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import styles from "./NowStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
-import { StartLayout } from "./StartLayout";
+import { PurchaseLayout } from "./PurchaseLayout";
 import { TeamResource } from "./TeamResource";
 import { type TeamHoursRow, useTeamHours } from "./teamHours";
 import { useCheckpointDraft } from "./useDraft";
@@ -48,8 +39,9 @@ const middle = (hours: { from: number; to: number }) =>
 	Math.round((hours.from + hours.to) / 2);
 
 /**
- * Frames 03 and 03.2: what the team has, when it starts and what the 28 days
- * are for. No tasks here — they are agreed with the curator on the first call.
+ * Frames 12.3 (`mfAfN`) and 03.2: the hours the team has and what the 28 days
+ * are for. The project is chosen in the hub, before the wizard opens. No tasks
+ * here — they are agreed with the curator on the first call.
  *
  * Next asks the curator whether the goal fits the hours. A warning does not
  * stop anyone: the button turns into "Continue anyway" until the goal changes.
@@ -59,7 +51,6 @@ export function NowStep() {
 	const { message } = App.useApp();
 	const { go, exit } = usePrepareNav();
 	const { draft, project, loading } = useCheckpointDraft();
-	const { data: list } = useCheckpoints(project?.id, 1, 50);
 	const { data: session } = useSession();
 	const queryClient = useQueryClient();
 	const team = useTeamHours(project?.team?.id);
@@ -73,7 +64,6 @@ export function NowStep() {
 		goal: string;
 		remark: GoalCheckResult;
 	} | null>(null);
-	const [resultsOpen, setResultsOpen] = useState(false);
 
 	const saveHours = useMutation({
 		mutationFn: (timeForWork: number[]) =>
@@ -122,11 +112,6 @@ export function NowStep() {
 		team.members.map((row) => ({ timeForWork: hoursOf(row) })),
 	);
 
-	const previous = (list?.closed.rows ?? [])
-		.filter((row) => row.status === CheckpointStatus.Closed && row.verdict)
-		.sort((a, b) => (b.decidedAt ?? "").localeCompare(a.decidedAt ?? ""))[0];
-	const isFirst = !previous;
-
 	const remark = warned?.goal === text.trim() ? warned.remark : null;
 
 	const next = async () => {
@@ -162,19 +147,11 @@ export function NowStep() {
 	};
 
 	return (
-		<StartLayout
-			step="now"
-			title={
-				isFirst
-					? t("checkpoints.now.title", "Glad you're heading for a checkpoint")
-					: t(
-							"checkpoints.now.titleNext",
-							"Glad you're heading for the next checkpoint",
-						)
-			}
+		<PurchaseLayout
+			title={t("checkout.goal.title", "Your goal")}
 			hint={t(
-				"checkpoints.now.hint",
-				"{days} days, one goal, and a curator beside you. Let's set it up.",
+				"checkout.goal.hint",
+				"One goal for the {days} days, and the hours your team can give.",
 				{ days: CHECKPOINT_DAYS },
 			)}
 			forward={
@@ -190,31 +167,6 @@ export function NowStep() {
 				</Button>
 			}
 		>
-			<Flex vertical gap={8}>
-				<Typography.Text className={styles.label}>
-					{t("checkpoints.now.project", "Your project")}
-				</Typography.Text>
-				<Flex gap={16} align="center" className={styles.project}>
-					<IconTile icon={IconDeviceGamepad2} size="md" />
-					<Flex vertical gap={4}>
-						<Typography.Text className={styles.projectName}>
-							{project?.name}
-						</Typography.Text>
-						<Typography.Text type="secondary" className={styles.small}>
-							{isFirst
-								? t("checkpoints.now.stage", "{stage} stage", {
-										stage: draft.stageName,
-									})
-								: t(
-										"checkpoints.now.stageNumber",
-										"{stage} stage · checkpoint {number}",
-										{ stage: draft.stageName, number: draft.order },
-									)}
-						</Typography.Text>
-					</Flex>
-				</Flex>
-			</Flex>
-
 			<Flex vertical gap={8}>
 				<Flex gap={8} align="center">
 					<Typography.Text className={styles.label}>
@@ -298,48 +250,6 @@ export function NowStep() {
 				)}
 			</Flex>
 
-			{previous && (
-				<Flex gap={16} align="center" className={styles.previous}>
-					<IconTile icon={IconFlag} size="md" />
-					<Flex vertical gap={4} className={styles.grow}>
-						<Flex gap={12} align="center">
-							<Typography.Text strong>
-								{t("checkpoints.number", "Checkpoint {number}", {
-									number: previous.order,
-								})}
-							</Typography.Text>
-							{previous.verdict && <VerdictChip verdict={previous.verdict} />}
-						</Flex>
-						{previous.verdictNote && (
-							<Typography.Text type="secondary" className={styles.small}>
-								{previous.curator?.name
-									? `“${previous.verdictNote}” — ${previous.curator.name}`
-									: `“${previous.verdictNote}”`}
-							</Typography.Text>
-						)}
-					</Flex>
-					<Button type="text" onClick={() => setResultsOpen(true)}>
-						{t("checkpoints.now.viewResults", "View results")}
-					</Button>
-					<Modal
-						open={resultsOpen}
-						onCancel={() => setResultsOpen(false)}
-						footer={null}
-						title={t(
-							"workflow.path.results.title",
-							"Checkpoint {number} results",
-							{
-								number: String(previous.order),
-							},
-						)}
-					>
-						<Flex vertical gap={16}>
-							<CheckpointResult checkpoint={previous} />
-						</Flex>
-					</Modal>
-				</Flex>
-			)}
-
 			<Flex vertical gap={8} className={styles.goal}>
 				<Typography.Text className={styles.label}>
 					{t(
@@ -388,6 +298,6 @@ export function NowStep() {
 					</Flex>
 				</Flex>
 			)}
-		</StartLayout>
+		</PurchaseLayout>
 	);
 }

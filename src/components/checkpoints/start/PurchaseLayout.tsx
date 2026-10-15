@@ -3,23 +3,19 @@
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Typography } from "antd";
 import type { ReactNode } from "react";
-import styles from "./StartLayout.module.scss";
+import styles from "./PurchaseLayout.module.scss";
 
 /**
- * The shell every question of the purchase shares — frames 03–06 (`UhPrX` …
- * `guKLF`): the question as the heading, "Step n/4" beside it.
+ * What every question of the purchase shares inside the entry shell — frames
+ * 12.3–12.5: the question as the heading, the answer and the foot.
  */
 
-export const START_STEPS = ["now", "curator", "payment"] as const;
+export const PURCHASE_STEPS = ["goal", "curator", "payment"] as const;
 
-export type StartStep = (typeof START_STEPS)[number];
+export type PurchaseStep = (typeof PURCHASE_STEPS)[number];
 
-/** The questions, then where paying lands — counted as a step of its own. */
-const STEPS = [...START_STEPS, "ready"] as const;
-
-export type StartLayoutProps = {
-	step: (typeof STEPS)[number];
-	/** The question itself, under the bars. */
+export type PurchaseLayoutProps = {
+	/** The question itself, under the stepper. */
 	title?: string;
 	/** One line under the title saying what this question is for. */
 	hint?: string;
@@ -39,8 +35,7 @@ export type StartLayoutProps = {
 	forward?: ReactNode;
 };
 
-export function StartLayout({
-	step,
+export function PurchaseLayout({
 	title,
 	hint,
 	notice,
@@ -49,33 +44,24 @@ export function StartLayout({
 	saved,
 	onBack,
 	forward,
-}: StartLayoutProps) {
+}: PurchaseLayoutProps) {
 	const { t } = useTranslate();
-	const index = STEPS.indexOf(step);
 
 	return (
 		<div className={styles.flow}>
 			<Flex vertical gap={32} className={styles.content}>
-				<Flex vertical gap={8}>
-					<Flex justify="space-between" align="baseline" gap={16}>
-						{title ? (
+				{(title || hint) && (
+					<Flex vertical gap={8}>
+						{title && (
 							<Typography.Title level={2} className={styles.title}>
 								{title}
 							</Typography.Title>
-						) : (
-							<span />
 						)}
-						<Typography.Text className={styles.stepCount}>
-							{t("checkpoints.prepare.stepNumber", "Step {current}/{total}", {
-								current: index + 1,
-								total: STEPS.length,
-							})}
-						</Typography.Text>
+						{hint && (
+							<Typography.Text className={styles.hint}>{hint}</Typography.Text>
+						)}
 					</Flex>
-					{hint && (
-						<Typography.Text className={styles.hint}>{hint}</Typography.Text>
-					)}
-				</Flex>
+				)}
 
 				{notice}
 

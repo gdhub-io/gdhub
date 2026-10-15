@@ -38,7 +38,7 @@ import styles from "./CuratorStep.module.scss";
 import { CuratorTable } from "./CuratorTable";
 import { FirstCallPicker } from "./FirstCallPicker";
 import { usePrepareNav } from "./PrepareNav";
-import { StartLayout, type StartStep } from "./StartLayout";
+import { PurchaseLayout, type PurchaseStep } from "./PurchaseLayout";
 import { useCheckpointDraft } from "./useDraft";
 
 /** A row of frame 04.1's card: a label, what it says, and a quiet note. */
@@ -127,7 +127,7 @@ export function CuratorStep() {
 		dayjs.utc(dateOfDay(startDay.format("YYYY-MM-DD"), sessionDay(index))),
 	);
 
-	const goTo = async (next: StartStep) => {
+	const goTo = async (next: PurchaseStep) => {
 		try {
 			await update.mutateAsync({
 				curatorKind: chosen,
@@ -184,13 +184,16 @@ export function CuratorStep() {
 	);
 
 	return (
-		<StartLayout
-			step="curator"
+		<PurchaseLayout
 			title={t(
 				"checkpoints.curator.title",
 				"Who will take this journey with you?",
 			)}
-			onBack={() => goTo("now")}
+			hint={t(
+				"checkout.curator.hint",
+				"An expert on calls, or the AI curator in writing.",
+			)}
+			onBack={() => goTo("goal")}
 			forward={
 				<Button
 					type="primary"
@@ -261,13 +264,13 @@ export function CuratorStep() {
 					</Flex>
 				) : (
 					<Flex vertical gap={12}>
-						{/* Frame 04.1 (`nhoB1`): when it starts, when the reviews come, what it costs. */}
+						{/* Frame 04.1 (`nhoB1`): day 1, when the reviews come, what it costs. */}
 						<div className={styles.summary}>
 							<SummaryRow
-								label={t("checkpoints.curator.start", "Start")}
+								label={t("checkpoints.curator.dayOne", "Day 1")}
 								hint={t(
-									"checkpoints.curator.startHint",
-									"from the start of the day · ends around {date}",
+									"checkpoints.curator.dayOneHint",
+									"from the beginning of the day · ends around {date}",
 									{
 										date: dayjs
 											.utc(
@@ -327,6 +330,6 @@ export function CuratorStep() {
 					</Flex>
 				)}
 			</Flex>
-		</StartLayout>
+		</PurchaseLayout>
 	);
 }

@@ -8,7 +8,11 @@ import { CuratorStep } from "./CuratorStep";
 import { NowStep } from "./NowStep";
 import { PaymentStep } from "./PaymentStep";
 import { PrepareNavProvider } from "./PrepareNav";
-import { START_STEPS, StartLayout, type StartStep } from "./StartLayout";
+import {
+	PURCHASE_STEPS,
+	PurchaseLayout,
+	type PurchaseStep,
+} from "./PurchaseLayout";
 
 export type PreparePanelProps = {
 	/** Where Cancel and "no draft" land: the project's checkpoint list. */
@@ -31,13 +35,13 @@ export function PreparePanel({ base, paid }: PreparePanelProps) {
 	const pathname = usePathname();
 	const search = useSearchParams();
 
-	const asked = search?.get("q") as StartStep | null;
-	const step: StartStep =
-		asked && START_STEPS.includes(asked) ? asked : START_STEPS[0];
+	const asked = search?.get("q") as PurchaseStep | null;
+	const step: PurchaseStep =
+		asked && PURCHASE_STEPS.includes(asked) ? asked : PURCHASE_STEPS[0];
 
 	const nav = useMemo(
 		() => ({
-			go: (next: StartStep) => {
+			go: (next: PurchaseStep) => {
 				const params = new URLSearchParams(search?.toString());
 				params.set("step", "inputs");
 				params.set("q", next);
@@ -50,15 +54,15 @@ export function PreparePanel({ base, paid }: PreparePanelProps) {
 
 	if (paid) {
 		return (
-			<StartLayout step="ready" saved={null}>
+			<PurchaseLayout saved={null}>
 				<PaidPanel checkpoint={paid} />
-			</StartLayout>
+			</PurchaseLayout>
 		);
 	}
 
 	return (
 		<PrepareNavProvider value={nav}>
-			{step === "now" && <NowStep />}
+			{step === "goal" && <NowStep />}
 			{step === "curator" && <CuratorStep />}
 			{step === "payment" && <PaymentStep />}
 		</PrepareNavProvider>
