@@ -375,3 +375,30 @@ export type CuratorReview = {
 	notes: CallNotes | null;
 	advice: PlanAdvice | null;
 };
+
+/** A Stripe promotion code as the admin's Promo codes tab lists it. */
+export type PromoCodeDto = {
+	id: string;
+	code: string;
+	/** Exactly one of the two is set. */
+	percentOff: number | null;
+	/** Minor units, USD. */
+	amountOff: number | null;
+	timesRedeemed: number;
+	maxRedemptions: number | null;
+	expiresAt: string | null;
+	firstPurchaseOnly: boolean;
+	active: boolean;
+};
+
+/** What the admin's form sends to create a promotion code. */
+export type NewPromoCode = {
+	code: string;
+	kind: "percent" | "amount";
+	/** Percent 1–99, or whole US dollars. */
+	value: number;
+	/** ISO date-time. */
+	expiresAt?: string | null;
+	maxRedemptions?: number | null;
+	firstPurchaseOnly: boolean;
+};

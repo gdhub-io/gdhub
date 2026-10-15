@@ -1,0 +1,58 @@
+/* Rule 8: a white card, clipped, no outer border; hairlines inside only. */
+.table {
+	overflow: hidden;
+	background: var(--gd-color-surface);
+	border-radius: var(--gd-radius-card);
+
+	:global(.ant-table) {
+		background: transparent;
+	}
+
+	:global(.ant-table-thead > tr > th) {
+		height: 44px;
+		padding-block: 0;
+		color: var(--gd-color-text-secondary);
+		font-size: var(--gd-font-size-label);
+		font-weight: 600;
+		text-transform: uppercase;
+		background: var(--gd-color-surface-sunken);
+		border-bottom: 1px solid var(--gd-color-border);
+
+		&::before {
+			display: none;
+		}
+	}
+
+	:global(.ant-table-tbody > tr > td) {
+		height: 56px;
+		padding-block: 0;
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	:global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+
+	:global(.ant-table-placeholder > td) {
+		height: auto;
+	}
+}
+
+.code {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	font-feature-settings: "tnum";
+
+	:global(.ant-typography-copy) {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.number {
+	font-feature-settings: "tnum";
+}
+
+.none {
+	color: var(--gd-color-text-tertiary);
+}

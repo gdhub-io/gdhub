@@ -9,6 +9,7 @@ import type Stripe from "stripe";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
+	CHECKPOINT_MINOR_UNITS as MINOR,
 	SESSIONS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
@@ -29,9 +30,6 @@ import {
 	releaseCheckout,
 	retrieveCheckout,
 } from "@/services/stripe/server";
-
-/** Prices are written in whole units; Stripe and `Payment.amount` want minor ones. */
-const MINOR = 100;
 
 /** The money a checkpoint holds or has taken. */
 const heldPaymentWhere = (checkpointId: string) => ({
@@ -279,10 +277,23 @@ export const settleCheckpointCheckout = async (
 			providerTransactionId: session.id,
 			providerCustomerId:
 				typeof session.customer === "string" ? session.customer : null,
+			// What was actually charged, after any promotion code.
+			...(session.amount_total != null && { amount: session.amount_total }),
 		},
 	});
 
 	if (!count) return false;
+
+	// A 100% code made in the dashboard leaves nothing to hold or capture, and a
+	// free checkpoint is an admin's call (GDHUB-40), so it reads as a failed payment.
+	if (!session.payment_intent) {
+		await prisma.payment.update({
+			where: { id: payment.id },
+			data: { status: PaymentStatus.CANCELED },
+		});
+
+		return true;
+	}
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: payment.payableId },
