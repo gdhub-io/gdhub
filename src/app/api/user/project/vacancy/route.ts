@@ -6,6 +6,7 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
+import { fromCents, toCents } from "@/helpers/format";
 import {
 	apiError,
 	json,
@@ -66,11 +67,6 @@ const UpdateVacancySchema = z.object({
 		.nullable()
 		.optional(),
 });
-
-// Offered compensation is entered/displayed in EUR but stored in minor units.
-const toCents = (eur: number) => Math.round(eur * 100);
-const fromCents = (cents: number | null | undefined) =>
-	cents != null ? cents / 100 : null;
 
 type IdQuery = z.infer<typeof IdQuerySchema>;
 type CreateVacancyBody = z.infer<typeof CreateVacancySchema>;

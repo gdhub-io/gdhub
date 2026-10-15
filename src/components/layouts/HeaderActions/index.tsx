@@ -7,7 +7,6 @@ import { Button, Dropdown, Grid, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import ReactNiceAvatar, { type AvatarFullConfig } from "react-nice-avatar";
 import { ChatPanel } from "@/components/Chat/ChatPanel";
 import { ChatButton } from "@/components/ChatButton";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -19,13 +18,16 @@ const NotificationsBell = dynamic(
 	{ ssr: false },
 );
 
+// The avatar generator is large and only the users without a photo need it.
+const FallbackAvatar = dynamic(() => import("./FallbackAvatar"));
+
 const DOCS_URL = "https://docs.gdhub.io";
 
 type HeaderActionsProps = {
 	dropdownMenuItems: MenuProps["items"];
 	onOpenMobileMenu: () => void;
-	/** When provided, falls back to a generated avatar instead of nothing. */
-	avatarConfig?: AvatarFullConfig;
+	/** When provided, falls back to an avatar generated from it instead of nothing. */
+	avatarSeed?: string;
 };
 
 /**
@@ -38,7 +40,7 @@ type HeaderActionsProps = {
 export const HeaderActions = ({
 	dropdownMenuItems,
 	onOpenMobileMenu,
-	avatarConfig,
+	avatarSeed,
 }: HeaderActionsProps) => {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
@@ -56,11 +58,8 @@ export const HeaderActions = ({
 				/>
 			}
 		/>
-	) : avatarConfig ? (
-		<ReactNiceAvatar
-			style={{ width: "32px", height: "32px" }}
-			{...avatarConfig}
-		/>
+	) : avatarSeed ? (
+		<FallbackAvatar seed={avatarSeed} />
 	) : null;
 
 	if (!screens.xl) {

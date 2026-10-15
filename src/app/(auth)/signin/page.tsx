@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import { SigninClient } from "./SigninClient";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SigninPage() {
-	const session = await auth();
+	const session = await getSession();
 	if (session?.user) {
 		redirect("/hub");
 	}

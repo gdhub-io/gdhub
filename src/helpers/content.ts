@@ -154,3 +154,15 @@ export const getEditorjsShortContent = (
 
 	return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
+
+/** The first paragraph of an Editor.js document, cut to `maxLength` with "...". */
+export const getEditorjsFirstParagraph = (
+	content: OutputData,
+	maxLength = 100,
+): string => {
+	const text: string | undefined = content?.blocks?.find(
+		(block) => block.type === "paragraph",
+	)?.data?.text;
+	if (!text) return "";
+	return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+};

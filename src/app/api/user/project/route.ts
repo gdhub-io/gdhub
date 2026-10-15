@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
-import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
 import { SpaceRole } from "@/config/permissions/roles";
 import { nextFreeSlug, toSlug } from "@/helpers/slug";
@@ -15,6 +14,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { cacheDelete } from "@/services/cache";

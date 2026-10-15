@@ -17,7 +17,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import _ from "lodash";
+import round from "lodash/round";
 import { useEffect, useState } from "react";
 
 const { Text, Paragraph } = Typography;
@@ -312,7 +312,7 @@ const MemberEquityPromiseModal = ({
 								<div style={{ flex: 1 }}>
 									<Slider
 										min={0}
-										max={_.round(maxShare, 2)}
+										max={round(maxShare, 2)}
 										step={0.1}
 										value={percentage}
 										marks={Object.fromEntries([
@@ -320,14 +320,14 @@ const MemberEquityPromiseModal = ({
 												i * 10,
 												`${i * 10}%`,
 											]),
-											[_.round(maxShare, 2), `${_.round(maxShare, 2)}%`],
+											[round(maxShare, 2), `${round(maxShare, 2)}%`],
 										])}
 										onChange={handlePercentageChange}
 									/>
 								</div>
 								<InputNumber
 									min={0}
-									max={_.round(maxShare, 2)}
+									max={round(maxShare, 2)}
 									step={0.1}
 									value={percentage}
 									onChange={handlePercentageChange}

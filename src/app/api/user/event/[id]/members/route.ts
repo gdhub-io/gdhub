@@ -9,6 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { cacheGet, cacheSet } from "@/services/cache";
 import { LegalService } from "@/services/legal";
 import { prisma } from "@/services/prisma";
 
@@ -94,11 +95,7 @@ export const GET = pipe(
 			const externalId = m.certificate.externalId;
 			if (externalId.startsWith("pending:")) return null;
 			try {
-				const envelope = await legalService.getEnvelope(externalId);
-				return {
-					status: envelope.status,
-					teamUrl: envelope.team.url,
-				};
+				return await envelopeInfo(legalService, externalId);
 			} catch (error) {
 				console.error(
 					`Failed to fetch envelope for cert ${m.certificate.number}`,
@@ -203,3 +200,26 @@ export const POST = pipe(
 		skipped: existingUserIds.size,
 	});
 });
+
+// A signed or rejected envelope never changes again; one still out for
+// signing is re-read after a minute.
+const FINAL_ENVELOPE_STATUSES = new Set(["COMPLETED", "REJECTED"]);
+
+async function envelopeInfo(legalService: LegalService, externalId: string) {
+	const key = `documenso:envelope:${externalId}`;
+	const hit = await cacheGet<{ status: string; teamUrl: string }>(key);
+	if (hit) return hit;
+
+	const envelope = await legalService.getEnvelope(externalId);
+	const info = {
+		status: envelope.status as string,
+		teamUrl: envelope.team.url,
+	};
+	await cacheSet(
+		key,
+		info,
+		FINAL_ENVELOPE_STATUSES.has(info.status) ? 24 * 60 * 60 : 60,
+	);
+
+	return info;
+}

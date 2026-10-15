@@ -4,7 +4,6 @@ import { TolgeeProvider } from "@tolgee/react";
 import type { ReactNode } from "react";
 import { defaultLocale } from "@/config/locale";
 import enLocale from "@/i18n/en.json";
-import ruLocale from "@/i18n/ru.json";
 import { tolgeeService } from "@/services/tolgee";
 
 /**
@@ -21,7 +20,7 @@ export function TolgeeClientProvider({ children }: { children: ReactNode }) {
 			fallback={null}
 			ssr={{
 				language: defaultLocale,
-				staticData: { en: enLocale, ru: ruLocale },
+				staticData: { en: enLocale },
 			}}
 		>
 			{children}

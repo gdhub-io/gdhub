@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	getMessaging,
-	getToken,
-	isSupported as isMessagingSupported,
-	type Messaging,
-} from "@firebase/messaging";
-import { useEffect, useMemo, useState } from "react";
-import { getFirebaseApp } from "@/lib/firebase";
+import { useQuery } from "@tanstack/react-query";
 
 type FirebaseMessagingState = {
 	token: string | null;
@@ -17,107 +10,63 @@ type FirebaseMessagingState = {
 	ready: boolean;
 };
 
-type UseFirebaseMessagingTokenOptions = {
-	serviceWorkerPath?: string;
-	vapidKey?: string;
+const SERVICE_WORKER_PATH = "/matrix-push-sw.js";
+
+const initialState: FirebaseMessagingState = {
+	token: null,
+	isSupported: false,
+	permissionState: "default",
+	error: null,
+	ready: false,
 };
 
-const DEFAULT_SW_PATH = "/matrix-push-sw.js";
+async function bootstrapMessaging(): Promise<FirebaseMessagingState> {
+	const state = { ...initialState, ready: true };
 
-function assertVapidKey(override?: string): string {
-	const key = override || process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
-	if (!key) {
-		throw new Error("Firebase VAPID key is not configured");
+	try {
+		// Loaded on demand so Firebase stays out of the bundle of every page.
+		const [{ getMessaging, getToken, isSupported }, { getFirebaseApp }] =
+			await Promise.all([
+				import("@firebase/messaging"),
+				import("@/lib/firebase"),
+			]);
+
+		state.isSupported = await isSupported();
+		if (!state.isSupported || typeof Notification === "undefined") {
+			return state;
+		}
+
+		let permission = Notification.permission;
+		if (permission === "default") {
+			permission = await Notification.requestPermission();
+		}
+		state.permissionState = permission;
+		if (permission !== "granted") return state;
+
+		const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+		if (!vapidKey) throw new Error("Firebase VAPID key is not configured");
+
+		const serviceWorkerRegistration =
+			await navigator.serviceWorker.register(SERVICE_WORKER_PATH);
+		state.token = await getToken(getMessaging(getFirebaseApp()), {
+			vapidKey,
+			serviceWorkerRegistration,
+		});
+	} catch (error) {
+		if (error instanceof Error) state.error = error;
 	}
-	return key;
+
+	return state;
 }
 
-function getClientMessaging(): Messaging {
-	return getMessaging(getFirebaseApp());
-}
+// One bootstrap per tab, shared by the chat and the notification bell.
+export function useFirebaseMessagingToken(): FirebaseMessagingState {
+	const { data } = useQuery({
+		queryKey: ["fcm-token"],
+		queryFn: bootstrapMessaging,
+		staleTime: Number.POSITIVE_INFINITY,
+		retry: false,
+	});
 
-export function useFirebaseMessagingToken(
-	options: UseFirebaseMessagingTokenOptions = {},
-): FirebaseMessagingState {
-	const [token, setToken] = useState<string | null>(null);
-	const [permissionState, setPermissionState] =
-		useState<NotificationPermission>("default");
-	const [error, setError] = useState<Error | null>(null);
-	const [ready, setReady] = useState(false);
-
-	const isBrowser = typeof window !== "undefined";
-
-	const [isSupported, setIsSupported] = useState(false);
-
-	useEffect(() => {
-		let cancelled = false;
-
-		if (!isBrowser) {
-			setReady(true);
-			return;
-		}
-
-		async function bootstrap() {
-			try {
-				const supported = await isMessagingSupported();
-				if (cancelled) return;
-				setIsSupported(supported);
-
-				if (!supported || typeof Notification === "undefined") {
-					return;
-				}
-
-				let permission = Notification.permission;
-				if (permission === "default") {
-					permission = await Notification.requestPermission();
-				}
-				if (cancelled) return;
-				setPermissionState(permission);
-
-				if (permission !== "granted") {
-					return;
-				}
-
-				const swRegistration = await navigator.serviceWorker.register(
-					options.serviceWorkerPath || DEFAULT_SW_PATH,
-				);
-
-				const vapidKey = assertVapidKey(options.vapidKey);
-				const messaging = getClientMessaging();
-				const messagingToken = await getToken(messaging, {
-					vapidKey,
-					serviceWorkerRegistration: swRegistration,
-				});
-
-				if (!cancelled) {
-					setToken(messagingToken);
-				}
-			} catch (err) {
-				if (!cancelled && err instanceof Error) {
-					setError(err);
-				}
-			} finally {
-				if (!cancelled) {
-					setReady(true);
-				}
-			}
-		}
-
-		void bootstrap();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [isBrowser, options.serviceWorkerPath, options.vapidKey]);
-
-	return useMemo(
-		() => ({
-			token,
-			isSupported,
-			permissionState,
-			error,
-			ready,
-		}),
-		[token, isSupported, permissionState, error, ready],
-	);
+	return data ?? initialState;
 }

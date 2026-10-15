@@ -1,4 +1,3 @@
-import type { WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -21,6 +20,7 @@ import React, { useEffect } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EventFormat, Language } from "@/config/prisma-enums";
+import { useWorkDirections } from "@/hooks/library";
 import type { ScheduleItemFormValues } from ".";
 import styles from "./style.module.scss";
 
@@ -106,13 +106,7 @@ const ScheduleItemModal: React.FC<ScheduleItemModalProps> = ({
 			(isAdmin || process.env.NODE_ENV === "development"),
 	});
 
-	const { data: workDirections } = useQuery({
-		queryKey: ["work-directions"],
-		queryFn: () =>
-			axios
-				.get<WorkDirection[]>("/api/dictionary/work-directions")
-				.then((res) => res.data),
-	});
+	const { data: workDirections } = useWorkDirections();
 
 	useEffect(() => {
 		if (speakersData?.data) {

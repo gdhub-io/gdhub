@@ -28,9 +28,9 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import ModernTable from "@/components/ModernTable";
-import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { ShareModal, type ShareTarget } from "@/components/ShareModal";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 import { AppImage } from "@/components/ui/AppImage";
@@ -47,6 +47,15 @@ import { useCurrentProject } from "@/hooks/project";
 import { useDevlogName } from "@/hooks/useDevlogName";
 import { devlogOgImage } from "@/services/telegram/messages";
 import styles from "./styles.module.scss";
+
+// Editor.js and its plugins stay out of the page's first load.
+const DevLogPostModal = dynamic(
+	() =>
+		import("@/components/modals/DevLogPostModal").then(
+			(module) => module.DevLogPostModal,
+		),
+	{ ssr: false },
+);
 
 const { Text } = Typography;
 

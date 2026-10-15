@@ -1,8 +1,15 @@
 import { json, withAuth } from "@/lib/api-handlers";
+import { cached } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 import type { ProjectActivityRow } from "@/types/project";
 
-export const GET = withAuth({ mode: "user" })(async () => {
+// Distinct stage names for a filter: they barely change, and finding them means
+// ranking every project.
+export const GET = withAuth({ mode: "user" })(async () =>
+	json(await cached("projects:stages", 600, loadStages)),
+);
+
+async function loadStages() {
 	const projects = (await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
 	})) as ProjectActivityRow[];
@@ -28,9 +35,7 @@ export const GET = withAuth({ mode: "user" })(async () => {
 		}
 	}
 
-	const result = Array.from(uniqueStages.values())
+	return Array.from(uniqueStages.values())
 		.sort((left, right) => left.order - right.order)
 		.map(({ label, value }) => ({ label, value }));
-
-	return json(result);
-});
+}
