@@ -1329,6 +1329,7 @@
 			},
 			"missing": "This review is not one of yours, or its checkpoint is not run by the AI curator.",
 			"noDevlog": "There is no devlog for this sprint yet, and a review is written under one.",
+			"noReviewYet": "The start sets the tasks; the first review comes after Sprint 1.",
 			"notes": {
 				"byTask": "By task",
 				"focus": "Focus for Sprint {n}",
