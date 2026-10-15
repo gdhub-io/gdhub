@@ -71,44 +71,25 @@ export const isProjectAvailableOnStores = ({
 	return workflow.currentStep.order >= MINIMUM_STORE_STAGE_ORDER;
 };
 
-export const getWorkedProjects = async () => {
+export const getWorkedProjects = async ({
+	stage,
+}: {
+	/** Only projects whose current workflow step has this name. */
+	stage?: string;
+} = {}) => {
 	const projects = (await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
+		where: stage
+			? { workflow: { is: { currentStep: { is: { name: stage } } } } }
+			: undefined,
 	})) as ProjectActivityRow[];
 	const projectIds = projects.map((project) => project.id);
-	const publishedVacancies = await prisma.teamVacancy.findMany({
-		where: {
-			team: {
-				project: {
-					id: {
-						in: projectIds,
-					},
-				},
-			},
-			status: "Published",
-		},
-		select: {
-			team: {
-				select: {
-					project: {
-						select: {
-							id: true,
-						},
-					},
-				},
-			},
-		},
-	});
-	const projectIdsWithOpenPositions = new Set(
-		publishedVacancies.flatMap((vacancy) =>
-			vacancy.team.project?.id ? [vacancy.team.project.id] : [],
-		),
-	);
-
-	const [applauseCounts, cardFacts] = await Promise.all([
-		prisma.project.getApplauseCounts({ projectIds }),
-		getProjectCardFacts(projectIds),
-	]);
+	const [projectIdsWithOpenPositions, applauseCounts, cardFacts] =
+		await Promise.all([
+			projectsWithOpenPositions(projectIds),
+			prisma.project.getApplauseCounts({ projectIds }),
+			getProjectCardFacts(projectIds),
+		]);
 
 	return projects.map((project) => {
 		const facts = cardFacts.get(project.id);
@@ -124,7 +105,11 @@ export const getWorkedProjects = async () => {
 	});
 };
 
-export const getPublishedStoreProjects = async () => {
+export const getPublishedStoreProjects = async ({
+	limit,
+}: {
+	limit?: number;
+} = {}) => {
 	const projects = await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
 		where: {
@@ -139,70 +124,38 @@ export const getPublishedStoreProjects = async () => {
 	});
 
 	const projectIds = projects.map((project) => project.id);
-	const workflows = await prisma.projectWorkflow.findMany({
-		where: {
-			projectId: {
-				in: projectIds,
+	const [workflows, projectIdsWithOpenPositions] = await Promise.all([
+		prisma.projectWorkflow.findMany({
+			where: { projectId: { in: projectIds } },
+			select: {
+				projectId: true,
+				currentStep: { select: { name: true, order: true } },
 			},
-		},
-		select: {
-			projectId: true,
-			currentStep: {
-				select: {
-					name: true,
-					order: true,
-				},
-			},
-		},
-	});
+		}),
+		projectsWithOpenPositions(projectIds),
+	]);
 	const workflowByProjectId = new Map(
 		workflows.map((workflow) => [
 			workflow.projectId,
-			{
-				currentStep: workflow.currentStep,
-			},
+			{ currentStep: workflow.currentStep },
 		]),
 	);
-	const publishedVacancies = await prisma.teamVacancy.findMany({
-		where: {
-			team: {
-				project: {
-					id: {
-						in: projectIds,
-					},
-				},
-			},
-			status: "Published",
-		},
-		select: {
-			team: {
-				select: {
-					project: {
-						select: {
-							id: true,
-						},
-					},
-				},
-			},
-		},
-	});
-	const projectIdsWithOpenPositions = new Set(
-		publishedVacancies.flatMap((vacancy) =>
-			vacancy.team.project?.id ? [vacancy.team.project.id] : [],
-		),
-	);
 
-	const eligible = projects.flatMap((project) => {
-		const workflow = workflowByProjectId.get(project.id);
+	// Filter and cut to the page size *before* counting applause, so the
+	// counter query only touches the projects that are actually returned.
+	const eligible = projects
+		.flatMap((project) => {
+			const workflow = workflowByProjectId.get(project.id);
 
-		if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
-			return [];
-		}
+			if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
+				return [];
+			}
 
-		const currentStep = workflow?.currentStep;
+			const currentStep = workflow?.currentStep;
 
-		return currentStep ? [{ project, currentStep }] : [];
-	});
+			return currentStep ? [{ project, currentStep }] : [];
+		})
+		.slice(0, limit);
 
 	const eligibleIds = eligible.map(({ project }) => project.id);
 	const [applauseCounts, cardFacts] = await Promise.all([
@@ -231,3 +184,19 @@ export const getPublishedStoreProjects = async () => {
 		},
 	}));
 };
+
+async function projectsWithOpenPositions(projectIds: string[]) {
+	const vacancies = await prisma.teamVacancy.findMany({
+		where: {
+			team: { project: { id: { in: projectIds } } },
+			status: "Published",
+		},
+		select: { team: { select: { project: { select: { id: true } } } } },
+	});
+
+	return new Set(
+		vacancies.flatMap((vacancy) =>
+			vacancy.team.project?.id ? [vacancy.team.project.id] : [],
+		),
+	);
+}
