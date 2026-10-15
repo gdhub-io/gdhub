@@ -44,7 +44,17 @@
 	letter-spacing: 0.04em;
 	font-feature-settings: "tnum";
 
+	// antd pins the copy button to the top of a taller actions box, above the caps.
+	display: inline-flex;
+	align-items: center;
+
+	:global(.ant-typography-actions) {
+		display: inline-flex;
+		align-items: center;
+	}
+
 	:global(.ant-typography-copy) {
+		display: inline-flex;
 		color: var(--gd-color-text-tertiary);
 	}
 }
