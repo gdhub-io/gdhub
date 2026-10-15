@@ -5,6 +5,12 @@
 
 @layer base {
 
+	// A Tag standing on the page background: the theme's chip fill is the page's
+	// own grey there, so it steps one shade darker (ui-guidelines §3).
+	.gd-tag-on-page {
+		background: var(--gd-neutral-100);
+	}
+
 	:root {
 		// Light is the app-wide default — the product (hub, my, admin, auth) is
 		// light. The dark marketing home opts in explicitly and server-side (see

@@ -32,7 +32,7 @@ export function CuratorRow({
 					<Typography.Text className={styles.name}>
 						{curator.name}
 					</Typography.Text>
-					<Tag className={styles.level}>
+					<Tag>
 						<T keyName={curator.level} />
 					</Tag>
 					{freeFrom && (

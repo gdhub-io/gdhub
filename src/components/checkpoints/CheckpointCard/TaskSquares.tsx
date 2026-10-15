@@ -3,6 +3,7 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
+import { BOX_TICK_STROKE } from "@/components/ui";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
@@ -71,8 +72,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 								<IconMinus size={14} />
 							) : (
 								item.artifact && (
-									// A tick under 16px inside a box needs the heavier stroke to read.
-									<IconCheck size={14} stroke={2.5} />
+									<IconCheck size={14} stroke={BOX_TICK_STROKE} />
 								)
 							)}
 							{item.originalText && !item.cut && (
@@ -109,6 +109,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 									styles.legendSquare,
 								)}
 							>
+								{/* The legend square is 12px; a 14px glyph would fill it. */}
 								<IconMinus size={8} />
 							</span>
 							<Typography.Text className={styles.muted}>

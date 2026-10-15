@@ -1,13 +1,11 @@
 "use client";
 
-import { IconCheck } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Table, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import clsx from "clsx";
 import dayjs from "dayjs";
+import { PulseCell } from "@/components/checkpoints/PulseCell";
 import { pulseCellLabel } from "@/components/checkpoints/SprintPanel/Signals";
-import pulse from "@/components/checkpoints/SprintPanel/style.module.scss";
 import { specialityLine } from "@/components/scout/ProjectCardModal/format";
 import { Section } from "@/components/scout/ProjectCardModal/parts";
 import styles from "@/components/scout/ProjectCardModal/style.module.scss";
@@ -51,19 +49,7 @@ export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 
 			return (
 				<Tooltip title={pulseCellLabel(t, cell)}>
-					<span
-						className={clsx(
-							pulse.cell,
-							cell && pulse[cell.state],
-							sprint.state === "current" && pulse.cellCurrent,
-						)}
-					>
-						{cell?.state === "confirmed" && (
-							// A tick under 16px inside a box needs the heavier stroke to read.
-							<IconCheck size={14} stroke={2.4} />
-						)}
-						{cell?.state === "waiting" && <span className={pulse.waitingDot} />}
-					</span>
+					<PulseCell state={cell?.state} current={sprint.state === "current"} />
 				</Tooltip>
 			);
 		},

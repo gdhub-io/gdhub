@@ -50,13 +50,6 @@
 	background: var(--gd-warning-tint);
 }
 
-.tag {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gd-space-1);
-	margin: 0;
-}
-
 // Frame 03 keeps the character count inside the field, bottom right.
 .goal {
 	:global(.ant-input-textarea-show-count) {

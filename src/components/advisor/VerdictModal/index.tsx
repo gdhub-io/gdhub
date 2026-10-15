@@ -35,7 +35,12 @@ import {
 	VERDICT_ORDER,
 	VERDICT_TONE,
 } from "@/components/checkpoints/VerdictChip";
-import { IconTile, SectionHeading, StatusDot } from "@/components/ui";
+import {
+	BOX_TICK_STROKE,
+	IconTile,
+	SectionHeading,
+	StatusDot,
+} from "@/components/ui";
 import { formatShort } from "@/components/WorkflowPath/dates";
 import {
 	SPRINTS_PER_CHECKPOINT,
@@ -545,8 +550,7 @@ function TeamPulse({ team }: { team: AdvisorProjectDto["team"] }) {
 							seat.pulse.find((cell) => cell.sprint === sprint)?.state ===
 							"confirmed" ? (
 								<span className={styles.confirmed}>
-									{/* A tick under 16px inside a box needs the heavier stroke to read. */}
-									<IconCheck size={14} stroke={2.4} />
+									<IconCheck size={14} stroke={BOX_TICK_STROKE} />
 								</span>
 							) : (
 								<span className={styles.muted}>—</span>

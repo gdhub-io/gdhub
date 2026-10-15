@@ -94,13 +94,6 @@
 	gap: var(--gd-space-6);
 }
 
-// The curator's kind leads the subtitle line; antd's trailing margin would offset it.
-// It sits on the page background, so it takes the chip's page-background fill.
-.kindTag.kindTag {
-	margin-inline-end: 0;
-	background: var(--gd-neutral-100);
-}
-
 .previousHead {
 	display: flex;
 	align-items: center;

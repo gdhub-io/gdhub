@@ -380,7 +380,7 @@ export function NowStep() {
 									"This goal may not fit the time you have",
 								)}
 							</Typography.Text>
-							<Tag icon={<IconSparkles size={14} />} className={styles.tag}>
+							<Tag icon={<IconSparkles size={14} />}>
 								{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
 							</Tag>
 						</Flex>

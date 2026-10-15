@@ -96,8 +96,9 @@ belongs to a token.
 
    The one exception is where the chip stands: the theme's fill is the page
    background's own colour, so a chip placed straight on the page (a page
-   header, not a card) takes one step darker, `--gd-neutral-100`. Same look,
-   still neutral — it only stops the chip from disappearing.
+   header, not a card) takes one step darker, `--gd-neutral-100`, through the
+   global `gd-tag-on-page` class. Same look, still neutral — it only stops the
+   chip from disappearing.
 
    **Which of the two you need is a question about the word, not the styling.**
    "Video", "Expert", "Programming", "Week 2" name what a thing *is* and stay
@@ -192,8 +193,9 @@ heights, control sizes: all multiples of 4, off the scale above.
   sized by reading distance, not by a grid.
 - **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes
   follow the set (14 / 16 / 20 / 24), not the spacing scale. Icons use Tabler's
-  default stroke 2; a heavier stroke only on a tick under 16px inside a box (a task
-  square, a pulse check).
+  default stroke 2, with two named exceptions in `src/components/ui`:
+  `BOX_TICK_STROKE` (2.4) for a tick under 16px inside a box, and
+  `META_ICON_STROKE` (1.75) for meta-row glyphs.
 
 Optical beats mathematical where they disagree. An icon centred by its bounding
 box next to text usually sits a fraction low; trust the eye, then write the

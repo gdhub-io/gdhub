@@ -8,7 +8,6 @@ import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCurator } from "./CheckpointCard/Curator";
 import { dayRange } from "./CheckpointCard/SprintTrack";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
-import styles from "./hero.module.scss";
 
 /**
  * The checkpoint page's hero, in the shape `ProjectSpace` already renders for
@@ -59,7 +58,7 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 		}),
 		titleExtra: (
 			<>
-				<Tag className={styles.stage}>{checkpoint.stageName}</Tag>
+				<Tag className="gd-tag-on-page">{checkpoint.stageName}</Tag>
 				{!running && <CheckpointStatusSlot checkpoint={checkpoint} />}
 			</>
 		),

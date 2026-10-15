@@ -1,6 +1,7 @@
 import { IconCheck } from "@tabler/icons-react";
 import clsx from "clsx";
 import type { HTMLAttributes, ReactNode, Ref } from "react";
+import { BOX_TICK_STROKE } from "@/components/ui";
 import type { CheckpointPulseCellDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -27,8 +28,7 @@ export function PulseCell({
 }: PulseCellProps) {
 	const glyph =
 		state === "confirmed" ? (
-			// A tick under 16px inside a box needs the heavier stroke to read.
-			<IconCheck size={14} stroke={2.4} />
+			<IconCheck size={14} stroke={BOX_TICK_STROKE} />
 		) : state === "waiting" ? (
 			<span className={styles.waitingDot} />
 		) : null;

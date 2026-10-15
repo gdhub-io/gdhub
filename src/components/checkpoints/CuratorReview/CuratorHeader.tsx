@@ -50,7 +50,7 @@ export function CuratorHeader({
 						{status && <StatusDot tone={status.tone} label={status.label} />}
 					</div>
 					<Flex align="center" gap={8} wrap>
-						<Tag className={styles.kindTag}>
+						<Tag className="gd-tag-on-page">
 							{kind === CheckpointCuratorKind.AI
 								? t("checkpoints.review.kindAi", "AI")
 								: t("checkpoints.review.kindPro", "Pro")}

@@ -4,6 +4,9 @@ import styles from "./style.module.scss";
 /** The one stroke weight every meta-row glyph is drawn at. */
 export const META_ICON_STROKE = 1.75;
 
+/** A tick under 16px inside a box needs a heavier stroke than the default 2 to read. */
+export const BOX_TICK_STROKE = 2.4;
+
 export type MetaStatSize = "default" | "large";
 
 export interface MetaStatProps {
