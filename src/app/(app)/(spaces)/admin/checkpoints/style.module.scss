@@ -1,0 +1,4 @@
+/* 24 between the tab bar and the table; the header owns the gap above. */
+.tabs :global(.ant-tabs-nav) {
+	margin-bottom: var(--gd-space-6);
+}

@@ -58,10 +58,22 @@ const post = () =>
 		}) as unknown as NextRequest,
 	);
 
-const completed = (metadata: Record<string, string>) => ({
+const completed = (
+	metadata: Record<string, string>,
+	over: Record<string, unknown> = {},
+) => ({
 	id: "evt_1",
 	type: "checkout.session.completed",
-	data: { object: { id: "cs_1", metadata, customer: "cus_1" } },
+	data: {
+		object: {
+			id: "cs_1",
+			metadata,
+			customer: "cus_1",
+			payment_intent: "pi_1",
+			amount_total: 45000,
+			...over,
+		},
+	},
 });
 
 const payment = {
@@ -257,6 +269,53 @@ describe("the Stripe webhook", () => {
 
 		expect(prisma.projectCheckpoint.findUnique).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	// Payment.amount is what was charged, which a promotion code makes less than the price.
+	it("writes the discounted total as the payment's amount", async () => {
+		vi.mocked(stripeEvent).mockReturnValue(
+			completed(
+				{ paymentId: "pay_1", checkpointId: "cp1" },
+				{ amount_total: 36000 },
+			) as never,
+		);
+
+		await post();
+
+		expect(prisma.payment.updateMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: { id: "pay_1", status: PaymentStatus.PENDING },
+				data: expect.objectContaining({
+					status: PaymentStatus.PROCESSING,
+					amount: 36000,
+				}),
+			}),
+		);
+	});
+
+	// A 100% code made in the dashboard: nothing was authorised, so nothing starts.
+	it("cancels the payment and starts nothing when no payment intent was made", async () => {
+		vi.mocked(stripeEvent).mockReturnValue(
+			completed(
+				{ paymentId: "pay_1", checkpointId: "cp1" },
+				{
+					payment_intent: null,
+					amount_total: 0,
+					payment_status: "no_payment_required",
+				},
+			) as never,
+		);
+
+		await post();
+
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay_1" },
+			data: { status: PaymentStatus.CANCELED },
+		});
+		expect(prisma.projectCheckpoint.findUnique).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(bookSessions).not.toHaveBeenCalled();
+		expect(captureCheckout).not.toHaveBeenCalled();
 	});
 
 	// A session whose metadata names someone else's checkpoint must not start it.

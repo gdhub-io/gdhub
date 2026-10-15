@@ -1,0 +1,61 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-89 — promotion codes, from the admin to the curator's payout" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+admin: "Admin → Checkpoints → Promo codes\n(admin.checkpoints.view / .manage)" {shape: page}
+
+list: "GET /api/admin/checkpoints/promo-codes\n→ stripe.promotionCodes.list (expand coupon)\ncode, discount, times_redeemed / max, expires_at, first purchase, active\n(nothing stored on our side: Stripe is the record)"
+admin -> list
+
+create: "POST /api/admin/checkpoints/promo-codes (Zod)\ncode A–Z0–9, percent 1–99 OR amount USD, expires?, max uses?, first purchase?"
+admin -> create
+
+refuse: "100% or more → 400\n(a free checkpoint is given by an admin, GDHUB-40)"
+create -> refuse: "percent ≥ 100"
+
+stripe_create: "stripe.coupons.create (duration once)\n→ stripe.promotionCodes.create(code, coupon, restrictions)\nAuditLog: promo code created"
+create -> stripe_create: ok
+taken: "code already exists in Stripe → 409"
+stripe_create -> taken: "Stripe refuses"
+
+off: "Switch: PATCH …/promo-codes/[id] { active }\n→ stripe.promotionCodes.update\nAuditLog: promo code turned on / off\n(Stripe never deletes a code; back on fails → 409 when it expired)"
+admin -> off
+
+buyer: "Buyer: /workflow/cp/new → Pay" {shape: person}
+checkout: "createCheckpointCheckout\nallow_promotion_codes: true\nline item = full price (curator level × team size)"
+buyer -> checkout
+stripe_page: "Stripe Checkout: 'Add promotion code'\nStripe checks the code, its limits and expiry\nthe card is authorised for the discounted sum"
+checkout -> stripe_page
+
+settle: "settleCheckpointCheckout (webhook / reconciliation)"
+stripe_page -> settle
+
+no_intent: "Session has no payment intent?\n(a 100% code made in the dashboard)" {shape: diamond}
+settle -> no_intent
+canceled: "Payment CANCELED, checkpoint stays Draft\n→ 'the payment did not go through'"
+no_intent -> canceled: yes
+
+paid: "Payment.amount = session.amount_total (paid, minor units)\nPayment PROCESSING (hold)"
+no_intent -> paid: no
+
+ai: "AI: capture now → COMPLETED → start"
+pro: "Pro: hold until the curator answers\nyes → capture the discounted sum\nno / cancel / 3 days → release (nothing charged)"
+paid -> ai
+paid -> pro
+
+refund: "Refund after capture = what was captured\n(partial-refund check compares with Payment.amount)"
+ai -> refund
+pro -> refund
+
+payout: "Curator's payout (by hand) is from Payment.amount\n= the sum actually paid"
+pro -> payout

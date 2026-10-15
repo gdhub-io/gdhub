@@ -11,7 +11,7 @@ import { env } from "@/helpers/env";
  */
 let client: Stripe | null = null;
 
-const stripe = () => {
+export const stripe = () => {
 	client ??= new Stripe(env("STRIPE_SECRET_KEY"));
 
 	return client;
@@ -55,6 +55,8 @@ export const createCheckpointCheckout = async (input: CheckpointCheckout) =>
 		// takes the checkpoint on; until then the money is the author's and
 		// letting go of it costs nobody anything.
 		payment_intent_data: { capture_method: "manual" },
+		// Admin-made codes (GDHUB-89); Stripe checks their limits, and the hold is for the discounted sum.
+		allow_promotion_codes: true,
 		// What the webhook has to find its way back by. `client_reference_id`
 		// survives in the dashboard where a human can read it; the metadata is
 		// what the handler actually reads.

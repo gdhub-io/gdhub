@@ -36,7 +36,7 @@ const pending = {
 };
 
 const session = (status: string) =>
-	({ id: "cs_1", status, customer: null }) as never;
+	({ id: "cs_1", status, customer: null, payment_intent: "pi_1" }) as never;
 
 beforeEach(() => {
 	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>

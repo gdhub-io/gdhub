@@ -437,6 +437,91 @@
 	"Your vote has been counted": "Your vote has been counted",
 	"Youtube": "Youtube",
 	"actual vacancies": "actual vacancies",
+	"admin": {
+		"checkpoints": {
+			"promoCodes": {
+				"column": {
+					"code": "Code",
+					"discount": "Discount",
+					"expires": "Expires",
+					"limits": "Limits",
+					"status": "Status",
+					"used": "Used"
+				},
+				"copied": "Copied",
+				"copy": "Copy",
+				"createFailed": "Couldn't create the code. Try again.",
+				"created": "Promo code created",
+				"discount": {
+					"amount": "{currency}{amount} off"
+				},
+				"empty": {
+					"description": "Codes made here are entered on the Stripe checkout page.",
+					"title": "No promo codes yet"
+				},
+				"error": {
+					"description": "Stripe or the server did not answer. Try again in a moment.",
+					"retry": "Try again",
+					"title": "Couldn't load promo codes"
+				},
+				"form": {
+					"code": {
+						"help": "Letters and digits; what the buyer types",
+						"invalid": "3 to 24 letters and digits.",
+						"label": "Code",
+						"taken": "This code already exists in Stripe. Pick another."
+					},
+					"discount": {
+						"amount": "Amount",
+						"helpAmount": "Less than the checkpoint price: a free checkpoint is given by an administrator, not by a code.",
+						"helpPercent": "Up to 99%: a free checkpoint is given by an administrator, not by a code.",
+						"label": "Discount",
+						"percent": "Percent",
+						"required": "Enter the discount."
+					},
+					"expires": {
+						"label": "Expires",
+						"placeholder": "No end date"
+					},
+					"firstPurchase": "First purchase only",
+					"maxUses": {
+						"label": "Max uses",
+						"placeholder": "Unlimited"
+					},
+					"optional": "(optional)"
+				},
+				"limit": {
+					"firstPurchase": "First purchase"
+				},
+				"modal": {
+					"submit": "Create code",
+					"title": "New promo code"
+				},
+				"new": "New code",
+				"status": {
+					"active": "Active",
+					"expired": "Expired",
+					"off": "Off"
+				},
+				"switch": {
+					"expired": "An expired code can't be turned on.",
+					"label": "Active"
+				},
+				"toggleFailed": "Couldn't change the code. Try again.",
+				"turnOff": {
+					"action": "Turn off",
+					"content": "Buyers can no longer use it. Stripe keeps codes; a code that's off cannot be turned back on.",
+					"failed": "Couldn't turn the code off. Try again.",
+					"ok": "Turn off",
+					"title": "Turn off {code}?"
+				}
+			},
+			"tab": {
+				"promoCodes": "Promo codes"
+			},
+			"title": "Checkpoints"
+		}
+	},
 	"advisor": {
 		"availability": {
 			"addPeriod": "Add period",

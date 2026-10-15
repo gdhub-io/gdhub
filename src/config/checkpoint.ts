@@ -92,6 +92,8 @@ export const PAYMENT_WEBHOOK_GRACE_MINUTES = 60;
 /** The screen writes a `$`, so USD is what is charged and what the row stores. */
 export const CHECKPOINT_PRICE_CURRENCY = "$";
 export const CHECKPOINT_CURRENCY = "USD";
+/** Prices are written in whole units; Stripe and `Payment.amount` want minor ones. */
+export const CHECKPOINT_MINOR_UNITS = 100;
 
 /** The AI curator has one price and it does not move with the team. */
 export const CHECKPOINT_AI_PRICE = 19;
