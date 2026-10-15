@@ -464,6 +464,18 @@
 	color: var(--gd-color-text-tertiary);
 }
 
+.listActions {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	flex-wrap: wrap;
+}
+
+// The AI's action wears its colour, like its advice.
+.suggestTasks.suggestTasks {
+	color: var(--gd-direction-game-design-ink);
+}
+
 .addTask.addTask {
 	align-self: flex-start;
 	color: var(--gd-color-text-secondary);

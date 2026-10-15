@@ -224,6 +224,20 @@ export function AiReviewView({
 													: null
 											}
 											hint={planHint(t, plan.edit)}
+											listAction={
+												<Button
+													type="text"
+													icon={<IconSparkles size={16} />}
+													loading={advising}
+													onClick={onAdvise}
+													className={callStyles.suggestTasks}
+												>
+													{t(
+														"checkpoints.review.plan.suggest",
+														"Suggest tasks",
+													)}
+												</Button>
+											}
 											footer={
 												<div className={callStyles.planFooter}>
 													<Typography.Text

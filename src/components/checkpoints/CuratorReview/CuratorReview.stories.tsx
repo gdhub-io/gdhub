@@ -476,15 +476,14 @@ export const ProDay29: Story = {
 
 /**
  * Day 1, the page opened for the first time: only the goal was bought, so
- * there are no tasks yet — the curator greets the team and its first
- * suggestions are on their way.
+ * there are no tasks yet — the curator greets the team, and "Suggest tasks"
+ * asks it for a first list.
  */
 export const AiDay1: Story = {
 	name: "AI · day 1, first open",
 	render: () => (
 		<AiPage
 			index={1}
-			advising
 			review={aiReview(
 				1,
 				[],

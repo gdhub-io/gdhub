@@ -1364,6 +1364,7 @@
 				"remove": "Remove",
 				"save": "Save changes",
 				"startHint": "Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+				"suggest": "Suggest tasks",
 				"until": "Open until {date}",
 				"useThis": "Use this"
 			},

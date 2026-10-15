@@ -74,6 +74,8 @@ export type PlanBodyProps = {
 	hint?: ReactNode;
 	/** Under the tasks while they can change; "saved as you type" by default. */
 	footer?: ReactNode;
+	/** Beside "Add task": the AI's "Suggest tasks". */
+	listAction?: ReactNode;
 };
 
 /**
@@ -86,6 +88,7 @@ export function PlanBody({
 	advice,
 	hint,
 	footer,
+	listAction,
 }: PlanBodyProps) {
 	const { t } = useTranslate();
 	const { edit } = plan;
@@ -103,7 +106,12 @@ export function PlanBody({
 				<Typography.Text type="secondary">{lead}</Typography.Text>
 			)}
 			{edit ? (
-				<PlanForm plan={plan} onChange={onChange} advice={advice} />
+				<PlanForm
+					plan={plan}
+					onChange={onChange}
+					advice={advice}
+					listAction={listAction}
+				/>
 			) : (
 				<PlanView plan={plan} />
 			)}
@@ -224,10 +232,12 @@ function PlanForm({
 	plan,
 	onChange,
 	advice,
+	listAction,
 }: {
 	plan: Plan;
 	onChange: PlanBodyProps["onChange"];
 	advice?: PlanAdvice | null;
+	listAction?: ReactNode;
 }) {
 	const { t } = useTranslate();
 	const [drafts, setDrafts] = useState<number[]>([]);
@@ -286,19 +296,22 @@ function PlanForm({
 						onEmpty={() => dropDraft(draft)}
 					/>
 				))}
-				{full ? (
-					<Tooltip
-						title={t(
-							"checkpoints.call.plan.tooMany",
-							"A checkpoint holds at most {max} tasks",
-							{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
-						)}
-					>
-						{addButton}
-					</Tooltip>
-				) : (
-					addButton
-				)}
+				<div className={styles.listActions}>
+					{full ? (
+						<Tooltip
+							title={t(
+								"checkpoints.call.plan.tooMany",
+								"A checkpoint holds at most {max} tasks",
+								{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
+							)}
+						>
+							{addButton}
+						</Tooltip>
+					) : (
+						addButton
+					)}
+					{listAction}
+				</div>
 			</div>
 		</Field>
 	);
