@@ -26,6 +26,9 @@ heavier weight — a coloured tab on a bar the user reads all day stops meaning
 A wall of brand-coloured buttons reads as errors, which is why the split exists.
 Filled brand is allowed on marketing surfaces (`inverse` mode) — there it carries
 an ink label, not a white one.
+A dark panel inside the product (`InverseBand density="product"`: the call
+stage, the curator's message) is not marketing: its committing button is white
+with an ink label, the mirror of the graphite one.
 
 **Marketing has a second accent.** The landing speaks to two audiences and tells
 them apart by colour: authors get the brand, specialists get amber
