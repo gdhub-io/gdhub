@@ -100,7 +100,7 @@ export const writePlanAdvice = async (input: PlanAdviceInput) => {
 			not cut).
 			${
 				input.moment === "start"
-					? "This is the start: four weeks lie ahead."
+					? "This is the start: four weeks lie ahead. Your letter is the team's first word from you: open it with a short greeting — you are their AI curator for the next 28 days — then go on to the tasks."
 					: "This is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding."
 			}
 		`,

@@ -812,6 +812,7 @@
 		},
 		"call": {
 			"aheadCurator": "The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
+			"aheadFirst": "Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"calendarTitle": "Call {index} · {project}",
 			"camOff": "Turn off camera",
@@ -1324,6 +1325,7 @@
 			"kindAi": "AI",
 			"kindPro": "Pro",
 			"message": {
+				"greeting": "Hi, team! I'm the AI curator of {project} for the next 28 days. Let's start with the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check.",
 				"reading": "The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
 				"start": "Hi, I'm your curator for the next four weeks. Let's set the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check."
 			},

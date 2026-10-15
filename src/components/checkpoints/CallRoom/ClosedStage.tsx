@@ -96,11 +96,21 @@ export function ClosedStage({
 			date={scheduled.format("D MMM, HH:mm")}
 			message={
 				team
-					? t(
-							"checkpoints.call.aheadTeam",
-							"Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
-							when,
-						)
+					? call.index === 1
+						? t(
+								"checkpoints.call.aheadFirst",
+								"Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
+								{
+									name: firstName(call.curator.name),
+									project: call.project.name,
+									...when,
+								},
+							)
+						: t(
+								"checkpoints.call.aheadTeam",
+								"Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
+								when,
+							)
 					: t(
 							"checkpoints.call.aheadCurator",
 							"The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",

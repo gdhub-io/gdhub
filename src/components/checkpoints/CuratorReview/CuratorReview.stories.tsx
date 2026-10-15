@@ -266,7 +266,7 @@ const aiReview = (
 
 const startContent: CuratorReview = {
 	message:
-		"Hi, I'm your curator for the next four weeks. The one-pager is a good first task. The greybox is heavy for week one, and nobody could check that the game “feels better”. Change them below, or keep them — it's your call.",
+		"Hi, team! I'm the AI curator of Hollow Tide for the next 28 days. The one-pager is a good first task. The greybox is heavy for week one, and nobody could check that the game “feels better”. Change them below, or keep them — it's your call.",
 	notes: null,
 	advice: advice({
 		hash: "start",

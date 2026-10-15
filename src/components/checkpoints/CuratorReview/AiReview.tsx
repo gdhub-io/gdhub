@@ -444,7 +444,7 @@ function Message({
 	return (
 		<CuratorMessage
 			date={dayjs(session?.scheduledAt).format("D MMM")}
-			message={session?.content?.message ?? fallbackMessage(t, review.current)}
+			message={session?.content?.message ?? fallbackMessage(t, review)}
 			verdict={final ? review.verdict?.verdict : null}
 			actions={actions}
 		/>
@@ -454,12 +454,13 @@ function Message({
 /** Before the curator has written: what it is doing, in its own voice. */
 const fallbackMessage = (
 	t: ReturnType<typeof useTranslate>["t"],
-	current: number,
+	review: CheckpointReviewDto,
 ) => {
-	if (current === 1) {
+	if (review.current === 1) {
 		return t(
-			"checkpoints.review.message.start",
-			"Hi, I'm your curator for the next four weeks. Let's set the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check.",
+			"checkpoints.review.message.greeting",
+			"Hi, team! I'm the AI curator of {project} for the next 28 days. Let's start with the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check.",
+			{ project: review.project.name },
 		);
 	}
 	return t(
