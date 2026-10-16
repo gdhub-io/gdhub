@@ -16,7 +16,7 @@ import styles from "./style.module.scss";
  * Introduction — a checkpoint is not bought there — and nothing after release.
  * The server checks the name against the template.
  */
-export const NEW_PROJECT_STAGES = [
+const NEW_PROJECT_STAGES = [
 	"Ideation",
 	"Concepting",
 	"Prototyping",

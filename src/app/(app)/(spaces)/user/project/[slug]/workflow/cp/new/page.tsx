@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
+import {
+	checkoutHref,
+	searchParam,
+} from "@/components/checkpoints/entry/hrefs";
 
 type Props = {
 	params: Promise<{ slug: string }>;
@@ -14,5 +17,5 @@ export default async function NewCheckpointPage({
 	const { slug } = await params;
 	const { step } = await searchParams;
 
-	redirect(checkoutHref(slug, typeof step === "string" ? step : undefined));
+	redirect(checkoutHref(slug, searchParam(step)));
 }

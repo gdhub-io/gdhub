@@ -1,7 +1,8 @@
 import {
 	CHECKPOINT_ENTRY_HREF,
 	CHECKPOINT_INTENT,
-} from "@/components/checkpoint-landing/constants";
+	isCheckpointEntry,
+} from "@/components/checkpoints/entry/hrefs";
 
 const isUnder = (pathname: string, root: string) =>
 	pathname === root || pathname.startsWith(`${root}/`);
@@ -18,7 +19,7 @@ export const signedOutRedirect = (
 	base: string,
 ) => {
 	if (
-		isUnder(pathname, CHECKPOINT_ENTRY_HREF) &&
+		isCheckpointEntry(pathname) &&
 		!isUnder(pathname, `${CHECKPOINT_ENTRY_HREF}/checkout`)
 	) {
 		const url = new URL("/registration", base);

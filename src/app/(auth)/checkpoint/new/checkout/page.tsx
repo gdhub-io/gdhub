@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckpointPurchase } from "@/components/CheckpointPurchase";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
+import {
+	checkoutHref,
+	searchParam,
+} from "@/components/checkpoints/entry/hrefs";
 import { requireSession } from "@/helpers/require-session";
 import { isProjectFounder } from "@/repositories/checkpoint-entry";
 import { prisma } from "@/services/prisma";
@@ -22,8 +25,8 @@ type Props = {
 // its checkpoints; anyone else gets a 404, so the page does not confirm it exists.
 export default async function CheckpointCheckoutPage({ searchParams }: Props) {
 	const query = await searchParams;
-	const slug = typeof query.project === "string" ? query.project : null;
-	const step = typeof query.step === "string" ? query.step : undefined;
+	const slug = searchParam(query.project);
+	const step = searchParam(query.step);
 
 	const session = await requireSession(
 		slug ? checkoutHref(slug, step) : undefined,

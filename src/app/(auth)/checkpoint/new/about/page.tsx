@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
 	entryAboutHref,
-	projectParam,
+	searchParam,
 } from "@/components/checkpoints/entry/hrefs";
 import { requireSession } from "@/helpers/require-session";
 import { AboutClient } from "./AboutClient";
@@ -16,7 +16,7 @@ type Props = { searchParams: Promise<{ project?: string | string[] }> };
 export default async function CheckpointEntryAboutPage({
 	searchParams,
 }: Props) {
-	const projectSlug = projectParam((await searchParams).project);
+	const projectSlug = searchParam((await searchParams).project);
 	await requireSession(entryAboutHref(projectSlug));
 	return <AboutClient projectSlug={projectSlug} />;
 }

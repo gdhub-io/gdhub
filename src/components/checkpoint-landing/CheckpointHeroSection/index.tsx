@@ -3,13 +3,13 @@ import { Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import heroImage from "@/assets/images/checkpoint/checkpoint-hero.png";
+import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import { CHECKPOINT_MIN_CURATOR_PRICE } from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
-import { CHECKPOINT_CTA_HREF } from "../constants";
 import styles from "./style.module.scss";
 
 export const CheckpointHeroSection = () => {
@@ -45,7 +45,7 @@ export const CheckpointHeroSection = () => {
 						)}
 					</p>
 
-					<Link href={CHECKPOINT_CTA_HREF} className={styles.ctaLink}>
+					<Link href={CHECKPOINT_ENTRY_HREF} className={styles.ctaLink}>
 						<Button type="primary" className={styles.primary}>
 							{t("checkpointLanding.cta.plan", "Plan my next Checkpoint")}
 						</Button>

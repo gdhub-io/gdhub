@@ -3,8 +3,8 @@ import { Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import roadImage from "@/assets/images/checkpoint/checkpoint-road.png";
+import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import { CheckpointSection } from "../CheckpointSection";
-import { CHECKPOINT_CTA_HREF } from "../constants";
 import styles from "./style.module.scss";
 
 export const CheckpointFinalCtaSection = () => {
@@ -39,7 +39,7 @@ export const CheckpointFinalCtaSection = () => {
 						"Save what changed, set the next goals, and keep moving through repeatable 28-day cycles.",
 					)}
 				</p>
-				<Link href={CHECKPOINT_CTA_HREF} className={styles.ctaLink}>
+				<Link href={CHECKPOINT_ENTRY_HREF} className={styles.ctaLink}>
 					<Button type="primary" className={styles.cta}>
 						{t("checkpointLanding.cta.plan", "Plan my next Checkpoint")}
 					</Button>

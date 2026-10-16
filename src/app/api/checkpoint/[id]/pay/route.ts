@@ -3,7 +3,7 @@ import {
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
+import { checkoutHref } from "@/components/checkpoints/entry/hrefs";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { env } from "@/helpers/env";
 import {

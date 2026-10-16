@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import rumourArt from "@/assets/images/checkpoint/checkpoint-rumour.png";
+import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
@@ -16,7 +17,6 @@ import {
 	curatorPrices,
 } from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
-import { CHECKPOINT_CTA_HREF } from "../constants";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
 
@@ -161,7 +161,7 @@ export const CheckpointPricingSection = () => {
 					</p>
 				</div>
 
-				<Link href={CHECKPOINT_CTA_HREF} className={styles.ctaLink}>
+				<Link href={CHECKPOINT_ENTRY_HREF} className={styles.ctaLink}>
 					<Button type="primary" className={styles.cta}>
 						{t("checkpointLanding.cta.plan", "Plan my next Checkpoint")}
 					</Button>

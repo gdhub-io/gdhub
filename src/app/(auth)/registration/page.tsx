@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import {
 	CHECKPOINT_ENTRY_HREF,
 	CHECKPOINT_INTENT,
-} from "@/components/checkpoint-landing/constants";
+} from "@/components/checkpoints/entry/hrefs";
 import { RegistrationClient } from "./RegistrationClient";
 
 export const metadata: Metadata = {

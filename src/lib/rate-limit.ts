@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cacheIncrement } from "@/services/cache";
 
-export type RateWindow = { limit: number; seconds: number };
+type RateWindow = { limit: number; seconds: number };
 
 /** Per user, for endpoints that spend a model call on every request. */
 export const AI_RATE_LIMITS: RateWindow[] = [
@@ -18,10 +18,9 @@ export const AI_RATE_LIMITS: RateWindow[] = [
 export const rateLimit = async (
 	bucket: string,
 	subject: string,
-	windows: RateWindow[] = AI_RATE_LIMITS,
 ): Promise<number | null> => {
 	const hits = await Promise.all(
-		windows.map((window) =>
+		AI_RATE_LIMITS.map((window) =>
 			cacheIncrement(
 				`rate:${bucket}:${window.seconds}:${subject}`,
 				window.seconds,
@@ -36,14 +35,13 @@ export const rateLimit = async (
 	return waits.length ? Math.max(...waits) : null;
 };
 
-export const tooManyRequests = (retryAfter: number) =>
-	NextResponse.json(
-		{ error: "rateLimited", statusCode: 429, retryAfter },
-		{ status: 429, headers: { "Retry-After": String(retryAfter) } },
-	);
-
 /** The 429 to return, or null when the user is within the limits. */
 export const limitAiCalls = async (bucket: string, userId: string) => {
 	const retryAfter = await rateLimit(bucket, userId);
-	return retryAfter === null ? null : tooManyRequests(retryAfter);
+	if (retryAfter === null) return null;
+
+	return NextResponse.json(
+		{ error: "rateLimited", statusCode: 429, retryAfter },
+		{ status: 429, headers: { "Retry-After": String(retryAfter) } },
+	);
 };

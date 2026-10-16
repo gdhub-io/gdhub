@@ -15,9 +15,12 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
-import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
+import {
+	checkoutHref,
+	entryHubHref,
+} from "@/components/checkpoints/entry/hrefs";
 import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceCuratorModal";
+import { PURCHASE_STEPS } from "@/components/checkpoints/start/PurchaseLayout";
 import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
 import {
@@ -267,7 +270,7 @@ export function CheckpointOffer({
 							"Saved at {step} · step {number} of 3",
 							{
 								step: stepName,
-								number: ["goal", "curator", "payment"].indexOf(savedAt) + 1,
+								number: PURCHASE_STEPS.indexOf(savedAt) + 1,
 							},
 						),
 						action: {

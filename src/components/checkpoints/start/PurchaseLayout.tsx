@@ -22,14 +22,8 @@ export type PurchaseLayoutProps = {
 	/** Sits above the hint: what the author has to read before the step's own words. */
 	notice?: ReactNode;
 	children: ReactNode;
-	/** Sits between the buttons and the standing note. */
-	footNote?: ReactNode;
-	/**
-	 * What the foot says about the state of the purchase. Defaults to the draft
-	 * note; `null` leaves the corner empty, which is what a bought checkpoint
-	 * needs — it is no longer a draft and has nothing to report there.
-	 */
-	saved?: string | null;
+	/** A bought checkpoint is no longer a draft, so the foot drops the draft note. */
+	bought?: boolean;
 	onBack?: () => void;
 	/** The way on. Payment has none — its action is in the price card. */
 	forward?: ReactNode;
@@ -40,8 +34,7 @@ export function PurchaseLayout({
 	hint,
 	notice,
 	children,
-	footNote,
-	saved,
+	bought,
 	onBack,
 	forward,
 }: PurchaseLayoutProps) {
@@ -70,7 +63,7 @@ export function PurchaseLayout({
 				</Flex>
 			</Flex>
 
-			{(onBack || forward || footNote || saved !== null) && (
+			{(onBack || forward || !bought) && (
 				<footer className={styles.foot}>
 					<Flex gap={8}>
 						{onBack && (
@@ -80,14 +73,11 @@ export function PurchaseLayout({
 						)}
 						{forward}
 					</Flex>
-					<Flex gap={12} align="center">
-						{footNote}
-						{saved !== null && (
-							<Typography.Text className={styles.saved}>
-								{saved ?? t("checkpoints.prepare.saved", "Saved as a draft")}
-							</Typography.Text>
-						)}
-					</Flex>
+					{!bought && (
+						<Typography.Text className={styles.saved}>
+							{t("checkpoints.prepare.saved", "Saved as a draft")}
+						</Typography.Text>
+					)}
 				</footer>
 			)}
 		</div>

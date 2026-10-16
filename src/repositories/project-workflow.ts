@@ -15,7 +15,7 @@ import { planReset } from "@/services/workflow/planReset";
  * stage before it marked finished.
  */
 
-export const DEFAULT_WORKFLOW_SCHEMA = "default";
+const DEFAULT_WORKFLOW_SCHEMA = "default";
 export const DEFAULT_PROJECT_STAGE = "Ideation";
 
 /** Stages a new project cannot be placed on: the entry one and the two after release. */

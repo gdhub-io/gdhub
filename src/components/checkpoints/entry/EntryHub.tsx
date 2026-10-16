@@ -10,12 +10,11 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Skeleton, Typography } from "antd";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import type { EntryStatusDto } from "@/types/checkpoints";
 import { type ChecklistState, ChecklistStatus } from "./ChecklistStatus";
 import styles from "./EntryHub.module.scss";
-import { entryAboutHref, entryProjectHref } from "./hrefs";
+import { checkoutHref, entryAboutHref, entryProjectHref } from "./hrefs";
 import { ProjectCover } from "./ProjectOption";
 
 export type EntryHubProps = {

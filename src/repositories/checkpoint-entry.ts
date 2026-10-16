@@ -256,17 +256,14 @@ export const getEntryStatus = async (
 	};
 };
 
-const findDraft = (projectId: string) =>
-	prisma.projectCheckpoint.findFirst({
+export const getEntryPrefill = async (
+	projectId: string,
+): Promise<EntryProjectPrefillDto> => {
+	const draft = await prisma.projectCheckpoint.findFirst({
 		where: { projectId, status: CheckpointStatus.Draft },
 		orderBy: { createdAt: "desc" },
 		select: draftInputsSelect,
 	});
-
-export const getEntryPrefill = async (
-	projectId: string,
-): Promise<EntryProjectPrefillDto> => {
-	const draft = await findDraft(projectId);
 	if (draft?.items.length) {
 		return { items: draft.items.map(toEntryItem), carriedFrom: null };
 	}

@@ -11,7 +11,7 @@ import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import {
 	CHECKPOINT_ENTRY_HREF,
 	CHECKPOINT_INTENT,
-} from "@/components/checkpoint-landing/constants";
+} from "@/components/checkpoints/entry/hrefs";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
 

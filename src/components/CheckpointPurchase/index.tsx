@@ -6,12 +6,12 @@ import { Button, Skeleton } from "antd";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
+import type { EntryPrice } from "@/components/checkpoints/entry/EntryFacts";
+import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
 import {
 	CHECKPOINT_ENTRY_HREF,
 	checkoutHref,
-} from "@/components/checkpoint-landing/constants";
-import type { EntryPrice } from "@/components/checkpoints/entry/EntryFacts";
-import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
+} from "@/components/checkpoints/entry/hrefs";
 import { PaidPanel } from "@/components/checkpoints/PaidPanel";
 import { CuratorStep } from "@/components/checkpoints/start/CuratorStep";
 import { NowStep } from "@/components/checkpoints/start/NowStep";
@@ -84,17 +84,35 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 	);
 
 	const amount = detail?.heldPrice ?? price;
-	const facts: EntryPrice | undefined = paid
-		? declined
-			? undefined
-			: current?.paymentId
-				? { kind: isOpen ? "paid" : "reserved", amount }
-				: { kind: "chosen", amount }
-		: step === "payment"
-			? { kind: "chosen", amount }
-			: undefined;
+	const facts = (): EntryPrice | undefined => {
+		if (!paid)
+			return step === "payment" ? { kind: "chosen", amount } : undefined;
+		if (declined) return undefined;
+		if (!current?.paymentId) return { kind: "chosen", amount };
+		return { kind: isOpen ? "paid" : "reserved", amount };
+	};
 
 	const loading = isPending || running || noDraft;
+
+	const body = () => {
+		if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
+		if (!paid)
+			return (
+				<PrepareNavProvider value={nav}>
+					{step === "goal" && <NowStep />}
+					{step === "curator" && <CuratorStep />}
+					{step === "payment" && <PaymentStep />}
+				</PrepareNavProvider>
+			);
+		if (!detail) return <Skeleton active paragraph={{ rows: 4 }} />;
+		return (
+			<PaidPanel
+				checkpoint={detail}
+				exitHref={workflow}
+				projectHref={`/user/project/${project.slug}/settings`}
+			/>
+		);
+	};
 
 	return (
 		<PurchaseProjectProvider value={project}>
@@ -108,7 +126,7 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 						</Button>
 					</Link>
 				}
-				price={facts}
+				price={facts()}
 				stepper={
 					!loading && (
 						<PurchaseSteps
@@ -119,25 +137,7 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 					)
 				}
 			>
-				{loading ? (
-					<Skeleton active paragraph={{ rows: 8 }} />
-				) : paid ? (
-					detail ? (
-						<PaidPanel
-							checkpoint={detail}
-							exitHref={workflow}
-							projectHref={`/user/project/${project.slug}/settings`}
-						/>
-					) : (
-						<Skeleton active paragraph={{ rows: 4 }} />
-					)
-				) : (
-					<PrepareNavProvider value={nav}>
-						{step === "goal" && <NowStep />}
-						{step === "curator" && <CuratorStep />}
-						{step === "payment" && <PaymentStep />}
-					</PrepareNavProvider>
-				)}
+				{body()}
 			</EntryShell>
 		</PurchaseProjectProvider>
 	);

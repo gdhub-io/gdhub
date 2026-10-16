@@ -54,7 +54,7 @@ export function PreparePanel({ base, paid }: PreparePanelProps) {
 
 	if (paid) {
 		return (
-			<PurchaseLayout saved={null}>
+			<PurchaseLayout bought>
 				<PaidPanel checkpoint={paid} />
 			</PurchaseLayout>
 		);

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
 	entryHubHref,
-	projectParam,
+	searchParam,
 } from "@/components/checkpoints/entry/hrefs";
 import { requireSession } from "@/helpers/require-session";
 import { HubClient } from "./HubClient";
@@ -15,7 +15,7 @@ type Props = { searchParams: Promise<{ project?: string | string[] }> };
 
 // In the (auth) group for AuthShell's light, chrome-less look; signed in only.
 export default async function CheckpointEntryPage({ searchParams }: Props) {
-	const projectSlug = projectParam((await searchParams).project);
+	const projectSlug = searchParam((await searchParams).project);
 	await requireSession(entryHubHref(projectSlug));
 	return <HubClient projectSlug={projectSlug} />;
 }

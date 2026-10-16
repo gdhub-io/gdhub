@@ -24,8 +24,6 @@ const EntryAboutSchema = z.object({
 	specialityName: z.string().trim().min(1).max(100),
 	workDirectionId: z.string().min(1),
 	level: z.nativeEnum(SkillLevel),
-	/** An uploaded avatar URL; null removes it, absent leaves it as it is. */
-	image: z.string().url().nullish(),
 	agreeWithTermsAndPrivacy: z.boolean().optional(),
 	needSubscribeToNewsletter: z.boolean().optional(),
 });
@@ -145,7 +143,6 @@ export const POST = pipe(
 			where: { id: currentUser.id },
 			data: {
 				name: input.name,
-				...(input.image === undefined ? null : { image: input.image }),
 				agreements,
 				onboardingDone: true,
 			},
