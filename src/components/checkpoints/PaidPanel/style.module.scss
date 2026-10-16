@@ -1,26 +1,26 @@
-.title {
-	font-size: var(--gd-font-size-body-lg);
-	font-weight: 600;
-}
-
-.body {
-	font-size: var(--gd-font-size-body-sm);
-	line-height: var(--gd-line-height-body);
-}
-
-.dates {
-	font-size: var(--gd-font-size-body-sm);
-}
-
-// The wait is not a card: nothing has happened that needs a surface of its own,
-// and the frame `dvMPy` draws it as centred text on the panel.
-.waiting {
-	padding: var(--gd-space-8) var(--gd-space-4);
+// Frames 12.6 and 12.7: one centred column under the stepper, nothing boxed —
+// what happened to the money is said, not framed.
+.column {
+	width: 100%;
+	max-width: 480px;
+	margin: 0 auto;
 	text-align: center;
 }
 
-.waitingText {
-	max-width: 420px;
+.title.title {
+	margin: 0;
+	font-size: var(--gd-font-size-h2);
+	font-weight: 700;
+}
+
+.sub {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+}
+
+.mail {
+	flex: none;
+	color: var(--gd-color-text-secondary);
 }
 
 // Present, findable, and not competing with anything: replacing a curator or

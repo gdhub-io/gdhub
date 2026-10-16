@@ -23,6 +23,7 @@ import {
 	usePlanChange,
 } from "@/components/checkpoints/CallRoom/CallPlan";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
+import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState } from "@/components/ui";
 import { FINAL_SESSION, SCOPE_SESSION } from "@/config/checkpoint";
 import {
@@ -425,7 +426,7 @@ function Message({
 				n: review.number + 1,
 			}),
 			icon: <IconCalendarPlus size={16} />,
-			onClick: () => router.push(`${workflow}/cp/new`),
+			onClick: () => router.push(entryHubHref(review.project.slug)),
 		});
 	}
 

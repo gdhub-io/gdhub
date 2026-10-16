@@ -73,6 +73,9 @@ export const CHECKPOINT_OPEN_STATUSES = [
 	CheckpointStatus.Review,
 ];
 
+/** "What's done so far" on the way in: at least one line, at most this many. */
+export const CHECKPOINT_ENTRY_ITEMS_MAX = 5;
+
 /** How long a curator has to answer before the money goes back. */
 export const CURATOR_ANSWER_DAYS = 3;
 /** The first call is booked at least this many days ahead. */

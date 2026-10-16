@@ -8,20 +8,25 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Card, Checkbox, Flex, Skeleton, Typography } from "antd";
+import { isAxiosError } from "axios";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
+import { entryProjectHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
-	CHECKPOINT_AI_PRICE,
+	AI_PLAN_DAYS,
 	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
-import { curatorPrice } from "@/config/checkpoint-pricing";
-import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+} from "@/config/prisma-enums";
 import { isSlotTaken } from "@/hooks/advisor-availability";
 import {
 	useCheckpointCheckout,
-	useCheckpointCurators,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
@@ -30,9 +35,9 @@ import { CuratorBadge } from "../CuratorBadge";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
-import { StartLayout, type StartStep } from "./StartLayout";
+import { PurchaseLayout, type PurchaseStep } from "./PurchaseLayout";
 import { useTeamHours } from "./teamHours";
-import { useCheckpointDraft } from "./useDraft";
+import { useCheckpointDraft, useCheckpointPrice } from "./useDraft";
 
 /**
  * Frames 05 and 05.1 (`ffbRA`, `C4c18X`): everything read back, what it costs
@@ -45,12 +50,13 @@ import { useCheckpointDraft } from "./useDraft";
 export function PaymentStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
+	const router = useRouter();
 	const { go, exit } = usePrepareNav();
 	const { draft, project, loading } = useCheckpointDraft();
 	const team = useTeamHours(project?.team?.id);
 	const update = useUpdateCheckpoint(draft?.id);
 	const checkout = useCheckpointCheckout(draft?.id);
-	const curators = useCheckpointCurators();
+	const { price, curator: chosen } = useCheckpointPrice(draft);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -64,18 +70,29 @@ export function PaymentStep() {
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.prepare.toWorkflow", "Back to the workflow")}
+						{t("checkout.backToPlan", "Back to your checkpoint plan")}
 					</Button>
 				}
 			/>
 		);
 	}
 
-	const block = (label: string, edit: StartStep, body: ReactNode) => (
+	// What's done so far is item 2 of the hub, so its Edit leaves the wizard for it.
+	const editDone = () => router.push(entryProjectHref(project?.slug));
+
+	const block = (
+		label: string,
+		edit: PurchaseStep | (() => void),
+		body: ReactNode,
+	) => (
 		<Flex vertical gap={8} className={styles.block}>
 			<Flex justify="space-between" align="baseline">
 				<Typography.Text className={styles.blockLabel}>{label}</Typography.Text>
-				<Button type="link" className={styles.edit} onClick={() => go(edit)}>
+				<Button
+					type="link"
+					className={styles.edit}
+					onClick={() => (typeof edit === "function" ? edit() : go(edit))}
+				>
 					{t("checkpoints.pay.edit", "Edit")}
 				</Button>
 			</Flex>
@@ -84,12 +101,10 @@ export function PaymentStep() {
 	);
 
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
-	// The level that sets the price lives on the curator list, not the draft.
-	const chosen = curators.data?.find(
-		(curator) => curator.userId === draft.curator?.id,
-	);
-	const price =
-		isAI || !chosen ? CHECKPOINT_AI_PRICE : curatorPrice(chosen.level);
+	const doneSoFar = draft.items
+		.filter((item) => item.kind === CheckpointItemKind.Input)
+		.sort((a, b) => a.order - b.order);
+	const amount = `${CHECKPOINT_PRICE_CURRENCY}${price}`;
 
 	// Stripe hosts the payment, so leaving the app is the last thing this step
 	// does; what comes back is a webhook, not this tab.
@@ -106,6 +121,21 @@ export function PaymentStep() {
 					),
 				);
 				go("curator");
+				return;
+			}
+			// The server refuses a draft without a goal or without what's done so far.
+			if (isAxiosError(error) && error.response?.status === 400) {
+				message.warning(
+					error.response.data?.error === "purchaseClosed"
+						? t(
+								"checkpointEntry.closed",
+								"Checkpoints open soon — we'll email you when you can head for one.",
+							)
+						: t(
+								"checkpoints.pay.incomplete",
+								"The goal or what's done so far is missing — fill it in first.",
+							),
+				);
 				return;
 			}
 			message.error(
@@ -129,7 +159,7 @@ export function PaymentStep() {
 			? `${dayjs.utc(draft.startedAt).format("D MMM")} – ${dayjs
 					.utc(dueDateFrom(utcStartOfDay(new Date(draft.startedAt))))
 					.format("D MMM YYYY")}`
-			: t("checkpoints.pay.days", "{count} days from the start", {
+			: t("checkpoints.pay.daysFromDayOne", "{count} days from day 1", {
 					count: CHECKPOINT_DAYS,
 				}),
 	].join(" · ");
@@ -159,17 +189,24 @@ export function PaymentStep() {
 		{
 			Icon: IconMinus,
 			tone: "note",
-			text: t(
-				"checkpoints.pay.termTasks",
-				"Tasks are set together on the first call. Results are not guaranteed.",
-			),
+			// The AI curator holds no calls: its tasks come from the review page.
+			text: isAI
+				? t(
+						"checkpoints.pay.termTasksAi",
+						"Tasks are set in the first {days} days, with the AI's advice. Results are not guaranteed.",
+						{ days: AI_PLAN_DAYS },
+					)
+				: t(
+						"checkpoints.pay.termTasks",
+						"Tasks are set together on the first call. Results are not guaranteed.",
+					),
 		},
 	];
 
 	return (
-		<StartLayout
-			step="payment"
+		<PurchaseLayout
 			title={t("checkpoints.pay.title", "Check and pay")}
+			hint={t("checkout.payment.hint", "Nothing is charged until you confirm.")}
 			notice={
 				draft.paymentFailed && (
 					<Flex gap={16} align="center" className={styles.failed}>
@@ -229,7 +266,7 @@ export function PaymentStep() {
 
 					{block(
 						t("checkpoints.pay.capacity", "Team capacity"),
-						"now",
+						"goal",
 						<Typography.Text className={styles.figure}>
 							{capacity.hoursPerWeek && capacity.hoursPerRun
 								? t(
@@ -248,8 +285,26 @@ export function PaymentStep() {
 					)}
 
 					{block(
+						t("checkpointEntry.done.label", "What's done so far"),
+						editDone,
+						<Flex vertical gap={8}>
+							{doneSoFar.map((item) => (
+								<Flex
+									key={item.id}
+									gap={12}
+									align="center"
+									justify="space-between"
+								>
+									<Typography.Text>{item.text}</Typography.Text>
+									<EvidenceSlot artifact={item.artifact} />
+								</Flex>
+							))}
+						</Flex>,
+					)}
+
+					{block(
 						t("checkpoints.pay.want", "What you want in 28 days"),
-						"now",
+						"goal",
 						<Typography.Text>{draft.goal}</Typography.Text>,
 					)}
 
@@ -273,9 +328,7 @@ export function PaymentStep() {
 						<Typography.Text className={styles.priceLabel}>
 							{t("checkpoints.pay.priceLabel", "Price")}
 						</Typography.Text>
-						<Typography.Text className={styles.total}>
-							{`${CHECKPOINT_PRICE_CURRENCY}${price}`}
-						</Typography.Text>
+						<Typography.Text className={styles.total}>{amount}</Typography.Text>
 					</Flex>
 
 					<Flex vertical gap={12} className={styles.terms}>
@@ -318,10 +371,10 @@ export function PaymentStep() {
 						disabled={!draft.acceptedTermsAt}
 						onClick={pay}
 					>
-						{t("checkpoints.pay.payAndStart", "Pay and start")}
+						{t("checkout.payment.pay", "Pay {amount}", { amount })}
 					</Button>
 				</Card>
 			</Flex>
-		</StartLayout>
+		</PurchaseLayout>
 	);
 }

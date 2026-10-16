@@ -1,5 +1,9 @@
 import { createHash } from "node:crypto";
-import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	CheckpointItemKind,
+	CheckpointStatus,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
@@ -11,6 +15,7 @@ import type {
 	CuratorGoalCard,
 	CuratorLine,
 	CuratorOptions,
+	GoalCheckInput,
 	GoalCheckResult,
 	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
@@ -98,12 +103,8 @@ const stageRequirements = async (stepId: string | null) => {
  * What a stored read answers: everything the model is given and nothing else.
  * A card edited back to what it was hashes the same and costs no second call.
  */
-export const goalCheckHash = (input: {
-	card: CuratorGoalCard;
-	stage: { name: string; requirements: string[] };
-	team: unknown;
-	previous: unknown;
-}) => createHash("sha256").update(JSON.stringify(input)).digest("hex");
+export const goalCheckHash = (input: GoalCheckInput) =>
+	createHash("sha256").update(JSON.stringify(input)).digest("hex");
 
 /**
  * Day 1: read the card back and say what will not fit.
@@ -133,11 +134,16 @@ export const runGoalCheck = async (
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			project: {
 				select: {
+					name: true,
+					description: true,
+					genre: true,
 					team: {
 						select: {
 							members: {
 								where: { status: { in: TEAM_ROSTER_STATUSES } },
 								select: {
+									status: true,
+									speciality: { select: { name: true, level: true } },
 									user: {
 										select: { profile: { select: { timeForWork: true } } },
 									},
@@ -166,12 +172,27 @@ export const runGoalCheck = async (
 		stageRequirements(checkpoint.stepId),
 	]);
 
-	const input = {
+	const founder = members.find(
+		(member) => member.status === TeamMemberStatus.Founder,
+	);
+
+	const input: GoalCheckInput = {
 		card: toCard(checkpoint.goal, checkpoint.items),
 		stage: {
 			name: checkpoint.stageName,
 			requirements,
 		},
+		project: {
+			name: checkpoint.project.name,
+			pitch: checkpoint.project.description?.trim() || null,
+			genre: checkpoint.project.genre?.trim() || null,
+		},
+		author: founder
+			? {
+					speciality: founder.speciality.name,
+					level: founder.speciality.level,
+				}
+			: null,
 		team: teamCapacity(
 			members.map((member) => ({
 				timeForWork: member.user.profile?.timeForWork,

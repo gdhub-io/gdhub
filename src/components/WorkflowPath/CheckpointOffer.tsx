@@ -15,7 +15,12 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import {
+	checkoutHref,
+	entryHubHref,
+} from "@/components/checkpoints/entry/hrefs";
 import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceCuratorModal";
+import { PURCHASE_STEPS } from "@/components/checkpoints/start/PurchaseLayout";
 import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
 import {
@@ -77,8 +82,6 @@ export function CheckpointOffer({
 		draft?.paymentId ? draft.id : undefined,
 	);
 
-	const purchase = `/user/project/${project.slug}/workflow/cp/new`;
-
 	// What a checkpoint is, the same three lines on the offer and on its draft.
 	const facts = (
 		<Flex gap={24} className={styles.offerFacts}>
@@ -100,8 +103,7 @@ export function CheckpointOffer({
 	);
 
 	if (!draft) {
-		// The purchase page opens the draft itself.
-		const start = () => router.push(purchase);
+		const plan = () => router.push(entryHubHref(project.slug));
 
 		const option = (
 			icon: ReactNode,
@@ -164,13 +166,13 @@ export function CheckpointOffer({
 							type="primary"
 							disabled={locked}
 							icon={locked ? <IconLock size={16} /> : undefined}
-							onClick={start}
+							onClick={plan}
 						>
 							{previous
 								? t("workflow.after.plan", "Plan Checkpoint {number}", {
 										number: String(previous.number + 1),
 									})
-								: t("workflow.offer.start", "Get started")}
+								: t("workflow.offer.plan", "Plan this checkpoint")}
 						</Button>
 					</Tooltip>
 				</Flex>
@@ -212,9 +214,9 @@ export function CheckpointOffer({
 		? "payment"
 		: draft.goal.trim()
 			? "curator"
-			: "now";
+			: "goal";
 	const stepName = {
-		now: t("checkpoints.prepare.step.now", "Now"),
+		goal: t("checkout.step.goal", "Goal"),
 		curator: t("checkpoints.prepare.step.curator", "Curator"),
 		payment: t("checkpoints.prepare.step.payment", "Payment"),
 	}[savedAt];
@@ -244,7 +246,7 @@ export function CheckpointOffer({
 					),
 					action: {
 						label: t("checkpoints.paid.pickAnother", "Pick another curator"),
-						href: `${purchase}?step=ready`,
+						href: checkoutHref(project.slug, "ready"),
 					},
 				}
 			: draft.paymentFailed
@@ -257,7 +259,7 @@ export function CheckpointOffer({
 						),
 						action: {
 							label: t("workflow.draft.tryAgain", "Try again"),
-							href: `${purchase}?step=payment`,
+							href: checkoutHref(project.slug, "payment"),
 						},
 					}
 				: {
@@ -268,12 +270,12 @@ export function CheckpointOffer({
 							"Saved at {step} · step {number} of 3",
 							{
 								step: stepName,
-								number: ["now", "curator", "payment"].indexOf(savedAt) + 1,
+								number: PURCHASE_STEPS.indexOf(savedAt) + 1,
 							},
 						),
 						action: {
 							label: t("workflow.draft.continue", "Continue setup"),
-							href: `${purchase}?step=${savedAt}`,
+							href: checkoutHref(project.slug, savedAt),
 						},
 					};
 

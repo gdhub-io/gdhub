@@ -77,13 +77,19 @@ const running = (over: Record<string, unknown> = {}) => ({
 });
 
 describe("runGoalCheck", () => {
-	const member = (timeForWork: number[] | null) => ({
+	const member = (
+		timeForWork: number[] | null,
+		status: TeamMemberStatus = TeamMemberStatus.Hired,
+	) => ({
+		status,
+		speciality: { name: "Level designer", level: "Skillful" },
 		user: { profile: timeForWork ? { timeForWork } : null },
 	});
 
 	const draft = (
 		members: ReturnType<typeof member>[],
 		kept: { goalCheck?: unknown; goalCheckHash?: string | null } = {},
+		project: { description?: string | null; genre?: string | null } = {},
 	) => ({
 		goal: "A playable vertical slice",
 		stageName: "Prototyping",
@@ -91,7 +97,13 @@ describe("runGoalCheck", () => {
 		goalCheck: null,
 		goalCheckHash: null,
 		items: [outcome("o1")],
-		project: { team: { members } },
+		project: {
+			name: "Lantern Keeper",
+			description: "A lighthouse keeper sorts ships by night",
+			genre: "Puzzle",
+			team: { members },
+			...project,
+		},
 		...kept,
 	});
 
@@ -119,6 +131,74 @@ describe("runGoalCheck", () => {
 			}),
 			{},
 		);
+	});
+
+	it("tells the model what the game is and who the founder is", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([
+				member([10, 20]),
+				{
+					...member([5, 8], TeamMemberStatus.Founder),
+					speciality: { name: "Programmer", level: "Beginner" },
+				},
+			]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				project: {
+					name: "Lantern Keeper",
+					pitch: "A lighthouse keeper sorts ships by night",
+					genre: "Puzzle",
+				},
+				author: { speciality: "Programmer", level: "Beginner" },
+			}),
+			{},
+		);
+	});
+
+	it("names no author when the team has no founder row", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])], {}, { description: "  ", genre: null }) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				project: { name: "Lantern Keeper", pitch: null, genre: null },
+				author: null,
+			}),
+			{},
+		);
+	});
+
+	it("asks again when the pitch moved under a kept read", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft([member([10, 20])]) as never,
+		);
+		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
+		await runGoalCheck("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
+		const hash = (args as Record<string, any>).data.goalCheckHash;
+		vi.clearAllMocks();
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			draft(
+				[member([10, 20])],
+				{ goalCheck: checked, goalCheckHash: hash },
+				{ description: "A tide-driven roguelite" },
+			) as never,
+		);
+
+		await runGoalCheck("cp1");
+
+		expect(checkpointCurator.checkGoal).toHaveBeenCalled();
 	});
 
 	it("weighs the goal against how the last checkpoint ended", async () => {
@@ -448,10 +528,30 @@ describe("goal check schema", () => {
 			stage: { name: "Ideation", requirements: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
+			project: { name: "Lantern Keeper", pitch: null, genre: null },
+			author: null,
 		});
 
 		expect(
 			schema.properties.notes.items.properties.itemId,
 		).not.toHaveProperty("enum");
+	});
+
+	it("puts the game and its author in front of the model", async () => {
+		const { goalCheckMessages } = await import(
+			"@/services/checkpoint-curator/prompts/goal-check"
+		);
+		const [, user] = goalCheckMessages({
+			card: { goal: "A greybox", inputs: [], outcomes: [] },
+			stage: { name: "Ideation", requirements: [] },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
+			previous: null,
+			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
+			author: { speciality: "Programmer", level: "Beginner" },
+		});
+
+		expect(user.content).toContain("Lantern Keeper (Puzzle)");
+		expect(user.content).toContain('"Ships by night"');
+		expect(user.content).toContain("Programmer, Beginner level");
 	});
 });

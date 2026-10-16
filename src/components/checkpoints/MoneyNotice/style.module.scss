@@ -12,6 +12,11 @@
 	min-width: 0;
 }
 
+// Centred, the line is as wide as what it says and the receipt sits beside it.
+.centered .text {
+	flex: none;
+}
+
 .receipt {
 	height: auto;
 	padding: 0;

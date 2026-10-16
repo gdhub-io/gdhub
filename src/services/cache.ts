@@ -117,6 +117,35 @@ export async function cacheClaim(
 	}
 }
 
+/**
+ * Adds one to a counter that lives `ttlSeconds` from its first hit, and returns
+ * the count with the seconds it has left. `undefined` when Redis is out.
+ */
+export async function cacheIncrement(
+	key: string,
+	ttlSeconds: number,
+): Promise<{ count: number; ttl: number } | undefined> {
+	const redis = await getClient();
+	if (!redis) return undefined;
+
+	try {
+		const [[, count], [, ttl]] = (await redis
+			.multi()
+			.incr(key)
+			.ttl(key)
+			.exec()) as [[unknown, number], [unknown, number]];
+		// No expiry yet: this hit opened the window (or a crash lost the EXPIRE).
+		if (ttl < 0) {
+			await redis.expire(key, ttlSeconds);
+			return { count, ttl: ttlSeconds };
+		}
+		return { count, ttl };
+	} catch (error) {
+		console.error(`[cache] increment failed for ${key}`, error);
+		return undefined;
+	}
+}
+
 /** Drops a key, so the next read goes back to the source. */
 export async function cacheDelete(key: string): Promise<void> {
 	const redis = await getClient();

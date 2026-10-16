@@ -1,0 +1,50 @@
+.label {
+	font-size: var(--gd-font-size-body);
+}
+
+.help.help {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body);
+}
+
+.carried {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	color: var(--gd-color-text-secondary);
+}
+
+.carriedText.carriedText {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.rows {
+	width: 100%;
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-height: var(--gd-control-height);
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.remove {
+	flex: none;
+}
+
+@media screen and (max-width: 599px) {
+	.row {
+		flex-wrap: wrap;
+	}
+
+	.text {
+		flex-basis: 100%;
+	}
+}

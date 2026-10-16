@@ -54,10 +54,26 @@ export type CuratorTeam = {
 	hoursPerRun: CuratorHours | null;
 };
 
+/** What the game is, as its page says. */
+export type CuratorProject = {
+	name: string;
+	pitch: string | null;
+	genre: string | null;
+};
+
+/** Who heads for the checkpoint: the founder's speciality on the team. */
+export type CuratorAuthor = {
+	speciality: string;
+	level: string;
+};
+
 /** Day 1: is this reachable in 28 days, and what is missing from the list. */
 export type GoalCheckInput = {
 	card: CuratorGoalCard;
+	/** The checkpoint's stage, which is the project's stage while it is a draft. */
 	stage: CuratorStage;
+	project: CuratorProject;
+	author: CuratorAuthor | null;
 	/** What the promise is weighed against: the time the team actually has. */
 	team: CuratorTeam;
 	/** How the project's last checkpoint ended, with the same team behind it. */

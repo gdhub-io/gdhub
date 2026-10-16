@@ -1,7 +1,5 @@
-// Frames 03–06: one 800px column, centred under the focus header.
-.page {
-	width: 100%;
-	max-width: 800px;
-	margin: 0 auto;
-	padding: var(--gd-space-12) var(--gd-space-4) var(--gd-space-16);
+// The one way out of the wizard, quiet, and it keeps the draft. A text button
+// carries its own padding; pulling it back lines its icon up with the logo.
+.back {
+	margin-left: calc(-1 * var(--gd-space-2));
 }

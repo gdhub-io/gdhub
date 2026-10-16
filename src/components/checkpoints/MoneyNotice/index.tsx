@@ -15,9 +15,11 @@ export type MoneyNoticeProps = {
 	 * Back from the checkout before the webhook landed. Only the payment step
 	 * knows that — from its own URL — and it is not a state of the checkpoint.
 	 */
-	starting?: boolean;
+	settling?: boolean;
 	/** Lined up with the text inside the cards above it. */
 	inset?: boolean;
+	/** One short centred line under a paid screen's heading, "Receipt" beside it. */
+	centered?: boolean;
 };
 
 /**
@@ -29,7 +31,12 @@ export type MoneyNoticeProps = {
  * to the author's money, which is why it lives here rather than being redrawn
  * wherever a page needs to mention it.
  */
-export function MoneyNotice({ checkpoint, starting, inset }: MoneyNoticeProps) {
+export function MoneyNotice({
+	checkpoint,
+	settling,
+	inset,
+	centered,
+}: MoneyNoticeProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [fetching, setFetching] = useState(false);
@@ -63,7 +70,7 @@ export function MoneyNotice({ checkpoint, starting, inset }: MoneyNoticeProps) {
 
 	// A draft nobody has bought has nothing to say about money, and a line
 	// saying nothing is worse than no line.
-	if (!checkpoint.paymentId && !held && !declined && !starting) return null;
+	if (!checkpoint.paymentId && !held && !declined && !settling) return null;
 
 	const money = declined
 		? {
@@ -77,8 +84,11 @@ export function MoneyNotice({ checkpoint, starting, inset }: MoneyNoticeProps) {
 		: {
 				icon: IconCheck,
 				ink: "var(--gd-success-solid)",
-				title: starting
-					? t("checkpoints.paid.starting", "Payment received — starting")
+				title: settling
+					? t(
+							"checkpoints.paid.receivedOnTheWay",
+							"Payment received — getting you on your way",
+						)
 					: held
 						? t("checkpoints.paid.held", "The money is reserved")
 						: t("checkpoints.paid.received", "Payment received"),
@@ -91,7 +101,15 @@ export function MoneyNotice({ checkpoint, starting, inset }: MoneyNoticeProps) {
 		<Flex
 			gap={8}
 			align="center"
-			className={`${styles.line}${inset ? ` ${styles.inset}` : ""}`}
+			justify={centered ? "center" : undefined}
+			wrap
+			className={[
+				styles.line,
+				inset && styles.inset,
+				centered && styles.centered,
+			]
+				.filter(Boolean)
+				.join(" ")}
 		>
 			<money.icon size={16} color={money.ink} />
 			<Typography.Text className={styles.text}>{money.title}</Typography.Text>
@@ -104,7 +122,9 @@ export function MoneyNotice({ checkpoint, starting, inset }: MoneyNoticeProps) {
 					onClick={openReceipt}
 					className={styles.receipt}
 				>
-					{t("checkpoints.paid.downloadReceipt", "Download receipt")}
+					{centered
+						? t("checkpoints.paid.receipt", "Receipt")
+						: t("checkpoints.paid.downloadReceipt", "Download receipt")}
 				</Button>
 			)}
 		</Flex>

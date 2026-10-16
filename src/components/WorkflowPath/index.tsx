@@ -335,8 +335,8 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 										<span className={styles.boundaryLabel}>
 											<IconFlag size={14} />
 											{t(
-												"workflow.path.checkpoint.started",
-												"Checkpoint {number} started · {date}",
+												"workflow.path.checkpoint.dayOne",
+												"Checkpoint {number} · day 1 · {date}",
 												{
 													number: String(detail.number ?? 1),
 													date: formatShort(detail.startedAt),

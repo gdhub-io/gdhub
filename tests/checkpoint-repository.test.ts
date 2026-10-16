@@ -5,7 +5,12 @@ import {
 	createDraftCheckpoint,
 	getCreationBlocker,
 } from "@/repositories/checkpoint.repository";
+import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { prisma } from "@/services/prisma";
+
+vi.mock("@/repositories/project-workflow", () => ({
+	ensureCheckpointStage: vi.fn(),
+}));
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -28,7 +33,7 @@ describe("getCreationBlocker", () => {
 		vi.stubEnv("CHECKPOINTS_PURCHASE_OPEN", "");
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
-			currentStepId: "step-3",
+			_count: { steps: 9 },
 		} as never);
 
 		await expect(getCreationBlocker("p1")).resolves.toEqual({
@@ -57,7 +62,7 @@ describe("getCreationBlocker", () => {
 	it("counts a paid checkpoint as open, and a draft as not", async () => {
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
-			currentStepId: "step-3",
+			_count: { steps: 9 },
 		} as never);
 
 		await expect(getCreationBlocker("p1")).resolves.toBeNull();
@@ -77,15 +82,23 @@ describe("getCreationBlocker", () => {
 		);
 	});
 
-	it("refuses a project that is not on a stage — a checkpoint has nowhere to sit", async () => {
+	it("refuses a workflow with no stages — a checkpoint has nowhere to sit", async () => {
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
 		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
-			currentStepId: null,
+			_count: { steps: 0 },
 		} as never);
 
 		await expect(getCreationBlocker("p1")).resolves.toMatchObject({
 			reason: "noStage",
 		});
+	});
+
+	// Drafting gives such a project the default workflow on Ideation.
+	it("does not block a project that has no workflow yet", async () => {
+		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
+		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue(null);
+
+		await expect(getCreationBlocker("p1")).resolves.toBeNull();
 	});
 });
 
@@ -93,9 +106,7 @@ describe("createDraftCheckpoint", () => {
 	const currentStep = { id: "step-3", name: "Prototyping" };
 
 	it("snapshots the stage name and numbers it through the whole project", async () => {
-		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
-			currentStep,
-		} as never);
+		vi.mocked(ensureCheckpointStage).mockResolvedValue(currentStep);
 		vi.mocked(prisma.projectCheckpoint.count).mockResolvedValue(2 as never);
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue(null);
 		vi.mocked(prisma.projectCheckpoint.create).mockResolvedValue({} as never);
@@ -118,9 +129,7 @@ describe("createDraftCheckpoint", () => {
 	});
 
 	it("carries the last checkpoint's outcomes forward as inputs, artifacts attached", async () => {
-		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
-			currentStep,
-		} as never);
+		vi.mocked(ensureCheckpointStage).mockResolvedValue(currentStep);
 		vi.mocked(prisma.projectCheckpoint.count).mockResolvedValue(0 as never);
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue({
 			items: [
@@ -152,9 +161,7 @@ describe("createDraftCheckpoint", () => {
 	});
 
 	it("refuses when the project sits on no stage", async () => {
-		vi.mocked(prisma.projectWorkflow.findUnique).mockResolvedValue({
-			currentStep: null,
-		} as never);
+		vi.mocked(ensureCheckpointStage).mockResolvedValue(null);
 
 		await expect(createDraftCheckpoint("p1")).rejects.toThrow(
 			"Project is not on a workflow stage",
