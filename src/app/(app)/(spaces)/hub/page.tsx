@@ -4,7 +4,7 @@ import {
 	QueryClient,
 } from "@tanstack/react-query";
 import type { Metadata } from "next";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import { DEVLOG_FEED_LIMIT, devlogFeedQueryKey } from "@/config/devlog-feed";
 import { getDevlogFeedPage } from "@/repositories/devlog-feed";
 import HubClient from "./HubClient";
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
  * posts, and the covers they point at, in the HTML.
  */
 export default async function HubPage() {
-	const session = await auth();
+	const session = await getSession();
 	const showFeed = Boolean(session?.user?.onboardingDone);
 
 	const queryClient = new QueryClient();

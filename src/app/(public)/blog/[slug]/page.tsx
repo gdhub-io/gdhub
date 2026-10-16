@@ -1,31 +1,29 @@
+import type { OutputData } from "@editorjs/editorjs";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { getEditorjsPageCover } from "@/helpers/content";
+import { findPublishedBlogPost } from "@/repositories/blog.repository";
 import { type BlogPost, BlogPostClient } from "./BlogPostClient";
 
 type Params = Promise<{ slug: string }>;
 
-const fetchPost = cache(async (slug: string): Promise<BlogPost | null> => {
-	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-	try {
-		const response = await fetch(`${baseUrl}/api/blog/${slug}`, {
-			cache: "no-store",
-		});
-		if (!response.ok) return null;
-		const data = await response.json();
-		if (!data?.id) return null;
+export const revalidate = 300;
 
-		return {
-			...data,
-			coverImage: data.coverImage || getEditorjsPageCover(data.content),
-			content: JSON.stringify(data.content),
-			description: data.description,
-		};
-	} catch (error) {
-		console.error("Error fetching blog post:", error);
-		return null;
-	}
+// Empty: each page is built on its first request, not during `next build`.
+export async function generateStaticParams() {
+	return [];
+}
+
+const fetchPost = cache(async (slug: string): Promise<BlogPost | null> => {
+	const post = await findPublishedBlogPost(slug);
+	if (!post) return null;
+
+	return {
+		...post,
+		coverImage: getEditorjsPageCover(post.content as OutputData) ?? undefined,
+		content: JSON.stringify(post.content),
+	};
 });
 
 export async function generateMetadata({

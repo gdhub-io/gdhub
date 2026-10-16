@@ -1,0 +1,27 @@
+.card {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+// The OG card's own proportions, so the box does not jump when it loads.
+.image {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1200 / 630;
+	background: var(--gd-neutral-100);
+	object-fit: cover;
+}
+
+.meta {
+	padding: var(--gd-space-3) var(--gd-space-4);
+}
+
+// Lets the link truncate beside the copy button.
+.text {
+	min-width: 0;
+}
+
+.link {
+	font-size: var(--gd-font-size-body-sm);
+}

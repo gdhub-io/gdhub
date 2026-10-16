@@ -1,0 +1,57 @@
+@use '../../../styles/variables.scss';
+
+.band {
+	width: 100%;
+}
+
+.section {
+	width: 100%;
+	padding-block: 56px;
+}
+
+.surface {
+	background-color: var(--gd-color-surface);
+}
+
+.sunken {
+	background-color: var(--gd-neutral-25);
+}
+
+// The band paints the ground; a fill here would cover the final CTA's artwork.
+.dark {
+	background-color: transparent;
+}
+
+.container {
+	// No global border-box reset in this tree.
+	box-sizing: border-box;
+	width: 100%;
+	max-width: variables.$wrapper-width;
+	margin-inline: auto;
+	padding-inline: variables.$landing-padding;
+}
+
+// The platform landing's gutter ladder, so the two pages line up.
+@media screen and (max-width: 575px) {
+	.container {
+		padding-inline: variables.$landing-padding-xs;
+	}
+}
+
+@media screen and (min-width: 576px) and (max-width: 1199px) {
+	.container {
+		padding-inline: 48px;
+	}
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+	.container {
+		padding-inline: 64px;
+	}
+}
+
+@media screen and (min-width: 992px) {
+	.section {
+		padding-block: 96px;
+	}
+}

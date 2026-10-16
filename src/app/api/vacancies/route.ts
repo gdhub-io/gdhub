@@ -1,9 +1,9 @@
-import { json } from "@/lib/api-handlers";
+import { json, sharedCache } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
 export async function GET() {
 	const vacancies = await prisma.teamVacancy.findMany({
-		where: { status: "Published" },
+		where: { status: "Published", finishedAt: { gt: new Date() } },
 		orderBy: { publishedAt: "desc" },
 		include: {
 			team: {
@@ -23,5 +23,5 @@ export async function GET() {
 		},
 	});
 
-	return json(vacancies);
+	return json(vacancies, sharedCache(60));
 }

@@ -16,6 +16,7 @@ import {
 	getEditorjsShortContent,
 	getPageCover,
 } from "@/helpers/content";
+import { devlogTitle } from "@/helpers/devlog";
 import { isHeadlineEvent } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import {
@@ -209,7 +210,7 @@ export const newVacanciesMessageLinkedIn = (project: any) => {
 
 export type DevlogPostForMessage = Pick<
 	ProjectReport,
-	"id" | "content" | "contentEditor"
+	"id" | "content" | "contentEditor" | "number"
 > & {
 	project: Pick<Project, "name" | "coverImage">;
 };
@@ -254,7 +255,7 @@ export const devlogOgImage = (post: DevlogPostForMessage) => {
 		undefined;
 
 	const params = new URLSearchParams({
-		t: post.project.name,
+		t: devlogTitle(post.project.name, post.number),
 		u: "gdhub.io/devlog",
 	});
 	if (cover) params.set("img", cover);
@@ -264,7 +265,7 @@ export const devlogOgImage = (post: DevlogPostForMessage) => {
 
 // Telegram HTML variant (news channels).
 export const devlogPostMessageTelegram = (post: DevlogPostForMessage) => {
-	let message = `🚀 <b>Update on project ${escapeTelegramHtml(post.project.name)}</b>`;
+	let message = `🚀 <b>${escapeTelegramHtml(devlogTitle(post.project.name, post.number))}</b>`;
 
 	const teaser = devlogTeaser(post);
 	if (teaser) message += `\n\n${escapeTelegramHtml(teaser)}`;
@@ -277,7 +278,7 @@ export const devlogPostMessageTelegram = (post: DevlogPostForMessage) => {
 
 // Discord Markdown variant (no HTML).
 export const devlogPostMessageDiscord = (post: DevlogPostForMessage) => {
-	let message = `🚀 **Update on project ${post.project.name}**`;
+	let message = `🚀 **${devlogTitle(post.project.name, post.number)}**`;
 
 	const teaser = devlogTeaser(post);
 	if (teaser) message += `\n\n${teaser}`;
@@ -290,7 +291,7 @@ export const devlogPostMessageDiscord = (post: DevlogPostForMessage) => {
 
 // Plain-text variant for LinkedIn (no markup; URLs are auto-linked by LinkedIn).
 export const devlogPostMessageLinkedIn = (post: DevlogPostForMessage) => {
-	let message = `🚀 Update on project ${post.project.name}`;
+	let message = `🚀 ${devlogTitle(post.project.name, post.number)}`;
 
 	const teaser = devlogTeaser(post);
 	if (teaser) message += `\n\n${teaser}`;

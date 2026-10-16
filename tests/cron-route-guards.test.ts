@@ -42,6 +42,22 @@ describe("cron routes are not open to the world", () => {
 			expect(routes, `${path} has no route file`).toContain(route);
 		}
 	});
+
+	// Vercel only calls what `vercel.json` lists, and only with GET: a cron route
+	// left out of it never runs and nothing reports that.
+	it("schedules every GET cron route", () => {
+		const config = JSON.parse(readFileSync(VERCEL_CONFIG, "utf8"));
+		const scheduled = config.crons.map((entry: { path: string }) =>
+			entry.path.replace("/api/cron/", ""),
+		);
+		const getRoutes = routes
+			.filter((route) =>
+				/export const GET\b/.test(readFileSync(join(CRON_API, route), "utf8")),
+			)
+			.map((route) => route.replace("/route.ts", ""));
+
+		expect(scheduled.sort()).toEqual(getRoutes.sort());
+	});
 });
 
 describe("an unset secret authenticates nobody", () => {

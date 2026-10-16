@@ -77,3 +77,6 @@ backup-tolgee
 # storybook
 storybook-static
 *.storybook.log
+
+# debug logs
+debug-*.log

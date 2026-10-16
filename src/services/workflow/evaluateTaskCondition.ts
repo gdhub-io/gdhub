@@ -86,10 +86,10 @@ export async function evaluateTaskCondition(
 			return count >= condition.min;
 		}
 
-		case "documents": {
-			const count = await prisma.teamDocument.count({
+		case "artifacts": {
+			const count = await prisma.projectArtifact.count({
 				where: {
-					...teamScope(projectId),
+					projectId,
 					...(condition.type ? { type: condition.type } : {}),
 				},
 			});

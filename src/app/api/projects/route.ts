@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
-import { getProjectCardFacts } from "@/repositories/project-card.repository";
-import { prisma } from "@/services/prisma";
+import { getWorkedProjects } from "@/services/prisma/queries";
 
 const ProjectsQuerySchema = z.object({
 	stage: z.string().optional(),
@@ -17,62 +16,7 @@ export const GET = withAuth({ mode: "user" })(
 		const { stage } = body as ProjectsQuery;
 
 		try {
-			const projects = await prisma.project.getProjectsOrderedByActivity({
-				order: "desc",
-				where: stage
-					? {
-							workflow: {
-								is: {
-									currentStep: {
-										is: {
-											name: stage,
-										},
-									},
-								},
-							},
-						}
-					: undefined,
-			});
-
-			const projectIds = projects.map((project) => project.id);
-			const publishedVacancies = await prisma.teamVacancy.findMany({
-				where: {
-					team: {
-						project: { id: { in: projectIds } },
-					},
-					status: "Published",
-				},
-				select: {
-					team: {
-						select: { project: { select: { id: true } } },
-					},
-				},
-			});
-			const projectIdsWithOpenPositions = new Set(
-				publishedVacancies.flatMap((vacancy) =>
-					vacancy.team.project?.id ? [vacancy.team.project.id] : [],
-				),
-			);
-
-			const [applauseCounts, cardFacts] = await Promise.all([
-				prisma.project.getApplauseCounts({ projectIds }),
-				getProjectCardFacts(projectIds),
-			]);
-
-			const enriched = projects.map((project) => {
-				const facts = cardFacts.get(project.id);
-
-				return {
-					...project,
-					applauseCount: applauseCounts.get(project.id) ?? 0,
-					hasOpenPositions: projectIdsWithOpenPositions.has(project.id),
-					author: facts?.author ?? null,
-					team: facts?.team ?? { count: 0, members: [] },
-					stage: facts?.stage ?? null,
-				};
-			});
-
-			return json(enriched);
+			return json(await getWorkedProjects({ stage }));
 		} catch (error) {
 			console.error("[projects: list: error]", error);
 			return apiError.badRequest("Failed to get projects");

@@ -1,0 +1,138 @@
+// The line stays in the flow; the section hangs from it over the timeline.
+.wrap {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.line {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--gd-space-4) 0 var(--gd-space-6);
+  color: var(--gd-color-text-secondary);
+  text-align: left;
+  cursor: pointer;
+  background: var(--gd-color-surface);
+  border: 0;
+  border-bottom: 1px solid var(--gd-color-border);
+  font: inherit;
+
+  // Line and section are one surface while open.
+  [data-open] > & {
+    border-bottom-color: transparent;
+  }
+
+  // Hover belongs to the line only, never to the section.
+  &:hover {
+    background: var(--gd-fill-base);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--gd-color-border-strong);
+  }
+
+  @media (max-width: 767px) {
+    padding: 0 var(--gd-space-3) 0 var(--gd-space-4);
+  }
+}
+
+.tag {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--gd-font-size-body-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform 0.15s;
+
+  [data-open] & {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// The only shadow: the block's bottom edge against the messages, clipped so
+// none of it falls on the line or the sides.
+.section {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: min(360px, 45dvh);
+  background: var(--gd-color-surface);
+  border-bottom: 1px solid var(--gd-color-border);
+  box-shadow: var(--gd-shadow-e2);
+  clip-path: inset(0 0 -24px 0);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-3);
+  min-height: 0;
+  padding: var(--gd-space-1) var(--gd-space-6) var(--gd-space-3);
+  overflow-y: auto;
+
+  @media (max-width: 767px) {
+    padding-inline: var(--gd-space-4);
+  }
+}
+
+.row {
+  display: flex;
+  gap: var(--gd-space-4);
+
+  > .field {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldLabel {
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-secondary);
+}
+
+.fieldValue {
+  font-size: var(--gd-font-size-body);
+  color: var(--gd-color-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--gd-space-2);
+  justify-content: flex-end;
+  padding: var(--gd-space-3) var(--gd-space-6);
+  border-top: 1px solid var(--gd-color-border-subtle);
+
+  @media (max-width: 767px) {
+    padding-inline: var(--gd-space-4);
+  }
+}

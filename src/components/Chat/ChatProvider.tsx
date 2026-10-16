@@ -4,16 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import { App, Avatar } from "antd";
 import axios from "axios";
-import {
-	ClientEvent,
-	HttpApiEvent,
-	type MatrixClient,
-	type MatrixEvent,
-	NotificationCountType,
-	type Room,
-	RoomEvent,
-	SyncState,
-} from "matrix-js-sdk";
+import type { MatrixClient, MatrixEvent, Room, SyncState } from "matrix-js-sdk";
 import { useSession } from "next-auth/react";
 import { type ReactNode, useCallback, useEffect, useRef } from "react";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -23,8 +14,8 @@ import { useChatDrawerQuery } from "@/hooks/useChatDrawerQuery";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
 import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
-import { createMatrixClient, INITIAL_SYNC_LIMIT } from "@/lib/matrix-client";
 import type { MatrixChatSessionResponse } from "@/types/chat";
+import { MatrixEvents, SyncStates, TOTAL_COUNT } from "./matrix-events";
 import { endChatSession } from "./session";
 import { useChat } from "./useChat";
 
@@ -44,12 +35,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 	const clientRef = useRef<MatrixClient | null>(null);
 	const { chatClient, setChatClient, setReady, setUnreadTotal } = useChat();
 
-	// drive the drawer from the ?chat=1&roomId=... query params
-	useChatDrawerQuery({
-		chatClient,
-		setOpenChatModal: (open) => useChat.getState().setOpenChatModal(open),
-		onResolveRoomId: (roomId) => useChat.getState().setSelectedRoomId(roomId),
-	});
+	useChatDrawerQuery();
 
 	const { data: chatSessionData } = useQuery<MatrixChatSessionResponse>({
 		queryKey: ["chat-client-session", session?.user.id],
@@ -113,9 +99,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 				const rooms = (client.getRooms() || []).filter((r: Room) =>
 					["join", "invite"].includes(r.getMyMembership()),
 				);
+				// An unanswered invite counts as one unread message.
 				const total = rooms.reduce((acc: number, r: Room) => {
-					const count =
-						r.getUnreadNotificationCount?.(NotificationCountType.Total) || 0;
+					if (r.getMyMembership() === "invite") return acc + 1;
+					const count = r.getUnreadNotificationCount?.(TOTAL_COUNT) || 0;
 					return acc + (Number.isFinite(count) ? count : 0);
 				}, 0);
 				setUnreadTotal(total);
@@ -136,7 +123,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		// is unreachable at boot, and consuming it would leave the chat stuck on
 		// its loader for the rest of the session.
 		const handleSync = (state: SyncState) => {
-			if (state !== SyncState.Prepared) return;
+			if (state === SyncStates.error) {
+				if (!useChat.getState().ready) useChat.getState().setSyncError(true);
+				return;
+			}
+			if (state !== SyncStates.prepared) return;
+			useChat.getState().setSyncError(false);
 			setReady(true);
 			if (createdClient) tryComputeUnreadTotal(createdClient);
 		};
@@ -149,20 +141,23 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 			});
 		};
 
-		createMatrixClient({
-			accessToken: chatSessionData.token,
-			userId: chatSessionData.userId,
-			deviceId: chatSessionData.deviceId ?? undefined,
-		})
-			.then((client) => {
+		// Loaded here, not imported: the SDK is only needed once there is a
+		// session, and a static import would ship it with every app page.
+		import("@/lib/matrix-client")
+			.then(async ({ createMatrixClient, INITIAL_SYNC_LIMIT }) => {
+				const client = await createMatrixClient({
+					accessToken: chatSessionData.token,
+					userId: chatSessionData.userId,
+					deviceId: chatSessionData.deviceId ?? undefined,
+				});
 				if (!active) {
 					client.stopClient();
 					return;
 				}
 				clientRef.current = client;
 				createdClient = client;
-				client.on(ClientEvent.Sync, handleSync);
-				client.on(HttpApiEvent.SessionLoggedOut, handleLoggedOut);
+				client.on(MatrixEvents.sync, handleSync);
+				client.on(MatrixEvents.sessionLoggedOut, handleLoggedOut);
 				// Lazy members and a bounded timeline keep the initial sync small
 				// on accounts with many rooms.
 				client.startClient({
@@ -176,9 +171,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		return () => {
 			active = false;
 			if (createdClient) {
-				createdClient.removeListener(ClientEvent.Sync, handleSync);
+				createdClient.removeListener(MatrixEvents.sync, handleSync);
 				createdClient.removeListener(
-					HttpApiEvent.SessionLoggedOut,
+					MatrixEvents.sessionLoggedOut,
 					handleLoggedOut,
 				);
 				createdClient.stopClient();
@@ -201,20 +196,32 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		if (!chatClient) return;
 
-		const recompute = () => tryComputeUnreadTotal(chatClient);
+		// A sync can deliver hundreds of events at once, and each count walks every
+		// room — so events only schedule one count, and a hidden tab skips it.
+		let scheduled: ReturnType<typeof setTimeout> | undefined;
+		const recompute = () => {
+			if (scheduled || document.hidden) return;
+			scheduled = setTimeout(() => {
+				scheduled = undefined;
+				tryComputeUnreadTotal(chatClient);
+			}, 300);
+		};
 
-		chatClient.on(RoomEvent.Receipt, recompute);
-		chatClient.on(RoomEvent.Timeline, recompute);
-		chatClient.on(RoomEvent.MyMembership, recompute);
+		chatClient.on(MatrixEvents.receipt, recompute);
+		chatClient.on(MatrixEvents.timeline, recompute);
+		chatClient.on(MatrixEvents.myMembership, recompute);
+		document.addEventListener("visibilitychange", recompute);
 
 		const interval = setInterval(recompute, 60_000);
-		recompute();
+		tryComputeUnreadTotal(chatClient);
 
 		return () => {
-			chatClient.removeListener(RoomEvent.Receipt, recompute);
-			chatClient.removeListener(RoomEvent.Timeline, recompute);
-			chatClient.removeListener(RoomEvent.MyMembership, recompute);
+			chatClient.removeListener(MatrixEvents.receipt, recompute);
+			chatClient.removeListener(MatrixEvents.timeline, recompute);
+			chatClient.removeListener(MatrixEvents.myMembership, recompute);
+			document.removeEventListener("visibilitychange", recompute);
 			clearInterval(interval);
+			clearTimeout(scheduled);
 		};
 	}, [chatClient, tryComputeUnreadTotal]);
 
@@ -279,9 +286,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 			} catch {}
 		};
 
-		chatClient.on(RoomEvent.Timeline, onTimeline);
+		chatClient.on(MatrixEvents.timeline, onTimeline);
 		return () => {
-			chatClient.removeListener(RoomEvent.Timeline, onTimeline);
+			chatClient.removeListener(MatrixEvents.timeline, onTimeline);
 		};
 	}, [chatClient, notification]);
 
@@ -337,9 +344,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 			} catch {}
 		};
 
-		chatClient.on(RoomEvent.MyMembership, onMembership);
+		chatClient.on(MatrixEvents.myMembership, onMembership);
 		return () => {
-			chatClient.removeListener(RoomEvent.MyMembership, onMembership);
+			chatClient.removeListener(MatrixEvents.myMembership, onMembership);
 		};
 	}, [chatClient, notification]);
 

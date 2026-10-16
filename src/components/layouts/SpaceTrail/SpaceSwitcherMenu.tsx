@@ -1,13 +1,12 @@
 "use client";
 
 import { IconCheck, IconHome } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import axios from "axios";
 import Link from "next/link";
 import type React from "react";
 import { avatarImage } from "@/helpers/image";
-import type { UserSpaceGroup, UserSpaces } from "@/repositories/user-spaces";
+import { useUserSpaces } from "@/hooks/useUserSpaces";
+import type { UserSpaceGroup } from "@/repositories/user-spaces";
 import styles from "./style.module.scss";
 import type { SpaceKind } from "./types";
 
@@ -109,12 +108,7 @@ export function SpaceSwitcherMenu({
 }) {
 	const { t } = useTranslate();
 
-	const { data } = useQuery<UserSpaces>({
-		queryKey: ["user-spaces"],
-		queryFn: () =>
-			axios.get<UserSpaces>("/api/user/spaces").then((res) => res.data),
-		staleTime: 60 * 1000,
-	});
+	const { data } = useUserSpaces();
 
 	const groups: GroupSpec[] = data
 		? [

@@ -1,13 +1,16 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { type NextAuthConfig } from "next-auth";
+import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/nodemailer";
 import { createTransport } from "nodemailer";
+import { cache } from "react";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
 import { brevoApi } from "@/services/brevo";
+import { cached, cacheSet } from "@/services/cache";
 import { ensureMatrixUser } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 import type {
@@ -50,6 +53,79 @@ const e2eCredentialsProvider = CredentialsProvider({
 // argument it is a plain GET that never reaches the `trigger === "update"`
 // branch below.
 const USER_SYNC_INTERVAL_MS = 5 * 60 * 1000;
+
+/**
+ * Everything the JWT carries about the user, read fresh. `syncedAt` travels with
+ * it, so a copy served from the cache keeps the time it was really read.
+ */
+async function readSessionUser(token: JWT) {
+	const user = await prisma.user.findUnique({
+		where: { email: token.email as string },
+		include: { profile: true },
+	});
+
+	if (!user) return null;
+
+	if (!user.matrixUserId) {
+		// Best-effort: a Synapse outage must never block sign-in — the chat
+		// session route provisions the Matrix user again on first use.
+		try {
+			const matrixUser = await ensureMatrixUser(
+				user.id,
+				user.email || token.email || undefined,
+				user.profile?.name || user.name || token.name || undefined,
+				user.image || token.picture || undefined,
+			);
+			await prisma.user.update({
+				where: { id: user.id },
+				data: { matrixUserId: matrixUser.user_id },
+			});
+			user.matrixUserId = matrixUser.user_id;
+		} catch (error) {
+			console.error("[auth] matrix provisioning failed", error);
+		}
+	}
+
+	const [activeSubscription, googleAccount, hubMembership] = await Promise.all([
+		prisma.user.activeSubscription(user.id),
+		// Cached in the token so the session callback can skip its own
+		// lookup while the Google access token is still valid.
+		prisma.account.findFirst({
+			where: { userId: user.id, provider: "google" },
+			select: { expires_at: true },
+		}),
+		// Platform staff. Read here so components outside the authenticated
+		// app — the public shell, which has no access context — can tell
+		// without falling back to the legacy `roles` array.
+		prisma.spaceMember.findUnique({
+			where: {
+				spaceType_spaceId_userId: {
+					spaceType: "hub",
+					spaceId: "default",
+					userId: user.id,
+				},
+			},
+			select: { role: true, revokedAt: true },
+		}),
+	]);
+
+	// Auth.js v5 encodes the JWT via jose, which calls `structuredClone`
+	// on the payload. Prisma rows can contain values that don't clone
+	// (Decimal, BigInt, etc.), so flatten the user through JSON first.
+	const safeUser = JSON.parse(JSON.stringify(user));
+
+	const isStaff =
+		!hubMembership?.revokedAt &&
+		(hubMembership?.role === "Admin" || hubMembership?.role === "Owner");
+
+	return {
+		...safeUser,
+		isStaff,
+		activeSubscription: activeSubscription?.id,
+		googleTokenExpiresAt: googleAccount?.expires_at ?? null,
+		syncedAt: Date.now(),
+	};
+}
 
 export const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(prisma),
@@ -133,80 +209,28 @@ export const authConfig: NextAuthConfig = {
 			// The JWT already carries the whole user record, and this callback runs
 			// on *every* request that touches `auth()` — the proxy, every server
 			// component, every API route. Re-reading the user from Postgres each
-			// time costs 3 queries per request, so the row is only re-synced once
+			// time costs 4 queries per request, so the row is only re-synced once
 			// per interval. `resyncSession()` (trigger === "update") always syncs,
 			// which is what onboarding and profile forms rely on.
 			const syncedAt = typeof token.syncedAt === "number" ? token.syncedAt : 0;
-			if (
-				trigger !== "update" &&
-				Date.now() - syncedAt < USER_SYNC_INTERVAL_MS
-			) {
+			if (!trigger && Date.now() - syncedAt < USER_SYNC_INTERVAL_MS) {
 				return token;
 			}
 
-			const user = await prisma.user.findUnique({
-				where: { email: token.email },
-				include: { profile: true },
-			});
+			// Bare `auth()` drops the refreshed cookie, so a stale token lands here
+			// on every call; Redis keeps that to one database read per interval.
+			const key = `session-user:${token.email}`;
+			const ttl = USER_SYNC_INTERVAL_MS / 1000;
+			const synced = trigger
+				? await readSessionUser(token).then(async (fresh) => {
+						await cacheSet(key, fresh, ttl);
+						return fresh;
+					})
+				: await cached(key, ttl, () => readSessionUser(token));
 
-			if (!user) return token;
+			if (!synced) return token;
 
-			if (!user.matrixUserId) {
-				// Best-effort: a Synapse outage must never block sign-in — the chat
-				// session route provisions the Matrix user again on first use.
-				try {
-					await ensureMatrixUser(
-						user.id,
-						user.email || token.email || undefined,
-						user.profile?.name || user.name || token.name || undefined,
-						user.image || token.picture || undefined,
-					);
-				} catch (error) {
-					console.error("[auth] matrix provisioning failed", error);
-				}
-			}
-
-			const [activeSubscription, googleAccount, hubMembership] =
-				await Promise.all([
-					prisma.user.activeSubscription(user.id),
-					// Cached in the token so the session callback can skip its own
-					// lookup while the Google access token is still valid.
-					prisma.account.findFirst({
-						where: { userId: user.id, provider: "google" },
-						select: { expires_at: true },
-					}),
-					// Platform staff. Read here so components outside the authenticated
-					// app — the public shell, which has no access context — can tell
-					// without falling back to the legacy `roles` array.
-					prisma.spaceMember.findUnique({
-						where: {
-							spaceType_spaceId_userId: {
-								spaceType: "hub",
-								spaceId: "default",
-								userId: user.id,
-							},
-						},
-						select: { role: true, revokedAt: true },
-					}),
-				]);
-
-			// Auth.js v5 encodes the JWT via jose, which calls `structuredClone`
-			// on the payload. Prisma rows can contain values that don't clone
-			// (Decimal, BigInt, etc.), so flatten the user through JSON first.
-			const safeUser = JSON.parse(JSON.stringify(user));
-
-			const isStaff =
-				!hubMembership?.revokedAt &&
-				(hubMembership?.role === "Admin" || hubMembership?.role === "Owner");
-
-			return {
-				...token,
-				...safeUser,
-				isStaff,
-				activeSubscription: activeSubscription?.id,
-				googleTokenExpiresAt: googleAccount?.expires_at ?? null,
-				syncedAt: Date.now(),
-			} as any;
+			return { ...token, ...synced } as any;
 		},
 		async session({ session, token }) {
 			if (!token) return { ...session, error: "InvalidGrantError" } as any;
@@ -305,3 +329,9 @@ export const authConfig: NextAuthConfig = {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+
+/**
+ * The session for server components, layouts and gates: one read per render,
+ * however many of them ask. `auth()` itself runs the jwt callback on every call.
+ */
+export const getSession = cache(() => auth());

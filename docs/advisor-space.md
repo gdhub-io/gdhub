@@ -187,7 +187,10 @@ Same shape as scout settings: a 300px section menu plus a form card.
 
 - **General** — the mentorship form moved out of the profile: speciality,
   *a list of questions that can be addressed to you* (the dynamic row list the
-  profile form already uses), query response rate.
+  profile form already uses), query response rate, and **the workflow stages the
+  advisor can help on** — a multi-select over the nine stages of the `default`
+  `WorkflowSchema`, not free text: they are what the Checkpoint landing shows under
+  a curator card, and a hand-typed stage matches nothing.
 - **Requests** — auto-decline after N days without an answer, pause new requests.
   **Pausing hides the advisor from `/hub/experts` entirely** — no *Paused* badge,
   no disabled ask button: a card nobody can act on is noise in a catalogue.
@@ -264,6 +267,12 @@ Also needed: advisor preferences (auto-decline window, paused). Either two
 columns on `Speciality` next to the mentorship fields, or a small
 `AdvisorSettings` row keyed by user — the second is cleaner once the settings
 page grows.
+
+And `curatorStages String[]` on `Speciality`, beside `openForQuestions`: the
+stages the advisor takes checkpoints on, stored as names from the `default`
+`WorkflowSchema`. `CheckpointCuratorsSection` on the Checkpoint landing is the
+first reader and today shows nothing in their place — see
+[checkpoint-landing.md](design/specs/checkpoint-landing.md).
 
 ## 6. API surface
 

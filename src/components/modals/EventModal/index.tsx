@@ -1,6 +1,5 @@
-import type { WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { IconCalendarCheck, IconTrash } from "@tabler/icons-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Button,
@@ -29,6 +28,7 @@ import { DirectionSelect } from "@/components/DirectionSelect";
 import { AppImage } from "@/components/ui/AppImage";
 import { EventFormat, EventType, Language } from "@/config/prisma-enums";
 import { useEvent } from "@/hooks/event";
+import { useWorkDirections } from "@/hooks/library";
 import { useQualifiedDirections } from "@/hooks/speciality";
 import styles from "./style.module.scss";
 
@@ -81,13 +81,7 @@ const EventModal: React.FC<EventModalProps> = ({
 
 	const { event: eventData } = useEvent(eventId);
 
-	const { data: workDirections } = useQuery({
-		queryKey: ["work-directions"],
-		queryFn: () =>
-			axios
-				.get<WorkDirection[]>("/api/dictionary/work-directions")
-				.then((res) => res.data),
-	});
+	const { data: workDirections } = useWorkDirections();
 
 	// Staff organise on the platform's behalf, so they get the full list; a
 	// member may only run an event in a direction they are expert in.

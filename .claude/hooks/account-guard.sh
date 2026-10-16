@@ -31,8 +31,12 @@ Bash)
 
 	decide deny "gh is signed in as '$login', not '$GITHUB_LOGIN'. This repository belongs to gdhub-io, which that account cannot see — GitHub answers 404 rather than a permission error, so the failure will look like a missing resource. Switch first: gh auth switch --hostname github.com --user $GITHUB_LOGIN"
 	;;
+mcp__linear-gdhub__*)
+	decide ask "This writes to Linear as whichever account authorised linear-gdhub. It must be $LINEAR_WHO. If that has not been confirmed with get_user(\"me\") in this session, cancel and confirm first — a write to the wrong workspace is not undone by retrying."
+	;;
 mcp__claude_ai_Linear__*)
-	decide ask "This writes to Linear as whichever account authorised the connector. It must be $LINEAR_WHO. If that has not been confirmed with get_user(\"me\") in this session, cancel and confirm first — a write to the wrong workspace is not undone by retrying."
+	# The claude.ai connector holds one account for every directory on the machine.
+	decide deny "The claude.ai Linear connector is not tied to this repository and may be signed in to another workspace. Write through the linear-gdhub server (~/projects/gdhub/.mcp.json) instead."
 	;;
 esac
 

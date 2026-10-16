@@ -1,5 +1,5 @@
 import { CourseGroupStatus, CourseStatus } from "@gdhub-io/gdhub-prisma";
-import { json } from "@/lib/api-handlers";
+import { json, sharedCache } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
 export async function GET() {
@@ -22,5 +22,5 @@ export async function GET() {
 			},
 		},
 	});
-	return json(courses);
+	return json(courses, sharedCache(300));
 }

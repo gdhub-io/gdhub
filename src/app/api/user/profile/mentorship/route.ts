@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import {
 	apiError,
 	json,
@@ -7,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";

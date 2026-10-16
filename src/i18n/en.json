@@ -437,6 +437,170 @@
 	"Your vote has been counted": "Your vote has been counted",
 	"Youtube": "Youtube",
 	"actual vacancies": "actual vacancies",
+	"advisor": {
+		"availability": {
+			"addPeriod": "Add period",
+			"awayUntil": "Away until",
+			"awayUntilRequired": "Pick the day you're back.",
+			"checkpoints": "Checkpoints",
+			"confirmed": "Hours confirmed on {date}. We'll ask you to check them again on {next}.",
+			"consultations": "Consultations",
+			"deletePeriod": "Delete period",
+			"editPeriod": "Edit period",
+			"editor": {
+				"addRange": "Add hours",
+				"cancel": "Cancel",
+				"days": "Days",
+				"daysRequired": "Pick at least one day.",
+				"everyWeek": "Every week, no end",
+				"from": "From",
+				"hours": "Hours",
+				"hoursOrder": "Hours must end after they start.",
+				"hoursRequired": "Set both times.",
+				"monthFrom": "From",
+				"monthTo": "To",
+				"months": "Months",
+				"monthsRequired": "Pick the months, or repeat every week.",
+				"openFor": "Open for",
+				"openForRequired": "Open the hours for at least one of them.",
+				"removeRange": "Remove these hours",
+				"save": "Save period",
+				"to": "To"
+			},
+			"error": {
+				"load": "Your hours could not be loaded.",
+				"retry": "Try again",
+				"save": "That did not go through."
+			},
+			"everyWeek": "Every week",
+			"hours": {
+				"hint": "A period with months replaces the weekly hours, and a shorter period a longer one, in its months. Checkpoint calls can't fall outside your hours: move the call first.",
+				"subtitle": "When teams can book you — consultations and checkpoint calls alike. A period without months repeats every week. Anything booked takes that time for everything else.",
+				"title": "Available hours"
+			},
+			"notConfirmed": "Your hours are not confirmed yet.",
+			"perMonth": {
+				"after": "consultations a month",
+				"before": "At most",
+				"hint": "· leave empty for no limit",
+				"label": "Consultations a month"
+			},
+			"refused": {
+				"calendar": "Move them in the Calendar",
+				"call": "Call {index} · {project}",
+				"text": "A checkpoint's calls are agreed with the team and don't move with your hours. Move each one with the author first, then you can save.",
+				"title": "{count, plural, one {# checkpoint call falls outside these hours} other {# checkpoint calls fall outside these hours}}"
+			},
+			"save": "Save",
+			"saved": "Saved",
+			"status": {
+				"away": "Away",
+				"awayHint": "Nobody can book you until a date",
+				"consultationsOnly": "Consultations only",
+				"consultationsOnlyHint": "No new checkpoints for now",
+				"open": "Open",
+				"openHint": "Consultations and new checkpoints",
+				"subtitle": "Whether new teams can book you. Checkpoints you already curate go on as planned.",
+				"title": "Status"
+			},
+			"stillCorrect": "Still correct",
+			"timeZone": "Time zone"
+		},
+		"calendar": {
+			"callTitle": "Call {index} · {project}",
+			"checkpointCall": "Checkpoint call",
+			"empty": {
+				"past": "No past calls.",
+				"upcoming": "No calls booked yet."
+			},
+			"error": {
+				"load": "The calendar could not be loaded.",
+				"retry": "Try again"
+			},
+			"finalCall": "The final call — your verdict follows",
+			"join": "Join",
+			"past": "Past",
+			"subtitle": "Every call booked with you, in {timeZone} time.",
+			"title": "Calendar",
+			"today": "Today · {date}",
+			"upcoming": "Upcoming"
+		},
+		"card": {
+			"devlogs": "Devlogs"
+		},
+		"checkpoints": {
+			"accept": "Take it on",
+			"answerFailed": "The answer was not saved",
+			"answerNote": "An author's money is held until you answer, and released after three days without one.",
+			"answerWindow": "You have three days to answer.",
+			"asked": "Waiting for your answer",
+			"closed": "Closed",
+			"decline": "Turn down",
+			"declined": "You could not take these",
+			"empty": "Nothing has been handed to you yet. An author picks a curator when they buy a checkpoint.",
+			"missing": "This checkpoint is not one of yours.",
+			"running": "Under way",
+			"subtitle": "Checkpoints assigned to you.",
+			"title": "Checkpoints"
+		},
+		"project": {
+			"role": "Role",
+			"teamEmpty": "Nobody has joined the team yet."
+		},
+		"settings": {
+			"menu": {
+				"availability": "Availability"
+			},
+			"subtitle": "What you advise on and how teams reach you.",
+			"title": "Advisor settings"
+		},
+		"verdict": {
+			"alreadySent": "The verdict is sent.",
+			"artifact": "Artifact",
+			"build": "Build",
+			"chipDraft": "Draft · final call {date}",
+			"chipDue": "Verdict due by {date}",
+			"chipOverdue": "Verdict overdue",
+			"confirm": "Send the verdict? It cannot be edited afterwards.",
+			"counter": "required · {n} / {max}",
+			"cut": "Cut",
+			"dates": "{from} – {to}",
+			"day": "day {n}",
+			"day1": "On day 1",
+			"devlogsCount": "{n} of {total} published",
+			"draft": "Draft the verdict",
+			"draftFailed": "The draft was not saved",
+			"draftNote": "Draft saved · {when}. Only you see it.",
+			"draftSaved": "Draft saved",
+			"dueBy": "Verdict due by {date}",
+			"finalNote": "Sending is final: the verdict cannot be edited afterwards.",
+			"goalCard": "Goal card",
+			"lastBuild": "Last build",
+			"noArtifact": "No artifact",
+			"noBuild": "No build was uploaded in these 28 days.",
+			"noDevlogs": "No devlogs were published.",
+			"noEvidence": "No evidence attached",
+			"now": "Now",
+			"openBuild": "Open the build",
+			"opensIn": "The verdict opens in sprint {n}.",
+			"overdue": "Verdict overdue",
+			"proven": "· proven",
+			"pulse": "Team pulse",
+			"pulseCount": "{confirmed} of {asked} confirmed",
+			"reasoning": "Your reasoning",
+			"saveDraft": "Save draft",
+			"send": "Send the verdict",
+			"sendFailed": "The verdict was not sent",
+			"sendIncomplete": "Choose a verdict and write your reasoning first.",
+			"sendLocked": "Sending opens when the final call starts on {date}.",
+			"sent": "The verdict is sent",
+			"title": "Write the verdict",
+			"uploaded": "Uploaded {date}",
+			"whatExisted": "What existed on day 1",
+			"windowNote": "Sending opens when the final call starts on {opens}; the verdict is due by {due}.",
+			"write": "Write the verdict"
+		}
+	},
 	"agreeWithTermsAndPrivacy": "By joining, you agree to our Terms of Service and Privacy Policy",
 	"agreeWithTermsAndPrivacy.error": "To register for the service you must agree with the specified documents",
 	"app": {
@@ -449,6 +613,7 @@
 		},
 		"user-project": {
 			"menu": {
+				"artifacts": "Artifacts",
 				"documents": "Documents",
 				"open-positions": "Open positions",
 				"overview": "Devlog",
@@ -463,6 +628,115 @@
 		}
 	},
 	"are-you-sure-you-want-to-delete-it": "Are you sure you want to delete it?",
+	"artifacts": {
+		"add": "Add artifact",
+		"addOther": "Add something else",
+		"addVideo": "Add a video",
+		"check": {
+			"pending": "Checking…",
+			"ready": "Ready",
+			"unreachable": "Cannot be opened",
+			"unsupported": "Saved, not readable"
+		},
+		"column": {
+			"addedBy": "Added by",
+			"artifact": "Artifact",
+			"check": "Check",
+			"description": "Description",
+			"name": "Title",
+			"stage": "Stage",
+			"updatedAt": "Updated At",
+			"when": "When",
+			"workflow": "Workflow"
+		},
+		"delete": "Delete artifact",
+		"deleteConfirm": "Delete this artifact?",
+		"deleted": "Artifact deleted",
+		"empty": "Your first artifact will appear here.",
+		"error": {
+			"retry": "Try again",
+			"title": "Artifacts could not be loaded"
+		},
+		"filter": {
+			"all": "All"
+		},
+		"kind": {
+			"build": "Build",
+			"document": "Document",
+			"image": "Image",
+			"other": "Other",
+			"video": "Video"
+		},
+		"modal": {
+			"cancel-text": "Cancel",
+			"description": {
+				"label": "What it is",
+				"placeholder": "Add context for the curator.",
+				"suffix": "2 sentences"
+			},
+			"error": "The artifact could not be added",
+			"field": {
+				"description": {
+					"label": "Short Description",
+					"placeholder": "This artifact is about..."
+				},
+				"link": {
+					"label": "Link to artifact",
+					"placeholder": "https://example.com/document.pdf"
+				},
+				"name": {
+					"label": "Title",
+					"placeholder": "Artifact title"
+				},
+				"type": {
+					"label": "Type",
+					"placeholder": "Select artifact type"
+				}
+			},
+			"filed": "Filed under {stage}",
+			"kind": {
+				"label": "Kind"
+			},
+			"link": {
+				"label": "Link",
+				"videoHelp": "YouTube, Vimeo or a direct link."
+			},
+			"name": {
+				"label": "Name",
+				"placeholder": "Prototype walkthrough, 3 min"
+			},
+			"ok-text": "Add",
+			"privacy": "Nothing here is public until the project page is.",
+			"title": "Add artifact",
+			"type": {
+				"label": "Type"
+			},
+			"videoHint": "Videos can be reviewed without running a build."
+		},
+		"noMatch": "No artifacts match",
+		"page": {
+			"description": "Project builds, videos, images and documents.",
+			"title": "Artifacts"
+		},
+		"search": "Search artifacts",
+		"stage": {
+			"count": "{count, plural, one {# artifact} other {# artifacts}}"
+		},
+		"total": "{count, plural, one {# artifact} other {# artifacts}}",
+		"type": {
+			"art": "Art",
+			"build": "Build",
+			"concept": "Concept document",
+			"gameplayVideo": "Gameplay video",
+			"gdd": "Game design document",
+			"jda": "Agreement",
+			"nda": "NDA",
+			"other": "Other",
+			"prototypeVideo": "Prototype video"
+		},
+		"unsorted": "Unsorted",
+		"unsortedHint": "No stage"
+	},
 	"blog": {
 		"create-post": {
 			"modal": {
@@ -481,10 +755,28 @@
 	},
 	"change": "Edit",
 	"chat": {
+		"context": {
+			"checkpoint": {
+				"author": "Author",
+				"checkpoint": "Checkpoint",
+				"curator": "Curator",
+				"dates": "Dates",
+				"openProject": "Open project page",
+				"sprint": "Current sprint",
+				"sprintValue": "Sprint {number} · {dates}",
+				"title": "Checkpoint {number}"
+			}
+		},
+		"emptyRoom": {
+			"groupDescription": "Only the people in this chat can see it."
+		},
 		"groups": {
 			"direct": "Direct chats",
 			"experts": "Experts",
 			"offers": "Offers"
+		},
+		"kind": {
+			"checkpoint": "Checkpoint"
 		},
 		"topic": {
 			"openPositionPage": "Open position page"
@@ -495,10 +787,733 @@
 		"error_no_connection": "No connection. Try later.",
 		"go_to_chat": "Go to chat"
 	},
+	"checkpointLanding": {
+		"example": {
+			"fact2": {
+				"label": "Day {day} · Re-scope"
+			}
+		}
+	},
+	"checkpoints": {
+		"asks": {
+			"dueOnDay": "due on day {day}",
+			"dueToday": "due today",
+			"info": "Everything still open in this sprint, and who it waits on. It empties as the sprint is answered.",
+			"none": "nothing open",
+			"noneTitle": "Nothing is waiting on anyone",
+			"open": "{count} open",
+			"owner": {
+				"curator": "Curator",
+				"team": "Team",
+				"you": "You"
+			},
+			"title": "What this sprint asks of you",
+			"titleCheckpoint": "What this checkpoint asks of you"
+		},
+		"call": {
+			"aheadCurator": "The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
+			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
+			"calendarTitle": "Call {index} · {project}",
+			"camOff": "Turn off camera",
+			"camOn": "Turn on camera",
+			"camera": "Camera",
+			"chat": "Chat",
+			"copyLink": "Copy link",
+			"curator": "Curator",
+			"curatorIn": "{name} is in the call",
+			"deviceUnnamed": "Device {n}",
+			"end": "End call for everyone",
+			"endConfirm": "End the call for everyone?",
+			"endFailed": "The call could not be ended",
+			"endOk": "End call",
+			"fullscreen": "Full screen",
+			"fullscreenExit": "Exit full screen",
+			"goal": {
+				"hint": "Agree it on this call — it locks when the call ends.",
+				"label": "Checkpoint goal"
+			},
+			"inCall": "In the call",
+			"inCallCount": "{count} in the call",
+			"join": "Join call",
+			"joinFailed": "Could not join the call",
+			"leave": "Leave call",
+			"linkCopied": "Link copied",
+			"message": "Message {name}",
+			"micOff": "Turn off microphone",
+			"micOn": "Turn on microphone",
+			"microphone": "Microphone",
+			"missing": "This call is not one of yours, or its checkpoint is not running.",
+			"notes": {
+				"agreed": "Agreed for the next call",
+				"discussed": "What was discussed",
+				"due": "due {date}",
+				"goal": "Goal: {goal}",
+				"inShort": "In short",
+				"lockedCall": "Notes appear after this call",
+				"noQuestions": "No open questions were left on the call.",
+				"noTranscript": "No transcript yet.",
+				"noneHeld": "Notes appear after the first call.",
+				"notDiscussed": "Not discussed: {task}",
+				"notDiscussedTitle": "Not discussed on this call",
+				"nothingOutside": "Nothing came up beyond the plan.",
+				"option": "Call {index} · {date}",
+				"outsidePlan": "Outside the plan",
+				"pendingText": "The transcript and summary of this call are ready within 24 hours. We'll email you when they are.",
+				"pendingTitle": "The summary is on its way",
+				"questions": "Open questions",
+				"sprintWent": "How Sprint {sprint} went",
+				"summary": "Summary",
+				"title": "Call notes",
+				"transcript": "Transcript"
+			},
+			"openNotes": "Open the notes",
+			"openReview": "Open the review",
+			"opensAt": "The room opens at {time}",
+			"over": "This call is over",
+			"overLine": "The plan and the notes from it are below.",
+			"overReady": "The call is over. The plan and the notes from it are below.",
+			"overReadyReview": "The call is over. The plan and the review of it are below.",
+			"overText": "The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready.",
+			"panel": {
+				"ahead": "This call is still ahead",
+				"notes": "Notes",
+				"plan": "Plan",
+				"review": "Review",
+				"today": "Call {index} · today"
+			},
+			"plan": {
+				"addTask": "Add task",
+				"callOneHint": "Agree the goal and the checkpoint tasks with {curator} on this call. The goal locks when the call ends; tasks can change once more on call 3.",
+				"callThreeHint": "This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
+				"closed": "The plan can no longer change",
+				"doneCount": "{done} of {total} done",
+				"failed": "The change was not saved",
+				"goal": "Goal",
+				"goalAgreed": "Goal · agreed on call 1",
+				"noGoal": "No goal agreed yet.",
+				"noTasks": "No tasks yet.",
+				"removeTask": "Remove task",
+				"saved": "Saved as you type · the team sees this plan on Workflow",
+				"tasks": "Tasks",
+				"title": "Checkpoint plan",
+				"tooMany": "A checkpoint holds at most {max} tasks"
+			},
+			"purpose": {
+				"final": "The final call",
+				"plan": "Sets the plan",
+				"sprint": "Opens Sprint {n}"
+			},
+			"readyTitle": "Ready to join?",
+			"recordedNotice": "The call is recorded for the notes",
+			"recording": "Recording",
+			"self": "You",
+			"share": "Share screen",
+			"shareStop": "Stop sharing",
+			"speakers": "Speakers",
+			"startsAtLine": "The call starts at {time}.",
+			"status": {
+				"live": "Live",
+				"over": "Ended",
+				"startsAt": "Starts at {time}",
+				"startsOn": "Starts {date}"
+			},
+			"subtitle": "{purpose} · Checkpoint {number} · {stage} · {when}",
+			"subtitlePro": "Pro · Call {index} with {name} · {purpose} · Checkpoint {number} · {stage} · {when}",
+			"subtitleWith": "Call {index} with {name} · {purpose} · Checkpoint {number} · {stage} · {when}",
+			"team": "Team",
+			"teamWaits": "The team is let in once you join",
+			"testSound": "Play a test sound",
+			"title": "Call with {name}",
+			"waitingButton": "Waiting for {name}…",
+			"waitingText": "Starts at {time}. You'll be let in as soon as they join.",
+			"waitingTitle": "Waiting for {name} to open the call",
+			"you": "{name} (you)"
+		},
+		"cancel": {
+			"body": "All three steps will be deleted permanently.",
+			"confirm": "Cancel the draft",
+			"keep": "Keep the draft",
+			"leaving": "Leaving this page keeps the draft.",
+			"title": "Cancel this draft?"
+		},
+		"card": {
+			"awaiting": "Paid. The 28 days start when the curator takes it on.",
+			"goal": "Checkpoint goal",
+			"legendCut": "Cut on day {day} · not counted",
+			"legendReworded": "Reworded on day {day}",
+			"taskCut": "Cut on day {day}"
+		},
+		"continue": "Continue",
+		"curator": {
+			"ai": "AI curator",
+			"aiDescription": "Written reviews and a day-28 verdict.",
+			"aiLimit": "The AI curator reads links, screenshots and what you write. It does not run your build and it holds no calls — judging how a game feels to play is what a person is paid for.",
+			"aiName": "AI curator, in writing",
+			"aiPrice": "{currency}{price} fixed",
+			"aiWritten": "Written feedback every sprint, a final verdict, clear deadlines and reminders.",
+			"allLevels": "All levels",
+			"amount": "{currency}{price}",
+			"expert": "Industry expert",
+			"expertCalls": "A call every sprint, a final verdict, clear deadlines and reminders.",
+			"expertDescription": "Live calls, written reviews and a verdict.",
+			"expertsLabel": "Industry experts",
+			"fixedPrice": "Fixed price for AI curator",
+			"freeFrom": "· free from {date}",
+			"humanDescription": "Five live calls, written reviews and a verdict.",
+			"humanName": "A person, on five calls",
+			"humanPrice": "from {currency}{price}",
+			"next": "Next — payment",
+			"noneOpen": "Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
+			"perCycle": "per cycle",
+			"pickerLabel": "Curators for this stage",
+			"pickerNote": "The 28 days start when they take it on, not when you pay; if they turn it down you pick another or get your money back.",
+			"pickerPending": "Choosing your own curator is not open yet — the platform assigns one for the stage. The 28 days start when they take the checkpoint on, not when you pay; if they turn it down you pick another or get your money back.",
+			"price": "Price",
+			"priceHint": "once, for the 28 days · + VAT",
+			"reviews": "Reviews",
+			"reviewsHint": "the verdict comes with the last",
+			"start": "Start",
+			"startHint": "from the start of the day · ends around {date}",
+			"talentCard": "Talent card",
+			"title": "Who will take this journey with you?",
+			"typeLabel": "Curator type",
+			"unassigned": "Curator to be assigned",
+			"unavailable": "Unavailable",
+			"vat": "+ VAT"
+		},
+		"devlog": {
+			"meta": "What got done, what is next, and what is in the way.",
+			"missing": "No devlog was written",
+			"missingNote": "Silence is part of the record; the verdict reads it as it is.",
+			"published": "Devlog published",
+			"write": "Write the devlog"
+		},
+		"draft": {
+			"add": "Add {pieces}.",
+			"chip": "Draft",
+			"continue": "Continue setup",
+			"discard": "Discard draft",
+			"discardFailed": "The draft could not be discarded",
+			"missing": {
+				"curator": "curator",
+				"goal": "a goal",
+				"startDate": "start date"
+			},
+			"more": "More",
+			"nothingCharged": "Nothing has been charged and no days are counting.",
+			"pageSub": "Prepare · Setup incomplete",
+			"pageTitle": "Checkpoint draft",
+			"pickAnother": "Select another expert for this checkpoint.",
+			"pickAnotherDated": "Select another expert ({dates}).",
+			"readyToPay": "Everything is answered — only the payment is left.",
+			"selectOther": "Select other curator",
+			"title": "Checkpoint"
+		},
+		"empty": {
+			"cta": "Plan my first checkpoint",
+			"description": "28 days, one goal, a curator, and a verdict that opens the next stage.",
+			"title": "Your first checkpoint starts here"
+		},
+		"error": {
+			"retry": "Try again",
+			"title": "Checkpoints could not be loaded"
+		},
+		"evidence": {
+			"accepted": "Counted by the curator",
+			"add": "Add new",
+			"addCta": "Add artifact",
+			"addNote": "Artifacts live with the project, not with the checkpoint. Add it once and pick it here.",
+			"addTitle": "Add it to the project",
+			"attach": "Attach evidence",
+			"attached": "Attached this sprint",
+			"change": "Pick another artifact",
+			"confirm": "Attach",
+			"empty": "No evidence yet",
+			"emptyNote": "Attach what proves an outcome as it lands, rather than on the last day.",
+			"failed": "The evidence could not be attached",
+			"landed": "Landed in this sprint",
+			"later": "Proof at the end",
+			"multi": "One artifact can prove more than one outcome.",
+			"noArtifacts": "No artifacts yet",
+			"noArtifactsNote": "Evidence comes from the project's artifact store. Add the build, the video or the document and it appears here.",
+			"noMatch": "Nothing in the store matches that.",
+			"noOutcomes": "This checkpoint has no outcomes to prove yet.",
+			"none": "Nothing attached",
+			"notDelivered": "Nothing was attached",
+			"pick": "From this project",
+			"proves": "Proves: {outcome}",
+			"search": "Search the project's artifacts",
+			"whatItProves": "What it proves"
+		},
+		"firstCall": {
+			"label": "First call with {name}",
+			"next": "Next week",
+			"noneThisWeek": "No free hours this week — try the next one.",
+			"prev": "Previous week",
+			"slots": "{count, plural, one {# slot} other {# slots}}",
+			"summary": "{weekday}s at {time} · {from} – {to}",
+			"summaryNote": "Call 1 plans the checkpoint on {first}; calls 2–5 follow on {rest}. Any call can be moved later.",
+			"taken": "That time was just taken. Pick another one.",
+			"takenPay": "That first call was just taken. Pick another time.",
+			"zone": "Times in your zone · {zone}"
+		},
+		"forward": {
+			"locked": "Answer what is open and finish this sprint to open the next one.",
+			"openSprint": "Open sprint {n}",
+			"opensOn": "Sprint {n} opens on {date}.",
+			"ready": "Nothing is left in this sprint. Opening it moves you there.",
+			"toCheckpoint": "To the checkpoint"
+		},
+		"goal": {
+			"check": "Check it against 28 days",
+			"checkFits": "This fits 28 days",
+			"checkMissing": "The stage also asks for: {line}",
+			"checkTight": "This looks like more than 28 days hold",
+			"checking": "The curator is reading this against your 28 days…",
+			"claimed": "{claimed} of {owed} outcomes claimed",
+			"empty": "The goal is not written yet",
+			"ghostLine": "Add a line, then press Enter",
+			"info": "Written on day 1 and agreed with the curator. It does not change for the rest of the checkpoint.",
+			"inputPlaceholder": "A concept document",
+			"inputsTitle": "What exists today",
+			"label": "Goal",
+			"outcomePlaceholder": "A playable vertical slice",
+			"outcomesTitle": "What it will have by day 28",
+			"placeholder": "Ship a playable prototype a stranger can finish in 15 minutes without help.",
+			"remarkAnyway": "Go on anyway",
+			"remarkEdit": "Go back and edit",
+			"remarkMissing": "The stage asks for more",
+			"remarkTight": "This looks like more than 28 days hold",
+			"removeLine": "Remove the line",
+			"saveFailed": "Could not save",
+			"sentence": "The goal, in one sentence",
+			"sentenceHint": "One sentence the 28 days are judged against. The list below is how it is proven.",
+			"sideEmpty": "Nothing listed",
+			"suggest": "Suggest with AI",
+			"suggestFailed": "The curator could not suggest anything just now"
+		},
+		"happened": {
+			"title": "What has happened"
+		},
+		"inputs": {
+			"agreed": "Agreed with the curator on {date}. From then it is what the verdict is written against.",
+			"existed": "What existed on day 1",
+			"notStarted": "not started yet"
+		},
+		"midnote": {
+			"open": "open",
+			"title": "Day {day} — the scope note"
+		},
+		"name": "Checkpoint {n}",
+		"next": {
+			"cta": "Next checkpoint",
+			"locked": "Available after the verdict."
+		},
+		"now": {
+			"continueAnyway": "Continue anyway",
+			"ends": "Ends around {date}",
+			"goal": "What do you want to have in {days} days?",
+			"goalPlaceholder": "A playable greybox friends can try in 10 minutes…",
+			"hint": "{days} days, one goal, and a curator beside you. Let's set it up.",
+			"hours": "hours",
+			"hoursAbout": "~{hours} h",
+			"hoursFrom": "Where the hours come from",
+			"hoursShort": "h",
+			"hoursValue": "{hours} h",
+			"next": "Next — curator",
+			"people": "{count, plural, one {# person} other {# people}}",
+			"perCheckpoint": "The checkpoint",
+			"perSprint": "A sprint",
+			"project": "Your project",
+			"resource": "Work resource",
+			"riskTitle": "This goal may not fit the time you have",
+			"run": "{hours} hours over the whole checkpoint",
+			"share": "Your share a sprint",
+			"stage": "{stage} stage",
+			"stageNumber": "{stage} stage · checkpoint {number}",
+			"team": "Your team of {count} gives {hours} hours a sprint",
+			"teamSize": "Team",
+			"teamUnknown": "Your team of {count} has not stated its hours yet",
+			"title": "Glad you're heading for a checkpoint",
+			"titleNext": "Glad you're heading for the next checkpoint",
+			"viewResults": "View results",
+			"when": "When would you like to start?",
+			"yourTime": "You give a sprint"
+		},
+		"number": "Checkpoint {number}",
+		"open": "Open checkpoint",
+		"outcomes": {
+			"draftNote": "Editable until the goal call, then locked for the cycle.",
+			"title": "Outcomes"
+		},
+		"paid": {
+			"awaiting": "Waiting for the curator to take it on",
+			"awaitingBody": "The 28 days begin when they accept, not when you pay. If they turn it down you pick another curator and nothing is charged again.",
+			"cancel": "Cancel and refund",
+			"cancelFailed": "The checkpoint was not cancelled",
+			"cancelHold": "Cancel and release the money",
+			"cancelKeep": "Keep it",
+			"cancelNote": "The reservation is let go, nothing is charged, and the checkpoint is deleted along with what you wrote for it.",
+			"cancelOk": "Cancel and refund",
+			"cancelTitle": "Cancel this checkpoint?",
+			"checkAgain": "Check again",
+			"dates": "{from} – {to}",
+			"declined": "This expert cannot take it on right now",
+			"declinedBody": "Pick another expert and the checkpoint goes to them instead.",
+			"downloadReceipt": "Download receipt",
+			"foot": "Nothing left to do here",
+			"held": "The money is reserved",
+			"hint": "The checkpoint is bought. What is left is not yours to do.",
+			"pickAnother": "Pick another curator",
+			"planned": "Planned for {dates}",
+			"receipt": "Receipt",
+			"received": "Payment received",
+			"receivedBody": "The purchase is complete and the receipt is yours to keep.",
+			"released": "The reservation was let go — nothing was charged",
+			"replace": "Replace the curator",
+			"replaceNote": "The 28 days will wait for whoever you pick. Nothing is charged again.",
+			"replaceNoteFirstCall": "The 28 days will wait for whoever you pick, from the first call you book with them. Nothing is charged again.",
+			"replaceOk": "Hand it to them",
+			"replaceTitle": "Replace the curator",
+			"settling": "This settles on its own in a few seconds. Nothing else is needed from you.",
+			"slow": "The payment is taking longer than usual to confirm. If you paid, it will show up here — check again in a minute.",
+			"starting": "Payment received — starting"
+		},
+		"past": {
+			"column": {
+				"checkpoint": "Checkpoint",
+				"curator": "Curator",
+				"dates": "Dates",
+				"decidedBy": "Decided by",
+				"goal": "Goal",
+				"stage": "Stage",
+				"verdict": "Verdict"
+			},
+			"title": "Past checkpoints",
+			"total": "{count} closed checkpoints"
+		},
+		"path": {
+			"bought": "what was bought",
+			"buying": "buying the 28 days",
+			"checkpoint": "Checkpoint",
+			"inputs": "Inputs",
+			"label": "Path to checkpoint",
+			"prepare": "Prepare",
+			"sprint": "Sprint {n}",
+			"undated": "Dates appear after payment.",
+			"waiting": "paid, waiting"
+		},
+		"pay": {
+			"accept": "I accept the checkpoint agreement.",
+			"acceptFirst": "Accept the agreement to pay",
+			"acceptedOn": "Accepted {date}",
+			"adjustGoal": "Adjust the goal",
+			"agree": "I have read the checkpoint agreement and accept it — including what is not guaranteed.",
+			"aiSuggestion": "AI suggestion",
+			"calls": "Calls with {name}",
+			"callsWhen": "{weekday}s at {time} · {from} – {to} · five calls",
+			"capacity": "Team capacity",
+			"capacityHours": "{week} hours per sprint · {run} hours over 28 days",
+			"capacityUnknown": "Nobody has stated their hours yet",
+			"checkingBody": "The outcomes you wrote are being weighed against the hours the team has.",
+			"checkingTitle": "Reading your plan",
+			"checkoutFailed": "Could not open the checkout",
+			"checkpointNumber": "checkpoint {number}",
+			"curator": "Curator",
+			"days": "{count} days from the start",
+			"edit": "Edit",
+			"failedBody": "Try the payment again, or pay with another card.",
+			"failedTitle": "The payment did not go through",
+			"fromPrice": "From",
+			"goal": "The goal",
+			"humanPriceNote": "The price is their hourly rate against the hours a checkpoint takes — 7.5 for you plus half an hour for each of the team — and the platform's 40%. It is settled once a curator takes this on.",
+			"okBody": "The outcomes fit the hours the team stated. Nothing here is a promise that they land — only that the plan is not asking for more days than there are.",
+			"okTitle": "Your 28-day plan looks reachable",
+			"payAndStart": "Pay and start",
+			"perCycle": "per cycle",
+			"priceLabel": "Price",
+			"readAgain": "Ask again",
+			"readFailedBody": "Nothing is wrong with your checkpoint — the curator's read did not come back. You can pay without it, or ask again.",
+			"readFailedTitle": "The plan could not be read",
+			"riskBody": "The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
+			"riskTitle": "Your 28-day plan may be at risk",
+			"runsIn": "Runs in",
+			"term1": "Five consultations and a verdict by day 30.",
+			"term2": "Not the game itself. The team builds it; the curator holds the 28 days to the goal and cannot reach it for you.",
+			"term3": "No promise that the goal is met. A checkpoint where the work did not happen ends in “goal missed”.",
+			"termTasks": "Tasks are set together on the first call. Results are not guaranteed.",
+			"termTeam": "Your team does the work; the curator keeps the 28 days on track.",
+			"title": "Check and pay",
+			"vat": "+ VAT",
+			"waitForCheck": "Wait for the plan to be read",
+			"want": "What you want in 28 days",
+			"whatExists": "What exists now",
+			"whatMustExist": "What must exist by day 28",
+			"whatYouGet": "What the curator does"
+		},
+		"prepare": {
+			"back": "Back",
+			"cancel": "Cancel",
+			"disabled": "One checkpoint at a time. This one ends {date}.",
+			"draftNote": "You can revise this with the curator before the cycle starts.",
+			"failed": "The checkpoint could not be started",
+			"h1": "Review what carried over from the last checkpoint.",
+			"h2": "Define the goal and outcomes that must exist by day 28.",
+			"h3": "Choose who you want to take this journey with.",
+			"h4": "Review your choices, complete payment, and start working toward your next Checkpoint.",
+			"next1": "Next — goal",
+			"next2": "Next — curator",
+			"next3": "Next — planning",
+			"noDraft": "There is no draft to continue",
+			"noDraftHint": "Start a checkpoint from the list and the goal card opens here.",
+			"noStage": "The project is not on a workflow stage yet.",
+			"payPending": "Checkout is not open yet",
+			"q4": "When do you want to start?",
+			"saved": "Saved as a draft",
+			"step": {
+				"curator": "Curator",
+				"goal": "Goal",
+				"now": "Now",
+				"payment": "Payment",
+				"planning": "Planning",
+				"ready": "Ready",
+				"when": "When"
+			},
+			"stepNumber": "Step {current}/{total}",
+			"stepOf": "Step {step} of {total}",
+			"toList": "Back to checkpoints",
+			"toWorkflow": "Back to the workflow"
+		},
+		"proved": {
+			"count": "{count} of {total} outcomes",
+			"empty": "Nothing claimed yet",
+			"emptyNote": "An outcome appears here when the artifact that claims it lands inside this sprint.",
+			"title": "What this sprint proved"
+		},
+		"purchase": {
+			"close": "Close",
+			"saveAndClose": "Save and close",
+			"title": "New checkpoint"
+		},
+		"ready": {
+			"declinedTitle": "Pick another curator",
+			"title": "Payment successful"
+		},
+		"result": {
+			"added": "Added on day {day}",
+			"column": {
+				"came": "WHAT CAME OF IT",
+				"changed": "WHAT CHANGED",
+				"planned": "PLANNED ON DAY 1"
+			},
+			"cut": "Cut on day {day}",
+			"reworded": "Reworded — {text}",
+			"title": "The result card"
+		},
+		"review": {
+			"action": {
+				"acceptAll": "Accept all {n} suggestions",
+				"move": "Move to {stage}",
+				"plan": "Plan Checkpoint {n}",
+				"reviewTasks": "Review the tasks"
+			},
+			"curator": "AI curator",
+			"empty": "No review yet",
+			"emptyNote": "The curator writes one for every sprint, after its devlog.",
+			"in": "The review for the sprint is in",
+			"kindAi": "AI",
+			"kindPro": "Pro",
+			"message": {
+				"reading": "The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
+				"start": "Hi, I'm your curator for the next four weeks. Let's set the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check."
+			},
+			"missing": "This review is not one of yours, or its checkpoint is not run by the AI curator.",
+			"noDevlog": "There is no devlog for this sprint yet, and a review is written under one.",
+			"noReviewYet": "The start sets the tasks; the first review comes after Sprint 1.",
+			"notes": {
+				"byTask": "By task",
+				"focus": "Focus for Sprint {n}",
+				"noQuestions": "No open questions for the team.",
+				"nothingYet": "Nothing to show yet"
+			},
+			"option": {
+				"ahead": "This review is still ahead",
+				"sprint": "Sprint {n} · {date}",
+				"start": "Start · {date}",
+				"verdict": "Verdict · {date}"
+			},
+			"pageTitle": "Curator's Review",
+			"panel": {
+				"final": "Final review",
+				"plan": "Plan",
+				"sprint": "Sprint review"
+			},
+			"pendingText": "The AI curator reads the sprint's devlog, artifacts and activity. Ready on the review day — we'll email you.",
+			"pendingTitle": "The Sprint {n} review is on its way",
+			"placeholder": "What moved, what is in the way, what you would do next.",
+			"plan": {
+				"add": "Add",
+				"adviceAdd": "Worth adding: “{task}”.",
+				"adviceFailed": "The curator could not read the tasks. Try again in a minute.",
+				"adviceTry": "{note} Try: “{suggestion}”.",
+				"advise": "Save and get feedback",
+				"midHint": "Change the tasks yourself or take the curator's suggestions. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
+				"midTitle": "Tasks for sprints 3–4",
+				"remove": "Remove",
+				"save": "Save changes",
+				"startHint": "Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+				"until": "Open until {date}",
+				"useThis": "Use this"
+			},
+			"proCurator": "{name} · curator",
+			"publish": "Publish the review",
+			"saveFailed": "The review was not saved",
+			"subtitle": "Checkpoint {number} · {stage} · {from} – {to}",
+			"subtitleAi": "AI · Checkpoint {number} · {stage} · {from} – {to}",
+			"title": "The curator's review of the sprint",
+			"verdict": "Verdict",
+			"write": "Your review of this sprint"
+		},
+		"scope": {
+			"add": "Add an outcome",
+			"check": "Check the scope",
+			"chip": {
+				"added": "New",
+				"cut": "Comes off",
+				"reworded": "Reworded"
+			},
+			"confirm": "Record it",
+			"cta": "Change the outcomes",
+			"cut": "Cut the line",
+			"failed": "The change could not be saved",
+			"keep": "Leave the list as it is",
+			"keepNote": "The outcome list stands. Say why, and the decision is recorded beside it.",
+			"keepTitle": "Leave the list as it is",
+			"note": "The original scope remains in the checkpoint history.",
+			"onCall": "Tasks can change on call 3",
+			"onCallMeta": "The last chance to change this checkpoint's tasks. Done tasks stay as they are.",
+			"openCall": "Open call 3",
+			"subtitle": "Update the scope on day {day}.",
+			"why": "Why"
+		},
+		"signals": {
+			"artifacts": "Artifacts",
+			"askedFor": "Asked for since day {day}",
+			"askedOn": "Asked for on day {day}",
+			"confirmedOf": "{done} of {total}",
+			"devlogs": "Devlogs",
+			"empty": "No one has been asked yet",
+			"emptyNote": "Every member is asked once a sprint, and work already published answers for them.",
+			"info": "One press per person per sprint. Hover a cell for the day it was marked.",
+			"legend": {
+				"missed": "Missed",
+				"notAsked": "Not asked yet",
+				"notOnTeam": "Not on the team",
+				"waiting": "Waiting"
+			},
+			"marked": "Marked {date}",
+			"markedCount": "{done} of {total} marked this sprint.",
+			"missing": "A mark is missing",
+			"noneAttached": "Not attached",
+			"of": "{done} of {total}",
+			"pulsesThisSprint": "Pulses this sprint",
+			"sprintShort": "S{n}",
+			"team": "TEAM",
+			"title": "Team signals"
+		},
+		"sprintTab": {
+			"evidence": "Evidence",
+			"review": "Review",
+			"signals": "Signals",
+			"status": "Status"
+		},
+		"start": "Start a checkpoint",
+		"start.": "Start a checkpoint",
+		"start.check.note": "Checked by the AI curator · advice, not a gate",
+		"start.disabled": "One checkpoint at a time. This one ends {date}.",
+		"start.draftNote": "You can revise this with the curator before the cycle starts.",
+		"start.failed": "The checkpoint could not be started",
+		"start.h1": "Review what carried over from the last checkpoint.",
+		"start.h2": "Define the goal and outcomes that must exist by day 28.",
+		"start.h3": "Choose who you want to take this journey with.",
+		"start.h4": "Review your choices, complete payment, and start working toward your next Checkpoint.",
+		"start.next1": "Next — goal",
+		"start.next2": "Next — curator",
+		"start.next3": "Next — planning",
+		"start.noDraft": "There is no draft to continue",
+		"start.noDraftHint": "Start a checkpoint from the list and the goal card opens here.",
+		"start.noStage": "The project is not on a workflow stage yet.",
+		"start.payPending": "Checkout is not open yet",
+		"start.q1": "What exists today?",
+		"start.q2": "Where do you want the project to be in 28 days?",
+		"start.q3": "Who runs the 28 days?",
+		"start.q4": "Ready to start?",
+		"start.toList": "Back to checkpoints",
+		"status": {
+			"awaitingCurator": "Waiting for the curator",
+			"awaitingVerdict": "Awaiting verdict",
+			"day": "Day {day} of 28",
+			"daysLeft": "{count} days left",
+			"declined": "Expert unavailable"
+		},
+		"tab": "Checkpoints",
+		"tab.evidence": "Evidence",
+		"tab.review": "Review",
+		"tab.signals": "Signals",
+		"tab.status": "Status",
+		"verdict": {
+			"goalMet": "Goal met",
+			"goalMetMeaning": "Outcomes are complete. The project stays on this stage; continue with a new checkpoint.",
+			"goalMissed": "Goal missed",
+			"goalMissedMeaning": "Outcomes are incomplete. Continue with a new checkpoint.",
+			"locked": "Written on day 28",
+			"lockedNote": "{done} of {total} outcomes has evidence against it so far.",
+			"nextStage": "Ready for the next stage",
+			"nextStageMeaning": "Goal met. The project may move from {from} to {to}.",
+			"nextStageMeaningShort": "Goal met. The project may move to the next stage.",
+			"review": "The curator is writing it",
+			"reviewNote": "Waiting for the curator’s verdict.",
+			"stageClosed": "Stage can be closed",
+			"title": "The verdict"
+		},
+		"waiting": {
+			"body": "Your curator confirms the start date. You’ll be notified when they respond.",
+			"curator": "The curator",
+			"title": "{name} has not taken these 28 days yet"
+		},
+		"when": {
+			"asap": "As soon as the curator accepts it",
+			"asapAi": "As soon as it is paid",
+			"calendar": "Calls: {s1}, {s2}, {s3}, {s4} · Devlogs: {d1}, {d2}, {d3}, {d4} · Final review: {review} · Verdict by {verdict}.",
+			"capacity": "Team capacity",
+			"curatorConfirms": "Project timezone: UTC+2. Your curator confirms the start date.",
+			"finishAuto": "Calculated automatically",
+			"finishDate": "Finish date",
+			"hint": "Say when you would like the 28 days to begin and confirm how much time the team has for them.",
+			"next": "Next — payment",
+			"pick": "On a day I choose",
+			"runs": "Runs {from} – {to}",
+			"startDate": "Preferred start date",
+			"startsOn": "Starts on",
+			"teamFrom": "From",
+			"teamMember": "Who",
+			"teamNote": "Hours come from each member's own profile. Only your own line is yours to correct here.",
+			"teamRun": "Over the 28 days",
+			"teamTitle": "What the team has for these 28 days",
+			"teamTo": "To",
+			"teamTotal": "The team",
+			"teamTotalPart": "The team — {stated} of {members} stated",
+			"teamUnknown": "not stated",
+			"teamWeek": "Hours / sprint",
+			"timezoneNote": "Project timezone: UTC+2 · Your curator confirms the final date.",
+			"timing": "Start timing"
+		}
+	},
 	"city": "City",
 	"close": "Close",
 	"common": {
 		"apply": "Apply",
+		"back": "Back",
 		"cancel": "Cancel",
 		"delete": "Delete",
 		"save": "Save"
@@ -716,7 +1731,9 @@
 			"description": "Share your progress on the development of {projectName}",
 			"description2": " will help attract attention to the project and get feedback.",
 			"title": "Your devlog is empty"
-		}
+		},
+		"numbered": "Devlog #{number}",
+		"unnumbered": "Devlog"
 	},
 	"devlogwall": {
 		"form": {
@@ -1374,8 +2391,33 @@
 			"delete-confirm": "Are you sure you want to delete this report?",
 			"delete-confirm-no": "No",
 			"delete-confirm-yes": "Yes",
+			"empty": "Write something first",
+			"error": "The post could not be saved",
+			"fullscreen": {
+				"enter": "Full screen",
+				"exit": "Exit full screen"
+			},
+			"placeholder": "What moved on the project?",
+			"post": "Post",
 			"report-deleted": "Report deleted",
-			"save": "Save"
+			"save": "Save",
+			"tool": {
+				"checklist": "Checklist",
+				"delimiter": "Divider",
+				"heading": "Heading",
+				"image": "Image",
+				"link": "Link preview",
+				"list": "List",
+				"more": "More blocks",
+				"quote": "Quote",
+				"table": "Table",
+				"video": "Video"
+			},
+			"video": {
+				"add": "Add",
+				"placeholder": "Paste a video link",
+				"unsupported": "This link is not a video we can embed"
+			}
 		},
 		"devlogwall": {
 			"newpost": {
@@ -1879,8 +2921,21 @@
 			"teamInvitation": "Team Invitation"
 		},
 		"my-project-devlog": {
-			"description": "Tell the world about your project development progress",
-			"title": "Project Devlog"
+			"action": {
+				"delete": "Delete",
+				"edit": "Edit",
+				"open": "Go to page"
+			},
+			"actions": "Post actions",
+			"column": {
+				"applause": "Applause",
+				"post": "Post",
+				"published": "Published",
+				"views": "Views"
+			},
+			"description": "Tell the community about your project development progress",
+			"empty": "No posts yet",
+			"title": "Devlog Posts"
 		},
 		"my": {
 			"projects": {
@@ -2319,6 +3374,42 @@
 		"jobs": "Open positions",
 		"video-games": "Video Games"
 	},
+	"pulse": {
+		"cell": {
+			"ahead": "Not yet",
+			"confirmed": "Confirmed",
+			"missed": "Missed",
+			"notAsked": "Not asked",
+			"waiting": "Waiting for your answer"
+		},
+		"closed": {
+			"kicker": "Pulse link",
+			"open": "Open GDHub",
+			"text": "A pulse can be answered until the sprint’s next call. This one has passed, or the link was changed on the way.",
+			"title": "This link no longer works"
+		},
+		"confirmed": {
+			"open": "Open {project}",
+			"text": "You are marked as working on {project} in Sprint {sprint}. Opening this link again changes nothing.",
+			"title": "Thanks, {name} — noted",
+			"titleNoName": "Thanks — noted"
+		},
+		"error": "Could not save — try again",
+		"kicker": "{project} · Checkpoint {number}",
+		"kickerSprint": "{project} · Checkpoint {number} · Sprint {sprint}",
+		"open": {
+			"confirm": "Yes, I was",
+			"hint": "If you weren’t working on it this sprint, just close this page. Nothing is recorded.",
+			"text": "Saying yes marks you in the team’s pulse, which your curator reads at the next call.",
+			"title": "Were you working on <accent>{project}</accent> this sprint?"
+		},
+		"period": "Sprint {sprint} · {dates}",
+		"strip": {
+			"joined": "You joined the team in Sprint {sprint}",
+			"sprint": "Sprint {sprint}",
+			"title": "Your pulse in this checkpoint"
+		}
+	},
 	"refresh_token_expired": "Your session has expired. Please sign in again.",
 	"relevant for": "relevant for",
 	"resources": "Recources",
@@ -2337,6 +3428,7 @@
 	"select": "Select",
 	"settings": {
 		"payments": {
+			"checkpoint": "Checkpoint",
 			"column": {
 				"amount": "Amount",
 				"date": "Date",
@@ -2346,10 +3438,27 @@
 			},
 			"download": "Download",
 			"empty": "No payments yet",
+			"gone": "No longer exists",
+			"history": {
+				"chargedRefunded": "Charged {charged} → refunded",
+				"reserved": "Reserved {date} · not charged yet",
+				"reservedCharged": "Reserved {reserved} → charged {charged}"
+			},
+			"receiptFailed": "The receipt could not be opened",
+			"status": {
+				"notCharged": "Not charged",
+				"reserved": "Reserved"
+			},
 			"subtitle": "Your payment history across the platform.",
 			"title": "Payments",
 			"vacancyFee": "Vacancy listing"
 		}
+	},
+	"share": {
+		"copied": "Link copied",
+		"copy": "Copy link",
+		"label": "Share",
+		"title": "Share post"
 	},
 	"signin": "Sign in",
 	"signin.backToMain.title": "Back to main",
@@ -2595,7 +3704,53 @@
 				"name": "Closing"
 			}
 		},
+		"activity": {
+			"artifact": "{name} added an artifact",
+			"created": "{name} created the project",
+			"devlog": "{name} published a devlog",
+			"devlogNumber": "Devlog {number}",
+			"empty": "Nothing has happened here yet.",
+			"invitedBy": "Invited by {name}",
+			"joined": "{name} joined the team",
+			"joinedInvited": "{role} · invited by {name}",
+			"left": "{name} left the team",
+			"loading": "Loading earlier activity…",
+			"reworded": "Task reworded on the day-{day} revision",
+			"sprint": "Sprint {number} started · {date}",
+			"stage": "Stage finished: {name}",
+			"title": "Activity",
+			"today": "Today, {time}",
+			"vacancyClosed": "Vacancy closed: {title}",
+			"vacancyOpened": "Vacancy opened: {title}"
+		},
+		"after": {
+			"another": "Another checkpoint",
+			"anotherBody": "28 days with a curator: a goal, four sprints and a verdict at the end.",
+			"by": "— {name}, curator",
+			"continue": "Continue with stage tasks",
+			"move": "Move to {stage}",
+			"own": "On your own",
+			"ownBody": "Work through the {stage} tasks at your own pace, without a curator.",
+			"plan": "Plan Checkpoint {number}",
+			"stageOpen": "{stage} is open",
+			"stageOpenBody": "The verdict lets the project move on. Its tasks and the next checkpoint will be for {stage}.",
+			"stay": "Or stay in {stage}",
+			"title": "How do you go on?",
+			"verdictOn": "verdict {date}"
+		},
 		"all-steps": "All steps",
+		"aside": {
+			"ai": "AI",
+			"allArtifacts": "All artifacts",
+			"attach": "Attach an artifact",
+			"chat": "Checkpoint chat",
+			"chatFailed": "The chat could not open",
+			"checkpoint": "Checkpoint {number}",
+			"curator": "Curator",
+			"goal": "Goal",
+			"industry": "Industry",
+			"tasks": "Tasks"
+		},
 		"create-workflow": {
 			"modal": {
 				"cancel-text": "Cancel",
@@ -2605,6 +3760,32 @@
 				"title-required": "Title is required"
 			}
 		},
+		"draft": {
+			"cancel": "Cancel the checkpoint",
+			"continue": "Continue setup",
+			"declined": "Curator declined",
+			"declinedNote": "The curator can't take it on right now. Pick another curator — the payment moves with it.",
+			"discard": "Cancel the draft",
+			"discardFailed": "The draft was not cancelled",
+			"discardKeep": "Leaving this page keeps the draft.",
+			"discardNote": "All three steps will be deleted permanently.",
+			"discardTitle": "Cancel this draft?",
+			"draft": "Draft",
+			"email": "We'll email you as soon as {name} decides.",
+			"failed": "Payment failed",
+			"failedNote": "Try again, or pay with another card. Nothing was charged.",
+			"first": "Your first checkpoint",
+			"keep": "Keep the draft",
+			"more": "More",
+			"next": "Your next checkpoint",
+			"nothingCharged": "Nothing was charged.",
+			"planned": "Planned for {dates}.",
+			"refundNote": "The money is returned in full and the checkpoint is deleted along with what you wrote for it.",
+			"replace": "Replace the curator",
+			"savedAt": "Saved at {step} · step {number} of 3",
+			"tryAgain": "Try again",
+			"waiting": "Waiting for the curator"
+		},
 		"equity-transfer": {
 			"description": "By proceeding to the next step, the following equity promises will be transferred to actual allocations:",
 			"title": "Equity Transfer Confirmation",
@@ -2613,6 +3794,144 @@
 		"finish-step": "Next step",
 		"next-step": "Go to completion step",
 		"no-tasks": "No tasks for this step",
+		"offer": {
+			"createFailed": "Could not start a checkpoint",
+			"factFeedback": "Feedback that moves you",
+			"factNext": "A clear next step",
+			"factSprints": "{count} weekly sprints",
+			"from": "from {price}",
+			"industry": "Industry curator",
+			"locked": "Checkpoints open soon",
+			"or": "or",
+			"sprints": "{count} sprints",
+			"sprintsNote": "a week each",
+			"start": "Get started",
+			"subtitle": "{days} days toward one goal, with a curator beside you.",
+			"subtitleAfter": "Checkpoint {number} closed: {verdict}. Set the next goal.",
+			"title": "Head for your first checkpoint",
+			"titleNext": "Head for the next checkpoint",
+			"titleNumber": "Head for Checkpoint {number}",
+			"verdict": "A verdict",
+			"verdictNote": "the stage can close"
+		},
+		"path": {
+			"accepted": {
+				"sub": "Your first call with them opens Sprint 1.",
+				"title": "{name} agreed to work with you"
+			},
+			"ai-curator": "AI curator",
+			"check": {
+				"artifacts": "Attach artifacts",
+				"at-session": "at the session {date}",
+				"at-today": "at today's session",
+				"build": "Upload the current build",
+				"devlog": "Write the sprint devlog",
+				"head": "Before the next session · {date}",
+				"head-final": "Before the checkpoint",
+				"head-review": "Before the next review · {date}",
+				"head-sprint": "By the end of Sprint {number} · {date}",
+				"priorities": "Set sprint priorities with {name}",
+				"session-on": "session {date}",
+				"verdict": "Read the Checkpoint {number} verdict",
+				"view-results": "View results"
+			},
+			"checkpoint": {
+				"goal": "Goal",
+				"not-delivered": "Not delivered",
+				"started": "Checkpoint {number} started · {date}",
+				"tasks": "Tasks",
+				"title": "Checkpoint {number}"
+			},
+			"count": "{done} of {total}",
+			"count-done": "{done} of {total} done",
+			"due": {
+				"on": "due {date}",
+				"overdue": "overdue since {date}",
+				"today": "due today",
+				"todayTag": "Today",
+				"tomorrow": "due tomorrow"
+			},
+			"earlierCheckpoints": "{count, plural, one {# earlier checkpoint} other {# earlier checkpoints}}",
+			"gate": {
+				"ai": "{date} · final review · verdict by {verdict}",
+				"human": "{date} · call with {name} · verdict by {verdict}"
+			},
+			"here": "You are here",
+			"history": {
+				"earlier": "Show earlier stages",
+				"hide": "Hide previous path",
+				"show": "Show previous path"
+			},
+			"pulse": {
+				"confirmed": "Checked in",
+				"empty": "Nobody has been asked yet.",
+				"hint": "A check is a day with a devlog, an artifact or the pulse link.",
+				"label": "Pulse",
+				"missed": "Missed",
+				"not-asked": "Not asked",
+				"quiet": "Quiet",
+				"sprint": "Sprint {number} · {dates}",
+				"title": "Team pulse",
+				"waiting": "Not yet"
+			},
+			"release": "Release",
+			"results": {
+				"title": "Checkpoint {number} results"
+			},
+			"review-by": "review by",
+			"session": {
+				"ai-start": "Set the tasks",
+				"ai-start-sub": "The AI curator reads your tasks and says which fit the four weeks",
+				"calendar": "Add to calendar",
+				"final": "the final one",
+				"join": "Join session",
+				"join-in": "Join in {days} days",
+				"join-tomorrow": "Join tomorrow",
+				"more": "Session actions",
+				"notes": "Notes",
+				"open-plan": "Open the plan",
+				"open-review": "Open review",
+				"opens": "opens Sprint {number}",
+				"review": "Review",
+				"review-sub": "Written by the AI curator from your devlog, artifacts and activity",
+				"review-title": "Sprint {number} review",
+				"today": "today",
+				"today-label": "Today",
+				"with": "Session with {name}"
+			},
+			"sprint": {
+				"added": "{count, plural, one {# artifact added} other {# artifacts added}}",
+				"artifacts": "Artifacts {done} of {total}",
+				"artifactsAdded": "Artifacts added",
+				"closed": "{count, plural, one {# task closed} other {# tasks closed}}",
+				"closedThis": "{count, plural, one {# task closed this sprint} other {# tasks closed this sprint}}",
+				"day": "day {day}",
+				"details": "Sprint details",
+				"devlog": "Devlog",
+				"devlogOf": "Sprint {number} devlog",
+				"empty": "Nothing was added in this sprint.",
+				"name": "Sprint {number}",
+				"of": "Sprint {number} of 4",
+				"tasks": "{done} of {total} tasks",
+				"tasksClosed": "Tasks closed",
+				"toward": "toward Checkpoint {number}"
+			},
+			"stage": {
+				"current": "Current stage",
+				"label": "Stage",
+				"locked": "Finish the required tasks to move on",
+				"next": "Next stage",
+				"next-button": "Next",
+				"previous": "Previous stage",
+				"required": "Required",
+				"since": "since {date}",
+				"tasks": "Tasks"
+			},
+			"starts-in": "starts in {days} days",
+			"starts-tomorrow": "starts tomorrow",
+			"up-next": "Up next",
+			"with": "with"
+		},
 		"previous-step": "Previous",
 		"start-step": "Go to the next step",
 		"tasks": {
@@ -2620,6 +3939,7 @@
 			"optional": "Optional",
 			"required": "Required",
 			"required-progress": "{done} of {total} required",
+			"stageTitle": "Stage tasks",
 			"title": "Tasks"
 		}
 	},

@@ -7,7 +7,7 @@ import { Button, Dropdown, Grid, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import ReactNiceAvatar, { type AvatarFullConfig } from "react-nice-avatar";
+import { ChatPanel } from "@/components/Chat/ChatPanel";
 import { ChatButton } from "@/components/ChatButton";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
@@ -18,15 +18,16 @@ const NotificationsBell = dynamic(
 	{ ssr: false },
 );
 
+// The avatar generator is large and only the users without a photo need it.
+const FallbackAvatar = dynamic(() => import("./FallbackAvatar"));
+
 const DOCS_URL = "https://docs.gdhub.io";
 
 type HeaderActionsProps = {
 	dropdownMenuItems: MenuProps["items"];
 	onOpenMobileMenu: () => void;
-	/** When provided, renders the chat button (only the hub-level layouts have it). */
-	onOpenChat?: () => void;
-	/** When provided, falls back to a generated avatar instead of nothing. */
-	avatarConfig?: AvatarFullConfig;
+	/** When provided, falls back to an avatar generated from it instead of nothing. */
+	avatarSeed?: string;
 };
 
 /**
@@ -39,8 +40,7 @@ type HeaderActionsProps = {
 export const HeaderActions = ({
 	dropdownMenuItems,
 	onOpenMobileMenu,
-	onOpenChat,
-	avatarConfig,
+	avatarSeed,
 }: HeaderActionsProps) => {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
@@ -58,27 +58,26 @@ export const HeaderActions = ({
 				/>
 			}
 		/>
-	) : avatarConfig ? (
-		<ReactNiceAvatar
-			style={{ width: "32px", height: "32px" }}
-			{...avatarConfig}
-		/>
+	) : avatarSeed ? (
+		<FallbackAvatar seed={avatarSeed} />
 	) : null;
 
 	if (!screens.xl) {
 		return (
-			<Space align="center" size={8}>
-				<NotificationsBell />
-				{onOpenChat && <ChatButton onClick={() => onOpenChat()} />}
-				<Button
-					type="text"
-					shape="circle"
-					style={{ top: 2 }}
-					onClick={onOpenMobileMenu}
-				>
-					<IconMenu2 />
-				</Button>
-			</Space>
+			<ChatPanel>
+				<Space align="center" size={8}>
+					<NotificationsBell />
+					<ChatButton />
+					<Button
+						type="text"
+						shape="circle"
+						style={{ top: 2 }}
+						onClick={onOpenMobileMenu}
+					>
+						<IconMenu2 />
+					</Button>
+				</Space>
+			</ChatPanel>
 		);
 	}
 
@@ -99,32 +98,35 @@ export const HeaderActions = ({
 				...(dropdownMenuItems ?? []),
 			];
 
+	// The chat panel hangs from the whole row, so it ends under the avatar.
 	return (
-		<Space align="center" size={8}>
-			{showDocsButton && (
-				<Link href={DOCS_URL} target="_blank">
-					<Button type="text" style={{ fontSize: 14 }}>
-						{t("hub.menu.documentation", "Documentation")}
-					</Button>
-				</Link>
-			)}
-			{onOpenChat && <ChatButton onClick={() => onOpenChat()} />}
-			<NotificationsBell />
-			<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
-				<Button
-					type="text"
-					shape="circle"
-					style={{
-						display: "inline-flex",
-						alignItems: "center",
-						justifyContent: "center",
-						padding: 0,
-						lineHeight: 0,
-					}}
-					icon={avatar}
-				/>
-			</Dropdown>
-		</Space>
+		<ChatPanel>
+			<Space align="center" size={8}>
+				{showDocsButton && (
+					<Link href={DOCS_URL} target="_blank">
+						<Button type="text" style={{ fontSize: 14 }}>
+							{t("hub.menu.documentation", "Documentation")}
+						</Button>
+					</Link>
+				)}
+				<ChatButton />
+				<NotificationsBell />
+				<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+					<Button
+						type="text"
+						shape="circle"
+						style={{
+							display: "inline-flex",
+							alignItems: "center",
+							justifyContent: "center",
+							padding: 0,
+							lineHeight: 0,
+						}}
+						icon={avatar}
+					/>
+				</Dropdown>
+			</Space>
+		</ChatPanel>
 	);
 };
 

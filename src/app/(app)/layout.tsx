@@ -1,10 +1,17 @@
+import {
+	dehydrate,
+	HydrationBoundary,
+	QueryClient,
+} from "@tanstack/react-query";
+import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
-import { auth } from "@/auth";
 import { AccessProvider } from "@/components/access/AccessProvider";
 import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { ProtectedShell } from "@/components/layouts/ProtectedShell";
 import { SpaceHeaderProvider } from "@/components/layouts/SpaceHeader";
 import { requireSession } from "@/helpers/require-session";
+import { USER_SPACES_QUERY_KEY } from "@/hooks/useUserSpaces";
+import { getCachedUserSpaces } from "@/repositories/user-spaces";
 import { getSpaceAccess, type MaybeAccessUser } from "@/services/access";
 import { toSnapshot } from "@/services/access/snapshot";
 
@@ -20,25 +27,36 @@ import { toSnapshot } from "@/services/access/snapshot";
  * Per-space access checks live in the space's own layout via `createSpaceGate`.
  */
 export default async function AppLayout({ children }: { children: ReactNode }) {
-	await requireSession();
-
-	const session = await auth();
+	const session = await requireSession();
 	const user = (session?.user ?? null) as MaybeAccessUser;
 
+	// The header's space switcher would otherwise ask for this after hydration.
+	const queryClient = new QueryClient();
 	const [hub, admin] = await Promise.all([
 		getSpaceAccess("hub", null, user),
 		getSpaceAccess("admin", null, user),
+		user &&
+			queryClient.prefetchQuery({
+				queryKey: USER_SPACES_QUERY_KEY,
+				queryFn: () => getCachedUserSpaces(user.id),
+			}),
 	]);
 
+	// Handing over the session read here lets every query gated on the user
+	// start without waiting for /api/auth/session.
 	return (
-		<ChatProvider>
-			<AccessProvider
-				value={{ hub: toSnapshot(hub), admin: toSnapshot(admin) }}
-			>
-				<SpaceHeaderProvider>
-					<ProtectedShell>{children}</ProtectedShell>
-				</SpaceHeaderProvider>
-			</AccessProvider>
-		</ChatProvider>
+		<SessionProvider session={session}>
+			<HydrationBoundary state={dehydrate(queryClient)}>
+				<ChatProvider>
+					<AccessProvider
+						value={{ hub: toSnapshot(hub), admin: toSnapshot(admin) }}
+					>
+						<SpaceHeaderProvider>
+							<ProtectedShell>{children}</ProtectedShell>
+						</SpaceHeaderProvider>
+					</AccessProvider>
+				</ChatProvider>
+			</HydrationBoundary>
+		</SessionProvider>
 	);
 }

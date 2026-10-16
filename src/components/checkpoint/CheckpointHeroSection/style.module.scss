@@ -1,0 +1,129 @@
+.section {
+	padding-block: 28px 40px;
+}
+
+.hero {
+	display: grid;
+	gap: 20px;
+}
+
+.copy {
+	display: grid;
+	gap: 20px;
+	align-content: start;
+}
+
+.badge {
+	display: grid;
+	gap: 4px;
+}
+
+.product {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-h3);
+	font-weight: 700;
+	color: var(--gd-color-text);
+}
+
+.descriptor {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--gd-color-accent);
+}
+
+.headline {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-hero);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.023em;
+	color: var(--gd-color-text);
+}
+
+.subhead {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-lead);
+	line-height: 1.55;
+	color: var(--gd-color-text-secondary);
+}
+
+.ctaLink,
+.primary {
+	width: 100%;
+}
+
+.primary {
+	font-weight: 600;
+}
+
+.visual {
+	display: flex;
+	justify-content: center;
+}
+
+.artwork {
+	width: 100%;
+	max-width: 250px;
+	height: auto;
+}
+
+.priceNote {
+	margin: 0;
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.5;
+	color: var(--gd-color-text-tertiary);
+}
+
+// Neither frame covers this width; the phone size leaves the artwork stranded.
+@media screen and (min-width: 768px) {
+	.artwork {
+		max-width: 340px;
+	}
+}
+
+@media screen and (min-width: 992px) {
+	.section {
+		padding-block: 64px 80px;
+	}
+
+	.hero {
+		grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+		column-gap: 64px;
+		align-items: center;
+	}
+
+	.copy {
+		grid-area: 1 / 1;
+		gap: 24px;
+	}
+
+	// Spans both rows so the price note sits under the button, not the picture.
+	.visual {
+		grid-area: 1 / 2 / span 2;
+	}
+
+	.priceNote {
+		grid-area: 2 / 1;
+		font-size: var(--gd-font-size-body-sm);
+	}
+
+	// Taller than the page's other calls to action, as on the platform landing.
+	.ctaLink,
+	.primary {
+		width: auto;
+	}
+
+	.primary {
+		height: 64px;
+		padding-inline: 32px;
+		font-size: var(--gd-font-size-h3);
+		white-space: nowrap;
+	}
+
+	.artwork {
+		max-width: 430px;
+	}
+}
