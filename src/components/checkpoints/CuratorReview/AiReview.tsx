@@ -14,7 +14,6 @@ import { App, Segmented, Tabs, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
 import { GoalCard } from "@/components/checkpoints/CallRoom/CallGoal";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { CallLayout } from "@/components/checkpoints/CallRoom/CallParts";
@@ -24,6 +23,7 @@ import {
 	usePlanChange,
 } from "@/components/checkpoints/CallRoom/CallPlan";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
+import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState } from "@/components/ui";
 import { FINAL_SESSION, SCOPE_SESSION } from "@/config/checkpoint";
 import {
@@ -426,7 +426,7 @@ function Message({
 				n: review.number + 1,
 			}),
 			icon: <IconCalendarPlus size={16} />,
-			onClick: () => router.push(checkoutHref(review.project.slug)),
+			onClick: () => router.push(entryHubHref(review.project.slug)),
 		});
 	}
 

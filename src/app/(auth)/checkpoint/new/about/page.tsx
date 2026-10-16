@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+import {
+	entryAboutHref,
+	projectParam,
+} from "@/components/checkpoints/entry/hrefs";
 import { requireSession } from "@/helpers/require-session";
 import { AboutClient } from "./AboutClient";
 
@@ -7,7 +11,12 @@ export const metadata: Metadata = {
 	robots: { index: false, follow: false },
 };
 
-export default async function CheckpointEntryAboutPage() {
-	await requireSession("/checkpoint/new/about");
-	return <AboutClient />;
+type Props = { searchParams: Promise<{ project?: string | string[] }> };
+
+export default async function CheckpointEntryAboutPage({
+	searchParams,
+}: Props) {
+	const projectSlug = projectParam((await searchParams).project);
+	await requireSession(entryAboutHref(projectSlug));
+	return <AboutClient projectSlug={projectSlug} />;
 }

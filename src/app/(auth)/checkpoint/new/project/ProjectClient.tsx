@@ -14,8 +14,8 @@ import {
 	type DoneSoFarRow,
 	EMPTY_DONE_ROW,
 } from "@/components/checkpoints/entry/DoneSoFar";
-import { ENTRY_HUB_HREF } from "@/components/checkpoints/entry/EntryHub";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
+import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { ProjectPicker } from "@/components/checkpoints/entry/ProjectPicker";
 import CreateProjectModal, {
 	type CreatedProject,
@@ -25,15 +25,21 @@ import {
 	entryKeys,
 	useEntryPrefill,
 	useEntryStatus,
+	useRateLimitWarning,
 	useSaveEntryProject,
 } from "@/hooks/checkpoint-entry";
-import type { EntryStatusDto } from "@/types/checkpoints";
+import type { CheckpointBlocker, EntryStatusDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 type ProjectValues = { [DONE_SO_FAR_FIELD]: DoneSoFarRow[] };
 
+export type ProjectClientProps = {
+	/** `?project=`: the project the way in was opened for, picked when it is free. */
+	projectSlug?: string;
+};
+
 /** Item 2 (12.2 – 12.2c): the project, and what is already done on it. */
-export function ProjectClient() {
+export function ProjectClient({ projectSlug }: ProjectClientProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const router = useRouter();
@@ -42,6 +48,8 @@ export function ProjectClient() {
 
 	const status = useEntryStatus();
 	const save = useSaveEntryProject();
+	const rateLimited = useRateLimitWarning();
+	const hubHref = entryHubHref(projectSlug);
 
 	const [projectId, setProjectId] = useState<string>();
 	const [creating, setCreating] = useState(false);
@@ -49,15 +57,17 @@ export function ProjectClient() {
 	const projects = status.data?.projects ?? [];
 	const available = projects.filter((project) => !project.running);
 
-	// The draft's project first, then the most recent one — never one already under way.
+	// The asked-for project, then the draft's, then the most recent one — never one already under way.
 	useEffect(() => {
 		if (projectId || !status.data) return;
 		const open = status.data.projects.filter((project) => !project.running);
 		const draftId = status.data.draft?.projectId;
 		setProjectId(
-			open.find((project) => project.id === draftId)?.id ?? open[0]?.id,
+			open.find((project) => project.slug === projectSlug)?.id ??
+				open.find((project) => project.id === draftId)?.id ??
+				open[0]?.id,
 		);
-	}, [projectId, status.data]);
+	}, [projectId, projectSlug, status.data]);
 
 	const prefill = useEntryPrefill(projectId);
 
@@ -118,17 +128,36 @@ export function ProjectClient() {
 					artifactId: row.artifact?.id ?? null,
 				})),
 			});
-			router.push(ENTRY_HUB_HREF);
+			router.push(hubHref);
 		} catch (error) {
-			message.error(
+			if (rateLimited(error)) return;
+			const blocker: CheckpointBlocker["reason"] | undefined =
 				isAxiosError(error) && error.response?.status === 409
-					? t(
-							"checkpointEntry.project.running",
-							"This project already has a checkpoint under way.",
-						)
+					? (error.response.data?.blocker?.reason ?? "checkpointOpen")
+					: undefined;
+			message.error(
+				blocker
+					? blockerText(blocker)
 					: t("checkpointEntry.project.failed", "Could not save — try again"),
 			);
 		}
+	};
+
+	const blockerText = (reason: CheckpointBlocker["reason"]) => {
+		if (reason === "purchaseClosed")
+			return t(
+				"checkpointEntry.closed",
+				"Checkpoints open soon — we'll email you when you can head for one.",
+			);
+		if (reason === "noStage")
+			return t(
+				"checkpointEntry.project.noStage",
+				"This project has no workflow stage yet — try again or pick another project.",
+			);
+		return t(
+			"checkpointEntry.project.running",
+			"This project already has a checkpoint under way.",
+		);
 	};
 
 	const saveButton = (
@@ -218,7 +247,7 @@ export function ProjectClient() {
 			)}
 			foot={
 				<>
-					<Link href={ENTRY_HUB_HREF}>
+					<Link href={hubHref}>
 						<Button>{t("checkpointEntry.cancel", "Cancel")}</Button>
 					</Link>
 					{blocked ? (

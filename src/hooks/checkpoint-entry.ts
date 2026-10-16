@@ -2,7 +2,9 @@
 
 import type { Speciality, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { useTranslate } from "@tolgee/react";
+import { App } from "antd";
+import axios, { isAxiosError } from "axios";
 import type { SkillLevel } from "@/config/prisma-enums";
 import type {
 	EntryProjectInput,
@@ -16,6 +18,27 @@ export const entryKeys = {
 		["checkpoint-entry", "project", projectId] as const,
 	profile: ["checkpoint-entry", "about", "profile"] as const,
 	speciality: ["checkpoint-entry", "about", "speciality"] as const,
+};
+
+/** An AI-backed call (about, project create, goal check) refused for being asked too often. */
+export const isRateLimited = (error: unknown) =>
+	isAxiosError(error) && error.response?.status === 429;
+
+/** Warns about a 429 and says whether it was one, so the caller can stop there. */
+export const useRateLimitWarning = () => {
+	const { t } = useTranslate();
+	const { message } = App.useApp();
+
+	return (error: unknown) => {
+		if (!isRateLimited(error)) return false;
+		message.warning(
+			t(
+				"checkpointEntry.tooManyTries",
+				"Too many tries — wait a minute and try again.",
+			),
+		);
+		return true;
+	};
 };
 
 /** What item 1 saves: the profile basics and the main speciality. */

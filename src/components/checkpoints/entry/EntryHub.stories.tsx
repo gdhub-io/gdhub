@@ -45,6 +45,28 @@ export const Running: Story = {
 	},
 };
 
+/** Purchase is not open yet: items 1 and 2 still work, item 3 waits. */
+export const PurchaseClosed: Story = {
+	args: { status: { ...entryStatusReady, purchaseOpen: false } },
+};
+
+/** Another project's checkpoint is on its way: a row to its workflow above the list. */
+export const CheckpointOnItsWay: Story = {
+	args: {
+		status: {
+			...entryStatusReady,
+			hadCheckpoint: true,
+			current: {
+				id: "c1",
+				number: 2,
+				projectSlug: "tiny-orbit",
+				projectName: "Tiny Orbit",
+				status: "Active",
+			},
+		},
+	},
+};
+
 export const Loading: Story = { args: { loading: true } };
 
 export const LoadFailed: Story = { args: { error: true } };

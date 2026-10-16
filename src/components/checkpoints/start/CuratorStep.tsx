@@ -97,7 +97,7 @@ export function CuratorStep() {
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.prepare.toWorkflow", "Back to the workflow")}
+						{t("checkout.backToPlan", "Back to your checkpoint plan")}
 					</Button>
 				}
 			/>

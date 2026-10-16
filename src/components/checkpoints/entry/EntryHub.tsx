@@ -1,6 +1,11 @@
 "use client";
 
-import { IconArrowRight, IconLock } from "@tabler/icons-react";
+import {
+	IconArrowRight,
+	IconClock,
+	IconFlag,
+	IconLock,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Skeleton, Typography } from "antd";
 import Link from "next/link";
@@ -10,11 +15,8 @@ import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import type { EntryStatusDto } from "@/types/checkpoints";
 import { type ChecklistState, ChecklistStatus } from "./ChecklistStatus";
 import styles from "./EntryHub.module.scss";
+import { entryAboutHref, entryProjectHref } from "./hrefs";
 import { ProjectCover } from "./ProjectOption";
-
-export const ENTRY_HUB_HREF = "/checkpoint/new";
-export const ENTRY_ABOUT_HREF = "/checkpoint/new/about";
-export const ENTRY_PROJECT_HREF = "/checkpoint/new/project";
 
 export type EntryHubProps = {
 	status?: EntryStatusDto;
@@ -23,11 +25,15 @@ export type EntryHubProps = {
 	loading?: boolean;
 	error?: boolean;
 	onRetry?: () => void;
+	/** The project the way in was opened for (`?project=`), handed on to item 2. */
+	projectSlug?: string;
 };
 
 type Item = {
 	key: string;
 	state: ChecklistState;
+	/** Read out in place of the lock, which says nothing to a screen reader. */
+	lockedReason?: string;
 	title: string;
 	line: ReactNode;
 	action?: ReactNode;
@@ -44,6 +50,7 @@ export function EntryHub({
 	loading,
 	error,
 	onRetry,
+	projectSlug,
 }: EntryHubProps) {
 	const { t } = useTranslate();
 
@@ -89,6 +96,17 @@ export function EntryHub({
 		status.draft?.items.filter(({ text }) => text.trim()).length ?? 0;
 	const aboutDone = status.aboutDone;
 	const projectDone = aboutDone && !!project && doneCount > 0;
+	const { purchaseOpen, current } = status;
+	const aboutHref = entryAboutHref(projectSlug);
+	const projectHref = entryProjectHref(projectSlug);
+	const closedNotice = t(
+		"checkpointEntry.closed",
+		"Checkpoints open soon — we'll email you when you can head for one.",
+	);
+	const lockedReason = t(
+		"checkpointEntry.lockedReason",
+		"Locked until the step above is done",
+	);
 
 	const fillIn = (href: string) => (
 		<Link href={href}>
@@ -129,7 +147,7 @@ export function EntryHub({
 	};
 
 	const checkpointAction = () => {
-		if (!projectDone || !project) return undefined;
+		if (!projectDone || !project || !purchaseOpen) return undefined;
 
 		if (project.running)
 			return (
@@ -169,22 +187,24 @@ export function EntryHub({
 							"checkpointEntry.about.todo",
 							"Your name and speciality — about a minute.",
 						),
-			action: aboutDone ? edit(ENTRY_ABOUT_HREF) : fillIn(ENTRY_ABOUT_HREF),
+			action: aboutDone ? edit(aboutHref) : fillIn(aboutHref),
 		},
 		{
 			key: "project",
 			state: !aboutDone ? "locked" : projectDone ? "done" : "active",
+			lockedReason,
 			title: t("checkpointEntry.project.title", "Tell us about your project"),
 			line: projectLine(),
 			action: !aboutDone
 				? undefined
 				: projectDone
-					? edit(ENTRY_PROJECT_HREF)
-					: fillIn(ENTRY_PROJECT_HREF),
+					? edit(projectHref)
+					: fillIn(projectHref),
 		},
 		{
 			key: "checkpoint",
-			state: projectDone ? "active" : "locked",
+			state: projectDone && purchaseOpen ? "active" : "locked",
+			lockedReason: projectDone ? closedNotice : lockedReason,
 			title: t("checkpointEntry.checkpoint.title", "Your checkpoint"),
 			line: t(
 				"checkpointEntry.checkpoint.lineGoal",
@@ -196,27 +216,63 @@ export function EntryHub({
 	];
 
 	return (
-		<div className={styles.panel}>
-			{items.map((item, index) => (
-				<div key={item.key} className={styles.row} data-state={item.state}>
-					<ChecklistStatus state={item.state} number={index + 1} />
-					<div className={styles.body}>
-						<Typography.Text className={styles.title}>
-							{item.title}
-						</Typography.Text>
-						<Typography.Text className={styles.line}>
-							{item.line}
-						</Typography.Text>
-					</div>
-					<div className={styles.action}>
-						{item.state === "locked" ? (
-							<IconLock size={16} className={styles.lock} />
-						) : (
-							item.action
-						)}
+		<Flex vertical gap={16}>
+			{!purchaseOpen && (
+				<Flex gap={8} align="center" className={styles.notice}>
+					<IconClock size={16} className={styles.noticeIcon} />
+					<Typography.Text type="secondary">{closedNotice}</Typography.Text>
+				</Flex>
+			)}
+			{current && (
+				<div className={styles.panel}>
+					<div className={styles.row}>
+						<IconFlag size={20} className={styles.currentIcon} />
+						<div className={styles.body}>
+							<Typography.Text className={styles.title}>
+								{t(
+									"checkpointEntry.current",
+									"Checkpoint {number} for {project} is on its way",
+									{ number: current.number, project: current.projectName },
+								)}
+							</Typography.Text>
+						</div>
+						<div className={styles.action}>
+							<Link href={`/user/project/${current.projectSlug}/workflow`}>
+								<Button icon={<IconArrowRight size={16} />} iconPlacement="end">
+									{t("checkpoints.paid.toWorkflow", "Go to the workflow")}
+								</Button>
+							</Link>
+						</div>
 					</div>
 				</div>
-			))}
-		</div>
+			)}
+			<div className={styles.panel}>
+				{items.map((item, index) => (
+					<div key={item.key} className={styles.row} data-state={item.state}>
+						<ChecklistStatus state={item.state} number={index + 1} />
+						<div className={styles.body}>
+							<Typography.Text className={styles.title}>
+								{item.title}
+							</Typography.Text>
+							<Typography.Text className={styles.line}>
+								{item.line}
+							</Typography.Text>
+						</div>
+						<div className={styles.action}>
+							{item.state === "locked" ? (
+								<>
+									<IconLock size={16} className={styles.lock} aria-hidden />
+									<span className={styles.srOnly}>
+										{item.lockedReason ?? lockedReason}
+									</span>
+								</>
+							) : (
+								item.action
+							)}
+						</div>
+					</div>
+				))}
+			</div>
+		</Flex>
 	);
 }

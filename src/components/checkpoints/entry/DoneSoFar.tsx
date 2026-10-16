@@ -70,13 +70,18 @@ export function DoneSoFar({ projectId, carriedFrom }: DoneSoFarProps) {
 				{(fields, { add, remove }) => (
 					<Flex vertical gap={8} align="flex-start">
 						<Flex vertical gap={8} className={styles.rows}>
-							{fields.map((field) => (
+							{fields.map((field, index) => (
 								<div key={field.key} className={styles.row}>
 									<Form.Item name={[field.name, "text"]} noStyle>
 										<Input
 											className={styles.text}
 											variant="filled"
 											maxLength={CHECKPOINT_ITEM_TEXT_MAX}
+											aria-label={t(
+												"checkpointEntry.done.lineLabel",
+												"Done so far, line {n}",
+												{ n: index + 1 },
+											)}
 											placeholder={t(
 												"checkpointEntry.done.placeholder",
 												"e.g. a playable greybox, a design doc, sketches",

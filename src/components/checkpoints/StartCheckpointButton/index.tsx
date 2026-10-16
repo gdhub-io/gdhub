@@ -19,7 +19,7 @@ export type StartCheckpointButtonProps = {
  * The one way into a checkpoint, on the empty screen where it is the only thing
  * to press (frame `J0pS4h`). It carries the reason it is disabled, because that
  * reason — a checkpoint already running, or no workflow stage — is the whole
- * answer to why nothing happens when you want to start one.
+ * answer to why nothing happens when you want to plan one.
  */
 export function StartCheckpointButton({
 	projectId,
@@ -53,15 +53,23 @@ export function StartCheckpointButton({
 					"checkpoints.prepare.noStage",
 					"The project is not on a workflow stage yet.",
 				)
-			: undefined;
+			: blocker?.reason === "purchaseClosed"
+				? t(
+						"checkpointEntry.closed",
+						"Checkpoints open soon — we'll email you when you can head for one.",
+					)
+				: undefined;
 
-	const start = async () => {
+	const plan = async () => {
 		try {
 			const checkpoint = await createCheckpoint.mutateAsync();
 			router.push(`/user/project/${projectSlug}/checkpoints/${checkpoint.id}`);
 		} catch {
 			message.error(
-				t("checkpoints.prepare.failed", "The checkpoint could not be started"),
+				t(
+					"checkpoints.prepare.planFailed",
+					"Could not open the checkpoint plan — try again",
+				),
 			);
 		}
 	};
@@ -73,7 +81,7 @@ export function StartCheckpointButton({
 				icon={reason ? <IconLock size={16} /> : undefined}
 				disabled={!data?.canCreate}
 				loading={createCheckpoint.isPending}
-				onClick={start}
+				onClick={plan}
 			>
 				{label ?? t("checkpoints.empty.cta", "Plan my first checkpoint")}
 			</Button>

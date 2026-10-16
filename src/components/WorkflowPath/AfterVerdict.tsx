@@ -3,8 +3,8 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { checkoutHref } from "@/components/checkpoint-landing/constants";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
+import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import {
 	useVerdictCopy,
 	VerdictChip,
@@ -181,7 +181,7 @@ export function AfterVerdict({
 								type="primary"
 								disabled={locked}
 								icon={locked ? <IconLock size={16} /> : undefined}
-								onClick={() => router.push(checkoutHref(project.slug))}
+								onClick={() => router.push(entryHubHref(project.slug))}
 							>
 								{t("workflow.after.plan", "Plan Checkpoint {number}", {
 									number: String(number + 1),

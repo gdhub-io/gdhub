@@ -6,7 +6,7 @@ import { EntryHub } from "@/components/checkpoints/entry/EntryHub";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
 import { useEntrySpeciality, useEntryStatus } from "@/hooks/checkpoint-entry";
 
-export function HubClient() {
+export function HubClient({ projectSlug }: { projectSlug?: string }) {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 	const status = useEntryStatus();
@@ -30,6 +30,7 @@ export function HubClient() {
 				loading={status.isPending}
 				error={status.isError}
 				onRetry={() => status.refetch()}
+				projectSlug={projectSlug}
 			/>
 		</EntryShell>
 	);

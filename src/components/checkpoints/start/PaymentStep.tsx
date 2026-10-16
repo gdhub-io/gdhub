@@ -8,15 +8,22 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Card, Checkbox, Flex, Skeleton, Typography } from "antd";
+import { isAxiosError } from "axios";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
+import { entryProjectHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
 	AI_PLAN_DAYS,
 	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
-import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+} from "@/config/prisma-enums";
 import { isSlotTaken } from "@/hooks/advisor-availability";
 import {
 	useCheckpointCheckout,
@@ -43,6 +50,7 @@ import { useCheckpointDraft, useCheckpointPrice } from "./useDraft";
 export function PaymentStep() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
+	const router = useRouter();
 	const { go, exit } = usePrepareNav();
 	const { draft, project, loading } = useCheckpointDraft();
 	const team = useTeamHours(project?.team?.id);
@@ -62,18 +70,29 @@ export function PaymentStep() {
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.prepare.toWorkflow", "Back to the workflow")}
+						{t("checkout.backToPlan", "Back to your checkpoint plan")}
 					</Button>
 				}
 			/>
 		);
 	}
 
-	const block = (label: string, edit: PurchaseStep, body: ReactNode) => (
+	// What's done so far is item 2 of the hub, so its Edit leaves the wizard for it.
+	const editDone = () => router.push(entryProjectHref(project?.slug));
+
+	const block = (
+		label: string,
+		edit: PurchaseStep | (() => void),
+		body: ReactNode,
+	) => (
 		<Flex vertical gap={8} className={styles.block}>
 			<Flex justify="space-between" align="baseline">
 				<Typography.Text className={styles.blockLabel}>{label}</Typography.Text>
-				<Button type="link" className={styles.edit} onClick={() => go(edit)}>
+				<Button
+					type="link"
+					className={styles.edit}
+					onClick={() => (typeof edit === "function" ? edit() : go(edit))}
+				>
 					{t("checkpoints.pay.edit", "Edit")}
 				</Button>
 			</Flex>
@@ -82,6 +101,9 @@ export function PaymentStep() {
 	);
 
 	const isAI = draft.curatorKind === CheckpointCuratorKind.AI;
+	const doneSoFar = draft.items
+		.filter((item) => item.kind === CheckpointItemKind.Input)
+		.sort((a, b) => a.order - b.order);
 	const amount = `${CHECKPOINT_PRICE_CURRENCY}${price}`;
 
 	// Stripe hosts the payment, so leaving the app is the last thing this step
@@ -99,6 +121,21 @@ export function PaymentStep() {
 					),
 				);
 				go("curator");
+				return;
+			}
+			// The server refuses a draft without a goal or without what's done so far.
+			if (isAxiosError(error) && error.response?.status === 400) {
+				message.warning(
+					error.response.data?.error === "purchaseClosed"
+						? t(
+								"checkpointEntry.closed",
+								"Checkpoints open soon — we'll email you when you can head for one.",
+							)
+						: t(
+								"checkpoints.pay.incomplete",
+								"The goal or what's done so far is missing — fill it in first.",
+							),
+				);
 				return;
 			}
 			message.error(
@@ -245,6 +282,24 @@ export function PaymentStep() {
 										"Nobody has stated their hours yet",
 									)}
 						</Typography.Text>,
+					)}
+
+					{block(
+						t("checkpointEntry.done.label", "What's done so far"),
+						editDone,
+						<Flex vertical gap={8}>
+							{doneSoFar.map((item) => (
+								<Flex
+									key={item.id}
+									gap={12}
+									align="center"
+									justify="space-between"
+								>
+									<Typography.Text>{item.text}</Typography.Text>
+									<EvidenceSlot artifact={item.artifact} />
+								</Flex>
+							))}
+						</Flex>,
 					)}
 
 					{block(

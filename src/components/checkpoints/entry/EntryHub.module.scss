@@ -56,6 +56,28 @@
 	color: var(--gd-color-text-tertiary);
 }
 
+// The way in is closed for now: a quiet line, not an alert — items 1 and 2 still work.
+.notice {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.noticeIcon,
+.currentIcon {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
 .projectLine {
 	display: flex;
 	align-items: center;

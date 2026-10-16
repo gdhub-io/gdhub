@@ -16,6 +16,7 @@ import { App, Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { checkoutHref } from "@/components/checkpoint-landing/constants";
+import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceCuratorModal";
 import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
@@ -78,8 +79,6 @@ export function CheckpointOffer({
 		draft?.paymentId ? draft.id : undefined,
 	);
 
-	const purchase = checkoutHref(project.slug);
-
 	// What a checkpoint is, the same three lines on the offer and on its draft.
 	const facts = (
 		<Flex gap={24} className={styles.offerFacts}>
@@ -101,8 +100,7 @@ export function CheckpointOffer({
 	);
 
 	if (!draft) {
-		// The purchase page opens the draft itself.
-		const start = () => router.push(purchase);
+		const plan = () => router.push(entryHubHref(project.slug));
 
 		const option = (
 			icon: ReactNode,
@@ -165,13 +163,13 @@ export function CheckpointOffer({
 							type="primary"
 							disabled={locked}
 							icon={locked ? <IconLock size={16} /> : undefined}
-							onClick={start}
+							onClick={plan}
 						>
 							{previous
 								? t("workflow.after.plan", "Plan Checkpoint {number}", {
 										number: String(previous.number + 1),
 									})
-								: t("workflow.offer.start", "Get started")}
+								: t("workflow.offer.plan", "Plan this checkpoint")}
 						</Button>
 					</Tooltip>
 				</Flex>

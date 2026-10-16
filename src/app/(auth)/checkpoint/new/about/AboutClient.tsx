@@ -1,10 +1,11 @@
 "use client";
 
-import { useTranslate } from "@tolgee/react";
+import { T, useTranslate } from "@tolgee/react";
 import {
 	App,
 	AutoComplete,
 	Button,
+	Checkbox,
 	Col,
 	Form,
 	Input,
@@ -16,10 +17,10 @@ import { isAxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import countryList from "react-select-country-list";
-import { ENTRY_HUB_HREF } from "@/components/checkpoints/entry/EntryHub";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
+import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 import type { SkillLevel } from "@/config/prisma-enums";
@@ -29,6 +30,7 @@ import {
 	useEntryProfile,
 	useEntrySpeciality,
 	useEntryStatus,
+	useRateLimitWarning,
 	useSaveEntryAbout,
 } from "@/hooks/checkpoint-entry";
 import { useWorkDirections } from "@/hooks/library";
@@ -40,7 +42,10 @@ type AboutValues = {
 	workDirectionId: string;
 	specialityName: string;
 	level: SkillLevel;
+	agreeWithTermsAndPrivacy?: boolean;
 };
+
+const TERMS_FIELD = "agreeWithTermsAndPrivacy";
 
 type ValidationIssue = {
 	key: keyof AboutValues | "name";
@@ -70,8 +75,13 @@ const readPreRegistration = () => {
 	return undefined;
 };
 
+export type AboutClientProps = {
+	/** `?project=`, handed back to the hub on the way out. */
+	projectSlug?: string;
+};
+
 /** Item 1 (12.1): who the curator is going to work with. */
-export function AboutClient() {
+export function AboutClient({ projectSlug }: AboutClientProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const router = useRouter();
@@ -84,8 +94,24 @@ export function AboutClient() {
 	const speciality = useEntrySpeciality();
 	const directions = useWorkDirections();
 	const save = useSaveEntryAbout();
+	const rateLimited = useRateLimitWarning();
+	const hubHref = entryHubHref(projectSlug);
+	// Read once: the cookie is gone after a save, and the form must not jump.
+	const [preRegistration] = useState(readPreRegistration);
+	// The server can still refuse for missing consent; then the checkbox appears regardless.
+	const [termsRefused, setTermsRefused] = useState(false);
 
-	const loading = profile.isPending || speciality.isPending;
+	const loading = profile.isPending || speciality.isPending || status.isPending;
+	const askTerms =
+		termsRefused ||
+		(!!status.data &&
+			!status.data.termsAccepted &&
+			!preRegistration?.agreeWithTermsAndPrivacy);
+
+	const termsError = t(
+		"agreeWithTermsAndPrivacy.error",
+		"To register for the service you must agree with the specified documents",
+	);
 
 	useEffect(() => {
 		if (loading) return;
@@ -116,7 +142,10 @@ export function AboutClient() {
 				specialityName: values.specialityName.trim(),
 				workDirectionId: values.workDirectionId,
 				level: values.level,
-				...readPreRegistration(),
+				...preRegistration,
+				...(askTerms && {
+					agreeWithTermsAndPrivacy: !!values.agreeWithTermsAndPrivacy,
+				}),
 			});
 			// Advisory AI warnings are shown and never block the save.
 			for (const warning of result.validation?.warnings ?? []) {
@@ -125,9 +154,15 @@ export function AboutClient() {
 			for (const name of PRE_REGISTRATION_COOKIES) deleteCookie(name);
 			// The proxy reads `onboardingDone` from the JWT, so it is re-read before leaving.
 			await resyncSession(updateSession);
-			router.push(ENTRY_HUB_HREF);
+			router.push(hubHref);
 		} catch (error) {
+			if (rateLimited(error)) return;
 			const data = isAxiosError(error) ? error.response?.data : undefined;
+			if (data?.error === "termsRequired") {
+				setTermsRefused(true);
+				form.setFields([{ name: TERMS_FIELD, errors: [termsError] }]);
+				return;
+			}
 			const issues: ValidationIssue[] = data?.validation?.errors ?? [];
 			if (issues.length) {
 				// The server's "name" is the two name fields joined; its error goes on the first.
@@ -156,7 +191,7 @@ export function AboutClient() {
 			)}
 			foot={
 				<>
-					<Link href={ENTRY_HUB_HREF}>
+					<Link href={hubHref}>
 						<Button>{t("checkpointEntry.cancel", "Cancel")}</Button>
 					</Link>
 					<Button type="primary" loading={save.isPending} onClick={submit}>
@@ -263,6 +298,43 @@ export function AboutClient() {
 							</Form.Item>
 						</Col>
 					</Row>
+					{askTerms && (
+						<Form.Item
+							name={TERMS_FIELD}
+							valuePropName="checked"
+							rules={[
+								{
+									validator: (_, value) =>
+										value ? Promise.resolve() : Promise.reject(termsError),
+								},
+							]}
+						>
+							<Checkbox>
+								<T
+									keyName="page.registration.agreeWithTermsAndPrivacy"
+									defaultValue="By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>"
+									params={{
+										terms: (
+											<Link
+												href="/terms"
+												target="_blank"
+												rel="noreferrer"
+												onClick={(event) => event.stopPropagation()}
+											/>
+										),
+										privacy: (
+											<Link
+												href="/privacy-policy"
+												target="_blank"
+												rel="noreferrer"
+												onClick={(event) => event.stopPropagation()}
+											/>
+										),
+									}}
+								/>
+							</Checkbox>
+						</Form.Item>
+					)}
 				</Form>
 			)}
 		</EntryShell>

@@ -24,6 +24,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
 import { CHECKPOINT_DAYS, CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
+import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useCheckGoal, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
@@ -56,6 +57,7 @@ export function NowStep() {
 	const team = useTeamHours(project?.team?.id);
 	const update = useUpdateCheckpoint(draft?.id);
 	const check = useCheckGoal(draft?.id);
+	const rateLimited = useRateLimitWarning();
 
 	const [goal, setGoal] = useState<string>();
 	const [mine, setMine] = useState<[number, number]>();
@@ -88,7 +90,7 @@ export function NowStep() {
 				)}
 				action={
 					<Button type="primary" onClick={exit}>
-						{t("checkpoints.prepare.toWorkflow", "Back to the workflow")}
+						{t("checkout.backToPlan", "Back to your checkpoint plan")}
 					</Button>
 				}
 			/>
@@ -124,8 +126,14 @@ export function NowStep() {
 
 		if (remark) return go("curator");
 
-		// Advice, never a gate: a check that does not come back lets them through.
-		const result = await check.mutateAsync().catch(() => null);
+		// Advice, never a gate: a check that does not come back lets them through —
+		// except a 429, which asks them to wait rather than skip it.
+		let limited = false;
+		const result = await check.mutateAsync().catch((error) => {
+			limited = rateLimited(error);
+			return null;
+		});
+		if (limited) return;
 		if (result && !result.reachable) {
 			setWarned({ goal: text.trim(), remark: result });
 			return;
@@ -173,7 +181,7 @@ export function NowStep() {
 						{t("checkpoints.now.resource", "Work resource")}
 					</Typography.Text>
 					<Popover
-						trigger="hover"
+						trigger="click"
 						placement="bottomLeft"
 						title={t("checkpoints.now.hoursFrom", "Where the hours come from")}
 						content={
@@ -182,7 +190,16 @@ export function NowStep() {
 							</div>
 						}
 					>
-						<IconInfoCircle size={16} className={styles.info} />
+						<Button
+							type="text"
+							size="small"
+							className={styles.info}
+							aria-label={t(
+								"checkpoints.now.hoursFrom",
+								"Where the hours come from",
+							)}
+							icon={<IconInfoCircle size={16} />}
+						/>
 					</Popover>
 				</Flex>
 				{team.isLoading ? (
@@ -197,6 +214,10 @@ export function NowStep() {
 								<InputNumber
 									min={0}
 									max={80}
+									aria-label={t(
+										"checkpoints.now.hoursFromLabel",
+										"Your hours a sprint, from",
+									)}
 									value={myHours[0]}
 									size="small"
 									variant="filled"
@@ -209,6 +230,10 @@ export function NowStep() {
 								<InputNumber
 									min={0}
 									max={80}
+									aria-label={t(
+										"checkpoints.now.hoursToLabel",
+										"Your hours a sprint, up to",
+									)}
 									value={myHours[1]}
 									size="small"
 									variant="filled"

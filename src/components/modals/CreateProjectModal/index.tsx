@@ -6,6 +6,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { gtmEventTrigger } from "@/helpers/gtm";
+import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useGameGenres } from "@/hooks/library";
 import { genreOptions } from "./genres";
 import styles from "./style.module.scss";
@@ -49,6 +50,7 @@ const CreateProjectModal = ({
 	const { message } = App.useApp();
 	const genres = useGameGenres();
 	const checkpoint = variant === "checkpoint";
+	const warnRateLimited = useRateLimitWarning();
 
 	const { mutateAsync: createProject, isPending: isCreateProcessing } =
 		useMutation({
@@ -92,6 +94,7 @@ const CreateProjectModal = ({
 			}
 			if (!checkpoint) router.push(`/user/project/${project.data.slug}`);
 		} catch (error: any) {
+			if (warnRateLimited(error)) return;
 			// Blocking AI errors (irrelevant / offensive) — attach to the fields.
 			const validationErrors = error?.response?.data?.validation?.errors;
 			if (validationErrors?.length) {

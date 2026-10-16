@@ -52,6 +52,9 @@ export const entryArtifact = (
 export const entryStatusNew: EntryStatusDto = {
 	aboutDone: false,
 	hadCheckpoint: false,
+	purchaseOpen: true,
+	termsAccepted: true,
+	current: null,
 	projects: [],
 	draft: null,
 };
