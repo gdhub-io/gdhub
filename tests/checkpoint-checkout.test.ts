@@ -34,6 +34,8 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 	startedAt: new Date("2026-09-21T09:00:00.000Z"),
 	curator: { name: "Marta Ilves" },
 	project: { slug: "tide", name: "Tide" },
+	goal: "A playable vertical slice",
+	_count: { items: 2 },
 	...over,
 });
 
@@ -73,6 +75,30 @@ describe("what a checkpoint checkout would charge", () => {
 
 		expect(quote.ok && quote.amount).toBe(CHECKPOINT_AI_PRICE * 100);
 		expect(prisma.speciality.findFirst).not.toHaveBeenCalled();
+	});
+
+	// The wizard checks these too; a client that skips it must still be refused.
+	it.each([
+		["goalMissing", { goal: "   " }],
+		["inputsMissing", { _count: { items: 0 } }],
+	])("refuses a draft with %s", async (reason, over) => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			checkpoint(over) as never,
+		);
+
+		await expect(checkpointCheckout("cp1")).resolves.toEqual({
+			ok: false,
+			reason,
+		});
+	});
+
+	it("counts only the day-1 inputs", async () => {
+		await checkpointCheckout("cp1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.findUnique).mock.calls[0];
+		expect((args as { select: { _count: unknown } }).select._count).toEqual({
+			select: { items: { where: { kind: "Input" } } },
+		});
 	});
 
 	// The checkbox is the agreement. A client that hides it changes nothing.

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { signedOutRedirect } from "@/lib/signed-out-redirect";
 
 /**
  * The checkpoint entry hub is its own way in: its "About you" item finishes
@@ -25,14 +26,9 @@ export default auth((req) => {
 	}
 
 	if (!session) {
-		const signInUrl = new URL("/signin", req.url);
-		// Keep the query: a chat deep link is `/hub?chat=1&roomId=…`, and a path
-		// without it drops the reader on the hub with no chat open.
-		signInUrl.searchParams.set(
-			"callbackUrl",
-			`${req.nextUrl.pathname}${req.nextUrl.search}`,
+		return NextResponse.redirect(
+			signedOutRedirect(req.nextUrl.pathname, req.nextUrl.search, req.url),
 		);
-		return NextResponse.redirect(signInUrl);
 	}
 
 	const { onboardingDone } = session.user;

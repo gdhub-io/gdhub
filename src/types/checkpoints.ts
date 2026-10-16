@@ -427,6 +427,18 @@ export type EntryStatusDto = {
 	aboutDone: boolean;
 	/** The user has paid for a checkpoint before: the hub heads for the "next" one. */
 	hadCheckpoint: boolean;
+	/** Checkpoints can be bought right now (the CHECKPOINTS_PURCHASE_OPEN switch). */
+	purchaseOpen: boolean;
+	/** Terms and Privacy are recorded for the user; otherwise "About you" asks for them. */
+	termsAccepted: boolean;
+	/** A checkpoint already on its way (awaiting a curator, active or in review), newest first. */
+	current: {
+		id: string;
+		number: number;
+		projectSlug: string;
+		projectName: string;
+		status: "AwaitingCurator" | "Active" | "Review";
+	} | null;
 	projects: EntryProjectDto[];
 	/** The draft checkpoint item 2 was saved into, if any. */
 	draft: {

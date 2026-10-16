@@ -1,5 +1,12 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
-import { apiError, json, pipe, withAuth } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+} from "@/lib/api-handlers";
+import { limitAiCalls } from "@/lib/rate-limit";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import { runGoalCheck } from "@/repositories/checkpoint-curator.repository";
@@ -20,7 +27,9 @@ export const POST = pipe(
 		permission: "project.checkpoints.manage",
 		idFrom: projectOfCheckpoint,
 	}),
-)(async (_req, ctx) => {
+)(async (_req, ctx, { user }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
@@ -32,6 +41,9 @@ export const POST = pipe(
 	if (checkpoint.status !== CheckpointStatus.Draft) {
 		return apiError.badRequest("checkpointNotDraft");
 	}
+
+	const limited = await limitAiCalls("goal-check", currentUser.id);
+	if (limited) return limited;
 
 	const result = await runGoalCheck(id);
 	if (!result) return apiError.unavailable("curatorUnavailable");

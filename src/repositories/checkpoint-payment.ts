@@ -1,5 +1,6 @@
 import {
 	CheckpointCuratorKind,
+	CheckpointItemKind,
 	CheckpointStatus,
 	PayableType,
 	PaymentProvider,
@@ -104,8 +105,12 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			curatorId: true,
 			startedAt: true,
 			acceptedTermsAt: true,
+			goal: true,
 			curator: { select: { name: true } },
 			project: { select: { slug: true, name: true } },
+			_count: {
+				select: { items: { where: { kind: CheckpointItemKind.Input } } },
+			},
 		},
 	});
 
@@ -119,6 +124,15 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	// paid. Picking someone else must not charge for it twice.
 	if (await isCheckpointPaid(checkpointId)) {
 		return { ok: false as const, reason: "alreadyPaid" as const };
+	}
+
+	// The goal and day 1 are what the 28 days are measured against; the wizard
+	// checks them too, but a client is not where that holds.
+	if (!checkpoint.goal.trim()) {
+		return { ok: false as const, reason: "goalMissing" as const };
+	}
+	if (!checkpoint._count.items) {
+		return { ok: false as const, reason: "inputsMissing" as const };
 	}
 
 	// The checkbox is the agreement, and the server is where that holds: a client

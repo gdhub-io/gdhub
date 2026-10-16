@@ -14,6 +14,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { limitAiCalls } from "@/lib/rate-limit";
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	DEFAULT_PROJECT_STAGE,
@@ -123,6 +124,19 @@ export const POST = withAuth({ mode: "user" })(
 			return apiError.badRequest("Unknown stage", { stages });
 		}
 
+		const userRecord = await prisma.user.findUnique({
+			where: { id: currentUser.id },
+			select: { specialities: { select: { id: true }, take: 1 } },
+		});
+
+		if (!userRecord) return apiError.notFound("User not found");
+		// The founder's team row needs one.
+		const specialityId = userRecord.specialities[0]?.id;
+		if (!specialityId) return apiError.badRequest("Add your speciality first");
+
+		const limited = await limitAiCalls("project-create", currentUser.id);
+		if (limited) return limited;
+
 		// AI checks: no offensive/forbidden content, name looks like a real
 		// project title, and the description (if any) is on-topic.
 		const validation = await aiValidation.validate(
@@ -143,13 +157,6 @@ export const POST = withAuth({ mode: "user" })(
 				{ status: 400 },
 			);
 		}
-
-		const userRecord = await prisma.user.findUnique({
-			where: { id: currentUser.id },
-			include: { specialities: true },
-		});
-
-		if (!userRecord) return apiError.notFound("User not found");
 
 		// Two teams may well be making a game called "Dungeon Crawler". The name
 		// is theirs to pick; only the slug has to be unique, so the second one
@@ -182,8 +189,7 @@ export const POST = withAuth({ mode: "user" })(
 							members: {
 								create: {
 									position: "Founder",
-									// biome-ignore lint/style/noNonNullAssertion: original semantics
-									specialityId: userRecord.specialities[0]!.id,
+									specialityId,
 									startedAt: dayjs().toISOString(),
 									status: TeamMemberStatus.Founder,
 									userId: currentUser.id,

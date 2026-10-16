@@ -1,5 +1,5 @@
 import { stripIndents } from "common-tags";
-import type { GoalCheckInput } from "../types";
+import type { CuratorAuthor, CuratorProject, GoalCheckInput } from "../types";
 import {
 	CURATOR_STANCE,
 	localeLine,
@@ -19,6 +19,17 @@ import {
  * "Does not fit" is measured against the team's own stated hours, which is the
  * one number that turns a scope opinion into an argument the author can check.
  */
+
+const renderProject = (project: CuratorProject) =>
+	[
+		`The game: ${project.name}${project.genre ? ` (${project.genre})` : ""}.`,
+		project.pitch ? `Its pitch: "${project.pitch}"` : "It has no pitch yet.",
+	].join(" ");
+
+const renderAuthor = (author: CuratorAuthor | null) =>
+	author
+		? `The author: ${author.speciality}, ${author.level} level.`
+		: "The author's speciality is not known.";
 
 export const GOAL_CHECK_FUNCTION_NAME = "report_goal_check";
 
@@ -81,7 +92,9 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			The card may hold only the goal: tasks are set with the curator on the
 			first call. Then judge the goal itself, and leave the notes empty.
 			Where the last checkpoint is given, weigh this goal against how that
-			one ended with the same team.
+			one ended with the same team. Read the goal against what the game is
+			and who the author is: a goal outside their own craft leans on the
+			rest of the team, and where there is no one, say so.
 
 			The hours are what the members themselves stated they have per week,
 			summed and carried over the 28 days. Weigh the list against them and
@@ -103,6 +116,9 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 	{
 		role: "user" as const,
 		content: stripIndents`
+			${renderProject(input.project)}
+			${renderAuthor(input.author)}
+
 			${renderCard(input.card)}
 
 			${renderStage(input.stage)}

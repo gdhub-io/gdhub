@@ -9,6 +9,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { limitAiCalls } from "@/lib/rate-limit";
+import { termsAccepted } from "@/repositories/checkpoint-entry";
 import { joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { syncUserToBrevo } from "@/services/brevo/sync";
@@ -33,7 +35,11 @@ type EntryAboutBody = z.infer<typeof EntryAboutSchema>;
 /**
  * Item 1 of the checkpoint entry: the profile and speciality steps of onboarding
  * in one request, which also finishes onboarding — the author came to head for a
- * checkpoint, so the interest is `Author` and the resources step is skipped.
+ * checkpoint, so a first profile gets the interest `Author` and the resources
+ * step is skipped. An interest already chosen is left alone.
+ *
+ * Onboarding is never finished without a recorded Terms and Privacy agreement:
+ * a user who arrived without one must tick it here.
  *
  * The client re-reads the JWT afterwards (`resyncSession`), as the last
  * onboarding step does: the proxy gates `/user/**` on `onboardingDone` in it.
@@ -68,6 +74,15 @@ export const POST = pipe(
 	if (input.specialityId && !speciality) {
 		return apiError.notFound("Speciality not found");
 	}
+	if (
+		!termsAccepted(userRecord.agreements) &&
+		input.agreeWithTermsAndPrivacy !== true
+	) {
+		return apiError.badRequest("termsRequired");
+	}
+
+	const limited = await limitAiCalls("entry-about", currentUser.id);
+	if (limited) return limited;
 
 	const validation = await aiValidation.validate(
 		[
@@ -90,9 +105,10 @@ export const POST = pipe(
 
 	const agreements = {
 		...((userRecord.agreements ?? {}) as Record<string, unknown>),
-		...(input.agreeWithTermsAndPrivacy === undefined
-			? null
-			: { agreeWithTermsAndPrivacy: input.agreeWithTermsAndPrivacy }),
+		// Recorded once; unticking a box later does not withdraw it here.
+		...(input.agreeWithTermsAndPrivacy === true
+			? { agreeWithTermsAndPrivacy: true }
+			: null),
 		...(input.needSubscribeToNewsletter === undefined
 			? null
 			: { needSubscribeToNewsletter: input.needSubscribeToNewsletter }),
@@ -113,10 +129,14 @@ export const POST = pipe(
 				country: input.country,
 				primaryInterest: PrimaryInterest.Author,
 			},
+			// The column defaults to Specialist, so a profile left half-way through
+			// onboarding has no chosen interest yet; a finished one has.
 			update: {
 				name: input.name,
 				country: input.country,
-				primaryInterest: PrimaryInterest.Author,
+				...(userRecord.onboardingDone
+					? null
+					: { primaryInterest: PrimaryInterest.Author }),
 			},
 		});
 

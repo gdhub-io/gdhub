@@ -16,6 +16,15 @@ vi.mock("@gdhub-io/gdhub-prisma", () => ({
 }));
 
 const placeProjectOnStage = vi.fn();
+const limitAiCalls = vi.fn();
+const validate = vi.fn();
+
+vi.mock("@/lib/rate-limit", () => ({
+	limitAiCalls: (...args: unknown[]) => limitAiCalls(...args),
+}));
+vi.mock("@/services/ai-validation", () => ({
+	aiValidation: { validate: (...args: unknown[]) => validate(...args) },
+}));
 
 vi.mock("@/repositories/project-workflow", () => ({
 	DEFAULT_PROJECT_STAGE: "Ideation",
@@ -88,6 +97,8 @@ const postProject = async (body: Record<string, unknown>) => {
 describe("POST /api/user/project", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		limitAiCalls.mockResolvedValue(null);
+		validate.mockResolvedValue({ ok: true });
 		placeProjectOnStage.mockImplementation(async (_id, stage) => ({
 			id: "step",
 			name: stage,
@@ -306,6 +317,37 @@ describe("POST /api/user/project", () => {
 		});
 
 		expect(response.status).toBe(400);
+		expect(prisma.project.create).not.toHaveBeenCalled();
+	});
+
+	it("asks for a speciality before the founder's team row is written", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({ specialities: [] });
+
+		const response = await postProject({});
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			error: "Add your speciality first",
+		});
+		expect(validate).not.toHaveBeenCalled();
+		expect(prisma.project.create).not.toHaveBeenCalled();
+	});
+
+	it("answers 429 without asking the AI when the user is over the limit", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({
+			specialities: [{ id: "spec1" }],
+		});
+		limitAiCalls.mockResolvedValue(
+			new Response(JSON.stringify({ error: "rateLimited", retryAfter: 30 }), {
+				status: 429,
+			}),
+		);
+
+		const response = await postProject({});
+
+		expect(response.status).toBe(429);
+		expect(limitAiCalls).toHaveBeenCalledWith("project-create", "user1");
+		expect(validate).not.toHaveBeenCalled();
 		expect(prisma.project.create).not.toHaveBeenCalled();
 	});
 });

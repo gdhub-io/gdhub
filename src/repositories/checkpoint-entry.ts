@@ -1,7 +1,10 @@
 import {
 	ArtifactCheckStatus,
+	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
+	PayableType,
+	PaymentStatus,
 	ProjectStatus,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
@@ -9,11 +12,8 @@ import {
 	CHECKPOINT_ENTRY_ITEMS_MAX,
 	CHECKPOINT_OPEN_STATUSES,
 } from "@/config/checkpoint";
-import {
-	createDraftCheckpoint,
-	replaceCheckpointItems,
-	toArtifactRef,
-} from "@/repositories/checkpoint.repository";
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
+import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { prisma } from "@/services/prisma";
@@ -66,6 +66,21 @@ const toEntryItem = (
 	artifact: item.artifact ? toArtifactRef(item.artifact) : null,
 });
 
+/** Money that reached us for a checkpoint, whatever happened to it afterwards. */
+const PAID_STATUSES = [
+	PaymentStatus.PROCESSING,
+	PaymentStatus.COMPLETED,
+	PaymentStatus.REFUNDED,
+	PaymentStatus.PARTIALLY_REFUNDED,
+	PaymentStatus.DISPUTED,
+];
+
+/** The Terms and Privacy agreement registration records in `User.agreements`. */
+export const termsAccepted = (agreements: unknown) =>
+	typeof agreements === "object" &&
+	agreements !== null &&
+	(agreements as Record<string, unknown>).agreeWithTermsAndPrivacy === true;
+
 /** Founder of the project's team — the one who buys its checkpoints. */
 export const isProjectFounder = async (userId: string, projectId: string) =>
 	(await prisma.teamMember.count({
@@ -104,65 +119,125 @@ const draftInputsSelect = {
 	},
 } as const;
 
-export const getEntryStatus = async (
-	userId: string,
-): Promise<EntryStatusDto> => {
-	const [profile, specialities, projects] = await Promise.all([
-		prisma.profile.findUnique({
-			where: { userId },
-			select: { name: true },
-		}),
-		prisma.speciality.count({ where: { userId } }),
-		prisma.project.findMany({
+/** Whether the user ever paid for a checkpoint that left Draft. */
+const hasPaidCheckpoint = async (userId: string) => {
+	const payments = await prisma.payment.findMany({
+		where: {
+			payerId: userId,
+			payableType: PayableType.CHECKPOINT,
+			status: { in: PAID_STATUSES },
+		},
+		select: { payableId: true },
+	});
+	if (!payments.length) return false;
+
+	return (
+		(await prisma.projectCheckpoint.count({
 			where: {
-				status: LISTED_PROJECT_STATUSES,
+				id: { in: payments.map((payment) => payment.payableId) },
+				status: { not: CheckpointStatus.Draft },
+			},
+		})) > 0
+	);
+};
+
+/** The newest checkpoint on its way over the projects the user founded. */
+const currentCheckpoint = async (
+	userId: string,
+): Promise<EntryStatusDto["current"]> => {
+	const row = await prisma.projectCheckpoint.findFirst({
+		where: {
+			status: { in: CHECKPOINT_OPEN_STATUSES },
+			project: {
 				team: {
 					members: { some: { userId, status: TeamMemberStatus.Founder } },
 				},
 			},
-			orderBy: { updatedAt: "desc" },
-			take: PROJECTS_LIMIT,
-			select: {
-				id: true,
-				slug: true,
-				name: true,
-				coverImage: true,
-				workflow: { select: { currentStep: { select: { name: true } } } },
-				checkpoints: {
-					where: { status: { in: CHECKPOINT_OPEN_STATUSES } },
-					select: { id: true },
-					take: 1,
+		},
+		orderBy: { createdAt: "desc" },
+		select: {
+			id: true,
+			status: true,
+			projectId: true,
+			createdAt: true,
+			project: { select: { slug: true, name: true } },
+		},
+	});
+	if (!row) return null;
+
+	return {
+		id: row.id,
+		number: await checkpointNumber(row),
+		projectSlug: row.project.slug,
+		projectName: row.project.name,
+		status: row.status as NonNullable<EntryStatusDto["current"]>["status"],
+	};
+};
+
+export const getEntryStatus = async (
+	userId: string,
+): Promise<EntryStatusDto> => {
+	const [user, profile, specialities, projects, hadCheckpoint, current] =
+		await Promise.all([
+			prisma.user.findUnique({
+				where: { id: userId },
+				select: { agreements: true },
+			}),
+			prisma.profile.findUnique({
+				where: { userId },
+				select: { name: true },
+			}),
+			prisma.speciality.count({ where: { userId } }),
+			prisma.project.findMany({
+				where: {
+					status: LISTED_PROJECT_STATUSES,
+					team: {
+						members: { some: { userId, status: TeamMemberStatus.Founder } },
+					},
 				},
-			},
-		}),
-	]);
+				orderBy: { updatedAt: "desc" },
+				take: PROJECTS_LIMIT,
+				select: {
+					id: true,
+					slug: true,
+					name: true,
+					coverImage: true,
+					workflow: { select: { currentStep: { select: { name: true } } } },
+					checkpoints: {
+						where: { status: { in: CHECKPOINT_OPEN_STATUSES } },
+						select: { id: true },
+						take: 1,
+					},
+				},
+			}),
+			hasPaidCheckpoint(userId),
+			currentCheckpoint(userId),
+		]);
 
 	// Item 2 is saved with at least one line, so a draft without any is one the
-	// wizard opened on its own and not what the hub is asking about.
-	const projectIds = projects.map((project) => project.id);
-	const [draft, closed] = projects.length
-		? await Promise.all([
-				prisma.projectCheckpoint.findFirst({
-					where: {
-						projectId: { in: projects.map((project) => project.id) },
-						status: CheckpointStatus.Draft,
-						items: { some: { kind: CheckpointItemKind.Input } },
-					},
-					orderBy: { updatedAt: "desc" },
-					select: draftInputsSelect,
-				}),
-				prisma.projectCheckpoint.count({
-					where: {
-						projectId: { in: projectIds },
-						status: CheckpointStatus.Closed,
-					},
-				}),
-			])
-		: [null, 0];
+	// wizard opened on its own and not what the hub is asking about. A project
+	// with a checkpoint on its way needs no draft: the hub shows it as such.
+	const draftProjectIds = projects
+		.filter((project) => !project.checkpoints.length)
+		.map((project) => project.id);
+	const draft = draftProjectIds.length
+		? await prisma.projectCheckpoint.findFirst({
+				where: {
+					projectId: { in: draftProjectIds },
+					status: CheckpointStatus.Draft,
+					items: { some: { kind: CheckpointItemKind.Input } },
+				},
+				orderBy: { updatedAt: "desc" },
+				select: draftInputsSelect,
+			})
+		: null;
 
 	return {
 		aboutDone: Boolean(profile?.name.trim()) && specialities > 0,
-		hadCheckpoint: closed > 0,
+		hadCheckpoint,
+		purchaseOpen: checkpointPurchaseOpen(),
+		termsAccepted: termsAccepted(user?.agreements),
+		current,
 		projects: projects.map((project) => ({
 			id: project.id,
 			slug: project.slug,
@@ -242,30 +317,69 @@ export const foreignArtifactIds = async (projectId: string, ids: string[]) => {
  * Writes item 2: the project's draft — reused, or opened now — carries exactly
  * these lines as its inputs. A reused draft follows the project's stage, which
  * may just have moved off Introduction.
+ *
+ * Under a per-project advisory lock: two saves racing (a double click, two tabs)
+ * would otherwise both find no draft and open two.
  */
 export const saveEntryProject = async ({
 	projectId,
 	items,
 }: EntryProjectInput) => {
-	const existing = await findDraft(projectId);
-	let draftId: string;
+	const stage = await ensureCheckpointStage(projectId);
 
-	if (existing) {
-		const stage = await ensureCheckpointStage(projectId);
-		await prisma.projectCheckpoint.update({
-			where: { id: existing.id },
-			// `updatedAt` too: the hub offers back the draft saved last.
-			data: {
-				...(stage ? { stepId: stage.id, stageName: stage.name } : null),
-				updatedAt: new Date(),
-			},
+	return prisma.$transaction(async (tx) => {
+		await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`checkpoint-draft:${projectId}`}))`;
+
+		const existing = await tx.projectCheckpoint.findFirst({
+			where: { projectId, status: CheckpointStatus.Draft },
+			orderBy: { createdAt: "desc" },
+			select: { id: true },
 		});
-		draftId = existing.id;
-	} else {
-		draftId = (await createDraftCheckpoint(projectId)).id;
-	}
 
-	await replaceCheckpointItems(draftId, CheckpointItemKind.Input, items);
+		let draftId: string;
+		if (existing) {
+			await tx.projectCheckpoint.update({
+				where: { id: existing.id },
+				// `updatedAt` too: the hub offers back the draft saved last.
+				data: {
+					...(stage ? { stepId: stage.id, stageName: stage.name } : null),
+					updatedAt: new Date(),
+				},
+			});
+			draftId = existing.id;
+		} else {
+			if (!stage) throw new Error("Project is not on a workflow stage");
+			// Counted under the lock, so two saves cannot take the same number.
+			const before = await tx.projectCheckpoint.count({ where: { projectId } });
+			draftId = (
+				await tx.projectCheckpoint.create({
+					data: {
+						projectId,
+						stepId: stage.id,
+						stageName: stage.name,
+						order: before + 1,
+						curatorKind: CheckpointCuratorKind.AI,
+						status: CheckpointStatus.Draft,
+						goal: "",
+					},
+					select: { id: true },
+				})
+			).id;
+		}
 
-	return draftId;
+		await tx.checkpointItem.deleteMany({
+			where: { checkpointId: draftId, kind: CheckpointItemKind.Input },
+		});
+		await tx.checkpointItem.createMany({
+			data: items.map((item, index) => ({
+				checkpointId: draftId,
+				kind: CheckpointItemKind.Input,
+				order: index + 1,
+				text: item.text,
+				artifactId: item.artifactId,
+			})),
+		});
+
+		return draftId;
+	});
 };
