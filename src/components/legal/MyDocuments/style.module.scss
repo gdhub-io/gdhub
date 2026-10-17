@@ -1,0 +1,17 @@
+.table {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+
+	:global(.ant-table) {
+		background: transparent;
+	}
+}
+
+.action {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	color: var(--gd-color-link);
+	white-space: nowrap;
+}

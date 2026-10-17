@@ -41,6 +41,10 @@ export function SettingsSider() {
 				key: "interests",
 			},
 			{
+				label: t("profile.settings.menu.documents", "Documents"),
+				key: "documents",
+			},
+			{
 				label: t("profile.settings.menu.payments", "Payments"),
 				key: "payments",
 			},
