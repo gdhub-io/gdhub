@@ -1,4 +1,3 @@
-import { randomBytes } from "node:crypto";
 import { CertificateSource, EventType, Prisma } from "@gdhub-io/gdhub-prisma";
 import { roleAtLeast, SpaceRole } from "@/config/permissions/roles";
 import {
@@ -9,6 +8,7 @@ import {
 	withAuth,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { generateCertificateNumber } from "@/services/certificates";
 import {
 	LegalService,
 	MENTOR_SIGNATURE_FIELD,
@@ -16,18 +16,6 @@ import {
 } from "@/services/legal";
 import { prisma } from "@/services/prisma";
 import { resolveMemberCertificateContext } from "../../../_helpers";
-
-// Crockford Base32 — 32 chars, no ambiguous I/L/O/U.
-const CROCKFORD_BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-
-function generateCertificateNumber(): string {
-	const bytes = randomBytes(6);
-	let suffix = "";
-	for (let i = 0; i < 6; i++) {
-		suffix += CROCKFORD_BASE32[bytes[i] & 0x1f]; // 5 random bits per char
-	}
-	return `GDH-${suffix}`;
-}
 
 export const POST = pipe(
 	withAuth({ mode: "user" }),

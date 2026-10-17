@@ -61,7 +61,10 @@ checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from
 - [ ] Profile → My documents lists what the user accepted (each opens the exact text)
       and the certificates issued to them.
 - [ ] Events, courses and checkpoints issue certificates checkable at `/verify/<number>`;
-      the existing event certificates still verify.
+      the existing event certificates still verify. **Issuing deferred (2026-10-17):**
+      `/verify`, My documents and `issueCertificate` handle every source, but nothing in
+      the product finishes a course yet and the checkpoint verdict lives in the checkpoint
+      branch; each calls `issueCertificate` when it lands.
 - [ ] `/legal` lists every document with its current text and archived versions, without
       sign-in. `/admin/legal` lists acceptances with filters and a CSV export written to
       `AuditLog`.
