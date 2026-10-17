@@ -13,6 +13,9 @@ const nextConfig = {
 	// Lets `dev:test` run beside the ordinary dev server: Next refuses a second
 	// instance sharing one build directory.
 	distDir: process.env.NEXT_DIST_DIR || ".next",
+	// Legal texts are read from disk at request time; without this they are not
+	// in the serverless bundle and every legal page renders empty in production.
+	outputFileTracingIncludes: { "/**": ["./docs/legal/**/*.md"] },
 	serverExternalPackages: [
 		"discord.js",
 		"matrix-js-sdk",
@@ -130,6 +133,18 @@ const nextConfig = {
 			permanent: true,
 		},
 		// The hub docs viewer was dropped; documentation lives on its own domain.
+		// The legal texts moved from Notion to versioned files under /legal.
+		...[
+			["/terms", "terms-of-use"],
+			["/privacy-policy", "privacy-policy"],
+			["/cookie-policy", "cookie-policy"],
+			["/refund-policy", "refund-policy"],
+			["/project-requirements", "project-requirements"],
+		].map(([source, slug]) => ({
+			source,
+			destination: `/legal/${slug}`,
+			permanent: true,
+		})),
 		{
 			source: "/hub/docs",
 			destination: "https://docs.gdhub.io",

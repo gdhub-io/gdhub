@@ -42,7 +42,7 @@ export const POST = pipe(
 	}
 
 	const externalId = member.certificate.externalId;
-	if (externalId.startsWith("pending:")) {
+	if (!externalId || externalId.startsWith("pending:")) {
 		return apiError.badRequest(
 			"Certificate document was not uploaded to Documenso",
 		);

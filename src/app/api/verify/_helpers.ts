@@ -1,7 +1,7 @@
 import { prisma } from "@/services/prisma";
 
 export async function resolvePublicCertificate(number: string) {
-	const certificate = await prisma.eventCertificate.findUnique({
+	const certificate = await prisma.certificate.findUnique({
 		where: { number },
 		include: {
 			eventMember: {
@@ -81,11 +81,16 @@ export async function resolvePublicCertificate(number: string) {
 		},
 	});
 
-	if (!certificate || certificate.externalId.startsWith("pending:")) {
+	// Course and checkpoint certificates are not issued yet; only an event one verifies here.
+	const member = certificate?.eventMember;
+	if (
+		!certificate?.externalId ||
+		certificate.externalId.startsWith("pending:") ||
+		!member
+	) {
 		return null;
 	}
 
-	const member = certificate.eventMember;
 	const event = member.event;
 
 	const startTimes = event.schedule
@@ -116,7 +121,7 @@ export async function resolvePublicCertificate(number: string) {
 	const mentorSpecialty = mentor?.user?.specialities[0]?.name?.trim() || "";
 
 	return {
-		certificate,
+		certificate: { ...certificate, externalId: certificate.externalId },
 		event,
 		startDate,
 		endDate,
@@ -131,6 +136,44 @@ export async function resolvePublicCertificate(number: string) {
 			event.certificationOrganizerTitle?.trim() || defaultOrganizerTitle,
 		mentorName,
 		mentorSpecialty,
+	};
+}
+
+export async function getVerifyCertificate(
+	number: string,
+): Promise<VerifyCertificateResponse | null> {
+	const data = await resolvePublicCertificate(number);
+	if (!data) return null;
+	return {
+		number: data.certificate.number,
+		issuedAt: data.certificate.issuedAt.toISOString(),
+		participant: {
+			name: data.participantName,
+			image: data.participantImage,
+			position: data.participantPosition || null,
+			specialty: data.participantSpecialty || null,
+		},
+		event: {
+			id: data.event.id,
+			slug: data.event.slug,
+			lang: data.event.lang,
+			title: data.event.title,
+			type: data.event.type,
+			startDate: data.startDate?.toISOString() ?? null,
+			endDate: data.endDate?.toISOString() ?? null,
+			organizerName: data.organizerName,
+			organizerTitle: data.organizerTitle,
+			mentorName: data.mentorName || null,
+			mentorSpecialty: data.mentorSpecialty || null,
+		},
+		project: data.project
+			? {
+					name: data.project.name,
+					slug: data.project.slug,
+					coverImage: data.project.coverImage,
+					shortDescription: data.project.description,
+				}
+			: null,
 	};
 }
 

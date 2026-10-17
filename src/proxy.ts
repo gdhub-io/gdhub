@@ -44,6 +44,16 @@ export default auth((req) => {
 		return NextResponse.redirect(new URL("/hub", req.url));
 	}
 
+	// A material change, or a document never accepted: nothing else opens until it is.
+	if (onboardingDone && session.user.legalPending) {
+		const gate = new URL("/legal-update", req.url);
+		gate.searchParams.set(
+			"callbackUrl",
+			`${req.nextUrl.pathname}${req.nextUrl.search}`,
+		);
+		return NextResponse.redirect(gate);
+	}
+
 	// Permission checks do not belong here: middleware runs on the edge, with no
 	// database and therefore no permission matrix. `/live/room/reports` is gated
 	// by `hub.live_room.use` in its own layout.

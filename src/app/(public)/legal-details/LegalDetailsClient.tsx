@@ -6,82 +6,41 @@ import {
 	IconPhone,
 	IconUserCircle,
 } from "@tabler/icons-react";
-import { Card, Flex, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { Card } from "antd";
+import dayjs from "dayjs";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { hubLegalEntity } from "@/config/legal/entities";
 import styles from "./style.module.scss";
-
-const { Title } = Typography;
 
 type EntityIcon = "user" | "building";
 type ContactType = "email" | "phone";
 
-type FieldRow = { label: string; value: string };
-type Contact = { type: ContactType; value: string };
-
 type Entity = {
 	name: string;
 	icon: EntityIcon;
-	fields: FieldRow[];
-	contacts: Contact[];
+	fields: { label: string; value: string }[];
+	contacts: { type: ContactType; value: string }[];
 };
 
-type Office = {
-	country: string;
-	flag?: string;
-	entity: Entity;
-};
+const legal = hubLegalEntity();
 
-const founder: Entity = {
-	name: "Individual Entrepreneur DZMITRY DRYNAU",
-	icon: "user",
+const operator: Entity = {
+	name: legal.name,
+	icon: "building",
 	fields: [
-		{ label: "Registration date", value: "27/06/2023" },
-		{ label: "Legal entity code", value: "306422564" },
+		{ label: "Legal entity code", value: legal.code },
+		{ label: "Registered address", value: legal.address },
 		{
-			label: "Administrator",
-			value: "LEPL National Agency of Public Registry",
+			label: "Registration date",
+			value: dayjs(legal.registeredAt).format("DD/MM/YYYY"),
 		},
-		{
-			label: "Registered address",
-			value: "Georgia, Tbilisi, Samgori District, Police Street I Dead End, N5",
-		},
-		{
-			label: "Certificate",
-			value: "Certificate of state registration of a legal entity (2023)",
-		},
+		{ label: "Registry", value: legal.registry },
 	],
 	contacts: [
-		{ type: "email", value: "office@gdhub.io" },
-		{ type: "phone", value: "+995 599 157 334" },
+		{ type: "email", value: legal.email },
+		{ type: "phone", value: legal.phone },
 	],
 };
-
-const representativeOffices: Office[] = [
-	{
-		country: "Lithuania",
-		entity: {
-			name: "VšĮ Žaidimų Kūrėjų Hubas",
-			icon: "building",
-			fields: [
-				{ label: "Registration date", value: "11/07/2025" },
-				{ label: "Legal entity code", value: "307277444" },
-				{
-					label: "Registered address",
-					value: "Vilnius, Giedraičių g. 39-R53, LT-09302",
-				},
-				{
-					label: "Administrator",
-					value: "Juridinių asmenų registras",
-				},
-			],
-			contacts: [
-				{ type: "email", value: "office@gdhub.io" },
-				{ type: "phone", value: "+370 67253194" },
-			],
-		},
-	},
-];
 
 const AvatarIcon = ({ icon }: { icon: EntityIcon }) => {
 	if (icon === "user") return <IconUserCircle size={20} stroke={1.75} />;
@@ -139,38 +98,10 @@ export function LegalDetailsClient() {
 		<>
 			<PublicPageHeader
 				title="Legal Details"
-				subTitle="Official legal information about Game Developers Hub and its representative offices"
+				subTitle="The legal entity that operates gdhub.io"
 			/>
 			<div className="layout-background">
-				<Flex vertical gap={32}>
-					<section>
-						<Title level={2} className={styles.sectionTitle}>
-							Founder
-						</Title>
-						<EntityCard entity={founder} />
-					</section>
-
-					<section>
-						<Title level={2} className={styles.sectionTitle}>
-							Representative offices
-						</Title>
-						<Flex vertical gap={20}>
-							{representativeOffices.map(({ country, flag, entity }) => (
-								<div key={country}>
-									<div className={styles.countryRow}>
-										{!!flag && (
-											<span className={styles.countryFlag} aria-hidden>
-												{flag}
-											</span>
-										)}
-										<span className={styles.countryName}>{country}</span>
-									</div>
-									<EntityCard entity={entity} />
-								</div>
-							))}
-						</Flex>
-					</section>
-				</Flex>
+				<EntityCard entity={operator} />
 			</div>
 		</>
 	);

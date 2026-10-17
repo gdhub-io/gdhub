@@ -1,0 +1,87 @@
+"use client";
+
+import { IconChevronRight, IconFileText } from "@tabler/icons-react";
+import { useTranslate } from "@tolgee/react";
+import { Flex, List, Typography } from "antd";
+import dayjs from "dayjs";
+import Link from "next/link";
+import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import { IconTile } from "@/components/ui/IconTile";
+import type { LegalIndexItem } from "@/lib/legal/pages";
+import styles from "./style.module.scss";
+
+const { Text, Title } = Typography;
+
+type Row = { key: string; href: string; title: string; meta?: string };
+
+export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
+	const { t } = useTranslate();
+
+	const toRow = (item: LegalIndexItem): Row => ({
+		key: item.code,
+		href: `/legal/${item.slug}`,
+		title: item.title,
+		meta: t(
+			"legal.index.version",
+			"Version {version} · in effect since {date}",
+			{
+				version: item.version,
+				date: dayjs(item.effectiveAt).format("D MMM YYYY"),
+			},
+		),
+	});
+
+	const groups: { key: string; title: string; rows: Row[] }[] = [
+		{
+			key: "platform",
+			title: t("legal.index.platform", "Platform"),
+			rows: [
+				...items.filter((i) => i.group === "platform").map(toRow),
+				{
+					key: "legal-details",
+					href: "/legal-details",
+					title: t("legal.index.legal-details", "Legal Details"),
+				},
+			],
+		},
+		{
+			key: "features",
+			title: t("legal.index.features", "Features"),
+			rows: items.filter((i) => i.group === "features").map(toRow),
+		},
+	];
+
+	return (
+		<>
+			<PublicPageHeader title={t("legal.index.title", "Legal")} />
+			<div className="layout-background">
+				<Flex vertical gap={32} className={styles.index}>
+					{groups.map((group) => (
+						<section key={group.key}>
+							<Title level={2} className={styles.groupTitle}>
+								{group.title}
+							</Title>
+							<List
+								bordered
+								className={styles.list}
+								dataSource={group.rows}
+								renderItem={(row) => (
+									<List.Item className={styles.row}>
+										<Link href={row.href} className={styles.rowLink}>
+											<IconTile icon={IconFileText} size="sm" />
+											<Text strong className={styles.rowTitle}>
+												{row.title}
+											</Text>
+											{row.meta && <Text type="secondary">{row.meta}</Text>}
+											<IconChevronRight size={16} className={styles.chevron} />
+										</Link>
+									</List.Item>
+								)}
+							/>
+						</section>
+					))}
+				</Flex>
+			</div>
+		</>
+	);
+}

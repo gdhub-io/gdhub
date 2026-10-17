@@ -46,7 +46,6 @@ gates: "Actions that refuse without their acceptance" {
   paid: "PUT /api/advisor/settings · Paid work\nExpertServicesTerms · ExpertServices\n+ payout details complete\nelse paid consultations and curation stay off"
   pay: "POST /api/checkpoint/[id]/pay (branch 31)\nCheckpointPurchaseTerms + WithdrawalWaiver\ncontext CheckpointPurchase · checkpointId\n(replaces acceptedTermsAt / acceptedTermsTemplateId)"
   curator: "Curator accepts a checkpoint (branch 31)\nCheckpointStandard in effect on that day\ncontext CuratorAccept · checkpointId\n→ then the held payment is captured"
-  join: "accept-invite · invitation/[token] · chat invite-response (offer)\nCoDevelopmentAgreement · JoinProject\nprojectId + params {title, member share}"
 }
 gates.signup -> accept: "{TermsOfUse, v}"
 gates.project -> accept
@@ -54,13 +53,12 @@ gates.advisor -> accept
 gates.paid -> accept
 gates.pay -> accept: "two rows, one transaction"
 gates.curator -> accept
-gates.join -> accept
 
 bad: "400 legal.required\nno acceptance in the body → the action does not happen\n(a client that hides the checkbox gets nowhere)" {style.stroke-dash: 3}
 gates -> bad: "missing"
 
 shares: "Share change (equity)" {
-  tx: "Author: POST /api/user/project/equity/transaction\nTransfer · Dilution · Increase touching a member"
+  tx: "Author gives a member a share, or changes it\nPOST /api/user/project/equity/transaction\n(no equity, invites, offers → no agreement)"
   vest: "Vesting of an EquityPromise\nalready in the accepted params"
   ask: "member: 'Shares changed — review and accept'\nCoDevelopmentAgreement with new params"
   rowS: "acceptLegal · ShareChange · projectId + new params"

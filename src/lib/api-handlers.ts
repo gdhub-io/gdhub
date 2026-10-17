@@ -77,6 +77,11 @@ export const apiError = {
 		),
 	notFound: (msg = "Not found") =>
 		NextResponse.json({ error: msg, statusCode: 404 }, { status: 404 }),
+	conflict: (msg = "Conflict", details?: unknown) =>
+		NextResponse.json(
+			{ error: msg, statusCode: 409, ...(details ? { details } : {}) },
+			{ status: 409 },
+		),
 	internal: (msg = "Internal server error") =>
 		NextResponse.json({ error: msg, statusCode: 500 }, { status: 500 }),
 	/** The answer is unknown right now — a dependency is degraded, not the caller. */

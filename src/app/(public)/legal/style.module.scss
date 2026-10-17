@@ -1,0 +1,34 @@
+.index {
+	max-width: 960px;
+}
+
+.groupTitle {
+	font-size: 20px !important;
+	margin-bottom: var(--gd-space-3) !important;
+}
+
+.list {
+	background: transparent;
+}
+
+.row {
+	padding: 0 !important;
+}
+
+.rowLink {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	width: 100%;
+	padding: var(--gd-space-3) var(--gd-space-4);
+	color: inherit;
+}
+
+.rowTitle {
+	flex: 1;
+	min-width: 0;
+}
+
+.chevron {
+	color: var(--gd-color-text-tertiary);
+}

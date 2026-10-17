@@ -7,8 +7,7 @@ design: [docs/legal/legal-layer.md](../legal/legal-layer.md)
 
 Whenever someone on GDHub agrees to something — the Terms at sign-up, the Project
 Requirements, the Advisor Agreement, the Expert Services Terms before earning money, the
-Checkpoint purchase terms, the Checkpoint Standard as a curator, a project's
-co-development agreement — the platform can show later exactly which text they agreed to,
+Checkpoint purchase terms, the Checkpoint Standard as a curator — the platform can show later exactly which text they agreed to,
 in which version, and when. Anyone can read every legal document and its past versions at
 `/legal`; users see their own documents and certificates in one place; a certificate from
 an event, a course or a checkpoint can be checked by anyone at `/verify`.
@@ -28,8 +27,10 @@ checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from
   The files must reach the server build, not only the repo.
 - One table, `LegalAcceptance`; the `Legal*` tables the app never wrote to are replaced.
   Schema changes go through `../prisma` and a released package.
-- The legal entity is one, configured in `src/config/legal/entities.ts` (today the VšĮ);
-  each version records the entity it names, so changing it never rewrites accepted text.
+- Legal entities are configured in `src/config/legal/entities.ts`: each hub space names
+  its entity (`default` → the VšĮ), the founder's sole proprietorship is kept alongside,
+  and each document names its issuer. A version records the entity it names, so changing
+  an issuer never rewrites accepted text.
   The entity also carries the currency: checkpoint prices, Stripe, consultation prices and
   the texts read it from there, and no screen hardcodes `$` or `€`.
 - A published file is never edited or deleted; one version in effect per document.
@@ -49,13 +50,12 @@ checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from
       pay endpoint refuses without them — **first, before launch**.
 - [ ] A curator accepts the Checkpoint Standard in force for each checkpoint they take.
 - [ ] Paid consultations and curation cannot be switched on without the Expert Services
-      Terms and payout details.
+      Terms and payout details. **Deferred (2026-10-17):** `/advisor/settings` does not exist
+      yet and the terms have no text; it lands with the advisor settings page and curation
+      in the checkpoint branch. `ExpertProfile` and `acceptLegal` are ready for it.
 - [ ] The Advisor space does not open without the Advisor Agreement.
 - [ ] Sign-up stores one acceptance — the Terms; project creation stores the Project
       Requirements and the server refuses a project without it.
-- [ ] Joining a project by invite or offer, and a change of shares, are accepted as the
-      project's co-development agreement with its values; until a member accepts new
-      shares, their previous ones stay in force (equity bookkeeping itself is unchanged).
 - [ ] After a material change takes effect, users get one email and are asked to accept
       at the next sign-in before going on.
 - [ ] Profile → My documents lists what the user accepted (each opens the exact text)
@@ -71,7 +71,11 @@ checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from
 
 ## Out of scope
 
-Signatures for agreements, per-agreement instances and parties, PDF and zip exports,
+The project co-development agreement (decided 2026-10-17, designed, not built): a project
+switches it on in its settings (`Project.usesCoDevelopmentAgreement`); while it is off no
+shares are given and the agreement is not mentioned; members accept it when given or
+changed a share. See `docs/legal/legal-layer.md` §3. Signatures for agreements,
+per-agreement instances and parties, PDF and zip exports,
 three-party agreements, user-supplied templates, Lithuanian versions, verifiable badges.
 The texts themselves — including bringing the Advisor Agreement and Checkpoint Terms in
 line with the product and splitting out the Expert Services Terms — are GDHUB-87.

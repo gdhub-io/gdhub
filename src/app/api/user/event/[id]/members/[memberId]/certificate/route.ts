@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { EventType, Prisma } from "@gdhub-io/gdhub-prisma";
+import { CertificateSource, EventType, Prisma } from "@gdhub-io/gdhub-prisma";
 import { roleAtLeast, SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -72,8 +72,10 @@ export const POST = pipe(
 	for (let attempt = 0; attempt < 3; attempt++) {
 		const candidate = generateCertificateNumber();
 		try {
-			claimedRow = await prisma.eventCertificate.create({
+			claimedRow = await prisma.certificate.create({
 				data: {
+					source: CertificateSource.Event,
+					userId: eventCtx.member.userId,
 					eventMemberId: eventCtx.member.id,
 					number: candidate,
 					externalId: `pending:${candidate}`,
@@ -158,7 +160,7 @@ export const POST = pipe(
 			signers,
 		});
 
-		const certificate = await prisma.eventCertificate.update({
+		const certificate = await prisma.certificate.update({
 			where: { id: claimedRow.id },
 			data: { externalId: document.envelopeId },
 		});
@@ -171,7 +173,7 @@ export const POST = pipe(
 			documentId: document.documentId,
 		});
 	} catch (error) {
-		await prisma.eventCertificate
+		await prisma.certificate
 			.delete({ where: { id: claimedRow.id } })
 			.catch((rollbackError) => {
 				console.error(
@@ -215,7 +217,7 @@ export const GET = pipe(
 
 	let status: string | null = null;
 	const externalId = member.certificate.externalId;
-	if (!externalId.startsWith("pending:")) {
+	if (externalId && !externalId.startsWith("pending:")) {
 		try {
 			const envelope = await new LegalService().getEnvelope(externalId);
 			status = envelope.status;
@@ -275,7 +277,7 @@ export const DELETE = pipe(
 	// Documenso returns 404 — we still want to clean up the DB row.
 	const externalId = member.certificate.externalId;
 	const legalService = new LegalService();
-	if (!externalId.startsWith("pending:")) {
+	if (externalId && !externalId.startsWith("pending:")) {
 		if (!mayDeleteSigned) {
 			try {
 				const envelope = await legalService.getEnvelope(externalId);
@@ -301,7 +303,7 @@ export const DELETE = pipe(
 		}
 	}
 
-	await prisma.eventCertificate.delete({
+	await prisma.certificate.delete({
 		where: { id: member.certificate.id },
 	});
 

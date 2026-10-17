@@ -2,8 +2,8 @@
 
 How GDHub handles legal documents: what kinds exist, how each is agreed to, what is
 stored, and what is deliberately not built. The texts themselves live next to this file
-([terms-of-use.md](terms-of-use.md), [advisor-agreement.md](advisor-agreement.md),
-[checkpoint-terms.md](checkpoint-terms.md)); open legal points are in
+([terms-of-use](terms-of-use/v1.md), [advisor-agreement](advisor-agreement/v1.md),
+[checkpoint-purchase-terms](checkpoint-purchase-terms/v1.md)); open legal points are in
 [open-points.md](open-points.md).
 
 Revision 2 — 2026-10-17. Replaces the September draft, which had four layers, per-user
@@ -37,7 +37,7 @@ drawn in [legal-layer-flow.d2](legal-layer-flow.d2) ([svg](legal-layer-flow.svg)
 | Platform offer | Terms of Use, Project Requirements, Advisor Agreement; later Course and Event terms | sign-up, project creation, switching the Advisor space on | — |
 | Paid expert work | Expert Services Terms | Advisor space → Settings → Paid work, before paid consultations or curation — together with payout details | — |
 | Checkpoint | Purchase Terms and the withdrawal waiver (author); Checkpoint Standard (curator) | the author pays; the curator accepts that checkpoint | `checkpointId` |
-| Project agreement | Co-Development Agreement (shares, IP, exit) | the project is created, a member joins, shares change | `projectId` |
+| Project agreement | Co-Development Agreement (shares, IP, exit) | a member is given a share for the first time, or their share changes | `projectId` |
 | Certificate | event certificate today | issued, not accepted | its source |
 
 Privacy Policy, Cookie Policy, Refund Policy and Legal Details are **published and
@@ -56,19 +56,23 @@ curation, and are accepted together with payout details, because getting paid ne
 The Checkpoint Standard in force on the day a checkpoint starts is accepted by its curator
 for that checkpoint. There is no separate "curator terms" document.
 
-## 2a. The platform's legal entity
+## 2a. Legal entities
 
-GDHUB is one legal entity — today the Lithuanian non-profit VšĮ "Game Developers Hub" —
-and it may change. Its details (name, entity code, address, email, kind) live in
-`src/config/legal/entities.ts`, and the texts name it through placeholders
-(`{{entity.name}}`, `{{entity.code}}`, …) filled in when the text is shown.
+Entities live in `src/config/legal/entities.ts`: today the Lithuanian non-profit VšĮ
+Žaidimų Kūrėjų Hubas and the founder's Georgian sole proprietorship (decided 2026-10-17).
+Each **hub space** names the entity it operates under (`HUB_LEGAL_ENTITIES`; only
+`default` exists, under the VšĮ) — a new hub brings its own. Each **document** names its
+issuer in the registry: `"hub"` (the hub's entity) or a specific one, so one document can
+come from the VšĮ and another from the founder. The texts name the issuer through
+placeholders (`{{entity.name}}`, `{{entity.code}}`, `{{entity.email}}`, …) filled in when
+the text is shown.
 
-Changing the entity must not rewrite a text someone already accepted, so **each version
-records the entity it was published under**. Archived versions keep naming the old
-entity; switching to a new one is a config change plus a new version of every document
-in effect, and a test fails while any document in effect names an entity other than the
-current one. The checksum is taken over the text as shown — file plus entity — and the
-Legal Details page reads the same config.
+Changing an issuer must not rewrite a text someone already accepted, so **each version
+records the entity it was published under**. Archived versions keep naming the old one;
+switching is a config change plus a new version of every document it issues, and a test
+fails while a document in effect names an entity other than its issuer. The checksum is
+taken over the text as shown — file plus entity — and the Legal Details page reads the
+hub's entity.
 
 **The currency belongs to the entity.** A Lithuanian or other EU entity would charge in
 euro, so `currency` (ISO code, e.g. `USD`) sits on the entity, not in each feature. The
@@ -111,6 +115,20 @@ erDiagram
   own code, not a flag, because it is a separate declaration with its own checkbox.
 - **The server takes `{code, version}` from the form** and refuses a version that is not
   the one in effect, so the row never names a text the user did not see.
+- **A project agreement is something a project switches on (decided 2026-10-17, not
+  built yet).** Most teams have no agreement and no shares, and an invitation carries no
+  share, so joining a team concludes nothing: invites and offers stay as they are. The
+  switch is the existing `Project.usesCoDevelopmentAgreement` (false by default), turned
+  on in the project settings — and later possibly chosen at creation, as the
+  `feat/legal-codev` branch (May 2026) did. While it is off, no shares are given and the
+  Co-Development Agreement is not mentioned anywhere in the project. Turning it on is the
+  author accepting the agreement; each member accepts it when given a share, and again
+  when the share changes.
+- **Its text exists as a draft**: `docs/co-development-agreement.md` in `feat/legal-codev`
+  (Russian; `{{ projectName }}`, `{{ authorName }}`, `{{ agreementDate }}`,
+  `{{ platformShare }}`, `{{ mentorFundShare }}`, and an `{% if damageCompensationEnabled %}`
+  block). It needs an English version, `{{params.*}}` placeholders, and conditional
+  sections either dropped or supported by the renderer, which today fills placeholders only.
 - **A project agreement** is a markdown template filled in with the project's title and
   shares. Its row carries `projectId` and the filled-in values (`params`), so template
   version + params reproduce the exact text, and the checksum is over that text. Changing
@@ -155,7 +173,7 @@ moment; the others are archived and still readable at `/legal/<slug>/v<n>`.
 | Curator accepting a checkpoint | Checkpoint Standard |
 | `/legal`, `/legal/<slug>`, `/legal/<slug>/v<n>` | every published document, its current text and its archived versions; old URLs 308 here |
 | `/admin/legal` | the acceptances log with filters and CSV export (written to `AuditLog`) |
-| Invite, vacancy offer, share change | Co-Development Agreement with the project's values filled in |
+| Share given or changed (team page) | Co-Development Agreement with the project's values filled in; invites and offers carry none |
 | Sign-in after a material change | a gate: what changed, the full text, accept to continue |
 | Profile → My documents | what the user accepted, each opening the exact text; certificates issued to them |
 | `/verify/<number>` | every certificate |
@@ -180,7 +198,7 @@ verification page is what proves it.
   changes, a file is the simpler and better-audited home for it.
 - **User-supplied templates, Lithuanian versions, verifiable badges** — on demand.
 - **Notification workflows** beyond two: a material version taking effect (email), and a
-  project agreement waiting for a member (with the existing invite and offer notifications).
+  share waiting for a member's acceptance.
 - **Legal conclusions.** The platform records what happened; it does not decide who is right.
 
 ## 8. Order inside the work
@@ -222,7 +240,7 @@ model LegalAcceptance {
   /// SHA-256 of the text as shown: file + entity + params.
   checksum     String
   /// Registry context: SignUp, ProjectCreate, AdvisorJoin, ExpertServices,
-  /// CheckpointPurchase, CuratorAccept, JoinProject, ShareChange, ReAcceptance.
+  /// CheckpointPurchase, CuratorAccept, ShareChange, ReAcceptance.
   context      String
   checkpointId String?
   projectId    String?

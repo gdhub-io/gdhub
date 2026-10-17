@@ -14,10 +14,10 @@ step (Checkpoint Standard). Both use `ClickwrapField`.
 
 Whenever someone agrees to something on GDHub — Terms at sign-up, Project Requirements,
 the Advisor Agreement, the Expert Services Terms before earning money, a project's
-co-development agreement — the platform must later show exactly which text, which version,
-when. Visitors read every document at `/legal`; users see their own documents and
-certificates in one place; anyone checks a certificate at `/verify`; admins see and export
-acceptances.
+co-development agreement once they hold a share — the platform must later show exactly
+which text, which version, when. Visitors read every document at `/legal`; users see their
+own documents and certificates in one place; anyone checks a certificate at `/verify`;
+admins see and export acceptances.
 
 ---
 
@@ -30,16 +30,17 @@ acceptances.
 | Create Project modal / not accepted | **bjuWB** / **o4O2xq** | Project Requirements clickwrap. |
 | Advisor · not accepted / modal / accepted | **ep5EM** / **Opj60** / **isYQT** | `/user/settings/mentorship`: the switch, the Advisor Agreement state, the link into the space — nothing else. |
 | Advisor settings · Paid work · not set up / error / set up | **Q8dNW0** / **SyTre** / **S5YkC** | `/advisor/settings` → *Paid work*: Expert Services Terms + payout details first, then paid consultations and curation. |
-| Invite · co-development agreement | **xajLY** | Invite accept page with the agreement (project, share) and its clickwrap. |
-| Vacancy offer · co-development agreement | **mCPjb** | The offer in chat, same block, *Accept offer*. |
 | Share change · member / accept / author | **S5YiA** / **JE8bI** / **kAKOz** | Team page banner and old → new share; the accept modal; the author's view of who has not accepted. |
+| Share change · first share | **CqRJV** | The accept modal when the member had no share: "You were given a share", "— → 5%". |
 | Re-acceptance gate (error) | **yuMw7** | After sign-in: what changed, the full text, clickwrap, *Continue*. |
 | /legal index / current / archived | **CytzX** / **KPEs5** / **W1rro** | Every published document; one version; an archived version. |
 | Profile · My documents / states | **CJGPi** / **ZssMc** | Accepted documents and Certificates; loading, empty, error. |
 | Verify · checkpoint certificate | **yDe69** | `/verify` for a non-event certificate. |
 | Admin · Legal acceptances / states | **A18rpy** / **P5Bfq** | The only admin page; loading, empty, error. |
 
-Removed in this revision: `DsjqX`, `xniGa`, `I9vSJT` (paid work drawn in the mentorship card — it belongs in the space).
+Removed in this revision: `DsjqX`, `xniGa`, `I9vSJT` (paid work drawn in the mentorship
+card — it belongs in the space); `xajLY`, `mCPjb` (agreement on invite and offer — invites
+and offers carry no agreement).
 
 Icons are lucide stand-ins named after their `@tabler/icons-react` component.
 
@@ -54,8 +55,12 @@ As legal-layer.md §2a and §3:
   Publishing = a pull request. No admin editor.
 - The legal entity comes from `src/config/legal/entities.ts`; texts name it through
   `{{entity.*}}` placeholders filled at render. The design never hardcodes an entity.
-- A project agreement is a template filled with the project's title and the member's share;
-  the acceptance row keeps `projectId` and the filled values (`params`).
+- **A project agreement exists only where there are shares.** Equity is optional and an
+  invitation carries no share, so **invites and vacancy offers are unchanged and conclude
+  nothing**. The agreement starts when the author gives a member a share for the first time
+  and moves with every later change; the share-change flow is the only place a member
+  accepts it. It is a template filled with the project's title and the member's share; the
+  acceptance row keeps `projectId` and the filled values (`params`).
 - One table, `LegalAcceptance`: user, code, version, checksum of the text shown, context,
   `checkpointId` or `projectId` + `params`, UTC time, IP, user-agent.
 - Rendering: `react-markdown` via `src/components/legal/LegalDocument/` (h1 32/600, h2
@@ -77,8 +82,8 @@ a new tab, signed out; ticking is its own action; one box per document.
 - `/user/settings/mentorship` (ep5EM, Opj60, isYQT): switch → Advisor Agreement modal →
   space opens. Free consultations live here as part of the space.
 - `/advisor/settings` gets a fourth section **Paid work** between Requests and Danger zone
-  (300 menu + one form card, rule 7, *Save* under the card). The card starts with an
-  outlined **Expert Services** block: account holder, IBAN or account number, invoicing
+  (menu + one form card, rule 7, *Save* under the card). The card starts with an outlined
+  **Expert Services** block: account holder, IBAN or account number, invoicing
   (self-employed / company / I accept self-billing), and the Expert Services Terms
   clickwrap. Below it: *Paid consultations* (switch + price per consultation) and *Curation*
   (switch + stages you curate). Both switches are locked (lock icon, tooltip) until the
@@ -87,12 +92,13 @@ a new tab, signed out; ticking is its own action; one box per document.
 - `/advisor` Requests stays the consultations inbox, free and paid.
 - Checkpoint Standard: accepted by the curator per checkpoint, in the checkpoint branch.
 
-**Co-development agreement.** Invite page and offer chat get an outlined block (tile,
-"Co-Development Agreement · v1", Project, Your share) and the clickwrap above the accept
-button. Share change: the member's Team page shows a warning-tint banner "Shares changed —
-review and accept. Your {old} stays in force until you do." with *Review*; the table shows
-old → new share and each member's agreement status. *Review* opens the modal (same block
-with old → new, clickwrap, *Not now* / *Accept*). The author sees the same table with
+**Project agreement (share given or changed).** The member's Team page shows a
+warning-tint banner with *Review*: "You were given a share — review and accept." for a
+first share, "Shares changed — review and accept. Your {old} stays in force until you do."
+for a change. The table shows old → new share ("—" when there was none) and each member's
+agreement status. *Review* opens the modal: an outlined block (tile, "Co-Development
+Agreement · v1", Project, Your share old → new), the clickwrap, *Not now* / *Accept*; its
+title is "You were given a share" or "Shares changed". The author sees the same table with
 "Pending · {n} days" and a banner counting who has not accepted.
 
 **Re-acceptance gate.** Full page on the auth shell after sign-in when a material version in
@@ -112,7 +118,7 @@ signed (event) certificates.
 
 **/legal.** Index (Platform: Terms, Privacy, Cookie, Refund, Legal Details; Features:
 Project Requirements, Advisor Agreement, Expert Services Terms, Checkpoint Terms,
-Checkpoint Standard, Withdrawal Waiver), document page, archived page — unchanged otherwise.
+Checkpoint Standard, Withdrawal Waiver), document page, archived page.
 
 **Admin.** One page "Legal acceptances", no tabs: search by user, document, version
 (disabled until a document is chosen), context, date range, *Export CSV* (→ `AuditLog`).
@@ -127,8 +133,8 @@ User-agent · Checksum (copy) · Context.
   version → unticks, `--gd-warning-on-tint` message). The submit button is never disabled
   by the checkbox.
 - **Paid work**: not set up (switches locked); error (field + clickwrap errors); set up.
-- **Share change**: until accepted the old share is shown as in force everywhere; *Not now*
-  keeps the banner.
+- **Project agreement**: first share or change; until accepted the previous share ("—" for
+  none) is in force everywhere; *Not now* keeps the banner.
 - **Gate**: one state with error drawn; loading = the shell with a skeleton text.
 - **Lists** (My documents, admin): loading skeleton rows; empty = one line of secondary text
   ("No certificates yet."); error = danger tile, title, *Try again*.
@@ -154,7 +160,8 @@ User-agent · Checksum (copy) · Context.
 | `advisor.settings.paid-work.curation` / `.stages` | Curation / Stages you curate |
 | `advisor.settings.paid-work.locked` | Set up Expert Services first *(tooltip)* |
 | `legal.co-development.title` / `.project` / `.your-share` | Co-Development Agreement / Project / Your share |
-| `project.team.shares-changed.member` | Shares changed — review and accept. Your {share} stays in force until you do. |
+| `project.team.share-given.member` / `.title` | You were given a share — review and accept. / You were given a share |
+| `project.team.shares-changed.member` / `.title` | Shares changed — review and accept. Your {share} stays in force until you do. / Shares changed |
 | `project.team.shares-changed.author` | {count, plural, one {# member has} other {# members have}} not accepted the new shares yet. |
 | `project.team.shares-changed.review` / `.not-now` / `.accept` | Review / Not now / Accept |
 | `legal.gate.title` / `.what-changed` / `.continue` | The {title} has changed / What changed / Continue |
@@ -164,7 +171,7 @@ User-agent · Checksum (copy) · Context.
 | `verify.source.event` / `.course` / `.checkpoint` | EVENT / COURSE / CHECKPOINT |
 | `admin.legal.title` | Legal acceptances |
 | `admin.legal.acceptances.column.linked` | CHECKPOINT / PROJECT |
-| `admin.legal.acceptances.context.*` | Sign-up · Project create · Advisor switch-on · Expert services on · Join project · Share change · Checkpoint purchase · Curator accept · Re-acceptance |
+| `admin.legal.acceptances.context.*` | Sign-up · Project create · Advisor switch-on · Expert services on · Share change · Checkpoint purchase · Curator accept · Re-acceptance |
 
 Document titles come from the registry; bodies are the markdown files.
 
@@ -174,12 +181,13 @@ Document titles come from the registry; bodies are the markdown files.
 
 1. Registry and entity config (in code).
 2. Submit an acceptance inside the gated action (registration, project create, mentorship
-   on, paid work save, invite/offer accept, share accept, gate *Continue*): `{ code,
-   version }` (+ `projectId`/`params`, `checkpointId`); refuse an outdated version and the
-   action without it.
+   on, paid work save, share accept, gate *Continue*): `{ code, version }` (+
+   `projectId`/`params`, `checkpointId`); refuse an outdated version and the action without
+   it.
 3. Paid work: payout details (holder, account, invoicing status) stored on the advisor
    profile; price per consultation; curation stages.
-4. Share change: per member, the share in force and the pending one with its date.
+4. Project agreement: per member, the share in force (or none) and the pending one with its
+   date.
 5. Gate: the latest material version in effect not accepted by the user, plus its "what
    changed" lines.
 6. My documents: the user's acceptances (with linked project/checkpoint) and certificates
@@ -192,7 +200,7 @@ Document titles come from the registry; bodies are the markdown files.
 ## 8. Open questions
 
 1. **Free curation** — assumed none: curation always needs the Expert Services Terms.
-2. **Price currency and stages list** — the entity's currency from `src/config/legal/entities.ts` (USD today), shown with `Intl.NumberFormat`, never a hardcoded symbol; the Advisor Agreement text still says euro, fixed in GDHUB-87; stages are the existing checkpoint stages.
+2. **Price currency and stages list** — EUR and the existing checkpoint stages assumed.
 3. **Gate scope** — assumed one gate per sign-in listing every unaccepted material version,
    one checkbox each.
 4. **Footer** should link to `/legal`; `Main Footer` not edited.

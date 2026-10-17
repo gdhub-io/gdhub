@@ -14,6 +14,8 @@ declare module "next-auth/jwt" {
 		syncedAt?: number;
 		/** Cached `Account.expires_at` of the Google account, if any. */
 		googleTokenExpiresAt?: number | null;
+		/** A legal document the user is bound by waits for their acceptance. */
+		legalPending?: boolean;
 	}
 }
 
@@ -27,6 +29,7 @@ declare module "next-auth" {
 			lang: string;
 			activeSubscription?: string;
 			telegramId?: string;
+			legalPending?: boolean;
 			name: string;
 			email: string;
 			image: string;

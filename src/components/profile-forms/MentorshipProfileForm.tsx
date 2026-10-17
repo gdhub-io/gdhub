@@ -19,9 +19,16 @@ import Select from "antd/es/select";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import {
+	ClickwrapField,
+	clickwrapFieldName,
+	legalAcceptances,
+	outdatedLegalCode,
+} from "@/components/legal/ClickwrapField";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
 import { resyncSession } from "@/helpers/session";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
+import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 import { SettingsActions } from "./SettingsActions";
 
 const { Paragraph, Text } = Typography;
@@ -63,11 +70,15 @@ const MentorshipProfileForm = ({
 		queryKey: ["user-mentorship"],
 		queryFn: () =>
 			axios
-				.get<{ enabled: boolean }>("/api/user/profile/mentorship")
+				.get<{ enabled: boolean; agreementAccepted: boolean }>(
+					"/api/user/profile/mentorship",
+				)
 				.then((response) => response.data),
 	});
 
 	const savedEnabled = mentorship?.enabled ?? false;
+	const needsAgreement = mentorship?.agreementAccepted === false;
+	const [agreementStale, setAgreementStale] = useState(false);
 	const enabled = draftEnabled ?? savedEnabled;
 
 	useEffect(() => {
@@ -92,6 +103,7 @@ const MentorshipProfileForm = ({
 				specialityId?: string;
 				timeForMentoring?: string;
 				openForQuestions?: string[];
+				legal?: LegalAcceptanceInput[];
 			}) => axios.put<any>("/api/user/profile/mentorship", data),
 			onSuccess: async () => {
 				await refetchSpecialityList();
@@ -128,9 +140,18 @@ const MentorshipProfileForm = ({
 		try {
 			// Turning mentorship off is a valid save on its own — there is nothing to
 			// fill in, so the fields are only validated when it stays on.
-			const data = enabled ? await form.validateFields() : {};
+			const { legal: _ticks, ...data } = enabled
+				? await form.validateFields()
+				: {};
 
-			await saveMentorshipSetting({ ...data, enabled });
+			setAgreementStale(false);
+			await saveMentorshipSetting({
+				...data,
+				enabled,
+				...(enabled && needsAgreement
+					? { legal: legalAcceptances(["AdvisorAgreement"]) }
+					: {}),
+			});
 			// The draft stays as the source of truth for the switch. `update()`
 			// returns before the session object in the hook is replaced, so falling
 			// back to the session here would show the pre-save value for a moment —
@@ -147,7 +168,13 @@ const MentorshipProfileForm = ({
 					"Mentorship settins is updated",
 				),
 			);
-		} catch {}
+		} catch (error) {
+			const outdated = outdatedLegalCode(error);
+			if (outdated) {
+				form.setFieldValue(clickwrapFieldName(outdated), false);
+				setAgreementStale(true);
+			}
+		}
 	};
 
 	const switchMentorshipStatus = (checked: boolean) => {
@@ -305,6 +332,17 @@ const MentorshipProfileForm = ({
 									)}
 								/>
 							</Form.Item>
+
+							{needsAgreement && (
+								<ClickwrapField
+									code="AdvisorAgreement"
+									stale={agreementStale}
+									requiredMessage={t(
+										"legal.clickwrap.AdvisorAgreement.required",
+										"You need to accept the Advisor Agreement to turn on the advisor space",
+									)}
+								/>
+							)}
 						</Form>
 					)}
 

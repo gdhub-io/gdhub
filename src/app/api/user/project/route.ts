@@ -1,5 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	type Prisma,
+	ProjectStatus,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
@@ -13,6 +17,12 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	LegalAcceptancesSchema,
+	LegalError,
+	resolveLegal,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
@@ -31,7 +41,7 @@ const GetProjectQuerySchema = z.object({
 
 const CreateProjectSchema = z.object({
 	name: z.string(),
-	agree: z.boolean(),
+	legal: LegalAcceptancesSchema,
 	// Creation-time gate only: the author confirms they are making the game
 	// themselves and that this form is not an AI prompt. Never persisted.
 	understandsNotAi: z.boolean(),
@@ -91,13 +101,23 @@ export const GET = withAuth({ mode: "user" })(
 );
 
 export const POST = withAuth({ mode: "user" })(
-	withValidation(CreateProjectSchema)(async (_req, _ctx, { user, body }) => {
+	withValidation(CreateProjectSchema)(async (req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
-		const { name, description, agree, understandsNotAi } =
+		const { name, description, legal, understandsNotAi } =
 			body as CreateProjectBody;
 
-		if (!agree) return apiError.badRequest("Should accept requirements");
+		let acceptances: Prisma.LegalAcceptanceCreateManyInput[];
+		try {
+			acceptances = resolveLegal(legal, ["ProjectRequirements"], {
+				userId: currentUser.id,
+				context: "ProjectCreate",
+				meta: requestMeta(req),
+			});
+		} catch (error) {
+			if (error instanceof LegalError) return legalErrorResponse(error);
+			throw error;
+		}
 		if (!understandsNotAi)
 			return apiError.badRequest(
 				"Should confirm the game is made by the author, not generated",
@@ -150,7 +170,7 @@ export const POST = withAuth({ mode: "user" })(
 			prisma.project.create({
 				data: {
 					name,
-					agree,
+					agree: true,
 					slug: projectSlug,
 					description,
 					author: { connect: { id: currentUser.id } },
@@ -204,6 +224,10 @@ export const POST = withAuth({ mode: "user" })(
 				`${baseSlug}-${randomUUID().slice(-6)}`,
 			);
 		}
+
+		await prisma.legalAcceptance.createMany({
+			data: acceptances.map((row) => ({ ...row, projectId: project.id })),
+		});
 
 		// Membership is what the space gates read; a project without its owner row
 		// would be unreachable for its own author.

@@ -14,6 +14,8 @@ const requestGroupBy = vi.fn();
 const requestUpdate = vi.fn();
 const memberFindMany = vi.fn();
 const specialityUpdateMany = vi.fn();
+const acceptanceFindFirst = vi.fn();
+const acceptanceCreateMany = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
@@ -38,6 +40,19 @@ vi.mock("@/services/prisma", () => ({
 			update: (...a: unknown[]) => requestUpdate(...a),
 		},
 		teamMember: { findMany: (...a: unknown[]) => memberFindMany(...a) },
+		legalAcceptance: {
+			findFirst: (...a: unknown[]) => acceptanceFindFirst(...a),
+			createMany: (...a: unknown[]) => acceptanceCreateMany(...a),
+		},
+		$transaction: (run: (tx: unknown) => unknown) =>
+			run({
+				speciality: {
+					updateMany: (...a: unknown[]) => specialityUpdateMany(...a),
+				},
+				legalAcceptance: {
+					createMany: (...a: unknown[]) => acceptanceCreateMany(...a),
+				},
+			}),
 	},
 }));
 
@@ -276,6 +291,44 @@ describe("turning mentorship on", () => {
 
 	beforeEach(() => {
 		specialityUpdateMany.mockResolvedValue({ count: 1 });
+		// The Advisor Agreement in effect is already accepted unless a test says otherwise.
+		acceptanceFindFirst.mockResolvedValue({ id: "acc-1" });
+	});
+
+	it("refuses without the Advisor Agreement, and writes nothing it would keep", async () => {
+		acceptanceFindFirst.mockResolvedValue(null);
+
+		const response = await save({ enabled: true, specialityId: "spec-1" });
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			details: { reason: "legal.required", code: "AdvisorAgreement" },
+		});
+		expect(acceptanceCreateMany).not.toHaveBeenCalled();
+	});
+
+	it("records the agreement when it is sent with the switch", async () => {
+		acceptanceFindFirst.mockResolvedValue(null);
+
+		const response = await save({
+			enabled: true,
+			specialityId: "spec-1",
+			legal: [{ code: "AdvisorAgreement", version: 1 }],
+		});
+
+		expect(response.status).toBe(200);
+		expect(acceptanceCreateMany.mock.calls[0][0].data[0]).toMatchObject({
+			userId: "u-advisor",
+			code: "AdvisorAgreement",
+			context: "AdvisorJoin",
+		});
+	});
+
+	it("does not ask again once the version in effect is accepted", async () => {
+		const response = await save({ enabled: true, specialityId: "spec-1" });
+
+		expect(response.status).toBe(200);
+		expect(acceptanceCreateMany).not.toHaveBeenCalled();
 	});
 
 	/**
