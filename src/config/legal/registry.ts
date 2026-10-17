@@ -98,7 +98,7 @@ export const LEGAL_DOCUMENTS = {
 		slug: "project-requirements",
 		title: "Project Requirements",
 		issuer: "hub",
-		group: "platform",
+		group: "features",
 		versions: [
 			{
 				version: 1,
