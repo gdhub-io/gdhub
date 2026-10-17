@@ -1,5 +1,10 @@
 // Frame `Opj60`: hairline header and footer, the text on the page ground between them.
 .modal {
+	// antd focuses the dialog itself on open; it is not a control, so no ring.
+	&:focus-visible {
+		outline: none;
+	}
+
 	:global(.ant-modal-container) {
 		padding: 0;
 		overflow: hidden;
