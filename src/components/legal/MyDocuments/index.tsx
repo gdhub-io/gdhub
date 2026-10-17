@@ -3,10 +3,12 @@
 import { IconExternalLink } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Table, type TableProps, Tag, Typography } from "antd";
+import { Flex, Skeleton, type TableProps, Tag, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { LoadError } from "@/components/legal/LoadError";
+import { ModernTable } from "@/components/ModernTable";
 import type {
 	MyAcceptance,
 	MyCertificate,
@@ -27,19 +29,25 @@ export function MyDocumentsView({
 	data,
 	loading,
 	error,
+	onRetry,
 }: {
 	data?: MyDocumentsData;
 	loading?: boolean;
 	error?: boolean;
+	onRetry?: () => void;
 }) {
 	const { t } = useTranslate();
 
+	if (error)
+		return (
+			<LoadError
+				title={t("legal.my.error", "Your documents could not be loaded")}
+				onRetry={onRetry}
+			/>
+		);
+
 	const empty = (text: string) => ({
-		emptyText: (
-			<Text type="secondary">
-				{error ? t("legal.my.error", "Could not load your documents.") : text}
-			</Text>
-		),
+		emptyText: <Text className={styles.empty}>{text}</Text>,
 	});
 
 	const acceptanceColumns: TableProps<MyAcceptance>["columns"] = [
@@ -49,19 +57,21 @@ export function MyDocumentsView({
 			render: (_, row) => (
 				<Flex vertical>
 					<Text>{row.title}</Text>
-					{row.subject && <Text type="secondary">{row.subject}</Text>}
+					{row.subject && <Text className={styles.subject}>{row.subject}</Text>}
 				</Flex>
 			),
 		},
 		{
 			title: t("legal.my.version", "Version"),
 			dataIndex: "version",
-			render: (v: number) => `v${v}`,
+			render: (v: number) => <Text className={styles.meta}>v{v}</Text>,
 		},
 		{
 			title: t("legal.my.accepted", "Accepted"),
 			dataIndex: "acceptedAt",
-			render: day,
+			render: (date: string) => (
+				<Text className={styles.meta}>{day(date)}</Text>
+			),
 		},
 		{
 			key: "open",
@@ -69,7 +79,7 @@ export function MyDocumentsView({
 			render: (_, row) =>
 				row.href && (
 					<Link href={row.href} target="_blank" className={styles.action}>
-						{t("legal.my.open", "Open")} <IconExternalLink size={14} />
+						{t("legal.my.open", "Open")} <IconExternalLink size={12} />
 					</Link>
 				),
 		},
@@ -88,7 +98,9 @@ export function MyDocumentsView({
 		{
 			title: t("legal.my.issued", "Issued"),
 			dataIndex: "issuedAt",
-			render: day,
+			render: (date: string) => (
+				<Text className={styles.meta}>{day(date)}</Text>
+			),
 		},
 		{
 			key: "verify",
@@ -99,11 +111,30 @@ export function MyDocumentsView({
 					target="_blank"
 					className={styles.action}
 				>
-					{t("legal.my.verify", "Verify")} <IconExternalLink size={14} />
+					{t("legal.my.verify", "Verify")} <IconExternalLink size={12} />
 				</Link>
 			),
 		},
 	];
+
+	const table = <T extends object>(
+		columns: TableProps<T>["columns"],
+		rows: T[] | undefined,
+		emptyText: string,
+	) =>
+		loading ? (
+			<Skeleton active title={false} paragraph={{ rows: 3 }} />
+		) : (
+			<ModernTable<T>
+				rowKey="id"
+				surface="page"
+				className={styles.table}
+				columns={columns}
+				dataSource={rows}
+				pagination={false}
+				locale={empty(emptyText)}
+			/>
+		);
 
 	return (
 		<Flex vertical gap={32}>
@@ -111,45 +142,40 @@ export function MyDocumentsView({
 				<Title level={4}>
 					{t("legal.my.accepted-title", "Accepted documents")}
 				</Title>
-				<Table
-					rowKey="id"
-					className={styles.table}
-					columns={acceptanceColumns}
-					dataSource={error ? [] : data?.acceptances}
-					loading={loading}
-					pagination={false}
-					locale={empty(
-						t("legal.my.no-acceptances", "No accepted documents yet."),
-					)}
-					scroll={{ x: "max-content" }}
-				/>
+				{table(
+					acceptanceColumns,
+					data?.acceptances,
+					t("legal.my.no-acceptances", "No accepted documents yet."),
+				)}
 			</section>
 			<section>
 				<Title level={4}>
 					{t("legal.my.certificates-title", "Certificates")}
 				</Title>
-				<Table
-					rowKey="id"
-					className={styles.table}
-					columns={certificateColumns}
-					dataSource={error ? [] : data?.certificates}
-					loading={loading}
-					pagination={false}
-					locale={empty(t("legal.my.no-certificates", "No certificates yet."))}
-					scroll={{ x: "max-content" }}
-				/>
+				{table(
+					certificateColumns,
+					data?.certificates,
+					t("legal.my.no-certificates", "No certificates yet."),
+				)}
 			</section>
 		</Flex>
 	);
 }
 
 export function MyDocuments() {
-	const { data, isLoading, isError } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ["my-legal-documents"],
 		queryFn: () =>
 			axios
 				.get<MyDocumentsData>("/api/user/legal/documents")
 				.then((r) => r.data),
 	});
-	return <MyDocumentsView data={data} loading={isLoading} error={isError} />;
+	return (
+		<MyDocumentsView
+			data={data}
+			loading={isLoading}
+			error={isError}
+			onRetry={() => refetch()}
+		/>
+	);
 }
