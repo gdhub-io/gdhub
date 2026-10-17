@@ -16,7 +16,7 @@ import {
 import { versionInEffect } from "./versions";
 
 /** What a form sends for each ticked checkbox: the document and the version it showed. */
-export const LegalAcceptanceInputSchema = z.object({
+const LegalAcceptanceInputSchema = z.object({
 	code: z.enum(LEGAL_CODES),
 	version: z.number().int().positive(),
 });

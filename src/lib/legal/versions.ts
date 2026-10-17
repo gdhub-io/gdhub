@@ -17,19 +17,3 @@ export function versionInEffect(
 	);
 	return due.length ? due[due.length - 1] : null;
 }
-
-/** The next version, published but not in effect yet. */
-export function scheduledVersion(
-	code: LegalCode,
-	now: Date = new Date(),
-): LegalVersion | null {
-	return (
-		LEGAL_DOCUMENTS[code].versions.find(
-			(v) => effectiveFrom(v) > now.getTime(),
-		) ?? null
-	);
-}
-
-export function findVersion(code: LegalCode, version: number) {
-	return LEGAL_DOCUMENTS[code].versions.find((v) => v.version === version);
-}

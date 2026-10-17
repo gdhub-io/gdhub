@@ -50,7 +50,7 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 			<div className="layout-background">
 				<div className={styles.layout}>
 					<Flex vertical gap={24} className={styles.main}>
-						{replacedBy && page.current && (
+						{replacedBy && (
 							<div className={styles.archived}>
 								<Text>
 									{t(

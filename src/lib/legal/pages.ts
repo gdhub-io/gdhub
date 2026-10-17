@@ -23,12 +23,10 @@ export type LegalPageData = {
 	effectiveAt: string;
 	status: LegalVersionStatus;
 	text: string;
-	/** The version in effect, for the archived banner. */
-	current: { version: number; effectiveAt: string } | null;
 	versions: LegalVersionRow[];
 };
 
-export const legalCodeBySlug = (slug: string): LegalCode | undefined =>
+const legalCodeBySlug = (slug: string): LegalCode | undefined =>
 	LEGAL_CODES.find((code) => LEGAL_DOCUMENTS[code].slug === slug);
 
 function rows(code: LegalCode, now: Date): LegalVersionRow[] {
@@ -74,9 +72,6 @@ export function loadLegalPage(
 		status:
 			versions.find((r) => r.version === shown.version)?.status ?? "current",
 		text,
-		current: current
-			? { version: current.version, effectiveAt: current.effectiveAt }
-			: null,
 		versions,
 	};
 }

@@ -19,8 +19,6 @@ export type LegalDocumentDefinition = {
 	/** Who issues it: the hub's entity, or a named one (e.g. the founder's sole proprietorship). */
 	issuer: "hub" | LegalEntityKey;
 	group: "platform" | "features";
-	/** Published for reading only (privacy, cookies, refunds) when false. */
-	accepted: boolean;
 	/** Filled in per project, so the checksum is per acceptance, not per version. */
 	withParams?: boolean;
 	versions: readonly LegalVersion[];
@@ -37,7 +35,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Terms of Use",
 		issuer: "hub",
 		group: "platform",
-		accepted: true,
 		versions: [
 			{
 				version: 1,
@@ -54,7 +51,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Privacy Policy",
 		issuer: "hub",
 		group: "platform",
-		accepted: false,
 		versions: [
 			{
 				version: 1,
@@ -71,7 +67,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Cookie Policy",
 		issuer: "hub",
 		group: "platform",
-		accepted: false,
 		versions: [
 			{
 				version: 1,
@@ -88,7 +83,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Refund Policy",
 		issuer: "hub",
 		group: "platform",
-		accepted: false,
 		versions: [
 			{
 				version: 1,
@@ -105,7 +99,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Project Requirements",
 		issuer: "hub",
 		group: "platform",
-		accepted: true,
 		versions: [
 			{
 				version: 1,
@@ -122,7 +115,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Advisor Agreement",
 		issuer: "hub",
 		group: "features",
-		accepted: true,
 		versions: [
 			{
 				version: 1,
@@ -139,7 +131,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Expert Services Terms",
 		issuer: "hub",
 		group: "features",
-		accepted: true,
 		versions: [],
 	},
 	CheckpointPurchaseTerms: {
@@ -147,7 +138,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Checkpoint Purchase Terms",
 		issuer: "hub",
 		group: "features",
-		accepted: true,
 		versions: [
 			{
 				version: 1,
@@ -164,7 +154,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Withdrawal Waiver",
 		issuer: "hub",
 		group: "features",
-		accepted: true,
 		versions: [],
 	},
 	CheckpointStandard: {
@@ -172,7 +161,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Checkpoint Standard",
 		issuer: "hub",
 		group: "features",
-		accepted: true,
 		versions: [],
 	},
 	CoDevelopmentAgreement: {
@@ -180,7 +168,6 @@ export const LEGAL_DOCUMENTS = {
 		title: "Co-Development Agreement",
 		issuer: "hub",
 		group: "features",
-		accepted: true,
 		withParams: true,
 		versions: [],
 	},

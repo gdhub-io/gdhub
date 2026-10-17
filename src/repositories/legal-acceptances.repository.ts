@@ -117,7 +117,7 @@ export async function listAcceptances(
 }
 
 /** The export's ceiling: a dispute or a regulator asks for a slice, not the table. */
-export const EXPORT_LIMIT = 50_000;
+const EXPORT_LIMIT = 50_000;
 
 export async function exportAcceptances(filters: AcceptanceFilters) {
 	const rows = await prisma.legalAcceptance.findMany({

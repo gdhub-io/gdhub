@@ -45,31 +45,16 @@ export function readLegalFile(code: LegalCode, version: number): string {
 	);
 }
 
-export type LegalText = {
-	code: LegalCode;
-	title: string;
-	version: number;
-	effectiveAt: string;
-	text: string;
-	checksum: string;
-};
-
+/** The text of a version as it is shown, with the checksum taken over exactly that. */
 export function loadLegalText(
 	code: LegalCode,
 	version: LegalVersion,
 	params?: LegalParams,
-): LegalText {
+): { text: string; checksum: string } {
 	const text = renderLegalText(
 		readLegalFile(code, version.version),
 		LEGAL_ENTITIES[version.entity],
 		params,
 	);
-	return {
-		code,
-		title: LEGAL_DOCUMENTS[code].title,
-		version: version.version,
-		effectiveAt: version.effectiveAt,
-		text,
-		checksum: legalChecksum(text),
-	};
+	return { text, checksum: legalChecksum(text) };
 }
