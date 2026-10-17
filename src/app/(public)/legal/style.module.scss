@@ -15,22 +15,33 @@
 	overflow: hidden;
 }
 
+// DS · 11 Tables: 56 rows on the lightest hairline, the brand tint on hover.
 .rowLink {
 	display: flex;
-	&:not(:first-child) {
-		border-top: 1px solid var(--gd-color-border);
-	}
-
 	align-items: center;
 	gap: var(--gd-space-3);
-	width: 100%;
-	padding: var(--gd-space-3) var(--gd-space-4);
+	min-height: 56px;
+	padding: var(--gd-space-2) var(--gd-space-4);
 	color: inherit;
+	transition: background-color 0.15s ease;
+
+	&:not(:first-child) {
+		border-top: 1px solid var(--gd-color-border-subtle);
+	}
+
+	&:hover {
+		color: inherit;
+		background-color: color-mix(in srgb, var(--gd-color-accent) 4%, transparent);
+	}
 }
 
 .rowTitle {
 	flex: 1;
 	min-width: 0;
+}
+
+.rowMeta {
+	font-size: var(--gd-font-size-caption);
 }
 
 .chevron {

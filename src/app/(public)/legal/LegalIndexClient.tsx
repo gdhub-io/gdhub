@@ -73,7 +73,11 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 										<Text strong className={styles.rowTitle}>
 											{row.title}
 										</Text>
-										{row.meta && <Text type="secondary">{row.meta}</Text>}
+										{row.meta && (
+											<Text type="secondary" className={styles.rowMeta}>
+												{row.meta}
+											</Text>
+										)}
 										<IconChevronRight size={16} className={styles.chevron} />
 									</Link>
 								))}
