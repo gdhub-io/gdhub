@@ -73,7 +73,6 @@ const MentorshipProfileForm = ({
 	 * session cannot flip it back under their hands.
 	 */
 	const [draftEnabled, setDraftEnabled] = useState<boolean | null>(null);
-	const [isDirty, setIsDirty] = useState(false);
 
 	// Read from the server, not from the session: the JWT lags by minutes, so a
 	// switch driven by it shows the previous answer after a save or a reload.
@@ -173,7 +172,6 @@ const MentorshipProfileForm = ({
 			// returns before the session object in the hook is replaced, so falling
 			// back to the session here would show the pre-save value for a moment —
 			// which is exactly what looked like the switch turning itself back on.
-			setIsDirty(false);
 			await refetchMentorship();
 			// Other parts of the app still read the role from the session.
 			await resyncSession(refreshSession);
@@ -195,7 +193,6 @@ const MentorshipProfileForm = ({
 
 	const switchMentorshipStatus = (checked: boolean) => {
 		setDraftEnabled(checked);
-		setIsDirty(true);
 
 		if (!checked) {
 			form.resetFields();

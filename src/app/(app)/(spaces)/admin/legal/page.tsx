@@ -42,8 +42,6 @@ import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
 
-const PAGE_SIZE = 20;
-
 const CONTEXT_LABELS: Record<LegalContext, string> = {
 	SignUp: "Sign-up",
 	ProjectCreate: "Project created",
@@ -325,10 +323,9 @@ export default function AdminLegalPage() {
 					}}
 					pagination={{
 						current: page,
-						pageSize: PAGE_SIZE,
+						pageSize: 20,
 						total: data?.total ?? 0,
 						showSizeChanger: false,
-						hideOnSinglePage: false,
 						showTotal: (total, [from, to]) =>
 							t("admin.legal.total", "{from}–{to} of {total} acceptances", {
 								from,

@@ -21,8 +21,6 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 		page.status === "archived"
 			? page.versions.find((v) => v.version === page.version + 1)
 			: undefined;
-	const until = (version: number) =>
-		page.versions.find((v) => v.version === version + 1)?.effectiveAt;
 	const range = (v: LegalVersionRow) =>
 		v.status === "scheduled"
 			? t("legal.document.takes-effect-short", "Takes effect {date}", {
@@ -33,7 +31,10 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 					to:
 						v.status === "current"
 							? t("legal.document.now", "now")
-							: day(until(v.version) ?? v.effectiveAt),
+							: day(
+									page.versions.find((n) => n.version === v.version + 1)
+										?.effectiveAt ?? v.effectiveAt,
+								),
 				});
 
 	return (
