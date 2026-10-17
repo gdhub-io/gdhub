@@ -81,11 +81,12 @@ export function LegalUpdateModal({
 			keyboard={false}
 			footer={null}
 			width={460}
+			centered
 			className={styles.modal}
 		>
 			<div className={styles.body}>
 				<div className={styles.head}>
-					<IconTile icon={IconFileText} />
+					<IconTile icon={IconFileText} tint="var(--gd-neutral-100)" />
 					<div className={styles.headText}>
 						<Title level={5} className={styles.title}>
 							{firstTime

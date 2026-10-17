@@ -1,16 +1,18 @@
 // Frames `BnOHg` / `wx2Zi` / `qGqSf`: the cookie panel's anatomy, centred and not dismissible.
 .modal {
-	:global(.ant-modal-content) {
-		padding: var(--gd-card-padding);
+	:global(.ant-modal-container) {
+		padding: var(--gd-space-6);
 		border: 1px solid var(--gd-color-border);
 		border-radius: var(--gd-radius-panel);
+		box-shadow: var(--gd-shadow-e3);
 	}
 }
 
 .body {
 	display: flex;
 	flex-direction: column;
-	gap: var(--gd-space-4);
+	// 20 in frame `BnOHg` — between steps 4 and 6 of the scale.
+	gap: calc(var(--gd-space-4) + var(--gd-space-1));
 }
 
 .head {
@@ -30,18 +32,22 @@
 	margin: 0 !important;
 	font-size: var(--gd-font-size-h4) !important;
 	font-weight: 600 !important;
-	line-height: var(--gd-line-height-heading) !important;
+	line-height: 1.35 !important;
 }
 
 .lead {
 	font-size: var(--gd-font-size-body);
-	line-height: var(--gd-line-height-relaxed);
+	line-height: var(--gd-line-height-body);
 	color: var(--gd-color-text-secondary);
 }
 
 .documents {
 	display: flex;
 	flex-direction: column;
+}
+
+.document :global(.ant-form-item .ant-form-item-explain) {
+	margin-top: var(--gd-space-2);
 }
 
 .document + .document {
@@ -66,12 +72,19 @@
 	flex-direction: column;
 	gap: var(--gd-space-1);
 	margin: var(--gd-space-2) 0 0;
-	padding-left: calc(var(--gd-space-6) + var(--gd-space-1));
+	padding-left: 26px;
+	list-style: none;
 	font-size: var(--gd-font-size-body-sm);
 	line-height: var(--gd-line-height-body);
 	color: var(--gd-color-text-secondary);
 
-	li::marker {
+	li {
+		display: flex;
+		gap: var(--gd-space-2);
+	}
+
+	li::before {
+		content: "•";
 		color: var(--gd-color-text-tertiary);
 	}
 }

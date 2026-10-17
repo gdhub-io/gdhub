@@ -1,6 +1,6 @@
 import type { Project } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
-import { T, useTolgee } from "@tolgee/react";
+import { useTolgee } from "@tolgee/react";
 import { Checkbox, Form, Input, Modal, message, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -190,13 +190,6 @@ const CreateProjectModal = ({ open, onCreate, onCancel }: any) => {
 						requiredMessage={t(
 							"legal.clickwrap.ProjectRequirements.required",
 							"You need to accept the Project Requirements to create a project",
-						)}
-						label={(doc) => (
-							<T
-								keyName="legal.clickwrap.ProjectRequirements.label"
-								defaultValue="I accept the <doc>requirements for game projects</doc> published on gdhub.io"
-								params={{ doc }}
-							/>
 						)}
 					/>
 				</Form>
