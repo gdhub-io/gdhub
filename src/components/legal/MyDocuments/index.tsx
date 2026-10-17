@@ -64,13 +64,6 @@ export function MyDocumentsView({
 			render: day,
 		},
 		{
-			title: t("legal.my.context", "Context"),
-			dataIndex: "context",
-			render: (context: string) => (
-				<Tag>{t(`legal.context.${context}`, context)}</Tag>
-			),
-		},
-		{
 			key: "open",
 			align: "right",
 			render: (_, row) =>

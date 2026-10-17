@@ -19,6 +19,7 @@ import { type ReactNode, useState } from "react";
 import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import {
 	ClickwrapField,
+	LegalLink,
 	legalAcceptances,
 } from "@/components/legal/ClickwrapField";
 import { setCookie } from "@/helpers/cookie";
@@ -343,15 +344,7 @@ function TermsClickwrap() {
 					params={{
 						doc,
 						privacy: (chunks: ReactNode) => (
-							<Link
-								href="/legal/privacy-policy"
-								target="_blank"
-								rel="noreferrer"
-								className={styles.policyLink}
-								onClick={(e) => e.stopPropagation()}
-							>
-								{chunks}
-							</Link>
+							<LegalLink href="/legal/privacy-policy">{chunks}</LegalLink>
 						),
 					}}
 				/>

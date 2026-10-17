@@ -8,15 +8,19 @@
 }
 
 .list {
-	background: transparent;
-}
-
-.row {
-	padding: 0 !important;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
 }
 
 .rowLink {
 	display: flex;
+	&:not(:first-child) {
+		border-top: 1px solid var(--gd-color-border);
+	}
+
 	align-items: center;
 	gap: var(--gd-space-3);
 	width: 100%;

@@ -186,7 +186,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									href={`/project/${data.project.slug}`}
 									target="_blank"
 									icon={<IconExternalLink size={16} />}
-									iconPosition="end"
+									iconPlacement="end"
 								>
 									{t("verify.result.viewProject", "View project")}
 								</Button>
@@ -280,7 +280,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 										href={data.subject.href}
 										target="_blank"
 										icon={<IconExternalLink size={16} />}
-										iconPosition="end"
+										iconPlacement="end"
 									>
 										{t("verify.result.view", "View {source}", {
 											source: sourceLabel.toLowerCase(),

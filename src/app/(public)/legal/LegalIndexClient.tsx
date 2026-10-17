@@ -2,7 +2,7 @@
 
 import { IconChevronRight, IconFileText } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, List, Typography } from "antd";
+import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
@@ -61,23 +61,23 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 							<Title level={2} className={styles.groupTitle}>
 								{group.title}
 							</Title>
-							<List
-								bordered
-								className={styles.list}
-								dataSource={group.rows}
-								renderItem={(row) => (
-									<List.Item className={styles.row}>
-										<Link href={row.href} className={styles.rowLink}>
-											<IconTile icon={IconFileText} size="sm" />
-											<Text strong className={styles.rowTitle}>
-												{row.title}
-											</Text>
-											{row.meta && <Text type="secondary">{row.meta}</Text>}
-											<IconChevronRight size={16} className={styles.chevron} />
-										</Link>
-									</List.Item>
-								)}
-							/>
+							{/* antd List is deprecated in v6: the rows are links in an outlined stack. */}
+							<div className={styles.list}>
+								{group.rows.map((row) => (
+									<Link
+										key={row.key}
+										href={row.href}
+										className={styles.rowLink}
+									>
+										<IconTile icon={IconFileText} size="sm" />
+										<Text strong className={styles.rowTitle}>
+											{row.title}
+										</Text>
+										{row.meta && <Text type="secondary">{row.meta}</Text>}
+										<IconChevronRight size={16} className={styles.chevron} />
+									</Link>
+								))}
+							</div>
 						</section>
 					))}
 				</Flex>

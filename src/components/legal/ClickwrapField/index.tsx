@@ -9,6 +9,27 @@ import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 import { versionInEffect } from "@/lib/legal/versions";
 import styles from "./style.module.scss";
 
+/** A legal document link inside a checkbox label: opens in a new tab and never toggles the box. */
+export function LegalLink({
+	href,
+	children,
+}: {
+	href: string;
+	children: ReactNode;
+}) {
+	return (
+		<Link
+			href={href}
+			target="_blank"
+			rel="noreferrer"
+			className={styles.link}
+			onClick={(e) => e.stopPropagation()}
+		>
+			{children}
+		</Link>
+	);
+}
+
 export const clickwrapFieldName = (code: LegalCode) => ["legal", code];
 
 /** What a form sends for its ticked documents: the version each box showed. */
@@ -42,15 +63,7 @@ export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
 		: `/legal/${slug}`;
 
 	const doc = (chunks: ReactNode) => (
-		<Link
-			href={href}
-			target="_blank"
-			rel="noreferrer"
-			className={styles.link}
-			onClick={(e) => e.stopPropagation()}
-		>
-			{chunks}
-		</Link>
+		<LegalLink href={href}>{chunks}</LegalLink>
 	);
 
 	return (
@@ -58,6 +71,8 @@ export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
 			name={clickwrapFieldName(code)}
 			valuePropName="checked"
 			initialValue={false}
+			// Full width whatever the form's column layout: the label is a sentence.
+			wrapperCol={{ span: 24 }}
 			className={styles.field}
 			validateStatus={stale ? "warning" : undefined}
 			help={

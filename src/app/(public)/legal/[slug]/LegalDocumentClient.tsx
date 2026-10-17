@@ -25,26 +25,24 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 			<PublicPageHeader
 				title={page.title}
 				backTo={{ href: "/legal", label: t("legal.index.title", "Legal") }}
-				subLine={
-					<Text className={styles.subLine}>
-						{page.status === "scheduled"
-							? t(
-									"legal.document.takes-effect",
-									"Version {version} · takes effect {date}",
-									{
-										version: page.version,
-										date: day(page.effectiveAt),
-									},
-								)
-							: t(
-									"legal.index.version",
-									"Version {version} · in effect since {date}",
-									{
-										version: page.version,
-										date: day(page.effectiveAt),
-									},
-								)}
-					</Text>
+				subTitle={
+					page.status === "scheduled"
+						? t(
+								"legal.document.takes-effect",
+								"Version {version} · takes effect {date}",
+								{
+									version: page.version,
+									date: day(page.effectiveAt),
+								},
+							)
+						: t(
+								"legal.index.version",
+								"Version {version} · in effect since {date}",
+								{
+									version: page.version,
+									date: day(page.effectiveAt),
+								},
+							)
 				}
 			/>
 			<div className="layout-background">

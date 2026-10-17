@@ -54,8 +54,14 @@ export function needsAcceptance(
 	);
 }
 
-/** The documents the user has to accept before going on, oldest-first registry order. */
-export async function pendingLegalCodes(userId: string): Promise<LegalCode[]> {
+export type PendingLegal = {
+	code: LegalCode;
+	/** Never accepted any version — today, everyone who signed up before acceptances were recorded. */
+	firstTime: boolean;
+};
+
+/** The documents the user has to accept before going on, in registry order. */
+export async function pendingLegal(userId: string): Promise<PendingLegal[]> {
 	const codes = await documentsThatApply(userId);
 	const rows = await prisma.legalAcceptance.findMany({
 		where: { userId, code: { in: codes } },
@@ -65,5 +71,10 @@ export async function pendingLegalCodes(userId: string): Promise<LegalCode[]> {
 	for (const row of rows) {
 		latest.set(row.code, Math.max(latest.get(row.code) ?? 0, row.version));
 	}
-	return codes.filter((code) => needsAcceptance(code, latest.get(code)));
+	return codes
+		.filter((code) => needsAcceptance(code, latest.get(code)))
+		.map((code) => ({ code, firstTime: !latest.has(code) }));
 }
+
+export const pendingLegalCodes = async (userId: string) =>
+	(await pendingLegal(userId)).map((p) => p.code);

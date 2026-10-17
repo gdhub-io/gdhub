@@ -42,7 +42,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: true,
 				checksum:
-					"2160a586a82744e79cf6938c68beae8cf67da6016c53cd8f113abd24fb20abd3",
+					"f67decab3c4018d583f0ed135d9a7106ffce0809b8a19c4072f83e1af45b66e7",
 			},
 		],
 	},
@@ -90,7 +90,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"c685f609a02e0ab5b5c1c764d7dab3024699d4757011a87bea5a0445135e0302",
+					"645ebb26227552ff96b5ba9bf430fe4fa48f0f16dcc1a12254619f6d0ac381a3",
 			},
 		],
 	},
@@ -122,7 +122,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"8ff7b4e33828a8c31f38c846fe6e5ebaec9c2c82ff97383120d58336e0e222b1",
+					"24609f31624d9d2ddfcf72198d0c1e20ddbace4a672241f7b0524f035ad582c9",
 			},
 		],
 	},
@@ -145,7 +145,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"168f896cc62541183ee4d5db706b139e16fb36d06bd6005805b2bf7acdff02d8",
+					"9dd6b4335aeff3efe6645626c40bece9bb311a520fd585684a209fe56f796676",
 			},
 		],
 	},
