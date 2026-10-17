@@ -12,7 +12,13 @@ import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
 
-type Row = { key: string; href: string; title: string; meta?: string };
+type Row = {
+	key: string;
+	href: string;
+	title: string;
+	version?: string;
+	since?: string;
+};
 
 export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 	const { t } = useTranslate();
@@ -21,14 +27,12 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 		key: item.code,
 		href: `/legal/${item.slug}`,
 		title: item.title,
-		meta: t(
-			"legal.index.version",
-			"Version {version} · in effect since {date}",
-			{
-				version: item.version,
-				date: dayjs(item.effectiveAt).format("D MMM YYYY"),
-			},
-		),
+		version: t("legal.index.version-number", "Version {version}", {
+			version: item.version,
+		}),
+		since: t("legal.index.since", "in effect since {date}", {
+			date: dayjs(item.effectiveAt).format("D MMM YYYY"),
+		}),
 	});
 
 	const groups: { key: string; title: string; rows: Row[] }[] = [
@@ -70,13 +74,12 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 										className={styles.rowLink}
 									>
 										<IconTile icon={IconFileText} size="sm" />
-										<Text strong className={styles.rowTitle}>
-											{row.title}
-										</Text>
-										{row.meta && (
-											<Text type="secondary" className={styles.rowMeta}>
-												{row.meta}
-											</Text>
+										<Text className={styles.rowTitle}>{row.title}</Text>
+										{row.version && (
+											<span className={styles.rowMeta}>
+												<Text>{row.version}</Text>
+												<Text className={styles.rowSince}>{row.since}</Text>
+											</span>
 										)}
 										<IconChevronRight size={16} className={styles.chevron} />
 									</Link>
