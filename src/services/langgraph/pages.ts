@@ -78,7 +78,7 @@ export const LANGGRAPH_PAGES: ReadonlyArray<PageInfo> = [
 		description: "Public devlog post for a project.",
 	},
 	{
-		path: "/cookie-policy",
+		path: "/legal/cookie-policy",
 		title: "Cookie Policy",
 		description: "Cookies usage policy.",
 	},

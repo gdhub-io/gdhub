@@ -127,7 +127,7 @@ on.
   does and does not do and takes a tick, and that tick is stored with the version
   accepted — but the binding document behind it (refunds, a curator who
   disappears, rights to what the team makes) is written separately, beside
-  `docs/legal/terms-of-use.md`. Until it exists the tick points at the checkpoint
+  `docs/legal/terms-of-use/v1.md`. Until it exists the tick points at the checkpoint
   standard.
 - **The human curator** — choosing one, their rate, their calls, their payout,
   and the author's rating of them. Separate issue; this one ships the

@@ -1,0 +1,31 @@
+// Frame `CJGPi` on the outlined table: rows 52, meta at 13, links 13/500.
+.table {
+	:global(.ant-table) :global(.ant-table-tbody > tr > td.ant-table-cell) {
+		height: 52px;
+	}
+}
+
+.subject {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.meta {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.empty {
+	display: block;
+	text-align: left;
+	color: var(--gd-color-text-secondary);
+}
+
+.action {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	color: var(--gd-color-link);
+	white-space: nowrap;
+}

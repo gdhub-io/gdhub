@@ -55,7 +55,6 @@ const ALLOWED: Record<string, string> = {
 
 	// A printed document, rendered outside the browser by DocuSeal: it has its
 	// own serif typography and border, and no custom properties to resolve.
-	"src/services/legal/legal-docuseal.ts": "print certificate template",
 };
 
 async function sourceFiles() {

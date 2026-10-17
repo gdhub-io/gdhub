@@ -1,0 +1,117 @@
+.layout {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-12);
+
+	@media (max-width: 992px) {
+		flex-direction: column-reverse;
+	}
+}
+
+.main {
+	flex: 1;
+	min-width: 0;
+	max-width: 760px;
+}
+
+.archived {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}
+
+.archivedText {
+	flex: 1;
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.archivedLink {
+	font-weight: 500;
+	color: var(--gd-color-link);
+}
+
+.aside {
+	width: 312px;
+	flex-shrink: 0;
+	position: sticky;
+	top: var(--gd-space-6);
+
+	@media (max-width: 992px) {
+		position: static;
+		width: 100%;
+	}
+}
+
+.asideTitle {
+	display: block;
+	margin-bottom: var(--gd-space-3);
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--gd-color-text-secondary);
+}
+
+.versions {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	overflow: hidden;
+
+	li + li {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.version {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: var(--gd-space-3) var(--gd-space-4);
+}
+
+.versionTitle {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-link);
+}
+
+.selected {
+	.versionTitle {
+		font-weight: 600;
+		color: var(--gd-color-text);
+	}
+
+	&::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 50%;
+		width: 2px;
+		height: 32px;
+		transform: translateY(-50%);
+		border-radius: var(--gd-radius-pill);
+		corner-shape: round;
+		background: var(--gd-color-accent);
+	}
+}
+
+.current {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text);
+}
+
+.versionDate {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}

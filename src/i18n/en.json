@@ -437,6 +437,84 @@
 	"Your vote has been counted": "Your vote has been counted",
 	"Youtube": "Youtube",
 	"actual vacancies": "actual vacancies",
+	"admin": {
+		"checkpoints": {
+			"promoCodes": {
+				"column": {
+					"code": "Code",
+					"discount": "Discount",
+					"expires": "Expires",
+					"limits": "Limits",
+					"status": "Status",
+					"used": "Used"
+				},
+				"copied": "Copied",
+				"copy": "Copy",
+				"createFailed": "Couldn't create the code. Try again.",
+				"created": "Promo code created",
+				"discount": {
+					"amount": "{currency}{amount} off"
+				},
+				"empty": {
+					"description": "Codes made here are entered on the Stripe checkout page.",
+					"title": "No promo codes yet"
+				},
+				"error": {
+					"description": "Stripe or the server did not answer. Try again in a moment.",
+					"retry": "Try again",
+					"title": "Couldn't load promo codes"
+				},
+				"form": {
+					"code": {
+						"help": "Letters and digits; what the buyer types",
+						"invalid": "3 to 24 letters and digits.",
+						"label": "Code",
+						"taken": "This code already exists in Stripe. Pick another."
+					},
+					"discount": {
+						"amount": "Amount",
+						"helpAmount": "Less than the checkpoint price: a free checkpoint is given by an administrator, not by a code.",
+						"helpPercent": "Up to 99%: a free checkpoint is given by an administrator, not by a code.",
+						"label": "Discount",
+						"percent": "Percent",
+						"required": "Enter the discount."
+					},
+					"expires": {
+						"label": "Expires",
+						"placeholder": "No end date"
+					},
+					"firstPurchase": "First purchase only",
+					"maxUses": {
+						"label": "Max uses",
+						"placeholder": "Unlimited"
+					},
+					"optional": "(optional)"
+				},
+				"limit": {
+					"firstPurchase": "First purchase"
+				},
+				"modal": {
+					"submit": "Create code",
+					"title": "New promo code"
+				},
+				"new": "New code",
+				"status": {
+					"active": "Active",
+					"expired": "Expired",
+					"off": "Off"
+				},
+				"switch": {
+					"expired": "An expired code can't be turned on.",
+					"label": "Active"
+				},
+				"toggleFailed": "Couldn't change the code. Try again."
+			},
+			"tab": {
+				"promoCodes": "Promo codes"
+			},
+			"title": "Checkpoints"
+		}
+	},
 	"advisor": {
 		"availability": {
 			"addPeriod": "Add period",
@@ -787,6 +865,93 @@
 		"error_no_connection": "No connection. Try later.",
 		"go_to_chat": "Go to chat"
 	},
+	"checkout": {
+		"backToPlan": "Back to your checkpoint plan",
+		"curator": {
+			"hint": "An expert on calls, or the AI curator in writing."
+		},
+		"goal": {
+			"hint": "One goal for the {days} days, and the hours your team can give.",
+			"title": "Your goal"
+		},
+		"payment": {
+			"hint": "Nothing is charged until you confirm.",
+			"pay": "Pay {amount}"
+		},
+		"step": {
+			"curator": "Curator",
+			"goal": "Goal",
+			"ofTotal": "Step {current} of {total} · {name}",
+			"payment": "Payment"
+		}
+	},
+	"checkpointEntry": {
+		"about": {
+			"done": "{name} · {speciality}",
+			"failed": "Could not save — try again",
+			"hint": "So the curator knows who they work with. The rest of your profile can wait.",
+			"specialityPlaceholder": "e.g. Game designer",
+			"title": "Tell us about yourself",
+			"todo": "Your name and speciality — about a minute."
+		},
+		"cancel": "Cancel",
+		"checkpoint": {
+			"button": "Set the goal",
+			"line": "Set the goal for {days} days, show what you have today and choose a curator.",
+			"lineGoal": "Set the goal for {days} days and choose a curator.",
+			"running": "Go to your checkpoint",
+			"title": "Your checkpoint"
+		},
+		"closed": "Checkpoints open soon — we'll email you when you can head for one.",
+		"current": "Checkpoint {number} for {project} is on its way",
+		"done": {
+			"add": "Add item",
+			"carried": "Carried over from Checkpoint {number} — remove what no longer applies.",
+			"help": "Up to {max} things that exist today — the curator measures the {days} days from here.",
+			"label": "What's done so far",
+			"lineLabel": "Done so far, line {n}",
+			"placeholder": "e.g. a playable greybox, a design doc, sketches",
+			"remove": "Remove",
+			"required": "Add at least one thing that's done"
+		},
+		"edit": "Edit",
+		"evidence": {
+			"detach": "Detach"
+		},
+		"fact": {
+			"curator": "Expert or AI curator",
+			"days": "{days} days",
+			"goal": "One goal",
+			"priceChosen": "{price}",
+			"priceFrom": "from {price}",
+			"pricePaid": "{price} paid",
+			"priceReserved": "{price} reserved"
+		},
+		"fillIn": "Fill in",
+		"loadFailed": "Could not load your progress",
+		"lockedReason": "Locked until the step above is done",
+		"project": {
+			"allRunning": "Every project has a checkpoint under way",
+			"allRunningHint": "Create a new project to head for another checkpoint.",
+			"done": "{count, plural, one {{project} · {stage} stage · # thing done so far} other {{project} · {stage} stage · # things done so far}}",
+			"doneNoStage": "{count, plural, one {{project} · # thing done so far} other {{project} · # things done so far}}",
+			"failed": "Could not save — try again",
+			"hint": "Pick the project this checkpoint is for, or create one.",
+			"noStage": "This project has no workflow stage yet — try again or pick another project.",
+			"pick": "Choose a project",
+			"running": "This project already has a checkpoint under way.",
+			"title": "Tell us about your project",
+			"todo": "Pick a project or create one, and what's done so far.",
+			"underWay": "Checkpoint under way"
+		},
+		"retry": "Try again",
+		"saveBack": "Save and go back",
+		"title": {
+			"first": "Head for your first checkpoint",
+			"next": "Head for your next checkpoint"
+		},
+		"tooManyTries": "Too many tries — wait a minute and try again."
+	},
 	"checkpointLanding": {
 		"example": {
 			"fact2": {
@@ -812,6 +977,7 @@
 		},
 		"call": {
 			"aheadCurator": "The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
+			"aheadFirst": "Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"calendarTitle": "Call {index} · {project}",
 			"camOff": "Turn off camera",
@@ -836,6 +1002,9 @@
 			"inCallCount": "{count} in the call",
 			"join": "Join call",
 			"joinFailed": "Could not join the call",
+			"joinInHours": "Join in {n} h",
+			"joinInMinutes": "Join in {n} min",
+			"joinOn": "Join on {date}",
 			"leave": "Leave call",
 			"linkCopied": "Link copied",
 			"message": "Message {name}",
@@ -858,6 +1027,8 @@
 				"nothingOutside": "Nothing came up beyond the plan.",
 				"option": "Call {index} · {date}",
 				"outsidePlan": "Outside the plan",
+				"pendingReviewTitle": "The review is on its way",
+				"pendingSoon": "The review of this call is written from its recording within two hours. We'll email you when it's ready.",
 				"pendingText": "The transcript and summary of this call are ready within 24 hours. We'll email you when they are.",
 				"pendingTitle": "The summary is on its way",
 				"questions": "Open questions",
@@ -873,6 +1044,7 @@
 			"overLine": "The plan and the notes from it are below.",
 			"overReady": "The call is over. The plan and the notes from it are below.",
 			"overReadyReview": "The call is over. The plan and the review of it are below.",
+			"overSoon": "The call is over. The plan is below, and the review of the call will be here within two hours — everyone gets a letter when it's ready.",
 			"overText": "The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready.",
 			"panel": {
 				"ahead": "This call is still ahead",
@@ -883,6 +1055,7 @@
 			},
 			"plan": {
 				"addTask": "Add task",
+				"beforeCallHint": "Add the tasks you have in mind now — on call 1 you'll go through them with the curator and agree the plan.",
 				"callOneHint": "Agree the goal and the checkpoint tasks with {curator} on this call. The goal locks when the call ends; tasks can change once more on call 3.",
 				"callThreeHint": "This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
 				"closed": "The plan can no longer change",
@@ -953,6 +1126,8 @@
 			"aiWritten": "Written feedback every sprint, a final verdict, clear deadlines and reminders.",
 			"allLevels": "All levels",
 			"amount": "{currency}{price}",
+			"dayOne": "Day 1",
+			"dayOneHint": "from the beginning of the day · ends around {date}",
 			"expert": "Industry expert",
 			"expertCalls": "A call every sprint, a final verdict, clear deadlines and reminders.",
 			"expertDescription": "Live calls, written reviews and a verdict.",
@@ -1111,6 +1286,7 @@
 		},
 		"now": {
 			"continueAnyway": "Continue anyway",
+			"createFirst": "Create a project first",
 			"ends": "Ends around {date}",
 			"goal": "What do you want to have in {days} days?",
 			"goalPlaceholder": "A playable greybox friends can try in 10 minutes…",
@@ -1118,9 +1294,14 @@
 			"hours": "hours",
 			"hoursAbout": "~{hours} h",
 			"hoursFrom": "Where the hours come from",
+			"hoursFromLabel": "Your hours a sprint, from",
 			"hoursShort": "h",
+			"hoursToLabel": "Your hours a sprint, up to",
 			"hoursValue": "{hours} h",
+			"newProject": "New project",
 			"next": "Next — curator",
+			"noProject": "You have no project yet",
+			"noProjectHint": "A checkpoint is reached with a project — create one to head for it.",
 			"people": "{count, plural, one {# person} other {# people}}",
 			"perCheckpoint": "The checkpoint",
 			"perSprint": "A sprint",
@@ -1131,6 +1312,8 @@
 			"share": "Your share a sprint",
 			"stage": "{stage} stage",
 			"stageNumber": "{stage} stage · checkpoint {number}",
+			"stageWhere": "Where is the project now?",
+			"stageWhereHelp": "We'll set the project on this stage; earlier stages are marked done.",
 			"team": "Your team of {count} gives {hours} hours a sprint",
 			"teamSize": "Team",
 			"teamUnknown": "Your team of {count} has not stated its hours yet",
@@ -1161,23 +1344,33 @@
 			"declined": "This expert cannot take it on right now",
 			"declinedBody": "Pick another expert and the checkpoint goes to them instead.",
 			"downloadReceipt": "Download receipt",
+			"emailWhenAnswers": "We'll email you when {curator} answers — usually within {days} days.",
+			"fillProject": "Fill in your project",
 			"foot": "Nothing left to do here",
 			"held": "The money is reserved",
 			"hint": "The checkpoint is bought. What is left is not yours to do.",
+			"onYourWay": "You're on your way",
+			"onYourWayFrom": "Day 1 on {date} · Checkpoint {number} · AI curator",
+			"onYourWayLine": "Day {day} of {days} · Checkpoint {number} · AI curator",
 			"pickAnother": "Pick another curator",
 			"planned": "Planned for {dates}",
 			"receipt": "Receipt",
 			"received": "Payment received",
 			"receivedBody": "The purchase is complete and the receipt is yours to keep.",
+			"receivedOnTheWay": "Payment received — getting you on your way",
 			"released": "The reservation was let go — nothing was charged",
 			"replace": "Replace the curator",
 			"replaceNote": "The 28 days will wait for whoever you pick. Nothing is charged again.",
 			"replaceNoteFirstCall": "The 28 days will wait for whoever you pick, from the first call you book with them. Nothing is charged again.",
 			"replaceOk": "Hand it to them",
 			"replaceTitle": "Replace the curator",
+			"reservedSub": "Charged when the curator accepts.",
+			"reservedTitle": "Payment reserved",
 			"settling": "This settles on its own in a few seconds. Nothing else is needed from you.",
 			"slow": "The payment is taking longer than usual to confirm. If you paid, it will show up here — check again in a minute.",
-			"starting": "Payment received — starting"
+			"starting": "Payment received — starting",
+			"theCurator": "the curator",
+			"toWorkflow": "Go to the workflow"
 		},
 		"past": {
 			"column": {
@@ -1221,12 +1414,14 @@
 			"checkpointNumber": "checkpoint {number}",
 			"curator": "Curator",
 			"days": "{count} days from the start",
+			"daysFromDayOne": "{count} days from day 1",
 			"edit": "Edit",
 			"failedBody": "Try the payment again, or pay with another card.",
 			"failedTitle": "The payment did not go through",
 			"fromPrice": "From",
 			"goal": "The goal",
 			"humanPriceNote": "The price is their hourly rate against the hours a checkpoint takes — 7.5 for you plus half an hour for each of the team — and the platform's 40%. It is settled once a curator takes this on.",
+			"incomplete": "The goal or what's done so far is missing — fill it in first.",
 			"okBody": "The outcomes fit the hours the team stated. Nothing here is a promise that they land — only that the plan is not asking for more days than there are.",
 			"okTitle": "Your 28-day plan looks reachable",
 			"payAndStart": "Pay and start",
@@ -1242,6 +1437,7 @@
 			"term2": "Not the game itself. The team builds it; the curator holds the 28 days to the goal and cannot reach it for you.",
 			"term3": "No promise that the goal is met. A checkpoint where the work did not happen ends in “goal missed”.",
 			"termTasks": "Tasks are set together on the first call. Results are not guaranteed.",
+			"termTasksAi": "Tasks are set in the first {days} days, with the AI's advice. Results are not guaranteed.",
 			"termTeam": "Your team does the work; the curator keeps the 28 days on track.",
 			"title": "Check and pay",
 			"vat": "+ VAT",
@@ -1268,6 +1464,7 @@
 			"noDraftHint": "Start a checkpoint from the list and the goal card opens here.",
 			"noStage": "The project is not on a workflow stage yet.",
 			"payPending": "Checkout is not open yet",
+			"planFailed": "Could not open the checkpoint plan — try again",
 			"q4": "When do you want to start?",
 			"saved": "Saved as a draft",
 			"step": {
@@ -1320,10 +1517,13 @@
 			"curator": "AI curator",
 			"empty": "No review yet",
 			"emptyNote": "The curator writes one for every sprint, after its devlog.",
+			"firstSprintText": "Sprint 1 is for the work itself. On {date} the AI curator writes the first review, from what the sprint showed: the devlog, the artifacts and the team's pulse.",
+			"firstSprintTitle": "No review in the first sprint",
 			"in": "The review for the sprint is in",
 			"kindAi": "AI",
 			"kindPro": "Pro",
 			"message": {
+				"greeting": "Hi, team! I'm the AI curator of {project} for the next 28 days. Let's start with the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check.",
 				"reading": "The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
 				"start": "Hi, I'm your curator for the next four weeks. Let's set the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check."
 			},
@@ -1362,8 +1562,12 @@
 				"remove": "Remove",
 				"save": "Save changes",
 				"startHint": "Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+				"suggest": "Suggest tasks",
 				"until": "Open until {date}",
 				"useThis": "Use this"
+			},
+			"previous": {
+				"label": "Checkpoint {number} · the verdict"
 			},
 			"proCurator": "{name} · curator",
 			"publish": "Publish the review",
@@ -2369,6 +2573,11 @@
 		},
 		"create-project": {
 			"cancel-text": "Cancel",
+			"checkpoint": {
+				"ok": "Create project",
+				"title": "New project"
+			},
+			"failed": "Could not create the project — try again",
 			"field": {
 				"agree": {
 					"error": "Should accept requirements",
@@ -2376,10 +2585,19 @@
 				},
 				"description": {
 					"label": "Short Description",
+					"pitch": "What's the game about",
 					"placeholder": "This game project about..."
+				},
+				"genre": {
+					"failed": "Genres could not be loaded",
+					"label": "Genre"
 				},
 				"name": {
 					"label": "Title"
+				},
+				"not-ai": {
+					"error": "Please confirm you are making the game yourself",
+					"label": "I confirm that I am making this game myself or with my team, and I understand this form is not an AI prompt — describing a game here will not generate one :)"
 				}
 			},
 			"ok-text": "Create",
@@ -2755,6 +2973,24 @@
 		},
 		"interests": {
 			"back": "Back",
+			"gameGenres": {
+				"action-adventure": "Action-adventure",
+				"adventure": "Adventure",
+				"dance": "Dance",
+				"fighting": "Fighting",
+				"fps": "First-person shooter",
+				"mmorpg": "MMORPG",
+				"other": "Other",
+				"platformer": "Platformer",
+				"puzzle": "Puzzle",
+				"rpg": "RPG",
+				"rts": "Real-time strategy",
+				"shooter": "Shooter",
+				"simulation": "Simulation",
+				"sports": "Sports",
+				"survival horror": "Survival horror",
+				"tbs": "Turn-based strategy"
+			},
 			"mentor": {
 				"description": "I want to share my expertise and help other developers"
 			},
@@ -3803,6 +4039,7 @@
 			"industry": "Industry curator",
 			"locked": "Checkpoints open soon",
 			"or": "or",
+			"plan": "Plan this checkpoint",
 			"sprints": "{count} sprints",
 			"sprintsNote": "a week each",
 			"start": "Get started",
@@ -3836,6 +4073,7 @@
 				"view-results": "View results"
 			},
 			"checkpoint": {
+				"dayOne": "Checkpoint {number} · day 1 · {date}",
 				"goal": "Goal",
 				"not-delivered": "Not delivered",
 				"started": "Checkpoint {number} started · {date}",

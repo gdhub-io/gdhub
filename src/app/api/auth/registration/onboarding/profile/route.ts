@@ -7,6 +7,12 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	acceptLegal,
+	LegalAcceptancesSchema,
+	LegalError,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { aiValidation } from "@/services/ai-validation";
 import { prisma } from "@/services/prisma";
 
@@ -16,8 +22,9 @@ const SaveOnboardingProfileSchema = z.object({
 	country: z.string().nullish(),
 	city: z.string().nullish(),
 	confirmUserData: z.boolean().nullish(),
-	agreeWithTermsAndPrivacy: z.boolean().nullish(),
 	needSubscribeToNewsletter: z.boolean().nullish(),
+	/** The Terms box ticked at registration, carried here in a cookie: the account exists only now. */
+	legal: LegalAcceptancesSchema.optional(),
 });
 
 type SaveOnboardingProfileBody = z.infer<typeof SaveOnboardingProfileSchema>;
@@ -65,8 +72,8 @@ export const PUT = withAuth({ mode: "user" })(
 					country,
 					city,
 					confirmUserData,
-					agreeWithTermsAndPrivacy,
 					needSubscribeToNewsletter,
+					legal,
 				} = body as SaveOnboardingProfileBody;
 
 				const userRecord = await prisma.user.findUnique({
@@ -112,45 +119,57 @@ export const PUT = withAuth({ mode: "user" })(
 				const agreementsPayload: Record<string, unknown> = { ...existing };
 				if (confirmUserData != null)
 					agreementsPayload.confirmUserData = confirmUserData;
-				if (agreeWithTermsAndPrivacy != null)
-					agreementsPayload.agreeWithTermsAndPrivacy = agreeWithTermsAndPrivacy;
 				if (needSubscribeToNewsletter != null)
 					agreementsPayload.needSubscribeToNewsletter =
 						needSubscribeToNewsletter;
 				const agreements = JSON.parse(JSON.stringify(agreementsPayload));
 
-				if (userRecord.profile) {
-					await prisma.profile.update({
-						where: { userId: currentUser.id },
-						data: {
-							name: safeName,
-							city,
-							yearOfBirth: safeYearOfBirth,
-							country,
-						},
-					});
-				} else {
-					if (!safeName) {
-						return apiError.badRequest("Name is required");
-					}
-					await prisma.profile.create({
-						data: {
-							name: safeName,
-							city: city ?? undefined,
-							yearOfBirth: safeYearOfBirth,
-							country: country ?? undefined,
-							user: { connect: { id: userRecord.id } },
-						},
-					});
+				if (!userRecord.profile && !safeName) {
+					return apiError.badRequest("Name is required");
 				}
 
-				await prisma.user.update({
-					where: { id: userRecord.id },
-					data: { agreements, lang: locale },
+				await prisma.$transaction(async (tx) => {
+					if (userRecord.profile) {
+						await tx.profile.update({
+							where: { userId: currentUser.id },
+							data: {
+								name: safeName,
+								city,
+								yearOfBirth: safeYearOfBirth,
+								country,
+							},
+						});
+					} else {
+						await tx.profile.create({
+							data: {
+								name: safeName as string,
+								city: city ?? undefined,
+								yearOfBirth: safeYearOfBirth,
+								country: country ?? undefined,
+								user: { connect: { id: userRecord.id } },
+							},
+						});
+					}
+
+					await tx.user.update({
+						where: { id: userRecord.id },
+						data: { agreements, lang: locale },
+					});
+
+					// Without a tick here (an account made from the sign-in page) the
+					// re-acceptance screen asks for the Terms at the next sign-in instead.
+					if (legal?.length) {
+						await acceptLegal(tx, legal, ["TermsOfUse"], {
+							userId: userRecord.id,
+							context: "SignUp",
+							meta: requestMeta(req),
+						});
+					}
 				});
 
 				return json({ ok: true, validation });
 			} catch (error) {
+				if (error instanceof LegalError) return legalErrorResponse(error);
 				console.error("saveOnboardingProfile: error", error);
 				const details =
 					process.env.NODE_ENV !== "production"

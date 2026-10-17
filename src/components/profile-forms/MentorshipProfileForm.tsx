@@ -1,11 +1,19 @@
 import type { Profile } from "@gdhub-io/gdhub-prisma";
-import { IconTrash } from "@tabler/icons-react";
+import {
+	IconArrowRight,
+	IconArrowUpRight,
+	IconFileCheck,
+	IconFileText,
+	IconLock,
+	IconTrash,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Alert,
 	Button,
 	Card,
+	Divider,
 	Flex,
 	Form,
 	Input,
@@ -17,11 +25,21 @@ import {
 } from "antd";
 import Select from "antd/es/select";
 import axios from "axios";
+import dayjs from "dayjs";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import {
+	legalAcceptances,
+	outdatedLegalCode,
+} from "@/components/legal/ClickwrapField";
+import { LegalAcceptModal } from "@/components/legal/LegalAcceptModal";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
+import { IconTile } from "@/components/ui";
 import { resyncSession } from "@/helpers/session";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
+import type { LegalAcceptanceInput } from "@/lib/legal/accept";
+import styles from "./MentorshipProfileForm.module.scss";
 import { SettingsActions } from "./SettingsActions";
 
 const { Paragraph, Text } = Typography;
@@ -55,7 +73,6 @@ const MentorshipProfileForm = ({
 	 * session cannot flip it back under their hands.
 	 */
 	const [draftEnabled, setDraftEnabled] = useState<boolean | null>(null);
-	const [isDirty, setIsDirty] = useState(false);
 
 	// Read from the server, not from the session: the JWT lags by minutes, so a
 	// switch driven by it shows the previous answer after a save or a reload.
@@ -63,11 +80,18 @@ const MentorshipProfileForm = ({
 		queryKey: ["user-mentorship"],
 		queryFn: () =>
 			axios
-				.get<{ enabled: boolean }>("/api/user/profile/mentorship")
+				.get<{
+					enabled: boolean;
+					agreementAccepted: boolean;
+					agreement: { version: number; acceptedAt: string } | null;
+				}>("/api/user/profile/mentorship")
 				.then((response) => response.data),
 	});
 
 	const savedEnabled = mentorship?.enabled ?? false;
+	const needsAgreement = mentorship?.agreementAccepted === false;
+	const [agreementStale, setAgreementStale] = useState(false);
+	const [agreementOpen, setAgreementOpen] = useState(false);
 	const enabled = draftEnabled ?? savedEnabled;
 
 	useEffect(() => {
@@ -92,6 +116,7 @@ const MentorshipProfileForm = ({
 				specialityId?: string;
 				timeForMentoring?: string;
 				openForQuestions?: string[];
+				legal?: LegalAcceptanceInput[];
 			}) => axios.put<any>("/api/user/profile/mentorship", data),
 			onSuccess: async () => {
 				await refetchSpecialityList();
@@ -124,18 +149,29 @@ const MentorshipProfileForm = ({
 		}
 	}, [specialities?.data, dataUpdatedAt]);
 
-	const handleForm = async () => {
+	// `agreed`: the box was ticked in the agreement modal just now.
+	const handleForm = async (agreed = false) => {
+		if (enabled && needsAgreement && !agreed) {
+			setAgreementOpen(true);
+			return;
+		}
 		try {
 			// Turning mentorship off is a valid save on its own — there is nothing to
 			// fill in, so the fields are only validated when it stays on.
 			const data = enabled ? await form.validateFields() : {};
 
-			await saveMentorshipSetting({ ...data, enabled });
+			setAgreementStale(false);
+			await saveMentorshipSetting({
+				...data,
+				enabled,
+				...(enabled && needsAgreement
+					? { legal: legalAcceptances(["AdvisorAgreement"]) }
+					: {}),
+			});
 			// The draft stays as the source of truth for the switch. `update()`
 			// returns before the session object in the hook is replaced, so falling
 			// back to the session here would show the pre-save value for a moment —
 			// which is exactly what looked like the switch turning itself back on.
-			setIsDirty(false);
 			await refetchMentorship();
 			// Other parts of the app still read the role from the session.
 			await resyncSession(refreshSession);
@@ -147,18 +183,105 @@ const MentorshipProfileForm = ({
 					"Mentorship settins is updated",
 				),
 			);
-		} catch {}
+		} catch (error) {
+			if (outdatedLegalCode(error)) {
+				setAgreementStale(true);
+				setAgreementOpen(true);
+			}
+		}
 	};
 
 	const switchMentorshipStatus = (checked: boolean) => {
 		setDraftEnabled(checked);
-		setIsDirty(true);
 
 		if (!checked) {
 			form.resetFields();
 			setSelectedSpecialityId(null);
 		}
 	};
+
+	const agreement = mentorship?.agreement;
+	const accepted = mentorship?.agreementAccepted === true;
+
+	// Frames `ep5EM` / `isYQT`: where the agreement stands, and the way into the space.
+	const agreementRows = (
+		<div className={styles.agreement}>
+			<Flex align="center" gap={12}>
+				{accepted && agreement ? (
+					<>
+						<IconTile
+							icon={IconFileCheck}
+							tint="var(--gd-success-tint)"
+							ink="var(--gd-success-on-tint)"
+						/>
+						<Flex vertical className={styles.rowText}>
+							<Text className={styles.rowTitle}>
+								{t(
+									"profile-forms.mentorship.agreement.accepted",
+									"Advisor Agreement accepted",
+								)}
+							</Text>
+							<Text className={styles.rowMeta}>
+								{t(
+									"profile-forms.mentorship.agreement.accepted-on",
+									"Accepted on {date} · version {version}",
+									{
+										date: dayjs(agreement.acceptedAt).format("D MMM YYYY"),
+										version: agreement.version,
+									},
+								)}
+							</Text>
+						</Flex>
+						<Link
+							href={`/legal/advisor-agreement/v${agreement.version}`}
+							target="_blank"
+						>
+							<Button icon={<IconArrowUpRight size={16} />} iconPlacement="end">
+								{t("profile-forms.mentorship.agreement.view", "View document")}
+							</Button>
+						</Link>
+					</>
+				) : (
+					<>
+						<IconTile
+							icon={IconFileText}
+							tint="var(--gd-warning-tint)"
+							ink="var(--gd-warning-on-tint)"
+						/>
+						<Text className={`${styles.rowText} ${styles.rowTitle}`}>
+							{t(
+								"profile-forms.mentorship.agreement.missing",
+								"Advisor Agreement not accepted",
+							)}
+						</Text>
+						<Button type="primary" onClick={() => setAgreementOpen(true)}>
+							{t("profile-forms.mentorship.agreement.read", "Read and accept")}
+						</Button>
+					</>
+				)}
+			</Flex>
+			<Divider className={styles.divider} />
+			<Flex align="center" gap={12}>
+				<Text
+					className={`${styles.rowText} ${styles.rowTitle}`}
+					type={accepted && savedEnabled ? undefined : "secondary"}
+				>
+					{t("profile-forms.mentorship.space", "Advisor space")}
+				</Text>
+				{accepted && savedEnabled ? (
+					<Link href="/advisor">
+						<Button icon={<IconArrowRight size={16} />} iconPlacement="end">
+							{t("profile-forms.mentorship.space.open", "Open advisor space")}
+						</Button>
+					</Link>
+				) : (
+					<Button disabled icon={<IconLock size={16} />}>
+						{t("profile-forms.mentorship.space.open", "Open advisor space")}
+					</Button>
+				)}
+			</Flex>
+		</div>
+	);
 
 	const specialityListOptions = specialities?.data.map((r: any) => ({
 		label: t(`components.profile-forms.mentorship.card.${r.name}`, r.name),
@@ -199,6 +322,7 @@ const MentorshipProfileForm = ({
 							"Allows you to contribute to game development through advising",
 						)}
 					</Paragraph>
+					{enabled && agreementRows}
 					{enabled && !!specialities?.data.length && (
 						<Form
 							form={form}
@@ -319,7 +443,26 @@ const MentorshipProfileForm = ({
 				</Spin>
 			</Card>
 
-			<SettingsActions onSave={handleForm} loading={isSaving} />
+			<SettingsActions onSave={() => handleForm()} loading={isSaving} />
+
+			<LegalAcceptModal
+				code="AdvisorAgreement"
+				open={agreementOpen}
+				stale={agreementStale}
+				okText={t(
+					"profile-forms.mentorship.agreement.accept",
+					"Accept and turn on",
+				)}
+				requiredMessage={t(
+					"legal.clickwrap.AdvisorAgreement.required",
+					"You need to accept the Advisor Agreement to turn on the advisor space",
+				)}
+				onCancel={() => setAgreementOpen(false)}
+				onAccept={() => {
+					setAgreementOpen(false);
+					handleForm(true);
+				}}
+			/>
 		</>
 	);
 };

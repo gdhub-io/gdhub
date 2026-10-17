@@ -1,0 +1,14 @@
+.error {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+}
+
+.title {
+	flex: 1;
+	font-weight: 500;
+	color: var(--gd-color-text);
+}

@@ -1,7 +1,7 @@
 import { prisma } from "@/services/prisma";
 
 export async function resolvePublicCertificate(number: string) {
-	const certificate = await prisma.eventCertificate.findUnique({
+	const certificate = await prisma.certificate.findUnique({
 		where: { number },
 		include: {
 			eventMember: {
@@ -81,11 +81,16 @@ export async function resolvePublicCertificate(number: string) {
 		},
 	});
 
-	if (!certificate || certificate.externalId.startsWith("pending:")) {
+	// Course and checkpoint certificates are not issued yet; only an event one verifies here.
+	const member = certificate?.eventMember;
+	if (
+		!certificate?.externalId ||
+		certificate.externalId.startsWith("pending:") ||
+		!member
+	) {
 		return null;
 	}
 
-	const member = certificate.eventMember;
 	const event = member.event;
 
 	const startTimes = event.schedule
@@ -116,7 +121,7 @@ export async function resolvePublicCertificate(number: string) {
 	const mentorSpecialty = mentor?.user?.specialities[0]?.name?.trim() || "";
 
 	return {
-		certificate,
+		certificate: { ...certificate, externalId: certificate.externalId },
 		event,
 		startDate,
 		endDate,
@@ -134,25 +139,206 @@ export async function resolvePublicCertificate(number: string) {
 	};
 }
 
+const personName = (u: {
+	name: string | null;
+	profile: { name: string | null } | null;
+}) => u.profile?.name?.trim() || u.name?.trim() || "";
+
+const person = {
+	select: {
+		name: true,
+		image: true,
+		profile: { select: { name: true } },
+		specialities: {
+			orderBy: { createdAt: "desc" },
+			take: 1,
+			select: { name: true },
+		},
+	},
+} as const;
+
+async function resolveEvent(
+	number: string,
+): Promise<VerifyCertificateResponse | null> {
+	const data = await resolvePublicCertificate(number);
+	if (!data) return null;
+	return {
+		number: data.certificate.number,
+		issuedAt: data.certificate.issuedAt.toISOString(),
+		source: "Event",
+		signed: true,
+		participant: {
+			name: data.participantName,
+			image: data.participantImage,
+			position: data.participantPosition || null,
+			specialty: data.participantSpecialty || null,
+		},
+		subject: {
+			title: data.event.title,
+			href: data.event.slug ? `/event/${data.event.slug}` : null,
+			kind: data.event.type,
+			lang: data.event.lang,
+			startDate: data.startDate?.toISOString() ?? null,
+			endDate: data.endDate?.toISOString() ?? null,
+			issuerName: data.organizerName,
+			issuerTitle: data.organizerTitle,
+			mentorName: data.mentorName || null,
+			mentorSpecialty: data.mentorSpecialty || null,
+		},
+		project: data.project
+			? {
+					name: data.project.name,
+					slug: data.project.slug,
+					coverImage: data.project.coverImage,
+					shortDescription: data.project.description,
+				}
+			: null,
+	};
+}
+
+/** A course or checkpoint certificate: unsigned, proven by this page alone. */
+async function resolveUnsigned(
+	number: string,
+): Promise<VerifyCertificateResponse | null> {
+	const c = await prisma.certificate.findUnique({
+		where: { number },
+		select: {
+			number: true,
+			issuedAt: true,
+			source: true,
+			revokedAt: true,
+			user: person,
+			courseGroupStudent: {
+				select: {
+					startedAt: true,
+					finishedAt: true,
+					group: {
+						select: {
+							course: {
+								select: { name: true, slug: true, createdByUser: person },
+							},
+						},
+					},
+				},
+			},
+			checkpoint: {
+				select: {
+					stageName: true,
+					startedAt: true,
+					curator: person,
+					project: {
+						select: {
+							name: true,
+							slug: true,
+							coverImage: true,
+							description: true,
+						},
+					},
+				},
+			},
+		},
+	});
+	if (!c || c.revokedAt) return null;
+
+	const participant = {
+		name: personName(c.user),
+		image: c.user.image,
+		position: null,
+		specialty: c.user.specialities[0]?.name?.trim() || null,
+	};
+	const base = {
+		number: c.number,
+		issuedAt: c.issuedAt.toISOString(),
+		signed: false,
+		participant,
+	};
+
+	const course = c.courseGroupStudent?.group.course;
+	if (c.source === "Course" && course && c.courseGroupStudent) {
+		return {
+			...base,
+			source: "Course",
+			subject: {
+				title: course.name,
+				href: `/course/${course.slug}`,
+				kind: null,
+				lang: null,
+				startDate: c.courseGroupStudent.startedAt.toISOString(),
+				endDate: c.courseGroupStudent.finishedAt?.toISOString() ?? null,
+				issuerName: personName(course.createdByUser),
+				issuerTitle: course.createdByUser.specialities[0]?.name?.trim() || "",
+				mentorName: null,
+				mentorSpecialty: null,
+			},
+			project: null,
+		};
+	}
+
+	const checkpoint = c.checkpoint;
+	if (c.source === "Checkpoint" && checkpoint) {
+		return {
+			...base,
+			source: "Checkpoint",
+			subject: {
+				title: `${checkpoint.project.name} · ${checkpoint.stageName}`,
+				href: `/project/${checkpoint.project.slug}`,
+				kind: null,
+				lang: null,
+				startDate: checkpoint.startedAt?.toISOString() ?? null,
+				endDate: null,
+				issuerName: checkpoint.curator ? personName(checkpoint.curator) : "",
+				issuerTitle: checkpoint.curator?.specialities[0]?.name?.trim() || "",
+				mentorName: null,
+				mentorSpecialty: null,
+			},
+			project: {
+				name: checkpoint.project.name,
+				slug: checkpoint.project.slug,
+				coverImage: checkpoint.project.coverImage,
+				shortDescription: checkpoint.project.description,
+			},
+		};
+	}
+	return null;
+}
+
+export async function getVerifyCertificate(
+	number: string,
+): Promise<VerifyCertificateResponse | null> {
+	const found = await prisma.certificate.findUnique({
+		where: { number },
+		select: { source: true },
+	});
+	if (!found) return null;
+	return found.source === "Event"
+		? resolveEvent(number)
+		: resolveUnsigned(number);
+}
+
 export type VerifyCertificateResponse = {
 	number: string;
 	issuedAt: string;
+	source: "Event" | "Course" | "Checkpoint";
+	/** Event certificates carry a Documenso signature and a signed PDF; the others do not. */
+	signed: boolean;
 	participant: {
 		name: string;
 		image: string | null;
 		position: string | null;
 		specialty: string | null;
 	};
-	event: {
-		id: string;
-		slug: string | null;
-		lang: string;
+	/** What the certificate is for: the event, the course or the checkpoint. */
+	subject: {
 		title: string;
-		type: string;
+		href: string | null;
+		/** The event type; null for a course or a checkpoint. */
+		kind: string | null;
+		lang: string | null;
 		startDate: string | null;
 		endDate: string | null;
-		organizerName: string;
-		organizerTitle: string;
+		/** The organizer, the teacher or the curator. */
+		issuerName: string;
+		issuerTitle: string;
 		mentorName: string | null;
 		mentorSpecialty: string | null;
 	};

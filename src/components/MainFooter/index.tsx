@@ -48,18 +48,25 @@ export const MainFooter = () => {
 			title: t("mainFooter.legal", "Legal"),
 			links: [
 				{
-					href: "/privacy-policy",
+					href: "/legal",
+					label: t("mainFooter.allDocuments", "All documents"),
+				},
+				{
+					href: "/legal/privacy-policy",
 					label: t("mainFooter.privacyPolicy", "Privacy Policy"),
 				},
 				{
-					href: "/cookie-policy",
+					href: "/legal/cookie-policy",
 					label: t("mainFooter.cookiePolicy", "Cookie Policy"),
 				},
 				{
-					href: "/refund-policy",
+					href: "/legal/refund-policy",
 					label: t("mainFooter.refundPolicy", "Refund Policy"),
 				},
-				{ href: "/terms", label: t("mainFooter.termsOfUse", "Terms of use") },
+				{
+					href: "/legal/terms-of-use",
+					label: t("mainFooter.termsOfUse", "Terms of use"),
+				},
 				{
 					href: "/legal-details",
 					label: t("mainFooter.legalDetails", "Legal Details"),

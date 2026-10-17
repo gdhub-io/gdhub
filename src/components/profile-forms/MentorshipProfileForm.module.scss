@@ -3,3 +3,27 @@
     width: 100%;
   }
 }
+// Frames `ep5EM` / `isYQT`.
+.agreement {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: calc(var(--gd-space-4) + var(--gd-space-1));
+}
+
+.divider {
+	margin: calc(var(--gd-space-4) + var(--gd-space-1)) 0 !important;
+}
+
+.rowText {
+	flex: 1;
+	min-width: 0;
+}
+
+.rowTitle {
+	font-weight: 500;
+}
+
+.rowMeta {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}

@@ -1,0 +1,111 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-54 — legal layer: who accepts what, where the server refuses" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+config: "Config, in the repo" {
+  registry: "src/config/legal — registry\ncode → slug, title, accepted where (or never)\nversions: n, effectiveAt, materialChange, entity, sha256"
+  entities: "src/config/legal/entities.ts\nname, code, address, email, currency (Currency enum)\ncurrent = VšĮ, USD"
+  files: "docs/legal/<slug>/v<n>.md\nnever edited after merge"
+  guard: "tests: file sha256 = registry · one version in effect per code\n· no version in effect names a non-current entity"
+  registry -> files
+  registry -> entities
+  guard -> registry
+}
+
+show: "Show a document" {
+  pick: "inEffect(code, now)\n= latest version with effectiveAt ≤ now"
+  render: "render(file, entity, params?)\n{{entity.*}} filled · project params for co-development"
+  sum: "checksum = sha256(rendered text)"
+  field: "ClickwrapField\nunticked · names the document · link to /legal/<slug>/v<n>\nsends {code, version}"
+  pick -> render -> sum -> field
+}
+
+accept: "acceptLegal(tx, user, {code, version}, context, subject?)\ncalled inside the action's own transaction" {
+  stale: "version ≠ inEffect(code)?" {shape: diamond}
+  refuse: "409 legal.outdated\n→ 'the text was updated, accept again'"
+  write: "LegalAcceptance row\nuser, code, version, checksum, context,\ncheckpointId | projectId + params, ip, user-agent, acceptedAt\nunique (user, code, context, checkpoint/project/params)"
+  stale -> refuse: yes
+  stale -> write: no
+}
+show.field -> accept.stale: "submit"
+
+gates: "Actions that refuse without their acceptance" {
+  signup: "Sign-up · onboarding/profile\nTermsOfUse · context SignUp\n(replaces User.agreements.agreeWithTermsAndPrivacy;\nnewsletter flag stays)"
+  project: "POST /api/user/project\nProjectRequirements · ProjectCreate\n+ CoDevelopmentAgreement as author, params {title, shares}"
+  advisor: "PUT /api/user/profile/mentorship (switch on)\nAdvisorAgreement · AdvisorJoin\nspace adapter: no acceptance → 404"
+  paid: "PUT /api/advisor/settings · Paid work\nExpertServicesTerms · ExpertServices\n+ payout details complete\nelse paid consultations and curation stay off"
+  pay: "POST /api/checkpoint/[id]/pay (branch 31)\nCheckpointPurchaseTerms + WithdrawalWaiver\ncontext CheckpointPurchase · checkpointId\n(replaces acceptedTermsAt / acceptedTermsTemplateId)"
+  curator: "Curator accepts a checkpoint (branch 31)\nCheckpointStandard in effect on that day\ncontext CuratorAccept · checkpointId\n→ then the held payment is captured"
+}
+gates.signup -> accept: "{TermsOfUse, v}"
+gates.project -> accept
+gates.advisor -> accept
+gates.paid -> accept
+gates.pay -> accept: "two rows, one transaction"
+gates.curator -> accept
+
+bad: "400 legal.required\nno acceptance in the body → the action does not happen\n(a client that hides the checkbox gets nowhere)" {style.stroke-dash: 3}
+gates -> bad: "missing"
+
+shares: "Share change (equity)" {
+  tx: "Author gives a member a share, or changes it\nPOST /api/user/project/equity/transaction\n(no equity, invites, offers → no agreement)"
+  vest: "Vesting of an EquityPromise\nalready in the accepted params"
+  ask: "member: 'Shares changed — review and accept'\nCoDevelopmentAgreement with new params"
+  rowS: "acceptLegal · ShareChange · projectId + new params"
+  force: "binding share = params of the member's latest acceptance\nuntil then the old share is shown as in force,\nthe new one as 'not accepted yet'"
+  author: "author sees who has not accepted"
+  tx -> ask -> rowS -> force
+  ask -> author
+  vest -> force: "no new acceptance"
+}
+shares.rowS -> accept
+
+life: "A version's life (by dates, no status column)" {
+  merged: "file + registry entry merged"
+  sched: "effectiveAt > now\nshown as 'takes effect <date>'"
+  live: "in effect"
+  arch: "archived\nstill at /legal/<slug>/v<n>"
+  merged -> sched
+  sched -> live: "effectiveAt reached"
+  live -> arch: "next version takes effect"
+  material: "materialChange?" {shape: diamond}
+  live -> material
+  mail: "cron on effectiveAt\none email to the users it concerns"
+  gate: "next sign-in: accepted version of each document\nthat applies to the user ≠ inEffect?\n→ re-acceptance screen, a checkbox per document\ncontext ReAcceptance"
+  quiet: "nothing asked"
+  material -> mail: yes
+  mail -> gate
+  material -> quiet: no
+  running: "running checkpoints and project agreements\nstay on the version they started under"
+  live -> running {style.stroke-dash: 3}
+}
+life.gate -> accept
+
+applies: "Documents that apply to a user (for the gate)\nTermsOfUse — everyone\nAdvisorAgreement — advisor on\nExpertServicesTerms — paid work on\nCheckpoint docs — never re-asked (per checkpoint)\nProject agreement — not re-asked by version; by shares" {shape: page}
+life.gate -> applies
+
+pages: "Read side" {
+  legal: "/legal · /legal/<slug> · /legal/<slug>/v<n>\npublic, no sign-in; old URLs 308 here"
+  mine: "Profile → My documents\nmy LegalAcceptance rows → render the exact version (+ params)\nmy certificates"
+  admin: "/admin/legal (admin.legal.view)\nacceptances: filters, Checkpoint / Project column\nCSV export → AuditLog"
+}
+
+certs: "Certificates (not acceptances)" {
+  issue: "event / course / checkpoint finished\n→ Certificate {source, sourceId, userId, number, issuedAt}"
+  ev: "event: Documenso signature as today"
+  other: "course, checkpoint: no signature"
+  verify: "/verify/<number>\nsource label, recipient, subject, date, status"
+  issue -> ev -> verify
+  issue -> other -> verify
+}
+pages.mine -> certs.verify: "Verify"

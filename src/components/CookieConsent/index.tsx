@@ -184,7 +184,7 @@ export const CookieConsent = () => {
 						<T keyName="popup.cookie.manage">Manage cookies</T>
 					</button>
 				)}
-				<Link href="/cookie-policy" className={styles.policyLink}>
+				<Link href="/legal/cookie-policy" className={styles.policyLink}>
 					<T keyName="popup.cookie.policy">Cookie policy</T>
 				</Link>
 			</div>

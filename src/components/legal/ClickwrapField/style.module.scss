@@ -1,0 +1,36 @@
+// Component `rUE26`: box 18 + gap 8, so the message lines up with the label text.
+.field {
+	margin-bottom: 0;
+
+	:global(.ant-form-item-control-input) {
+		min-height: 0;
+	}
+
+	:global(.ant-checkbox-wrapper) {
+		color: var(--gd-color-text);
+		font-weight: 400;
+	}
+
+	// antd v6 draws the box on `.ant-checkbox` itself; there is no `-inner`.
+	:global(.ant-checkbox:not(.ant-checkbox-checked)) {
+		border-color: var(--gd-color-border-strong);
+	}
+
+	:global(.ant-form-item-explain) {
+		margin-top: var(--gd-space-1);
+		padding-left: 26px;
+	}
+
+	:global(.ant-form-item-explain-warning) {
+		color: var(--gd-warning-on-tint);
+	}
+
+	&:global(.ant-form-item-has-error .ant-checkbox:not(.ant-checkbox-checked)) {
+		border-color: var(--gd-danger-solid);
+	}
+}
+
+.link {
+	color: var(--gd-color-link);
+	font-weight: 500;
+}

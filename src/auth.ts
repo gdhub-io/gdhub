@@ -9,6 +9,7 @@ import { cache } from "react";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
+import { pendingLegalCodes } from "@/repositories/legal.repository";
 import { brevoApi } from "@/services/brevo";
 import { cached, cacheSet } from "@/services/cache";
 import { ensureMatrixUser } from "@/services/matrix/admin";
@@ -86,28 +87,31 @@ async function readSessionUser(token: JWT) {
 		}
 	}
 
-	const [activeSubscription, googleAccount, hubMembership] = await Promise.all([
-		prisma.user.activeSubscription(user.id),
-		// Cached in the token so the session callback can skip its own
-		// lookup while the Google access token is still valid.
-		prisma.account.findFirst({
-			where: { userId: user.id, provider: "google" },
-			select: { expires_at: true },
-		}),
-		// Platform staff. Read here so components outside the authenticated
-		// app — the public shell, which has no access context — can tell
-		// without falling back to the legacy `roles` array.
-		prisma.spaceMember.findUnique({
-			where: {
-				spaceType_spaceId_userId: {
-					spaceType: "hub",
-					spaceId: "default",
-					userId: user.id,
+	const [activeSubscription, googleAccount, hubMembership, legalPending] =
+		await Promise.all([
+			prisma.user.activeSubscription(user.id),
+			// Cached in the token so the session callback can skip its own
+			// lookup while the Google access token is still valid.
+			prisma.account.findFirst({
+				where: { userId: user.id, provider: "google" },
+				select: { expires_at: true },
+			}),
+			// Platform staff. Read here so components outside the authenticated
+			// app — the public shell, which has no access context — can tell
+			// without falling back to the legacy `roles` array.
+			prisma.spaceMember.findUnique({
+				where: {
+					spaceType_spaceId_userId: {
+						spaceType: "hub",
+						spaceId: "default",
+						userId: user.id,
+					},
 				},
-			},
-			select: { role: true, revokedAt: true },
-		}),
-	]);
+				select: { role: true, revokedAt: true },
+			}),
+			// Read on each sync, so a version taking effect reaches the proxy within the interval.
+			pendingLegalCodes(user.id).then((codes) => codes.length > 0),
+		]);
 
 	// Auth.js v5 encodes the JWT via jose, which calls `structuredClone`
 	// on the payload. Prisma rows can contain values that don't clone
@@ -122,6 +126,7 @@ async function readSessionUser(token: JWT) {
 		...safeUser,
 		isStaff,
 		activeSubscription: activeSubscription?.id,
+		legalPending,
 		googleTokenExpiresAt: googleAccount?.expires_at ?? null,
 		syncedAt: Date.now(),
 	};

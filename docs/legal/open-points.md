@@ -1,14 +1,14 @@
 # Legal open points — internal
 
 Not a published document. What a Lithuanian-qualified lawyer and the accountant have to
-confirm before [the advisor agreement](advisor-agreement.md) and
-[the Checkpoint terms](checkpoint-terms.md) go live, and the contradictions those two
+confirm before [the advisor agreement](advisor-agreement/v1.md) and
+[the Checkpoint terms](checkpoint-purchase-terms/v1.md) go live, and the contradictions those two
 documents surfaced in what is already published.
 
 ## Contradictions with what is already published
 
 1. **Two operators — decided: the operator is the Lithuanian VšĮ.** The new agreements are
-   right; [terms-of-use.md](terms-of-use.md) and [refund-policy.md](../refund-policy.md)
+   right; [terms-of-use.md](terms-of-use/v1.md) and [refund-policy.md](refund-policy/v1.md)
    are behind. They still name the Georgian individual entrepreneur (code 306422564) as
    the operator, keep Lithuania as a representative office, and choose **Georgian**
    governing law. Both need to be reissued with the VšĮ as the operator and Lithuanian
@@ -37,7 +37,7 @@ documents surfaced in what is already published.
 4. **Age.** The Terms of Use admit users from 16. A Checkpoint is a paid contract and the
    drafts require 18. Checkout has to enforce it.
 5. **Refund policy.** The Checkpoint's 7-day rule is not in
-   [refund-policy.md](../refund-policy.md). Add a Checkpoint section there or point that
+   [refund-policy.md](refund-policy/v1.md). Add a Checkpoint section there or point that
    policy at these terms.
 
 ## To confirm with counsel

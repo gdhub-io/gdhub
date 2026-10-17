@@ -93,7 +93,7 @@ export const GET = pipe(
 		members.map(async (m) => {
 			if (!m.certificate) return null;
 			const externalId = m.certificate.externalId;
-			if (externalId.startsWith("pending:")) return null;
+			if (!externalId || externalId.startsWith("pending:")) return null;
 			try {
 				return await envelopeInfo(legalService, externalId);
 			} catch (error) {
@@ -114,12 +114,13 @@ export const GET = pipe(
 			certificate: {
 				...m.certificate,
 				status: info?.status ?? null,
-				documentUrl: info
-					? legalService.getDocumentUrl({
-							teamUrl: info.teamUrl,
-							envelopeId: m.certificate.externalId,
-						})
-					: null,
+				documentUrl:
+					info && m.certificate.externalId
+						? legalService.getDocumentUrl({
+								teamUrl: info.teamUrl,
+								envelopeId: m.certificate.externalId,
+							})
+						: null,
 			},
 		};
 	});

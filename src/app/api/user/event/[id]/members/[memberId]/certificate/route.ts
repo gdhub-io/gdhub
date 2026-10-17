@@ -1,5 +1,4 @@
-import { randomBytes } from "node:crypto";
-import { EventType, Prisma } from "@gdhub-io/gdhub-prisma";
+import { CertificateSource, EventType, Prisma } from "@gdhub-io/gdhub-prisma";
 import { roleAtLeast, SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -9,6 +8,7 @@ import {
 	withAuth,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { generateCertificateNumber } from "@/services/certificates";
 import {
 	LegalService,
 	MENTOR_SIGNATURE_FIELD,
@@ -16,18 +16,6 @@ import {
 } from "@/services/legal";
 import { prisma } from "@/services/prisma";
 import { resolveMemberCertificateContext } from "../../../_helpers";
-
-// Crockford Base32 — 32 chars, no ambiguous I/L/O/U.
-const CROCKFORD_BASE32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-
-function generateCertificateNumber(): string {
-	const bytes = randomBytes(6);
-	let suffix = "";
-	for (let i = 0; i < 6; i++) {
-		suffix += CROCKFORD_BASE32[bytes[i] & 0x1f]; // 5 random bits per char
-	}
-	return `GDH-${suffix}`;
-}
 
 export const POST = pipe(
 	withAuth({ mode: "user" }),
@@ -72,8 +60,10 @@ export const POST = pipe(
 	for (let attempt = 0; attempt < 3; attempt++) {
 		const candidate = generateCertificateNumber();
 		try {
-			claimedRow = await prisma.eventCertificate.create({
+			claimedRow = await prisma.certificate.create({
 				data: {
+					source: CertificateSource.Event,
+					userId: eventCtx.member.userId,
 					eventMemberId: eventCtx.member.id,
 					number: candidate,
 					externalId: `pending:${candidate}`,
@@ -158,7 +148,7 @@ export const POST = pipe(
 			signers,
 		});
 
-		const certificate = await prisma.eventCertificate.update({
+		const certificate = await prisma.certificate.update({
 			where: { id: claimedRow.id },
 			data: { externalId: document.envelopeId },
 		});
@@ -171,7 +161,7 @@ export const POST = pipe(
 			documentId: document.documentId,
 		});
 	} catch (error) {
-		await prisma.eventCertificate
+		await prisma.certificate
 			.delete({ where: { id: claimedRow.id } })
 			.catch((rollbackError) => {
 				console.error(
@@ -215,7 +205,7 @@ export const GET = pipe(
 
 	let status: string | null = null;
 	const externalId = member.certificate.externalId;
-	if (!externalId.startsWith("pending:")) {
+	if (externalId && !externalId.startsWith("pending:")) {
 		try {
 			const envelope = await new LegalService().getEnvelope(externalId);
 			status = envelope.status;
@@ -275,7 +265,7 @@ export const DELETE = pipe(
 	// Documenso returns 404 — we still want to clean up the DB row.
 	const externalId = member.certificate.externalId;
 	const legalService = new LegalService();
-	if (!externalId.startsWith("pending:")) {
+	if (externalId && !externalId.startsWith("pending:")) {
 		if (!mayDeleteSigned) {
 			try {
 				const envelope = await legalService.getEnvelope(externalId);
@@ -301,7 +291,7 @@ export const DELETE = pipe(
 		}
 	}
 
-	await prisma.eventCertificate.delete({
+	await prisma.certificate.delete({
 		where: { id: member.certificate.id },
 	});
 
