@@ -1,7 +1,9 @@
 # Development-only files, kept out of the Vercel build.
 # scripts/ and tests/ must stay: prebuild runs scripts/, and the type check follows scripts/test-env.ts into tests/.
 
-/docs/
+/docs/*
+# Legal texts are read at build time (/legal pages, checksums).
+!/docs/legal/
 /.storybook/
 /playwright.config.ts
 /vitest.config.mts
