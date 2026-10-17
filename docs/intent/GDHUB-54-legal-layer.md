@@ -1,79 +1,87 @@
-# GDHUB-54 — Legal layer, stage 1
+# GDHUB-54 — Legal layer
 
 [Linear](https://linear.app/gdhub/issue/GDHUB-54) · intent written 2026-10-17 ·
-architecture draft: [docs/legal/legal-layer.md](../legal/legal-layer.md) (Russian, §12 stage 1)
+design: [docs/legal/legal-layer.md](../legal/legal-layer.md)
 
 ## Want
 
-When someone on GDHub agrees to something (the Terms at sign-up, an advisor's agreement
-when switching on the Advisor space, the purchase terms when buying a Checkpoint), the
-platform can show later exactly which text they agreed to, in which version, and when.
-Anyone can read every legal document at a stable `/legal` address, including the
-versions that came before. An admin can publish a new version without editing the old
-one, and can see and download who agreed to what.
+Whenever someone on GDHub agrees to something — the Terms at sign-up, the Project
+Requirements, the Advisor Agreement, the Expert Services Terms before earning money, the
+Checkpoint purchase terms, the Checkpoint Standard as a curator, a project's
+co-development agreement — the platform can show later exactly which text they agreed to,
+in which version, and when. Anyone can read every legal document and its past versions at
+`/legal`; users see their own documents and certificates in one place; a certificate from
+an event, a course or a checkpoint can be checked by anyone at `/verify`.
 
 ## Why now
 
-Checkpoint launch is blocked on it (GDHUB-87). Without a recorded acceptance of the
+Checkpoint launch is blocked on it (GDHUB-87): without a recorded acceptance of the
 purchase terms and a separate waiver of the withdrawal period, a refund cannot keep the
-value of calls already given. Today nothing is recorded anywhere: the `Legal*` models
-exist in the schema but the app never writes to them, and Terms/Privacy/Cookie/Refund
-are rendered live from Notion, so there is no version to point an acceptance at.
+value of calls already given. Today the evidence does not exist anywhere: sign-up stores
+a boolean in `User.agreements`, the project checkbox is checked only in the browser, the
+checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from Notion.
 
 ## Constraints
 
-- Schema changes go through `../prisma` and a released package (two-repo loop).
-- A published version is never edited or deleted; a correction is a new version.
-- Existing public URLs (`/terms`, `/privacy-policy`, `/cookie-policy`, `/refund-policy`,
-  `/legal-details`, `/project-requirements`) keep working — they redirect or render the current version.
-- Issued event certificates and `/verify/[number]` keep working unchanged.
-- Signatures: Documenso only. DocuSeal is not used — `legal-docuseal.ts` and
-  `@docuseal/api` are removed.
-- Admin section fits the existing admin space: a `legal` feature with `view`/`manage`
-  in `src/config/spaces/admin.ts`, like Roles and Workflows.
-- Cookie consent stays a separate mechanism, never folded into a clickwrap.
-- Notion was a stopgap for legal text (decided 2026-10-17). Terms, Privacy, Cookie,
-  Refund and Project Requirements move into the repo — sources in `docs/legal/*.md`, seeded into
-  `LegalDocumentTemplate` — and their pages stop reading Notion.
+- Texts are markdown files, `docs/legal/<slug>/v<n>.md`, listed in a registry in code with
+  effective date, entity and checksum; a new version is a pull request. No admin editor.
+  The files must reach the server build, not only the repo.
+- One table, `LegalAcceptance`; the `Legal*` tables the app never wrote to are replaced.
+  Schema changes go through `../prisma` and a released package.
+- The legal entity is one, configured in `src/config/legal/entities.ts` (today the VšĮ);
+  each version records the entity it names, so changing it never rewrites accepted text.
+  The entity also carries the currency: checkpoint prices, Stripe, consultation prices and
+  the texts read it from there, and no screen hardcodes `$` or `€`.
+- A published file is never edited or deleted; one version in effect per document.
+- The server refuses the action without the acceptance, not only the form.
+- Ticks, not signatures — the Advisor Agreement included (the Documenso plan in
+  `docs/advisor-space.md` is dropped). Issued event certificates keep their signature
+  and their `/verify` pages. DocuSeal is removed.
+- Old URLs (`/terms`, `/privacy-policy`, …) 308 to `/legal/<slug>`.
+- The checkpoint pay step and the curator's accept step live in the checkpoint
+  integration branch (`feature/gdhub-31-add-checkpoints-to-projects`); that part lands
+  where that code is.
 
 ## Done when
 
-- [ ] Buying a Checkpoint requires two unticked checkboxes (purchase terms; immediate
-      start and loss of withdrawal) and stores two acceptances with version, checksum,
-      IP, user-agent and context — **first slice, ships before launch**.
-- [ ] Sign-up requires accepting the Terms of Use; the acceptance is stored the same way.
-- [ ] Creating a project requires accepting the Project Requirements (today the
-      checkbox is checked only in the browser and nothing is stored); the acceptance is
-      stored and the server refuses a project without it.
-- [ ] Switching on the Advisor space requires accepting the Advisor Agreement; the space
-      does not switch on without it.
-- [ ] `/legal` lists every published document; each has its current text and its past
-      versions with effective dates, readable without signing in.
-- [ ] Every document is one entry in a code registry (code, audience, trigger, method);
-      adding one touches no shared code.
-- [ ] The models are space-scoped (`spaceType` + `spaceId`) with `LegalParty`; a
-      project's co-development agreement uses the same tables as everything else.
-- [ ] Novu sends `legal-acceptance-requested` and `legal-acceptance-completed`.
-- [ ] `/admin/legal`: create a version, preview it with test params, publish it (the
-      previous one archives); list concluded documents with parties and statuses;
-      download a PDF or a filtered zip, each download written to `AuditLog`.
-- [ ] Tests prove: only one published version per (code, locale); a published text
-      cannot be changed; an acceptance always carries the checksum it was shown.
+- [ ] Paying for a Checkpoint needs two unticked checkboxes (purchase terms; immediate
+      start and loss of withdrawal), stores two acceptances with `checkpointId`, and the
+      pay endpoint refuses without them — **first, before launch**.
+- [ ] A curator accepts the Checkpoint Standard in force for each checkpoint they take.
+- [ ] Paid consultations and curation cannot be switched on without the Expert Services
+      Terms and payout details.
+- [ ] The Advisor space does not open without the Advisor Agreement.
+- [ ] Sign-up stores one acceptance — the Terms; project creation stores the Project
+      Requirements and the server refuses a project without it.
+- [ ] Joining a project by invite or offer, and a change of shares, are accepted as the
+      project's co-development agreement with its values; until a member accepts new
+      shares, their previous ones stay in force.
+- [ ] After a material change takes effect, users get one email and are asked to accept
+      at the next sign-in before going on.
+- [ ] Profile → My documents lists what the user accepted (each opens the exact text)
+      and the certificates issued to them.
+- [ ] Events, courses and checkpoints issue certificates checkable at `/verify/<number>`;
+      the existing event certificates still verify.
+- [ ] `/legal` lists every document with its current text and archived versions, without
+      sign-in. `/admin/legal` lists acceptances with filters and a CSV export written to
+      `AuditLog`.
+- [ ] Tests prove: one version in effect per document at any moment; a published file
+      matches its checksum; no document in effect names an entity other than the current
+      one; each endpoint refuses without its acceptance; an outdated version is refused.
 
 ## Out of scope
 
-Stage 2 and 3 of the draft: certificates moving onto `LegalInstance`, the
-re-acceptance gate after a material change, "My documents", Documenso signature for
-the co-development agreement, the remaining Novu workflows, user-supplied templates,
-Lithuanian versions, verifiable badges. Also out: the **texts** themselves (GDHUB-87),
-the seller entity, and the transactional email design. Workflow step content (`/api/notion/page`), the
-last Notion reader, is not legal and moves off Notion in its own issue.
+Signatures for agreements, per-agreement instances and parties, PDF and zip exports,
+three-party agreements, user-supplied templates, Lithuanian versions, verifiable badges.
+The texts themselves — including bringing the Advisor Agreement and Checkpoint Terms in
+line with the product and splitting out the Expert Services Terms — are GDHUB-87.
+Workflow step content still read from Notion is GDHUB-97.
 
 ## Open questions
 
-- **The seller entity** is undecided (GDHUB-87) — assumed: a template param, filled when
-  decided; it does not block the mechanics.
-- **Existing rows in `ProjectLegalSnapshot` / `LegalAcceptance` in production** —
-  assumed none, since nothing writes them; checked with a count before the migration.
-- **Translating `legal-layer.md` to English** — done in this branch, before code, as the
-  spec the work is checked against.
+- **Free curation** — the Advisor Agreement allows volunteer checkpoints; assumed none for
+  now: curation always needs the Expert Services Terms.
+- **Payout details** — assumed: the fields the payout by hand needs (holder, IBAN or
+  account, invoicing status), stored on the advisor profile; no payment provider account.
+- **Existing rows** in the old `Legal*` tables in production — assumed none; checked with
+  a count before the schema change.
