@@ -10,6 +10,8 @@ export type LegalEntity = {
 	registeredAt: string;
 	registry: string;
 	phone: string;
+	/** The registration document, where Legal Details names one. */
+	certificate?: string;
 	/** Contracts, refunds, disputes. */
 	email: string;
 	/** General questions, e.g. about cookies. */
@@ -54,6 +56,7 @@ export const LEGAL_ENTITIES = {
 		country: "Georgia",
 		law: "the laws of Georgia",
 		currency: "USD",
+		certificate: "Certificate of state registration of a legal entity (2023)",
 	},
 } as const satisfies Record<string, LegalEntity>;
 
@@ -73,3 +76,12 @@ export type HubId = keyof typeof HUB_LEGAL_ENTITIES;
 
 export const hubLegalEntity = (hub: HubId = "default"): LegalEntity =>
 	LEGAL_ENTITIES[HUB_LEGAL_ENTITIES[hub]];
+
+/** What Legal Details shows: the founder, and the offices the platform operates through. */
+export const LEGAL_DETAILS = {
+	founder: "founder",
+	offices: [{ country: "Lithuania", entity: "vsi" }],
+} as const satisfies {
+	founder: LegalEntityKey;
+	offices: readonly { country: string; entity: LegalEntityKey }[];
+};

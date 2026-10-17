@@ -6,11 +6,18 @@ import {
 	IconPhone,
 	IconUserCircle,
 } from "@tabler/icons-react";
-import { Card } from "antd";
+import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
-import { hubLegalEntity } from "@/config/legal/entities";
+import {
+	LEGAL_DETAILS,
+	LEGAL_ENTITIES,
+	type LegalEntity,
+	type LegalEntityKey,
+} from "@/config/legal/entities";
 import styles from "./style.module.scss";
+
+const { Title } = Typography;
 
 type EntityIcon = "user" | "building";
 type ContactType = "email" | "phone";
@@ -22,25 +29,35 @@ type Entity = {
 	contacts: { type: ContactType; value: string }[];
 };
 
-const legal = hubLegalEntity();
-
-const operator: Entity = {
-	name: legal.name,
-	icon: "building",
-	fields: [
-		{ label: "Legal entity code", value: legal.code },
-		{ label: "Registered address", value: legal.address },
-		{
-			label: "Registration date",
-			value: dayjs(legal.registeredAt).format("DD/MM/YYYY"),
-		},
-		{ label: "Registry", value: legal.registry },
-	],
-	contacts: [
-		{ type: "email", value: legal.email },
-		{ type: "phone", value: legal.phone },
-	],
+const toEntity = (key: LegalEntityKey, icon: EntityIcon): Entity => {
+	const e: LegalEntity = LEGAL_ENTITIES[key];
+	return {
+		name: e.name,
+		icon,
+		fields: [
+			{
+				label: "Registration date",
+				value: dayjs(e.registeredAt).format("DD/MM/YYYY"),
+			},
+			{ label: "Legal entity code", value: e.code },
+			{ label: "Administrator", value: e.registry },
+			{ label: "Registered address", value: e.address },
+			...(e.certificate
+				? [{ label: "Certificate", value: e.certificate }]
+				: []),
+		],
+		contacts: [
+			{ type: "email", value: e.email },
+			{ type: "phone", value: e.phone },
+		],
+	};
 };
+
+const founder = toEntity(LEGAL_DETAILS.founder, "user");
+const offices = LEGAL_DETAILS.offices.map((o) => ({
+	country: o.country,
+	entity: toEntity(o.entity, "building"),
+}));
 
 const AvatarIcon = ({ icon }: { icon: EntityIcon }) => {
 	if (icon === "user") return <IconUserCircle size={20} stroke={1.75} />;
@@ -98,10 +115,32 @@ export function LegalDetailsClient() {
 		<>
 			<PublicPageHeader
 				title="Legal Details"
-				subTitle="The legal entity that operates gdhub.io"
+				subTitle="Official legal information about Game Developers Hub and its representative offices"
 			/>
 			<div className="layout-background">
-				<EntityCard entity={operator} />
+				<Flex vertical gap={32}>
+					<section>
+						<Title level={2} className={styles.sectionTitle}>
+							Founder
+						</Title>
+						<EntityCard entity={founder} />
+					</section>
+					<section>
+						<Title level={2} className={styles.sectionTitle}>
+							Representative offices
+						</Title>
+						<Flex vertical gap={20}>
+							{offices.map(({ country, entity }) => (
+								<div key={country}>
+									<div className={styles.countryRow}>
+										<span className={styles.countryName}>{country}</span>
+									</div>
+									<EntityCard entity={entity} />
+								</div>
+							))}
+						</Flex>
+					</section>
+				</Flex>
 			</div>
 		</>
 	);

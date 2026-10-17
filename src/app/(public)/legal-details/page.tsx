@@ -3,13 +3,15 @@ import { LegalDetailsClient } from "./LegalDetailsClient";
 
 export const metadata: Metadata = {
 	title: "Legal Details",
-	description: "The legal entity that operates gdhub.io",
+	description:
+		"Official legal information about Game Developers Hub and its representative offices",
 	alternates: { canonical: "/legal-details" },
 	openGraph: {
 		type: "website",
 		url: "/legal-details",
 		title: "Legal Details",
-		description: "The legal entity that operates gdhub.io",
+		description:
+			"Official legal information about Game Developers Hub and its representative offices",
 	},
 };
 
