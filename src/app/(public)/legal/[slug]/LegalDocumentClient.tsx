@@ -1,12 +1,14 @@
 "use client";
 
+import { IconArchive } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Tag, Typography } from "antd";
+import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { LegalDocument } from "@/components/legal/LegalDocument";
-import type { LegalPageData } from "@/lib/legal/pages";
+import { IconTile, StatusDot } from "@/components/ui";
+import type { LegalPageData, LegalVersionRow } from "@/lib/legal/pages";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -19,6 +21,20 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 		page.status === "archived"
 			? page.versions.find((v) => v.version === page.version + 1)
 			: undefined;
+	const until = (version: number) =>
+		page.versions.find((v) => v.version === version + 1)?.effectiveAt;
+	const range = (v: LegalVersionRow) =>
+		v.status === "scheduled"
+			? t("legal.document.takes-effect-short", "Takes effect {date}", {
+					date: day(v.effectiveAt),
+				})
+			: t("legal.document.range", "{from} — {to}", {
+					from: day(v.effectiveAt),
+					to:
+						v.status === "current"
+							? t("legal.document.now", "now")
+							: day(until(v.version) ?? v.effectiveAt),
+				});
 
 	return (
 		<>
@@ -26,23 +42,33 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 				title={page.title}
 				backTo={{ href: "/legal", label: t("legal.index.title", "Legal") }}
 				subTitle={
-					page.status === "scheduled"
+					replacedBy
 						? t(
-								"legal.document.takes-effect",
-								"Version {version} · takes effect {date}",
+								"legal.document.archived-range",
+								"Version {version} · in effect {from} — {to}",
 								{
 									version: page.version,
-									date: day(page.effectiveAt),
+									from: day(page.effectiveAt),
+									to: day(replacedBy.effectiveAt),
 								},
 							)
-						: t(
-								"legal.index.version",
-								"Version {version} · in effect since {date}",
-								{
-									version: page.version,
-									date: day(page.effectiveAt),
-								},
-							)
+						: page.status === "scheduled"
+							? t(
+									"legal.document.takes-effect",
+									"Version {version} · takes effect {date}",
+									{
+										version: page.version,
+										date: day(page.effectiveAt),
+									},
+								)
+							: t(
+									"legal.index.version",
+									"Version {version} · in effect since {date}",
+									{
+										version: page.version,
+										date: day(page.effectiveAt),
+									},
+								)
 				}
 			/>
 			<div className="layout-background">
@@ -50,7 +76,8 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 					<Flex vertical gap={24} className={styles.main}>
 						{replacedBy && (
 							<div className={styles.archived}>
-								<Text>
+								<IconTile icon={IconArchive} size="sm" />
+								<Text className={styles.archivedText}>
 									{t(
 										"legal.document.archived",
 										"Archived — replaced by version {version} on {date}",
@@ -60,7 +87,10 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 										},
 									)}
 								</Text>
-								<Link href={`/legal/${page.slug}`}>
+								<Link
+									href={`/legal/${page.slug}`}
+									className={styles.archivedLink}
+								>
 									{t("legal.document.read-current", "Read the current version")}
 								</Link>
 							</div>
@@ -69,46 +99,41 @@ export function LegalDocumentClient({ page }: { page: LegalPageData }) {
 					</Flex>
 
 					<aside className={styles.aside}>
-						<Text type="secondary" className={styles.asideTitle}>
+						<Text className={styles.asideTitle}>
 							{t("legal.document.versions", "Versions")}
 						</Text>
 						<ul className={styles.versions}>
-							{[...page.versions].reverse().map((v) => (
-								<li key={v.version}>
-									<Link
-										href={`/legal/${page.slug}/v${v.version}`}
-										className={
-											v.version === page.version
-												? `${styles.version} ${styles.selected}`
-												: styles.version
-										}
-									>
-										<Flex justify="space-between" align="center" gap={8}>
-											<Text strong>
-												{t("legal.document.version", "Version {version}", {
-													version: v.version,
-												})}
-											</Text>
-											{v.status === "current" && (
-												<Tag color="processing">
-													{t("legal.document.current", "Current")}
-												</Tag>
-											)}
-										</Flex>
-										<Text type="secondary" className={styles.versionDate}>
-											{v.status === "scheduled"
-												? t(
-														"legal.document.takes-effect-short",
-														"Takes effect {date}",
-														{
-															date: day(v.effectiveAt),
-														},
-													)
-												: day(v.effectiveAt)}
-										</Text>
-									</Link>
-								</li>
-							))}
+							{[...page.versions].reverse().map((v) => {
+								const selected = v.version === page.version;
+								return (
+									<li key={v.version}>
+										<Link
+											href={`/legal/${page.slug}/v${v.version}`}
+											className={
+												selected
+													? `${styles.version} ${styles.selected}`
+													: styles.version
+											}
+										>
+											<Flex justify="space-between" align="center" gap={8}>
+												<span className={styles.versionTitle}>
+													{t("legal.document.version", "Version {version}", {
+														version: v.version,
+													})}
+												</span>
+												{v.status === "current" && (
+													<StatusDot
+														tone="success"
+														label={t("legal.document.current", "Current")}
+														className={styles.current}
+													/>
+												)}
+											</Flex>
+											<span className={styles.versionDate}>{range(v)}</span>
+										</Link>
+									</li>
+								);
+							})}
 						</ul>
 					</aside>
 				</div>

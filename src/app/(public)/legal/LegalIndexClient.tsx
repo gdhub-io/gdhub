@@ -59,7 +59,7 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 		<>
 			<PublicPageHeader title={t("legal.index.title", "Legal")} />
 			<div className="layout-background">
-				<Flex vertical gap={32} className={styles.index}>
+				<Flex vertical gap={48} className={styles.index}>
 					{groups.map((group) => (
 						<section key={group.key}>
 							<Title level={2} className={styles.groupTitle}>
@@ -73,7 +73,10 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 										href={row.href}
 										className={styles.rowLink}
 									>
-										<IconTile icon={IconFileText} size="sm" />
+										<IconTile
+											icon={IconFileText}
+											tint="var(--gd-neutral-100)"
+										/>
 										<Text className={styles.rowTitle}>{row.title}</Text>
 										{row.version && (
 											<span className={styles.rowMeta}>
