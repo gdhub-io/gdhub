@@ -602,7 +602,7 @@ that day, not today's.
 
 **The three lines on that screen are product copy, not the agreement.** What the
 checkbox has to point at is a real document — the terms of a paid checkpoint,
-sitting beside [docs/legal/terms-of-use.md](legal/terms-of-use.md) and covering
+sitting beside [docs/legal/terms-of-use/v1.md](legal/terms-of-use/v1.md) and covering
 who owes what, what a refund is, what happens when a curator disappears and who
 holds the rights to what the team makes. Writing it is **its own issue**, not
 part of this one; until it exists the checkbox links to

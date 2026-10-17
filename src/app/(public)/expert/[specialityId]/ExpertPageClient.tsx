@@ -25,7 +25,6 @@ import { useContentPageView } from "@/hooks/useContentViews";
 const { Text, Title } = Typography;
 
 export interface ExpertPageProps {
-	isAuthenticated: boolean;
 	expert: any;
 	seo?: {
 		title?: string | null;

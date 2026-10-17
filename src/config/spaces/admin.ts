@@ -27,6 +27,8 @@ export const adminSpace = defineSpace({
 		// Checkpoint promotion codes, kept in Stripe; `manage` creates and turns them off.
 		checkpoints: ["view", "manage"],
 		audit_logs: ["view"],
+		// Who accepted which legal text. Read-only: acceptances are never edited.
+		legal: ["view"],
 		// The content-view report. Read-only by nature: there is nothing here to
 		// manage, only numbers the platform already counted.
 		views: ["view"],

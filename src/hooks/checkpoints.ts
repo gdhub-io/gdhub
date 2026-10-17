@@ -11,6 +11,7 @@ import type {
 	CheckpointCuratorKind,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
+import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
 import type { ProjectActivity } from "@/repositories/project-activity.repository";
@@ -67,7 +68,6 @@ export const useUpdateCheckpoint = (id?: string) => {
 			goal?: string;
 			curatorKind?: CheckpointCuratorKind;
 			curatorId?: string | null;
-			acceptedTerms?: boolean;
 			inputs?: CheckpointItemInput[];
 			outcomes?: CheckpointItemInput[];
 			/**
@@ -116,8 +116,12 @@ export const useAttachEvidence = (id?: string) =>
  */
 export const useCheckpointCheckout = (id?: string) =>
 	useMutation({
-		mutationFn: async () =>
-			(await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`)).data,
+		mutationFn: async (legal: LegalAcceptanceInput[]) =>
+			(
+				await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`, {
+					legal,
+				})
+			).data,
 	});
 
 /**

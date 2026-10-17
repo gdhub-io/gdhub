@@ -104,7 +104,6 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			curatorKind: true,
 			curatorId: true,
 			startedAt: true,
-			acceptedTermsAt: true,
 			goal: true,
 			curator: { select: { name: true } },
 			project: { select: { slug: true, name: true } },
@@ -133,12 +132,6 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	}
 	if (!checkpoint._count.items) {
 		return { ok: false as const, reason: "inputsMissing" as const };
-	}
-
-	// The checkbox is the agreement, and the server is where that holds: a client
-	// that hides it still cannot open a checkout.
-	if (!checkpoint.acceptedTermsAt) {
-		return { ok: false as const, reason: "termsNotAccepted" as const };
 	}
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;

@@ -47,6 +47,7 @@ vi.mock("../src/services/prisma", () => ({
 		project: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn() },
 		// Creating a project now also records its owner in SpaceMember.
 		spaceMember: { upsert: vi.fn(), findUnique: vi.fn() },
+		legalAcceptance: { createMany: vi.fn() },
 	},
 }));
 
@@ -85,7 +86,7 @@ const postProject = async (body: Record<string, unknown>) => {
 		body: JSON.stringify({
 			name: "Test Project",
 			description: "Test Description",
-			agree: true,
+			legal: [{ code: "ProjectRequirements", version: 1 }],
 			understandsNotAi: true,
 			...body,
 		}),
@@ -168,7 +169,7 @@ describe("POST /api/user/project", () => {
 			body: JSON.stringify({
 				name: "Test Project",
 				description: "Test Description",
-				agree: true,
+				legal: [{ code: "ProjectRequirements", version: 1 }],
 				understandsNotAi: true,
 			}),
 		});
@@ -218,7 +219,7 @@ describe("POST /api/user/project", () => {
 			body: JSON.stringify({
 				name: "Test Project",
 				description: "Test Description",
-				agree: true,
+				legal: [{ code: "ProjectRequirements", version: 1 }],
 				understandsNotAi: true,
 			}),
 		});
@@ -257,7 +258,7 @@ describe("POST /api/user/project", () => {
 			headers: { "content-type": "application/json" },
 			body: JSON.stringify({
 				name: "Test Project",
-				agree: true,
+				legal: [{ code: "ProjectRequirements", version: 1 }],
 				understandsNotAi: true,
 			}),
 		});
@@ -283,7 +284,7 @@ describe("POST /api/user/project", () => {
 			body: JSON.stringify({
 				name: "Test Project",
 				description: "Test Description",
-				agree: true,
+				legal: [{ code: "ProjectRequirements", version: 1 }],
 			}),
 		});
 		const { NextRequest } = await import("next/server");
@@ -305,7 +306,7 @@ describe("POST /api/user/project", () => {
 			body: JSON.stringify({
 				name: "Test Project",
 				description: "Test Description",
-				agree: true,
+				legal: [{ code: "ProjectRequirements", version: 1 }],
 				understandsNotAi: false,
 			}),
 		});
@@ -349,5 +350,72 @@ describe("POST /api/user/project", () => {
 		expect(limitAiCalls).toHaveBeenCalledWith("project-create", "user1");
 		expect(validate).not.toHaveBeenCalled();
 		expect(prisma.project.create).not.toHaveBeenCalled();
+	});
+
+	it("refuses a project without the Project Requirements accepted, and records nothing", async () => {
+		const { POST } = await import("../src/app/api/user/project/route");
+		const { NextRequest } = await import("next/server");
+		const response = await (POST as any)(
+			new NextRequest(
+				new Request("http://test/api/user/project", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({
+						name: "Test Project",
+						understandsNotAi: true,
+						legal: [],
+					}),
+				}),
+			),
+			{ params: Promise.resolve({}) },
+		);
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			details: { reason: "legal.required", code: "ProjectRequirements" },
+		});
+		expect(prisma.project.create).not.toHaveBeenCalled();
+		expect(prisma.legalAcceptance.createMany).not.toHaveBeenCalled();
+	});
+
+	it("records the acceptance against the new project", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({
+			id: "user1",
+			specialities: [{ id: "spec1" }],
+		});
+		(prisma.project.findMany as any).mockResolvedValue([]);
+		(prisma.project.create as any).mockResolvedValue({ id: "p1", slug: "p" });
+
+		const { POST } = await import("../src/app/api/user/project/route");
+		const { NextRequest } = await import("next/server");
+		await (POST as any)(
+			new NextRequest(
+				new Request("http://test/api/user/project", {
+					method: "POST",
+					headers: {
+						"content-type": "application/json",
+						"x-forwarded-for": "192.0.2.7",
+					},
+					body: JSON.stringify({
+						name: "Test Project",
+						understandsNotAi: true,
+						legal: [{ code: "ProjectRequirements", version: 1 }],
+					}),
+				}),
+			),
+			{ params: Promise.resolve({}) },
+		);
+
+		expect(prisma.legalAcceptance.createMany).toHaveBeenCalledWith({
+			data: [
+				expect.objectContaining({
+					userId: "user1",
+					code: "ProjectRequirements",
+					context: "ProjectCreate",
+					projectId: "p1",
+					ipAddress: "192.0.2.7",
+				}),
+			],
+		});
 	});
 });

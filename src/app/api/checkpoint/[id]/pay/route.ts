@@ -3,6 +3,7 @@ import {
 	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { z } from "zod";
 import { checkoutHref } from "@/components/checkpoints/entry/hrefs";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { env } from "@/helpers/env";
@@ -12,7 +13,14 @@ import {
 	pipe,
 	type SessionUser,
 	withAuth,
+	withValidation,
 } from "@/lib/api-handlers";
+import {
+	LegalAcceptancesSchema,
+	LegalError,
+	resolveLegal,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
@@ -34,20 +42,43 @@ import {
  * The return addresses are built here rather than accepted from the caller — a
  * checkout that redirects wherever it is told is an open redirect with a payment
  * attached to it.
+ *
+ * Pay is also where the purchase terms are accepted: the tick travels with the
+ * click, and the acceptance is recorded with the checkout it opened.
  */
+const PaySchema = z.object({ legal: LegalAcceptancesSchema });
+
 export const POST = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({
 		permission: "project.checkpoints.manage",
 		idFrom: projectOfCheckpoint,
 	}),
-)(async (_req, ctx, { user }) => {
+	withValidation(PaySchema),
+)(async (req, ctx, { user, body }) => {
 	const payer = user as SessionUser | undefined;
 	if (!payer) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
 
 	if (!checkpointPurchaseOpen()) return apiError.badRequest("purchaseClosed");
+
+	let acceptances: ReturnType<typeof resolveLegal>;
+	try {
+		acceptances = resolveLegal(
+			(body as z.infer<typeof PaySchema>).legal,
+			["CheckpointPurchaseTerms"],
+			{
+				userId: payer.id,
+				context: "CheckpointPurchase",
+				checkpointId: id,
+				meta: requestMeta(req),
+			},
+		);
+	} catch (error) {
+		if (error instanceof LegalError) return legalErrorResponse(error);
+		throw error;
+	}
 
 	// A checkout finished in another tab, whose webhook has not come, must not
 	// be sold a second time.
@@ -85,6 +116,8 @@ export const POST = pipe(
 		},
 		data: { status: PaymentStatus.CANCELED },
 	});
+
+	await prisma.legalAcceptance.createMany({ data: acceptances });
 
 	const payment = await prisma.payment.create({
 		data: {

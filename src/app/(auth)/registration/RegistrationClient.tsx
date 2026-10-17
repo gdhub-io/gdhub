@@ -9,19 +9,23 @@ import {
 	Form,
 	Input,
 	message,
-	notification,
 	Space,
 	Typography,
 } from "antd";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import {
 	CHECKPOINT_ENTRY_HREF,
 	CHECKPOINT_INTENT,
 } from "@/components/checkpoints/entry/hrefs";
+import {
+	ClickwrapField,
+	LegalLink,
+	legalAcceptances,
+} from "@/components/legal/ClickwrapField";
 import { setCookie } from "@/helpers/cookie";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
@@ -58,8 +62,7 @@ export function RegistrationClient() {
 			return;
 		}
 
-		const { email, agreeWithTermsAndPrivacy, needSubscribeToNewsletter } =
-			values;
+		const { email, needSubscribeToNewsletter } = values;
 
 		setIsRegistration(true);
 
@@ -68,7 +71,7 @@ export function RegistrationClient() {
 			JSON.stringify({
 				for: forParam,
 				intent,
-				agreeWithTermsAndPrivacy,
+				legal: legalAcceptances(["TermsOfUse"]),
 				needSubscribeToNewsletter,
 			}),
 		);
@@ -100,7 +103,7 @@ export function RegistrationClient() {
 			return;
 		}
 
-		const { agreeWithTermsAndPrivacy, needSubscribeToNewsletter } = values;
+		const { needSubscribeToNewsletter } = values;
 
 		setIsRegistration(true);
 
@@ -109,7 +112,7 @@ export function RegistrationClient() {
 			JSON.stringify({
 				for: forParam,
 				intent,
-				agreeWithTermsAndPrivacy,
+				legal: legalAcceptances(["TermsOfUse"]),
 				needSubscribeToNewsletter,
 			}),
 		);
@@ -204,53 +207,7 @@ export function RegistrationClient() {
 							<Space orientation="vertical" size={24} style={{ width: "100%" }}>
 								<Form variant="filled" form={formRegGoogle} layout="vertical">
 									<Flex vertical gap={12}>
-										<Form.Item
-											name="agreeWithTermsAndPrivacy"
-											valuePropName="checked"
-											noStyle
-											rules={[
-												{
-													validator: (_, value) => {
-														if (!value) {
-															notification.error({
-																message: t(
-																	"agreeWithTermsAndPrivacy.error",
-																	"You should confirm the accuracy of the information entered",
-																),
-															});
-														}
-														return value ? Promise.resolve() : Promise.reject();
-													},
-												},
-											]}
-										>
-											<Checkbox>
-												<T
-													keyName="page.registration.agreeWithTermsAndPrivacy"
-													defaultValue="By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>"
-													params={{
-														terms: (
-															<Link
-																href="/terms"
-																target="_blank"
-																rel="noreferrer"
-																className={styles.policyLink}
-																onClick={(e) => e.stopPropagation()}
-															/>
-														),
-														privacy: (
-															<Link
-																href="/privacy-policy"
-																target="_blank"
-																rel="noreferrer"
-																className={styles.policyLink}
-																onClick={(e) => e.stopPropagation()}
-															/>
-														),
-													}}
-												/>
-											</Checkbox>
-										</Form.Item>
+										<TermsClickwrap />
 
 										<Form.Item
 											name="needSubscribeToNewsletter"
@@ -322,53 +279,7 @@ export function RegistrationClient() {
 									</Form.Item>
 
 									<Flex vertical gap={12}>
-										<Form.Item
-											name="agreeWithTermsAndPrivacy"
-											valuePropName="checked"
-											noStyle
-											rules={[
-												{
-													validator: (_, value) => {
-														if (!value) {
-															notification.error({
-																message: t(
-																	"agreeWithTermsAndPrivacy.error",
-																	"You should confirm the accuracy of the information entered",
-																),
-															});
-														}
-														return value ? Promise.resolve() : Promise.reject();
-													},
-												},
-											]}
-										>
-											<Checkbox>
-												<T
-													keyName="page.registration.agreeWithTermsAndPrivacy"
-													defaultValue="By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>"
-													params={{
-														terms: (
-															<Link
-																href="/terms"
-																target="_blank"
-																rel="noreferrer"
-																className={styles.policyLink}
-																onClick={(e) => e.stopPropagation()}
-															/>
-														),
-														privacy: (
-															<Link
-																href="/privacy-policy"
-																target="_blank"
-																rel="noreferrer"
-																className={styles.policyLink}
-																onClick={(e) => e.stopPropagation()}
-															/>
-														),
-													}}
-												/>
-											</Checkbox>
-										</Form.Item>
+										<TermsClickwrap />
 
 										<Form.Item
 											name="needSubscribeToNewsletter"
@@ -438,5 +349,26 @@ export function RegistrationClient() {
 				</Space>
 			</div>
 		</div>
+	);
+}
+
+/** Terms are accepted; the Privacy Policy is only read, so it is a link in the same line. */
+function TermsClickwrap() {
+	return (
+		<ClickwrapField
+			code="TermsOfUse"
+			label={(doc) => (
+				<T
+					keyName="legal.clickwrap.TermsOfUse.label"
+					defaultValue="I accept the <doc>Terms of Use</doc> and have read the <privacy>Privacy Policy</privacy>"
+					params={{
+						doc,
+						privacy: (chunks: ReactNode) => (
+							<LegalLink href="/legal/privacy-policy">{chunks}</LegalLink>
+						),
+					}}
+				/>
+			)}
+		/>
 	);
 }

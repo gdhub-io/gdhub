@@ -105,7 +105,7 @@ export const OnboardingProfileStep = ({
 			const res = await saveUserProfile({
 				...data,
 				name: [firstName, lastName].join(" "),
-				agreeWithTermsAndPrivacy: preRegistrationData?.agreeWithTermsAndPrivacy,
+				legal: preRegistrationData?.legal,
 				needSubscribeToNewsletter:
 					preRegistrationData?.needSubscribeToNewsletter,
 			});

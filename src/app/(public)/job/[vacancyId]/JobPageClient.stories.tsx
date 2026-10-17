@@ -1,4 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
+import type { ReactElement } from "react";
 import {
 	MARKDOWN_IMAGES,
 	MARKDOWN_SHORT,
@@ -31,7 +35,6 @@ const meta: Meta<typeof JobPageClient> = {
 	args: {
 		vacancy: vacancy(MARKDOWN_SHOWCASE),
 		pageCover: "/images/new-project.png",
-		isAuthenticated: false,
 	},
 };
 
@@ -66,6 +69,29 @@ export const PaidVacancy: Story = {
 /** The viewer already applied — the page offers to withdraw. */
 export const AlreadyApplied: Story = {
 	args: {
-		vacancy: vacancy(MARKDOWN_SHORT, { myTeamMemberId: "tm-1" }),
+		vacancy: vacancy(MARKDOWN_SHORT),
 	},
+	decorators: [
+		(Story: () => ReactElement) => {
+			const viewer = {
+				expires: "2099-01-01T00:00:00.000Z",
+				user: { id: "viewer-1", name: "Viewer", email: "viewer@gdhub.io" },
+			} as Session;
+			const client = new QueryClient({
+				defaultOptions: { queries: { staleTime: Number.POSITIVE_INFINITY } },
+			});
+			client.setQueryData(
+				["vacancy-my-application", mockVacancy.id, viewer.user.id],
+				"tm-1",
+			);
+
+			return (
+				<SessionProvider session={viewer}>
+					<QueryClientProvider client={client}>
+						<Story />
+					</QueryClientProvider>
+				</SessionProvider>
+			);
+		},
+	],
 };

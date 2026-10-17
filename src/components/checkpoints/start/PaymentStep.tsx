@@ -7,13 +7,19 @@ import {
 	IconMinus,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Card, Checkbox, Flex, Skeleton, Typography } from "antd";
+import { App, Button, Card, Flex, Form, Skeleton, Typography } from "antd";
 import { isAxiosError } from "axios";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
 import { entryProjectHref } from "@/components/checkpoints/entry/hrefs";
+import {
+	ClickwrapField,
+	clickwrapFieldName,
+	legalAcceptances,
+	outdatedLegalCode,
+} from "@/components/legal/ClickwrapField";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
 	AI_PLAN_DAYS,
@@ -25,10 +31,7 @@ import {
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import { isSlotTaken } from "@/hooks/advisor-availability";
-import {
-	useCheckpointCheckout,
-	useUpdateCheckpoint,
-} from "@/hooks/checkpoints";
+import { useCheckpointCheckout } from "@/hooks/checkpoints";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import { CuratorBadge } from "../CuratorBadge";
@@ -54,9 +57,10 @@ export function PaymentStep() {
 	const { go, exit } = usePrepareNav();
 	const { draft, project, loading } = useCheckpointDraft();
 	const team = useTeamHours(project?.team?.id);
-	const update = useUpdateCheckpoint(draft?.id);
 	const checkout = useCheckpointCheckout(draft?.id);
 	const { price, curator: chosen } = useCheckpointPrice(draft);
+	const [form] = Form.useForm();
+	const [stale, setStale] = useState(false);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -110,9 +114,23 @@ export function PaymentStep() {
 	// does; what comes back is a webhook, not this tab.
 	const pay = async () => {
 		try {
-			const { url } = await checkout.mutateAsync();
+			await form.validateFields();
+		} catch {
+			return;
+		}
+		try {
+			setStale(false);
+			const { url } = await checkout.mutateAsync(
+				legalAcceptances(["CheckpointPurchaseTerms"]),
+			);
 			window.location.href = url;
 		} catch (error) {
+			const outdated = outdatedLegalCode(error);
+			if (outdated) {
+				form.setFieldValue(clickwrapFieldName(outdated), false);
+				setStale(true);
+				return;
+			}
 			if (isSlotTaken(error)) {
 				message.warning(
 					t(
@@ -347,28 +365,22 @@ export function PaymentStep() {
 						))}
 					</Flex>
 
-					<Checkbox
-						checked={!!draft.acceptedTermsAt}
-						disabled={update.isPending}
-						onChange={(event) =>
-							update
-								.mutateAsync({ acceptedTerms: event.target.checked })
-								.catch(() =>
-									message.error(
-										t("checkpoints.goal.saveFailed", "Could not save"),
-									),
-								)
-						}
-					>
-						{t("checkpoints.pay.accept", "I accept the checkpoint agreement.")}
-					</Checkbox>
+					<Form form={form}>
+						<ClickwrapField
+							code="CheckpointPurchaseTerms"
+							stale={stale}
+							requiredMessage={t(
+								"legal.clickwrap.CheckpointPurchaseTerms.required",
+								"You need to accept the Checkpoint Purchase Terms to pay",
+							)}
+						/>
+					</Form>
 
 					<Button
 						type="primary"
 						size="large"
 						block
 						loading={checkout.isPending}
-						disabled={!draft.acceptedTermsAt}
 						onClick={pay}
 					>
 						{t("checkout.payment.pay", "Pay {amount}", { amount })}

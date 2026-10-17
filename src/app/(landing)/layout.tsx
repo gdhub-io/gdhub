@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
 
 /**
@@ -15,9 +16,9 @@ export default function LandingGroupLayout({
 	children: ReactNode;
 }) {
 	return (
-		<>
+		<SessionProvider>
 			<style>{`:root{--background-color:var(--gd-neutral-950)}`}</style>
 			{children}
-		</>
+		</SessionProvider>
 	);
 }

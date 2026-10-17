@@ -14,7 +14,6 @@ export interface BlogPost {
 	id: string;
 	title: string;
 	slug: string;
-	content: any;
 	image?: string;
 	publishedAt: string;
 	description?: string;

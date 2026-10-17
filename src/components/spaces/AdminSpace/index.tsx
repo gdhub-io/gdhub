@@ -18,6 +18,7 @@ const resolveSelectedMenuKey = (pathname: string) => {
 	if (pathname.startsWith("/admin/roles")) return "/admin/roles";
 	if (pathname.startsWith("/admin/audit-logs")) return "/admin/audit-logs";
 	if (pathname.startsWith("/admin/views")) return "/admin/views";
+	if (pathname.startsWith("/admin/legal")) return "/admin/legal";
 	if (pathname.startsWith("/admin/devlog-posts")) return "/admin/devlog-posts";
 	if (pathname.startsWith("/admin/events")) return "/admin/events";
 	if (pathname.startsWith("/admin/scouts")) return "/admin/scouts";
@@ -70,6 +71,7 @@ const MENU_ITEMS: {
 		permission: "admin.checkpoints.view",
 		name: "Checkpoints",
 	},
+	{ key: "/admin/legal", permission: "admin.legal.view", name: "Legal" },
 ];
 
 /**

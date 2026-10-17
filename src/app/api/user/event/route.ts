@@ -3,7 +3,6 @@ import { EventFormat, EventType, Language } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import slugify from "slugify";
 import { z } from "zod";
-import { userSpacesCacheKey } from "@/app/api/user/spaces/route";
 import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -13,6 +12,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { hasQualifiedSpeciality } from "@/repositories/speciality.repository";
+import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { can, getSpaceAccess, isStaff } from "@/services/access";
 import { joinSpace } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";

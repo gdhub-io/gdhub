@@ -1,4 +1,5 @@
 import { BlogPostStatus } from "@gdhub-io/gdhub-prisma";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
 	apiError,
@@ -69,6 +70,7 @@ export const PUT = pipe(
 			publishedAt: status === BlogPostStatus.Published ? new Date() : null,
 		},
 	});
+	revalidatePath("/blog", "layout");
 
 	return json(post);
 });
@@ -82,6 +84,7 @@ export const DELETE = pipe(
 	const { id } = (await ctx.params) as { id: string };
 
 	await prisma.blogPost.delete({ where: { id } });
+	revalidatePath("/blog", "layout");
 
 	return json({ success: true });
 });

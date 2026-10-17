@@ -1,10 +1,16 @@
 import type { Project } from "@gdhub-io/gdhub-prisma";
 import { useMutation } from "@tanstack/react-query";
-import { T, useTolgee } from "@tolgee/react";
+import { useTolgee } from "@tolgee/react";
 import { App, Checkbox, Flex, Form, Input, Modal, Select, Spin } from "antd";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+	ClickwrapField,
+	clickwrapFieldName,
+	legalAcceptances,
+	outdatedLegalCode,
+} from "@/components/legal/ClickwrapField";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useGameGenres } from "@/hooks/library";
@@ -46,6 +52,7 @@ const CreateProjectModal = ({
 }: CreateProjectModalProps) => {
 	const router = useRouter();
 	const [form] = Form.useForm();
+	const [stale, setStale] = useState(false);
 	const { t } = useTolgee();
 	const { message } = App.useApp();
 	const genres = useGameGenres();
@@ -73,9 +80,12 @@ const CreateProjectModal = ({
 		if (!data) return;
 
 		try {
-			// Both confirmations are required by the API; `understandsNotAi` is a
-			// creation-time gate there too and is not stored.
-			const project = await createProject(data);
+			setStale(false);
+			const { legal: _ticks, ...fields } = data;
+			const project = await createProject({
+				...fields,
+				legal: legalAcceptances(["ProjectRequirements"]),
+			});
 
 			// Advisory AI warnings (e.g. a weak description) — shown, not blocking.
 			const warnings = (project.data as any)?.validation?.warnings ?? [];
@@ -95,6 +105,12 @@ const CreateProjectModal = ({
 			if (!checkpoint) router.push(`/user/project/${project.data.slug}`);
 		} catch (error: any) {
 			if (warnRateLimited(error)) return;
+			const outdated = outdatedLegalCode(error);
+			if (outdated) {
+				form.setFieldValue(clickwrapFieldName(outdated), false);
+				setStale(true);
+				return;
+			}
 			// Blocking AI errors (irrelevant / offensive) — attach to the fields.
 			const validationErrors = error?.response?.data?.validation?.errors;
 			if (validationErrors?.length) {
@@ -159,7 +175,7 @@ const CreateProjectModal = ({
 					onFinishFailed={() => {}}
 					autoComplete="off"
 					requiredMark="optional"
-					initialValues={{ agree: false, stage: NEW_PROJECT_STAGES[0] }}
+					initialValues={{ stage: NEW_PROJECT_STAGES[0] }}
 				>
 					<Form.Item
 						label={t("modal.create-project.field.name.label", "Title")}
@@ -270,51 +286,14 @@ const CreateProjectModal = ({
 						</Checkbox>
 					</Form.Item>
 
-					<Form.Item
-						name="agree"
-						className={styles.consentItem}
-						valuePropName="checked"
-						wrapperCol={{
-							xs: {
-								span: 24,
-								offset: 0,
-							},
-						}}
-						rules={[
-							{
-								validator: (_, value) =>
-									value
-										? Promise.resolve()
-										: Promise.reject(
-												new Error(
-													t(
-														"modal.create-project.field.agree.error",
-														"Should accept requirements",
-													),
-												),
-											),
-							},
-						]}
-					>
-						<Checkbox>
-							{
-								<T
-									keyName="modal.create-project.field.agree.label"
-									defaultValue="I confirm that I have read and agree to the <a href='/project-requirements'>requirements for game projects published on the gdhub.io platform</a>."
-									params={{
-										a: (
-											<Link
-												href="/project-requirements"
-												target="_blank"
-												rel="noreferrer"
-												className={styles.link}
-											/>
-										),
-									}}
-								/>
-							}
-						</Checkbox>
-					</Form.Item>
+					<ClickwrapField
+						code="ProjectRequirements"
+						stale={stale}
+						requiredMessage={t(
+							"legal.clickwrap.ProjectRequirements.required",
+							"You need to accept the Project Requirements to create a project",
+						)}
+					/>
 				</Form>
 			</Spin>
 		</Modal>

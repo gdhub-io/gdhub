@@ -1,0 +1,65 @@
+// Frame `Opj60`: hairline header and footer, the text on the page ground between them.
+.modal {
+	// antd focuses the dialog itself on open; it is not a control, so no ring.
+	&:focus-visible {
+		outline: none;
+	}
+
+	:global(.ant-modal-container) {
+		padding: 0;
+		overflow: hidden;
+	}
+
+	:global(.ant-modal-header) {
+		margin: 0;
+		padding: calc(var(--gd-space-4) + var(--gd-space-1)) var(--gd-space-6)
+			var(--gd-space-4);
+		border-bottom: 1px solid var(--gd-color-border);
+	}
+
+	:global(.ant-modal-close) {
+		top: calc(var(--gd-space-4) + var(--gd-space-1));
+		color: var(--gd-color-text-tertiary);
+	}
+
+	:global(.ant-modal-body) {
+		display: flex;
+		flex-direction: column;
+		gap: var(--gd-space-4);
+		padding: calc(var(--gd-space-4) + var(--gd-space-1)) var(--gd-space-6);
+		background: var(--gd-color-bg);
+	}
+
+	:global(.ant-modal-footer) {
+		margin: 0;
+		padding: var(--gd-space-4) var(--gd-space-6);
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.head {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.title {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-h3) !important;
+	font-weight: 600 !important;
+}
+
+.version {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+.document {
+	max-height: min(420px, 50vh);
+	overflow-y: auto;
+	padding: calc(var(--gd-space-4) + var(--gd-space-1)) var(--gd-space-3)
+		calc(var(--gd-space-4) + var(--gd-space-1)) var(--gd-space-6);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}

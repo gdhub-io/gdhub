@@ -36,6 +36,13 @@ const loadProject = cache(async (projectSlug: string) => {
 	return { project, applauseSummary };
 });
 
+export const revalidate = 60;
+
+// Empty: each page is built on its first request, not during `next build`.
+export async function generateStaticParams() {
+	return [];
+}
+
 export async function generateMetadata({
 	params,
 }: {

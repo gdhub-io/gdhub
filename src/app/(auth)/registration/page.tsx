@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import {
 	CHECKPOINT_ENTRY_HREF,
 	CHECKPOINT_INTENT,
@@ -19,7 +19,7 @@ export default async function RegistrationPage({
 }: {
 	searchParams: Promise<{ intent?: string }>;
 }) {
-	const session = await auth();
+	const session = await getSession();
 	if (session?.user) {
 		const { intent } = await searchParams;
 		redirect(intent === CHECKPOINT_INTENT ? CHECKPOINT_ENTRY_HREF : "/hub");

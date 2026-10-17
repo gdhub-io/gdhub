@@ -4,6 +4,7 @@ import { prisma } from "@/services/prisma";
 import {
 	checkpointSelect,
 	getCheckpoint,
+	withAcceptedTerms,
 	withProgress,
 } from "./checkpoint.repository";
 import { CONFIRMED_MEMBERS } from "./scout.games";
@@ -61,13 +62,15 @@ export const listAdvisorCheckpoints = async (curatorId: string) => {
 	]);
 
 	const of = (...statuses: CheckpointStatus[]) =>
-		rows.filter((row) => statuses.includes(row.status)).map(withProgress);
+		rows
+			.filter((row) => statuses.includes(row.status))
+			.map((row) => withProgress(withAcceptedTerms(row)));
 
 	return {
 		asked: of(CheckpointStatus.AwaitingCurator),
 		running: of(CheckpointStatus.Active, CheckpointStatus.Review),
 		closed: of(CheckpointStatus.Closed),
-		declined: declined.map(withProgress),
+		declined: declined.map((row) => withProgress(withAcceptedTerms(row))),
 	};
 };
 
@@ -84,7 +87,7 @@ export const getAdvisorCheckpoint = async (id: string, curatorId: string) => {
 		select: advisorCheckpointSelect,
 	});
 
-	return withProgress(row);
+	return row && withProgress(withAcceptedTerms(row));
 };
 
 /** How many of the project's devlogs the Project tab leads with. */

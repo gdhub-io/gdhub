@@ -37,8 +37,6 @@ export const UpdateCheckpointSchema = z
 		 * specialist who has said they take mentees — the route checks.
 		 */
 		curatorId: z.string().min(1).nullable(),
-		/** Ticking the box on step 4; untick before paying and it is withdrawn. */
-		acceptedTerms: z.boolean(),
 		/**
 		 * The whole side, replaced. A goal card is a short list edited as a list —
 		 * per-line patches would need ids the step pages do not carry, and the

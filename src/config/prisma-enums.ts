@@ -6,6 +6,7 @@ import type {
 	ArtifactCheckStatus as ArtifactCheckStatusType,
 	AuditAction as AuditActionType,
 	BlogPostStatus as BlogPostStatusType,
+	CertificateSource as CertificateSourceType,
 	ChatRoomKind as ChatRoomKindType,
 	ChatRoomStatus as ChatRoomStatusType,
 	CheckpointCuratorKind as CheckpointCuratorKindType,
@@ -25,20 +26,15 @@ import type {
 	EventMemberStatus as EventMemberStatusType,
 	EventStatus as EventStatusType,
 	EventType as EventTypeType,
+	ExpertInvoicing as ExpertInvoicingType,
 	InvitationStatus as InvitationStatusType,
 	Language as LanguageType,
-	LegalAcceptanceContext as LegalAcceptanceContextType,
-	LegalActorRole as LegalActorRoleType,
-	LegalDocumentCode as LegalDocumentCodeType,
-	LegalTemplateStatus as LegalTemplateStatusType,
 	PayableType as PayableTypeType,
 	PaymentProvider as PaymentProviderType,
 	PaymentRateType as PaymentRateTypeType,
 	PaymentStatus as PaymentStatusType,
 	PrimaryInterest as PrimaryInterestType,
 	ProjectArtifactType as ProjectArtifactTypeType,
-	ProjectLegalEventType as ProjectLegalEventTypeType,
-	ProjectLegalSnapshotStatus as ProjectLegalSnapshotStatusType,
 	ProjectStatus as ProjectStatusType,
 	QueueJobStatus as QueueJobStatusType,
 	QueueJobType as QueueJobTypeType,
@@ -125,6 +121,13 @@ export const ChatRoomKind = {
 	Checkpoint: "Checkpoint",
 } as const satisfies Record<ChatRoomKindType, ChatRoomKindType>;
 export type ChatRoomKind = ChatRoomKindType;
+
+export const CertificateSource = {
+	Event: "Event",
+	Course: "Course",
+	Checkpoint: "Checkpoint",
+} as const satisfies Record<CertificateSourceType, CertificateSourceType>;
+export type CertificateSource = CertificateSourceType;
 
 export const ChatRoomStatus = {
 	Open: "Open",
@@ -292,6 +295,13 @@ export const EventType = {
 } as const satisfies Record<EventTypeType, EventTypeType>;
 export type EventType = EventTypeType;
 
+export const ExpertInvoicing = {
+	SelfEmployed: "SelfEmployed",
+	Company: "Company",
+	SelfBilling: "SelfBilling",
+} as const satisfies Record<ExpertInvoicingType, ExpertInvoicingType>;
+export type ExpertInvoicing = ExpertInvoicingType;
+
 export const InvitationStatus = {
 	Pending: "Pending",
 	Accepted: "Accepted",
@@ -305,40 +315,6 @@ export const Language = {
 	en: "en",
 } as const satisfies Record<LanguageType, LanguageType>;
 export type Language = LanguageType;
-
-export const LegalAcceptanceContext = {
-	ProjectCreate: "ProjectCreate",
-	InviteJoin: "InviteJoin",
-	VacancyHire: "VacancyHire",
-	MentorJoin: "MentorJoin",
-	ShareChange: "ShareChange",
-	MemberExclusion: "MemberExclusion",
-} as const satisfies Record<
-	LegalAcceptanceContextType,
-	LegalAcceptanceContextType
->;
-export type LegalAcceptanceContext = LegalAcceptanceContextType;
-
-export const LegalActorRole = {
-	Author: "Author",
-	Member: "Member",
-	Mentor: "Mentor",
-	Platform: "Platform",
-} as const satisfies Record<LegalActorRoleType, LegalActorRoleType>;
-export type LegalActorRole = LegalActorRoleType;
-
-export const LegalDocumentCode = {
-	CoDevelopmentAgreement: "CoDevelopmentAgreement",
-	CheckpointTerms: "CheckpointTerms",
-} as const satisfies Record<LegalDocumentCodeType, LegalDocumentCodeType>;
-export type LegalDocumentCode = LegalDocumentCodeType;
-
-export const LegalTemplateStatus = {
-	Draft: "Draft",
-	Published: "Published",
-	Archived: "Archived",
-} as const satisfies Record<LegalTemplateStatusType, LegalTemplateStatusType>;
-export type LegalTemplateStatus = LegalTemplateStatusType;
 
 export const PayableType = {
 	VACANCY: "VACANCY",
@@ -380,31 +356,6 @@ export const PrimaryInterest = {
 	Scout: "Scout",
 } as const satisfies Record<PrimaryInterestType, PrimaryInterestType>;
 export type PrimaryInterest = PrimaryInterestType;
-
-export const ProjectLegalEventType = {
-	ProjectCreated: "ProjectCreated",
-	AgreementAccepted: "AgreementAccepted",
-	MemberJoined: "MemberJoined",
-	MentorJoined: "MentorJoined",
-	ShareChanged: "ShareChanged",
-	MemberExcluded: "MemberExcluded",
-	MemberLeft: "MemberLeft",
-	AgreementUpdated: "AgreementUpdated",
-} as const satisfies Record<
-	ProjectLegalEventTypeType,
-	ProjectLegalEventTypeType
->;
-export type ProjectLegalEventType = ProjectLegalEventTypeType;
-
-export const ProjectLegalSnapshotStatus = {
-	Active: "Active",
-	Superseded: "Superseded",
-	Void: "Void",
-} as const satisfies Record<
-	ProjectLegalSnapshotStatusType,
-	ProjectLegalSnapshotStatusType
->;
-export type ProjectLegalSnapshotStatus = ProjectLegalSnapshotStatusType;
 
 export const ProjectStatus = {
 	Registered: "Registered",

@@ -74,6 +74,24 @@ const checkpointItemSelect = {
 	},
 } as const;
 
+/** The purchase terms are a `LegalAcceptance`; the row still says when they were taken. */
+const purchaseTermsSelect = {
+	where: { code: "CheckpointPurchaseTerms" },
+	orderBy: { acceptedAt: "desc" },
+	take: 1,
+	select: { acceptedAt: true },
+} as const;
+
+export const withAcceptedTerms = <
+	T extends { legalAcceptances?: { acceptedAt: Date }[] },
+>({
+	legalAcceptances,
+	...row
+}: T) => ({
+	...row,
+	acceptedTermsAt: legalAcceptances?.[0]?.acceptedAt ?? null,
+});
+
 /** Everything a checkpoint row needs to be drawn, wherever it is drawn. */
 export const checkpointSelect = {
 	id: true,
@@ -95,7 +113,7 @@ export const checkpointSelect = {
 	verdict: true,
 	verdictNote: true,
 	decidedAt: true,
-	acceptedTermsAt: true,
+	legalAcceptances: purchaseTermsSelect,
 	curatorAcceptedAt: true,
 	curatorDeclinedAt: true,
 	declinedCuratorIds: true,
@@ -409,7 +427,7 @@ const toCheckpointDetail = (row: DetailRow) => {
 		reports,
 		sessions,
 		...checkpoint
-	} = row;
+	} = withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
 
 	return {
@@ -558,7 +576,8 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 
 	if (!row) return null;
 
-	const { reports, pulses, project, curator, ...checkpoint } = row;
+	const { reports, pulses, project, curator, ...checkpoint } =
+		withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
 
 	return {
@@ -663,7 +682,7 @@ export const listClosedCheckpoints = async (
 		prisma.projectCheckpoint.count({ where }),
 	]);
 
-	return { rows, total, page, limit };
+	return { rows: rows.map(withAcceptedTerms), total, page, limit };
 };
 
 /**
@@ -682,7 +701,7 @@ export const createDraftCheckpoint = async (projectId: string) => {
 	// "Checkpoint 1" rows in the same list.
 	const before = await prisma.projectCheckpoint.count({ where: { projectId } });
 
-	return prisma.projectCheckpoint.create({
+	const draft = await prisma.projectCheckpoint.create({
 		data: {
 			projectId,
 			stepId: step.id,
@@ -695,6 +714,7 @@ export const createDraftCheckpoint = async (projectId: string) => {
 		},
 		select: checkpointSelect,
 	});
+	return withAcceptedTerms(draft);
 };
 
 /**

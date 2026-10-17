@@ -30,7 +30,6 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 	status: CheckpointStatus.Draft,
 	curatorKind: CheckpointCuratorKind.Human,
 	curatorId: "u1",
-	acceptedTermsAt: new Date("2026-09-17T00:00:00.000Z"),
 	startedAt: new Date("2026-09-21T09:00:00.000Z"),
 	curator: { name: "Marta Ilves" },
 	project: { slug: "tide", name: "Tide" },
@@ -98,18 +97,6 @@ describe("what a checkpoint checkout would charge", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.findUnique).mock.calls[0];
 		expect((args as { select: { _count: unknown } }).select._count).toEqual({
 			select: { items: { where: { kind: "Input" } } },
-		});
-	});
-
-	// The checkbox is the agreement. A client that hides it changes nothing.
-	it("refuses until the agreement is accepted", async () => {
-		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
-			checkpoint({ acceptedTermsAt: null }) as never,
-		);
-
-		await expect(checkpointCheckout("cp1")).resolves.toMatchObject({
-			ok: false,
-			reason: "termsNotAccepted",
 		});
 	});
 

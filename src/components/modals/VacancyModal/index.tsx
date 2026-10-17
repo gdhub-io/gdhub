@@ -511,7 +511,7 @@ const VacancyModal = ({
 									"The listing fee is non-refundable.",
 								)}{" "}
 								<a
-									href="/refund-policy"
+									href="/legal/refund-policy"
 									target="_blank"
 									rel="noopener noreferrer"
 								>

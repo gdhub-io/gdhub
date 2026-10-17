@@ -2,12 +2,16 @@ import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
+import {
+	ARCHIVE_AFTER_DORMANT_DAYS,
+	resolveDormantTransition,
+	statusChangeData,
+} from "@/lib/project-status";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 import { isProjectAvailableOnStores } from "@/services/prisma/queries";
 
 const DORMANT_AFTER_MONTHS = 3;
-const ARCHIVE_AFTER_DORMANT_DAYS = 14;
 
 const pickMaxDate = (current: Date | undefined, candidate?: Date | null) => {
 	if (!candidate) return current;
@@ -89,6 +93,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				return {
 					checkedProjects: 0,
 					dormantProjectIds: [],
+					reactivatedProjectIds: [],
 					archivedProjectIds: [],
 				};
 			}
@@ -106,6 +111,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				projectEquities,
 				workflowUpdates,
 				workflowStepUpdates,
+				workflowTaskUpdates,
 				workflows,
 				equityAllocations,
 				equityPromises,
@@ -137,11 +143,19 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				prisma.projectWorkflowStep.findMany({
 					where: { projectWorkflow: { projectId: { in: projectIds } } },
 					select: {
+						id: true,
 						projectWorkflow: {
 							select: { projectId: true },
 						},
 						updatedAt: true,
 					},
+				}),
+				prisma.projectWorkflowTask.groupBy({
+					by: ["stepId"],
+					where: {
+						step: { projectWorkflow: { projectId: { in: projectIds } } },
+					},
+					_max: { updatedAt: true },
 				}),
 				prisma.projectWorkflow.findMany({
 					where: {
@@ -228,6 +242,21 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				(item) => item.projectWorkflow.projectId,
 				(item) => item.updatedAt,
 			);
+			const projectIdByStepId = new Map(
+				workflowStepUpdates.map((step) => [
+					step.id,
+					step.projectWorkflow.projectId,
+				]),
+			);
+			const maxWorkflowTaskByProject = toMaxDateMap(
+				workflowTaskUpdates.flatMap((task) =>
+					task._max.updatedAt
+						? [{ ...task, updatedAt: task._max.updatedAt }]
+						: [],
+				),
+				(item) => projectIdByStepId.get(item.stepId) ?? "",
+				(item) => item.updatedAt,
+			);
 			const maxEquityAllocationByProject = toMaxDateMap(
 				equityAllocations,
 				(item) => item.equity.projectId,
@@ -243,6 +272,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			);
 
 			const dormantProjectIds: string[] = [];
+			const reactivatedProjectIds: string[] = [];
 			const archivedProjectIds: string[] = [];
 
 			for (const project of projects) {
@@ -285,6 +315,10 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 					lastActivityAt,
 					maxWorkflowStepByProject.get(project.id),
 				);
+				lastActivityAt = pickMaxDate(
+					lastActivityAt,
+					maxWorkflowTaskByProject.get(project.id),
+				);
 
 				if (!lastActivityAt) continue;
 
@@ -301,11 +335,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 							id: project.id,
 							status: ProjectStatus.Approved,
 						},
-						data: {
-							status: ProjectStatus.Dormant,
-							dormantAt: now,
-							statusChangedAt: now,
-						},
+						data: statusChangeData(ProjectStatus.Dormant, now),
 					});
 
 					dormantProjectIds.push(project.id);
@@ -337,25 +367,34 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				}
 
 				if (project.status === ProjectStatus.Dormant) {
-					const dormantSince = project.dormantAt;
-					if (!dormantSince) continue;
+					if (!project.dormantAt) continue;
 
-					const archiveAt = dayjs(dormantSince)
-						.add(ARCHIVE_AFTER_DORMANT_DAYS, "day")
-						.toDate();
-					const hadActivityAfterDormant = lastActivityAt > dormantSince;
+					const transition = resolveDormantTransition({
+						dormantAt: project.dormantAt,
+						lastActivityAt,
+						now,
+					});
 
-					if (!hadActivityAfterDormant && now >= archiveAt) {
+					if (transition === "reactivate") {
 						await prisma.project.update({
 							where: {
 								id: project.id,
 								status: ProjectStatus.Dormant,
 							},
-							data: {
-								status: ProjectStatus.Archived,
-								archivedAt: now,
-								statusChangedAt: now,
+							data: statusChangeData(ProjectStatus.Approved, now),
+						});
+
+						reactivatedProjectIds.push(project.id);
+						continue;
+					}
+
+					if (transition === "archive") {
+						await prisma.project.update({
+							where: {
+								id: project.id,
+								status: ProjectStatus.Dormant,
 							},
+							data: statusChangeData(ProjectStatus.Archived, now),
 						});
 
 						archivedProjectIds.push(project.id);
@@ -386,6 +425,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			return {
 				checkedProjects: projects.length,
 				dormantProjectIds,
+				reactivatedProjectIds,
 				archivedProjectIds,
 			};
 		},

@@ -1,7 +1,6 @@
 "use client";
 
 import { IconExternalLink, IconX } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
 import {
 	Button,
@@ -16,13 +15,10 @@ import {
 } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
-import axios from "axios";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { genConfig } from "react-nice-avatar";
 import { useAccess } from "@/components/access/AccessProvider";
 import { signOutWithChat } from "@/components/Chat/session";
 import { Header as AppHeader } from "@/components/layouts/Header";
@@ -33,7 +29,7 @@ import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
 import type { Permission } from "@/config/spaces";
 import { useTelegram } from "@/helpers/useTelegram";
-import type { UserSpaces } from "@/repositories/user-spaces";
+import { useUserSpaces } from "@/hooks/useUserSpaces";
 import styles from "./style.module.scss";
 import { useSwitchAccountMenuItems } from "./useSwitchAccountMenu";
 
@@ -70,22 +66,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	// The scout link cannot come from a permission: the shell sits outside the
 	// scout gate, so it holds no access snapshot for that space. Having a
 	// cabinet is the same answer — it is what the space gate checks.
-	const { data: userSpaces } = useQuery<UserSpaces>({
-		queryKey: ["user-spaces"],
-		queryFn: () =>
-			axios.get<UserSpaces>("/api/user/spaces").then((res) => res.data),
-		staleTime: 60 * 1000,
-	});
-
-	/** Fallback avatar for users without an uploaded image. */
-	const avatarConfig = useMemo(() => {
-		if (!session?.user.email) return;
-
-		const config = genConfig(session.user.email);
-		config.hairStyle = "normal";
-
-		return config;
-	}, [session?.user.email]);
+	const { data: userSpaces } = useUserSpaces();
 
 	// The scroll container is the shell's own content, not the document, so route
 	// changes no longer reset the scroll position by themselves.
@@ -381,7 +362,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 								<HeaderActions
 									dropdownMenuItems={dropdownMenuItems}
 									onOpenMobileMenu={() => setOpenMobileMenu(true)}
-									avatarConfig={avatarConfig}
+									avatarSeed={session?.user.email ?? undefined}
 								/>
 							)
 						}

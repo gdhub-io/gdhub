@@ -1,7 +1,8 @@
 import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import type { Metadata } from "next";
-import { auth } from "@/auth";
+import { getSession } from "@/auth";
 import { type AccessUser, getSpaceAccess, isStaff } from "@/services/access";
+import { cached } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 import { HubMembersClient } from "./HubMembersClient";
 
@@ -13,14 +14,19 @@ export const metadata: Metadata = {
 };
 
 export default async function HubMembersPage() {
-	const session = await auth();
+	const session = await getSession();
 	const user = (session?.user ?? null) as AccessUser;
 
-	const [access, usersCount, specialitiesCount, ownApprovedProjects] =
+	const [access, { usersCount, specialitiesCount }, ownApprovedProjects] =
 		await Promise.all([
 			getSpaceAccess("hub", null, user),
-			prisma.user.count(),
-			prisma.speciality.count(),
+			cached("stats:hub-members", 300, async () => {
+				const [usersCount, specialitiesCount] = await Promise.all([
+					prisma.user.count(),
+					prisma.speciality.count(),
+				]);
+				return { usersCount, specialitiesCount };
+			}),
 			prisma.project.count({
 				where: {
 					authorId: session?.user?.id,

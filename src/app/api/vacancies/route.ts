@@ -1,4 +1,4 @@
-import { json } from "@/lib/api-handlers";
+import { json, sharedCache } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
 export async function GET() {
@@ -23,5 +23,5 @@ export async function GET() {
 		},
 	});
 
-	return json(vacancies);
+	return json(vacancies, sharedCache(60));
 }

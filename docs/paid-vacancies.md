@@ -237,7 +237,7 @@ For a vacancy whose fee is `COMPLETED`:
 
 2. **Refunds — out of scope (documented).** We do **not** implement refunds.
    `REFUNDED` exists in the enum but is unused. Behaviour is governed by the
-   [refund policy](./refund-policy.md): **paid listing fees are non-refundable**
+   [refund policy](./legal/refund-policy/v1.md): **paid listing fees are non-refundable**
    (link it from the payment UI / notice). No `adjustment.*` webhook handling.
 
 3. **Abandoned checkout — rely on Paddle + retry (mostly no code).** Industry

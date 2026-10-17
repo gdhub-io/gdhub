@@ -1,5 +1,5 @@
 import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
-import { json } from "@/lib/api-handlers";
+import { json, sharedCache } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
 export async function GET() {
@@ -22,5 +22,5 @@ export async function GET() {
 		take: 5,
 	});
 
-	return json(projects);
+	return json(projects, sharedCache(300));
 }

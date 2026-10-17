@@ -12,7 +12,6 @@ import {
 	defaultLocale,
 } from "@/config/locale";
 import enLocale from "@/i18n/en.json";
-import ruLocale from "@/i18n/ru.json";
 
 declare global {
 	// eslint-disable-next-line no-var
@@ -51,10 +50,11 @@ const createTolgeeService = () => {
 	return tolgee.init({
 		defaultLanguage: defaultLocale,
 		availableLanguages: availableLocales,
-		// for production and server
+		// English renders on the server and on first paint, so it ships with the
+		// bundle; any other language is fetched only once someone switches to it.
 		staticData: {
 			en: enLocale,
-			ru: ruLocale,
+			ru: () => import("@/i18n/ru.json").then((module) => module.default),
 		} satisfies Record<AvailableLocales, unknown>,
 	});
 };

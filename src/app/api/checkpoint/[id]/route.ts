@@ -88,15 +88,8 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const {
-		goal,
-		curatorKind,
-		curatorId,
-		acceptedTerms,
-		inputs,
-		outcomes,
-		startedAt,
-	} = body as UpdateCheckpointBody;
+	const { goal, curatorKind, curatorId, inputs, outcomes, startedAt } =
+		body as UpdateCheckpointBody;
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
@@ -115,11 +108,7 @@ export const PUT = pipe(
 	// way out that does not cost the author their money.
 	// The first call comes with them: it is booked in that curator's hours.
 	const onlyTheCurator =
-		curatorId !== undefined &&
-		goal === undefined &&
-		acceptedTerms === undefined &&
-		!inputs &&
-		!outcomes;
+		curatorId !== undefined && goal === undefined && !inputs && !outcomes;
 
 	const mayEdit =
 		checkpoint.status === CheckpointStatus.Draft ||
@@ -189,7 +178,6 @@ export const PUT = pipe(
 		goal !== undefined ||
 		curatorKind ||
 		curatorId !== undefined ||
-		acceptedTerms !== undefined ||
 		start !== undefined
 	) {
 		const data = {
@@ -197,10 +185,6 @@ export const PUT = pipe(
 			...(goal !== undefined && { goal }),
 			...(curatorKind && { curatorKind }),
 			...(curatorId !== undefined && { curatorId }),
-			// The moment it was accepted is the record; unticking withdraws it.
-			...(acceptedTerms !== undefined && {
-				acceptedTermsAt: acceptedTerms ? new Date() : null,
-			}),
 			// The first call with a person, the start of the day with the AI.
 			// `dueAt` follows from it rather than being sent, so the two can
 			// never disagree by a day.
