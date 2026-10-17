@@ -55,7 +55,7 @@ checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from
       Requirements and the server refuses a project without it.
 - [ ] Joining a project by invite or offer, and a change of shares, are accepted as the
       project's co-development agreement with its values; until a member accepts new
-      shares, their previous ones stay in force.
+      shares, their previous ones stay in force (equity bookkeeping itself is unchanged).
 - [ ] After a material change takes effect, users get one email and are asked to accept
       at the next sign-in before going on.
 - [ ] Profile → My documents lists what the user accepted (each opens the exact text)

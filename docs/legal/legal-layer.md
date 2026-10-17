@@ -11,6 +11,9 @@ instances, parties, signatures, an admin editor and ten notification workflows. 
 of that existed for agreements nobody concludes yet; this revision keeps what proves an
 acceptance and drops the rest until a real case asks for it.
 
+The logic — who accepts what, where the server refuses, how versions and shares move — is
+drawn in [legal-layer-flow.d2](legal-layer-flow.d2) ([svg](legal-layer-flow.svg)).
+
 ## 1. Principles
 
 1. **Texts are files, acceptances are rows.** Every version of every document is a
@@ -113,6 +116,12 @@ erDiagram
   version + params reproduce the exact text, and the checksum is over that text. Changing
   shares is new params; each member accepts them with a new row, and until they do the
   previous row stays in force for them.
+- **Shares and equity (decided 2026-10-17).** The equity tables (`EquityAllocation`,
+  `EquityTransaction`, `EquityPromise`) keep working as they do: a transaction changes the
+  bookkeeping at once. What binds a member is the share in their latest accepted
+  agreement; until they accept a new one, the new share is shown as "not accepted yet"
+  and the old one as in force. Vesting of a promise already in the accepted params needs
+  no new acceptance.
 - **What replaces the stopgaps.** `User.agreements.agreeWithTermsAndPrivacy` (a boolean
   with no version or time) becomes the Terms acceptance; `ProjectCheckpoint.acceptedTermsAt`
   and `acceptedTermsTemplateId` become two acceptances with `checkpointId`. The newsletter
@@ -185,3 +194,128 @@ Nothing in the acceptances table is deleted, and no published file is removed: a
 concluded. Deleting an account minimises personal fields on the user, not the acceptance.
 The retention period is for the lawyer to confirm (Lithuania's general limitation period
 is ten years); until then nothing is removed.
+
+## 10. Schema change (`../prisma`)
+
+Proposed against `dev` of gdhub-prisma (2.0.0-beta.67). One release, then the app bumps.
+
+**Removed** — never written by the app (a production count confirms it before the
+release): `LegalDocumentTemplate`, `ProjectLegalSnapshot`, `ProjectLegalEvent`, the enums
+`LegalDocumentCode`, `LegalTemplateStatus`, `ProjectLegalSnapshotStatus`, `LegalActorRole`,
+`LegalAcceptanceContext`, `ProjectLegalEventType`; the relations
+`Project.activeLegalSnapshot*`, `Project.legalSnapshots`, `Project.legalEvents`,
+`TeamMember.joinedUnderSnapshot*`, `TeamMember.legalEvents`, the `User` snapshot and event
+relations; `ProjectCheckpoint.acceptedTermsAt` / `acceptedTermsTemplateId` /
+`acceptedTerms` (replaced by acceptance rows; a checkpoint already paid on beta keeps its
+timestamp copied into a row by the migration).
+
+**`LegalAcceptance`, reshaped:**
+
+```prisma
+model LegalAcceptance {
+  id           String   @id @default(cuid())
+  userId       String
+  /// Registry code (`src/config/legal`), e.g. "TermsOfUse". A string, not an enum:
+  /// a new document is a registry entry in the app, not a schema release.
+  code         String
+  version      Int
+  /// SHA-256 of the text as shown: file + entity + params.
+  checksum     String
+  /// Registry context: SignUp, ProjectCreate, AdvisorJoin, ExpertServices,
+  /// CheckpointPurchase, CuratorAccept, JoinProject, ShareChange, ReAcceptance.
+  context      String
+  checkpointId String?
+  projectId    String?
+  /// Filled-in values of a project agreement (title, shares).
+  params       Json?
+  ipAddress    String?
+  userAgent    String?
+  acceptedAt   DateTime @default(now())
+
+  /// Restrict: an acceptance outlives everything it points at.
+  user       User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+  checkpoint ProjectCheckpoint? @relation(fields: [checkpointId], references: [id], onDelete: SetNull)
+  project    Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, code])
+  @@index([checkpointId])
+  @@index([projectId, code])
+  @@index([acceptedAt])
+}
+```
+
+No unique constraint: the same user may accept the same version twice in different
+contexts or projects, and a double submit is harmless evidence. The app checks
+"accepted?" by query.
+
+**`Certificate`, replacing `EventCertificate`:**
+
+```prisma
+enum CertificateSource {
+  Event
+  Course
+  Checkpoint
+}
+
+model Certificate {
+  id            String            @id @default(cuid())
+  number        String            @unique
+  source        CertificateSource
+  userId        String
+  eventMemberId String?           @unique
+  courseGroupStudentId String?    @unique
+  checkpointId  String?
+  /// Documenso envelope — event certificates only.
+  externalId    String?           @unique
+  issuedAt      DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  eventMember        EventMember?        @relation(fields: [eventMemberId], references: [id], onDelete: SetNull)
+  courseGroupStudent CourseGroupStudent? @relation(fields: [courseGroupStudentId], references: [id], onDelete: SetNull)
+  checkpoint         ProjectCheckpoint?  @relation(fields: [checkpointId], references: [id], onDelete: SetNull)
+
+  @@unique([checkpointId, userId])
+  @@index([userId])
+}
+```
+
+The migration copies every `EventCertificate` row into `Certificate` (same number,
+`source = Event`, `userId` from the event member) and drops the old table — issued numbers
+keep verifying.
+
+**`ExpertProfile`, new — the Paid work section:**
+
+```prisma
+enum ExpertInvoicing {
+  SelfEmployed
+  Company
+  SelfBilling
+}
+
+model ExpertProfile {
+  id                 String           @id @default(cuid())
+  userId             String           @unique
+  payoutHolder       String?
+  payoutAccount      String?
+  invoicing          ExpertInvoicing?
+  paidConsultations  Boolean          @default(false)
+  /// Minor units, in the entity's currency.
+  consultationPrice  Int?
+  curation           Boolean          @default(false)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+```
+
+**`User.agreements`** keeps its JSON for the newsletter and `confirmUserData` flags;
+`agreeWithTermsAndPrivacy` stops being read (Terms acceptance rows replace it). Existing
+users get no back-filled acceptance — there is no evidence to back-fill — and meet the
+re-acceptance screen at their next sign-in.
+
+**`deletePersonalData`** (extension) must leave `LegalAcceptance` and `Certificate` rows
+in place; it may blank `ipAddress` / `userAgent` after the retention period, never the row.
