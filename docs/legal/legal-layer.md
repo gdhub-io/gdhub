@@ -317,5 +317,7 @@ model ExpertProfile {
 users get no back-filled acceptance — there is no evidence to back-fill — and meet the
 re-acceptance screen at their next sign-in.
 
-**`deletePersonalData`** (extension) must leave `LegalAcceptance` and `Certificate` rows
-in place; it may blank `ipAddress` / `userAgent` after the retention period, never the row.
+**Erasure (`deleteUserPersonalData`), decided 2026-10-17.** `LegalAcceptance` rows stay,
+IP and user-agent included, until the retention period ends (legal-claims basis); they are
+not written to `AuditLog`. `Certificate` and `ExpertProfile` rows are deleted — a
+certificate without a name proves nothing, and `/verify` then answers "not found".
