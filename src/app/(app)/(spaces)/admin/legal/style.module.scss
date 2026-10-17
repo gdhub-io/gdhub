@@ -7,10 +7,44 @@
 }
 
 .search {
-	width: 260px;
+	width: 320px;
 	max-width: 100%;
 }
 
 .select {
 	min-width: 200px;
+}
+
+.cell {
+	min-width: 0;
+}
+
+.sub {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.headNote {
+	font-weight: 400;
+	color: var(--gd-color-text-tertiary);
+}
+
+.date,
+.checksum {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.checksum :global(.ant-typography-copy) {
+	color: var(--gd-color-text-tertiary);
+}
+
+.agent {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.empty {
+	display: block;
+	text-align: left;
+	color: var(--gd-color-text-secondary);
 }

@@ -8,7 +8,7 @@ const { acceptancesCsv } = await import(
 
 const row = (userAgent: string) => ({
 	id: "a1",
-	user: { id: "u1", name: "Ann", email: "ann@example.com" },
+	user: { id: "u1", name: "Ann", email: "ann@example.com", image: null },
 	code: "TermsOfUse",
 	title: "Terms of Use",
 	version: 1,

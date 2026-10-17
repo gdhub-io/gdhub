@@ -8,7 +8,6 @@ import {
 } from "@/config/legal/registry";
 import { loadLegalText, renderLegalText } from "@/lib/legal/documents";
 import {
-	acceptanceValidUntil,
 	validUntil,
 	versionInEffect,
 } from "@/lib/legal/versions";
@@ -101,6 +100,6 @@ describe("validUntil", () => {
 
 	it("is open for the latest material version", () => {
 		expect(validUntil(versions, 3)).toBeNull();
-		expect(acceptanceValidUntil("TermsOfUse", 1)).toBeNull();
+		expect(validUntil(LEGAL_DOCUMENTS.TermsOfUse.versions, 1)).toBeNull();
 	});
 });

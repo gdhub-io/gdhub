@@ -4,7 +4,7 @@ import {
 	LEGAL_DOCUMENTS,
 	type LegalCode,
 } from "@/config/legal/registry";
-import { acceptanceValidUntil } from "@/lib/legal/versions";
+import { validUntil } from "@/lib/legal/versions";
 import { prisma } from "@/services/prisma";
 
 export type AcceptanceFilters = {
@@ -18,7 +18,12 @@ export type AcceptanceFilters = {
 
 export type AcceptanceRow = {
 	id: string;
-	user: { id: string; name: string | null; email: string | null };
+	user: {
+		id: string;
+		name: string | null;
+		email: string | null;
+		image: string | null;
+	};
 	code: string;
 	title: string;
 	version: number;
@@ -68,7 +73,7 @@ const select = {
 	ipAddress: true,
 	userAgent: true,
 	checksum: true,
-	user: { select: { id: true, name: true, email: true } },
+	user: { select: { id: true, name: true, email: true, image: true } },
 	project: { select: { name: true } },
 	checkpoint: {
 		select: { stageName: true, project: { select: { name: true } } },
@@ -97,7 +102,7 @@ const toRow = (r: Selected): AcceptanceRow => ({
 			: null),
 	acceptedAt: r.acceptedAt.toISOString(),
 	validUntil: isLegalCode(r.code)
-		? acceptanceValidUntil(r.code, r.version)
+		? validUntil(LEGAL_DOCUMENTS[r.code].versions, r.version)
 		: null,
 	ipAddress: r.ipAddress,
 	userAgent: r.userAgent,

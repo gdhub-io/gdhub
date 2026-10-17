@@ -32,6 +32,3 @@ export function validUntil(
 			?.effectiveAt ?? null
 	);
 }
-
-export const acceptanceValidUntil = (code: LegalCode, version: number) =>
-	validUntil(LEGAL_DOCUMENTS[code].versions, version);
