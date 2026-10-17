@@ -16,6 +16,15 @@ export async function hasAcceptedCurrent(
 	return row !== null;
 }
 
+/** The user's most recent acceptance of `code`, whichever version it was. */
+export function latestAcceptance(userId: string, code: LegalCode) {
+	return prisma.legalAcceptance.findFirst({
+		where: { userId, code },
+		orderBy: { acceptedAt: "desc" },
+		select: { version: true, acceptedAt: true },
+	});
+}
+
 /** The documents a user is bound by: the Terms always, the rest by what they do. */
 async function documentsThatApply(userId: string): Promise<LegalCode[]> {
 	const [advisor, expert] = await Promise.all([

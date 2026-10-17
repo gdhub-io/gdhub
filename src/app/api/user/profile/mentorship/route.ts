@@ -12,7 +12,10 @@ import {
 	LegalError,
 } from "@/lib/legal/accept";
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
-import { hasAcceptedCurrent } from "@/repositories/legal.repository";
+import {
+	hasAcceptedCurrent,
+	latestAcceptance,
+} from "@/repositories/legal.repository";
 import { userSpacesCacheKey } from "@/repositories/user-spaces";
 import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
 import { cacheDelete } from "@/services/cache";
@@ -54,14 +57,15 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
-	const [open, agreementAccepted] = await Promise.all([
+	const [open, agreementAccepted, agreement] = await Promise.all([
 		prisma.speciality.count({
 			where: { userId: currentUser.id, isOpenForMentoring: true },
 		}),
 		hasAcceptedCurrent(currentUser.id, "AdvisorAgreement"),
+		latestAcceptance(currentUser.id, "AdvisorAgreement"),
 	]);
 
-	return json({ enabled: open > 0, agreementAccepted });
+	return json({ enabled: open > 0, agreementAccepted, agreement });
 });
 
 export const PUT = withAuth({ mode: "user" })(

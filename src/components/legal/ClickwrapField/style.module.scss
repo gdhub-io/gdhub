@@ -11,7 +11,8 @@
 		font-weight: 400;
 	}
 
-	:global(.ant-checkbox-inner) {
+	// antd v6 draws the box on `.ant-checkbox` itself; there is no `-inner`.
+	:global(.ant-checkbox:not(.ant-checkbox-checked)) {
 		border-color: var(--gd-color-border-strong);
 	}
 
@@ -24,7 +25,7 @@
 		color: var(--gd-warning-on-tint);
 	}
 
-	&:global(.ant-form-item-has-error .ant-checkbox-inner) {
+	&:global(.ant-form-item-has-error .ant-checkbox:not(.ant-checkbox-checked)) {
 		border-color: var(--gd-danger-solid);
 	}
 }
