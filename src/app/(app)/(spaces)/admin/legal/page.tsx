@@ -9,6 +9,7 @@ import {
 	Row,
 	Select,
 	Space,
+	Tag,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -74,6 +75,12 @@ const columns: ColumnsType<AcceptanceRow> = [
 		title: "Accepted (UTC)",
 		dataIndex: "acceptedAt",
 		render: (v: string) => dayjs(v).utc().format("YYYY-MM-DD HH:mm:ss"),
+	},
+	{
+		title: "Valid until",
+		dataIndex: "validUntil",
+		render: (v: string | null) =>
+			v ? dayjs(v).format("YYYY-MM-DD") : <Tag color="success">Current</Tag>,
 	},
 	{
 		title: "IP",

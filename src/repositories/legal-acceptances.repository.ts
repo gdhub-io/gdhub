@@ -4,6 +4,7 @@ import {
 	LEGAL_DOCUMENTS,
 	type LegalCode,
 } from "@/config/legal/registry";
+import { acceptanceValidUntil } from "@/lib/legal/versions";
 import { prisma } from "@/services/prisma";
 
 export type AcceptanceFilters = {
@@ -24,6 +25,8 @@ export type AcceptanceRow = {
 	context: string;
 	subject: string | null;
 	acceptedAt: string;
+	/** Date the acceptance stops binding; null while it still does. */
+	validUntil: string | null;
 	ipAddress: string | null;
 	userAgent: string | null;
 	checksum: string;
@@ -74,10 +77,11 @@ const select = {
 
 type Selected = Prisma.LegalAcceptanceGetPayload<{ select: typeof select }>;
 
+const isLegalCode = (code: string): code is LegalCode =>
+	(LEGAL_CODES as string[]).includes(code);
+
 const title = (code: string) =>
-	(LEGAL_CODES as string[]).includes(code)
-		? LEGAL_DOCUMENTS[code as LegalCode].title
-		: code;
+	isLegalCode(code) ? LEGAL_DOCUMENTS[code].title : code;
 
 const toRow = (r: Selected): AcceptanceRow => ({
 	id: r.id,
@@ -92,6 +96,9 @@ const toRow = (r: Selected): AcceptanceRow => ({
 			? `${r.checkpoint.project.name} · ${r.checkpoint.stageName}`
 			: null),
 	acceptedAt: r.acceptedAt.toISOString(),
+	validUntil: isLegalCode(r.code)
+		? acceptanceValidUntil(r.code, r.version)
+		: null,
 	ipAddress: r.ipAddress,
 	userAgent: r.userAgent,
 	checksum: r.checksum,
@@ -139,6 +146,7 @@ const cell = (value: string | number | null) => {
 export function acceptancesCsv(rows: AcceptanceRow[]): string {
 	const header = [
 		"accepted_at_utc",
+		"valid_until",
 		"user_id",
 		"user_email",
 		"document",
@@ -152,6 +160,7 @@ export function acceptancesCsv(rows: AcceptanceRow[]): string {
 	const lines = rows.map((r) =>
 		[
 			r.acceptedAt,
+			r.validUntil ?? "current",
 			r.user.id,
 			r.user.email,
 			r.code,

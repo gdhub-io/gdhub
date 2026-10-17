@@ -17,3 +17,21 @@ export function versionInEffect(
 	);
 	return due.length ? due[due.length - 1] : null;
 }
+
+/**
+ * When an acceptance of `version` stops binding: the date the next material
+ * version takes effect, or null while none is published. A non-material
+ * version does not end it.
+ */
+export function validUntil(
+	versions: readonly LegalVersion[],
+	version: number,
+): string | null {
+	return (
+		versions.find((v) => v.version > version && v.materialChange)
+			?.effectiveAt ?? null
+	);
+}
+
+export const acceptanceValidUntil = (code: LegalCode, version: number) =>
+	validUntil(LEGAL_DOCUMENTS[code].versions, version);

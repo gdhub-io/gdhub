@@ -15,6 +15,7 @@ const row = (userAgent: string) => ({
 	context: "SignUp",
 	subject: null,
 	acceptedAt: "2026-10-17T10:00:00.000Z",
+	validUntil: null,
 	ipAddress: "192.0.2.1",
 	userAgent,
 	checksum: "abc",
@@ -33,6 +34,12 @@ describe("acceptancesCsv", () => {
 
 	it("leaves an empty cell for a missing value", () => {
 		const [, line] = acceptancesCsv([row("ua")]).split("\r\n");
-		expect(line.split(",")[6]).toBe('""');
+		expect(line.split(",")[7]).toBe('""');
+	});
+
+	it("says an acceptance still binds when nothing has replaced it", () => {
+		const [header, line] = acceptancesCsv([row("ua")]).split("\r\n");
+		expect(header.split(",")[1]).toBe("valid_until");
+		expect(line.split(",")[1]).toBe('"current"');
 	});
 });

@@ -7,7 +7,11 @@ import {
 	legalDocument,
 } from "@/config/legal/registry";
 import { loadLegalText, renderLegalText } from "@/lib/legal/documents";
-import { versionInEffect } from "@/lib/legal/versions";
+import {
+	acceptanceValidUntil,
+	validUntil,
+	versionInEffect,
+} from "@/lib/legal/versions";
 
 const published = LEGAL_CODES.flatMap((code) =>
 	LEGAL_DOCUMENTS[code].versions.map((v) => ({ code, v })),
@@ -73,5 +77,30 @@ describe("renderLegalText", () => {
 			/entity\.fax/,
 		);
 		expect(() => renderLegalText("{{params.share}}", entity)).toThrow();
+	});
+});
+
+describe("validUntil", () => {
+	const v = (version: number, effectiveAt: string, materialChange: boolean) => ({
+		version,
+		effectiveAt,
+		materialChange,
+		entity: "vsi" as const,
+		checksum: "",
+	});
+	const versions = [
+		v(1, "2026-01-01", true),
+		v(2, "2026-03-01", false),
+		v(3, "2026-06-01", true),
+	];
+
+	it("ends at the next material version, skipping a non-material one", () => {
+		expect(validUntil(versions, 1)).toBe("2026-06-01");
+		expect(validUntil(versions, 2)).toBe("2026-06-01");
+	});
+
+	it("is open for the latest material version", () => {
+		expect(validUntil(versions, 3)).toBeNull();
+		expect(acceptanceValidUntil("TermsOfUse", 1)).toBeNull();
 	});
 });
