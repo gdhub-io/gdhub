@@ -77,7 +77,7 @@ export function LegalIndexClient({ items }: { items: LegalIndexItem[] }) {
 										<Text className={styles.rowTitle}>{row.title}</Text>
 										{row.version && (
 											<span className={styles.rowMeta}>
-												<Text>{row.version}</Text>
+												<Text className={styles.rowVersion}>{row.version}</Text>
 												<Text className={styles.rowSince}>{row.since}</Text>
 											</span>
 										)}
