@@ -4,7 +4,7 @@ import { useTolgee } from "@tolgee/react";
 import { ConfigProvider } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { CheckpointAudienceSection } from "@/components/checkpoint-landing/CheckpointAudienceSection";
 import { CheckpointCuratorChoiceSection } from "@/components/checkpoint-landing/CheckpointCuratorChoiceSection";
 import { CheckpointCuratorsSection } from "@/components/checkpoint-landing/CheckpointCuratorsSection";
@@ -32,6 +32,14 @@ export function CheckpointClient({
 	curators: FeaturedCurator[];
 }) {
 	const { getLanguage } = useTolgee();
+	const [atTop, setAtTop] = useState(true);
+
+	useEffect(() => {
+		const onScroll = () => setAtTop(window.scrollY <= 0);
+		onScroll();
+		window.addEventListener("scroll", onScroll, { passive: true });
+		return () => window.removeEventListener("scroll", onScroll);
+	}, []);
 
 	return (
 		<ConfigProvider
@@ -40,7 +48,12 @@ export function CheckpointClient({
 		>
 			<div className={styles.page} style={marketingVars}>
 				{/* The platform's own bar and footer, as on every other public page. */}
-				<InverseBand className={styles.headerBand}>
+				<InverseBand
+					transparent
+					className={[styles.headerBand, atTop && styles.atTop]
+						.filter(Boolean)
+						.join(" ")}
+				>
 					<div className={styles.headerInner}>
 						<MainHeader />
 					</div>
