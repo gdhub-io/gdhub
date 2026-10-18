@@ -6,6 +6,7 @@ import { useTranslate } from "@tolgee/react";
 import { App } from "antd";
 import axios, { isAxiosError } from "axios";
 import type { SkillLevel } from "@/config/prisma-enums";
+import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 import type {
 	EntryProjectInput,
 	EntryProjectPrefillDto,
@@ -49,8 +50,8 @@ export type EntryAboutInput = {
 	specialityName: string;
 	workDirectionId: string;
 	level: SkillLevel;
-	/** Consents ticked on the registration page, carried in its cookie. */
-	agreeWithTermsAndPrivacy?: boolean;
+	/** The Terms of Use, ticked here or on the registration page (its cookie). */
+	legal?: LegalAcceptanceInput[];
 	needSubscribeToNewsletter?: boolean;
 };
 

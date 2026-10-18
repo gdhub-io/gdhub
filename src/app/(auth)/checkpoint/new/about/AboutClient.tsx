@@ -1,11 +1,10 @@
 "use client";
 
-import { T, useTranslate } from "@tolgee/react";
+import { useTranslate } from "@tolgee/react";
 import {
 	App,
 	AutoComplete,
 	Button,
-	Checkbox,
 	Col,
 	Form,
 	Input,
@@ -22,6 +21,13 @@ import countryList from "react-select-country-list";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { DirectionSelect } from "@/components/DirectionSelect";
+import {
+	ClickwrapField,
+	clickwrapFieldName,
+	legalAcceptances,
+	missingLegalCode,
+	outdatedLegalCode,
+} from "@/components/legal/ClickwrapField";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 import type { SkillLevel } from "@/config/prisma-enums";
 import { deleteCookie, getCookie } from "@/helpers/cookie";
@@ -34,6 +40,7 @@ import {
 	useSaveEntryAbout,
 } from "@/hooks/checkpoint-entry";
 import { useWorkDirections } from "@/hooks/library";
+import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 
 type AboutValues = {
 	firstName: string;
@@ -42,10 +49,7 @@ type AboutValues = {
 	workDirectionId: string;
 	specialityName: string;
 	level: SkillLevel;
-	agreeWithTermsAndPrivacy?: boolean;
 };
-
-const TERMS_FIELD = "agreeWithTermsAndPrivacy";
 
 type ValidationIssue = {
 	key: keyof AboutValues | "name";
@@ -65,7 +69,7 @@ const readPreRegistration = () => {
 		if (!raw) continue;
 		try {
 			return JSON.parse(decodeURIComponent(raw)) as {
-				agreeWithTermsAndPrivacy?: boolean;
+				legal?: LegalAcceptanceInput[];
 				needSubscribeToNewsletter?: boolean;
 			};
 		} catch {
@@ -100,18 +104,14 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 	const [preRegistration] = useState(readPreRegistration);
 	// The server can still refuse for missing consent; then the checkbox appears regardless.
 	const [termsRefused, setTermsRefused] = useState(false);
+	const [termsStale, setTermsStale] = useState(false);
 
 	const loading = profile.isPending || speciality.isPending || status.isPending;
 	const askTerms =
 		termsRefused ||
 		(!!status.data &&
 			!status.data.termsAccepted &&
-			!preRegistration?.agreeWithTermsAndPrivacy);
-
-	const termsError = t(
-		"agreeWithTermsAndPrivacy.error",
-		"To register for the service you must agree with the specified documents",
-	);
+			!preRegistration?.legal?.length);
 
 	useEffect(() => {
 		if (loading) return;
@@ -142,10 +142,10 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 				specialityName: values.specialityName.trim(),
 				workDirectionId: values.workDirectionId,
 				level: values.level,
-				...preRegistration,
-				...(askTerms && {
-					agreeWithTermsAndPrivacy: !!values.agreeWithTermsAndPrivacy,
-				}),
+				needSubscribeToNewsletter: preRegistration?.needSubscribeToNewsletter,
+				legal: askTerms
+					? legalAcceptances(["TermsOfUse"])
+					: preRegistration?.legal,
 			});
 			// Advisory AI warnings are shown and never block the save.
 			for (const warning of result.validation?.warnings ?? []) {
@@ -157,12 +157,14 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 			router.push(hubHref);
 		} catch (error) {
 			if (rateLimited(error)) return;
-			const data = isAxiosError(error) ? error.response?.data : undefined;
-			if (data?.error === "termsRequired") {
+			// The registration page's tick was missing or is outdated: ask here.
+			if (missingLegalCode(error) || outdatedLegalCode(error)) {
 				setTermsRefused(true);
-				form.setFields([{ name: TERMS_FIELD, errors: [termsError] }]);
+				setTermsStale(!!outdatedLegalCode(error));
+				form.setFieldValue(clickwrapFieldName("TermsOfUse") as never, false);
 				return;
 			}
+			const data = isAxiosError(error) ? error.response?.data : undefined;
 			const issues: ValidationIssue[] = data?.validation?.errors ?? [];
 			if (issues.length) {
 				// The server's "name" is the two name fields joined; its error goes on the first.
@@ -298,43 +300,7 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 							</Form.Item>
 						</Col>
 					</Row>
-					{askTerms && (
-						<Form.Item
-							name={TERMS_FIELD}
-							valuePropName="checked"
-							rules={[
-								{
-									validator: (_, value) =>
-										value ? Promise.resolve() : Promise.reject(termsError),
-								},
-							]}
-						>
-							<Checkbox>
-								<T
-									keyName="page.registration.agreeWithTermsAndPrivacy"
-									defaultValue="By joining, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>"
-									params={{
-										terms: (
-											<Link
-												href="/terms"
-												target="_blank"
-												rel="noreferrer"
-												onClick={(event) => event.stopPropagation()}
-											/>
-										),
-										privacy: (
-											<Link
-												href="/privacy-policy"
-												target="_blank"
-												rel="noreferrer"
-												onClick={(event) => event.stopPropagation()}
-											/>
-										),
-									}}
-								/>
-							</Checkbox>
-						</Form.Item>
-					)}
+					{askTerms && <ClickwrapField code="TermsOfUse" stale={termsStale} />}
 				</Form>
 			)}
 		</EntryShell>

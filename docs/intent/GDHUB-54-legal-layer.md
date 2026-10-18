@@ -7,7 +7,7 @@ design: [docs/legal/legal-layer.md](../legal/legal-layer.md)
 
 Whenever someone on GDHub agrees to something — the Terms at sign-up, the Project
 Requirements, the Advisor Agreement, the Expert Services Terms before earning money, the
-Checkpoint purchase terms, the Checkpoint Standard as a curator — the platform can show later exactly which text they agreed to,
+Checkpoint purchase terms and the withdrawal waiver — the platform can show later exactly which text they agreed to,
 in which version, and when. Anyone can read every legal document and its past versions at
 `/legal`; users see their own documents and certificates in one place; a certificate from
 an event, a course or a checkpoint can be checked by anyone at `/verify`.
@@ -48,7 +48,7 @@ checkpoint keeps its own `acceptedTermsAt`, and the texts are rendered live from
 - [ ] Paying for a Checkpoint needs two unticked checkboxes (purchase terms; immediate
       start and loss of withdrawal), stores two acceptances with `checkpointId`, and the
       pay endpoint refuses without them — **first, before launch**.
-- [ ] A curator accepts the Checkpoint Standard in force for each checkpoint they take.
+- [ ] A curator accepts the Expert Services Terms before the first checkpoint they take on (no per-checkpoint document).
 - [ ] Paid consultations and curation cannot be switched on without the Expert Services
       Terms and payout details. **Deferred (2026-10-17):** `/advisor/settings` does not exist
       yet and the terms have no text; it lands with the advisor settings page and curation

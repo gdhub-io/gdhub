@@ -1,6 +1,7 @@
 import { CheckpointStatus, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { versionInEffect } from "@/lib/legal/versions";
 import { prisma } from "@/services/prisma";
 
 const authMock = vi.fn();
@@ -10,6 +11,8 @@ const paymentFindFirst = vi.fn();
 const paymentUpdate = vi.fn();
 const captureCheckout = vi.fn();
 const returnMoney = vi.fn();
+const createMany = vi.fn();
+const lastAcceptance = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
@@ -32,6 +35,10 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
 		},
+		legalAcceptance: {
+			createMany: (...a: unknown[]) => createMany(...a),
+			findFirst: (...a: unknown[]) => lastAcceptance(...a),
+		},
 		payment: {
 			findFirst: (...a: unknown[]) => paymentFindFirst(...a),
 			update: (...a: unknown[]) => paymentUpdate(...a),
@@ -50,11 +57,21 @@ vi.mock("@/repositories/checkpoint-payment", async (importOriginal) => ({
 
 const curator = { id: "u9", roles: ["Member"], onboardingDone: true };
 
-const answer = async (accept: boolean) => {
+const terms = [
+	{
+		code: "ExpertServicesTerms",
+		version: versionInEffect("ExpertServicesTerms")?.version ?? 1,
+	},
+];
+
+const answer = async (
+	accept: boolean,
+	legal: unknown = accept ? terms : undefined,
+) => {
 	const { POST } = await import("@/app/api/checkpoint/[id]/curator/route");
 	const request = new NextRequest("http://localhost/api/checkpoint/cp1/curator", {
 		method: "POST",
-		body: JSON.stringify({ accept }),
+		body: JSON.stringify({ accept, legal }),
 		headers: { "content-type": "application/json" },
 	});
 
@@ -70,6 +87,7 @@ beforeEach(() => {
 			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: curator });
+	lastAcceptance.mockResolvedValue(null);
 	checkpointFindUnique.mockResolvedValue({
 		status: CheckpointStatus.AwaitingCurator,
 		curatorId: "u9",
@@ -88,6 +106,42 @@ beforeEach(() => {
 describe("a curator answering", () => {
 	// Accepting is the moment the author is actually charged: buying the
 	// checkpoint only held the money on their card.
+	it("takes nothing on without the Expert Services Terms accepted", async () => {
+		const response = await answer(true, []);
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			details: { reason: "legal.required", code: "ExpertServicesTerms" },
+		});
+		expect(captureCheckout).not.toHaveBeenCalled();
+		expect(checkpointUpdate).not.toHaveBeenCalled();
+	});
+
+	it("records the terms with the checkpoint they were accepted for", async () => {
+		await answer(true);
+
+		expect(createMany).toHaveBeenCalledWith({
+			data: [
+				expect.objectContaining({
+					userId: "u9",
+					code: "ExpertServicesTerms",
+					context: "CuratorAccept",
+					checkpointId: "cp1",
+				}),
+			],
+		});
+	});
+
+	it("does not ask a curator who already accepted them", async () => {
+		lastAcceptance.mockResolvedValue({
+			version: terms[0].version,
+			acceptedAt: new Date(),
+		});
+
+		expect((await answer(true, undefined)).status).toBe(200);
+		expect(createMany).not.toHaveBeenCalled();
+	});
+
 	it("takes the held money and starts the 28 days", async () => {
 		expect((await answer(true)).status).toBe(200);
 		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "accepted");

@@ -10,6 +10,7 @@ import { Button, Card, Col, Flex, Row, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { VerifyCertificateResponse } from "@/app/api/verify/_helpers";
+import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./style.module.scss";
 
@@ -82,8 +83,29 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 	const issuerLabel = {
 		Event: t("verify.result.organizer", "Organizer"),
 		Course: t("verify.result.teacher", "Teacher"),
-		Checkpoint: t("verify.result.curator", "Curator"),
+		Checkpoint: t("verify.result.issuedBy", "Issued by"),
 	}[data.source];
+	const mentorLabel =
+		data.source === "Checkpoint"
+			? t("verify.result.curator", "Curator")
+			: t("verify.result.mentor", "Lead mentor");
+	// A checkpoint's certificate is the project's; the founder is named on it.
+	const recipient =
+		data.source === "Checkpoint" && data.project
+			? {
+					label: t("verify.result.issuedTo", "Issued to"),
+					name: data.project.name,
+					image: data.project.coverImage,
+					line: t("verify.result.founder", "Founder: {name}", {
+						name: data.participant.name,
+					}),
+				}
+			: {
+					label: t("verify.result.recipient", "Recipient"),
+					name: data.participant.name,
+					image: data.participant.image,
+					line: data.participant.specialty,
+				};
 	const pdfUrl = `/api/verify/${encodeURIComponent(data.number)}/pdf#view=FitH&pagemode=none&zoom=page-width`;
 
 	const cardBody = { padding: 24 } as const;
@@ -99,27 +121,27 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									<IconUser size={14} color="var(--gd-color-text-tertiary)" />
 								}
 							>
-								{t("verify.result.recipient", "Recipient")}
+								{recipient.label}
 							</SectionLabel>
 							<Flex gap={14} align="center">
 								<AppAvatar
 									size={56}
-									src={data.participant.image ?? undefined}
+									src={recipient.image ?? undefined}
 									style={{
 										flex: "0 0 56px",
-										background: data.participant.image ? undefined : "#d4a574",
+										background: recipient.image ? undefined : "#d4a574",
 										fontSize: 22,
 										fontWeight: 700,
 									}}
 								>
-									{initials(data.participant.name)}
+									{initials(recipient.name)}
 								</AppAvatar>
 								<Flex vertical gap={4} style={{ flex: 1, minWidth: 0 }}>
 									<Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-										{data.participant.name}
+										{recipient.name}
 									</Title>
-									{data.participant.specialty && (
-										<Text type="secondary">{data.participant.specialty}</Text>
+									{recipient.line && (
+										<Text type="secondary">{recipient.line}</Text>
 									)}
 								</Flex>
 							</Flex>
@@ -264,13 +286,26 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 								)}
 								{data.subject.mentorName && (
 									<MetaItem
-										label={t("verify.result.mentor", "Lead mentor")}
+										label={mentorLabel}
 										value={
 											data.subject.mentorName +
 											(data.subject.mentorSpecialty
 												? ` · ${data.subject.mentorSpecialty}`
 												: "")
 										}
+									/>
+								)}
+
+								{data.outcome?.verdict && (
+									<MetaItem
+										label={t("verify.result.result", "Result")}
+										value={<VerdictChip verdict={data.outcome.verdict} />}
+									/>
+								)}
+								{data.outcome?.goal && (
+									<MetaItem
+										label={t("verify.result.goal", "Goal")}
+										value={data.outcome.goal}
 									/>
 								)}
 

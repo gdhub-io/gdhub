@@ -67,7 +67,7 @@ export const POST = pipe(
 	try {
 		acceptances = resolveLegal(
 			(body as z.infer<typeof PaySchema>).legal,
-			["CheckpointPurchaseTerms"],
+			["CheckpointPurchaseTerms", "WithdrawalWaiver"],
 			{
 				userId: payer.id,
 				context: "CheckpointPurchase",

@@ -35,10 +35,10 @@ drawn in [legal-layer-flow.d2](legal-layer-flow.d2) ([svg](legal-layer-flow.svg)
 | Kind | Documents | Agreed when | Linked to |
 |---|---|---|---|
 | Platform offer | Terms of Use, Project Requirements, Advisor Agreement; later Course and Event terms | sign-up, project creation, switching the Advisor space on | — |
-| Paid expert work | Expert Services Terms | Advisor space → Settings → Paid work, before paid consultations or curation — together with payout details | — |
-| Checkpoint | Purchase Terms and the withdrawal waiver (author); Checkpoint Standard (curator) | the author pays; the curator accepts that checkpoint | `checkpointId` |
+| Paid expert work | Expert Services Terms | before the first paid work: a curator taking on a checkpoint today; later Advisor space → Settings → Paid work, with payout details | the checkpoint that asked for it |
+| Checkpoint | Purchase Terms and the Withdrawal Waiver (author) | the author presses Pay | `checkpointId` |
 | Project agreement | Co-Development Agreement (shares, IP, exit) | a member is given a share for the first time, or their share changes | `projectId` |
-| Certificate | event certificate today | issued, not accepted | its source |
+| Certificate | event, course, checkpoint | issued, not accepted | its source |
 
 Privacy Policy, Cookie Policy, Refund Policy and Legal Details are **published and
 versioned but never accepted**: privacy is notice, cookies are the banner's own consent,
@@ -53,8 +53,9 @@ Agreement (status, conduct, AI, confidentiality, data, volunteering) opens the s
 with it free consultations. Expert Services Terms (fees, the platform's cut,
 payouts, invoicing or self-billing, withholding, refunds) open paid consultations and
 curation, and are accepted together with payout details, because getting paid needs both.
-The Checkpoint Standard in force on the day a checkpoint starts is accepted by its curator
-for that checkpoint. There is no separate "curator terms" document.
+What a curator owes on a checkpoint is a section of the Expert Services Terms, accepted
+once and again after a material change — there is no per-checkpoint document (the
+"Checkpoint Standard" of the early plan is the product's standard, not a legal text).
 
 ## 2a. Legal entities
 
@@ -168,9 +169,9 @@ moment; the others are archived and still readable at `/legal/<slug>/v<n>`.
 | Sign-up | Terms of Use |
 | Create project | Project Requirements |
 | Advisor space switch-on | Advisor Agreement; the space does not open without it |
-| Checkpoint pay step | Purchase Terms + withdrawal waiver, two checkboxes |
-| Advisor space → Settings → Paid work | Expert Services Terms + payout details; paid consultations and curation stay off until both are done |
-| Curator accepting a checkpoint | Checkpoint Standard |
+| Checkpoint pay step | Purchase Terms + Withdrawal Waiver, two checkboxes sent with Pay; the checkout refuses without them |
+| Curator taking on a checkpoint | Expert Services Terms, until accepted; asked in a modal only when the server says they are missing |
+| Advisor space → Settings → Paid work (later) | Expert Services Terms + payout details for paid consultations |
 | `/legal`, `/legal/<slug>`, `/legal/<slug>/v<n>` | every published document, its current text and its archived versions; old URLs 308 here |
 | `/admin/legal` | the acceptances log with filters and CSV export (written to `AuditLog`) |
 | Share given or changed (team page) | Co-Development Agreement with the project's values filled in; invites and offers carry none |
@@ -185,10 +186,17 @@ public number and the existing `/verify` page. Event certificates keep their Doc
 signature, so the issued ones keep working; a new kind needs no signature, because the
 verification page is what proves it.
 
+A **checkpoint certificate** is issued when the checkpoint closes — by the curator's verdict
+or the AI's — to the project, by the platform's entity, and carried by the project's
+founder, who is named on it so the result is not anonymous. `/verify` shows the project,
+the founder, the stage, the dates, the curator, the verdict and the goal.
+
 ## 7. Not built, and when it would be
 
-- **Signatures for agreements** — when an investor or a court asks for a signed co-development
-  agreement. The signed PDF is then attached to the version; the model does not change.
+- **Signatures for the Co-Development Agreement** — decided 2026-10-18: unlike the public
+  offers, it is a contract between named people with their shares, so it is to be signed
+  by every party through Documenso (already used for event certificates) when the feature
+  is built. Every other document stays a tick.
 - **Per-agreement instances, parties, a registry of concluded documents, Void, PDF and zip
   exports** — when user-to-user agreements need more than "who accepted which version".
 - **Three-party agreements** — two two-party agreements referring to each other instead.

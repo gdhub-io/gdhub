@@ -5,8 +5,8 @@ Frames: [`docs/design/platform-design.pen`](../platform-design.pen), row **Legal
 Intent: [docs/intent/GDHUB-54-legal-layer.md](../../intent/GDHUB-54-legal-layer.md).
 
 **Built in the checkpoint branch, not drawn here** (`feature/gdhub-31-add-checkpoints-to-projects`):
-the pay step (Purchase Terms + Withdrawal Waiver, two checkboxes) and the curator's accept
-step (Checkpoint Standard). Both use `ClickwrapField`.
+the pay step (Purchase Terms + Withdrawal Waiver, two checkboxes) and the curator's
+first take-on (Expert Services Terms, in `LegalAcceptModal`). Both use `ClickwrapField`.
 
 ---
 
@@ -110,7 +110,7 @@ Advisor Agreement for advisors) gets this prompt over the app. It follows the co
   block is saved. Set up: the clickwrap is replaced by "Accepted on {date} · version {n}"
   with *View document*.
 - `/advisor` Requests stays the consultations inbox, free and paid.
-- Checkpoint Standard: accepted by the curator per checkpoint, in the checkpoint branch.
+- Expert Services Terms: asked of a curator taking on their first checkpoint, in the checkpoint branch.
 
 **Project agreement (share given or changed).** The member's Team page shows a
 warning-tint banner with *Review*: "You were given a share — review and accept." for a
@@ -132,8 +132,8 @@ Checkpoint: curator); the banner says "digitally signed" and the file "Signed PD
 signed (event) certificates.
 
 **/legal.** Index (Platform: Terms, Privacy, Cookie, Refund, Legal Details; Features:
-Project Requirements, Advisor Agreement, Expert Services Terms, Checkpoint Terms,
-Checkpoint Standard, Withdrawal Waiver), document page, archived page.
+Project Requirements, Advisor Agreement, Expert Services Terms, Checkpoint Purchase Terms,
+Withdrawal Waiver, Course Agreement), document page, archived page.
 
 **Admin.** One page "Legal acceptances", no tabs: search by user, document, version
 (disabled until a document is chosen), context, date range, *Export CSV* (→ `AuditLog`).

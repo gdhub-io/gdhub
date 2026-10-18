@@ -1,5 +1,9 @@
 import { randomBytes } from "node:crypto";
-import { type CertificateSource, Prisma } from "@gdhub-io/gdhub-prisma";
+import {
+	type CertificateSource,
+	Prisma,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 
 // Crockford Base32 — 32 chars, no ambiguous I/L/O/U.
@@ -47,4 +51,47 @@ export async function issueCertificate(input: IssueCertificateInput) {
 		}
 	}
 	throw new Error("Could not find a free certificate number");
+}
+
+/**
+ * The record of a closed checkpoint, issued to the project and carried by its
+ * founder — named on it so the result is not anonymous. Never blocks the close:
+ * one already issued, or a project with no founder left, is skipped.
+ */
+export async function issueCheckpointCertificate(checkpointId: string) {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			project: {
+				select: {
+					team: {
+						select: {
+							members: {
+								where: { status: TeamMemberStatus.Founder },
+								select: { userId: true },
+								take: 1,
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+	const founderId = checkpoint?.project?.team?.members[0]?.userId;
+	if (!founderId) return null;
+
+	try {
+		return await issueCertificate({
+			source: "Checkpoint",
+			userId: founderId,
+			checkpointId,
+		});
+	} catch (error) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === "P2002"
+		)
+			return null;
+		throw error;
+	}
 }

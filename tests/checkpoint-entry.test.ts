@@ -6,6 +6,13 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { versionInEffect } from "@/lib/legal/versions";
+
+const terms = {
+	code: "TermsOfUse",
+	version: versionInEffect("TermsOfUse")?.version ?? 1,
+};
+const acceptedTerms = { version: terms.version, acceptedAt: new Date() };
 
 const authMock = vi.fn();
 const getCreationBlocker = vi.fn();
@@ -34,6 +41,7 @@ const db = {
 	},
 	project: { findMany: vi.fn() },
 	user: { findUnique: vi.fn(), update: vi.fn() },
+	legalAcceptance: { findFirst: vi.fn(), createMany: vi.fn() },
 	workDirection: { findUnique: vi.fn() },
 	payment: { findMany: vi.fn() },
 	$executeRaw: vi.fn(),
@@ -208,9 +216,7 @@ describe("getEntryStatus", () => {
 	};
 
 	it("answers the hub in one shape, scoped to the user's founded projects", async () => {
-		db.user.findUnique.mockResolvedValue({
-			agreements: { agreeWithTermsAndPrivacy: true },
-		});
+		db.legalAcceptance.findFirst.mockResolvedValue(acceptedTerms);
 		db.profile.findUnique.mockResolvedValue({ name: "Anna Petrova" });
 		db.speciality.count.mockResolvedValue(1);
 		db.project.findMany.mockResolvedValue([lantern, tides]);
@@ -342,9 +348,7 @@ describe("getEntryStatus", () => {
 	});
 
 	it("is not done about the user without a speciality, and has no draft without projects", async () => {
-		db.user.findUnique.mockResolvedValue({
-			agreements: { agreeWithTermsAndPrivacy: false },
-		});
+		db.legalAcceptance.findFirst.mockResolvedValue(null);
 		db.profile.findUnique.mockResolvedValue({ name: "Anna" });
 		db.speciality.count.mockResolvedValue(0);
 		db.project.findMany.mockResolvedValue([]);
@@ -365,17 +369,6 @@ describe("getEntryStatus", () => {
 				([args]) => args.where.status === CheckpointStatus.Draft,
 			),
 		).toBe(false);
-	});
-});
-
-describe("termsAccepted", () => {
-	it("is true only for a recorded agreement", async () => {
-		const { termsAccepted } = await import("@/repositories/checkpoint-entry");
-
-		expect(termsAccepted({ agreeWithTermsAndPrivacy: true })).toBe(true);
-		expect(termsAccepted({ agreeWithTermsAndPrivacy: false })).toBe(false);
-		expect(termsAccepted({ agreeWithTermsAndPrivacy: "true" })).toBe(false);
-		expect(termsAccepted(null)).toBe(false);
 	});
 });
 
@@ -567,29 +560,39 @@ describe("POST /api/checkpoint/entry/about", () => {
 		validate.mockResolvedValue({ ok: true });
 	});
 
-	it("refuses to finish onboarding without a recorded or ticked agreement", async () => {
-		db.user.findUnique.mockResolvedValue({
-			onboardingDone: false,
-			agreements: { agreeWithTermsAndPrivacy: false },
-		});
+	it("refuses to finish onboarding without the Terms of Use accepted", async () => {
+		db.user.findUnique.mockResolvedValue({ onboardingDone: false, agreements: null });
+		db.legalAcceptance.findFirst.mockResolvedValue(null);
 
-		for (const agree of [undefined, false]) {
-			const response = await post({ ...valid, agreeWithTermsAndPrivacy: agree });
+		for (const legal of [undefined, []]) {
+			const response = await post({ ...valid, legal });
 			expect(response.status).toBe(400);
-			expect(await response.json()).toMatchObject({ error: "termsRequired" });
+			expect(await response.json()).toMatchObject({
+				details: { reason: "legal.required", code: "TermsOfUse" },
+			});
 		}
 		expect(validate).not.toHaveBeenCalled();
 		expect(db.user.update).not.toHaveBeenCalled();
+		expect(db.legalAcceptance.createMany).not.toHaveBeenCalled();
 	});
 
-	it("records the agreement ticked here and sets Author on a first profile", async () => {
+	it("records the Terms ticked here and sets Author on a first profile", async () => {
 		db.user.findUnique.mockResolvedValue({ onboardingDone: false, agreements: null });
+		db.legalAcceptance.findFirst.mockResolvedValue(null);
 
-		const response = await post({ ...valid, agreeWithTermsAndPrivacy: true });
+		const response = await post({ ...valid, legal: [terms] });
 
 		expect(response.status).toBe(200);
+		expect(db.legalAcceptance.createMany).toHaveBeenCalledWith({
+			data: [
+				expect.objectContaining({
+					userId: "u1",
+					code: "TermsOfUse",
+					context: "SignUp",
+				}),
+			],
+		});
 		expect(db.user.update.mock.calls[0][0].data).toMatchObject({
-			agreements: { agreeWithTermsAndPrivacy: true },
 			onboardingDone: true,
 		});
 		const upsert = db.profile.upsert.mock.calls[0][0];
@@ -597,28 +600,28 @@ describe("POST /api/checkpoint/entry/about", () => {
 		expect(upsert.update.primaryInterest).toBe("Author");
 	});
 
-	it("leaves an onboarded user's interest and agreement alone", async () => {
+	it("asks nothing of a user who accepted, and leaves interest and newsletter alone", async () => {
 		db.user.findUnique.mockResolvedValue({
 			onboardingDone: true,
-			agreements: { agreeWithTermsAndPrivacy: true },
+			agreements: { needSubscribeToNewsletter: true },
 		});
+		db.legalAcceptance.findFirst.mockResolvedValue(acceptedTerms);
 
-		const response = await post({ ...valid, agreeWithTermsAndPrivacy: false });
+		const response = await post(valid);
 
 		expect(response.status).toBe(200);
+		expect(db.legalAcceptance.createMany).not.toHaveBeenCalled();
 		expect(db.profile.upsert.mock.calls[0][0].update).not.toHaveProperty(
 			"primaryInterest",
 		);
 		expect(db.user.update.mock.calls[0][0].data.agreements).toEqual({
-			agreeWithTermsAndPrivacy: true,
+			needSubscribeToNewsletter: true,
 		});
 	});
 
 	it("answers 429 before the AI is asked when the user is over the limit", async () => {
-		db.user.findUnique.mockResolvedValue({
-			onboardingDone: true,
-			agreements: { agreeWithTermsAndPrivacy: true },
-		});
+		db.user.findUnique.mockResolvedValue({ onboardingDone: true, agreements: null });
+		db.legalAcceptance.findFirst.mockResolvedValue(acceptedTerms);
 		limitAiCalls.mockResolvedValue(
 			new Response(JSON.stringify({ error: "rateLimited", retryAfter: 42 }), {
 				status: 429,

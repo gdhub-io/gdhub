@@ -110,3 +110,9 @@
 	border-radius: var(--gd-radius-panel);
 	background: var(--gd-danger-tint);
 }
+
+.clickwraps {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+}

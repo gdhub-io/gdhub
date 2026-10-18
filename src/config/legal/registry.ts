@@ -131,7 +131,16 @@ export const LEGAL_DOCUMENTS = {
 		title: "Expert Services Terms",
 		issuer: "hub",
 		group: "features",
-		versions: [],
+		versions: [
+			{
+				version: 1,
+				effectiveAt: "2026-10-17",
+				entity: "vsi",
+				materialChange: false,
+				checksum:
+					"ad978c092bf7af93769dd9e97551af385352e0c2fc64c873192294bb63517dfd",
+			},
+		],
 	},
 	CheckpointPurchaseTerms: {
 		slug: "checkpoint-purchase-terms",
@@ -154,14 +163,32 @@ export const LEGAL_DOCUMENTS = {
 		title: "Withdrawal Waiver",
 		issuer: "hub",
 		group: "features",
-		versions: [],
+		versions: [
+			{
+				version: 1,
+				effectiveAt: "2026-10-17",
+				entity: "vsi",
+				materialChange: false,
+				checksum:
+					"3a166b605a4377185e364fa0d8d2c41ed0cde8c440c7d70ddf64c0eebfe49458",
+			},
+		],
 	},
-	CheckpointStandard: {
-		slug: "checkpoint-standard",
-		title: "Checkpoint Standard",
+	CourseAgreement: {
+		slug: "course-agreement",
+		title: "Course Agreement",
 		issuer: "hub",
 		group: "features",
-		versions: [],
+		versions: [
+			{
+				version: 1,
+				effectiveAt: "2026-10-17",
+				entity: "vsi",
+				materialChange: false,
+				checksum:
+					"2efec0770f560867d955ca33612b06c74df8ebdf029bfef0f67bbe650d8b520c",
+			},
+		],
 	},
 	CoDevelopmentAgreement: {
 		slug: "co-development-agreement",

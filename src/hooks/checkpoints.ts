@@ -132,11 +132,17 @@ export const useAnswerCheckpoint = (id?: string) => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (accept: boolean) =>
+		mutationFn: async ({
+			accept,
+			legal,
+		}: {
+			accept: boolean;
+			legal?: LegalAcceptanceInput[];
+		}) =>
 			(
 				await axios.post<{ accepted: boolean }>(
 					`/api/checkpoint/${id}/curator`,
-					{ accept },
+					{ accept, legal },
 				)
 			).data,
 		onSuccess: () => {

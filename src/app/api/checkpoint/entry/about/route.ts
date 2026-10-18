@@ -9,8 +9,17 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	LegalAcceptancesSchema,
+	LegalError,
+	resolveLegal,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { limitAiCalls } from "@/lib/rate-limit";
-import { termsAccepted } from "@/repositories/checkpoint-entry";
+import {
+	latestAcceptance,
+	needsAcceptance,
+} from "@/repositories/legal.repository";
 import { joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { syncUserToBrevo } from "@/services/brevo/sync";
@@ -24,7 +33,8 @@ const EntryAboutSchema = z.object({
 	specialityName: z.string().trim().min(1).max(100),
 	workDirectionId: z.string().min(1),
 	level: z.nativeEnum(SkillLevel),
-	agreeWithTermsAndPrivacy: z.boolean().optional(),
+	/** The Terms of Use, from this form or the registration page; needed until accepted. */
+	legal: LegalAcceptancesSchema.optional(),
 	needSubscribeToNewsletter: z.boolean().optional(),
 });
 
@@ -36,8 +46,8 @@ type EntryAboutBody = z.infer<typeof EntryAboutSchema>;
  * checkpoint, so a first profile gets the interest `Author` and the resources
  * step is skipped. An interest already chosen is left alone.
  *
- * Onboarding is never finished without a recorded Terms and Privacy agreement:
- * a user who arrived without one must tick it here.
+ * Onboarding is never finished without the Terms of Use accepted: a user who
+ * arrived without that acceptance must tick it here.
  *
  * The client re-reads the JWT afterwards (`resyncSession`), as the last
  * onboarding step does: the proxy gates `/user/**` on `onboardingDone` in it.
@@ -45,7 +55,7 @@ type EntryAboutBody = z.infer<typeof EntryAboutSchema>;
 export const POST = pipe(
 	withAuth({ mode: "user" }),
 	withValidation(EntryAboutSchema),
-)(async (_req, _ctx, { user, body }) => {
+)(async (req, _ctx, { user, body }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const input = body as EntryAboutBody;
@@ -72,11 +82,24 @@ export const POST = pipe(
 	if (input.specialityId && !speciality) {
 		return apiError.notFound("Speciality not found");
 	}
+
+	let acceptances: ReturnType<typeof resolveLegal> = [];
 	if (
-		!termsAccepted(userRecord.agreements) &&
-		input.agreeWithTermsAndPrivacy !== true
+		needsAcceptance(
+			"TermsOfUse",
+			(await latestAcceptance(currentUser.id, "TermsOfUse"))?.version,
+		)
 	) {
-		return apiError.badRequest("termsRequired");
+		try {
+			acceptances = resolveLegal(input.legal, ["TermsOfUse"], {
+				userId: currentUser.id,
+				context: "SignUp",
+				meta: requestMeta(req),
+			});
+		} catch (error) {
+			if (error instanceof LegalError) return legalErrorResponse(error);
+			throw error;
+		}
 	}
 
 	const limited = await limitAiCalls("entry-about", currentUser.id);
@@ -103,10 +126,6 @@ export const POST = pipe(
 
 	const agreements = {
 		...((userRecord.agreements ?? {}) as Record<string, unknown>),
-		// Recorded once; unticking a box later does not withdraw it here.
-		...(input.agreeWithTermsAndPrivacy === true
-			? { agreeWithTermsAndPrivacy: true }
-			: null),
 		...(input.needSubscribeToNewsletter === undefined
 			? null
 			: { needSubscribeToNewsletter: input.needSubscribeToNewsletter }),
@@ -119,6 +138,9 @@ export const POST = pipe(
 	};
 
 	await prisma.$transaction(async (tx) => {
+		if (acceptances.length) {
+			await tx.legalAcceptance.createMany({ data: acceptances });
+		}
 		await tx.profile.upsert({
 			where: { userId: currentUser.id },
 			create: {

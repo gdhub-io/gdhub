@@ -11,6 +11,7 @@ import {
 	type VerdictStage,
 	verdictStage,
 } from "@/lib/checkpoint-verdict-window";
+import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import {
 	notifyVerdictDue,
@@ -137,6 +138,9 @@ export async function writeCuratorVerdict(
 				closeCheckpointRoom(checkpointId),
 			),
 			notifyVerdictSent(checkpointId),
+			issueCheckpointCertificate(checkpointId).catch((error) =>
+				console.error(`[certificate] checkpoint ${checkpointId}`, error),
+			),
 		]);
 
 	return result;

@@ -14,9 +14,19 @@ import {
 } from "@/lib/api-handlers";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import {
+	LegalAcceptancesSchema,
+	LegalError,
+	resolveLegal,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
+import {
 	returnCheckpointMoney,
 	returnToAuthor,
 } from "@/repositories/checkpoint-payment";
+import {
+	latestAcceptance,
+	needsAcceptance,
+} from "@/repositories/legal.repository";
 import {
 	ensureCheckpointRoom,
 	syncChat,
@@ -25,7 +35,11 @@ import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import { captureCheckout } from "@/services/stripe/server";
 
-const AnswerSchema = z.object({ accept: z.boolean() });
+const AnswerSchema = z.object({
+	accept: z.boolean(),
+	/** The Expert Services Terms, until accepted once: curating is paid work. */
+	legal: LegalAcceptancesSchema.optional(),
+});
 
 /** A date already gone cannot be day one; the author's wish holds otherwise. */
 const startsOn = (wanted: Date | null) => {
@@ -52,12 +66,12 @@ export const dynamic = "force-dynamic";
 export const POST = pipe(
 	withAuth({ mode: "user" }),
 	withValidation(AnswerSchema, "body"),
-)(async (_req, ctx, { user, body }) => {
+)(async (req, ctx, { user, body }) => {
 	const curator = user as SessionUser | undefined;
 	if (!curator) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const { accept } = body as z.infer<typeof AnswerSchema>;
+	const { accept, legal } = body as z.infer<typeof AnswerSchema>;
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
@@ -71,6 +85,29 @@ export const POST = pipe(
 	// it must not restart a checkpoint that is already running.
 	if (checkpoint.status !== CheckpointStatus.AwaitingCurator) {
 		return apiError.badRequest("checkpointNotAwaiting");
+	}
+
+	// Refused before any money moves: curating is paid work, done under the
+	// Expert Services Terms, accepted once and again after a material change.
+	let acceptances: ReturnType<typeof resolveLegal> = [];
+	if (
+		accept &&
+		needsAcceptance(
+			"ExpertServicesTerms",
+			(await latestAcceptance(curator.id, "ExpertServicesTerms"))?.version,
+		)
+	) {
+		try {
+			acceptances = resolveLegal(legal, ["ExpertServicesTerms"], {
+				userId: curator.id,
+				context: "CuratorAccept",
+				checkpointId: id,
+				meta: requestMeta(req),
+			});
+		} catch (error) {
+			if (error instanceof LegalError) return legalErrorResponse(error);
+			throw error;
+		}
 	}
 
 	// Accepting takes the money that is held. Turning it down gives it back —
@@ -109,6 +146,8 @@ export const POST = pipe(
 	const startedAt = startsOn(checkpoint.startedAt);
 
 	if (accept) {
+		if (acceptances.length)
+			await prisma.legalAcceptance.createMany({ data: acceptances });
 		await prisma.projectCheckpoint.update({
 			where: { id },
 			data: {

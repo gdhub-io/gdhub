@@ -37,7 +37,7 @@ describe("needsAcceptance", () => {
 	});
 
 	it("asks nothing for a document with no version in effect", () => {
-		expect(needsAcceptance("ExpertServicesTerms", undefined, now)).toBe(false);
+		expect(needsAcceptance("CoDevelopmentAgreement", undefined, now)).toBe(false);
 	});
 });
 

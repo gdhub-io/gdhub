@@ -82,8 +82,8 @@ model ProjectCheckpoint {
 
   paymentId String?  @unique
 
-  acceptedStandardAt      DateTime?          // the tick before paying
-  acceptedStandardVersion String?            // which version of the standard was ticked
+  // The ticks before paying are LegalAcceptance rows with this checkpointId
+  // (Purchase Terms, Withdrawal Waiver) — see docs/legal/legal-layer.md.
 
   goalAgreedAt   DateTime?                // consultation 1: the card the 28 days are judged against
   goalAgreedById String?                  // null when the AI curator confirmed it
@@ -594,21 +594,22 @@ This protects both sides of the same sentence. An author who paid does not get t
 treat the curator as a contractor who owes them a finished demo; a curator whose
 team went quiet does not carry the blame for a verdict that says so.
 
-`POST /api/checkpoint/[id]/pay` refuses with `apiError.badRequest` unless
-`acceptedStandardAt` is set, so a client that hides the checkbox still cannot
-start a checkout. The version ticked is stored beside the timestamp: the standard
-will be edited, and a dispute a year later is about the text that was on screen
-that day, not today's.
+`POST /api/checkpoint/[id]/pay` takes the two ticks with the click — the
+Checkpoint Purchase Terms and the Withdrawal Waiver — and refuses without them
+(400 `legal.required`, 409 `legal.outdated`), so a client that hides a checkbox
+still cannot start a checkout. Each is recorded as a `LegalAcceptance` with the
+version, the text's checksum and the `checkpointId`: a dispute a year later is
+about the text that was on screen that day, not today's.
 
 **The three lines on that screen are product copy, not the agreement.** What the
 checkbox has to point at is a real document — the terms of a paid checkpoint,
 sitting beside [docs/legal/terms-of-use/v1.md](legal/terms-of-use/v1.md) and covering
 who owes what, what a refund is, what happens when a curator disappears and who
-holds the rights to what the team makes. Writing it is **its own issue**, not
-part of this one; until it exists the checkbox links to
-[the checkpoint standard](checkpoint-standard.md), and `acceptedStandardVersion`
-already stores which version was accepted, so the same field carries the legal
-document's version when it arrives.
+holds the rights to what the team makes: the
+[Checkpoint Purchase Terms](legal/checkpoint-purchase-terms/v1.md), with the
+[Withdrawal Waiver](legal/withdrawal-waiver/v1.md) beside it. A curator takes a
+checkpoint on under the [Expert Services Terms](legal/expert-services-terms/v1.md),
+asked once before the first one.
 
 The AI curator has one price in config for now. The human curator's price is
 computed from their hourly rate and lands with that issue.
@@ -849,8 +850,8 @@ feature that ships on manual checks.
   list; after it, neither can until day 14.
 - The first wording survives an edit on day 1 and a rewording on day 14 — one
   `originalText`, written once.
-- Paying is refused while `acceptedStandardAt` is null, even when the request
-  comes straight to the API.
+- Paying is refused without the Purchase Terms and the Withdrawal Waiver in
+  the request, even when it comes straight to the API.
 - The artifact check: a login page answering `200` is `unreachable`, not
   `readable`; a content type that contradicts the chosen kind is refused.
 - The fetcher refuses loopback, link-local and private addresses, and refuses a

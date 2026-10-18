@@ -117,8 +117,11 @@ export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
 	);
 }
 
-/** The document whose version the server refused as outdated, from an axios error. */
-export function outdatedLegalCode(error: unknown): LegalCode | null {
+const refusedLegalCode = (
+	error: unknown,
+	status: number,
+	reason: string,
+): LegalCode | null => {
 	const data = (
 		error as {
 			response?: {
@@ -127,7 +130,15 @@ export function outdatedLegalCode(error: unknown): LegalCode | null {
 			};
 		}
 	)?.response;
-	return data?.status === 409 && data.data?.details?.reason === "legal.outdated"
+	return data?.status === status && data.data?.details?.reason === reason
 		? (data.data.details.code ?? null)
 		: null;
-}
+};
+
+/** The document whose version the server refused as outdated, from an axios error. */
+export const outdatedLegalCode = (error: unknown) =>
+	refusedLegalCode(error, 409, "legal.outdated");
+
+/** The document the server asked for and the request did not carry. */
+export const missingLegalCode = (error: unknown) =>
+	refusedLegalCode(error, 400, "legal.required");

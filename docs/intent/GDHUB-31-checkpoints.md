@@ -123,12 +123,11 @@ on.
 
 ## Out of scope
 
-- **The legal terms of a paid checkpoint.** The pay step states what the curator
-  does and does not do and takes a tick, and that tick is stored with the version
-  accepted — but the binding document behind it (refunds, a curator who
-  disappears, rights to what the team makes) is written separately, beside
-  `docs/legal/terms-of-use/v1.md`. Until it exists the tick points at the checkpoint
-  standard.
+- **The legal texts of a paid checkpoint.** The pay step takes two ticks — the
+  Checkpoint Purchase Terms and the Withdrawal Waiver — recorded by the legal
+  layer (GDHUB-54) with the version accepted; the curator accepts the Expert
+  Services Terms before their first checkpoint. The texts themselves are GDHUB-87;
+  the Waiver and the Expert Services Terms are TBD placeholders until then.
 - **The human curator** — choosing one, their rate, their calls, their payout,
   and the author's rating of them. Separate issue; this one ships the
   `curatorKind` field and a nullable curator on the model, so the second kind

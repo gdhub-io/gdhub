@@ -24,6 +24,7 @@ import type {
 	EntryProjectPrefillDto,
 	EntryStatusDto,
 } from "@/types/checkpoints";
+import { latestAcceptance, needsAcceptance } from "./legal.repository";
 
 /**
  * The checkpoint entry hub (`/checkpoint/new`): who the author is, which project
@@ -74,12 +75,6 @@ const PAID_STATUSES = [
 	PaymentStatus.PARTIALLY_REFUNDED,
 	PaymentStatus.DISPUTED,
 ];
-
-/** The Terms and Privacy agreement registration records in `User.agreements`. */
-export const termsAccepted = (agreements: unknown) =>
-	typeof agreements === "object" &&
-	agreements !== null &&
-	(agreements as Record<string, unknown>).agreeWithTermsAndPrivacy === true;
 
 /** Founder of the project's team — the one who buys its checkpoints. */
 export const isProjectFounder = async (userId: string, projectId: string) =>
@@ -177,12 +172,9 @@ const currentCheckpoint = async (
 export const getEntryStatus = async (
 	userId: string,
 ): Promise<EntryStatusDto> => {
-	const [user, profile, specialities, projects, hadCheckpoint, current] =
+	const [terms, profile, specialities, projects, hadCheckpoint, current] =
 		await Promise.all([
-			prisma.user.findUnique({
-				where: { id: userId },
-				select: { agreements: true },
-			}),
+			latestAcceptance(userId, "TermsOfUse"),
 			prisma.profile.findUnique({
 				where: { userId },
 				select: { name: true },
@@ -236,7 +228,7 @@ export const getEntryStatus = async (
 		aboutDone: Boolean(profile?.name.trim()) && specialities > 0,
 		hadCheckpoint,
 		purchaseOpen: checkpointPurchaseOpen(),
-		termsAccepted: termsAccepted(user?.agreements),
+		termsAccepted: !needsAcceptance("TermsOfUse", terms?.version),
 		current,
 		projects: projects.map((project) => ({
 			id: project.id,

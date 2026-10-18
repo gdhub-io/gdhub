@@ -21,6 +21,12 @@ import {
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
+import {
+	legalAcceptances,
+	missingLegalCode,
+	outdatedLegalCode,
+} from "@/components/legal/ClickwrapField";
+import { LegalAcceptModal } from "@/components/legal/LegalAcceptModal";
 import styles from "@/components/scout/ProjectCardModal/style.module.scss";
 import { AppImage } from "@/components/ui/AppImage";
 import { CheckpointStatus } from "@/config/prisma-enums";
@@ -67,6 +73,8 @@ export function CheckpointCardModal({
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [tab, setTab] = useState("checkpoint");
+	const [termsOpen, setTermsOpen] = useState(false);
+	const [termsStale, setTermsStale] = useState(false);
 	const { data: project, isLoading } = useAdvisorProject(checkpoint.id, open);
 	const answer = useAnswerCheckpoint(checkpoint.id);
 	const openChat = useCheckpointChat(checkpoint.id);
@@ -79,11 +87,27 @@ export function CheckpointCardModal({
 		if (open) setTab("checkpoint");
 	}, [open]);
 
-	const reply = async (accept: boolean) => {
+	// Taking it on first goes without the terms: the server asks for them only
+	// from a curator who has not accepted the version in effect.
+	const reply = async (accept: boolean, withTerms = false) => {
 		try {
-			await answer.mutateAsync(accept);
+			await answer.mutateAsync({
+				accept,
+				legal: withTerms
+					? legalAcceptances(["ExpertServicesTerms"])
+					: undefined,
+			});
+			setTermsOpen(false);
 			onClose();
-		} catch {
+		} catch (error) {
+			if (outdatedLegalCode(error)) {
+				setTermsStale(true);
+				return;
+			}
+			if (missingLegalCode(error) === "ExpertServicesTerms") {
+				setTermsOpen(true);
+				return;
+			}
 			message.error(
 				t("advisor.checkpoints.answerFailed", "The answer was not saved"),
 			);
@@ -110,184 +134,198 @@ export function CheckpointCardModal({
 		: "";
 
 	return (
-		<Modal
-			open={open}
-			onCancel={onClose}
-			footer={null}
-			closable={false}
-			width={960}
-			centered
-			className={styles.modal}
-			classNames={{ body: styles.body }}
-			destroyOnHidden
-		>
-			{isLoading || !project ? (
-				<div className={styles.loading}>
-					<Skeleton active paragraph={{ rows: 8 }} />
-				</div>
-			) : (
-				<>
-					<header className={styles.header}>
-						{project.coverImage && (
-							<AppImage
-								className={styles.cover}
-								src={project.coverImage}
-								alt=""
-								fill
-								sizes="960px"
-							/>
-						)}
-						<div className={styles.scrim} />
-						<div className={styles.scrimBottom} />
-
-						<Flex
-							justify="space-between"
-							align="start"
-							className={styles.headerTop}
-						>
-							<Text className={styles.kind}>
-								{answerable
-									? t("advisor.card.kindRequest", "Checkpoint request")
-									: t("advisor.card.kind", "Checkpoint card")}
-							</Text>
-							<Flex gap={8} align="center">
-								<Button
-									className={card.projectLink}
-									icon={<IconExternalLink size={16} />}
-									iconPlacement="end"
-									href={`/project/${checkpoint.project.slug}`}
-									target="_blank"
-								>
-									{t("advisor.card.projectPage", "Go to project page")}
-								</Button>
-								{project.links
-									.filter((link) => link.link)
-									.slice(0, 3)
-									.map((link) => {
-										const platform = platformOptions.find(
-											(option) => option.value === link.platform,
-										);
-
-										return (
-											<Tooltip
-												key={link.link}
-												title={platform?.label ?? link.platform}
-											>
-												<Button
-													className={styles.headerButton}
-													icon={platform?.icon ?? <IconWorld size={16} />}
-													href={link.link}
-													target="_blank"
-												/>
-											</Tooltip>
-										);
-									})}
-								<Button
-									className={styles.close}
-									icon={<IconX size={16} />}
-									onClick={onClose}
-									aria-label={t("common.close", "Close")}
+		<>
+			<Modal
+				open={open}
+				onCancel={onClose}
+				footer={null}
+				closable={false}
+				width={960}
+				centered
+				className={styles.modal}
+				classNames={{ body: styles.body }}
+				destroyOnHidden
+			>
+				{isLoading || !project ? (
+					<div className={styles.loading}>
+						<Skeleton active paragraph={{ rows: 8 }} />
+					</div>
+				) : (
+					<>
+						<header className={styles.header}>
+							{project.coverImage && (
+								<AppImage
+									className={styles.cover}
+									src={project.coverImage}
+									alt=""
+									fill
+									sizes="960px"
 								/>
-							</Flex>
-						</Flex>
-
-						<Flex
-							justify="space-between"
-							align="end"
-							gap={16}
-							className={styles.headerBottom}
-						>
-							<Flex vertical gap={8} className={styles.titleWrap}>
-								<Title level={2} className={styles.title}>
-									{project.name}
-								</Title>
-								<Text className={styles.meta}>{meta}</Text>
-							</Flex>
-
-							{accepted && !answerable && (
-								<Button
-									className={styles.headerAction}
-									icon={<IconMessageCircle size={16} />}
-									loading={openChat.isPending}
-									onClick={chat}
-								>
-									{t("workflow.aside.chat", "Checkpoint chat")}
-								</Button>
 							)}
+							<div className={styles.scrim} />
+							<div className={styles.scrimBottom} />
 
-							{answerable && (
-								<Flex gap={12} align="center">
+							<Flex
+								justify="space-between"
+								align="start"
+								className={styles.headerTop}
+							>
+								<Text className={styles.kind}>
+									{answerable
+										? t("advisor.card.kindRequest", "Checkpoint request")
+										: t("advisor.card.kind", "Checkpoint card")}
+								</Text>
+								<Flex gap={8} align="center">
+									<Button
+										className={card.projectLink}
+										icon={<IconExternalLink size={16} />}
+										iconPlacement="end"
+										href={`/project/${checkpoint.project.slug}`}
+										target="_blank"
+									>
+										{t("advisor.card.projectPage", "Go to project page")}
+									</Button>
+									{project.links
+										.filter((link) => link.link)
+										.slice(0, 3)
+										.map((link) => {
+											const platform = platformOptions.find(
+												(option) => option.value === link.platform,
+											);
+
+											return (
+												<Tooltip
+													key={link.link}
+													title={platform?.label ?? link.platform}
+												>
+													<Button
+														className={styles.headerButton}
+														icon={platform?.icon ?? <IconWorld size={16} />}
+														href={link.link}
+														target="_blank"
+													/>
+												</Tooltip>
+											);
+										})}
+									<Button
+										className={styles.close}
+										icon={<IconX size={16} />}
+										onClick={onClose}
+										aria-label={t("common.close", "Close")}
+									/>
+								</Flex>
+							</Flex>
+
+							<Flex
+								justify="space-between"
+								align="end"
+								gap={16}
+								className={styles.headerBottom}
+							>
+								<Flex vertical gap={8} className={styles.titleWrap}>
+									<Title level={2} className={styles.title}>
+										{project.name}
+									</Title>
+									<Text className={styles.meta}>{meta}</Text>
+								</Flex>
+
+								{accepted && !answerable && (
 									<Button
 										className={styles.headerAction}
-										onClick={() => reply(false)}
-										disabled={answer.isPending}
+										icon={<IconMessageCircle size={16} />}
+										loading={openChat.isPending}
+										onClick={chat}
 									>
-										{t("advisor.checkpoints.decline", "Turn down")}
+										{t("workflow.aside.chat", "Checkpoint chat")}
 									</Button>
-									<Button
-										type="primary"
-										className={styles.headerOffer}
-										onClick={() => reply(true)}
-										loading={answer.isPending}
-									>
-										{t("advisor.checkpoints.accept", "Take it on")}
-									</Button>
-								</Flex>
-							)}
-						</Flex>
-					</header>
+								)}
 
-					<Tabs
-						activeKey={tab}
-						onChange={setTab}
-						className={styles.tabs}
-						items={[
-							{
-								key: "checkpoint",
-								label: t("advisor.brief.checkpoint", "Checkpoint"),
-								children: (
-									<CheckpointTab checkpoint={checkpoint} project={project} />
-								),
-							},
-							{
-								key: "plan",
-								label: t("advisor.plan.tab", "Plan"),
-								children: <PlanTab checkpoint={checkpoint} />,
-							},
-							{
-								key: "project",
-								label: t("advisor.brief.project", "Project"),
-								children: <ProjectTab project={project} onOpenTab={setTab} />,
-							},
-							{
-								key: "team",
-								label: t("scout.card.tab.team", "Team"),
-								children: <TeamTab project={project} />,
-							},
-							...(accepted
-								? [
-										{
-											key: "devlogs",
-											label: t("advisor.card.devlogs", "Devlogs"),
-											children: <DevlogsTab devlogs={project.devlogs} />,
-										},
-									]
-								: []),
-						]}
-					/>
+								{answerable && (
+									<Flex gap={12} align="center">
+										<Button
+											className={styles.headerAction}
+											onClick={() => reply(false)}
+											disabled={answer.isPending}
+										>
+											{t("advisor.checkpoints.decline", "Turn down")}
+										</Button>
+										<Button
+											type="primary"
+											className={styles.headerOffer}
+											onClick={() => reply(true)}
+											loading={answer.isPending}
+										>
+											{t("advisor.checkpoints.accept", "Take it on")}
+										</Button>
+									</Flex>
+								)}
+							</Flex>
+						</header>
 
-					<footer className={styles.footer}>
-						<Flex align="center" gap={8}>
-							<IconClock size={14} />
-							<span>
-								{t("scout.card.updated", "Updated {when}", {
-									when: dayjs(project.updatedAt).fromNow(),
-								})}
-							</span>
-						</Flex>
-					</footer>
-				</>
-			)}
-		</Modal>
+						<Tabs
+							activeKey={tab}
+							onChange={setTab}
+							className={styles.tabs}
+							items={[
+								{
+									key: "checkpoint",
+									label: t("advisor.brief.checkpoint", "Checkpoint"),
+									children: (
+										<CheckpointTab checkpoint={checkpoint} project={project} />
+									),
+								},
+								{
+									key: "plan",
+									label: t("advisor.plan.tab", "Plan"),
+									children: <PlanTab checkpoint={checkpoint} />,
+								},
+								{
+									key: "project",
+									label: t("advisor.brief.project", "Project"),
+									children: <ProjectTab project={project} onOpenTab={setTab} />,
+								},
+								{
+									key: "team",
+									label: t("scout.card.tab.team", "Team"),
+									children: <TeamTab project={project} />,
+								},
+								...(accepted
+									? [
+											{
+												key: "devlogs",
+												label: t("advisor.card.devlogs", "Devlogs"),
+												children: <DevlogsTab devlogs={project.devlogs} />,
+											},
+										]
+									: []),
+							]}
+						/>
+
+						<footer className={styles.footer}>
+							<Flex align="center" gap={8}>
+								<IconClock size={14} />
+								<span>
+									{t("scout.card.updated", "Updated {when}", {
+										when: dayjs(project.updatedAt).fromNow(),
+									})}
+								</span>
+							</Flex>
+						</footer>
+					</>
+				)}
+			</Modal>
+			<LegalAcceptModal
+				code="ExpertServicesTerms"
+				open={termsOpen}
+				stale={termsStale}
+				okText={t("advisor.checkpoints.acceptTerms", "Accept and take it on")}
+				requiredMessage={t(
+					"legal.clickwrap.ExpertServicesTerms.required",
+					"You need to accept the Expert Services Terms to curate a checkpoint",
+				)}
+				onCancel={() => setTermsOpen(false)}
+				onAccept={() => reply(true, true)}
+			/>
+		</>
 	);
 }

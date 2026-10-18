@@ -10,6 +10,7 @@ import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
+import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import type {
 	CuratorGoalCard,
@@ -435,9 +436,12 @@ export const closeCheckpoint = async (
 		},
 	});
 
-	await syncChat(`close ${checkpointId}`, () =>
-		closeCheckpointRoom(checkpointId),
-	);
+	await Promise.all([
+		syncChat(`close ${checkpointId}`, () => closeCheckpointRoom(checkpointId)),
+		issueCheckpointCertificate(checkpointId).catch((error) =>
+			console.error(`[certificate] checkpoint ${checkpointId}`, error),
+		),
+	]);
 
 	return settled;
 };

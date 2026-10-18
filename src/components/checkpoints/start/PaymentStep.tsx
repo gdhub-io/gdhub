@@ -6,7 +6,7 @@ import {
 	IconFlag,
 	IconMinus,
 } from "@tabler/icons-react";
-import { useTranslate } from "@tolgee/react";
+import { T, useTranslate } from "@tolgee/react";
 import { App, Button, Card, Flex, Form, Skeleton, Typography } from "antd";
 import { isAxiosError } from "axios";
 import dayjs from "dayjs";
@@ -26,6 +26,7 @@ import {
 	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
+import type { LegalCode } from "@/config/legal/registry";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
@@ -60,7 +61,7 @@ export function PaymentStep() {
 	const checkout = useCheckpointCheckout(draft?.id);
 	const { price, curator: chosen } = useCheckpointPrice(draft);
 	const [form] = Form.useForm();
-	const [stale, setStale] = useState(false);
+	const [stale, setStale] = useState<LegalCode | null>(null);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -119,16 +120,16 @@ export function PaymentStep() {
 			return;
 		}
 		try {
-			setStale(false);
+			setStale(null);
 			const { url } = await checkout.mutateAsync(
-				legalAcceptances(["CheckpointPurchaseTerms"]),
+				legalAcceptances(["CheckpointPurchaseTerms", "WithdrawalWaiver"]),
 			);
 			window.location.href = url;
 		} catch (error) {
 			const outdated = outdatedLegalCode(error);
 			if (outdated) {
 				form.setFieldValue(clickwrapFieldName(outdated), false);
-				setStale(true);
+				setStale(outdated);
 				return;
 			}
 			if (isSlotTaken(error)) {
@@ -365,13 +366,28 @@ export function PaymentStep() {
 						))}
 					</Flex>
 
-					<Form form={form}>
+					<Form form={form} className={styles.clickwraps}>
 						<ClickwrapField
 							code="CheckpointPurchaseTerms"
-							stale={stale}
+							stale={stale === "CheckpointPurchaseTerms"}
 							requiredMessage={t(
 								"legal.clickwrap.CheckpointPurchaseTerms.required",
 								"You need to accept the Checkpoint Purchase Terms to pay",
+							)}
+						/>
+						<ClickwrapField
+							code="WithdrawalWaiver"
+							stale={stale === "WithdrawalWaiver"}
+							requiredMessage={t(
+								"legal.clickwrap.WithdrawalWaiver.required",
+								"Agree that the checkpoint starts before the withdrawal period ends to pay",
+							)}
+							label={(doc) => (
+								<T
+									keyName="legal.clickwrap.WithdrawalWaiver.label"
+									defaultValue="I want the checkpoint to start now and understand I lose the right of withdrawal for what is already provided (<doc>Withdrawal Waiver</doc>)"
+									params={{ doc }}
+								/>
 							)}
 						/>
 					</Form>
