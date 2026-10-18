@@ -122,7 +122,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"24609f31624d9d2ddfcf72198d0c1e20ddbace4a672241f7b0524f035ad582c9",
+					"783508b4ad2f1394a2fb29ecc502801891238f5a4d21ce52cf65a2ca5ae8627f",
 			},
 		],
 	},
@@ -154,7 +154,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"9dd6b4335aeff3efe6645626c40bece9bb311a520fd585684a209fe56f796676",
+					"1dda0272538781792f9c81da14710c7c414c811174bb5547c2c674d6f5ba7d5f",
 			},
 		],
 	},
