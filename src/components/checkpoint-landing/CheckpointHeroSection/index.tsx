@@ -2,7 +2,7 @@ import { useTranslate } from "@tolgee/react";
 import { Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import heroImage from "@/assets/images/checkpoint/checkpoint-hero.png";
+import heroImage from "@/assets/images/checkpoint/checkpoint-hero-bridge.jpg";
 import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import {
 	CHECKPOINT_AI_PRICE,
@@ -53,16 +53,20 @@ export const CheckpointHeroSection = () => {
 				</div>
 
 				<div className={styles.visual}>
-					<Image
-						src={heroImage}
-						alt={t(
-							"checkpointLanding.hero.artworkAlt",
-							"A team running toward a checkpoint gate",
-						)}
-						className={styles.artwork}
-						sizes="(min-width: 992px) 430px, 250px"
-						priority
-					/>
+					<div className={styles.frame}>
+						<Image
+							src={heroImage}
+							alt={t(
+								"checkpointLanding.hero.artworkAlt",
+								"A team crossing a bridge toward a lit door",
+							)}
+							fill
+							className={styles.artwork}
+							sizes="100vw"
+							placeholder="blur"
+							priority
+						/>
+					</div>
 				</div>
 
 				<p className={styles.priceNote}>

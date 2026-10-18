@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HeroImage from "@/assets/images/checkpoint/checkpoint-hero.png";
+import HeroImage from "@/assets/images/checkpoint/checkpoint-hero-bridge.jpg";
 import {
 	type FeaturedCurator,
 	getFeaturedCurators,

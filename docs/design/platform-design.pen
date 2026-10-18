@@ -204473,7 +204473,7 @@
                   "fill": "#FFFFFFB3",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release. Over 28 days, the project team works with a curator to define a realistic goal, organize the work needed to achieve it, review progress, and adjust priorities when necessary.",
+                  "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
                   "lineHeight": 1.55,
                   "fontFamily": "Onest",
                   "fontSize": 18,
@@ -204521,7 +204521,7 @@
                   "fill": "#FFFFFF8A",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "AI curator — $19  ·  Industry curator — from $250  ·  Exact price before payment",
+                  "content": "AI curator — $19 · Industry curator — from $300",
                   "lineHeight": 1.5,
                   "fontFamily": "Onest",
                   "fontSize": 13,
@@ -209047,7 +209047,7 @@
               "fill": "#FFFFFFB3",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release. Over 28 days, the project team works with a curator to define a realistic goal, organize the work needed to achieve it, review progress, and adjust priorities when necessary.",
+              "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
               "lineHeight": 1.5,
               "fontFamily": "Onest",
               "fontSize": 15,
@@ -209116,7 +209116,7 @@
               "fill": "#FFFFFF8A",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "AI curator — $19 · Industry curator — from $250",
+              "content": "AI curator — $19 · Industry curator — from $300",
               "textAlign": "center",
               "fontFamily": "Onest",
               "fontSize": 12,
@@ -413139,6 +413139,940 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "n0C3vl",
+      "x": 16986,
+      "y": 1638,
+      "name": "Checkpoint hero · new art · A full-bleed (desktop)",
+      "width": 1440,
+      "height": 640,
+      "fill": "#0F0F0E",
+      "gap": 64,
+      "padding": [
+        64,
+        120,
+        80,
+        120
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "m0MqO",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 0,
+          "name": "Scene",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "images/checkpoint-hero-bridge.png",
+            "mode": "cover"
+          },
+          "width": 1440,
+          "height": 640
+        },
+        {
+          "type": "rectangle",
+          "id": "DbcGp",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 0,
+          "name": "Tone · muted",
+          "fill": [
+            {
+              "type": "color",
+              "color": "#80808073",
+              "enabled": true,
+              "blendMode": "saturation"
+            },
+            "#0F0F0E59"
+          ],
+          "width": 1440,
+          "height": 640
+        },
+        {
+          "type": "rectangle",
+          "id": "kXe9p",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 0,
+          "name": "Shade · left",
+          "fill": [
+            {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 270,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#0F0F0E",
+                  "position": 0
+                },
+                {
+                  "color": "#0F0F0E",
+                  "position": 0.2
+                },
+                {
+                  "color": "#0F0F0ECC",
+                  "position": 0.42
+                },
+                {
+                  "color": "#0F0F0E00",
+                  "position": 0.66
+                }
+              ]
+            },
+            {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 180,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#0F0F0E99",
+                  "position": 0
+                },
+                {
+                  "color": "#0F0F0E00",
+                  "position": 0.18
+                },
+                {
+                  "color": "#0F0F0E00",
+                  "position": 0.8
+                },
+                {
+                  "color": "#0F0F0EB3",
+                  "position": 1
+                }
+              ]
+            }
+          ],
+          "width": 1440,
+          "height": 640
+        },
+        {
+          "type": "frame",
+          "id": "n2hnMS",
+          "name": "Hero copy",
+          "width": 560,
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "B3nxXj",
+              "name": "Program badge",
+              "fill": "#0F0F0E00",
+              "cornerRadius": 6,
+              "stroke": "#0F0F0E00",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "j8wBBx",
+                  "name": "Badge label",
+                  "fill": "#FFFFFF",
+                  "content": "Checkpoint",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "GqazA",
+                  "name": "Product descriptor",
+                  "fill": "#F57A67",
+                  "content": "A REPEATABLE 28-DAY PROGRAM FOR GAME DEVELOPERS",
+                  "fontFamily": "Onest",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "letterSpacing": 1.2
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "jeeBy",
+              "name": "Hero headline",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Reach your next Checkpoint in 28 days",
+              "lineHeight": 1.02,
+              "fontFamily": "Onest",
+              "fontSize": 64,
+              "fontWeight": "700",
+              "letterSpacing": -1.5
+            },
+            {
+              "type": "text",
+              "id": "dH9Io",
+              "name": "Hero subhead",
+              "fill": "#FFFFFFB3",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
+              "lineHeight": 1.55,
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "MZooo",
+              "name": "Hero actions",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "i3rgjb",
+                  "name": "Plan my next Checkpoint",
+                  "height": 64,
+                  "fill": "#F15541",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    32
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "y7TZq",
+                      "name": "Primary label",
+                      "fill": "#FFFFFF",
+                      "content": "Plan my next Checkpoint",
+                      "fontFamily": "Onest",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "GQiiZ",
+              "name": "Price note",
+              "fill": "#FFFFFF8A",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "AI curator — $19 · Industry curator — from $300",
+              "lineHeight": 1.5,
+              "fontFamily": "Onest",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LVRdm",
+          "x": 744,
+          "y": 64,
+          "name": "Hero visual",
+          "enabled": false,
+          "width": "fill_container(576)",
+          "height": "fill_container(496)",
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "G4ltBh",
+              "name": "Checkpoint artwork",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "image-7.png",
+                "mode": "cover"
+              },
+              "width": 430,
+              "height": 405
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "M02aHM",
+      "x": 16986,
+      "y": 2398,
+      "name": "Checkpoint hero · new art · B in column (desktop)",
+      "width": 1440,
+      "height": 640,
+      "fill": "#0F0F0E",
+      "gap": 64,
+      "padding": [
+        64,
+        120,
+        80,
+        120
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Q8jmb",
+          "name": "Hero copy",
+          "width": 560,
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "OwYDF",
+              "name": "Program badge",
+              "fill": "#0F0F0E00",
+              "cornerRadius": 6,
+              "stroke": "#0F0F0E00",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ZDt57",
+                  "name": "Badge label",
+                  "fill": "#FFFFFF",
+                  "content": "Checkpoint",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "YtCKc",
+                  "name": "Product descriptor",
+                  "fill": "#F57A67",
+                  "content": "A REPEATABLE 28-DAY PROGRAM FOR GAME DEVELOPERS",
+                  "fontFamily": "Onest",
+                  "fontSize": 11,
+                  "fontWeight": "600",
+                  "letterSpacing": 1.2
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "l4Omn",
+              "name": "Hero headline",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Reach your next Checkpoint in 28 days",
+              "lineHeight": 1.02,
+              "fontFamily": "Onest",
+              "fontSize": 64,
+              "fontWeight": "700",
+              "letterSpacing": -1.5
+            },
+            {
+              "type": "text",
+              "id": "tS9SS",
+              "name": "Hero subhead",
+              "fill": "#FFFFFFB3",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
+              "lineHeight": 1.55,
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "S2kAK",
+              "name": "Hero actions",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "fIAdV",
+                  "name": "Plan my next Checkpoint",
+                  "height": 64,
+                  "fill": "#F15541",
+                  "cornerRadius": 10,
+                  "padding": [
+                    0,
+                    32
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "klgLD",
+                      "name": "Primary label",
+                      "fill": "#FFFFFF",
+                      "content": "Plan my next Checkpoint",
+                      "fontFamily": "Onest",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "l8vFl",
+              "name": "Price note",
+              "fill": "#FFFFFF8A",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "AI curator — $19 · Industry curator — from $300",
+              "lineHeight": 1.5,
+              "fontFamily": "Onest",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NJeKw",
+          "name": "Hero visual",
+          "clip": true,
+          "width": 576,
+          "height": 496,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "JMRTO",
+              "x": 0,
+              "y": 0,
+              "name": "Checkpoint artwork",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "images/checkpoint-hero-bridge.png",
+                "mode": "cover",
+                "transform": [
+                  1.7241379310344827,
+                  0,
+                  0,
+                  1.1273957158962795,
+                  -0.7241379310344827,
+                  -0.12401352874859076
+                ]
+              },
+              "width": 576,
+              "height": 496
+            },
+            {
+              "type": "rectangle",
+              "id": "l2Ril",
+              "layoutPosition": "absolute",
+              "x": 0,
+              "y": 0,
+              "name": "Tone · muted",
+              "fill": [
+                {
+                  "type": "color",
+                  "color": "#80808073",
+                  "enabled": true,
+                  "blendMode": "saturation"
+                },
+                "#0F0F0E59"
+              ],
+              "width": 576,
+              "height": 496
+            },
+            {
+              "type": "rectangle",
+              "id": "C3eq1c",
+              "layoutPosition": "absolute",
+              "x": 0,
+              "y": 0,
+              "name": "Feather",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1.15,
+                  "height": 1.15
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0.45
+                  },
+                  {
+                    "color": "#0F0F0E",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 576,
+              "height": 496
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "F4U69P",
+      "x": 18546,
+      "y": 1638,
+      "name": "Checkpoint hero · new art · A scene behind (mobile)",
+      "width": "fill_container(390)",
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        28,
+        24,
+        40,
+        24
+      ],
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "Vuukx",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 440,
+          "name": "Scene",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "images/checkpoint-hero-bridge.png",
+            "mode": "cover",
+            "transform": [
+              1.7857142857142856,
+              0,
+              0,
+              1,
+              -0.7857142857142857,
+              0
+            ]
+          },
+          "width": 390,
+          "height": 381
+        },
+        {
+          "type": "rectangle",
+          "id": "XiSMs",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 440,
+          "name": "Tone · muted",
+          "fill": [
+            {
+              "type": "color",
+              "color": "#80808073",
+              "enabled": true,
+              "blendMode": "saturation"
+            },
+            "#0F0F0E59"
+          ],
+          "width": 390,
+          "height": 381
+        },
+        {
+          "type": "rectangle",
+          "id": "q0g5QE",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 440,
+          "name": "Shade",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0F0F0E",
+                "position": 0
+              },
+              {
+                "color": "#0F0F0E00",
+                "position": 0.3
+              },
+              {
+                "color": "#0F0F0E00",
+                "position": 0.7
+              },
+              {
+                "color": "#0F0F0EE6",
+                "position": 1
+              }
+            ]
+          },
+          "width": 390,
+          "height": 381
+        },
+        {
+          "type": "frame",
+          "id": "Xjub1",
+          "name": "Hero label",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "qw2aH",
+              "name": "Product name",
+              "fill": "#FFFFFF",
+              "content": "Checkpoint",
+              "fontFamily": "Onest",
+              "fontSize": 22,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "k4gMEg",
+              "name": "Descriptor",
+              "fill": "#F57A67",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "A REPEATABLE 28-DAY PROGRAM FOR GAME DEVELOPERS",
+              "lineHeight": 1.4,
+              "fontFamily": "Onest",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 1
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "WCqIG",
+          "name": "Headline",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Reach your next Checkpoint in 28 days",
+          "lineHeight": 1.02,
+          "fontFamily": "Onest",
+          "fontSize": 42,
+          "fontWeight": "700",
+          "letterSpacing": -1
+        },
+        {
+          "type": "text",
+          "id": "I1jLJi",
+          "name": "Subhead",
+          "fill": "#FFFFFFB3",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
+          "lineHeight": 1.5,
+          "fontFamily": "Onest",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "f03GC",
+          "name": "Actions",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "frame",
+              "id": "wF4mm",
+              "name": "Plan my next Checkpoint",
+              "width": "fill_container",
+              "height": 48,
+              "fill": "#F15541",
+              "cornerRadius": 10,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "b1prv7",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "Plan my next Checkpoint",
+                  "fontFamily": "Onest",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "uHOAW",
+          "name": "Artwork wrapper",
+          "width": "fill_container",
+          "height": 300,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "c4Ghn",
+              "x": 46,
+              "y": 31,
+              "name": "Checkpoint artwork",
+              "enabled": false,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "image-7.png",
+                "mode": "cover"
+              },
+              "width": 250,
+              "height": 238
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "JysYB",
+          "name": "Price note",
+          "fill": "#FFFFFF8A",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "AI curator — $19 · Industry curator — from $300",
+          "textAlign": "center",
+          "fontFamily": "Onest",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "R2sx8T",
+      "x": 19056,
+      "y": 1638,
+      "name": "Checkpoint hero · new art · B in flow (mobile)",
+      "width": "fill_container(390)",
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        28,
+        24,
+        40,
+        24
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "dBmXc",
+          "name": "Hero label",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "kG4QJ",
+              "name": "Product name",
+              "fill": "#FFFFFF",
+              "content": "Checkpoint",
+              "fontFamily": "Onest",
+              "fontSize": 22,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "lpSl2",
+              "name": "Descriptor",
+              "fill": "#F57A67",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "A REPEATABLE 28-DAY PROGRAM FOR GAME DEVELOPERS",
+              "lineHeight": 1.4,
+              "fontFamily": "Onest",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 1
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "OmeiB",
+          "name": "Headline",
+          "fill": "#FFFFFF",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Reach your next Checkpoint in 28 days",
+          "lineHeight": 1.02,
+          "fontFamily": "Onest",
+          "fontSize": 42,
+          "fontWeight": "700",
+          "letterSpacing": -1
+        },
+        {
+          "type": "text",
+          "id": "u6v3X",
+          "name": "Subhead",
+          "fill": "#FFFFFFB3",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "The Checkpoint Program helps game developers organize their work around a clear goal and move their project closer to release.",
+          "lineHeight": 1.5,
+          "fontFamily": "Onest",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "S3MTB4",
+          "name": "Actions",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ENESj",
+              "name": "Plan my next Checkpoint",
+              "width": "fill_container",
+              "height": 48,
+              "fill": "#F15541",
+              "cornerRadius": 10,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dlZwJ",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "Plan my next Checkpoint",
+                  "fontFamily": "Onest",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "lqSax",
+          "name": "Artwork wrapper",
+          "clip": true,
+          "width": 342,
+          "height": 260,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "isUOX",
+              "x": 0,
+              "y": 0,
+              "name": "Checkpoint artwork",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "images/checkpoint-hero-bridge.png",
+                "mode": "cover",
+                "transform": [
+                  1.8181818181818181,
+                  0,
+                  0,
+                  1.3513513513513513,
+                  -0.8181818181818181,
+                  -0.16216216216216217
+                ]
+              },
+              "width": 342,
+              "height": 260
+            },
+            {
+              "type": "rectangle",
+              "id": "Gm37o",
+              "layoutPosition": "absolute",
+              "x": 0,
+              "y": 0,
+              "name": "Tone · muted",
+              "fill": [
+                {
+                  "type": "color",
+                  "color": "#80808073",
+                  "enabled": true,
+                  "blendMode": "saturation"
+                },
+                "#0F0F0E59"
+              ],
+              "width": 342,
+              "height": 260
+            },
+            {
+              "type": "rectangle",
+              "id": "PZMj8",
+              "layoutPosition": "absolute",
+              "x": 0,
+              "y": 0,
+              "name": "Feather",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1.15,
+                  "height": 1.15
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0.45
+                  },
+                  {
+                    "color": "#0F0F0E",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 342,
+              "height": 260
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "id7jl",
+          "name": "Price note",
+          "fill": "#FFFFFF8A",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "AI curator — $19 · Industry curator — from $300",
+          "textAlign": "center",
+          "fontFamily": "Onest",
+          "fontSize": 12,
+          "fontWeight": "normal"
         }
       ]
     }

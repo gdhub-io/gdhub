@@ -374,6 +374,13 @@ export function PaymentStep() {
 								"legal.clickwrap.CheckpointPurchaseTerms.required",
 								"You need to accept the Checkpoint Purchase Terms to pay",
 							)}
+							label={(doc) => (
+								<T
+									keyName="legal.clickwrap.CheckpointPurchaseTerms.label"
+									defaultValue="I am 18 or over and accept the <doc>Checkpoint Purchase Terms</doc>"
+									params={{ doc }}
+								/>
+							)}
 						/>
 						<ClickwrapField
 							code="WithdrawalWaiver"
