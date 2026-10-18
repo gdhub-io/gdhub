@@ -57,6 +57,8 @@ export const createCheckpointCheckout = async (input: CheckpointCheckout) =>
 		payment_intent_data: { capture_method: "manual" },
 		// Admin-made codes (GDHUB-89); Stripe checks their limits, and the hold is for the discounted sum.
 		allow_promotion_codes: true,
+		// A business buyer's VAT number, for the reverse charge on the invoice we issue on request.
+		tax_id_collection: { enabled: true },
 		// What the webhook has to find its way back by. `client_reference_id`
 		// survives in the dashboard where a human can read it; the metadata is
 		// what the handler actually reads.

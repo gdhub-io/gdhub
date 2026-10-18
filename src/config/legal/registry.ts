@@ -42,7 +42,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: true,
 				checksum:
-					"f67decab3c4018d583f0ed135d9a7106ffce0809b8a19c4072f83e1af45b66e7",
+					"c193172c25be20b1eb58fd5f7c03cf3a1267100034bcdc6be34aed777349c1c4",
 			},
 		],
 	},
@@ -58,7 +58,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"8adb763027dbaf4b06c0c0311572e920fd0f85b16e1674d2414ccaed8e9ac0d9",
+					"e636fd0dbd3af9a544592c5dcf798c68b6ce4a335079855f06e9dbbdc309b901",
 			},
 		],
 	},
@@ -90,7 +90,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"645ebb26227552ff96b5ba9bf430fe4fa48f0f16dcc1a12254619f6d0ac381a3",
+					"f74d4c0c1f4f32cd5f3ae6c090b293a785afd9d67b3c3e6fab0709c0bf4b84e3",
 			},
 		],
 	},
@@ -122,7 +122,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"783508b4ad2f1394a2fb29ecc502801891238f5a4d21ce52cf65a2ca5ae8627f",
+					"f58586e32250ef49c19bbab618e9183045fc74a7b1ef98fd649d61c8e0f93964",
 			},
 		],
 	},
@@ -138,7 +138,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"ad978c092bf7af93769dd9e97551af385352e0c2fc64c873192294bb63517dfd",
+					"7e8eb9a900b3dec44fd47dbead54425b04765a88662fde8697176785d40e38d2",
 			},
 		],
 	},
@@ -154,7 +154,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"1dda0272538781792f9c81da14710c7c414c811174bb5547c2c674d6f5ba7d5f",
+					"a4dddc7f5ccb09b3da08563929940ae93bdec5941d05122e655c60d6a8bb6c01",
 			},
 		],
 	},
@@ -170,7 +170,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"3a166b605a4377185e364fa0d8d2c41ed0cde8c440c7d70ddf64c0eebfe49458",
+					"7b9942b9ae94effde5fdbba249e3239457bdf091672a22ec28b811312bfe59ae",
 			},
 		],
 	},
