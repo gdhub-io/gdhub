@@ -403841,7 +403841,7 @@
                           "fill": "$text-secondary",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "So the curator knows who they work with. The rest of your profile can wait.",
+                          "content": "Your speciality and level help the curator pitch their advice. The rest of your profile can wait.",
                           "lineHeight": 1.45,
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -403911,7 +403911,7 @@
                                   "id": "EqEhe",
                                   "name": "L",
                                   "fill": "$text-primary",
-                                  "content": "First name",
+                                  "content": "Name",
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "normal"
@@ -403937,7 +403937,7 @@
                                       "fill": "$text-primary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Anna",
+                                      "content": "Anna Petrova",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -403949,83 +403949,25 @@
                             },
                             {
                               "type": "frame",
-                              "id": "wcIDB",
-                              "name": "Field — Last name",
-                              "width": "fill_container",
+                              "id": "spXRU",
+                              "name": "Field — Year of birth",
+                              "width": 160,
                               "layout": "vertical",
                               "gap": 8,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "E1Q0ZE",
+                                  "id": "SSzpm",
                                   "name": "L",
                                   "fill": "$text-primary",
-                                  "content": "Last name",
+                                  "content": "Year of birth",
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "normal"
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "I6dWtO",
-                                  "name": "Input",
-                                  "width": "fill_container",
-                                  "height": 40,
-                                  "fill": "$bg-muted",
-                                  "cornerRadius": 10,
-                                  "padding": [
-                                    0,
-                                    12
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "hwYcs",
-                                      "name": "V",
-                                      "fill": "$text-primary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "Petrova",
-                                      "lineHeight": 1.45,
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "vdwkY",
-                          "name": "Row — Country + Work direction",
-                          "width": "fill_container",
-                          "gap": 24,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "V1xh1",
-                              "name": "Field — Country",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 8,
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "T13IlW",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "Country",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "bppqA",
+                                  "id": "S4Pr7V",
                                   "name": "Select",
                                   "width": "fill_container",
                                   "height": 40,
@@ -404040,12 +403982,12 @@
                                   "children": [
                                     {
                                       "type": "text",
-                                      "id": "DFpm2",
+                                      "id": "I26QEl",
                                       "name": "V",
                                       "fill": "$text-primary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Estonia",
+                                      "content": "1994",
                                       "lineHeight": 1.45,
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -404053,7 +403995,76 @@
                                     },
                                     {
                                       "type": "icon",
-                                      "id": "qsyn7",
+                                      "id": "VeIv8",
+                                      "name": "Caret",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "chevron-down",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "BzpiS",
+                          "name": "Row — Time zone + Work direction",
+                          "width": "fill_container",
+                          "gap": 24,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "A8Evd",
+                              "name": "Field — Time zone",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "nrA6A",
+                                  "name": "L",
+                                  "fill": "$text-primary",
+                                  "content": "Time zone",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "V2Nor",
+                                  "name": "Select",
+                                  "width": "fill_container",
+                                  "height": 40,
+                                  "fill": "$bg-muted",
+                                  "cornerRadius": 10,
+                                  "gap": 8,
+                                  "padding": [
+                                    0,
+                                    12
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "v7Brg",
+                                      "name": "V",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Europe/Tallinn · UTC+3",
+                                      "lineHeight": 1.45,
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "icon",
+                                      "id": "n65LUI",
                                       "name": "Caret",
                                       "width": 14,
                                       "height": 14,
@@ -404067,7 +404078,7 @@
                             },
                             {
                               "type": "frame",
-                              "id": "NKkXc",
+                              "id": "a9BSFL",
                               "name": "Field — Work direction",
                               "width": "fill_container",
                               "layout": "vertical",
@@ -404075,7 +404086,7 @@
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "T4TXaB",
+                                  "id": "BVEFd",
                                   "name": "L",
                                   "fill": "$text-primary",
                                   "content": "Work direction",
@@ -404085,7 +404096,7 @@
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "HERoU",
+                                  "id": "paiWV",
                                   "name": "Select",
                                   "width": "fill_container",
                                   "height": 40,
@@ -404100,7 +404111,7 @@
                                   "children": [
                                     {
                                       "type": "text",
-                                      "id": "EYoTT",
+                                      "id": "TOtUw",
                                       "name": "V",
                                       "fill": "$text-primary",
                                       "textGrowth": "fixed-width",
@@ -404113,7 +404124,7 @@
                                     },
                                     {
                                       "type": "icon",
-                                      "id": "TJl9v",
+                                      "id": "jLFBd",
                                       "name": "Caret",
                                       "width": 14,
                                       "height": 14,
@@ -404244,6 +404255,66 @@
                               ]
                             }
                           ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "O26fWn",
+                          "name": "Field — About your experience",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "P5m1A",
+                              "name": "L",
+                              "fill": "$text-primary",
+                              "content": "Briefly about your experience",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "KLt61",
+                              "name": "Textarea",
+                              "width": "fill_container",
+                              "height": 96,
+                              "fill": "$bg-muted",
+                              "cornerRadius": 10,
+                              "layout": "vertical",
+                              "padding": [
+                                10,
+                                12
+                              ],
+                              "justifyContent": "space_between",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "xtRtt",
+                                  "name": "V",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Six years in level design: two shipped mobile puzzlers, then a stealth game at a mid-size studio. Now making my own.",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "a8lPf4",
+                                  "name": "Count",
+                                  "fill": "$text-tertiary",
+                                  "content": "118 / 500",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
@@ -404299,7 +404370,7 @@
                     {
                       "type": "frame",
                       "id": "ClbYE",
-                      "name": "Button — Save and go back",
+                      "name": "Button — Save and continue",
                       "height": 40,
                       "fill": "$btn-black",
                       "cornerRadius": 10,
@@ -404316,7 +404387,7 @@
                           "id": "U11dS",
                           "name": "Label",
                           "fill": "$text-invert",
-                          "content": "Save and go back",
+                          "content": "Save and continue",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -405097,7 +405168,7 @@
                     {
                       "type": "frame",
                       "id": "izqXT",
-                      "name": "Button — Save and go back",
+                      "name": "Button — Save and continue",
                       "height": 40,
                       "fill": "$btn-black",
                       "cornerRadius": 10,
@@ -405114,7 +405185,7 @@
                           "id": "xv21k",
                           "name": "Label",
                           "fill": "$text-invert",
-                          "content": "Save and go back",
+                          "content": "Save and continue",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -409155,13 +409226,13 @@
                                 },
                                 {
                                   "type": "icon",
-                                  "id": "LAk7v",
+                                  "id": "r5tepE",
                                   "name": "Icon info",
                                   "width": 16,
                                   "height": 16,
                                   "icon": "info",
                                   "library": "lucide",
-                                  "fill": "$text-tertiary"
+                                  "fill": "$text-secondary"
                                 }
                               ]
                             },
@@ -409240,7 +409311,7 @@
                                             },
                                             {
                                               "type": "text",
-                                              "id": "XV6sD",
+                                              "id": "ug1Nm",
                                               "name": "Dash",
                                               "fill": "$text-secondary",
                                               "content": "–",
@@ -409250,7 +409321,7 @@
                                             },
                                             {
                                               "type": "frame",
-                                              "id": "H0smVI",
+                                              "id": "nOe9q",
                                               "name": "To",
                                               "width": 52,
                                               "height": 32,
@@ -409267,7 +409338,7 @@
                                               "children": [
                                                 {
                                                   "type": "text",
-                                                  "id": "azdnX",
+                                                  "id": "S1juSu",
                                                   "name": "Value",
                                                   "fill": "#1A1917",
                                                   "content": "15",
@@ -409318,7 +409389,7 @@
                                     },
                                     {
                                       "type": "text",
-                                      "id": "KekSY",
+                                      "id": "LMJqQ",
                                       "name": "V",
                                       "fill": "$text-primary",
                                       "textGrowth": "fixed-width-height",
@@ -413148,6 +413219,7 @@
       "x": 16986,
       "y": 1638,
       "name": "Checkpoint hero · new art · A full-bleed (desktop)",
+      "clip": true,
       "width": 1440,
       "height": 640,
       "fill": "#0F0F0E",
@@ -413164,8 +413236,8 @@
           "type": "rectangle",
           "id": "m0MqO",
           "layoutPosition": "absolute",
-          "x": 0,
-          "y": 0,
+          "x": 100,
+          "y": -57,
           "name": "Scene",
           "fill": {
             "type": "image",
@@ -413173,15 +413245,15 @@
             "url": "images/checkpoint-hero-bridge.png",
             "mode": "cover"
           },
-          "width": 1440,
-          "height": 640
+          "width": 1340,
+          "height": 754
         },
         {
           "type": "rectangle",
           "id": "DbcGp",
           "layoutPosition": "absolute",
-          "x": 0,
-          "y": 0,
+          "x": 100,
+          "y": -57,
           "name": "Tone · muted",
           "fill": [
             {
@@ -413190,10 +413262,10 @@
               "enabled": true,
               "blendMode": "saturation"
             },
-            "#0F0F0E59"
+            "#0F0F0E33"
           ],
-          "width": 1440,
-          "height": 640
+          "width": 1340,
+          "height": 754
         },
         {
           "type": "rectangle",
@@ -413218,15 +413290,15 @@
                 },
                 {
                   "color": "#0F0F0E",
-                  "position": 0.2
+                  "position": 0.22
                 },
                 {
-                  "color": "#0F0F0ECC",
-                  "position": 0.42
+                  "color": "#0F0F0EB3",
+                  "position": 0.38
                 },
                 {
                   "color": "#0F0F0E00",
-                  "position": 0.66
+                  "position": 0.5
                 }
               ]
             },
@@ -413240,16 +413312,12 @@
               },
               "colors": [
                 {
-                  "color": "#0F0F0E99",
+                  "color": "#0F0F0E00",
                   "position": 0
                 },
                 {
                   "color": "#0F0F0E00",
-                  "position": 0.18
-                },
-                {
-                  "color": "#0F0F0E00",
-                  "position": 0.8
+                  "position": 0.78
                 },
                 {
                   "color": "#0F0F0EB3",
@@ -413999,12 +414067,12 @@
                 "url": "images/checkpoint-hero-bridge.png",
                 "mode": "cover",
                 "transform": [
-                  1.8181818181818181,
+                  1.6129032258064517,
                   0,
                   0,
-                  1.3513513513513513,
-                  -0.8181818181818181,
-                  -0.16216216216216217
+                  1.1933174224343677,
+                  -0.6129032258064516,
+                  -0.11933174224343676
                 ]
               },
               "width": 342,
@@ -414024,7 +414092,7 @@
                   "enabled": true,
                   "blendMode": "saturation"
                 },
-                "#0F0F0E59"
+                "#0F0F0E33"
               ],
               "width": 342,
               "height": 260
@@ -414036,26 +414104,73 @@
               "x": 0,
               "y": 0,
               "name": "Feather",
-              "fill": {
-                "type": "gradient",
-                "gradientType": "radial",
-                "enabled": true,
-                "rotation": 0,
-                "size": {
-                  "width": 1.15,
-                  "height": 1.15
-                },
-                "colors": [
-                  {
-                    "color": "#0F0F0E00",
-                    "position": 0.45
+              "fill": [
+                {
+                  "type": "gradient",
+                  "gradientType": "linear",
+                  "enabled": true,
+                  "rotation": 270,
+                  "size": {
+                    "height": 1
                   },
-                  {
-                    "color": "#0F0F0E",
-                    "position": 1
-                  }
-                ]
-              },
+                  "colors": [
+                    {
+                      "color": "#0F0F0E",
+                      "position": 0
+                    },
+                    {
+                      "color": "#0F0F0E00",
+                      "position": 0.3
+                    }
+                  ]
+                },
+                {
+                  "type": "gradient",
+                  "gradientType": "linear",
+                  "enabled": true,
+                  "rotation": 90,
+                  "size": {
+                    "height": 1
+                  },
+                  "colors": [
+                    {
+                      "color": "#0F0F0E",
+                      "position": 0
+                    },
+                    {
+                      "color": "#0F0F0E00",
+                      "position": 0.04
+                    }
+                  ]
+                },
+                {
+                  "type": "gradient",
+                  "gradientType": "linear",
+                  "enabled": true,
+                  "rotation": 180,
+                  "size": {
+                    "height": 1
+                  },
+                  "colors": [
+                    {
+                      "color": "#0F0F0E",
+                      "position": 0
+                    },
+                    {
+                      "color": "#0F0F0E00",
+                      "position": 0.12
+                    },
+                    {
+                      "color": "#0F0F0E00",
+                      "position": 0.72
+                    },
+                    {
+                      "color": "#0F0F0E",
+                      "position": 1
+                    }
+                  ]
+                }
+              ],
               "width": 342,
               "height": 260
             }

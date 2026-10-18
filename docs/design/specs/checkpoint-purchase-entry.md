@@ -279,3 +279,54 @@ Open:
 
 1. Carry-over can exceed 5 rows (Inputs + delivered Outcomes). Assumed: delivered
    Outcomes first, then Inputs, cut at 5 — confirm the order.
+
+---
+
+## v2 (GDHUB-96) — purchase path, items 1–3
+
+Intent: [docs/intent/GDHUB-96-purchase-path.md](../../intent/GDHUB-96-purchase-path.md).
+The approved frames are reworked **in place**; sections 1–9 above stay true except where
+this section says otherwise.
+
+### What changed on the frames
+
+| Frame | Change |
+|---|---|
+| 12.1 About you `TV9y5` | First and last name are one field **Name** (prefilled from the session: Google or the registration name), with **Year of birth** beside it (a select, as in onboarding; required; under 18 the field shows "You need to be 18 or over to head for a checkpoint" and the step does not save). **Country is replaced by Time zone**: a select of IANA zones shown as "Europe/Tallinn · UTC+3", prefilled from the browser (`Intl.DateTimeFormat().resolvedOptions().timeZone`) and editable; stored on the profile. Work direction, speciality and the skill-level select stay as they were. **New: "Briefly about your experience"** — a textarea under them (up to 500 characters, counter), help text "So your project's curator can learn a little more about you before the start."; optional; stored in `Speciality.specialization`. The subtitle no longer says the curator sees who you are: "Your speciality and level help the curator pitch their advice. The rest of your profile can wait." The primary button is **Save and continue**. |
+| 12.2 Your project `u7wrRw` | The primary button is **Save and continue**: it leads on to the goal. |
+| 12.3 Goal `mfAfN` | **Unchanged.** The author states their own hours; the team is the registered members. More people come in by invitation after payment. |
+
+### The straight line
+
+- A new user goes about you → your project → goal → curator → payment, each **Save and
+  continue** leading to the next.
+- The hub (12.0) stays the screen people come back to: a profile or a project already
+  exists, or they left half-way. From the hub the steps behave as before.
+- Signing up from the landing keeps `?project=` through registration.
+
+### Data
+
+- `Profile.yearOfBirth` (exists). The about step and the pay endpoint refuse when
+  `currentYear − year < 18`.
+- `Profile.timezone` (IANA name). Call reminders to the team are written in it instead of
+  UTC; the curator's brief shows it.
+- No team numbers on the checkpoint. The author's side, the curator's card and the AI goal
+  check count the same members (`TEAM_ROSTER_STATUSES` without former members).
+
+### Copy (Tolgee keys, English defaults)
+
+| Key | Default |
+|---|---|
+| `checkpointEntry.about.name` | Name |
+| `checkpointEntry.about.timezone` | Time zone |
+| `yearOfBirth` | Year of birth (existing onboarding key) |
+| `checkpointEntry.about.underage` | You need to be 18 or over to head for a checkpoint |
+| `checkpointEntry.about.experience` | Briefly about your experience |
+| `checkpointEntry.about.experienceHelp` | So your project's curator can learn a little more about you before the start. |
+| `checkpointEntry.about.hint` | Your speciality and level help the curator pitch their advice. The rest of your profile can wait. |
+| `checkpointEntry.saveContinue` | Save and continue |
+
+### Open questions
+
+1. Inviting the team after payment: a link to the project's team page on the paid screens
+   (12.6 / 12.7) — not drawn yet.
