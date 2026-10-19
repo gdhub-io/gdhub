@@ -23,13 +23,23 @@ export const FINAL_SESSION = SESSIONS_PER_CHECKPOINT;
  */
 export const SESSION_MINUTES = 45;
 
+// The team
+
+/**
+ * A checkpoint is sold for a team of one to this many, the author included, at
+ * one price. People join and leave mid-run, so a price that moved with the team
+ * could not hold; a larger team asks for an offer by email instead.
+ */
+export const CHECKPOINT_MAX_TEAM = 10;
+export const CHECKPOINT_LARGE_TEAM_EMAIL = "info@gdhub.io";
+
 // The call room
 
 /** The room opens this long before a call and closes this long after its start. */
 export const CALL_OPENS_MINUTES = 15;
 export const CALL_CLOSES_MINUTES = 180;
-/** The curator and up to ten people of the team. */
-export const CALL_MAX_PARTICIPANTS = 11;
+/** The curator and the whole team. */
+export const CALL_MAX_PARTICIPANTS = CHECKPOINT_MAX_TEAM + 1;
 /** How often a team waiting for the curator asks whether they have joined. */
 export const CALL_WAIT_POLL_SECONDS = 5;
 /** Notes wait this long after a call so every part of its recording is in. */
@@ -108,11 +118,10 @@ export const CHECKPOINT_MINOR_UNITS = 100;
 export const CHECKPOINT_AI_PRICE = 19;
 
 /**
- * A curator's price by level, at the team sizes `docs/checkpoint-standard.md`
- * §8 prices: the author alone, then plus two, four and seven. A level with no
- * row is not offered — see `config/checkpoint-pricing.ts`.
+ * A curator's price by level, for any team up to `CHECKPOINT_MAX_TEAM`. A level
+ * with no price is not offered — see `config/checkpoint-pricing.ts`.
  */
 export const CURATOR_PRICE = {
-	Experienced: [300, 340, 380, 440],
-	Expert: [450, 510, 570, 660],
-} as const satisfies Partial<Record<SkillLevel, readonly number[]>>;
+	Experienced: 300,
+	Expert: 450,
+} as const satisfies Partial<Record<SkillLevel, number>>;

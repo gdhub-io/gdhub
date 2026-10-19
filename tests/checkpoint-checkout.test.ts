@@ -1,6 +1,6 @@
 import { CheckpointCuratorKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CHECKPOINT_AI_PRICE } from "@/config/checkpoint";
+import { CHECKPOINT_AI_PRICE, CHECKPOINT_MAX_TEAM } from "@/config/checkpoint";
 import { curatorPrice } from "@/config/checkpoint-pricing";
 import { SkillLevel } from "@/config/prisma-enums";
 import { isFirstCallFree } from "@/repositories/advisor-availability";
@@ -20,6 +20,7 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: { findUnique: vi.fn() },
 		speciality: { findFirst: vi.fn() },
 		payment: { count: vi.fn() },
+		teamMember: { count: vi.fn() },
 	},
 }));
 
@@ -32,7 +33,7 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 	curatorId: "u1",
 	startedAt: new Date("2026-09-21T09:00:00.000Z"),
 	curator: { name: "Marta Ilves" },
-	project: { slug: "tide", name: "Tide" },
+	project: { id: "p1", slug: "tide", name: "Tide" },
 	goal: "A playable vertical slice",
 	_count: { items: 2 },
 	...over,
@@ -48,6 +49,7 @@ beforeEach(() => {
 		checkpoint() as never,
 	);
 	vi.mocked(prisma.payment.count).mockResolvedValue(0 as never);
+	vi.mocked(prisma.teamMember.count).mockResolvedValue(3 as never);
 	vi.mocked(prisma.speciality.findFirst).mockResolvedValue({
 		level: SkillLevel.Expert,
 	} as never);
@@ -88,6 +90,36 @@ describe("what a checkpoint checkout would charge", () => {
 		await expect(checkpointCheckout("cp1")).resolves.toEqual({
 			ok: false,
 			reason,
+		});
+	});
+
+	// One price covers the team up to the cap; one person more asks for an offer.
+	it("sells to a team at the cap and refuses one past it", async () => {
+		vi.mocked(prisma.teamMember.count).mockResolvedValueOnce(
+			CHECKPOINT_MAX_TEAM as never,
+		);
+		await expect(checkpointCheckout("cp1")).resolves.toMatchObject({
+			ok: true,
+		});
+
+		vi.mocked(prisma.teamMember.count).mockResolvedValueOnce(
+			(CHECKPOINT_MAX_TEAM + 1) as never,
+		);
+		await expect(checkpointCheckout("cp1")).resolves.toEqual({
+			ok: false,
+			reason: "teamTooLarge",
+		});
+	});
+
+	it("counts the team as it stands, without those who left", async () => {
+		await checkpointCheckout("cp1");
+
+		expect(prisma.teamMember.count).toHaveBeenCalledWith({
+			where: {
+				team: { projectId: "p1" },
+				status: { not: "Fired" },
+				finishedAt: null,
+			},
 		});
 	});
 

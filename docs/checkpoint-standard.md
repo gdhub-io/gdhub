@@ -12,8 +12,8 @@ This is the rulebook shown to people. The engineering side is in
 curator on day 1, and a verdict at the end. A stage of the project takes one checkpoint or several.
 
 The author of the project buys the checkpoint. Five calls are included. The
-price comes from the curator's hourly rate and the amount of work, so it differs
-between curators and grows with the size of the team.
+price comes from the curator's level, so it differs between curators; it is the
+same for any team of one to ten people.
 
 **Every checkpoint has a curator, and the curator is either a person or the AI
 curator.** Both walk the same five moments. A person says them on a call. The AI
@@ -25,7 +25,7 @@ moving and leaves the choice to the author.
 | Role | What they do |
 |---|---|
 | **Author** | Buys the checkpoint, answers for the project, brings the team to calls, publishes devlogs. |
-| **Team** | Up to eight people besides the author. Does the work and writes into the devlog. Author and up to four others attend a call. |
+| **Team** | Up to ten people, the author included. Does the work and writes into the devlog. The whole team may attend a call. A larger team asks for an offer by email. |
 | **Curator** | Runs the checkpoint: five calls, reading devlogs, the verdict. A person has a level and an hourly rate and decides for themselves how many projects to take. Only someone who worked on a game that reached release may curate, and only at the stage they have taken a project through; the platform checks this by hand. |
 | **Platform** | Issues certificates, keeps the records, replaces a curator who drops out. |
 
@@ -156,16 +156,14 @@ inside a checkpoint: 28 days always end in a verdict.
 
 ## 8. Price
 
-Price = checkpoint hours × the curator's hourly rate + the platform's 25%.
+One price per curator level for a team of one to ten people, the author included.
+People join and leave during the 28 days, so a price that moved with the team
+could not hold. A team larger than ten writes to info@gdhub.io for an offer.
 
-Checkpoint hours: 7.5 for the author plus 0.5 for each member of the team. Those
-hours cover five calls of 45 minutes, reading and answering four devlogs, and the
-goal and result cards.
-
-| Curator level | Rate | Author alone | Plus 2 | Plus 4 | Plus 7 |
-|---|---|---|---|---|---|
-| Experienced | 30 | 300 | 340 | 380 | 440 |
-| Expert | 45 | 450 | 510 | 570 | 660 |
+| Curator level | Team of 1–10 | Over 10 |
+|---|---|---|
+| Experienced | 300 | On request |
+| Expert | 450 | On request |
 
 There is no regional price. The author picks the level of curator their budget
 allows. The AI curator has its own, far lower, fixed price and is the way in for
@@ -176,7 +174,7 @@ verdict, and a record of the checkpoint on every participant's profile.
 
 **Not in the price:** doing the work — code, art, text; line-by-line code review;
 marketing the game; introductions to publishers; legal advice; calls
-beyond the five; the whole team on a call when it is larger than five.
+beyond the five.
 
 A private checkpoint costs more. It hides the devlogs and the showing, but the fact
 of the checkpoint, its goal and its verdict stay visible.

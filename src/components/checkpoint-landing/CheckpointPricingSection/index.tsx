@@ -1,20 +1,21 @@
 import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Select, Typography } from "antd";
+import { Button, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import rumourArt from "@/assets/images/checkpoint/checkpoint-rumour.png";
 import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import {
 	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_LARGE_TEAM_EMAIL,
+	CHECKPOINT_MAX_TEAM,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import {
 	CHECKPOINT_MIN_CURATOR_PRICE,
 	CURATOR_LEVELS,
 	type CuratorLevel,
-	curatorPrices,
+	curatorPrice,
 } from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
@@ -22,8 +23,6 @@ import styles from "./style.module.scss";
 
 export const CheckpointPricingSection = () => {
 	const { t } = useTranslate();
-	// Below 992 only one column of the matrix fits, so the reader picks which.
-	const [teamSize, setTeamSize] = useState(0);
 
 	const levelNames: Record<CuratorLevel, string> = {
 		Experienced: t(
@@ -34,10 +33,12 @@ export const CheckpointPricingSection = () => {
 	};
 
 	const teamSizes = [
-		t("checkpointLanding.pricing.column.alone", "Author alone"),
-		t("checkpointLanding.pricing.column.plus2", "+2 in the team"),
-		t("checkpointLanding.pricing.column.plus4", "+4 in the team"),
-		t("checkpointLanding.pricing.column.plus7", "+7 in the team"),
+		t("checkpointLanding.pricing.column.upTo", "Team of 1–{max}", {
+			max: CHECKPOINT_MAX_TEAM,
+		}),
+		t("checkpointLanding.pricing.column.over", "Over {max}", {
+			max: CHECKPOINT_MAX_TEAM,
+		}),
 	];
 
 	return (
@@ -56,8 +57,9 @@ export const CheckpointPricingSection = () => {
 						},
 					)}
 					lead={t(
-						"checkpointLanding.pricing.lead",
-						"Choose the review that fits the project and the budget. The complete price is shown before payment and does not change during the checkpoint.",
+						"checkpointLanding.pricing.leadTeam",
+						"Choose the review that fits the project and the budget. One price for a team of 1 to {max}, shown before payment and unchanged during the checkpoint. A larger team? Write to {email}.",
+						{ max: CHECKPOINT_MAX_TEAM, email: CHECKPOINT_LARGE_TEAM_EMAIL },
 					)}
 				/>
 
@@ -67,15 +69,9 @@ export const CheckpointPricingSection = () => {
 							<Typography.Text className={styles.tableTitle}>
 								{t("checkpointLanding.pricing.human.title", "Human curator")}
 							</Typography.Text>
-							<Select
-								size="small"
-								value={teamSize}
-								onChange={setTeamSize}
-								options={teamSizes.map((size, index) => ({
-									value: index,
-									label: size,
-								}))}
-							/>
+							<Typography.Text className={styles.tableNote}>
+								{teamSizes[0]}
+							</Typography.Text>
 						</div>
 
 						<table className={styles.table}>
@@ -100,17 +96,18 @@ export const CheckpointPricingSection = () => {
 										<th scope="row" className={styles.level}>
 											{levelNames[level]}
 										</th>
-										{curatorPrices(level).map((price, index) => (
-											<td
-												key={teamSizes[index]}
-												className={
-													index === teamSize ? undefined : styles.wideOnly
-												}
+										<td>
+											{CHECKPOINT_PRICE_CURRENCY}
+											{curatorPrice(level)}
+										</td>
+										<td className={styles.wideOnly}>
+											<Typography.Link
+												href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}
+												className={styles.onRequest}
 											>
-												{CHECKPOINT_PRICE_CURRENCY}
-												{price}
-											</td>
-										))}
+												{t("checkpointLanding.pricing.onRequest", "On request")}
+											</Typography.Link>
+										</td>
 									</tr>
 								))}
 							</tbody>
@@ -142,8 +139,9 @@ export const CheckpointPricingSection = () => {
 						</p>
 						<p className={styles.aiBody}>
 							{t(
-								"checkpointLanding.pricing.ai.body",
-								"One lower fixed price, whatever the size of the team. Written feedback instead of calls, and the same verdict on the platform.",
+								"checkpointLanding.pricing.ai.bodyTeam",
+								"One lower fixed price for a team of up to {max}. Written feedback instead of calls, and the same verdict on the platform.",
+								{ max: CHECKPOINT_MAX_TEAM },
 							)}
 						</p>
 					</div>
@@ -154,8 +152,9 @@ export const CheckpointPricingSection = () => {
 						</span>
 						<span className={styles.aiPriceNote}>
 							{t(
-								"checkpointLanding.pricing.ai.note",
-								"per cycle · any team size",
+								"checkpointLanding.pricing.ai.noteTeam",
+								"per cycle · team of 1–{max}",
+								{ max: CHECKPOINT_MAX_TEAM },
 							)}
 						</span>
 					</p>

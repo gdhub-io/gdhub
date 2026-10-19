@@ -24,6 +24,8 @@ import { EmptyState, IconTile } from "@/components/ui";
 import {
 	AI_PLAN_DAYS,
 	CHECKPOINT_DAYS,
+	CHECKPOINT_LARGE_TEAM_EMAIL,
+	CHECKPOINT_MAX_TEAM,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import type { LegalCode } from "@/config/legal/registry";
@@ -156,10 +158,19 @@ export function PaymentStep() {
 									"checkpointEntry.about.underage",
 									"You need to be 18 or over to head for a checkpoint",
 								)
-							: t(
-									"checkpoints.pay.incomplete",
-									"The goal or what's done so far is missing — fill it in first.",
-								),
+							: reason === "teamTooLarge"
+								? t(
+										"checkpoints.pay.teamTooLarge",
+										"A team over {max} gets its own offer — write to {email}.",
+										{
+											max: CHECKPOINT_MAX_TEAM,
+											email: CHECKPOINT_LARGE_TEAM_EMAIL,
+										},
+									)
+								: t(
+										"checkpoints.pay.incomplete",
+										"The goal or what's done so far is missing — fill it in first.",
+									),
 				);
 				return;
 			}

@@ -5,11 +5,13 @@ import {
 	PayableType,
 	PaymentProvider,
 	PaymentStatus,
+	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import type Stripe from "stripe";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
+	CHECKPOINT_MAX_TEAM,
 	CHECKPOINT_MINOR_UNITS as MINOR,
 	SESSIONS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
@@ -86,6 +88,16 @@ export const heldAmount = async (checkpointId: string) =>
 /** Minor units back to the whole ones the price table and the screen use. */
 export const toWholePrice = (amount: number) => amount / MINOR;
 
+/** The team as it stands — the same members the goal step counts. */
+const activeTeamSize = (projectId: string) =>
+	prisma.teamMember.count({
+		where: {
+			team: { projectId },
+			status: { not: TeamMemberStatus.Fired },
+			finishedAt: null,
+		},
+	});
+
 /**
  * What a checkout for this checkpoint would charge, and for what.
  *
@@ -106,7 +118,7 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			startedAt: true,
 			goal: true,
 			curator: { select: { name: true } },
-			project: { select: { slug: true, name: true } },
+			project: { select: { id: true, slug: true, name: true } },
 			_count: {
 				select: { items: { where: { kind: CheckpointItemKind.Input } } },
 			},
@@ -132,6 +144,11 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	}
 	if (!checkpoint._count.items) {
 		return { ok: false as const, reason: "inputsMissing" as const };
+	}
+
+	// One price covers up to CHECKPOINT_MAX_TEAM; a larger team asks for an offer.
+	if ((await activeTeamSize(checkpoint.project.id)) > CHECKPOINT_MAX_TEAM) {
+		return { ok: false as const, reason: "teamTooLarge" as const };
 	}
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;

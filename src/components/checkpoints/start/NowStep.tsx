@@ -5,6 +5,7 @@ import {
 	IconFlag,
 	IconInfoCircle,
 	IconSparkles,
+	IconUsers,
 } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -23,7 +24,12 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
-import { CHECKPOINT_DAYS, CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
+import {
+	CHECKPOINT_DAYS,
+	CHECKPOINT_GOAL_MAX,
+	CHECKPOINT_LARGE_TEAM_EMAIL,
+	CHECKPOINT_MAX_TEAM,
+} from "@/config/checkpoint";
 import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useCheckGoal, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
@@ -115,6 +121,7 @@ export function NowStep() {
 	);
 
 	const remark = warned?.goal === text.trim() ? warned.remark : null;
+	const tooLarge = team.members.length > CHECKPOINT_MAX_TEAM;
 
 	const next = async () => {
 		try {
@@ -166,7 +173,7 @@ export function NowStep() {
 				<Button
 					type="primary"
 					loading={update.isPending || check.isPending}
-					disabled={!text.trim() || myHours[1] <= 0}
+					disabled={!text.trim() || myHours[1] <= 0 || tooLarge}
 					onClick={next}
 				>
 					{remark
@@ -298,6 +305,39 @@ export function NowStep() {
 					onChange={(event) => setGoal(event.target.value)}
 				/>
 			</Flex>
+
+			{tooLarge && (
+				<Flex gap={16} align="flex-start" className={styles.warning}>
+					<IconTile
+						icon={IconUsers}
+						size="md"
+						tint="var(--gd-color-surface)"
+						ink="var(--gd-warning-solid)"
+					/>
+					<Flex vertical gap={4}>
+						<Typography.Text strong>
+							{t(
+								"checkpoints.now.teamTooLargeTitle",
+								"A team over {max} gets its own offer",
+								{ max: CHECKPOINT_MAX_TEAM },
+							)}
+						</Typography.Text>
+						<Typography.Text type="secondary">
+							{t(
+								"checkpoints.now.teamTooLargeBody",
+								"One price covers a team of 1 to {max}. Write to {email} and we'll send you an offer.",
+								{
+									max: CHECKPOINT_MAX_TEAM,
+									email: CHECKPOINT_LARGE_TEAM_EMAIL,
+								},
+							)}
+						</Typography.Text>
+						<Typography.Link href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}>
+							{t("checkpoints.now.teamTooLargeAction", "Ask for an offer")}
+						</Typography.Link>
+					</Flex>
+				</Flex>
+			)}
 
 			{remark && (
 				<Flex gap={16} align="flex-start" className={styles.warning}>
