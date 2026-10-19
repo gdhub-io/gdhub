@@ -138,7 +138,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"7e8eb9a900b3dec44fd47dbead54425b04765a88662fde8697176785d40e38d2",
+					"50c9f56b70c60b16e67b7d4a9cca1e47a92d8b204cbb199dac0981767fb9ca56",
 			},
 		],
 	},

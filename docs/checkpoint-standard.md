@@ -98,7 +98,7 @@ and about 9.5 for a team of five, so two to three hours a week.
 | Artefact | When | What is in it |
 |---|---|---|
 | **Goal card** | day 1 | What exists at the start, as a list, each line with the artefact that proves it where there is one. What must exist at the end, as a list, each line with an empty slot for its artefact. The goal in one sentence. What the author bought with is kept beside anything the call changed. Not edited after the call, except on day 15. |
-| **Devlogs** | days 7, 14, 21, 28, the last day of each sprint | What got done, what is next, what is in the way. Public unless the checkpoint is private. |
+| **Devlogs** | days 7, 14, 21, 28, the last day of each sprint | What got done, what is next, what is in the way. Seen by the team and the curator only. |
 | **Scope change** | day 15, if any | What came off, what was reworded — with the day-1 wording kept beside it — what was added, and why. Written beside the original, never over it. |
 | **Artefacts** | by day 26 | One per line of the outcome list: a link or an upload, screenshots and a short description. A line with nothing attached is a line that did not get done. |
 | **Result card** | by day 31 | What of the list got done and what proves it, what was cut, the verdict and the reasoning. |
@@ -145,14 +145,18 @@ inside a checkpoint: 28 days always end in a verdict.
 - **Silence is not a verdict.** No verdict by day 31 and an administrator closes
   the checkpoint; money for calls that did not happen goes back.
 - **A curator who disappears.** Two missed calls in a row and the platform
-  replaces them inside the checkpoint and returns the money for what did not happen.
+  replaces them inside the checkpoint. A curator is paid only for a whole
+  checkpoint — every call and the verdict — so one who disappears is paid nothing,
+  the calls they held included. The replacement is paid for the calls they hold and
+  the verdict. With no replacement the checkpoint closes and the author gets back the
+  price less the calls already held.
 - **An author who disappears.** Two missed calls in a row with no devlogs and the
   checkpoint closes as goal missed. No refund.
 - **Who is on the call.** The author and up to four of the team. The rest read
   the written answer to the devlog. The call stays 45 minutes whatever the size
   of the team.
-- **The team roster** changes between checkpoints, not inside one. Someone joining
-  mid-checkpoint is paid for from the next one.
+- **The team roster** may change during the checkpoint, up to ten people; the
+  price does not move.
 
 ## 8. Price
 
@@ -176,8 +180,8 @@ verdict, and a record of the checkpoint on every participant's profile.
 marketing the game; introductions to publishers; legal advice; calls
 beyond the five.
 
-A private checkpoint costs more. It hides the devlogs and the showing, but the fact
-of the checkpoint, its goal and its verdict stay visible.
+Every checkpoint is private: the devlogs and the work stay inside it, and only the
+certificate — the fact of the checkpoint, its goal and its verdict — is public.
 
 ## 9. What is recorded for good
 

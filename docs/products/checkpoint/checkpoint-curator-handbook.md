@@ -22,8 +22,9 @@ introductions to publishers — and no promise that the goal is met. What you ow
 judgement, on time, in writing.
 
 **Take only as many projects as you can run without missing a call.** Two missed calls in
-a row and the platform replaces you inside the checkpoint and returns the author's money
-for what did not happen.
+a row and the platform replaces you inside the checkpoint — and you are paid nothing for
+it, the calls you held included. You are paid for a whole checkpoint: every call and the
+verdict.
 
 | | |
 |---|---|
@@ -31,7 +32,7 @@ for what did not happen.
 | **Calls** | Five of 45 minutes: one opening each sprint, and one deciding the checkpoint |
 | **Writing** | An answer to each of the four devlogs, the goal card and the result card |
 | **Hard deadline** | The verdict on the platform by day 30 |
-| **Your rate** | $30 an hour at Experienced, $45 at Expert — $225 and $338 for a solo author's checkpoint. The platform adds 25% on top, which the author pays |
+| **Your fee** | The checkpoint's price for your level — $300 at Experienced, $450 at Expert, for any team of one to ten — less the platform's share. A promotion code lowers it in the same proportion |
 
 ### Four principles
 
@@ -291,10 +292,10 @@ verdict is missed, and the reasoning says what was achieved and what to start fr
 | **After that it changes once** | Only on call 3, and every change is recorded with the day-1 wording kept beside it. |
 | **What is not attached is not done** | An outcome with nothing against it on day 28 counts as missed — unless you count it yourself and write why. |
 | **Silence is not a verdict** | No verdict by day 30 and an administrator closes the checkpoint; money for calls that did not happen goes back. |
-| **A curator who disappears** | Two missed calls in a row and the platform replaces you inside the checkpoint and returns the money for what did not happen. |
+| **A curator who disappears** | Two missed calls in a row and the platform replaces you inside the checkpoint; you are paid nothing for it. With no replacement the author gets back the price less the calls already held. |
 | **An author who disappears** | Two missed calls in a row with no devlogs and the checkpoint closes as goal missed. No refund. |
 | **Who is on the call** | The author and up to four of the team. The rest read your written answer to the devlog. The call stays 45 minutes whatever the size of the team. |
-| **The team roster** | Changes between checkpoints, not inside one. Someone joining mid-checkpoint is paid for from the next one. |
+| **The team roster** | May change during the checkpoint, up to ten people; the price does not move. |
 
 ### What is recorded about you
 
