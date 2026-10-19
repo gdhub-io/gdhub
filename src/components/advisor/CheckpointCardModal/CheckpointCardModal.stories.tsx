@@ -6,6 +6,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
+	CheckpointVerdict,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
 import type {
@@ -148,6 +149,11 @@ const PROJECT: AdvisorProjectDto = {
 		hoursPerWeek: { from: 30, to: 40 },
 		hoursPerRun: { from: 120, to: 160 },
 	},
+	author: {
+		experience:
+			"Six years in level design: two shipped mobile puzzlers, then a stealth game.",
+		timezone: "Europe/Tallinn",
+	},
 	team: [
 		{
 			id: "m1",
@@ -178,6 +184,10 @@ const PROJECT: AdvisorProjectDto = {
 		},
 	],
 	sprints: SPRINTS,
+	previous: {
+		verdict: CheckpointVerdict.GoalMissed,
+		note: "The slice plays, but nobody outside the team has finished it yet.",
+	},
 	latestDevlogs: [
 		{
 			id: "l1",

@@ -7,6 +7,11 @@ import {
 	withAcceptedTerms,
 	withProgress,
 } from "./checkpoint.repository";
+import {
+	briefAuthor,
+	briefMemberSelect,
+	lastVerdict,
+} from "./checkpoint-brief";
 import { CONFIRMED_MEMBERS } from "./scout.games";
 
 const advisorCheckpointSelect = {
@@ -105,58 +110,58 @@ export const getAdvisorProject = async (
 	checkpointId: string,
 	curatorId: string,
 ) => {
-	const [checkpoint, detail] = await Promise.all([
-		prisma.projectCheckpoint.findFirst({
-			where: { id: checkpointId, curatorId },
-			select: {
-				project: {
-					select: {
-						name: true,
-						description: true,
-						coverImage: true,
-						videoLink: true,
-						startedAt: true,
-						updatedAt: true,
-						genre: true,
-						platform: true,
-						setting: true,
-						visualStyle: true,
-						audition: true,
-						links: true,
-						workflow: {
-							select: { currentStep: { select: { name: true } } },
-						},
-						reports: {
-							where: { isSystem: false },
-							orderBy: { publishedAt: "desc" },
-							take: LATEST_DEVLOGS,
-							select: { id: true, publishedAt: true, content: true },
-						},
-						team: {
-							select: {
-								members: {
-									where: CONFIRMED_MEMBERS,
-									orderBy: { startedAt: "asc" },
-									select: {
-										id: true,
-										position: true,
-										status: true,
-										startedAt: true,
-										speciality: { select: { name: true, level: true } },
-										user: {
-											select: { profile: { select: { timeForWork: true } } },
-										},
-									},
+	const found = prisma.projectCheckpoint.findFirst({
+		where: { id: checkpointId, curatorId },
+		select: {
+			projectId: true,
+			project: {
+				select: {
+					name: true,
+					description: true,
+					coverImage: true,
+					videoLink: true,
+					startedAt: true,
+					updatedAt: true,
+					genre: true,
+					platform: true,
+					setting: true,
+					visualStyle: true,
+					audition: true,
+					links: true,
+					workflow: {
+						select: { currentStep: { select: { name: true } } },
+					},
+					reports: {
+						where: { isSystem: false },
+						orderBy: { publishedAt: "desc" },
+						take: LATEST_DEVLOGS,
+						select: { id: true, publishedAt: true, content: true },
+					},
+					team: {
+						select: {
+							members: {
+								where: CONFIRMED_MEMBERS,
+								orderBy: { startedAt: "asc" },
+								select: {
+									id: true,
+									position: true,
+									status: true,
+									startedAt: true,
+									...briefMemberSelect,
 								},
 							},
 						},
 					},
 				},
 			},
-		}),
+		},
+	});
+	const [checkpoint, detail, previous] = await Promise.all([
+		found,
 		// The page's own sprints, pulse and devlog reads, so the card cannot draw a
 		// week differently from the checkpoint it describes.
 		getCheckpoint(checkpointId),
+		found.then((row) => row && lastVerdict(row.projectId, checkpointId)),
 	]);
 
 	if (!checkpoint) return null;
@@ -171,6 +176,9 @@ export const getAdvisorProject = async (
 		detail.status !== CheckpointStatus.AwaitingCurator;
 	const pulseOf = new Map(
 		accepted ? detail.pulses.map((row) => [row.memberId, row.cells]) : [],
+	);
+	const founder = members.find(
+		(member) => member.status === TeamMemberStatus.Founder,
 	);
 	const hoursOf = (member: (typeof members)[number]) =>
 		member.user.profile?.timeForWork ?? null;
@@ -196,15 +204,26 @@ export const getAdvisorProject = async (
 			members.map((member) => ({ timeForWork: hoursOf(member) })),
 		),
 		// The member id stays only as a row key; nothing on it leads to a person.
+		author: founder
+			? {
+					experience: briefAuthor(founder).experience,
+					timezone: founder.user.profile?.timezone ?? null,
+				}
+			: null,
 		team: members.map((member) => ({
 			id: member.id,
 			position: member.position,
-			speciality: member.speciality,
+			// Without `specialization`: a member's own words are not part of the card.
+			speciality: member.speciality && {
+				name: member.speciality.name,
+				level: member.speciality.level,
+			},
 			isFounder: member.status === TeamMemberStatus.Founder,
 			hoursPerWeek: hoursOf(member),
 			startedAt: member.startedAt,
 			pulse: pulseOf.get(member.id) ?? [],
 		})),
+		previous,
 		sprints: accepted ? detail.sprints : [],
 		/** The project's own latest, whatever checkpoint they belong to. */
 		latestDevlogs: project.reports,

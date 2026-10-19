@@ -41,16 +41,24 @@ const row = {
 					position: "Lead designer",
 					status: "Founder",
 					startedAt: new Date("2026-01-01"),
-					speciality: { name: "Game design", level: "Expert" },
-					user: { profile: { timeForWork: [10, 20] } },
+					speciality: {
+						name: "Game design",
+						level: "Expert",
+						specialization: "Two shipped mobile puzzlers",
+					},
+					user: { profile: { timeForWork: [10, 20], timezone: "Europe/Tallinn" } },
 				},
 				{
 					id: "m2",
 					position: "Artist",
 					status: "Hired",
 					startedAt: new Date("2026-03-01"),
-					speciality: null,
-					user: { profile: null },
+					speciality: {
+						name: "2D art",
+						level: "Middle",
+						specialization: "Their own words",
+					},
+					user: { profile: { timeForWork: null, timezone: "Asia/Tokyo" } },
 				},
 			],
 		},
@@ -91,6 +99,47 @@ describe("the project as its curator reads it", () => {
 			startedAt: new Date("2026-01-01"),
 			pulse: [{ sprint: 1, state: "confirmed" }],
 		});
+	});
+
+	it("gives the author's words and time zone, and nobody else's", async () => {
+		const project = await getAdvisorProject("cp1", "u9");
+
+		expect(project?.author).toEqual({
+			experience: "Two shipped mobile puzzlers",
+			timezone: "Europe/Tallinn",
+		});
+		expect(project?.team[1]).toEqual(
+			expect.not.objectContaining({ experience: expect.anything() }),
+		);
+		expect(project?.team[1].speciality).toEqual({
+			name: "2D art",
+			level: "Middle",
+		});
+	});
+
+	it("reads back the project's last closed checkpoint, not this one", async () => {
+		vi.mocked(prisma.projectCheckpoint.findFirst)
+			.mockResolvedValueOnce({ ...row, projectId: "p1" } as never)
+			.mockResolvedValueOnce({
+				verdict: "GoalMissed",
+				verdictNote: "Nobody outside the team played it.",
+			} as never);
+
+		const project = await getAdvisorProject("cp1", "u9");
+
+		expect(project?.previous).toEqual({
+			verdict: "GoalMissed",
+			note: "Nobody outside the team played it.",
+		});
+		expect(prisma.projectCheckpoint.findFirst).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				where: expect.objectContaining({
+					projectId: "p1",
+					id: { not: "cp1" },
+					status: "Closed",
+				}),
+			}),
+		);
 	});
 
 	it("keeps the pulse and devlogs from a curator who has not taken it on yet", async () => {

@@ -6,7 +6,6 @@ import { Button, Skeleton } from "antd";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
-import type { EntryPrice } from "@/components/checkpoints/entry/EntryFacts";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
 import {
 	CHECKPOINT_ENTRY_HREF,
@@ -25,7 +24,6 @@ import { PurchaseSteps } from "@/components/checkpoints/start/PurchaseSteps";
 import {
 	type PurchaseProject,
 	PurchaseProjectProvider,
-	useCheckpointPrice,
 } from "@/components/checkpoints/start/useDraft";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import { purchaseState } from "./purchaseState";
@@ -49,14 +47,10 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 	const { data: list, isPending } = useCheckpoints(project.id);
 	const current = list?.current ?? null;
 	const { data: detail } = useCheckpoint(current?.id);
-	const { price } = useCheckpointPrice(detail ?? current);
 
 	const workflow = `/user/project/${project.slug}/workflow`;
 	const asked = search?.get("step");
-	const { step, isDraft, isOpen, paid, declined, running } = purchaseState(
-		current,
-		asked,
-	);
+	const { step, isDraft, paid, running } = purchaseState(current, asked);
 	// Nothing to buy here: the hub is where a draft is made.
 	const noDraft = !isPending && !paid && !running && !isDraft;
 
@@ -82,15 +76,6 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 		}),
 		[project.slug, router],
 	);
-
-	const amount = detail?.heldPrice ?? price;
-	const facts = (): EntryPrice | undefined => {
-		if (!paid)
-			return step === "payment" ? { kind: "chosen", amount } : undefined;
-		if (declined) return undefined;
-		if (!current?.paymentId) return { kind: "chosen", amount };
-		return { kind: isOpen ? "paid" : "reserved", amount };
-	};
 
 	const loading = isPending || running || noDraft;
 
@@ -126,7 +111,6 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 						</Button>
 					</Link>
 				}
-				price={facts()}
 				stepper={
 					!loading && (
 						<PurchaseSteps

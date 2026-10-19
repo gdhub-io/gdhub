@@ -24,6 +24,8 @@ import { EmptyState, IconTile } from "@/components/ui";
 import {
 	AI_PLAN_DAYS,
 	CHECKPOINT_DAYS,
+	CHECKPOINT_LARGE_TEAM_EMAIL,
+	CHECKPOINT_MAX_TEAM,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import type { LegalCode } from "@/config/legal/registry";
@@ -144,22 +146,27 @@ export function PaymentStep() {
 			}
 			// The server refuses a draft without a goal or without what's done so far.
 			if (isAxiosError(error) && error.response?.status === 400) {
-				const reason = error.response.data?.error;
+				const refusals: Record<string, string> = {
+					purchaseClosed: t(
+						"checkpointEntry.closed",
+						"Checkpoints open soon — we'll email you when you can head for one.",
+					),
+					underage: t(
+						"checkpointEntry.about.underage",
+						"You need to be 18 or over to head for a checkpoint",
+					),
+					teamTooLarge: t(
+						"checkpoints.pay.teamTooLarge",
+						"A team over {max} gets its own offer — write to {email}.",
+						{ max: CHECKPOINT_MAX_TEAM, email: CHECKPOINT_LARGE_TEAM_EMAIL },
+					),
+				};
 				message.warning(
-					reason === "purchaseClosed"
-						? t(
-								"checkpointEntry.closed",
-								"Checkpoints open soon — we'll email you when you can head for one.",
-							)
-						: reason === "underage"
-							? t(
-									"checkpointEntry.about.underage",
-									"You need to be 18 or over to head for a checkpoint",
-								)
-							: t(
-									"checkpoints.pay.incomplete",
-									"The goal or what's done so far is missing — fill it in first.",
-								),
+					refusals[error.response.data?.error] ??
+						t(
+							"checkpoints.pay.incomplete",
+							"The goal or what's done so far is missing — fill it in first.",
+						),
 				);
 				return;
 			}
@@ -207,8 +214,8 @@ export function PaymentStep() {
 			Icon: IconMinus,
 			tone: "no",
 			text: t(
-				"checkpoints.pay.termTeam",
-				"Your team does the work; the curator keeps the 28 days on track.",
+				"checkpoints.pay.termNoBuild",
+				"The curator does not build any part of the game — that is your team's work.",
 			),
 		},
 		{

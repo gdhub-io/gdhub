@@ -9,6 +9,11 @@ import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
+import {
+	briefAuthor,
+	briefMemberSelect,
+	lastVerdict,
+} from "@/repositories/checkpoint-brief";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
@@ -143,13 +148,7 @@ export const runGoalCheck = async (
 							members: {
 								// The team as it stands, as the curator's card counts it.
 								where: CONFIRMED_MEMBERS,
-								select: {
-									status: true,
-									speciality: { select: { name: true, level: true } },
-									user: {
-										select: { profile: { select: { timeForWork: true } } },
-									},
-								},
+								select: { status: true, ...briefMemberSelect },
 							},
 						},
 					},
@@ -162,15 +161,7 @@ export const runGoalCheck = async (
 
 	const members = checkpoint.project?.team?.members ?? [];
 	const [previous, requirements] = await Promise.all([
-		prisma.projectCheckpoint.findFirst({
-			where: {
-				projectId: checkpoint.projectId,
-				status: CheckpointStatus.Closed,
-				verdict: { not: null },
-			},
-			orderBy: { decidedAt: "desc" },
-			select: { verdict: true, verdictNote: true },
-		}),
+		lastVerdict(checkpoint.projectId, checkpointId),
 		stageRequirements(checkpoint.stepId),
 	]);
 
@@ -189,20 +180,13 @@ export const runGoalCheck = async (
 			pitch: checkpoint.project.description?.trim() || null,
 			genre: checkpoint.project.genre?.trim() || null,
 		},
-		author: founder
-			? {
-					speciality: founder.speciality.name,
-					level: founder.speciality.level,
-				}
-			: null,
+		author: founder ? briefAuthor(founder) : null,
 		team: teamCapacity(
 			members.map((member) => ({
 				timeForWork: member.user.profile?.timeForWork,
 			})),
 		),
-		previous: previous?.verdict
-			? { verdict: previous.verdict, note: previous.verdictNote }
-			: null,
+		previous,
 	};
 
 	const hash = goalCheckHash(input);

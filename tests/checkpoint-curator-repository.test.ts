@@ -82,7 +82,11 @@ describe("runGoalCheck", () => {
 		status: TeamMemberStatus = TeamMemberStatus.Hired,
 	) => ({
 		status,
-		speciality: { name: "Level designer", level: "Skillful" },
+		speciality: {
+			name: "Level designer",
+			level: "Skillful",
+			specialization: null as string | null,
+		},
 		user: { profile: timeForWork ? { timeForWork } : null },
 	});
 
@@ -139,7 +143,11 @@ describe("runGoalCheck", () => {
 				member([10, 20]),
 				{
 					...member([5, 8], TeamMemberStatus.Founder),
-					speciality: { name: "Programmer", level: "Beginner" },
+					speciality: {
+						name: "Programmer",
+						level: "Beginner",
+						specialization: "  Two jam games in Godot  ",
+					},
 				},
 			]) as never,
 		);
@@ -154,7 +162,11 @@ describe("runGoalCheck", () => {
 					pitch: "A lighthouse keeper sorts ships by night",
 					genre: "Puzzle",
 				},
-				author: { speciality: "Programmer", level: "Beginner" },
+				author: {
+					speciality: "Programmer",
+					level: "Beginner",
+					experience: "Two jam games in Godot",
+				},
 			}),
 			{},
 		);
@@ -221,6 +233,11 @@ describe("runGoalCheck", () => {
 				},
 			}),
 			{},
+		);
+		expect(prisma.projectCheckpoint.findFirst).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: expect.objectContaining({ id: { not: "cp1" } }),
+			}),
 		);
 	});
 
@@ -545,10 +562,15 @@ describe("goal check schema", () => {
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
-			author: { speciality: "Programmer", level: "Beginner" },
+			author: {
+				speciality: "Programmer",
+				level: "Beginner",
+				experience: "Two jam games in Godot",
+			},
 		});
 
 		expect(user.content).toContain("Lantern Keeper (Puzzle)");
+		expect(user.content).toContain('"Two jam games in Godot"');
 		expect(user.content).toContain('"Ships by night"');
 		expect(user.content).toContain("Programmer, Beginner level");
 	});

@@ -23,7 +23,7 @@ type Member = AdvisorProjectDto["team"][number];
  */
 export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 	const { t } = useTranslate();
-	const { capacity, sprints, team } = project;
+	const { author, capacity, sprints, team } = project;
 
 	const commitment = (member: Member) => {
 		const [min, max = min] = member.hoursPerWeek ?? [];
@@ -104,8 +104,18 @@ export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 									)}
 								</Flex>
 								<Text type="secondary" className={styles.summarySub} ellipsis>
-									{specialityLine(member.speciality) ?? "—"}
+									{[
+										specialityLine(member.speciality) ?? "—",
+										member.isFounder && author?.timezone,
+									]
+										.filter(Boolean)
+										.join(" · ")}
 								</Text>
+								{member.isFounder && author?.experience && (
+									<Text type="secondary" className={styles.summarySub}>
+										{author.experience}
+									</Text>
+								)}
 							</Flex>
 						),
 					},

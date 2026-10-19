@@ -10,6 +10,7 @@ import type Stripe from "stripe";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
+	CHECKPOINT_MAX_TEAM,
 	CHECKPOINT_MINOR_UNITS as MINOR,
 	SESSIONS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
@@ -23,6 +24,7 @@ import {
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import {
@@ -106,7 +108,19 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			startedAt: true,
 			goal: true,
 			curator: { select: { name: true } },
-			project: { select: { slug: true, name: true } },
+			project: {
+				select: {
+					id: true,
+					slug: true,
+					name: true,
+					// The team as it stands, as the goal step and the curator's card count it.
+					team: {
+						select: {
+							_count: { select: { members: { where: CONFIRMED_MEMBERS } } },
+						},
+					},
+				},
+			},
 			_count: {
 				select: { items: { where: { kind: CheckpointItemKind.Input } } },
 			},
@@ -132,6 +146,11 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	}
 	if (!checkpoint._count.items) {
 		return { ok: false as const, reason: "inputsMissing" as const };
+	}
+
+	// One price covers up to CHECKPOINT_MAX_TEAM; a larger team asks for an offer.
+	if ((checkpoint.project.team?._count.members ?? 0) > CHECKPOINT_MAX_TEAM) {
+		return { ok: false as const, reason: "teamTooLarge" as const };
 	}
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;

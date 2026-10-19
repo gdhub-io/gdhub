@@ -100,10 +100,9 @@ describe("purchaseState", () => {
 			"goal",
 		);
 		expect(state.paid).toBe(true);
-		expect(state.declined).toBe(false);
 	});
 
-	it("tells a declined checkpoint apart from a paid one", () => {
+	it("keeps a declined checkpoint on the paid screen", () => {
 		const state = purchaseState(
 			{
 				...ready,
@@ -113,7 +112,6 @@ describe("purchaseState", () => {
 			null,
 		);
 		expect(state.paid).toBe(true);
-		expect(state.declined).toBe(true);
 	});
 
 	it("has nothing to show without a checkpoint", () => {

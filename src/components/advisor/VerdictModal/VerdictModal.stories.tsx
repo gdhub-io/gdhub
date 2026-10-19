@@ -161,6 +161,8 @@ const PROJECT: AdvisorProjectDto = {
 	},
 	links: [],
 	stage: "Prototyping",
+	previous: null,
+	author: null,
 	capacity: {
 		members: 4,
 		stated: 4,

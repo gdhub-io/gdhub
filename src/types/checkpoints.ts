@@ -228,6 +228,8 @@ export type AdvisorProjectDto = {
 		hoursPerWeek: { from: number; to: number } | null;
 		hoursPerRun: { from: number; to: number } | null;
 	};
+	/** The founder in their own words, and their IANA zone. */
+	author: { experience: string | null; timezone: string | null } | null;
 	/** Roles, not people: no name, no face, no link to a profile. */
 	team: {
 		id: string;
@@ -241,6 +243,8 @@ export type AdvisorProjectDto = {
 		pulse: CheckpointPulseCellDto[];
 	}[];
 	sprints: CheckpointSprintDto[];
+	/** How the project's last closed checkpoint ended. */
+	previous: { verdict: CheckpointVerdict; note: string | null } | null;
 	/** The project's last three, newest first. */
 	latestDevlogs: { id: string; publishedAt: string; content: string }[];
 	/**
