@@ -606,6 +606,9 @@
 		"card": {
 			"devlogs": "Devlogs"
 		},
+		"checkpoint": {
+			"lastVerdict": "Last checkpoint"
+		},
 		"checkpoints": {
 			"accept": "Take it on",
 			"answerFailed": "The answer was not saved",
@@ -888,11 +891,15 @@
 	"checkpointEntry": {
 		"about": {
 			"done": "{name} · {speciality}",
+			"experience": "Briefly about your experience",
+			"experienceHelp": "So your project's curator can learn a little more about you before the start.",
 			"failed": "Could not save — try again",
-			"hint": "So the curator knows who they work with. The rest of your profile can wait.",
+			"name": "Name",
 			"specialityPlaceholder": "e.g. Game designer",
+			"timezone": "Time zone",
 			"title": "Tell us about yourself",
-			"todo": "Your name and speciality — about a minute."
+			"todo": "Your name and speciality — about a minute.",
+			"underage": "You need to be 18 or over to head for a checkpoint"
 		},
 		"cancel": "Cancel",
 		"checkpoint": {
@@ -907,7 +914,6 @@
 		"done": {
 			"add": "Add item",
 			"carried": "Carried over from Checkpoint {number} — remove what no longer applies.",
-			"help": "Up to {max} things that exist today — the curator measures the {days} days from here.",
 			"label": "What's done so far",
 			"lineLabel": "Done so far, line {n}",
 			"placeholder": "e.g. a playable greybox, a design doc, sketches",
@@ -917,15 +923,6 @@
 		"edit": "Edit",
 		"evidence": {
 			"detach": "Detach"
-		},
-		"fact": {
-			"curator": "Expert or AI curator",
-			"days": "{days} days",
-			"goal": "One goal",
-			"priceChosen": "{price}",
-			"priceFrom": "from {price}",
-			"pricePaid": "{price} paid",
-			"priceReserved": "{price} reserved"
 		},
 		"fillIn": "Fill in",
 		"loadFailed": "Could not load your progress",
@@ -946,6 +943,7 @@
 		},
 		"retry": "Try again",
 		"saveBack": "Save and go back",
+		"saveContinue": "Save and continue",
 		"title": {
 			"first": "Head for your first checkpoint",
 			"next": "Head for your next checkpoint"
@@ -957,6 +955,13 @@
 			"fact2": {
 				"label": "Day {day} · Re-scope"
 			}
+		},
+		"pricing": {
+			"column": {
+				"over": "Over {max}",
+				"upTo": "Team of 1–{max}"
+			},
+			"onRequest": "On request"
 		}
 	},
 	"checkpoints": {
@@ -1316,6 +1321,9 @@
 			"stageWhereHelp": "We'll set the project on this stage; earlier stages are marked done.",
 			"team": "Your team of {count} gives {hours} hours a sprint",
 			"teamSize": "Team",
+			"teamTooLargeAction": "Ask for an offer",
+			"teamTooLargeBody": "One price covers a team of 1 to {max}. Write to {email} and we'll send you an offer.",
+			"teamTooLargeTitle": "A team over {max} gets its own offer",
 			"teamUnknown": "Your team of {count} has not stated its hours yet",
 			"title": "Glad you're heading for a checkpoint",
 			"titleNext": "Glad you're heading for the next checkpoint",
@@ -1433,12 +1441,12 @@
 			"riskBody": "The current outcomes may require more time than the team has available. Review the plan before payment to improve your chance of reaching this Checkpoint.",
 			"riskTitle": "Your 28-day plan may be at risk",
 			"runsIn": "Runs in",
+			"teamTooLarge": "A team over {max} gets its own offer — write to {email}.",
 			"term1": "Five consultations and a verdict by day 30.",
 			"term2": "Not the game itself. The team builds it; the curator holds the 28 days to the goal and cannot reach it for you.",
 			"term3": "No promise that the goal is met. A checkpoint where the work did not happen ends in “goal missed”.",
 			"termTasks": "Tasks are set together on the first call. Results are not guaranteed.",
 			"termTasksAi": "Tasks are set in the first {days} days, with the AI's advice. Results are not guaranteed.",
-			"termTeam": "Your team does the work; the curator keeps the 28 days on track.",
 			"title": "Check and pay",
 			"vat": "+ VAT",
 			"waitForCheck": "Wait for the plan to be read",
