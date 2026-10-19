@@ -207,8 +207,8 @@ export function PaymentStep() {
 			Icon: IconMinus,
 			tone: "no",
 			text: t(
-				"checkpoints.pay.termTeam",
-				"Your team does the work; the curator keeps the 28 days on track.",
+				"checkpoints.pay.termNoBuild",
+				"The curator does not build any part of the game — that is your team's work.",
 			),
 		},
 		{

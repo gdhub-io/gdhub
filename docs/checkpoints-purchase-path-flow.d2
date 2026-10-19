@@ -51,8 +51,8 @@ about: "About you — 12.1 `TV9y5`" {
 }
 
 project: "Your project — 12.2 `u7wrRw`" {
-  pick: "pick or create the project (?project preselected)\nexisting: ask only what is missing — description, genre\n+ current stage with 'change' (item 4)"
-  done: "What's done so far — 1–5 lines + evidence\nAI suggestion for a fresh project (item 6):\nPOST /api/checkpoint/entry/suggest {projectId}\nfounder only · rate-limited · editable lines"
+  pick: "pick the project, or create one in the modal\n(pitch · genre · stage; ?project preselected)"
+  done: "What's done so far — 1–5 lines, evidence optional\nafter a closed checkpoint: its proven tasks + evidence carried over"
   save: "PUT /api/checkpoint/entry/project\nfounder · no open checkpoint · purchase open\n→ Draft + Input items"
   pick -> done -> save
 }
@@ -67,25 +67,28 @@ project.save -> goal.hours: "Save and continue"
 
 rest: "Curator → Payment → paid" {
   curator: "Curator step (unchanged)"
-  pay: "Payment — 'What the curator will see' = the brief (item 5)\nPOST /api/checkpoint/[id]/pay"
+  pay: "Payment\nPOST /api/checkpoint/[id]/pay"
   payAge: "the author under 18 by yearOfBirth?" {shape: diamond}
   payRefuse: "400 underage"
+  payTeam: "current members > CHECKPOINT_MAX_TEAM (10)?" {shape: diamond}
+  payTeamRefuse: "400 teamTooLarge\n'A team over 10 gets its own offer — write to info@gdhub.io'\n(one price for 1–10; the goal step already says so and disables Next)"
   stripe: "legal ticks · Stripe Checkout (hold)"
   paid: "Paid (12.6 / 12.7)\n'Invite your team to the project' → project team page;\ninvited members state their own hours"
   curator -> pay -> payAge
   payAge -> payRefuse: yes
-  payAge -> stripe: no
+  payAge -> payTeam: no
+  payTeam -> payTeamRefuse: yes
+  payTeam -> stripe: no
   stripe -> paid
 }
 goal.text -> rest.curator
 
-brief: "buildCuratorBrief(checkpointId) — item 5, no names" {
+brief: "repositories/checkpoint-brief.ts — item 5, no names" {
   who: "with whom: the author's work direction, speciality, level, experience,\ntime zone; team size and hours (current members)"
   what: "with what: project pitch, genre, stage, what's done so far + evidence,\nthe goal, the last verdict and its note"
   who -- what
 }
 brief -> goal.text: "AI goal check"
-brief -> rest.pay: "author's read-back"
 cardModal: "Curator's CheckpointCardModal\n(tabs read the same brief)"
 brief -> cardModal
 

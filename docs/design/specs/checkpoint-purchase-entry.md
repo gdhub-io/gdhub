@@ -194,7 +194,7 @@ Icons (Tabler): `IconCalendar`, `IconTarget`, `IconUser`, `IconCheck`, `IconLock
 | `checkpointEntry.about.title` | Tell us about yourself |
 | `checkpointEntry.about.todo` | Your name and speciality — about a minute. |
 | `checkpointEntry.about.done` | {name} · {speciality} |
-| `checkpointEntry.about.hint` | So the curator knows who they work with. The rest of your profile can wait. |
+| `checkpointEntry.about.subtitle` | Your speciality and level help the curator pitch their advice. The rest of your profile can wait. (replaces `checkpointEntry.about.hint`) |
 | `checkpointEntry.project.title` | Tell us about your project |
 | `checkpointEntry.project.todo` | Pick a project or create one, and where it is now. |
 | `checkpointEntry.project.done` | {project} · {stage} stage · {count, plural, one {# thing} other {# things}} done so far |
@@ -207,7 +207,7 @@ Icons (Tabler): `IconCalendar`, `IconTarget`, `IconUser`, `IconCheck`, `IconLock
 | `checkpointEntry.loadFailed` | Could not load your progress |
 | `checkpointEntry.saveBack` / `.cancel` | Save and go back / Cancel |
 | `checkpointEntry.done.label` | What's done so far |
-| `checkpointEntry.done.help` | Up to {max} things that exist today — the curator measures the {days} days from here. |
+| `checkpointEntry.done.hint` | Up to {max} things that exist today. Evidence is optional — a link or a file that shows it. (replaces `checkpointEntry.done.help`) |
 | `checkpointEntry.done.placeholder` | e.g. a playable greybox, a design doc, sketches |
 | `checkpointEntry.done.carried` | Carried over from Checkpoint {number} — remove what no longer applies. |
 | `checkpointEntry.done.add` / `.remove` | Add item / Remove |
@@ -292,9 +292,10 @@ this section says otherwise.
 
 | Frame | Change |
 |---|---|
+| Every 12.x frame | **The facts row is gone** (2026-10-20): no "28 days · One goal · Expert or AI curator · from $19" under the title anywhere on the way in; `EntryFacts` and its `checkpointEntry.fact.*` keys are removed. The price is read on the payment step. |
 | 12.1 About you `TV9y5` | First and last name are one field **Name** (prefilled from the session: Google or the registration name), with **Year of birth** beside it (a select, as in onboarding; required; under 18 the field shows "You need to be 18 or over to head for a checkpoint" and the step does not save). **Country is replaced by Time zone**: a select of IANA zones shown as "Europe/Tallinn · UTC+3", prefilled from the browser (`Intl.DateTimeFormat().resolvedOptions().timeZone`) and editable; stored on the profile. Work direction, speciality and the skill-level select stay as they were. **New: "Briefly about your experience"** — a textarea under them (up to 500 characters, counter), help text "So your project's curator can learn a little more about you before the start."; optional; stored in `Speciality.specialization`. The subtitle no longer says the curator sees who you are: "Your speciality and level help the curator pitch their advice. The rest of your profile can wait." The primary button is **Save and continue**. |
 | 12.2 Your project `u7wrRw` | The primary button is **Save and continue**: it leads on to the goal. |
 | 12.3 Goal `mfAfN` | **Unchanged.** The author states their own hours; the team is the registered members. More people come in by invitation after payment. |
-| 12.2 Your project `u7wrRw` (items 4, 6) | **What the project is missing** — under the project select, shown only for the fields an existing project lacks: "What's the game about" (textarea) and **Genre** (select), with **Stage** (select, the current stage preselected — that is the "change"). Help: "The curator reads the pitch and the genre — this project has neither yet." A project with both filled shows only the stage select. **Suggest with AI** — a text button beside "Add item" in What's done so far: fills the empty rows with two or three lines from the pitch and the stage, each editable; disabled while the project has no pitch. |
-| 12.5 Payment `msGNN` (item 5) | **WHAT THE CURATOR WILL SEE** — the last block of the summary, no Edit: the author's speciality · level · time zone, their experience, the project · genre · stage · pitch, team size and hours a sprint, what's done so far (count, with evidence), "No names: the curator meets you on the first call." It renders the same brief the curator gets. |
-| Curator's card `CheckpointCardModal` (no frame: it reuses the scout's Project Modal) | Reads the same brief. **Team** tab: the founder's row adds level, experience and time zone; the roster is the current members. **Checkpoint** tab: adds "Last checkpoint" — the previous verdict and its note — when there is one. |
+| 12.2 Your project `u7wrRw` (items 4, 6 dropped) | **No extra project fields** (2026-10-20): an existing project is only picked; a new one is created in the New project modal 12.2d `d1mY0Z`, which already asks the pitch, genre and stage. **No AI suggestion** (2026-10-20): the AI cannot know what exists; a project with a closed checkpoint already gets its proven tasks and evidence carried over (12.2b). |
+| 12.5 Payment `msGNN` (item 5) | **No "What the curator will see" block** (2026-10-20). The second term reads "The curator does not build any part of the game — that is your team's work." (`checkpoints.pay.termNoBuild`). The checkboxes are the two the code has: "I am 18 or over and accept the Checkpoint Purchase Terms" and the Withdrawal Waiver. |
+| Curator's card `CheckpointCardModal` (no frame: it reuses the scout's Project Modal) | Reads the same brief (`repositories/checkpoint-brief.ts`) as the AI goal check. **Team** tab: the founder's row adds the time zone beside speciality · level, and their experience under it; the roster is the current members. **Checkpoint** tab: adds "Last checkpoint" — the previous verdict and its note — when there is one. |

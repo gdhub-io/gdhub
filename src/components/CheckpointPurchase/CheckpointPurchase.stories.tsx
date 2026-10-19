@@ -167,7 +167,7 @@ export const Curator: Story = {
 	parameters: at("curator"),
 };
 
-/** Frame 12.5 (`msGNN`): the chosen expert's price in the facts and on the button. */
+/** Frame 12.5 (`msGNN`): the chosen expert's price on the button. */
 export const Payment: Story = {
 	decorators: [
 		withCheckpoint({

@@ -28,7 +28,7 @@ const renderProject = (project: CuratorProject) =>
 
 const renderAuthor = (author: CuratorAuthor | null) =>
 	author
-		? `The author: ${author.speciality}, ${author.level} level.`
+		? `The author: ${author.speciality}, ${author.level} level.${author.experience ? ` In their words: "${author.experience}"` : ""}`
 		: "The author's speciality is not known.";
 
 export const GOAL_CHECK_FUNCTION_NAME = "report_goal_check";

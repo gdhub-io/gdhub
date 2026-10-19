@@ -65,6 +65,8 @@ export type CuratorProject = {
 export type CuratorAuthor = {
 	speciality: string;
 	level: string;
+	/** "Briefly about your experience", null when left empty. */
+	experience: string | null;
 };
 
 /** Day 1: is this reachable in 28 days, and what is missing from the list. */

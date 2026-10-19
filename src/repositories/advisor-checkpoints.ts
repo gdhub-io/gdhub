@@ -7,6 +7,11 @@ import {
 	withAcceptedTerms,
 	withProgress,
 } from "./checkpoint.repository";
+import {
+	briefAuthor,
+	briefMemberSelect,
+	lastVerdict,
+} from "./checkpoint-brief";
 import { CONFIRMED_MEMBERS } from "./scout.games";
 
 const advisorCheckpointSelect = {
@@ -109,6 +114,7 @@ export const getAdvisorProject = async (
 		prisma.projectCheckpoint.findFirst({
 			where: { id: checkpointId, curatorId },
 			select: {
+				projectId: true,
 				project: {
 					select: {
 						name: true,
@@ -142,10 +148,7 @@ export const getAdvisorProject = async (
 										position: true,
 										status: true,
 										startedAt: true,
-										speciality: { select: { name: true, level: true } },
-										user: {
-											select: { profile: { select: { timeForWork: true } } },
-										},
+										...briefMemberSelect,
 									},
 								},
 							},
@@ -162,6 +165,7 @@ export const getAdvisorProject = async (
 	if (!checkpoint) return null;
 
 	const { project } = checkpoint;
+	const previous = await lastVerdict(checkpoint.projectId, checkpointId);
 	const members = project.team?.members ?? [];
 	// The pulse and the checkpoint's devlogs are shown to the curator running
 	// it, not to one still deciding whether to take it.
@@ -196,15 +200,31 @@ export const getAdvisorProject = async (
 			members.map((member) => ({ timeForWork: hoursOf(member) })),
 		),
 		// The member id stays only as a row key; nothing on it leads to a person.
-		team: members.map((member) => ({
-			id: member.id,
-			position: member.position,
-			speciality: member.speciality,
-			isFounder: member.status === TeamMemberStatus.Founder,
-			hoursPerWeek: hoursOf(member),
-			startedAt: member.startedAt,
-			pulse: pulseOf.get(member.id) ?? [],
-		})),
+		team: members.map((member) => {
+			const isFounder = member.status === TeamMemberStatus.Founder;
+
+			return {
+				id: member.id,
+				position: member.position,
+				// Without `specialization`: a member's own words are not part of the card.
+				speciality: member.speciality && {
+					name: member.speciality.name,
+					level: member.speciality.level,
+				},
+				isFounder,
+				// The author's own words and clock; the rest of the team stated neither.
+				...(isFounder
+					? {
+							experience: briefAuthor(member).experience,
+							timezone: member.user.profile?.timezone ?? null,
+						}
+					: { experience: null, timezone: null }),
+				hoursPerWeek: hoursOf(member),
+				startedAt: member.startedAt,
+				pulse: pulseOf.get(member.id) ?? [],
+			};
+		}),
+		previous,
 		sprints: accepted ? detail.sprints : [],
 		/** The project's own latest, whatever checkpoint they belong to. */
 		latestDevlogs: project.reports,

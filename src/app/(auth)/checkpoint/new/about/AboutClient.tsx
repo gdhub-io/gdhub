@@ -217,7 +217,7 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 			next={status.data?.hadCheckpoint}
 			heading={t("checkpointEntry.about.title", "Tell us about yourself")}
 			subtitle={t(
-				"checkpointEntry.about.hint",
+				"checkpointEntry.about.subtitle",
 				"Your speciality and level help the curator pitch their advice. The rest of your profile can wait.",
 			)}
 			foot={

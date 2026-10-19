@@ -23,15 +23,16 @@ picture of the project and the team.
    people outside GDHub **invites them after payment** (a link on the paid screens), and
    they state their hours themselves. The author's side, the curator's card and the AI goal
    check count the same members (today one includes former members and the other does not).
-4. **An existing project is asked only for what is missing** — an empty description or
-   genre — and shows its current stage with "change".
-5. **One curator brief** — `buildCuratorBrief(checkpointId)`: with whom (the author's
-   role and level, team size and hours, language and timezone) and with what (pitch,
-   genre, stage, what's done so far with its evidence, the goal, the last verdict). The AI
-   prompts and the curator's card read it; the author sees it on the payment step as "What
-   the curator will see".
-6. **An AI suggestion for "what's done so far"** — two or three lines for a fresh project
-   from its pitch and stage (`suggestCardLines(Input)` exists), editable, rate-limited.
+4. ~~An existing project is asked only for what is missing~~ — dropped (2026-10-20): an
+   existing project is only picked; a new one is created in the New project modal, which
+   asks the pitch, genre and stage.
+5. **One curator brief** — the AI goal check and the curator's card read the author
+   (speciality, level, experience; the card adds the time zone), the current team and the
+   last verdict from one place. The author is not shown a read-back on the payment step
+   (2026-10-20).
+6. ~~An AI suggestion for "what's done so far"~~ — dropped (2026-10-20): the AI cannot
+   know what exists. A project with a closed checkpoint already gets its proven tasks and
+   their evidence carried over; AI suggestions are for the tasks ahead, not this list.
 
 ## Decided (2026-10-18)
 
@@ -68,5 +69,6 @@ gdhub-prisma, each approved before code. Items 1–3 first; 4–6 follow on the 
 
 ## Not here
 
-GTM events (GDHUB-95). Pricing by team size (the price table has the columns; the checkout
-charges solo — a separate decision). Inviting the team in-app beyond a link after payment.
+GTM events (GDHUB-95). Pricing by team size — decided against for now (2026-10-20): one
+price for a team of 1–10, the author included, because people join and leave mid-run; a
+larger team writes to info@gdhub.io for an offer, and pay refuses it. Inviting the team in-app beyond a link after payment.

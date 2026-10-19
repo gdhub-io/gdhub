@@ -104,8 +104,15 @@ export function TeamTab({ project }: { project: AdvisorProjectDto }) {
 									)}
 								</Flex>
 								<Text type="secondary" className={styles.summarySub} ellipsis>
-									{specialityLine(member.speciality) ?? "—"}
+									{[specialityLine(member.speciality) ?? "—", member.timezone]
+										.filter(Boolean)
+										.join(" · ")}
 								</Text>
+								{member.experience && (
+									<Text type="secondary" className={styles.summarySub}>
+										{member.experience}
+									</Text>
+								)}
 							</Flex>
 						),
 					},

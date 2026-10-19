@@ -404799,203 +404799,6 @@
                         },
                         {
                           "type": "frame",
-                          "id": "huzvL",
-                          "name": "Field — What the project is missing (item 4)",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 12,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "a7KxQO",
-                              "name": "Help",
-                              "fill": "$text-secondary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "The curator reads the pitch and the genre — this project has neither yet.",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "J5TfH",
-                              "name": "Field — What's the game about",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 8,
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "Q43rFF",
-                                  "name": "L",
-                                  "fill": "$text-primary",
-                                  "content": "What's the game about",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "c2jhi",
-                                  "name": "Textarea",
-                                  "width": "fill_container",
-                                  "height": 72,
-                                  "fill": "$bg-muted",
-                                  "cornerRadius": 10,
-                                  "layout": "vertical",
-                                  "padding": [
-                                    10,
-                                    12
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "w6euPH",
-                                      "name": "Placeholder",
-                                      "fill": "$text-tertiary",
-                                      "content": "A pitch in a sentence or two",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "EOMUy",
-                              "name": "Row — Genre + Stage",
-                              "width": "fill_container",
-                              "gap": 24,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "K9U7l",
-                                  "name": "Field — Genre",
-                                  "width": "fill_container",
-                                  "layout": "vertical",
-                                  "gap": 8,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "R3bCK",
-                                      "name": "L",
-                                      "fill": "$text-primary",
-                                      "content": "Genre",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "bM0BN",
-                                      "name": "Select",
-                                      "width": "fill_container",
-                                      "height": 40,
-                                      "fill": "$bg-muted",
-                                      "cornerRadius": 10,
-                                      "gap": 8,
-                                      "padding": [
-                                        0,
-                                        12
-                                      ],
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "K8WF56",
-                                          "name": "V",
-                                          "fill": "$text-tertiary",
-                                          "textGrowth": "fixed-width",
-                                          "width": "fill_container",
-                                          "content": "Select a genre",
-                                          "lineHeight": 1.45,
-                                          "fontFamily": "$font",
-                                          "fontSize": 14,
-                                          "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "icon",
-                                          "id": "V3elnO",
-                                          "name": "Caret",
-                                          "width": 14,
-                                          "height": 14,
-                                          "icon": "chevron-down",
-                                          "library": "lucide",
-                                          "fill": "$text-tertiary"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "YtjjO",
-                                  "name": "Field — Stage",
-                                  "width": "fill_container",
-                                  "layout": "vertical",
-                                  "gap": 8,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "J7RKL",
-                                      "name": "L",
-                                      "fill": "$text-primary",
-                                      "content": "Stage",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "F87tUg",
-                                      "name": "Select",
-                                      "width": "fill_container",
-                                      "height": 40,
-                                      "fill": "$bg-muted",
-                                      "cornerRadius": 10,
-                                      "gap": 8,
-                                      "padding": [
-                                        0,
-                                        12
-                                      ],
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "w1tc04",
-                                          "name": "V",
-                                          "fill": "$text-primary",
-                                          "textGrowth": "fixed-width",
-                                          "width": "fill_container",
-                                          "content": "Ideation",
-                                          "lineHeight": 1.45,
-                                          "fontFamily": "$font",
-                                          "fontSize": 14,
-                                          "fontWeight": "normal"
-                                        },
-                                        {
-                                          "type": "icon",
-                                          "id": "EK5E2",
-                                          "name": "Caret",
-                                          "width": 14,
-                                          "height": 14,
-                                          "icon": "chevron-down",
-                                          "library": "lucide",
-                                          "fill": "$text-tertiary"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
                           "id": "FZPa3",
                           "name": "Field — What's done so far (up to 5)",
                           "width": "fill_container",
@@ -405025,7 +404828,9 @@
                                   "id": "Pj6Ki",
                                   "name": "Help",
                                   "fill": "$text-secondary",
-                                  "content": "Up to 5 things that exist today — the curator measures the 28 days from here.",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Up to 5 things that exist today. Evidence is optional — a link or a file that shows it.",
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "normal"
@@ -405310,41 +405115,6 @@
                                       "name": "L",
                                       "fill": "$text-primary",
                                       "content": "Add item",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "500"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "V0H1q8",
-                                  "name": "Button — Suggest with AI (text)",
-                                  "height": 32,
-                                  "cornerRadius": 8,
-                                  "gap": 8,
-                                  "padding": [
-                                    0,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "o9z2xn",
-                                      "name": "Icon sparkles",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "sparkles",
-                                      "library": "lucide",
-                                      "fill": "$text-primary"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "t4vnoV",
-                                      "name": "L",
-                                      "fill": "$text-primary",
-                                      "content": "Suggest with AI",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
                                       "fontWeight": "500"
@@ -408773,60 +408543,6 @@
                                       ]
                                     }
                                   ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "ec3KD",
-                                  "name": "Block — WHAT THE CURATOR WILL SEE (item 5)",
-                                  "width": "fill_container",
-                                  "stroke": "$border",
-                                  "strokeWidth": {
-                                    "bottom": 1
-                                  },
-                                  "strokeAlignment": "inner",
-                                  "layout": "vertical",
-                                  "gap": 8,
-                                  "padding": [
-                                    16,
-                                    0
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "frame",
-                                      "id": "M3LS6W",
-                                      "name": "H",
-                                      "width": "fill_container",
-                                      "gap": 12,
-                                      "justifyContent": "space_between",
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "Tgg2g",
-                                          "name": "L",
-                                          "fill": "$text-tertiary",
-                                          "content": "WHAT THE CURATOR WILL SEE",
-                                          "fontFamily": "$font",
-                                          "fontSize": 12,
-                                          "fontWeight": "600",
-                                          "letterSpacing": 0.5
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "Z3mCS",
-                                      "name": "V",
-                                      "fill": "$text-secondary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "Game designer · Middle · Europe/Tallinn\nSix years in level design: two shipped mobile puzzlers, then a stealth game.\nLantern Keeper · Puzzle · Ideation — a pitch in two lines\nTeam of 4 · 43–52 hours a sprint\n3 things done so far, 2 with evidence · the goal above\nNo names: the curator meets you on the first call.",
-                                      "lineHeight": 1.5,
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
                                 }
                               ]
                             },
@@ -408960,39 +408676,7 @@
                                               "fill": "$text-secondary",
                                               "textGrowth": "fixed-width",
                                               "width": "fill_container",
-                                              "content": "Your team does the work; the curator keeps the 28 days on track.",
-                                              "lineHeight": 1.45,
-                                              "fontFamily": "$font",
-                                              "fontSize": 12,
-                                              "fontWeight": "normal"
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "type": "frame",
-                                          "id": "FTkee",
-                                          "name": "Li",
-                                          "width": "fill_container",
-                                          "gap": 8,
-                                          "children": [
-                                            {
-                                              "type": "icon",
-                                              "id": "DdKvn",
-                                              "name": "Ic",
-                                              "width": 14,
-                                              "height": 14,
-                                              "icon": "minus",
-                                              "library": "lucide",
-                                              "fill": "$text-tertiary"
-                                            },
-                                            {
-                                              "type": "text",
-                                              "id": "w8Xfjl",
-                                              "name": "L",
-                                              "fill": "$text-secondary",
-                                              "textGrowth": "fixed-width",
-                                              "width": "fill_container",
-                                              "content": "Tasks are set together on the first call. Results are not guaranteed.",
+                                              "content": "The curator does not build any part of the game — that is your team's work.",
                                               "lineHeight": 1.45,
                                               "fontFamily": "$font",
                                               "fontSize": 12,
@@ -409005,7 +408689,7 @@
                                     {
                                       "type": "frame",
                                       "id": "d4LQUu",
-                                      "name": "Agree",
+                                      "name": "Clickwrap — Checkpoint Purchase Terms",
                                       "width": "fill_container",
                                       "gap": 12,
                                       "children": [
@@ -409042,7 +408726,55 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "I accept the checkpoint agreement.",
+                                          "content": "I am 18 or over and accept the Checkpoint Purchase Terms.",
+                                          "lineHeight": 1.45,
+                                          "fontFamily": "$font",
+                                          "fontSize": 12,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "TU1FY",
+                                      "name": "Clickwrap — Withdrawal Waiver",
+                                      "width": "fill_container",
+                                      "gap": 12,
+                                      "children": [
+                                        {
+                                          "type": "frame",
+                                          "id": "H55OS6",
+                                          "name": "Box",
+                                          "width": 20,
+                                          "height": 20,
+                                          "fill": "$brand-primary",
+                                          "cornerRadius": 5,
+                                          "stroke": "$brand-primary",
+                                          "strokeWidth": 1,
+                                          "strokeAlignment": "inner",
+                                          "justifyContent": "center",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "rtUVF",
+                                              "name": "Ic",
+                                              "width": 14,
+                                              "height": 14,
+                                              "icon": "check",
+                                              "library": "lucide",
+                                              "fill": "$surface"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Su590",
+                                          "name": "L",
+                                          "fill": "$text-secondary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "I want the checkpoint to start now and understand I lose the right of withdrawal for what is already provided (Withdrawal Waiver).",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,

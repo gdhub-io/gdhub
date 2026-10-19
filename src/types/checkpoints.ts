@@ -234,6 +234,10 @@ export type AdvisorProjectDto = {
 		position: string | null;
 		speciality: { name: string; level: string } | null;
 		isFounder: boolean;
+		/** The founder's "Briefly about your experience"; null on every other row. */
+		experience: string | null;
+		/** The founder's IANA zone; null on every other row. */
+		timezone: string | null;
 		/** `[min, max]` a week as stated, or null when nothing was. */
 		hoursPerWeek: number[] | null;
 		startedAt: string;
@@ -241,6 +245,8 @@ export type AdvisorProjectDto = {
 		pulse: CheckpointPulseCellDto[];
 	}[];
 	sprints: CheckpointSprintDto[];
+	/** How the project's last closed checkpoint ended. */
+	previous: { verdict: CheckpointVerdict; note: string | null } | null;
 	/** The project's last three, newest first. */
 	latestDevlogs: { id: string; publishedAt: string; content: string }[];
 	/**

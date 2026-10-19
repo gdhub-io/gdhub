@@ -4,6 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
+import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import {
 	HeadlineCard,
 	Section,
@@ -139,6 +140,22 @@ export function CheckpointTab({
 			{list(
 				t("checkpoints.pay.whatMustExist", "What must exist by day 28"),
 				side(CheckpointItemKind.Outcome),
+			)}
+
+			{project.previous && (
+				<section className={scout.sectionTight}>
+					<Text className={scout.sectionTitle}>
+						{t("advisor.checkpoint.lastVerdict", "Last checkpoint")}
+					</Text>
+					<Flex vertical gap={8} className={scout.detailsCard}>
+						<VerdictChip verdict={project.previous.verdict} />
+						{project.previous.note && (
+							<Paragraph className={styles.goal}>
+								{project.previous.note}
+							</Paragraph>
+						)}
+					</Flex>
+				</section>
 			)}
 		</Flex>
 	);

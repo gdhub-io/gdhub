@@ -4,7 +4,6 @@ import { IconHistory, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import {
-	CHECKPOINT_DAYS,
 	CHECKPOINT_ENTRY_ITEMS_MAX,
 	CHECKPOINT_ITEM_TEXT_MAX,
 } from "@/config/checkpoint";
@@ -46,9 +45,9 @@ export function DoneSoFar({ projectId, carriedFrom }: DoneSoFarProps) {
 				</Typography.Text>
 				<Typography.Text className={styles.help}>
 					{t(
-						"checkpointEntry.done.help",
-						"Up to {max} things that exist today — the curator measures the {days} days from here.",
-						{ max: CHECKPOINT_ENTRY_ITEMS_MAX, days: CHECKPOINT_DAYS },
+						"checkpointEntry.done.hint",
+						"Up to {max} things that exist today. Evidence is optional — a link or a file that shows it.",
+						{ max: CHECKPOINT_ENTRY_ITEMS_MAX },
 					)}
 				</Typography.Text>
 			</Flex>
