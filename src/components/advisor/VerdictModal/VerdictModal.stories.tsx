@@ -140,8 +140,6 @@ const seat = (
 	position,
 	speciality: { name: speciality, level: "Middle" },
 	isFounder: id === "m1",
-	experience: null,
-	timezone: null,
 	hoursPerWeek: [10, 20],
 	startedAt: day(-200),
 	pulse: cells,
@@ -164,6 +162,7 @@ const PROJECT: AdvisorProjectDto = {
 	links: [],
 	stage: "Prototyping",
 	previous: null,
+	author: null,
 	capacity: {
 		members: 4,
 		stated: 4,

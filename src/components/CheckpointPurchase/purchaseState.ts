@@ -66,10 +66,7 @@ export function purchaseState(
 	return {
 		step,
 		isDraft,
-		isOpen,
 		paid,
-		// A curator handed it back: the money went with them, so it is not "paid".
-		declined: !!current?.curatorDeclinedAt && !current.curator,
 		// Running, and not the paid screen of an AI one: the workflow shows it now.
 		running: isOpen && !paid,
 	};

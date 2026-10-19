@@ -118,8 +118,7 @@ reads "from $19" until a curator is chosen, then the amount; on the paid screens
 
 | Block | Source |
 |---|---|
-| Light shell | New `src/components/checkpoints/entry/EntryShell.tsx` (logo, title, facts row, optional stepper, body, foot), styled after the onboarding layout. Replaces `StartLayout` on this path, paid screens included. |
-| Facts row | New `EntryFacts.tsx` (same folder), `price` prop: from / chosen / paid / reserved. |
+| Light shell | New `src/components/checkpoints/entry/EntryShell.tsx` (logo, title, optional stepper, body, foot), styled after the onboarding layout. Replaces `StartLayout` on this path, paid screens included. |
 | Hub page | New `EntryHub.tsx` for `/checkpoint/new`. antd `List` (`actions` = button or lock) or `Flex` rows; new `ChecklistStatus` (`active` / `done` / `locked`) — not `StatusDot`. A locked row has no link and no hover. |
 | About you | The existing profile and speciality form parts and APIs (antd `Form`, `Input`, `Select`, `Upload` for the avatar). |
 | Project Select | antd `Select` with a shared `ProjectOption` (`AppImage` cover 40 or `IconTile md` + `IconDeviceGamepad2`, name, stage) for `optionRender` and `labelRender`. Proposed `ProjectPicker.tsx`. |

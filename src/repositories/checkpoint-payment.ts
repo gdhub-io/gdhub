@@ -5,7 +5,6 @@ import {
 	PayableType,
 	PaymentProvider,
 	PaymentStatus,
-	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import type Stripe from "stripe";
 import {
@@ -25,6 +24,7 @@ import {
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import {
@@ -88,16 +88,6 @@ export const heldAmount = async (checkpointId: string) =>
 /** Minor units back to the whole ones the price table and the screen use. */
 export const toWholePrice = (amount: number) => amount / MINOR;
 
-/** The team as it stands — the same members the goal step counts. */
-const activeTeamSize = (projectId: string) =>
-	prisma.teamMember.count({
-		where: {
-			team: { projectId },
-			status: { not: TeamMemberStatus.Fired },
-			finishedAt: null,
-		},
-	});
-
 /**
  * What a checkout for this checkpoint would charge, and for what.
  *
@@ -118,7 +108,19 @@ export const checkpointCheckout = async (checkpointId: string) => {
 			startedAt: true,
 			goal: true,
 			curator: { select: { name: true } },
-			project: { select: { id: true, slug: true, name: true } },
+			project: {
+				select: {
+					id: true,
+					slug: true,
+					name: true,
+					// The team as it stands, as the goal step and the curator's card count it.
+					team: {
+						select: {
+							_count: { select: { members: { where: CONFIRMED_MEMBERS } } },
+						},
+					},
+				},
+			},
 			_count: {
 				select: { items: { where: { kind: CheckpointItemKind.Input } } },
 			},
@@ -147,7 +149,7 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	}
 
 	// One price covers up to CHECKPOINT_MAX_TEAM; a larger team asks for an offer.
-	if ((await activeTeamSize(checkpoint.project.id)) > CHECKPOINT_MAX_TEAM) {
+	if ((checkpoint.project.team?._count.members ?? 0) > CHECKPOINT_MAX_TEAM) {
 		return { ok: false as const, reason: "teamTooLarge" as const };
 	}
 

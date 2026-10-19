@@ -95,8 +95,6 @@ describe("the project as its curator reads it", () => {
 			position: "Lead designer",
 			speciality: { name: "Game design", level: "Expert" },
 			isFounder: true,
-			experience: "Two shipped mobile puzzlers",
-			timezone: "Europe/Tallinn",
 			hoursPerWeek: [10, 20],
 			startedAt: new Date("2026-01-01"),
 			pulse: [{ sprint: 1, state: "confirmed" }],
@@ -106,10 +104,16 @@ describe("the project as its curator reads it", () => {
 	it("gives the author's words and time zone, and nobody else's", async () => {
 		const project = await getAdvisorProject("cp1", "u9");
 
-		expect(project?.team[1]).toMatchObject({
-			speciality: { name: "2D art", level: "Middle" },
-			experience: null,
-			timezone: null,
+		expect(project?.author).toEqual({
+			experience: "Two shipped mobile puzzlers",
+			timezone: "Europe/Tallinn",
+		});
+		expect(project?.team[1]).toEqual(
+			expect.not.objectContaining({ experience: expect.anything() }),
+		);
+		expect(project?.team[1].speciality).toEqual({
+			name: "2D art",
+			level: "Middle",
 		});
 	});
 

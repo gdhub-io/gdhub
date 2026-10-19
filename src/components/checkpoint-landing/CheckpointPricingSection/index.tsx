@@ -32,14 +32,9 @@ export const CheckpointPricingSection = () => {
 		Expert: t("checkpointLanding.pricing.level.expert", "Expert"),
 	};
 
-	const teamSizes = [
-		t("checkpointLanding.pricing.column.upTo", "Team of 1–{max}", {
-			max: CHECKPOINT_MAX_TEAM,
-		}),
-		t("checkpointLanding.pricing.column.over", "Over {max}", {
-			max: CHECKPOINT_MAX_TEAM,
-		}),
-	];
+	const upTo = t("checkpointLanding.pricing.column.upTo", "Team of 1–{max}", {
+		max: CHECKPOINT_MAX_TEAM,
+	});
 
 	return (
 		<CheckpointSection tone="dark" anchor="pricing">
@@ -70,7 +65,7 @@ export const CheckpointPricingSection = () => {
 								{t("checkpointLanding.pricing.human.title", "Human curator")}
 							</Typography.Text>
 							<Typography.Text className={styles.tableNote}>
-								{teamSizes[0]}
+								{upTo}
 							</Typography.Text>
 						</div>
 
@@ -83,11 +78,12 @@ export const CheckpointPricingSection = () => {
 											"Curator level",
 										)}
 									</th>
-									{teamSizes.map((size) => (
-										<th key={size} scope="col">
-											{size}
-										</th>
-									))}
+									<th scope="col">{upTo}</th>
+									<th scope="col" className={styles.wideOnly}>
+										{t("checkpointLanding.pricing.column.over", "Over {max}", {
+											max: CHECKPOINT_MAX_TEAM,
+										})}
+									</th>
 								</tr>
 							</thead>
 							<tbody>

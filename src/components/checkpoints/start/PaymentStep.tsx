@@ -146,31 +146,27 @@ export function PaymentStep() {
 			}
 			// The server refuses a draft without a goal or without what's done so far.
 			if (isAxiosError(error) && error.response?.status === 400) {
-				const reason = error.response.data?.error;
+				const refusals: Record<string, string> = {
+					purchaseClosed: t(
+						"checkpointEntry.closed",
+						"Checkpoints open soon — we'll email you when you can head for one.",
+					),
+					underage: t(
+						"checkpointEntry.about.underage",
+						"You need to be 18 or over to head for a checkpoint",
+					),
+					teamTooLarge: t(
+						"checkpoints.pay.teamTooLarge",
+						"A team over {max} gets its own offer — write to {email}.",
+						{ max: CHECKPOINT_MAX_TEAM, email: CHECKPOINT_LARGE_TEAM_EMAIL },
+					),
+				};
 				message.warning(
-					reason === "purchaseClosed"
-						? t(
-								"checkpointEntry.closed",
-								"Checkpoints open soon — we'll email you when you can head for one.",
-							)
-						: reason === "underage"
-							? t(
-									"checkpointEntry.about.underage",
-									"You need to be 18 or over to head for a checkpoint",
-								)
-							: reason === "teamTooLarge"
-								? t(
-										"checkpoints.pay.teamTooLarge",
-										"A team over {max} gets its own offer — write to {email}.",
-										{
-											max: CHECKPOINT_MAX_TEAM,
-											email: CHECKPOINT_LARGE_TEAM_EMAIL,
-										},
-									)
-								: t(
-										"checkpoints.pay.incomplete",
-										"The goal or what's done so far is missing — fill it in first.",
-									),
+					refusals[error.response.data?.error] ??
+						t(
+							"checkpoints.pay.incomplete",
+							"The goal or what's done so far is missing — fill it in first.",
+						),
 				);
 				return;
 			}

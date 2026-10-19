@@ -1,9 +1,10 @@
+import { hubLegalEntity } from "@/config/legal/entities";
 import { CheckpointStatus, type SkillLevel } from "@/config/prisma-enums";
 
 /**
  * Every number a checkpoint runs on. Code that needs one imports it from here;
- * the arithmetic built on them (`sessionDay`, `dueDateFrom`, `curatorPrice`)
- * lives in `lib/` and `config/checkpoint-pricing.ts`. Browser-safe.
+ * the arithmetic built on them (`sessionDay`, `dueDateFrom`) lives in `lib/`, and
+ * the price lookups in `config/checkpoint-pricing.ts`. Browser-safe.
  */
 
 // The 28 days
@@ -31,7 +32,7 @@ export const SESSION_MINUTES = 45;
  * could not hold; a larger team asks for an offer by email instead.
  */
 export const CHECKPOINT_MAX_TEAM = 10;
-export const CHECKPOINT_LARGE_TEAM_EMAIL = "info@gdhub.io";
+export const CHECKPOINT_LARGE_TEAM_EMAIL = hubLegalEntity().infoEmail;
 
 // The call room
 

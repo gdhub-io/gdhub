@@ -228,16 +228,14 @@ export type AdvisorProjectDto = {
 		hoursPerWeek: { from: number; to: number } | null;
 		hoursPerRun: { from: number; to: number } | null;
 	};
+	/** The founder in their own words, and their IANA zone. */
+	author: { experience: string | null; timezone: string | null } | null;
 	/** Roles, not people: no name, no face, no link to a profile. */
 	team: {
 		id: string;
 		position: string | null;
 		speciality: { name: string; level: string } | null;
 		isFounder: boolean;
-		/** The founder's "Briefly about your experience"; null on every other row. */
-		experience: string | null;
-		/** The founder's IANA zone; null on every other row. */
-		timezone: string | null;
 		/** `[min, max]` a week as stated, or null when nothing was. */
 		hoursPerWeek: number[] | null;
 		startedAt: string;

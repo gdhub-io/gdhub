@@ -149,15 +149,17 @@ const PROJECT: AdvisorProjectDto = {
 		hoursPerWeek: { from: 30, to: 40 },
 		hoursPerRun: { from: 120, to: 160 },
 	},
+	author: {
+		experience:
+			"Six years in level design: two shipped mobile puzzlers, then a stealth game.",
+		timezone: "Europe/Tallinn",
+	},
 	team: [
 		{
 			id: "m1",
 			position: "Lead designer",
 			speciality: { name: "Game design", level: "Expert" },
 			isFounder: true,
-			experience:
-				"Six years in level design: two shipped mobile puzzlers, then a stealth game.",
-			timezone: "Europe/Tallinn",
 			hoursPerWeek: [20, 25],
 			startedAt: "2026-01-10T00:00:00.000Z",
 			pulse: pulse("confirmed", "waiting", "notAsked", "notAsked"),
@@ -167,8 +169,6 @@ const PROJECT: AdvisorProjectDto = {
 			position: "Programmer",
 			speciality: { name: "Gameplay programming", level: "Middle" },
 			isFounder: false,
-			experience: null,
-			timezone: null,
 			hoursPerWeek: [10, 15],
 			startedAt: "2026-04-02T00:00:00.000Z",
 			pulse: pulse("missed", "confirmed", "notAsked", "notAsked"),
@@ -178,8 +178,6 @@ const PROJECT: AdvisorProjectDto = {
 			position: "Artist",
 			speciality: null,
 			isFounder: false,
-			experience: null,
-			timezone: null,
 			hoursPerWeek: null,
 			startedAt: "2026-07-15T00:00:00.000Z",
 			pulse: pulse("confirmed", "waiting", "notAsked", "notAsked"),

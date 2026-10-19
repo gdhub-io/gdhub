@@ -22,7 +22,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { type ComponentProps, type ReactNode, useState } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
 import {
 	CHECKPOINT_DAYS,
@@ -307,62 +307,68 @@ export function NowStep() {
 			</Flex>
 
 			{tooLarge && (
-				<Flex gap={16} align="flex-start" className={styles.warning}>
-					<IconTile
-						icon={IconUsers}
-						size="md"
-						tint="var(--gd-color-surface)"
-						ink="var(--gd-warning-solid)"
-					/>
-					<Flex vertical gap={4}>
-						<Typography.Text strong>
-							{t(
-								"checkpoints.now.teamTooLargeTitle",
-								"A team over {max} gets its own offer",
-								{ max: CHECKPOINT_MAX_TEAM },
-							)}
-						</Typography.Text>
-						<Typography.Text type="secondary">
-							{t(
-								"checkpoints.now.teamTooLargeBody",
-								"One price covers a team of 1 to {max}. Write to {email} and we'll send you an offer.",
-								{
-									max: CHECKPOINT_MAX_TEAM,
-									email: CHECKPOINT_LARGE_TEAM_EMAIL,
-								},
-							)}
-						</Typography.Text>
-						<Typography.Link href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}>
-							{t("checkpoints.now.teamTooLargeAction", "Ask for an offer")}
-						</Typography.Link>
-					</Flex>
-				</Flex>
+				<Warning icon={IconUsers}>
+					<Typography.Text strong>
+						{t(
+							"checkpoints.now.teamTooLargeTitle",
+							"A team over {max} gets its own offer",
+							{ max: CHECKPOINT_MAX_TEAM },
+						)}
+					</Typography.Text>
+					<Typography.Text type="secondary">
+						{t(
+							"checkpoints.now.teamTooLargeBody",
+							"One price covers a team of 1 to {max}. Write to {email} and we'll send you an offer.",
+							{
+								max: CHECKPOINT_MAX_TEAM,
+								email: CHECKPOINT_LARGE_TEAM_EMAIL,
+							},
+						)}
+					</Typography.Text>
+					<Typography.Link href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}>
+						{t("checkpoints.now.teamTooLargeAction", "Ask for an offer")}
+					</Typography.Link>
+				</Warning>
 			)}
 
 			{remark && (
-				<Flex gap={16} align="flex-start" className={styles.warning}>
-					<IconTile
-						icon={IconAlertTriangle}
-						size="md"
-						tint="var(--gd-color-surface)"
-						ink="var(--gd-warning-solid)"
-					/>
-					<Flex vertical gap={4}>
-						<Flex gap={8} align="center" wrap>
-							<Typography.Text strong>
-								{t(
-									"checkpoints.now.riskTitle",
-									"This goal may not fit the time you have",
-								)}
-							</Typography.Text>
-							<Tag icon={<IconSparkles size={14} />}>
-								{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
-							</Tag>
-						</Flex>
-						<Typography.Text type="secondary">{remark.note}</Typography.Text>
+				<Warning icon={IconAlertTriangle}>
+					<Flex gap={8} align="center" wrap>
+						<Typography.Text strong>
+							{t(
+								"checkpoints.now.riskTitle",
+								"This goal may not fit the time you have",
+							)}
+						</Typography.Text>
+						<Tag icon={<IconSparkles size={14} />}>
+							{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
+						</Tag>
 					</Flex>
-				</Flex>
+					<Typography.Text type="secondary">{remark.note}</Typography.Text>
+				</Warning>
 			)}
 		</PurchaseLayout>
+	);
+}
+
+function Warning({
+	icon,
+	children,
+}: {
+	icon: ComponentProps<typeof IconTile>["icon"];
+	children: ReactNode;
+}) {
+	return (
+		<Flex gap={16} align="flex-start" className={styles.warning}>
+			<IconTile
+				icon={icon}
+				size="md"
+				tint="var(--gd-color-surface)"
+				ink="var(--gd-warning-solid)"
+			/>
+			<Flex vertical gap={4}>
+				{children}
+			</Flex>
+		</Flex>
 	);
 }
