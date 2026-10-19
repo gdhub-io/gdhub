@@ -1,6 +1,6 @@
 import {
 	CHECKPOINT_ENTRY_HREF,
-	CHECKPOINT_INTENT,
+	entryRegistrationHref,
 	isCheckpointEntry,
 } from "@/components/checkpoints/entry/hrefs";
 
@@ -22,9 +22,10 @@ export const signedOutRedirect = (
 		isCheckpointEntry(pathname) &&
 		!isUnder(pathname, `${CHECKPOINT_ENTRY_HREF}/checkout`)
 	) {
-		const url = new URL("/registration", base);
-		url.searchParams.set("intent", CHECKPOINT_INTENT);
-		return url;
+		return new URL(
+			entryRegistrationHref(new URLSearchParams(search).get("project")),
+			base,
+		);
 	}
 
 	const url = new URL("/signin", base);

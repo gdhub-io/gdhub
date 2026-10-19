@@ -6,6 +6,7 @@ const authMock = vi.fn();
 const createMany = vi.fn();
 const paymentCreate = vi.fn();
 const createCheckout = vi.fn();
+const profileFind = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
@@ -39,6 +40,7 @@ vi.mock("@/services/stripe/server", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		legalAcceptance: { createMany: (...a: unknown[]) => createMany(...a) },
+		profile: { findUnique: (...a: unknown[]) => profileFind(...a) },
 		payment: {
 			updateMany: async () => ({ count: 0 }),
 			create: (...a: unknown[]) => paymentCreate(...a),
@@ -74,10 +76,25 @@ beforeEach(() => {
 		user: { id: "u1", roles: ["Member"], onboardingDone: true },
 	});
 	paymentCreate.mockResolvedValue({ id: "pay_1" });
+	profileFind.mockResolvedValue({ yearOfBirth: 1990 });
 	createCheckout.mockResolvedValue({ id: "cs_1", url: "https://pay" });
 });
 
 describe("POST /api/checkpoint/[id]/pay", () => {
+	// Onboarding admits 16; the checkpoint is sold at 18, so pay checks again.
+	it("opens no checkout for a buyer under 18 by year of birth", async () => {
+		profileFind.mockResolvedValue({
+			yearOfBirth: new Date().getUTCFullYear() - 16,
+		});
+
+		const response = await post({ legal: both() });
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({ error: "underage" });
+		expect(createMany).not.toHaveBeenCalled();
+		expect(paymentCreate).not.toHaveBeenCalled();
+	});
+
 	it("opens no checkout without the purchase terms accepted", async () => {
 		const response = await post({ legal: [] });
 

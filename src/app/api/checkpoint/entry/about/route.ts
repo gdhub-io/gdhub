@@ -1,5 +1,6 @@
 import { PrimaryInterest, SkillLevel } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { CHECKPOINT_EXPERIENCE_MAX } from "@/config/checkpoint";
 import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
@@ -9,6 +10,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { underCheckpointAge } from "@/lib/checkpoint-age";
 import {
 	LegalAcceptancesSchema,
 	LegalError,
@@ -27,12 +29,18 @@ import { prisma } from "@/services/prisma";
 
 const EntryAboutSchema = z.object({
 	name: z.string().trim().min(1).max(100),
-	country: z.string().trim().min(1),
+	yearOfBirth: z.number().int(),
+	/** IANA zone, prefilled from the browser; call reminders are written in it. */
+	timezone: z
+		.string()
+		.refine((zone) => Intl.supportedValuesOf("timeZone").includes(zone)),
 	/** The user's speciality being edited; absent when they have none yet. */
 	specialityId: z.string().min(1).optional(),
 	specialityName: z.string().trim().min(1).max(100),
 	workDirectionId: z.string().min(1),
 	level: z.nativeEnum(SkillLevel),
+	/** "Briefly about your experience" — kept on the speciality, shown in the curator's brief. */
+	experience: z.string().trim().max(CHECKPOINT_EXPERIENCE_MAX).optional(),
 	/** The Terms of Use, from this form or the registration page; needed until accepted. */
 	legal: LegalAcceptancesSchema.optional(),
 	needSubscribeToNewsletter: z.boolean().optional(),
@@ -82,6 +90,9 @@ export const POST = pipe(
 	if (input.specialityId && !speciality) {
 		return apiError.notFound("Speciality not found");
 	}
+	if (underCheckpointAge(input.yearOfBirth)) {
+		return apiError.badRequest("underage");
+	}
 
 	let acceptances: ReturnType<typeof resolveLegal> = [];
 	if (
@@ -114,6 +125,16 @@ export const POST = pipe(
 				value: input.specialityName,
 				kind: "speciality",
 			},
+			...(input.experience
+				? [
+						{
+							key: "experience",
+							label: "Experience",
+							value: input.experience,
+							kind: "specialization" as const,
+						},
+					]
+				: []),
 		],
 		{ locale: currentUser.lang },
 	);
@@ -135,6 +156,12 @@ export const POST = pipe(
 		name: input.specialityName,
 		level: input.level,
 		workDirectionId: input.workDirectionId,
+		specialization: input.experience ?? "",
+	};
+	const profileData = {
+		name: input.name,
+		yearOfBirth: input.yearOfBirth,
+		timezone: input.timezone,
 	};
 
 	await prisma.$transaction(async (tx) => {
@@ -145,15 +172,13 @@ export const POST = pipe(
 			where: { userId: currentUser.id },
 			create: {
 				userId: currentUser.id,
-				name: input.name,
-				country: input.country,
+				...profileData,
 				primaryInterest: PrimaryInterest.Author,
 			},
 			// The column defaults to Specialist, so a profile left half-way through
 			// onboarding has no chosen interest yet; a finished one has.
 			update: {
-				name: input.name,
-				country: input.country,
+				...profileData,
 				...(userRecord.onboardingDone
 					? null
 					: { primaryInterest: PrimaryInterest.Author }),
@@ -177,7 +202,7 @@ export const POST = pipe(
 			});
 		} else {
 			await tx.speciality.create({
-				data: { ...specialityData, specialization: "", userId: currentUser.id },
+				data: { ...specialityData, userId: currentUser.id },
 			});
 		}
 	});

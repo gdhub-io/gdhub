@@ -549,7 +549,8 @@ describe("POST /api/checkpoint/entry/about", () => {
 
 	const valid = {
 		name: "Anna Petrova",
-		country: "PL",
+		yearOfBirth: 1994,
+		timezone: "Europe/Tallinn",
 		specialityName: "Level designer",
 		workDirectionId: "wd-1",
 		level: "Skillful",
@@ -617,6 +618,45 @@ describe("POST /api/checkpoint/entry/about", () => {
 		expect(db.user.update.mock.calls[0][0].data.agreements).toEqual({
 			needSubscribeToNewsletter: true,
 		});
+	});
+
+	it("refuses a year of birth under 18, before anything is asked or written", async () => {
+		db.user.findUnique.mockResolvedValue({ onboardingDone: false, agreements: null });
+		db.legalAcceptance.findFirst.mockResolvedValue(acceptedTerms);
+
+		const response = await post({
+			...valid,
+			yearOfBirth: new Date().getUTCFullYear() - 17,
+		});
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({ error: "underage" });
+		expect(validate).not.toHaveBeenCalled();
+		expect(db.user.update).not.toHaveBeenCalled();
+	});
+
+	it("refuses a time zone the runtime does not know", async () => {
+		db.user.findUnique.mockResolvedValue({ onboardingDone: false, agreements: null });
+
+		expect((await post({ ...valid, timezone: "Mars/Olympus" })).status).toBe(400);
+		expect(db.profile.upsert).not.toHaveBeenCalled();
+	});
+
+	it("keeps the year, the time zone and the experience", async () => {
+		db.user.findUnique.mockResolvedValue({ onboardingDone: true, agreements: null });
+		db.legalAcceptance.findFirst.mockResolvedValue(acceptedTerms);
+
+		await post({ ...valid, experience: "Six years in level design." });
+
+		const upsert = db.profile.upsert.mock.calls[0][0];
+		expect(upsert.update).toMatchObject({
+			name: "Anna Petrova",
+			yearOfBirth: 1994,
+			timezone: "Europe/Tallinn",
+		});
+		expect(db.speciality.create.mock.calls[0][0].data.specialization).toBe(
+			"Six years in level design.",
+		);
 	});
 
 	it("answers 429 before the AI is asked when the user is over the limit", async () => {

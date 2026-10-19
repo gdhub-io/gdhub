@@ -15,7 +15,10 @@ import {
 	EMPTY_DONE_ROW,
 } from "@/components/checkpoints/entry/DoneSoFar";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
-import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
+import {
+	checkoutHref,
+	entryHubHref,
+} from "@/components/checkpoints/entry/hrefs";
 import { ProjectPicker } from "@/components/checkpoints/entry/ProjectPicker";
 import CreateProjectModal, {
 	type CreatedProject,
@@ -128,7 +131,11 @@ export function ProjectClient({ projectSlug }: ProjectClientProps) {
 					artifactId: row.artifact?.id ?? null,
 				})),
 			});
-			router.push(hubHref);
+			// A draft saved before means it was opened from the hub to edit; otherwise on to the goal.
+			const slug = projects.find((project) => project.id === projectId)?.slug;
+			router.push(
+				status.data?.draft || !slug ? hubHref : checkoutHref(slug, "goal"),
+			);
 		} catch (error) {
 			if (rateLimited(error)) return;
 			const blocker: CheckpointBlocker["reason"] | undefined =
@@ -168,7 +175,9 @@ export function ProjectClient({ projectSlug }: ProjectClientProps) {
 			icon={blocked ? <IconLock size={16} /> : undefined}
 			onClick={submit}
 		>
-			{t("checkpointEntry.saveBack", "Save and go back")}
+			{status.data?.draft
+				? t("checkpointEntry.saveBack", "Save and go back")
+				: t("checkpointEntry.saveContinue", "Save and continue")}
 		</Button>
 	);
 

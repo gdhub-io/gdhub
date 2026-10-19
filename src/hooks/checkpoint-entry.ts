@@ -44,12 +44,14 @@ export const useRateLimitWarning = () => {
 /** What item 1 saves: the profile basics and the main speciality. */
 export type EntryAboutInput = {
 	name: string;
-	country: string;
+	yearOfBirth: number;
+	timezone: string;
 	/** The speciality being edited; absent when the user has none yet. */
 	specialityId?: string;
 	specialityName: string;
 	workDirectionId: string;
 	level: SkillLevel;
+	experience?: string;
 	/** The Terms of Use, ticked here or on the registration page (its cookie). */
 	legal?: LegalAcceptanceInput[];
 	needSubscribeToNewsletter?: boolean;
@@ -123,9 +125,11 @@ export const useEntryProfile = () =>
 		queryKey: entryKeys.profile,
 		queryFn: async () =>
 			(
-				await axios.get<{ name: string | null; country: string | null } | null>(
-					"/api/auth/registration/onboarding/profile",
-				)
+				await axios.get<{
+					name: string | null;
+					yearOfBirth: number;
+					timezone: string | null;
+				} | null>("/api/auth/registration/onboarding/profile")
 			).data,
 	});
 

@@ -18,8 +18,8 @@ import { signIn } from "next-auth/react";
 import { type ReactNode, useState } from "react";
 import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import {
-	CHECKPOINT_ENTRY_HREF,
 	CHECKPOINT_INTENT,
+	entryHubHref,
 } from "@/components/checkpoints/entry/hrefs";
 import {
 	ClickwrapField,
@@ -46,11 +46,12 @@ export function RegistrationClient() {
 
 	const forParam = searchParams?.get("for") || "";
 	const intent = searchParams?.get("intent") || "";
+	const projectSlug = searchParams?.get("project");
 
 	/** Where sign-up lands: onboarding, or straight to the checkpoint hub when it came from there. */
 	const afterSignUp = (provider: "email" | "google") =>
 		intent === CHECKPOINT_INTENT
-			? CHECKPOINT_ENTRY_HREF
+			? entryHubHref(projectSlug)
 			: `/registration/onboarding?locale=${getLanguage()}&provider=${provider}${forParam ? `&for=${forParam}` : ""}`;
 
 	const handleSendWithEmail = async () => {
@@ -181,7 +182,7 @@ export function RegistrationClient() {
 							<Link
 								href={
 									intent === CHECKPOINT_INTENT
-										? `/signin?callbackUrl=${encodeURIComponent(CHECKPOINT_ENTRY_HREF)}`
+										? `/signin?callbackUrl=${encodeURIComponent(entryHubHref(projectSlug))}`
 										: "/signin"
 								}
 								className={styles.createAccountLink}

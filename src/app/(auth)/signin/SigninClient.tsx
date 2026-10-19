@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import {
 	CHECKPOINT_ENTRY_HREF,
-	CHECKPOINT_INTENT,
+	entryRegistrationHref,
 } from "@/components/checkpoints/entry/hrefs";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import styles from "./style.module.scss";
@@ -118,7 +118,11 @@ export function SigninClient() {
 								<Link
 									href={
 										callbackUrl.startsWith(CHECKPOINT_ENTRY_HREF)
-											? `/registration?intent=${CHECKPOINT_INTENT}`
+											? entryRegistrationHref(
+													new URL(callbackUrl, "http://x").searchParams.get(
+														"project",
+													),
+												)
 											: "/registration"
 									}
 									className={styles.createAccountLink}

@@ -49,9 +49,14 @@ describe("remindCallsSoon", () => {
 			project: {
 				name: "Hollow Tide",
 				slug: "hollow-tide",
-				author: person("author"),
+				author: { ...person("author"), profile: { timezone: "Asia/Tbilisi" } },
 				team: {
-					members: [{ user: person("author") }, { user: person("oleg") }],
+					members: [
+						{
+							user: { ...person("author"), profile: { timezone: "Asia/Tbilisi" } },
+						},
+						{ user: { ...person("oleg"), profile: null } },
+					],
 				},
 			},
 		},
@@ -72,7 +77,7 @@ describe("remindCallsSoon", () => {
 		});
 	});
 
-	it("tells the curator in their zone and each team member once, in UTC", async () => {
+	it("tells each person once, in their own zone — UTC for whoever has none", async () => {
 		sessionFindMany.mockResolvedValue([call]);
 		expect(await remindCallsSoon(new Date("2026-10-21T13:00:00Z"))).toBe(3);
 
@@ -84,6 +89,7 @@ describe("remindCallsSoon", () => {
 		expect(byUser.curator.payload.redirectUrl).toMatch(
 			/\/advisor\/checkpoints\/cp\/review\/2$/,
 		);
+		expect(byUser.author.payload.message).toContain("18:00 (Asia/Tbilisi)");
 		expect(byUser.oleg.payload.message).toContain("14:00 (UTC)");
 		expect(byUser.oleg.payload.redirectUrl).toMatch(
 			/\/user\/project\/hollow-tide\/workflow\/cp2\/review\/2$/,

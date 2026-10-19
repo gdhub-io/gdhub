@@ -1,25 +1,18 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import {
-	App,
-	AutoComplete,
-	Button,
-	Col,
-	Form,
-	Input,
-	Row,
-	Select,
-	Skeleton,
-} from "antd";
+import { App, Button, Col, Form, Input, Row, Select, Skeleton } from "antd";
 import { isAxiosError } from "axios";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
-import countryList from "react-select-country-list";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
-import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
+import {
+	entryHubHref,
+	entryProjectHref,
+} from "@/components/checkpoints/entry/hrefs";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import {
 	ClickwrapField,
@@ -29,6 +22,10 @@ import {
 	outdatedLegalCode,
 } from "@/components/legal/ClickwrapField";
 import { skillLevelsList } from "@/components/ui/skillLevel";
+import {
+	CHECKPOINT_EXPERIENCE_MAX,
+	CHECKPOINT_MIN_AGE,
+} from "@/config/checkpoint";
 import type { SkillLevel } from "@/config/prisma-enums";
 import { deleteCookie, getCookie } from "@/helpers/cookie";
 import { resyncSession } from "@/helpers/session";
@@ -43,12 +40,13 @@ import { useWorkDirections } from "@/hooks/library";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 
 type AboutValues = {
-	firstName: string;
-	lastName: string;
-	country: string;
+	name: string;
+	yearOfBirth: number;
+	timezone: string;
 	workDirectionId: string;
 	specialityName: string;
 	level: SkillLevel;
+	experience?: string;
 };
 
 type ValidationIssue = {
@@ -61,6 +59,20 @@ const PRE_REGISTRATION_COOKIES = [
 	"auth.email.pre-registration",
 	"auth.google.pre-registration",
 ];
+
+/** Every IANA zone the browser knows, labelled with its current offset. */
+const timezoneOptions = () =>
+	Intl.supportedValuesOf("timeZone").map((zone) => ({
+		value: zone,
+		label: `${zone.replaceAll("_", " ")} · UTC${dayjs().tz(zone).format("Z")}`,
+	}));
+
+/** The years onboarding offers, newest first. */
+const yearOptions = () =>
+	Array.from({ length: 84 }, (_, i) => {
+		const year = dayjs().year() - 16 - i;
+		return { value: year, label: String(year) };
+	});
 
 /** The consents ticked on the registration page, when the user came from there. */
 const readPreRegistration = () => {
@@ -90,8 +102,9 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 	const { message } = App.useApp();
 	const router = useRouter();
 	const [form] = Form.useForm<AboutValues>();
-	const { update: updateSession } = useSession();
-	const countries = useMemo(() => countryList().getData(), []);
+	const { data: session, update: updateSession } = useSession();
+	const timezones = useMemo(timezoneOptions, []);
+	const years = useMemo(yearOptions, []);
 
 	const status = useEntryStatus();
 	const profile = useEntryProfile();
@@ -115,16 +128,24 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 
 	useEffect(() => {
 		if (loading) return;
-		const [firstName, ...rest] = (profile.data?.name ?? "").split(" ");
 		form.setFieldsValue({
-			firstName: firstName || undefined,
-			lastName: rest.join(" ") || undefined,
-			country: profile.data?.country ?? undefined,
+			// A fresh Google sign-up has a name on the account and no profile yet.
+			name: profile.data?.name || session?.user.name || undefined,
+			yearOfBirth: profile.data?.yearOfBirth || undefined,
+			timezone:
+				profile.data?.timezone ??
+				Intl.DateTimeFormat().resolvedOptions().timeZone,
 			workDirectionId: speciality.data?.workDirectionId,
 			specialityName: speciality.data?.name,
 			level: speciality.data?.level,
+			experience: speciality.data?.specialization || undefined,
 		});
-	}, [loading, profile.data, speciality.data, form]);
+	}, [loading, profile.data, speciality.data, session?.user.name, form]);
+
+	const underage = t(
+		"checkpointEntry.about.underage",
+		"You need to be 18 or over to head for a checkpoint",
+	);
 
 	const submit = async () => {
 		let values: AboutValues;
@@ -136,12 +157,14 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 
 		try {
 			const result = await save.mutateAsync({
-				name: [values.firstName.trim(), values.lastName.trim()].join(" "),
-				country: values.country,
+				name: values.name.trim(),
+				yearOfBirth: values.yearOfBirth,
+				timezone: values.timezone,
 				specialityId: speciality.data?.id,
 				specialityName: values.specialityName.trim(),
 				workDirectionId: values.workDirectionId,
 				level: values.level,
+				experience: values.experience?.trim() || undefined,
 				needSubscribeToNewsletter: preRegistration?.needSubscribeToNewsletter,
 				legal: askTerms
 					? legalAcceptances(["TermsOfUse"])
@@ -154,7 +177,10 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 			for (const name of PRE_REGISTRATION_COOKIES) deleteCookie(name);
 			// The proxy reads `onboardingDone` from the JWT, so it is re-read before leaving.
 			await resyncSession(updateSession);
-			router.push(hubHref);
+			// Done before means it was opened from the hub to edit; otherwise on to the project.
+			router.push(
+				status.data?.aboutDone ? hubHref : entryProjectHref(projectSlug),
+			);
 		} catch (error) {
 			if (rateLimited(error)) return;
 			// The registration page's tick was missing or is outdated: ask here.
@@ -167,13 +193,16 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 			const data = isAxiosError(error) ? error.response?.data : undefined;
 			const issues: ValidationIssue[] = data?.validation?.errors ?? [];
 			if (issues.length) {
-				// The server's "name" is the two name fields joined; its error goes on the first.
 				form.setFields(
 					issues.map((issue) => ({
-						name: issue.key === "name" ? "firstName" : issue.key,
+						name: issue.key,
 						errors: [t(issue.messageKey, issue.message)],
 					})),
 				);
+				return;
+			}
+			if (data?.error === "underage") {
+				form.setFields([{ name: "yearOfBirth", errors: [underage] }]);
 				return;
 			}
 			message.error(
@@ -189,7 +218,7 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 			heading={t("checkpointEntry.about.title", "Tell us about yourself")}
 			subtitle={t(
 				"checkpointEntry.about.hint",
-				"So the curator knows who they work with. The rest of your profile can wait.",
+				"Your speciality and level help the curator pitch their advice. The rest of your profile can wait.",
 			)}
 			foot={
 				<>
@@ -197,7 +226,9 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 						<Button>{t("checkpointEntry.cancel", "Cancel")}</Button>
 					</Link>
 					<Button type="primary" loading={save.isPending} onClick={submit}>
-						{t("checkpointEntry.saveBack", "Save and go back")}
+						{status.data?.aboutDone
+							? t("checkpointEntry.saveBack", "Save and go back")
+							: t("checkpointEntry.saveContinue", "Save and continue")}
 					</Button>
 				</>
 			}
@@ -214,43 +245,42 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 					scrollToFirstError
 				>
 					<Row gutter={[16, 0]}>
-						<Col xs={24} md={12}>
+						<Col xs={24} md={16}>
 							<Form.Item
-								name="firstName"
-								label={t("firstName", "First name")}
+								name="name"
+								label={t("checkpointEntry.about.name", "Name")}
 								rules={[{ required: true, whitespace: true }]}
 							>
-								<Input autoComplete="given-name" />
+								<Input autoComplete="name" />
+							</Form.Item>
+						</Col>
+						<Col xs={24} md={8}>
+							<Form.Item
+								name="yearOfBirth"
+								label={t("yearOfBirth", "Year of birth")}
+								rules={[
+									{ required: true },
+									{
+										validator: (_, year?: number) =>
+											!year || dayjs().year() - year >= CHECKPOINT_MIN_AGE
+												? Promise.resolve()
+												: Promise.reject(new Error(underage)),
+									},
+								]}
+							>
+								<Select options={years} showSearch />
 							</Form.Item>
 						</Col>
 						<Col xs={24} md={12}>
 							<Form.Item
-								name="lastName"
-								label={t("lastName", "Last name")}
-								rules={[{ required: true, whitespace: true }]}
-							>
-								<Input autoComplete="family-name" />
-							</Form.Item>
-						</Col>
-						<Col xs={24} md={12}>
-							<Form.Item
-								name="country"
-								label={t("country", "Country")}
+								name="timezone"
+								label={t("checkpointEntry.about.timezone", "Time zone")}
 								rules={[{ required: true }]}
 							>
-								<AutoComplete
-									allowClear
-									placeholder={t("country.placeholder", "Select country")}
-									options={countries.map(({ label }) => ({
-										value: label,
-										label,
-									}))}
-									showSearch={{
-										filterOption: (input, option) =>
-											String(option?.value ?? "")
-												.toLowerCase()
-												.includes(input.toLowerCase()),
-									}}
+								<Select
+									options={timezones}
+									showSearch
+									optionFilterProp="label"
 								/>
 							</Form.Item>
 						</Col>
@@ -296,6 +326,25 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 											</span>
 										),
 									}))}
+								/>
+							</Form.Item>
+						</Col>
+						<Col span={24}>
+							<Form.Item
+								name="experience"
+								label={t(
+									"checkpointEntry.about.experience",
+									"Briefly about your experience",
+								)}
+								extra={t(
+									"checkpointEntry.about.experienceHelp",
+									"So your project's curator can learn a little more about you before the start.",
+								)}
+							>
+								<Input.TextArea
+									autoSize={{ minRows: 3, maxRows: 6 }}
+									maxLength={CHECKPOINT_EXPERIENCE_MAX}
+									showCount
 								/>
 							</Form.Item>
 						</Col>

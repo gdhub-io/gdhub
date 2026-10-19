@@ -15,6 +15,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { underCheckpointAge } from "@/lib/checkpoint-age";
 import {
 	LegalAcceptancesSchema,
 	LegalError,
@@ -62,6 +63,15 @@ export const POST = pipe(
 	const { id } = (await ctx.params) as { id: string };
 
 	if (!checkpointPurchaseOpen()) return apiError.badRequest("purchaseClosed");
+
+	// Onboarding admits 16; a Checkpoint is sold at 18.
+	const profile = await prisma.profile.findUnique({
+		where: { userId: payer.id },
+		select: { yearOfBirth: true },
+	});
+	if (underCheckpointAge(profile?.yearOfBirth)) {
+		return apiError.badRequest("underage");
+	}
 
 	let acceptances: ReturnType<typeof resolveLegal>;
 	try {

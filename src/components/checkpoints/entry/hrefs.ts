@@ -19,6 +19,13 @@ export const entryAboutHref = (slug?: string | null) =>
 export const entryProjectHref = (slug?: string | null) =>
 	withProject(`${CHECKPOINT_ENTRY_HREF}/project`, slug);
 
+/** Sign-up for the checkpoint entry, keeping the project it was opened for. */
+export const entryRegistrationHref = (slug?: string | null) => {
+	const query = new URLSearchParams({ intent: CHECKPOINT_INTENT });
+	if (slug) query.set("project", slug);
+	return `/registration?${query.toString()}`;
+};
+
 /**
  * The purchase wizard for one project. The project rides in the query, not the
  * path, so a slug can never collide with the hub's own pages (`about`, `project`).

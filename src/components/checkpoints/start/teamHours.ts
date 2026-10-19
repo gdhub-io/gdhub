@@ -2,10 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { TeamMemberStatus } from "@/config/prisma-enums";
 
 export type TeamHoursRow = {
 	id: string;
 	userId: string;
+	status: string;
+	finishedAt: string | null;
 	position: string | null;
 	speciality?: { name?: string | null } | null;
 	user: {
@@ -31,7 +34,11 @@ export const useTeamHours = (teamId?: string) => {
 			axios.get<{ members: TeamHoursRow[] }>("/api/user/project/team", {
 				params: { teamId },
 			}),
-		select: (res) => res.data.members,
+		// The team page lists those who left too; the hours are the team as it stands.
+		select: (res) =>
+			res.data.members.filter(
+				(row) => row.status !== TeamMemberStatus.Fired && !row.finishedAt,
+			),
 		enabled: !!teamId,
 	});
 

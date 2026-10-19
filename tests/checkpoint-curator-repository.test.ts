@@ -7,12 +7,12 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import {
 	closeCheckpoint,
 	runGoalCheck,
 	writeMidNote,
 } from "@/repositories/checkpoint-curator.repository";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { prisma } from "@/services/prisma";
 
@@ -264,7 +264,7 @@ describe("runGoalCheck", () => {
 		);
 	});
 
-	it("counts the roster the team page counts, and no one else", async () => {
+	it("counts the team as it stands — the curator's card count, without those who left", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([10, 20])]) as never,
 		);
@@ -275,19 +275,17 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.findUnique).mock.calls[0];
 		const select = (args as Record<string, any>).select;
 
-		expect(select.project.select.team.select.members.where).toEqual({
-			status: { in: TEAM_ROSTER_STATUSES },
+		expect(select.project.select.team.select.members.where).toEqual(
+			CONFIRMED_MEMBERS,
+		);
+		expect(CONFIRMED_MEMBERS).toEqual({
+			status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder] },
+			finishedAt: null,
 		});
-		expect(TEAM_ROSTER_STATUSES).toEqual([
-			TeamMemberStatus.Founder,
-			TeamMemberStatus.Hired,
-			TeamMemberStatus.Fired,
-		]);
-		// The team page is where that definition comes from; a second list there
-		// would let the two drift apart without either test failing.
+		// The curator's card reads the same definition.
 		expect(
-			readFileSync("src/app/api/user/project/team/route.ts", "utf8"),
-		).toContain("TEAM_ROSTER_STATUSES");
+			readFileSync("src/repositories/advisor-checkpoints.ts", "utf8"),
+		).toContain("CONFIRMED_MEMBERS");
 	});
 
 	// The payment step is the only caller and opens on every load, so a read that

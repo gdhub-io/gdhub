@@ -76,6 +76,12 @@ export const CHECKPOINT_OPEN_STATUSES = [
 /** "What's done so far" on the way in: at least one line, at most this many. */
 export const CHECKPOINT_ENTRY_ITEMS_MAX = 5;
 
+/** A Checkpoint is sold to people this old or older (Purchase Terms), by year of birth. */
+export const CHECKPOINT_MIN_AGE = 18;
+
+/** "Briefly about your experience" on About you. */
+export const CHECKPOINT_EXPERIENCE_MAX = 500;
+
 /** How long a curator has to answer before the money goes back. */
 export const CURATOR_ANSWER_DAYS = 3;
 /** The first call is booked at least this many days ahead. */

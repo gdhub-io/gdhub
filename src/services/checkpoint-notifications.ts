@@ -125,6 +125,11 @@ export const notifyAuthorOfAnswer = async (
 
 const HOUR = 60 * 60 * 1000;
 
+/** A team member, with the time zone their reminders are written in. */
+const inZone = {
+	select: { id: true, email: true, profile: { select: { timezone: true } } },
+} as const;
+
 /**
  * The hourly run: a call starting in one to two hours is announced to its
  * curator, in their own zone, and to the team, in UTC — the only zone known
@@ -166,12 +171,12 @@ export const remindCallsSoon = async (now = new Date()) => {
 						select: {
 							name: true,
 							slug: true,
-							author: recipient,
+							author: inZone,
 							team: {
 								select: {
 									members: {
 										where: CONFIRMED_MEMBERS,
-										select: { user: recipient },
+										select: { user: inZone },
 									},
 								},
 							},
@@ -200,7 +205,10 @@ export const remindCallsSoon = async (now = new Date()) => {
 			redirectUrl: `${appUrl()}/advisor/checkpoints/${session.checkpointId}/review/${session.index}`,
 		});
 
-		const team = new Map<string, Recipient>();
+		const team = new Map<
+			string,
+			Recipient & { profile: { timezone: string | null } | null }
+		>();
 		team.set(checkpoint.project.author.id, checkpoint.project.author);
 		for (const member of checkpoint.project.team?.members ?? []) {
 			if (member.user) team.set(member.user.id, member.user);
@@ -210,7 +218,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 		for (const person of team.values()) {
 			await notify(person, `cp-call-${session.id}-${person.id}`, {
 				title,
-				message: `Call ${session.index} of Checkpoint ${number}, at ${at("UTC")}. You can join once your curator opens the room.`,
+				message: `Call ${session.index} of Checkpoint ${number}, at ${at(person.profile?.timezone ?? "UTC")}. You can join once your curator opens the room.`,
 				redirectUrl: reviewUrl(checkpoint.project.slug, number, session.index),
 			});
 		}

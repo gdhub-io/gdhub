@@ -8,8 +8,8 @@ import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
-import { TEAM_ROSTER_STATUSES } from "@/lib/team-roster";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import type {
@@ -141,7 +141,8 @@ export const runGoalCheck = async (
 					team: {
 						select: {
 							members: {
-								where: { status: { in: TEAM_ROSTER_STATUSES } },
+								// The team as it stands, as the curator's card counts it.
+								where: CONFIRMED_MEMBERS,
 								select: {
 									status: true,
 									speciality: { select: { name: true, level: true } },
