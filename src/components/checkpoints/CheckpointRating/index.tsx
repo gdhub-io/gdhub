@@ -2,18 +2,10 @@
 
 import { IconAlertCircle, IconEyeOff } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import {
-	Alert,
-	App,
-	Button,
-	ConfigProvider,
-	Form,
-	Input,
-	Rate,
-	Typography,
-} from "antd";
+import { Alert, App, Button, Form, Input, Rate, Typography } from "antd";
 import dayjs from "dayjs";
 import { useId, useState } from "react";
+import { RATING_COMMENT_MAX } from "@/config/checkpoint";
 import {
 	alreadyRatedFeedback,
 	type RateCheckpointInput,
@@ -22,10 +14,6 @@ import {
 } from "@/hooks/checkpoint-feedback";
 import type { CheckpointFeedbackDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
-import { rateTheme } from "./theme";
-
-const COMMENT_MAX = 500;
-const THEME = rateTheme();
 
 export function useStarLabels() {
 	const { t } = useTranslate();
@@ -46,9 +34,6 @@ export type CheckpointRatingViewProps = {
 	onSend: (input: RateCheckpointInput) => void;
 	/** Called when the form is put back to unanswered, to drop a failed send. */
 	onCancel?: () => void;
-	/** A star and comment already picked, for the stories. */
-	defaultRating?: number;
-	defaultComment?: string;
 };
 
 /** Frames 07.4 (`b2YQQN`) and 13.6a–e: the buyer rates the assessment, once. */
@@ -58,15 +43,13 @@ export function CheckpointRatingView({
 	failed = false,
 	onSend,
 	onCancel,
-	defaultRating = 0,
-	defaultComment = "",
 }: CheckpointRatingViewProps) {
 	const { t } = useTranslate();
 	const labels = useStarLabels();
 	const commentId = useId();
-	const [rating, setRating] = useState(defaultRating);
+	const [rating, setRating] = useState(0);
 	const [hover, setHover] = useState<number>();
-	const [comment, setComment] = useState(defaultComment);
+	const [comment, setComment] = useState("");
 
 	const hint = (
 		<Typography.Text className={`${styles.hint} ${styles.tertiary}`}>
@@ -85,9 +68,7 @@ export function CheckpointRatingView({
 					<Typography.Text className={styles.question}>
 						{t("checkpoints.rating.yours", "Your rating")}
 					</Typography.Text>
-					<ConfigProvider theme={THEME}>
-						<Rate disabled size="small" value={feedback.rating} />
-					</ConfigProvider>
+					<Rate disabled size="small" value={feedback.rating} />
 					<Typography.Text className={`${styles.small} ${styles.tertiary}`}>
 						{dayjs(feedback.createdAt).format("D MMM")}
 					</Typography.Text>
@@ -125,17 +106,15 @@ export function CheckpointRatingView({
 							{labels[shown - 1]}
 						</Typography.Text>
 					)}
-					<ConfigProvider theme={THEME}>
-						<Rate
-							allowClear={false}
-							tooltips={labels}
-							value={rating}
-							disabled={sending}
-							className={sending ? styles.sending : undefined}
-							onChange={setRating}
-							onHoverChange={setHover}
-						/>
-					</ConfigProvider>
+					<Rate
+						allowClear={false}
+						tooltips={labels}
+						value={rating}
+						disabled={sending}
+						className={sending ? styles.sending : undefined}
+						onChange={setRating}
+						onHoverChange={setHover}
+					/>
 				</div>
 			</div>
 
@@ -146,19 +125,20 @@ export function CheckpointRatingView({
 							htmlFor={commentId}
 							className={styles.field}
 							label={
-								<span className={styles.label}>
+								<>
 									{t("checkpoints.rating.commentLabel", "Comment")}
-									<span className={styles.tertiary}>
-										{t("checkpoints.rating.commentOptional", "(optional)")} ·{" "}
-										{comment.length} / {COMMENT_MAX}
+									<span className={styles.optional}>
+										{t("checkpoints.rating.commentOptional", "(optional)")}
 									</span>
-								</span>
+								</>
 							}
 						>
 							<Input.TextArea
 								id={commentId}
 								variant="filled"
-								maxLength={COMMENT_MAX}
+								showCount
+								maxLength={RATING_COMMENT_MAX}
+								className={styles.counted}
 								autoSize={{ minRows: 3, maxRows: 6 }}
 								placeholder={t(
 									"checkpoints.rating.commentPlaceholder",

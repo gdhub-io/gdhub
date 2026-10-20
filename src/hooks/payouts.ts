@@ -6,8 +6,14 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
 import axios from "axios";
-import type { ExpertInvoicing } from "@/config/prisma-enums";
+import { CHECKPOINT_PARTS } from "@/config/checkpoint";
+import {
+	CheckpointFeeReason,
+	type ExpertInvoicing,
+} from "@/config/prisma-enums";
+import type { NoFeeReason } from "@/lib/checkpoint-fee";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 import type {
 	AdminPayoutsDto,
@@ -19,10 +25,10 @@ import type {
 const ADMIN = ["admin", "payouts"];
 const ADMIN_URL = "/api/admin/payouts";
 
-/** `month` as `YYYY-MM`; the server's default (last month) when omitted. */
-export const useAdminPayouts = (month?: string) =>
+/** `month` as `YYYY-MM`. */
+export const useAdminPayouts = (month: string) =>
 	useQuery({
-		queryKey: [...ADMIN, "list", month ?? "default"],
+		queryKey: [...ADMIN, "list", month],
 		queryFn: async () =>
 			(await axios.get<AdminPayoutsDto>(ADMIN_URL, { params: { month } })).data,
 		placeholderData: keepPreviousData,
@@ -62,6 +68,31 @@ export const useMarkPayoutPaid = () => {
 	});
 };
 
+/** The payout the month already has: another admin, or a second click, got there first. */
+export type PaidPayout = {
+	paidOn: string;
+	reference: string;
+	paidBy: string | null;
+};
+
+/** Why the server refused to mark a month paid, when the dialog has something to show for it. */
+export const payoutRefusal = (
+	error: unknown,
+):
+	| { error: "alreadyPaid"; paid: PaidPayout | null }
+	| { error: "detailsChanged" }
+	| null => {
+	if (!axios.isAxiosError(error) || error.response?.status !== 409) return null;
+	const body = error.response.data as
+		| { error?: string; details?: { paid?: PaidPayout | null } }
+		| undefined;
+	if (body?.error === "alreadyPaid") {
+		return { error: "alreadyPaid", paid: body.details?.paid ?? null };
+	}
+	if (body?.error === "detailsChanged") return { error: "detailsChanged" };
+	return null;
+};
+
 export const useSavePayoutNote = (payoutId: string) => {
 	const queryClient = useQueryClient();
 
@@ -99,6 +130,12 @@ export type PaidWorkBody = {
 	legal?: LegalAcceptanceInput[];
 };
 
+/** A first save sent no account, and none is saved. */
+export const isAccountRequired = (error: unknown) =>
+	axios.isAxiosError(error) &&
+	error.response?.status === 400 &&
+	error.response.data?.error === "accountRequired";
+
 export const useSavePaidWork = () => {
 	const queryClient = useQueryClient();
 
@@ -112,4 +149,46 @@ export const useSavePaidWork = () => {
 			});
 		},
 	});
+};
+
+export const useInvoicingLabels = (): Record<ExpertInvoicing, string> => {
+	const { t } = useTranslate();
+
+	return {
+		SelfEmployed: t("admin.payouts.invoicing.selfEmployed", "Self-employed"),
+		Company: t("admin.payouts.invoicing.company", "Company"),
+		SelfBilling: t("admin.payouts.invoicing.selfBilling", "Self-billing"),
+	};
+};
+
+/**
+ * Why a curator's fee is what it is, or why there is none. `viewer` only changes
+ * the curator's own stop: "You stopped" to them, "Stopped" to an admin.
+ */
+export const useFeeReasonLabel = (viewer: "admin" | "curator") => {
+	const { t } = useTranslate();
+
+	return (reason: CheckpointFeeReason | NoFeeReason, parts = 0) => {
+		switch (reason) {
+			case CheckpointFeeReason.Full:
+				return t("checkpoints.fee.reason.full", "Full fee");
+			case CheckpointFeeReason.RefundReduced:
+				return t("checkpoints.fee.reason.refundReduced", "Reduced by a refund");
+			case CheckpointFeeReason.Replacement:
+				return t(
+					"checkpoints.fee.reason.replacement",
+					"Took over · {parts} of {total} parts",
+					{ parts, total: CHECKPOINT_PARTS.Human },
+				);
+			case "adminVerdict":
+				return t(
+					"checkpoints.fee.reason.adminVerdict",
+					"Verdict written by an admin — no fee",
+				);
+			case "stopped":
+				return viewer === "curator"
+					? t("checkpoints.fee.reason.stoppedCurator", "You stopped — no fee")
+					: t("checkpoints.fee.reason.stopped", "Stopped — no fee");
+		}
+	};
 };

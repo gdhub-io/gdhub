@@ -22,32 +22,25 @@ import {
 	Tooltip,
 	Typography,
 } from "antd";
-import { isAxiosError } from "axios";
 import dayjs, { type Dayjs } from "dayjs";
 import { type ReactNode, useId, useState } from "react";
-import {
-	firstName,
-	formatPayoutMoney,
-	useInvoicingLabels,
-} from "@/components/admin/PayoutsTable/format";
+import { formatMoneyCents } from "@/config/checkpoint-pricing";
 import type { ExpertInvoicing } from "@/config/prisma-enums";
-import { useMarkPayoutPaid, usePayoutDetails } from "@/hooks/payouts";
+import {
+	type PaidPayout,
+	payoutRefusal,
+	useInvoicingLabels,
+	useMarkPayoutPaid,
+	usePayoutDetails,
+} from "@/hooks/payouts";
 import type { AdminPayoutRowDto, PayoutDetailsDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
-export type AlreadyPaid = {
-	paidOn: string;
-	reference: string;
-	paidBy: string | null;
-};
-
-type ApiError = {
-	error?: string;
-	details?: { paid?: AlreadyPaid | null };
-};
+/** "Anna Petrova" → "Anna", for the lines that address the curator. */
+const firstName = (name: string | null) => name?.split(" ")[0] ?? "";
 
 export type MarkPayoutPaidModalProps = {
-	row: AdminPayoutRowDto | null;
+	row: AdminPayoutRowDto;
 	/** The month's first day, UTC, as the list returns it. */
 	month: string;
 	onClose: () => void;
@@ -61,15 +54,15 @@ export function MarkPayoutPaidModal({
 }: MarkPayoutPaidModalProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
-	const details = usePayoutDetails(row?.curatorId);
+	const details = usePayoutDetails(row.curatorId);
 	const mark = useMarkPayoutPaid();
-	const [alreadyPaid, setAlreadyPaid] = useState<AlreadyPaid | null>(null);
+	const [alreadyPaid, setAlreadyPaid] = useState<PaidPayout | null>(null);
 	const [failure, setFailure] = useState<"detailsChanged" | "other" | null>(
 		null,
 	);
 
 	const submit = ({ paidOn, reference }: MarkPaidForm) => {
-		if (!row || !details.data) return;
+		if (!details.data) return;
 		setFailure(null);
 		mark.mutate(
 			{
@@ -91,16 +84,14 @@ export function MarkPayoutPaidModal({
 					onClose();
 				},
 				onError: (error) => {
-					const body = isAxiosError<ApiError>(error)
-						? error.response?.data
-						: undefined;
-					if (body?.error === "alreadyPaid") {
+					const refusal = payoutRefusal(error);
+					if (refusal?.error === "alreadyPaid") {
 						setAlreadyPaid(
-							body.details?.paid ?? { paidOn: "", reference: "", paidBy: null },
+							refusal.paid ?? { paidOn: "", reference: "", paidBy: null },
 						);
 						return;
 					}
-					if (body?.error === "detailsChanged") {
+					if (refusal?.error === "detailsChanged") {
 						setFailure("detailsChanged");
 						details.refetch();
 						return;
@@ -113,11 +104,10 @@ export function MarkPayoutPaidModal({
 
 	return (
 		<MarkPayoutPaidDialog
-			open={!!row}
-			name={row?.name ?? ""}
+			name={row.name ?? ""}
 			month={month}
-			amount={row?.amount ?? 0}
-			count={row?.checkpoints.length ?? 0}
+			amount={row.amount}
+			count={row.checkpoints.length}
 			details={details.data}
 			alreadyPaid={alreadyPaid}
 			failure={failure}
@@ -131,25 +121,21 @@ export function MarkPayoutPaidModal({
 export type MarkPaidForm = { paidOn: string; reference: string };
 
 export type MarkPayoutPaidDialogProps = {
-	open: boolean;
 	name: string;
 	month: string;
 	amount: number;
 	count: number;
 	/** Undefined while they load. */
 	details: PayoutDetailsDto | undefined;
-	alreadyPaid: AlreadyPaid | null;
+	alreadyPaid: PaidPayout | null;
 	failure: "detailsChanged" | "other" | null;
 	submitting: boolean;
 	onSubmit: (form: MarkPaidForm) => void;
 	onClose: () => void;
-	/** What the reference field opens with; the stories show a typed one. */
-	defaultReference?: string;
 };
 
 /** The dialog itself, all state passed in; the stories render it straight. */
 export function MarkPayoutPaidDialog({
-	open,
 	name,
 	month,
 	amount,
@@ -160,16 +146,15 @@ export function MarkPayoutPaidDialog({
 	submitting,
 	onSubmit,
 	onClose,
-	defaultReference = "",
 }: MarkPayoutPaidDialogProps) {
 	const { t } = useTranslate();
 	const invoicing = useInvoicingLabels();
 	const [paidOn, setPaidOn] = useState<Dayjs>(() => dayjs());
-	const [reference, setReference] = useState(defaultReference);
+	const [reference, setReference] = useState("");
 	const id = useId();
 
 	const monthName = dayjs.utc(month).format("MMMM");
-	const total = formatPayoutMoney(amount);
+	const total = formatMoneyCents(amount);
 	const ready = !!reference.trim() && !!details;
 
 	const invoicingNotes: Record<ExpertInvoicing, string> = {
@@ -374,7 +359,7 @@ export function MarkPayoutPaidDialog({
 
 	return (
 		<Modal
-			open={open}
+			open
 			width={560}
 			title={t("admin.payouts.markPaid.title", "Mark {name}'s {month} paid", {
 				name,

@@ -1,11 +1,9 @@
 import { CheckpointFeeReason, ExpertInvoicing } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { payoutStatus } from "@/lib/checkpoint-costs";
+import { maskAccount } from "@/lib/payout-account";
 import { recordCheckpointFee } from "@/repositories/checkpoint-fee";
-import {
-	markPayoutPaid,
-	maskAccount,
-	payoutStatus,
-} from "@/repositories/checkpoint-payouts";
+import { markPayoutPaid } from "@/repositories/checkpoint-payouts";
 import { refundCaseOf } from "@/repositories/checkpoint-refund";
 import { notify } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
@@ -14,7 +12,7 @@ vi.mock("@/services/prisma", () => {
 	const client = {
 		expertProfile: { findUnique: vi.fn() },
 		checkpointFee: { findMany: vi.fn(), updateMany: vi.fn(), upsert: vi.fn() },
-		curatorPayout: { count: vi.fn(), create: vi.fn(), findUnique: vi.fn() },
+		curatorPayout: { create: vi.fn(), findUnique: vi.fn() },
 		user: { findUnique: vi.fn() },
 		auditLog: { create: vi.fn(), findMany: vi.fn() },
 		projectCheckpoint: { findUnique: vi.fn() },
@@ -29,8 +27,12 @@ vi.mock("@/services/checkpoint-notifications", () => ({
 	notify: vi.fn(),
 	appUrl: () => "",
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({ checkpointNumber: vi.fn() }));
-vi.mock("@/repositories/checkpoint-refund", () => ({ refundCaseOf: vi.fn() }));
+vi.mock("@/repositories/checkpoint-number", () => ({ checkpointNumbers: vi.fn() }));
+vi.mock("@/repositories/checkpoint-refund", () => ({
+	refundCaseOf: vi.fn(),
+	CAPTURED: [],
+	refundedTotal: vi.fn(),
+}));
 
 const NOW = new Date("2026-10-20T12:00:00.000Z");
 const SEPTEMBER = new Date("2026-09-01T00:00:00.000Z");
@@ -62,7 +64,7 @@ beforeEach(() => {
 	] as never);
 	vi.mocked(prisma.checkpointFee.updateMany).mockResolvedValue({ count: 2 } as never);
 	vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: "c1", email: "a@x" } as never);
-	vi.mocked(prisma.curatorPayout.count).mockResolvedValue(0 as never);
+	vi.mocked(prisma.curatorPayout.findUnique).mockResolvedValue(null);
 	vi.mocked(prisma.curatorPayout.create).mockResolvedValue({ id: "p1" } as never);
 });
 
@@ -119,7 +121,6 @@ describe("marking a month paid", () => {
 	});
 
 	it("pays a month once: a second click finds the first payout", async () => {
-		vi.mocked(prisma.curatorPayout.count).mockResolvedValue(1 as never);
 		vi.mocked(prisma.curatorPayout.findUnique).mockResolvedValue({
 			paidOn: new Date("2026-10-20"),
 			reference: "SEB-1",
@@ -136,11 +137,18 @@ describe("marking a month paid", () => {
 
 	it("gives way when another admin's payout took the fees meanwhile", async () => {
 		vi.mocked(prisma.checkpointFee.updateMany).mockResolvedValue({ count: 1 } as never);
-		vi.mocked(prisma.curatorPayout.findUnique).mockResolvedValue(null);
+		vi.mocked(prisma.curatorPayout.findUnique)
+			.mockResolvedValueOnce(null)
+			.mockResolvedValueOnce({
+				paidOn: new Date("2026-10-20"),
+				reference: "SEB-2",
+				paidBy: { name: "Ola" },
+			} as never);
 
 		await expect(markPayoutPaid("admin1", input, NOW)).resolves.toMatchObject({
 			ok: false,
 			error: "alreadyPaid",
+			paid: { reference: "SEB-2" },
 		});
 		expect(notify).not.toHaveBeenCalled();
 	});
@@ -198,6 +206,16 @@ describe("recording a fee", () => {
 
 		await recordCheckpointFee("cp1", NOW);
 
+		expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: expect.objectContaining({
+					AND: expect.arrayContaining([
+						{ meta: { path: ["toCuratorId"], equals: "c2" } },
+					]),
+				}),
+				take: 1,
+			}),
+		);
 		expect(prisma.checkpointFee.upsert).toHaveBeenCalledWith({
 			where: { checkpointId_curatorId: { checkpointId: "cp1", curatorId: "c2" } },
 			create: expect.objectContaining({

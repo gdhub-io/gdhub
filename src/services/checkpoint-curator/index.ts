@@ -93,8 +93,8 @@ class CheckpointCuratorService {
 				temperature: 0,
 			});
 			await recordAiUsage(meter, this.model, {
-				input: completion.usage?.prompt_tokens,
-				output: completion.usage?.completion_tokens,
+				inputTokens: completion.usage?.prompt_tokens,
+				outputTokens: completion.usage?.completion_tokens,
 			});
 
 			const toolCall = completion.choices[0]?.message?.tool_calls?.[0];

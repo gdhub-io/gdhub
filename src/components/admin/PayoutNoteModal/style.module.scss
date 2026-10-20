@@ -3,6 +3,7 @@
 	font-size: var(--gd-font-size-body);
 }
 
-.counter {
-	font-feature-settings: "tnum";
+/* antd hangs the count below the field without reserving its line. */
+.counted {
+	margin-bottom: calc(var(--gd-font-size-body) * var(--gd-line-height-body));
 }

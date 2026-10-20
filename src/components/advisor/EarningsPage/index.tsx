@@ -13,8 +13,7 @@ import { Alert, Button, Flex, Skeleton, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { type ReactNode, useState } from "react";
-import table from "@/components/admin/PromoCodesTable/style.module.scss";
+import type { ReactNode } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import {
 	EmptyState,
@@ -22,11 +21,13 @@ import {
 	SectionHeading,
 	StatusDot,
 	type StatusTone,
+	skeletonColumns,
+	skeletonRows,
+	tableStyles as table,
+	tableScrollX,
 } from "@/components/ui";
-import { CHECKPOINT_PARTS } from "@/config/checkpoint";
-import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
-import { CheckpointFeeReason } from "@/config/prisma-enums";
-import { payoutDueOn } from "@/lib/checkpoint-costs";
+import { formatMoneyCents } from "@/config/checkpoint-pricing";
+import { useFeeReasonLabel } from "@/hooks/payouts";
 import type { CuratorEarningsDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -34,10 +35,10 @@ type CheckpointRow = CuratorEarningsDto["checkpoints"][number];
 type PayoutRow = CuratorEarningsDto["payouts"][number];
 
 const PAID_WORK_HREF = "/advisor/settings?section=paid-work";
-const PAGE = 12;
-// The fixed columns plus room for the flexible first one.
-const CHECKPOINTS_X = 920;
-const PAYOUTS_X = 1080;
+const PAGINATION = { pageSize: 12, hideOnSinglePage: true };
+// The least the flexible first column shrinks to before the table scrolls.
+const PROJECT_WIDTH = 320;
+const MONTH_WIDTH = 240;
 
 const TONE: Record<CheckpointRow["status"], StatusTone> = {
 	earned: "info",
@@ -49,11 +50,6 @@ const TONE: Record<CheckpointRow["status"], StatusTone> = {
 const day = (at: string) => dayjs.utc(at).format("D MMM");
 const month = (at: string) => dayjs.utc(at).format("MMMM");
 
-const skeletonRows = <Row,>(key: string) =>
-	Array.from({ length: 3 }, (_, index) => ({
-		[key]: `skeleton-${index}`,
-	})) as Row[];
-
 export type EarningsPageProps = {
 	data: CuratorEarningsDto | undefined;
 	status: "pending" | "error" | "success";
@@ -63,39 +59,19 @@ export type EarningsPageProps = {
 /** Frames 13.4, 13.4b and 13.4c: what a curator earned, is owed and was paid. */
 export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 	const { t } = useTranslate();
-	const [checkpointsShown, setCheckpointsShown] = useState(PAGE);
-	const [payoutsShown, setPayoutsShown] = useState(PAGE);
+	const feeReason = useFeeReasonLabel("curator");
 
 	const loading = status === "pending";
 	const failed = status === "error";
 	const skeleton = <Skeleton.Input active size="small" />;
 	const none = <span className={table.none}>—</span>;
 	const money = (minor: number) => (
-		<span className={table.number}>{formatCheckpointMoney(minor)}</span>
+		<span className={table.number}>{formatMoneyCents(minor)}</span>
 	);
 
 	const reasonLabel = (row: CheckpointRow) => {
-		switch (row.reason) {
-			case CheckpointFeeReason.Full:
-				return t("checkpoints.fee.reason.full", "Full fee");
-			case CheckpointFeeReason.RefundReduced:
-				return t("checkpoints.fee.reason.refundReduced", "Reduced by a refund");
-			case CheckpointFeeReason.Replacement:
-				return t(
-					"checkpoints.fee.reason.replacement",
-					"Took over · {parts} of {total} parts",
-					{ parts: row.parts, total: CHECKPOINT_PARTS.Human },
-				);
-			default:
-				return row.noFee === "adminVerdict"
-					? t(
-							"checkpoints.fee.reason.adminVerdict",
-							"Verdict written by an admin — no fee",
-						)
-					: row.noFee === "stopped"
-						? t("checkpoints.fee.reason.stoppedCurator", "You stopped — no fee")
-						: null;
-		}
+		const reason = row.reason ?? row.noFee;
+		return reason && feeReason(reason, row.parts);
 	};
 
 	const statusLabels: Record<CheckpointRow["status"], string> = {
@@ -228,9 +204,6 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 		},
 	];
 
-	const asSkeleton = <Row,>(columns: ColumnsType<Row>): ColumnsType<Row> =>
-		columns.map((column) => ({ ...column, render: () => skeleton }));
-
 	const error = (
 		<EmptyState
 			size="compact"
@@ -254,27 +227,8 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 		<Typography.Text type="secondary">{text}</Typography.Text>
 	);
 
-	const loadMore = (onClick: () => void) => (
-		<Button type="text" block onClick={onClick}>
-			{t("advisor.earnings.loadMore", "Load more")}
-		</Button>
-	);
-
-	// Nothing due: the card still names last month's payout day, at zero.
-	const earnedMonth =
-		data?.earned.month ?? dayjs.utc().startOf("month").format();
-	const lastMonth = dayjs.utc(earnedMonth).subtract(1, "month").toISOString();
-	const due = data?.due ?? {
-		amount: 0,
-		month: lastMonth,
-		dueOn: payoutDueOn(lastMonth).toISOString(),
-	};
 	const figure = (minor: number | undefined) =>
-		failed
-			? "—"
-			: minor === undefined
-				? skeleton
-				: formatCheckpointMoney(minor);
+		failed ? "—" : minor === undefined ? skeleton : formatMoneyCents(minor);
 
 	const since = data?.paidTotal.since;
 	const paidNote =
@@ -287,7 +241,7 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 				)
 			: t("advisor.earnings.kpi.noPayouts", "No payouts yet"));
 
-	const waiting = data ? (data.due?.amount ?? data.earned.amount) : 0;
+	const waiting = data ? data.due.amount || data.earned.amount : 0;
 	const checkpoints = data?.checkpoints ?? [];
 	const payouts = data?.payouts ?? [];
 
@@ -330,7 +284,7 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 							t(
 								"advisor.earnings.noDetails.body",
 								"{amount} is waiting. We pay by bank transfer once the details are in.",
-								{ amount: formatCheckpointMoney(waiting) },
+								{ amount: formatMoneyCents(waiting) },
 							)
 						}
 						action={
@@ -346,9 +300,13 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 				<div className={styles.kpis}>
 					<KpiCard
 						icon={IconTrendingUp}
-						name={t("advisor.earnings.kpi.earned", "Earned in {month}", {
-							month: month(earnedMonth),
-						})}
+						name={
+							data
+								? t("advisor.earnings.kpi.earned", "Earned in {month}", {
+										month: month(data.earned.month),
+									})
+								: t("advisor.earnings.status.earned", "Earned")
+						}
 						value={figure(data?.earned.amount)}
 						note={
 							data &&
@@ -359,14 +317,18 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 					/>
 					<KpiCard
 						icon={IconCalendarDue}
-						name={t("advisor.earnings.kpi.due", "Due on {date}", {
-							date: day(due.dueOn),
-						})}
-						value={figure(data && due.amount)}
+						name={
+							data
+								? t("advisor.earnings.kpi.due", "Due on {date}", {
+										date: day(data.due.dueOn),
+									})
+								: t("advisor.earnings.status.due", "Due")
+						}
+						value={figure(data?.due.amount)}
 						note={
 							data &&
 							t("advisor.earnings.kpi.dueNote", "Earned in {month}", {
-								month: month(due.month),
+								month: month(data.due.month),
 							})
 						}
 					/>
@@ -387,15 +349,13 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 						className={table.table}
 						rowKey={(row) => row.feeId ?? row.checkpointId ?? row.closedAt}
 						columns={
-							loading ? asSkeleton(checkpointColumns) : checkpointColumns
+							loading ? skeletonColumns(checkpointColumns) : checkpointColumns
 						}
 						dataSource={
-							loading
-								? skeletonRows<CheckpointRow>("feeId")
-								: checkpoints.slice(0, checkpointsShown)
+							loading ? skeletonRows<CheckpointRow>(3, "feeId") : checkpoints
 						}
-						pagination={false}
-						scroll={{ x: CHECKPOINTS_X }}
+						pagination={PAGINATION}
+						scroll={{ x: tableScrollX(checkpointColumns, PROJECT_WIDTH) }}
 						locale={{
 							emptyText: failed
 								? error
@@ -407,8 +367,6 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 									),
 						}}
 					/>
-					{checkpoints.length > checkpointsShown &&
-						loadMore(() => setCheckpointsShown((shown) => shown + PAGE))}
 				</Flex>
 
 				{!failed && (
@@ -420,22 +378,18 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 						<Table<PayoutRow>
 							className={table.table}
 							rowKey="month"
-							columns={loading ? asSkeleton(payoutColumns) : payoutColumns}
+							columns={loading ? skeletonColumns(payoutColumns) : payoutColumns}
 							dataSource={
-								loading
-									? skeletonRows<PayoutRow>("month")
-									: payouts.slice(0, payoutsShown)
+								loading ? skeletonRows<PayoutRow>(3, "month") : payouts
 							}
-							pagination={false}
-							scroll={{ x: PAYOUTS_X }}
+							pagination={PAGINATION}
+							scroll={{ x: tableScrollX(payoutColumns, MONTH_WIDTH) }}
 							locale={{
 								emptyText: emptyText(
 									t("advisor.earnings.noPayouts", "No payouts yet"),
 								),
 							}}
 						/>
-						{payouts.length > payoutsShown &&
-							loadMore(() => setPayoutsShown((shown) => shown + PAGE))}
 					</Flex>
 				)}
 			</div>

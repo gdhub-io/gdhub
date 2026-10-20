@@ -9,66 +9,6 @@
 	}
 }
 
-/* Paid against due as one bar with a legend, as AI · person on 11.5; the counts are in its tooltip. */
-.mix {
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-3);
-	padding-top: var(--gd-space-3);
-	cursor: default;
-}
-
-.split {
-	display: flex;
-	gap: 2px;
-	height: 8px;
-	overflow: hidden;
-	background: var(--gd-neutral-100);
-	border-radius: var(--gd-radius-chip);
-}
-
-.paid,
-.due {
-	flex-basis: 0;
-	min-width: 0;
-}
-
-.paid {
-	background: var(--gd-success-solid);
-}
-
-.due {
-	background: var(--gd-warning-solid);
-}
-
-.legend {
-	display: flex;
-	gap: var(--gd-space-6);
-	color: var(--gd-color-text-secondary);
-	font-size: var(--gd-font-size-body-sm);
-}
-
-.key {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gd-space-2);
-
-	i {
-		display: block;
-		flex: 0 0 8px;
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		corner-shape: round;
-	}
-
-	b {
-		color: var(--gd-color-text);
-		font-weight: 600;
-		font-feature-settings: "tnum";
-	}
-}
-
 .person {
 	min-width: 0;
 }

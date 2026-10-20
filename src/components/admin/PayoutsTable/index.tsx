@@ -18,31 +18,37 @@ import {
 	Dropdown,
 	Flex,
 	type MenuProps,
-	Skeleton,
 	Table,
 	Tooltip,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import shared from "@/components/admin/PromoCodesTable/style.module.scss";
 import {
 	EmptyState,
 	KpiCard,
+	KpiSplit,
 	StatusDot,
 	type StatusTone,
+	tableStyles as shared,
+	skeletonColumns,
+	skeletonRows,
+	tableScrollX,
 } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { CHECKPOINT_PARTS, PLATFORM_SHARE } from "@/config/checkpoint";
-import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
+import { PLATFORM_SHARE } from "@/config/checkpoint";
+import {
+	formatCheckpointMoney,
+	formatMoneyCents,
+} from "@/config/checkpoint-pricing";
 import { CheckpointFeeReason } from "@/config/prisma-enums";
+import { useFeeReasonLabel, useInvoicingLabels } from "@/hooks/payouts";
 import type {
 	AdminPayoutsDto,
 	PayoutCheckpointDto,
 	PayoutStatus,
 	AdminPayoutRowDto as Row,
 } from "@/types/checkpoints";
-import { formatPayoutMoney, useInvoicingLabels } from "./format";
 import styles from "./style.module.scss";
 
 const STATUS_TONE: Record<PayoutStatus, StatusTone> = {
@@ -52,9 +58,9 @@ const STATUS_TONE: Record<PayoutStatus, StatusTone> = {
 	paid: "success",
 };
 
-const SKELETON_ROWS = Array.from({ length: 4 }, (_, index) => ({
-	curatorId: `skeleton-${index}`,
-})) as Row[];
+/** The curator's least width before the table scrolls; the card is narrower than 1260 on a laptop. */
+const CURATOR_WIDTH = 160;
+const EXPAND_WIDTH = 48;
 
 const SHARE = Math.round((1 - PLATFORM_SHARE) * 100);
 
@@ -66,8 +72,6 @@ export type PayoutsTableProps = {
 	canManage: boolean;
 	onMarkPaid: (row: Row) => void;
 	onEditNote: (row: Row) => void;
-	/** Rows open on first render, for the stories. */
-	defaultExpanded?: string[];
 };
 
 /** Frames 13.2–13.2e: the month's KPI cards and one row per curator, each expanding to its fees. */
@@ -78,14 +82,13 @@ export function PayoutsTable({
 	canManage,
 	onMarkPaid,
 	onEditNote,
-	defaultExpanded,
 }: PayoutsTableProps) {
 	const { t } = useTranslate();
 	const invoicing = useInvoicingLabels();
+	const feeReason = useFeeReasonLabel("admin");
 
 	const loading = status === "pending";
 	const failed = status === "error";
-	const skeleton = <Skeleton.Input active size="small" />;
 	const dueOn = data ? dayjs.utc(data.dueOn).format("D MMM") : "";
 	const monthName = data ? dayjs.utc(data.month).format("MMMM YYYY") : "";
 
@@ -231,7 +234,7 @@ export function PayoutsTable({
 			width: 160,
 			align: "right",
 			render: (_, row) => (
-				<span className={shared.number}>{formatPayoutMoney(row.amount)}</span>
+				<span className={shared.number}>{formatMoneyCents(row.amount)}</span>
 			),
 		},
 		{
@@ -280,46 +283,30 @@ export function PayoutsTable({
 		},
 	];
 
-	const reasonLine = (fee: PayoutCheckpointDto) => {
+	const formula = (fee: PayoutCheckpointDto) => {
 		switch (fee.reason) {
 			case CheckpointFeeReason.Full:
-				return {
-					reason: t("checkpoints.fee.reason.full", "Full fee"),
-					formula: t("checkpoints.fee.formula.full", "{share}% of {paid}", {
+				return t("checkpoints.fee.formula.full", "{share}% of {paid}", {
+					share: SHARE,
+					paid: formatCheckpointMoney(fee.paid),
+				});
+			case CheckpointFeeReason.RefundReduced:
+				return t(
+					"checkpoints.fee.formula.refundReduced",
+					"{share}% of ({paid} − {refunded})",
+					{
 						share: SHARE,
 						paid: formatCheckpointMoney(fee.paid),
-					}),
-				};
-			case CheckpointFeeReason.RefundReduced:
-				return {
-					reason: t(
-						"checkpoints.fee.reason.refundReduced",
-						"Reduced by a refund",
-					),
-					formula: t(
-						"checkpoints.fee.formula.refundReduced",
-						"{share}% of ({paid} − {refunded})",
-						{
-							share: SHARE,
-							paid: formatCheckpointMoney(fee.paid),
-							refunded: formatCheckpointMoney(fee.refunded),
-						},
-					),
-				};
+						refunded: formatCheckpointMoney(fee.refunded),
+					},
+				);
 			case CheckpointFeeReason.Replacement:
-				return {
-					reason: t(
-						"checkpoints.fee.reason.replacement",
-						"Took over · {parts} of {total} parts",
-						{ parts: fee.parts, total: CHECKPOINT_PARTS.Human },
-					),
-					// Every part but the verdict is a call held.
-					formula: t(
-						"checkpoints.fee.formula.replacement",
-						"{calls, plural, one {# call} other {# calls}} and the verdict",
-						{ calls: Math.max(fee.parts - 1, 0) },
-					),
-				};
+				// Every part but the verdict is a call held.
+				return t(
+					"checkpoints.fee.formula.replacement",
+					"{calls, plural, one {# call} other {# calls}} and the verdict",
+					{ calls: Math.max(fee.parts - 1, 0) },
+				);
 		}
 	};
 
@@ -379,17 +366,16 @@ export function PayoutsTable({
 			title: t("admin.payouts.expanded.why", "Why this fee"),
 			key: "why",
 			width: 280,
-			render: (_, fee) => {
-				const { reason, formula } = reasonLine(fee);
-				return (
-					<Flex vertical className={styles.stack}>
-						<Typography.Text ellipsis>{reason}</Typography.Text>
-						<Typography.Text type="secondary" className={styles.sub} ellipsis>
-							{formula}
-						</Typography.Text>
-					</Flex>
-				);
-			},
+			render: (_, fee) => (
+				<Flex vertical className={styles.stack}>
+					<Typography.Text ellipsis>
+						{feeReason(fee.reason, fee.parts)}
+					</Typography.Text>
+					<Typography.Text type="secondary" className={styles.sub} ellipsis>
+						{formula(fee)}
+					</Typography.Text>
+				</Flex>
+			),
 		},
 		{
 			title: t("admin.payouts.expanded.fee", "Fee"),
@@ -397,7 +383,7 @@ export function PayoutsTable({
 			width: 120,
 			align: "right",
 			render: (_, fee) => (
-				<span className={styles.fee}>{formatPayoutMoney(fee.fee)}</span>
+				<span className={styles.fee}>{formatMoneyCents(fee.fee)}</span>
 			),
 		},
 	];
@@ -434,22 +420,15 @@ export function PayoutsTable({
 			<Table<Row>
 				className={`${shared.table} ${styles.payouts}`}
 				rowKey="curatorId"
-				columns={
-					loading
-						? columns.map((column) => ({
-								...column,
-								render: () => (column.key === "action" ? null : skeleton),
-							}))
-						: columns
+				columns={loading ? skeletonColumns(columns) : columns}
+				dataSource={
+					loading ? skeletonRows<Row>(4, "curatorId") : failed ? [] : data?.rows
 				}
-				dataSource={loading ? SKELETON_ROWS : failed ? [] : data?.rows}
 				pagination={false}
-				// The fixed columns and room for a curator's name; the card is narrower than 1260 on a laptop.
-				scroll={{ x: 1184 }}
+				scroll={{ x: tableScrollX(columns, CURATOR_WIDTH) + EXPAND_WIDTH }}
 				locale={{ emptyText }}
 				expandable={{
-					columnWidth: 48,
-					defaultExpandedRowKeys: defaultExpanded,
+					columnWidth: EXPAND_WIDTH,
 					rowExpandable: (row) => !loading && row.checkpoints?.length > 0,
 					expandIcon: ({ expanded, onExpand, record, expandable }) =>
 						expandable && (
@@ -491,14 +470,13 @@ function PayoutKpis({
 	dueOn: string;
 }) {
 	const { t } = useTranslate();
-	const curators = totals ? totals.curatorsPaid + totals.curatorsDue : 0;
 
 	return (
 		<div className={styles.kpis}>
 			<KpiCard
 				icon={IconWallet}
 				name={t("admin.payouts.kpi.toPay", "To pay")}
-				value={totals ? formatPayoutMoney(totals.toPay) : "—"}
+				value={totals ? formatMoneyCents(totals.toPay) : "—"}
 				note={
 					totals &&
 					t("admin.payouts.kpi.dueBy", "Due by {date}", { date: dueOn })
@@ -507,7 +485,7 @@ function PayoutKpis({
 			<KpiCard
 				icon={IconCircleCheck}
 				name={t("admin.payouts.kpi.paid", "Paid")}
-				value={totals ? formatPayoutMoney(totals.paid) : "—"}
+				value={totals ? formatMoneyCents(totals.paid) : "—"}
 				note={
 					totals &&
 					t(
@@ -521,44 +499,31 @@ function PayoutKpis({
 				icon={IconUsers}
 				name={t("admin.payouts.kpi.curators", "Curators")}
 			>
-				<Tooltip
-					title={
+				<KpiSplit
+					tooltip={
 						totals &&
 						t("admin.payouts.kpi.curatorsTooltip", "{paid} paid · {due} due", {
 							paid: totals.curatorsPaid,
 							due: totals.curatorsDue,
 						})
 					}
-				>
-					<div className={styles.mix}>
-						<div className={styles.split}>
-							{totals && curators > 0 && (
-								<>
-									<span
-										className={styles.paid}
-										style={{ flexGrow: totals.curatorsPaid }}
-									/>
-									<span
-										className={styles.due}
-										style={{ flexGrow: totals.curatorsDue }}
-									/>
-								</>
-							)}
-						</div>
-						<div className={styles.legend}>
-							<span className={styles.key}>
-								<i className={styles.paid} />
-								{t("admin.payouts.kpi.legend.paid", "Paid")}
-								<b>{totals ? totals.curatorsPaid : "—"}</b>
-							</span>
-							<span className={styles.key}>
-								<i className={styles.due} />
-								{t("admin.payouts.kpi.legend.due", "Due")}
-								<b>{totals ? totals.curatorsDue : "—"}</b>
-							</span>
-						</div>
-					</div>
-				</Tooltip>
+					parts={[
+						{
+							key: "paid",
+							label: t("admin.payouts.kpi.legend.paid", "Paid"),
+							value: totals ? totals.curatorsPaid : "—",
+							count: totals?.curatorsPaid ?? 0,
+							color: "var(--gd-success-solid)",
+						},
+						{
+							key: "due",
+							label: t("admin.payouts.kpi.legend.due", "Due"),
+							value: totals ? totals.curatorsDue : "—",
+							count: totals?.curatorsDue ?? 0,
+							color: "var(--gd-warning-solid)",
+						},
+					]}
+				/>
 			</KpiCard>
 		</div>
 	);

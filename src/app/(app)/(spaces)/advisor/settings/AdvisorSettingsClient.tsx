@@ -20,7 +20,6 @@ import {
 	Typography,
 } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 import { AvailabilityPeriods } from "@/components/advisor/AvailabilityPeriods";
 import { PaidWorkSection } from "@/components/advisor/PaidWorkSection";
@@ -34,7 +33,13 @@ import {
 	useConfirmAvailability,
 	useSaveAvailability,
 } from "@/hooks/advisor-availability";
-import { usePaidWork, useSavePaidWork } from "@/hooks/payouts";
+import { useAskAgain, useCuration, useSaveCuration } from "@/hooks/curators";
+import {
+	type PaidWorkBody,
+	usePaidWork,
+	useSavePaidWork,
+} from "@/hooks/payouts";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import type { AvailabilityRule } from "@/lib/advisor-availability";
 import type { AvailabilityDto } from "@/repositories/advisor-availability";
 import styles from "./style.module.scss";
@@ -57,11 +62,7 @@ export function AdvisorSettingsClient() {
 function AdvisorSettings() {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const requested = searchParams.get("section") as Section | null;
-	const section: Section =
-		requested && SECTIONS.includes(requested) ? requested : "availability";
+	const [section, openSection] = useUrlTab("section", SECTIONS, "availability");
 
 	const items = [
 		{
@@ -74,8 +75,7 @@ function AdvisorSettings() {
 		},
 	];
 
-	const open = ({ key }: { key: string }) =>
-		router.replace(`?section=${key}`, { scroll: false });
+	const open = ({ key }: { key: string }) => openSection(key);
 
 	return (
 		<div className="layout-background">
@@ -150,9 +150,19 @@ function Availability() {
 function PaidWork() {
 	const { t } = useTranslate();
 	const { data, isLoading, isError, refetch } = usePaidWork();
+	const curation = useCuration();
 	const save = useSavePaidWork();
+	const saveCuration = useSaveCuration();
+	const askAgain = useAskAgain();
 
-	if (isError)
+	// Saving the payout details is what unlocks curation.
+	const savePaidWork = async (body: PaidWorkBody) => {
+		const saved = await save.mutateAsync(body);
+		await curation.refetch();
+		return saved;
+	};
+
+	if (isError || (curation.isError && !curation.data))
 		return (
 			<Alert
 				type="error"
@@ -162,14 +172,20 @@ function PaidWork() {
 					"Your payout details could not be loaded.",
 				)}
 				action={
-					<Button size="small" onClick={() => refetch()}>
+					<Button
+						size="small"
+						onClick={() => {
+							refetch();
+							curation.refetch();
+						}}
+					>
 						{t("advisor.settings.paid-work.retry", "Try again")}
 					</Button>
 				}
 			/>
 		);
 
-	if (isLoading || !data)
+	if (isLoading || !data || !curation.data)
 		return (
 			<Card variant="borderless">
 				<Skeleton active paragraph={{ rows: 8 }} />
@@ -179,8 +195,12 @@ function PaidWork() {
 	return (
 		<PaidWorkSection
 			paidWork={data}
-			saving={save.isPending}
-			onSave={save.mutateAsync}
+			curation={curation.data}
+			saving={save.isPending || saveCuration.isPending}
+			askingAgain={askAgain.isPending}
+			onSave={savePaidWork}
+			onSaveCuration={saveCuration.mutateAsync}
+			onAskAgain={askAgain.mutateAsync}
 		/>
 	);
 }

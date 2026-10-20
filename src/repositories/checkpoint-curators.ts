@@ -1,3 +1,4 @@
+import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import { CURATOR_LEVELS, type CuratorLevel } from "@/config/checkpoint-pricing";
 import type { SkillLevel } from "@/config/prisma-enums";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
@@ -76,21 +77,31 @@ export type CheckpointCurator = {
 };
 
 /**
- * Who may curate a checkpoint: someone open to mentees at Experienced or Expert.
- * The list, the price and the PUT that names a curator all read this one rule.
+ * Who may curate a checkpoint: someone open to mentees at Experienced or Expert,
+ * who turned project curation on, whom an admin approved, and who curates this
+ * stage. The list, the price and the PUT that names a curator all read this one rule.
  */
-export const curatorEligibleWhere = {
-	isOpenForMentoring: true,
-	level: { in: CURATOR_LEVELS },
-};
+export const curatorEligibleWhere = (stage?: string) =>
+	({
+		isOpenForMentoring: true,
+		level: { in: CURATOR_LEVELS },
+		user: {
+			expertProfile: {
+				curation: true,
+				curatorApprovedAt: { not: null },
+				...(stage && { curatorStages: { has: stage } }),
+			},
+		},
+	}) satisfies Prisma.SpecialityWhereInput;
 
 export async function listCheckpointCurators(
 	viewerId: string,
+	stage?: string,
 	limit = 50,
 ): Promise<CheckpointCurator[]> {
 	const specialities = await prisma.speciality.findMany({
 		where: {
-			...curatorEligibleWhere,
+			...curatorEligibleWhere(stage),
 			// A curator buying a checkpoint for their own project cannot be its
 			// curator: the point of the 28 days is judgement from outside.
 			userId: { not: viewerId },

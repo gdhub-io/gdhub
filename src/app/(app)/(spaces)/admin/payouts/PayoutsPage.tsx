@@ -102,10 +102,11 @@ export function PayoutsPage() {
 						onClose={() => setPaying(null)}
 					/>
 				)}
-				{noting && (
+				{noting?.payout && (
 					<PayoutNoteModal
 						key={noting.curatorId}
 						row={noting}
+						payout={noting.payout}
 						month={shownMonth}
 						onClose={() => setNoting(null)}
 					/>

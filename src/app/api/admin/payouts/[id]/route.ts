@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PAYOUT_NOTE_MAX } from "@/config/checkpoint";
 import {
 	apiError,
 	json,
@@ -10,7 +11,7 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { setPayoutNote } from "@/repositories/checkpoint-payouts";
 
-const NoteSchema = z.object({ note: z.string().max(500) });
+const NoteSchema = z.object({ note: z.string().max(PAYOUT_NOTE_MAX) });
 
 /** Frame 13.3c: the note on a paid payout; empty removes it. */
 export const PATCH = pipe(

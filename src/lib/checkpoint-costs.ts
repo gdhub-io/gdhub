@@ -8,6 +8,7 @@ import {
 	PAYOUT_DUE_DAY,
 	PLATFORM_SHARE,
 } from "@/config/checkpoint";
+import type { PayoutStatus } from "@/types/checkpoints";
 
 /**
  * What a checkpoint costs to run and what its curator earns, in one place for
@@ -81,11 +82,33 @@ export const callCost = (calls: CallUsage[]) =>
 export const microsToMinor = (micros: number) =>
 	(micros / MICROS_PER_USD) * CHECKPOINT_MINOR_UNITS;
 
+/** What the platform keeps of a checkpoint, in minor units. */
+export const checkpointMargin = ({
+	paid,
+	refunded,
+	fee,
+	calls,
+	ai,
+}: {
+	paid: number;
+	refunded: number;
+	fee: number;
+	calls: number;
+	ai: number;
+}) => paid - refunded - fee - calls - ai;
+
 /** The first day of `at`'s month, UTC. */
 export const monthOf = (at: Date | string) => {
 	const date = new Date(at);
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
 };
+
+export const nextMonth = (month: Date) =>
+	new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 1));
+
+/** The first day of the month before `now`'s, UTC. */
+export const previousMonth = (now: Date) =>
+	new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
 
 /** The day a month's fees are due by: the PAYOUT_DUE_DAY of the next month. */
 export const payoutDueOn = (month: Date | string) => {
@@ -93,4 +116,14 @@ export const payoutDueOn = (month: Date | string) => {
 	return new Date(
 		Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, PAYOUT_DUE_DAY),
 	);
+};
+
+export const payoutStatus = (
+	month: Date,
+	paid: boolean,
+	now: Date,
+): PayoutStatus => {
+	if (paid) return "paid";
+	if (monthOf(now) <= month) return "notDue";
+	return now > payoutDueOn(month) ? "late" : "due";
 };

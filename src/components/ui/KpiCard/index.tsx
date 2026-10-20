@@ -1,7 +1,7 @@
 import type { Icon } from "@tabler/icons-react";
 import type { ReactNode } from "react";
-import kpi from "@/components/admin/Views/ViewsKpiCard.module.scss";
 import { IconTile } from "../IconTile";
+import styles from "./style.module.scss";
 
 export type KpiCardProps = {
 	icon: Icon;
@@ -10,26 +10,46 @@ export type KpiCardProps = {
 	value?: ReactNode;
 	/** The caption under the figure. */
 	note?: ReactNode;
+	/** Bars the size of the figure and the caption, so nothing reflows when data lands. */
+	loading?: boolean;
 	children?: ReactNode;
 };
 
 /** One metric card — the admin tabs' and the advisor's earnings alike. */
-export function KpiCard({ icon, name, value, note, children }: KpiCardProps) {
+export function KpiCard({
+	icon,
+	name,
+	value,
+	note,
+	loading,
+	children,
+}: KpiCardProps) {
 	return (
-		<div className={kpi.card}>
-			<div className={kpi.head}>
+		<div className={styles.card}>
+			<div className={styles.head}>
 				<IconTile
 					icon={icon}
 					size="sm"
 					tint="var(--gd-neutral-100)"
 					ink="var(--gd-color-text-secondary)"
 				/>
-				<span className={kpi.name}>{name}</span>
+				<span className={styles.name}>{name}</span>
 			</div>
-			<div className={kpi.figures}>
-				{value !== undefined && <span className={kpi.total}>{value}</span>}
-				{note !== undefined && <span className={kpi.delta}>{note}</span>}
-				{children}
+			<div className={styles.figures}>
+				{loading ? (
+					<>
+						<span className={styles.skeletonTotal} />
+						<span className={styles.skeletonDelta} />
+					</>
+				) : (
+					<>
+						{value !== undefined && (
+							<span className={styles.total}>{value}</span>
+						)}
+						{note !== undefined && <span className={styles.delta}>{note}</span>}
+						{children}
+					</>
+				)}
 			</div>
 		</div>
 	);

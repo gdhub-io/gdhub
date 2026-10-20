@@ -4,9 +4,23 @@ import {
 	IconExternalLink,
 	IconFileCheck,
 	IconInfoCircle,
+	IconLock,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Card, Flex, Form, Input, Radio, Typography } from "antd";
+import {
+	App,
+	Button,
+	Card,
+	Divider,
+	Flex,
+	Form,
+	Input,
+	Radio,
+	Select,
+	Switch,
+	Tooltip,
+	Typography,
+} from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useState } from "react";
@@ -17,39 +31,66 @@ import {
 	missingLegalCode,
 	outdatedLegalCode,
 } from "@/components/legal/ClickwrapField";
-import { IconTile } from "@/components/ui";
+import { IconTile, StatusDot } from "@/components/ui";
 import { LEGAL_DOCUMENTS } from "@/config/legal/registry";
 import { ExpertInvoicing } from "@/config/prisma-enums";
-import type { PaidWorkBody } from "@/hooks/payouts";
+import {
+	isAccountRequired,
+	type PaidWorkBody,
+	useInvoicingLabels,
+} from "@/hooks/payouts";
 import { validPayoutAccount } from "@/lib/payout-account";
-import type { PaidWorkDto } from "@/types/checkpoints";
+import type { CurationDto, PaidWorkDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
 
 const TERMS = "ExpertServicesTerms";
 
+const PAYOUT_FIELDS = [
+	"holder",
+	"account",
+	"invoicing",
+	clickwrapFieldName(TERMS),
+];
+
 type Values = {
 	holder: string;
 	account?: string;
 	invoicing: ExpertInvoicing;
+	curationOn?: boolean;
+	curationStages?: string[];
 };
+
+export type CurationBody = { on: boolean; stages: string[] };
 
 export type PaidWorkSectionProps = {
 	paidWork: PaidWorkDto;
+	curation: CurationDto;
 	saving?: boolean;
+	askingAgain?: boolean;
 	/** Rejects with the axios error; the section maps it onto its fields. */
 	onSave: (body: PaidWorkBody) => Promise<unknown>;
+	onSaveCuration: (body: CurationBody) => Promise<unknown>;
+	onAskAgain: () => Promise<unknown>;
 };
+
+const sameStages = (a: string[], b: string[]) =>
+	a.length === b.length && a.every((stage) => b.includes(stage));
 
 /** Frames `Q8dNW0` / `SyTre` / `S5YkC` / `g9B7RS`: where an expert is paid and under which terms. */
 export function PaidWorkSection({
 	paidWork,
+	curation,
 	saving,
+	askingAgain,
 	onSave,
+	onSaveCuration,
+	onAskAgain,
 }: PaidWorkSectionProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
+	const invoicing = useInvoicingLabels();
 	const [form] = Form.useForm();
 	const [changing, setChanging] = useState(false);
 	const [stale, setStale] = useState(false);
@@ -68,10 +109,7 @@ export function PaidWorkSection({
 	const invoicingOptions = [
 		{
 			value: ExpertInvoicing.SelfEmployed,
-			title: t(
-				"advisor.settings.paid-work.invoicing.selfEmployed.label",
-				"Self-employed",
-			),
+			title: invoicing.SelfEmployed,
 			note: t(
 				"advisor.settings.paid-work.invoicing.selfEmployed.note",
 				"You invoice us from your registered individual activity.",
@@ -79,7 +117,7 @@ export function PaidWorkSection({
 		},
 		{
 			value: ExpertInvoicing.Company,
-			title: t("advisor.settings.paid-work.invoicing.company.label", "Company"),
+			title: invoicing.Company,
 			note: t(
 				"advisor.settings.paid-work.invoicing.company.note",
 				"Your company invoices us.",
@@ -87,10 +125,7 @@ export function PaidWorkSection({
 		},
 		{
 			value: ExpertInvoicing.SelfBilling,
-			title: t(
-				"advisor.settings.paid-work.invoicing.selfBilling.label",
-				"Self-billing",
-			),
+			title: invoicing.SelfBilling,
 			note: t(
 				"advisor.settings.paid-work.invoicing.selfBilling.note",
 				"We issue the invoice on your behalf; you accept it.",
@@ -103,8 +138,43 @@ export function PaidWorkSection({
 		form.setFields([{ name: "account", value: undefined, errors: [] }]);
 	};
 
+	const curationChanged = (values: Values) =>
+		!curation.locked &&
+		(!!values.curationOn !== curation.on ||
+			!sameStages(values.curationStages ?? [], curation.stages));
+
+	const saveCuration = async (values: Values) => {
+		try {
+			await onSaveCuration({
+				on: !!values.curationOn,
+				stages: values.curationStages ?? [],
+			});
+			return true;
+		} catch {
+			message.error(
+				t(
+					"advisor.settings.paid-work.curator.saveFailed",
+					"Couldn't save project curation. Try again.",
+				),
+			);
+			return false;
+		}
+	};
+
 	const submit = async (values: Values) => {
 		setStale(false);
+		const withCuration = curationChanged(values);
+		// One Save commits the card; untouched payout details are not re-sent for a curation change.
+		if (withCuration && !form.isFieldsTouched(PAYOUT_FIELDS)) {
+			if (await saveCuration(values))
+				message.success(
+					t(
+						"advisor.settings.paid-work.curator.saved",
+						"Project curation saved",
+					),
+				);
+			return;
+		}
 		try {
 			await onSave({
 				holder: values.holder.trim(),
@@ -114,6 +184,7 @@ export function PaidWorkSection({
 			});
 			setChanging(false);
 			form.setFieldValue("account", undefined);
+			if (withCuration && !(await saveCuration(values))) return;
 			message.success(
 				t("advisor.settings.paid-work.saved", "Payout details saved"),
 			);
@@ -129,10 +200,7 @@ export function PaidWorkSection({
 				]);
 				return;
 			}
-			if (
-				(error as { response?: { data?: { error?: string } } })?.response?.data
-					?.error === "accountRequired"
-			) {
+			if (isAccountRequired(error)) {
 				setChanging(true);
 				form.setFields([{ name: "account", errors: [accountError] }]);
 				return;
@@ -157,6 +225,8 @@ export function PaidWorkSection({
 			initialValues={{
 				holder: paidWork.holder ?? "",
 				invoicing: paidWork.invoicing ?? undefined,
+				curationOn: curation.on,
+				curationStages: curation.stages,
 			}}
 			onFinish={submit}
 		>
@@ -374,6 +444,13 @@ export function PaidWorkSection({
 							</Text>
 						</Flex>
 					</div>
+
+					<Divider className={styles.divider} />
+					<CurationBlock
+						curation={curation}
+						askingAgain={askingAgain}
+						onAskAgain={onAskAgain}
+					/>
 				</Card>
 
 				<Flex>
@@ -388,5 +465,161 @@ export function PaidWorkSection({
 				</Flex>
 			</Flex>
 		</Form>
+	);
+}
+
+/** Frames `S5YkC` / `JPpKq` / `Q8dNW0`: the switch, the stages and one curator status. */
+function CurationBlock({
+	curation,
+	askingAgain,
+	onAskAgain,
+}: {
+	curation: CurationDto;
+	askingAgain?: boolean;
+	onAskAgain: () => Promise<unknown>;
+}) {
+	const { t } = useTranslate();
+	const { message } = App.useApp();
+	const lockedReason = t(
+		"advisor.settings.paid-work.curator.locked",
+		"Accept the Expert Services Terms and save your payout details first",
+	);
+	const notOffered = t(
+		"advisor.settings.paid-work.curator.notOffered",
+		"You're not offered to authors until GDHub approves you.",
+	);
+	const day = (date: string | null) =>
+		date ? dayjs(date).format("D MMM") : "";
+
+	const askAgain = async () => {
+		try {
+			await onAskAgain();
+		} catch {
+			message.error(
+				t(
+					"advisor.settings.paid-work.curator.saveFailed",
+					"Couldn't save project curation. Try again.",
+				),
+			);
+		}
+	};
+
+	return (
+		<div className={styles.curation}>
+			<Flex justify="space-between" align="center" gap={12}>
+				<Text
+					className={curation.locked ? styles.rowTitleLocked : styles.rowTitle}
+				>
+					{t("advisor.settings.paid-work.projectCuration", "Project curation")}
+				</Text>
+				<Tooltip title={curation.locked ? lockedReason : undefined}>
+					<Flex align="center" gap={8}>
+						{curation.locked && (
+							<IconLock size={14} className={styles.lockIcon} />
+						)}
+						<Form.Item name="curationOn" valuePropName="checked" noStyle>
+							<Switch
+								disabled={curation.locked}
+								aria-label={t(
+									"advisor.settings.paid-work.projectCuration",
+									"Project curation",
+								)}
+							/>
+						</Form.Item>
+					</Flex>
+				</Tooltip>
+			</Flex>
+
+			<Form.Item
+				name="curationStages"
+				label={t(
+					"advisor.settings.paid-work.curator.stages",
+					"Stages you curate",
+				)}
+				className={styles.item}
+			>
+				<Select
+					mode="multiple"
+					disabled={curation.locked}
+					placeholder={t(
+						"advisor.settings.paid-work.curator.stagesPlaceholder",
+						"Select stages",
+					)}
+					options={curation.stageOptions.map((stage) => ({
+						value: stage,
+						label: stage,
+					}))}
+				/>
+			</Form.Item>
+
+			{curation.status === "pending" && (
+				<Flex vertical gap={4}>
+					<StatusDot
+						tone="warning"
+						className={styles.statusLabel}
+						label={t(
+							"advisor.settings.paid-work.curator.pending",
+							"Waiting for review · sent {date}",
+							{ date: day(curation.requestedAt) },
+						)}
+					/>
+					<Text type="secondary" className={styles.note}>
+						{notOffered}
+					</Text>
+				</Flex>
+			)}
+
+			{curation.status === "approved" && (
+				<Flex vertical gap={4}>
+					<StatusDot
+						tone="success"
+						className={styles.statusLabel}
+						label={t(
+							"advisor.settings.paid-work.curator.approved",
+							"Approved · {date}",
+							{ date: day(curation.approvedAt) },
+						)}
+					/>
+					{/* With the switch off the approval stays, but nobody is offered them. */}
+					{curation.on && (
+						<Text type="secondary" className={styles.note}>
+							{t(
+								"advisor.settings.paid-work.curator.offered",
+								"Authors are offered you at these stages.",
+							)}
+						</Text>
+					)}
+				</Flex>
+			)}
+
+			{curation.status === "notApproved" && (
+				<Flex vertical gap={4} align="flex-start">
+					<StatusDot
+						tone="neutral"
+						className={styles.statusLabel}
+						label={t(
+							"advisor.settings.paid-work.curator.notApproved",
+							"Not approved",
+						)}
+					/>
+					{curation.note && (
+						<Text type="secondary" className={styles.note}>
+							“{curation.note}”
+						</Text>
+					)}
+					<Text type="secondary" className={styles.note}>
+						{notOffered}
+					</Text>
+					<Button
+						type="link"
+						loading={askingAgain}
+						onClick={askAgain}
+						className={styles.askAgain}
+					>
+						{t("advisor.settings.paid-work.curator.askAgain", "Ask again")}
+					</Button>
+				</Flex>
+			)}
+		</div>
 	);
 }

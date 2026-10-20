@@ -13,7 +13,6 @@ import { useTranslate } from "@tolgee/react";
 import {
 	AutoComplete,
 	Button,
-	ConfigProvider,
 	Divider,
 	Dropdown,
 	Flex,
@@ -21,7 +20,6 @@ import {
 	Rate,
 	Segmented,
 	Select,
-	Skeleton,
 	Table,
 	Tooltip,
 	Typography,
@@ -33,27 +31,30 @@ import { useMemo, useState } from "react";
 import { AdminVerdictModal } from "@/components/admin/AdminVerdictModal";
 import { AssignCuratorModal } from "@/components/admin/AssignCuratorModal";
 import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
-import styles from "@/components/admin/PromoCodesTable/style.module.scss";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
-import { rateTheme } from "@/components/checkpoints/CheckpointRating/theme";
-import { EmptyState, StatusDot, type StatusTone } from "@/components/ui";
 import {
-	CHECKPOINT_MINOR_UNITS,
-	CHECKPOINT_PARTS,
-	CHECKPOINT_PRICE_CURRENCY,
-} from "@/config/checkpoint";
-import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
+	EmptyState,
+	StatusDot,
+	type StatusTone,
+	skeletonColumns,
+	skeletonRows,
+	tableStyles as styles,
+	tableScrollX,
+} from "@/components/ui";
 import {
-	CheckpointCuratorKind,
-	CheckpointFeeReason,
-	CheckpointStatus,
-} from "@/config/prisma-enums";
+	formatCheckpointMoney,
+	formatMoneyCents,
+	moneyOut,
+	signedMoney,
+} from "@/config/checkpoint-pricing";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import {
 	type AdminCheckpointsFilter,
 	useAdminCheckpoints,
 	useCheckpointProjectOptions,
 	useRefundReasonLabels,
 } from "@/hooks/admin-checkpoints";
+import { useFeeReasonLabel } from "@/hooks/payouts";
 import type {
 	CheckpointFeedbackDto,
 	AdminCheckpointRowDto as Row,
@@ -79,13 +80,6 @@ const TONE: Partial<Record<CheckpointStatus, StatusTone>> = {
 
 /** The project's least width before the table scrolls; it takes what is left above that. */
 const PROJECT_WIDTH = 160;
-
-/** Running costs are fractions of a cent: always shown to the cent. */
-const formatCost = (minor: number) =>
-	`${CHECKPOINT_PRICE_CURRENCY}${(Math.round(minor) / CHECKPOINT_MINOR_UNITS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-const signedMoney = (minor: number, format = formatCheckpointMoney) =>
-	`${minor < 0 ? "−" : ""}${format(Math.abs(minor))}`;
 
 /** A cost that rounds to nothing is left out rather than written as $0. */
 const spent = (minor: number) => Math.round(minor) > 0;
@@ -113,8 +107,6 @@ function BreakdownLine({
 	);
 }
 
-const TIP_RATE = rateTheme({ empty: "var(--gd-neutral-500)", sizeSm: 13 });
-
 /** 13.6f (`cEF7c`): the author's stars under the status; the comment in its tooltip. */
 function RatingLine({
 	rating,
@@ -131,9 +123,7 @@ function RatingLine({
 			title={
 				<div className={own.ratingBody}>
 					<div className={own.ratingHead}>
-						<ConfigProvider theme={TIP_RATE}>
-							<Rate disabled size="small" value={rating.rating} />
-						</ConfigProvider>
+						<Rate disabled size="small" value={rating.rating} />
 						<span className={own.ratingMeta}>
 							{t("admin.checkpoints.list.ratingOf", "{rating} of 5 · {date}", {
 								rating: rating.rating,
@@ -167,10 +157,6 @@ function RatingLine({
 	);
 }
 
-const SKELETON_ROWS = Array.from({ length: 5 }, (_, index) => ({
-	id: `skeleton-${index}`,
-})) as Row[];
-
 /** Frames 11.5–11.5d: every paid checkpoint, and the way into its refund. */
 export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 	const { t } = useTranslate();
@@ -187,6 +173,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 	);
 
 	const reasonLabels = useRefundReasonLabels();
+	const feeReason = useFeeReasonLabel("admin");
 	const statusLabels: Partial<Record<CheckpointStatus, string>> = {
 		AwaitingCurator: t(
 			"admin.checkpoints.list.status.awaitingCurator",
@@ -199,41 +186,17 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		Draft: t("admin.checkpoints.list.status.draft", "Draft"),
 	};
 
-	const feeReason = (fee: NonNullable<Row["fee"]>) =>
-		({
-			[CheckpointFeeReason.Full]: t(
-				"admin.checkpoints.margin.reason.full",
-				"full",
-			),
-			[CheckpointFeeReason.RefundReduced]: t(
-				"admin.checkpoints.margin.reason.refundReduced",
-				"reduced by a refund",
-			),
-			[CheckpointFeeReason.Replacement]: t(
-				"admin.checkpoints.margin.reason.replacement",
-				"took over · {parts} of {total} parts",
-				{ parts: fee.parts, total: CHECKPOINT_PARTS.Human },
-			),
-		})[fee.reason];
-	const noFeeLabels: Record<NonNullable<Row["noFee"]>, string> = {
-		stopped: t("admin.checkpoints.margin.noFee.stopped", "Stopped — no fee"),
-		adminVerdict: t(
-			"admin.checkpoints.margin.noFee.adminVerdict",
-			"Verdict written by an admin — no fee",
-		),
-	};
-
 	const breakdown = (row: Row) => {
 		const ai = row.curatorName === null;
 		return (
 			<div className={own.breakdown}>
 				<BreakdownLine
 					label={t("admin.checkpoints.margin.paid", "Paid")}
-					value={row.paid === null ? "—" : formatCost(row.paid)}
+					value={row.paid === null ? "—" : formatMoneyCents(row.paid)}
 				/>
 				<BreakdownLine
 					label={t("admin.checkpoints.margin.refunded", "Refunded")}
-					value={row.refunded ? `−${formatCost(row.refunded)}` : "—"}
+					value={row.refunded ? moneyOut(row.refunded, formatMoneyCents) : "—"}
 				/>
 				{!ai &&
 					(row.fee ? (
@@ -241,15 +204,15 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 							label={t(
 								"admin.checkpoints.margin.fee",
 								"Curator's fee · {reason}",
-								{ reason: feeReason(row.fee) },
+								{ reason: feeReason(row.fee.reason, row.fee.parts) },
 							)}
-							value={`−${formatCost(row.fee.amount)}`}
+							value={moneyOut(row.fee.amount, formatMoneyCents)}
 						/>
 					) : (
 						<BreakdownLine
 							label={
 								row.noFee
-									? noFeeLabels[row.noFee]
+									? feeReason(row.noFee)
 									: t("admin.checkpoints.margin.feeOnClose", "Fee on close")
 							}
 							value="—"
@@ -261,7 +224,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						<BreakdownLine
 							head
 							label={t("admin.checkpoints.margin.calls", "Calls")}
-							value={`−${formatCost(row.calls.total)}`}
+							value={moneyOut(row.calls.total, formatMoneyCents)}
 						/>
 						<BreakdownLine
 							part
@@ -270,7 +233,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 								"Video · {personMinutes} person-min",
 								{ personMinutes: Math.round(row.calls.personMinutes) },
 							)}
-							value={formatCost(row.calls.video)}
+							value={formatMoneyCents(row.calls.video)}
 						/>
 						<BreakdownLine
 							part
@@ -279,7 +242,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 								"Recording · {minutes} min",
 								{ minutes: Math.round(row.calls.minutes) },
 							)}
-							value={formatCost(row.calls.recording)}
+							value={formatMoneyCents(row.calls.recording)}
 						/>
 						<BreakdownLine
 							part
@@ -288,7 +251,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 								"Transcript · {minutes} min",
 								{ minutes: Math.round(row.calls.minutes) },
 							)}
-							value={formatCost(row.calls.transcript)}
+							value={formatMoneyCents(row.calls.transcript)}
 						/>
 					</>
 				)}
@@ -297,7 +260,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						<BreakdownLine
 							head
 							label={t("admin.checkpoints.margin.ai", "AI")}
-							value={`−${formatCost(row.aiCost)}`}
+							value={moneyOut(row.aiCost, formatMoneyCents)}
 						/>
 						<BreakdownLine
 							part
@@ -305,7 +268,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 								"admin.checkpoints.margin.tokens",
 								"Tokens · notes, reviews, advice",
 							)}
-							value={formatCost(row.aiCost)}
+							value={formatMoneyCents(row.aiCost)}
 						/>
 					</>
 				)}
@@ -316,7 +279,9 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 					head
 					label={t("admin.checkpoints.margin.total", "Margin")}
 					value={
-						row.margin === null ? "—" : signedMoney(row.margin, formatCost)
+						row.margin === null
+							? "—"
+							: signedMoney(row.margin, formatMoneyCents)
 					}
 				/>
 			</div>
@@ -325,7 +290,6 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 
 	const loading = list.isPending;
 	const failed = list.isError && !list.data;
-	const skeleton = <Skeleton.Input active size="small" />;
 
 	const columns: ColumnsType<Row> = [
 		{
@@ -450,11 +414,11 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						}),
 					spent(row.calls.total) &&
 						t("admin.checkpoints.list.margin.calls", "calls −{amount}", {
-							amount: formatCost(row.calls.total),
+							amount: formatMoneyCents(row.calls.total),
 						}),
 					spent(row.aiCost) &&
 						t("admin.checkpoints.list.margin.ai", "AI −{amount}", {
-							amount: formatCost(row.aiCost),
+							amount: formatMoneyCents(row.aiCost),
 						}),
 				].filter(Boolean);
 
@@ -543,11 +507,6 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			},
 		},
 	];
-
-	const scrollX = columns.reduce(
-		(sum, column) => sum + (Number(column.width) || 0),
-		PROJECT_WIDTH,
-	);
 
 	const filtered =
 		!!filter.status || !!filter.stage || !!filter.curatorKind || !!filter.q;
@@ -668,15 +627,10 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			<Table<Row>
 				className={styles.table}
 				rowKey="id"
-				columns={
-					loading
-						? columns.map((column) => ({
-								...column,
-								render: () => (column.key === "action" ? null : skeleton),
-							}))
-						: columns
+				columns={loading ? skeletonColumns(columns) : columns}
+				dataSource={
+					loading ? skeletonRows<Row>(5, "id") : failed ? [] : list.data?.items
 				}
-				dataSource={loading ? SKELETON_ROWS : failed ? [] : list.data?.items}
 				pagination={
 					list.data && list.data.total > list.data.pageSize
 						? {
@@ -697,7 +651,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 							}
 						: false
 				}
-				scroll={{ x: scrollX }}
+				scroll={{ x: tableScrollX(columns, PROJECT_WIDTH) }}
 				locale={{ emptyText }}
 			/>
 

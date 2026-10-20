@@ -13,7 +13,13 @@ import {
 	CURATOR_SWAPPABLE_STATUSES,
 	draftComplete,
 } from "@/lib/checkpoint-admin";
-import { callCost, callPrice, microsToMinor } from "@/lib/checkpoint-costs";
+import {
+	callCost,
+	callPrice,
+	checkpointMargin,
+	microsToMinor,
+} from "@/lib/checkpoint-costs";
+import { noFeeReason } from "@/lib/checkpoint-fee";
 import {
 	isRunning,
 	REFUND_REASONS,
@@ -25,7 +31,11 @@ import {
 } from "@/lib/checkpoint-refund";
 import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { recordCheckpointFee } from "@/repositories/checkpoint-fee";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
+import {
+	FEEDBACK_SELECT,
+	toDto as feedbackDto,
+} from "@/repositories/checkpoint-feedback";
+import { checkpointNumbers } from "@/repositories/checkpoint-number";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
@@ -45,13 +55,13 @@ import type {
  */
 
 /** The price was taken: a hold still waiting is released, not refunded. */
-const CAPTURED: PaymentStatus[] = [
+export const CAPTURED: PaymentStatus[] = [
 	PaymentStatus.COMPLETED,
 	PaymentStatus.PARTIALLY_REFUNDED,
 	PaymentStatus.REFUNDED,
 ];
 
-const refundedTotal = (refunds: { amount: number }[]) =>
+export const refundedTotal = (refunds: { amount: number }[]) =>
 	refunds.reduce((sum, row) => sum + row.amount, 0);
 
 export const refundCaseOf = async (checkpointId: string) => {
@@ -311,29 +321,53 @@ const adminCheckpointTotals = async ({
 			WHERE p."payableType" = 'CHECKPOINT'
 				AND p.status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
 		),
-		per AS (
-			SELECT cp.finished, cp."curatorKind",
-				(SELECT COALESCE(SUM(t.amount), 0) FROM taken t WHERE t."payableId" = cp.id) AS paid,
-				(SELECT COALESCE(SUM(r.amount), 0) FROM "Refund" r JOIN taken t ON t.id = r."paymentId" WHERE t."payableId" = cp.id) AS refunded,
-				(SELECT COALESCE(SUM(f.amount), 0) FROM "CheckpointFee" f WHERE f."checkpointId" = cp.id) AS fees,
-				(SELECT COALESCE(SUM(u.cost), 0) FROM "CheckpointAiUsage" u WHERE u."checkpointId" = cp.id) AS ai_micros,
-				(SELECT COALESCE(SUM(s."participantMinutes"), 0) FROM "CheckpointSession" s WHERE s."checkpointId" = cp.id) AS person_minutes,
-				(SELECT COALESCE(SUM(GREATEST(0, CEIL(EXTRACT(EPOCH FROM (s."endedAt" - s."curatorJoinedAt")) / 60))), 0)
-					FROM "CheckpointSession" s
-					WHERE s."checkpointId" = cp.id AND s."endedAt" IS NOT NULL AND s."curatorJoinedAt" IS NOT NULL) AS minutes
-			FROM cp
+		paid AS (
+			SELECT "payableId" AS id, SUM(amount) AS paid FROM taken GROUP BY "payableId"
+		),
+		refunded AS (
+			SELECT t."payableId" AS id, SUM(r.amount) AS refunded
+			FROM "Refund" r
+			JOIN taken t ON t.id = r."paymentId"
+			GROUP BY t."payableId"
+		),
+		fees AS (
+			SELECT f."checkpointId" AS id, SUM(f.amount) AS fees
+			FROM "CheckpointFee" f
+			JOIN cp ON cp.id = f."checkpointId"
+			GROUP BY f."checkpointId"
+		),
+		ai_usage AS (
+			SELECT u."checkpointId" AS id, SUM(u.cost) AS ai_micros
+			FROM "CheckpointAiUsage" u
+			JOIN cp ON cp.id = u."checkpointId"
+			GROUP BY u."checkpointId"
+		),
+		sessions AS (
+			SELECT s."checkpointId" AS id,
+				SUM(s."participantMinutes") AS person_minutes,
+				-- callMinutes in lib/checkpoint-costs.ts: from the curator's join to the end, rounded up.
+				SUM(GREATEST(0, CEIL(EXTRACT(EPOCH FROM (s."endedAt" - s."curatorJoinedAt")) / 60)))
+					FILTER (WHERE s."endedAt" IS NOT NULL AND s."curatorJoinedAt" IS NOT NULL) AS minutes
+			FROM "CheckpointSession" s
+			JOIN cp ON cp.id = s."checkpointId"
+			GROUP BY s."checkpointId"
 		)
-		SELECT finished,
-			SUM(paid)::float AS paid,
-			SUM(refunded)::float AS refunded,
-			SUM(fees)::float AS fees,
-			SUM(ai_micros)::float AS ai_micros,
-			SUM(person_minutes)::float AS person_minutes,
-			SUM(minutes)::float AS minutes,
-			(COUNT(*) FILTER (WHERE "curatorKind" = 'AI'))::float AS ai,
-			(COUNT(*) FILTER (WHERE "curatorKind" = 'Human'))::float AS human
-		FROM per
-		GROUP BY finished
+		SELECT cp.finished,
+			COALESCE(SUM(paid.paid), 0)::float AS paid,
+			COALESCE(SUM(refunded.refunded), 0)::float AS refunded,
+			COALESCE(SUM(fees.fees), 0)::float AS fees,
+			COALESCE(SUM(ai_usage.ai_micros), 0)::float AS ai_micros,
+			COALESCE(SUM(sessions.person_minutes), 0)::float AS person_minutes,
+			COALESCE(SUM(sessions.minutes), 0)::float AS minutes,
+			(COUNT(*) FILTER (WHERE cp."curatorKind" = 'AI'))::float AS ai,
+			(COUNT(*) FILTER (WHERE cp."curatorKind" = 'Human'))::float AS human
+		FROM cp
+		LEFT JOIN paid ON paid.id = cp.id
+		LEFT JOIN refunded ON refunded.id = cp.id
+		LEFT JOIN fees ON fees.id = cp.id
+		LEFT JOIN ai_usage ON ai_usage.id = cp.id
+		LEFT JOIN sessions ON sessions.id = cp.id
+		GROUP BY cp.finished
 	`;
 
 	const money = rows.map((row) => {
@@ -343,7 +377,13 @@ const adminCheckpointTotals = async ({
 			...row,
 			calls,
 			aiCost: ai,
-			margin: row.paid - row.refunded - row.fees - calls - ai,
+			margin: checkpointMargin({
+				paid: row.paid,
+				refunded: row.refunded,
+				fee: row.fees,
+				calls,
+				ai,
+			}),
 		};
 	});
 	const sum = (pick: (row: (typeof money)[number]) => number) =>
@@ -384,7 +424,13 @@ export const listAdminCheckpoints = async (
 			project: { name: { contains: query, mode: "insensitive" } },
 		}),
 	};
-	const [total, rows, stages, totals] = await Promise.all([
+	// The AI curator's health: how many of its rated verdicts were rated 1–2.
+	const aiRatedWhere = {
+		...where,
+		curatorKind: CheckpointCuratorKind.AI,
+		feedback: { isNot: null },
+	} satisfies Prisma.ProjectCheckpointWhereInput;
+	const [total, rows, stages, totals, aiRated, aiRatedLow] = await Promise.all([
 		prisma.projectCheckpoint.count({ where }),
 		prisma.projectCheckpoint.findMany({
 			where,
@@ -406,7 +452,7 @@ export const listAdminCheckpoints = async (
 				goal: true,
 				curator: { select: { name: true } },
 				project: { select: { name: true } },
-				feedback: { select: { rating: true, comment: true, createdAt: true } },
+				feedback: { select: FEEDBACK_SELECT },
 				_count: {
 					select: { items: { where: { kind: CheckpointItemKind.Input } } },
 				},
@@ -419,25 +465,18 @@ export const listAdminCheckpoints = async (
 			select: { stageName: true },
 		}),
 		adminCheckpointTotals(filter),
-	]);
-	// The AI curator's health: how many of its rated verdicts were rated 1–2.
-	const aiRatedWhere = {
-		...where,
-		curatorKind: CheckpointCuratorKind.AI,
-		feedback: { isNot: null },
-	} satisfies Prisma.ProjectCheckpointWhereInput;
-	const [aiRated, aiRatedLow] = await Promise.all([
 		prisma.projectCheckpoint.count({ where: aiRatedWhere }),
 		prisma.projectCheckpoint.count({
 			where: { ...aiRatedWhere, feedback: { rating: { lte: 2 } } },
 		}),
 	]);
 
-	const [payments, numbers] = await Promise.all([
+	const ids = rows.map((row) => row.id);
+	const [payments, numbers, fees, sessions, aiUsage] = await Promise.all([
 		prisma.payment.findMany({
 			where: {
 				payableType: PayableType.CHECKPOINT,
-				payableId: { in: rows.map((row) => row.id) },
+				payableId: { in: ids },
 				status: { in: [PaymentStatus.PROCESSING, ...CAPTURED] },
 			},
 			orderBy: { createdAt: "desc" },
@@ -448,10 +487,7 @@ export const listAdminCheckpoints = async (
 				refunds: { select: { amount: true, reason: true } },
 			},
 		}),
-		Promise.all(rows.map((row) => checkpointNumber(row))),
-	]);
-	const ids = rows.map((row) => row.id);
-	const [fees, sessions, aiUsage] = await Promise.all([
+		checkpointNumbers(rows),
 		prisma.checkpointFee.findMany({
 			where: { checkpointId: { in: ids } },
 			select: { checkpointId: true, amount: true, reason: true, parts: true },
@@ -477,7 +513,7 @@ export const listAdminCheckpoints = async (
 		pageSize: ADMIN_PAGE_SIZE,
 		stages: stages.map((row) => row.stageName),
 		totals: { ...totals, aiRated, aiRatedLow },
-		items: rows.map((row, index) => {
+		items: rows.map((row) => {
 			// A declined checkpoint paid again has two rows; the newest speaks for it.
 			const payment = payments.find((one) => one.payableId === row.id);
 			const refunded = payment ? refundedTotal(payment.refunds) : 0;
@@ -494,7 +530,7 @@ export const listAdminCheckpoints = async (
 
 			return {
 				id: row.id,
-				number: numbers[index],
+				number: numbers.get(row.id) ?? 1,
 				stageName: row.stageName,
 				status: row.status,
 				curatorName: row.curator?.name ?? null,
@@ -514,23 +550,19 @@ export const listAdminCheckpoints = async (
 				},
 				noFee:
 					finished && !fee && row.curatorKind === CheckpointCuratorKind.Human
-						? row.decidedById && row.decidedById !== row.curatorId
-							? ("adminVerdict" as const)
-							: ("stopped" as const)
+						? noFeeReason(row)
 						: null,
 				calls,
 				aiCost: ai,
-				rating: row.feedback && {
-					rating: row.feedback.rating,
-					comment: row.feedback.comment,
-					createdAt: row.feedback.createdAt.toISOString(),
-				},
+				rating: row.feedback && feedbackDto(row.feedback),
 				margin: finished
-					? (payment?.amount ?? 0) -
-						refunded -
-						(fee?.amount ?? 0) -
-						calls.total -
-						ai
+					? checkpointMargin({
+							paid: payment?.amount ?? 0,
+							refunded,
+							fee: fee?.amount ?? 0,
+							calls: calls.total,
+							ai,
+						})
 					: null,
 				overdue,
 				canRefund:

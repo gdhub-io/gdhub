@@ -60,11 +60,12 @@ export const isCheckpointPaid = async (checkpointId: string) =>
 export const curatorCharge = async (
 	kind: CheckpointCuratorKind | null,
 	curatorId: string | null | undefined,
+	stage: string,
 ) => {
 	if (kind === CheckpointCuratorKind.AI) return CHECKPOINT_AI_PRICE * MINOR;
 
 	const speciality = await prisma.speciality.findFirst({
-		where: { ...curatorEligibleWhere, userId: curatorId ?? "" },
+		where: { ...curatorEligibleWhere(stage), userId: curatorId ?? "" },
 		select: { level: true },
 	});
 
@@ -174,6 +175,7 @@ export const checkpointCheckout = async (checkpointId: string) => {
 	const amount = await curatorCharge(
 		checkpoint.curatorKind,
 		checkpoint.curatorId,
+		checkpoint.stageName,
 	);
 
 	if (amount === null) {

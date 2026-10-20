@@ -92,6 +92,15 @@
 
 .ratingTip {
 	max-width: 320px;
+
+	/* The theme's empty star is drawn for a light surface; on the dark bubble it lifts a step, and shrinks to the text. */
+	:global(.ant-rate-small) {
+		font-size: var(--gd-font-size-body-sm);
+	}
+
+	:global(.ant-rate-star-zero .ant-rate-star-second) {
+		color: var(--gd-neutral-500);
+	}
 }
 
 .ratingBody {

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { userEvent, within } from "storybook/test";
 import type { AdminPayoutRowDto, AdminPayoutsDto } from "@/types/checkpoints";
 import { PayoutsTable } from ".";
 import { ANNA, LEA, MARCUS, SEPTEMBER } from "./payouts.fixtures";
@@ -44,9 +45,18 @@ export default meta;
 
 type Story = StoryObj<typeof PayoutsTable>;
 
+/** Opens the first row on its checkpoints. */
+const expandFirst: Story["play"] = async ({ canvasElement }) => {
+	const [expand] = within(canvasElement).getAllByRole("button", {
+		name: "Show checkpoints",
+	});
+	await userEvent.click(expand);
+};
+
 /** Frame 13.2 (`DM48P`): September, four due and one paid, Anna's row open. */
 export const Data: Story = {
-	args: { data: SEPTEMBER, defaultExpanded: [ANNA.curatorId] },
+	args: { data: SEPTEMBER },
+	play: expandFirst,
 };
 
 /** A due row; ⋮ → Mark paid (13.2b `c14iz`). */
@@ -54,7 +64,8 @@ export const Due: Story = { args: { data: month([ANNA]) } };
 
 /** A row opened on its checkpoints and why each fee is what it is. */
 export const Expanded: Story = {
-	args: { data: month([ANNA]), defaultExpanded: [ANNA.curatorId] },
+	args: { data: month([ANNA]) },
+	play: expandFirst,
 };
 
 /** Lea without payout details: Mark paid is locked, the reason on hover. */

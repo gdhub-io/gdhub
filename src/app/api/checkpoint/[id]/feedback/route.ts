@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RATING_COMMENT_MAX } from "@/config/checkpoint";
 import {
 	apiError,
 	json,
@@ -26,7 +27,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 const RatingSchema = z.object({
 	rating: z.number().int().min(1).max(5),
-	comment: z.string().max(500).optional(),
+	comment: z.string().max(RATING_COMMENT_MAX).optional(),
 });
 
 export const POST = pipe(

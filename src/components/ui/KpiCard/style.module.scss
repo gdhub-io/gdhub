@@ -1,5 +1,4 @@
-/* The filled panel this page shares with the rest of the admin tab — see §10 of
-   docs/design/specs/admin-views.md for why it is a fill and not an outline. */
+/* A filled panel, not an outline — see §10 of docs/design/specs/admin-views.md. */
 .card {
 	display: flex;
 	flex-direction: column;
@@ -40,7 +39,7 @@
 	font-feature-settings: "tnum";
 }
 
-/* Neutral, never red: a card that reports fewer views is not a failure. */
+/* Neutral, never red: a card that reports a drop is not a failure. */
 .delta {
 	display: flex;
 	align-items: center;

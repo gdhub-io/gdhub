@@ -17,10 +17,8 @@ const withProviders = (Story: () => ReactElement) => (
 	</QueryClientProvider>
 );
 
-const WITHOUT_NOTE: AdminPayoutRowDto = {
-	...MARCUS,
-	payout: MARCUS.payout && { ...MARCUS.payout, note: null },
-};
+// Marcus is the paid row in the fixtures.
+const PAID = MARCUS.payout as NonNullable<AdminPayoutRowDto["payout"]>;
 
 const meta: Meta<typeof PayoutNoteModal> = {
 	title: "Admin/PayoutNoteModal",
@@ -34,7 +32,9 @@ export default meta;
 type Story = StoryObj<typeof PayoutNoteModal>;
 
 /** Add a note: empty, Save waits for text. */
-export const New: Story = { args: { row: WITHOUT_NOTE } };
+export const New: Story = {
+	args: { row: MARCUS, payout: { ...PAID, note: null } },
+};
 
 /** 13.3c (`O33p7k`), Edit note: opens with the note, Save waits for a change. */
-export const Edit: Story = { args: { row: MARCUS } };
+export const Edit: Story = { args: { row: MARCUS, payout: PAID } };

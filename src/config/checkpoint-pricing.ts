@@ -49,3 +49,26 @@ export const formatCheckpointMoney = (minor: number) => {
 		maximumFractionDigits: digits,
 	})}`;
 };
+
+const money = (minor: number, digits: number) =>
+	`${CHECKPOINT_PRICE_CURRENCY}${(
+		minor / CHECKPOINT_MINOR_UNITS
+	).toLocaleString("en-US", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits,
+	})}`;
+
+/** Always to the cent: a fee or a payout is what goes into the bank form, a running cost is fractions of one. */
+export const formatMoneyCents = (minor: number) => money(Math.round(minor), 2);
+
+/** Rounded to the dollar, for a legend too narrow for cents. */
+export const formatMoneyWhole = (minor: number) =>
+	money(Math.round(minor / CHECKPOINT_MINOR_UNITS) * CHECKPOINT_MINOR_UNITS, 0);
+
+/** A sum that can go below zero, with a real minus. */
+export const signedMoney = (minor: number, format = formatCheckpointMoney) =>
+	`${minor < 0 ? "−" : ""}${format(Math.abs(Math.round(minor)))}`;
+
+/** Money going out reads at a glance as a minus; nothing out is written plain. */
+export const moneyOut = (minor: number, format = formatCheckpointMoney) =>
+	signedMoney(-minor, format);

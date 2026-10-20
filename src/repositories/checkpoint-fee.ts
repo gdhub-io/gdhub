@@ -6,21 +6,25 @@ import { prisma } from "@/services/prisma";
 
 /** The first call the curator holds, when an admin put them in (GDHUB-40's audit row). */
 const tookOverAt = async (checkpointId: string, curatorId: string) => {
-	const rows = await prisma.auditLog.findMany({
-		where: { entity: "checkpoint_admin", entityId: checkpointId },
+	const [swap] = await prisma.auditLog.findMany({
+		where: {
+			entity: "checkpoint_admin",
+			entityId: checkpointId,
+			AND: [
+				{ meta: { path: ["action"], equals: "curatorAssigned" } },
+				{ meta: { path: ["toCuratorId"], equals: curatorId } },
+				// A draft assignment has no session; a swap after the last call has a null one.
+				{ meta: { path: ["fromSession"], gte: 1 } },
+			],
+		},
 		orderBy: { createdAt: "desc" },
+		take: 1,
 		select: { meta: true },
 	});
-	const swap = rows
-		.map((row) => row.meta as Record<string, unknown> | null)
-		.find(
-			(meta) =>
-				meta?.action === "curatorAssigned" &&
-				meta.toCuratorId === curatorId &&
-				typeof meta.fromSession === "number",
-		);
+	const fromSession = (swap?.meta as { fromSession?: unknown } | undefined)
+		?.fromSession;
 
-	return (swap?.fromSession as number | undefined) ?? null;
+	return typeof fromSession === "number" ? fromSession : null;
 };
 
 /**
@@ -32,11 +36,18 @@ export const recordCheckpointFee = async (
 	checkpointId: string,
 	now = new Date(),
 ) => {
-	const [checkpoint, found] = await Promise.all([
-		prisma.projectCheckpoint.findUnique({
-			where: { id: checkpointId },
-			select: { curatorId: true, decidedById: true, decidedAt: true },
-		}),
+	const [{ checkpoint, took }, found] = await Promise.all([
+		prisma.projectCheckpoint
+			.findUnique({
+				where: { id: checkpointId },
+				select: { curatorId: true, decidedById: true, decidedAt: true },
+			})
+			.then(async (checkpoint) => ({
+				checkpoint,
+				took: checkpoint?.curatorId
+					? await tookOverAt(checkpointId, checkpoint.curatorId)
+					: null,
+			})),
 		refundCaseOf(checkpointId),
 	]);
 	if (!checkpoint?.curatorId || !found) return null;
@@ -51,7 +62,7 @@ export const recordCheckpointFee = async (
 			(found.payment.refunds.at(0)?.reason as RefundRowReason | undefined) ??
 			null,
 		sessions: found.refund.sessions,
-		tookOverAt: await tookOverAt(checkpointId, checkpoint.curatorId),
+		tookOverAt: took,
 	});
 	if (!fee) return null;
 

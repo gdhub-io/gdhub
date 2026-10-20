@@ -57,3 +57,15 @@ export const feeFor = (fee: FeeCase) => {
 				: CheckpointFeeReason.Full,
 	};
 };
+
+export type NoFeeReason = "stopped" | "adminVerdict";
+
+/** Why a finished human checkpoint pays its curator nothing. */
+export const noFeeReason = ({
+	decidedById,
+	curatorId,
+}: {
+	decidedById: string | null;
+	curatorId: string | null;
+}): NoFeeReason =>
+	decidedById && decidedById !== curatorId ? "adminVerdict" : "stopped";

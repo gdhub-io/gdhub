@@ -144,9 +144,6 @@ export const writeCallNotes = async (
 			${input.transcript}
 		`,
 	});
-	await recordAiUsage(meter, AI_MODELS.callNotes, {
-		input: usage.inputTokens,
-		output: usage.outputTokens,
-	});
+	await recordAiUsage(meter, AI_MODELS.callNotes, usage);
 	return output ?? null;
 };

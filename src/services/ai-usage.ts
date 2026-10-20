@@ -21,12 +21,12 @@ export type AiMeter = { checkpointId: string; purpose: AiPurpose };
 export const recordAiUsage = async (
 	meter: AiMeter | undefined,
 	model: string,
-	tokens: { input?: number | null; output?: number | null } | undefined,
+	usage: { inputTokens?: number | null; outputTokens?: number | null },
 ) => {
-	if (!meter || !tokens) return;
+	if (!meter) return;
 
-	const inputTokens = tokens.input ?? 0;
-	const outputTokens = tokens.output ?? 0;
+	const inputTokens = usage.inputTokens ?? 0;
+	const outputTokens = usage.outputTokens ?? 0;
 	const cost = aiCostMicros(model, inputTokens, outputTokens);
 	if (cost === null) console.warn(`[ai-usage] no price for model ${model}`);
 

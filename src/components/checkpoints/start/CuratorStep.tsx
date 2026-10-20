@@ -78,7 +78,7 @@ export function CuratorStep() {
 	const { draft, loading } = useCheckpointDraft();
 
 	const update = useUpdateCheckpoint(draft?.id);
-	const curators = useCheckpointCurators();
+	const curators = useCheckpointCurators(draft?.stageName);
 	const [kind, setKind] = useState<CheckpointCuratorKind | null>(null);
 	const [person, setPerson] = useState<string | null>(null);
 	// Undefined until touched: the draft's own answer stands until then.
@@ -244,6 +244,7 @@ export function CuratorStep() {
 							</Typography.Text>
 
 							<CuratorTable
+								stage={draft.stageName}
 								value={chosenPerson}
 								onChange={(userId) => {
 									setPerson(userId);

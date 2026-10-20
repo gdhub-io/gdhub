@@ -2,13 +2,16 @@ import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { monthOf, payoutDueOn } from "@/lib/checkpoint-costs";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
 import {
-	describeFees,
-	feeSelect,
-	maskAccount,
-} from "@/repositories/checkpoint-payouts";
+	monthOf,
+	payoutDueOn,
+	payoutStatus,
+	previousMonth,
+} from "@/lib/checkpoint-costs";
+import { noFeeReason } from "@/lib/checkpoint-fee";
+import { maskAccount } from "@/lib/payout-account";
+import { checkpointNumbers } from "@/repositories/checkpoint-number";
+import { describeFees, feeSelect } from "@/repositories/checkpoint-payouts";
 import { prisma } from "@/services/prisma";
 import type { CuratorEarningsDto } from "@/types/checkpoints";
 
@@ -63,17 +66,19 @@ export const curatorEarnings = async (
 
 	const [described, numbers] = await Promise.all([
 		describeFees(fees),
-		Promise.all(unpaidCheckpoints.map((row) => checkpointNumber(row))),
+		checkpointNumbers(unpaidCheckpoints),
 	]);
 
 	const earned = described.map((row, index) => {
 		const fee = fees[index];
 		const month = monthOf(fee.earnedAt);
-		const status = fee.payout
-			? ("paid" as const)
-			: month >= thisMonth
-				? ("earned" as const)
-				: ("due" as const);
+		const payout = payoutStatus(month, !!fee.payout, now);
+		const status =
+			payout === "paid"
+				? ("paid" as const)
+				: payout === "notDue"
+					? ("earned" as const)
+					: ("due" as const);
 		return {
 			...row,
 			status,
@@ -81,11 +86,11 @@ export const curatorEarnings = async (
 			on: (fee.payout?.paidOn ?? payoutDueOn(month)).toISOString(),
 		};
 	});
-	const none = unpaidCheckpoints.map((row, index) => ({
+	const none = unpaidCheckpoints.map((row) => ({
 		feeId: null,
 		checkpointId: row.id,
 		projectName: row.project.name,
-		number: numbers[index],
+		number: numbers.get(row.id) ?? 1,
 		stageName: row.stageName,
 		closedAt: (row.decidedAt ?? row.updatedAt).toISOString(),
 		paid: 0,
@@ -94,15 +99,12 @@ export const curatorEarnings = async (
 		reason: null,
 		parts: 0,
 		status: "noFee" as const,
-		noFee:
-			row.decidedById && row.decidedById !== curatorId
-				? ("adminVerdict" as const)
-				: ("stopped" as const),
+		noFee: noFeeReason({ decidedById: row.decidedById, curatorId }),
 		on: null,
 	}));
 
 	const dueRows = earned.filter((row) => row.status === "due");
-	const oldestDue = dueRows.at(-1);
+	const dueMonth = monthOf(dueRows.at(-1)?.closedAt ?? previousMonth(now));
 	const sum = (rows: { fee: number }[]) =>
 		rows.reduce((total, row) => total + row.fee, 0);
 
@@ -113,13 +115,11 @@ export const curatorEarnings = async (
 			amount: sum(earned.filter((row) => row.status === "earned")),
 			dueOn: payoutDueOn(thisMonth).toISOString(),
 		},
-		due: oldestDue
-			? {
-					amount: sum(dueRows),
-					month: monthOf(oldestDue.closedAt).toISOString(),
-					dueOn: payoutDueOn(monthOf(oldestDue.closedAt)).toISOString(),
-				}
-			: null,
+		due: {
+			amount: sum(dueRows),
+			month: dueMonth.toISOString(),
+			dueOn: payoutDueOn(dueMonth).toISOString(),
+		},
 		paidTotal: {
 			amount: payouts.reduce((total, payout) => total + payout.amount, 0),
 			count: payouts.length,

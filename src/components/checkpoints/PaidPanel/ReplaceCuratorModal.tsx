@@ -21,6 +21,8 @@ export type ReplaceCuratorModalProps = {
 	unavailable?: string[];
 	/** The price already held; nobody dearer or cheaper can take it over. */
 	price?: number | null;
+	/** The checkpoint's stage: only curators who curate it are listed. */
+	stage?: string | null;
 	open: boolean;
 	onClose: () => void;
 };
@@ -40,13 +42,14 @@ export function ReplaceCuratorModal({
 	currentCuratorId,
 	unavailable,
 	price,
+	stage,
 	open,
 	onClose,
 }: ReplaceCuratorModalProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const update = useUpdateCheckpoint(checkpointId);
-	const curators = useCheckpointCurators();
+	const curators = useCheckpointCurators(stage);
 	const [picked, setPicked] = useState<string>();
 	const [firstCall, setFirstCall] = useState<string | null>(null);
 	const curator = curators.data?.find((row) => row.userId === picked);
@@ -111,6 +114,7 @@ export function ReplaceCuratorModal({
 					exclude={currentCuratorId}
 					unavailable={unavailable}
 					price={price}
+					stage={stage}
 				/>
 
 				{curator && (

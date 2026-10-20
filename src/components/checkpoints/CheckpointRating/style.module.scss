@@ -51,17 +51,16 @@
 
 .field.field {
 	margin: 0;
-
-	:global(.ant-form-item-label > label) {
-		width: 100%;
-	}
 }
 
-.label {
-	display: flex;
-	flex: 1;
-	justify-content: space-between;
-	gap: var(--gd-space-2);
+// antd hangs the count below the field without reserving its line.
+.counted {
+	margin-bottom: calc(var(--gd-font-size-body) * var(--gd-line-height-body));
+}
+
+.optional {
+	margin-inline-start: var(--gd-space-1);
+	color: var(--gd-color-text-tertiary);
 }
 
 .comment {

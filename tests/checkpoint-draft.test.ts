@@ -131,14 +131,20 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		const response = await put({ curatorKind: "Human", curatorId: "u9" });
 
 		expect(response.status).toBe(200);
-		// The level floor the list applies: Experienced or Expert, nobody below.
+		// The level floor the list applies, and only a curator an admin approved.
 		expect(specialityFindFirst).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: {
+				where: expect.objectContaining({
 					userId: "u9",
 					isOpenForMentoring: true,
 					level: { in: ["Experienced", "Expert"] },
-				},
+					user: {
+						expertProfile: expect.objectContaining({
+							curation: true,
+							curatorApprovedAt: { not: null },
+						}),
+					},
+				}),
 			}),
 		);
 		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({

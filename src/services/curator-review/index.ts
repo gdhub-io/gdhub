@@ -118,10 +118,7 @@ export const writePlanAdvice = async (
 			${input.review ? `What the sprints so far showed:\n${input.review}` : ""}
 		`,
 	});
-	await recordAiUsage(meter, AI_MODELS.curatorReview, {
-		input: usage.inputTokens,
-		output: usage.outputTokens,
-	});
+	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
 	return output ?? null;
 };
 
@@ -203,10 +200,7 @@ export const writeSprintReview = async (
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
 	});
-	await recordAiUsage(meter, AI_MODELS.curatorReview, {
-		input: usage.inputTokens,
-		output: usage.outputTokens,
-	});
+	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
 	if (!output) return null;
 	const { message, ...notes } = output;
 	return { message, notes: notes satisfies CallNotes };

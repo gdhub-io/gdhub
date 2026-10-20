@@ -151,6 +151,16 @@ export const CURATOR_PRICE = {
 export const PLATFORM_SHARE = 0.3;
 /** Fees earned in a month are paid by this day of the next one. */
 export const PAYOUT_DUE_DAY = 15;
+export const PAYOUT_NOTE_MAX = 500;
+
+// Ratings and curator approval (GDHUB-74)
+
+/** Fewer answers than this say too little: no average is shown. */
+export const RATINGS_BEFORE_AVERAGE = 5;
+export const RATING_COMMENT_MAX = 500;
+/** The admin's note when declining or revoking a curator. */
+export const CURATOR_NOTE_MIN = 3;
+export const CURATOR_NOTE_MAX = 500;
 
 // Running cost
 

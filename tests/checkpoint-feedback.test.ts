@@ -1,4 +1,4 @@
-import { CheckpointVerdict } from "@gdhub-io/gdhub-prisma";
+import { CheckpointVerdict, Prisma } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	feedbackFor,
@@ -64,6 +64,12 @@ describe("rating an assessment", () => {
 	});
 
 	it("is final: a second send keeps the first", async () => {
+		vi.mocked(prisma.checkpointFeedback.create).mockRejectedValue(
+			new Prisma.PrismaClientKnownRequestError("unique", {
+				code: "P2002",
+				clientVersion: "test",
+			}),
+		);
 		vi.mocked(prisma.checkpointFeedback.findUnique).mockResolvedValue(saved as never);
 
 		await expect(
@@ -73,7 +79,18 @@ describe("rating an assessment", () => {
 			error: "alreadyRated",
 			feedback: { rating: 4 },
 		});
-		expect(prisma.checkpointFeedback.create).not.toHaveBeenCalled();
+	});
+
+	it("shows the rater what they sent, read with the checkpoint", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
+			...closed,
+			feedback: saved,
+		} as never);
+
+		await expect(feedbackFor("cp1", "buyer")).resolves.toEqual({
+			feedback: { rating: 4, comment: "Fair", createdAt: "2026-10-20T10:00:00.000Z" },
+		});
+		expect(prisma.checkpointFeedback.findUnique).not.toHaveBeenCalled();
 	});
 
 	it("waits for the verdict", async () => {

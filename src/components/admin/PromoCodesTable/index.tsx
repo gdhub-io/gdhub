@@ -8,19 +8,17 @@ import {
 	IconTicket,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import {
-	App,
-	Button,
-	Skeleton,
-	Switch,
-	Table,
-	Tag,
-	Tooltip,
-	Typography,
-} from "antd";
+import { App, Button, Switch, Table, Tag, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import { EmptyState, StatusDot, type StatusTone } from "@/components/ui";
+import {
+	EmptyState,
+	StatusDot,
+	type StatusTone,
+	skeletonColumns,
+	skeletonRows,
+	tableStyles,
+} from "@/components/ui";
 import {
 	CHECKPOINT_MINOR_UNITS,
 	CHECKPOINT_PRICE_CURRENCY,
@@ -46,10 +44,6 @@ const STATUS_TONE: Record<PromoCodeStatus, StatusTone> = {
 	off: "neutral",
 	expired: "neutral",
 };
-
-const SKELETON_ROWS = Array.from({ length: 5 }, (_, index) => ({
-	id: `skeleton-${index}`,
-})) as PromoCodeDto[];
 
 export type PromoCodesTableProps = {
 	codes: PromoCodeDto[] | undefined;
@@ -85,7 +79,6 @@ export function PromoCodesTable({
 		);
 
 	const loading = status === "pending";
-	const skeleton = <Skeleton.Input active size="small" />;
 
 	const columns: ColumnsType<PromoCodeDto> = [
 		{
@@ -132,7 +125,7 @@ export function PromoCodesTable({
 			width: 120,
 			align: "right",
 			render: (_, code) => (
-				<span className={styles.number}>
+				<span className={tableStyles.number}>
 					{code.maxRedemptions === null
 						? code.timesRedeemed
 						: `${code.timesRedeemed} / ${code.maxRedemptions}`}
@@ -149,7 +142,7 @@ export function PromoCodesTable({
 						{dayjs(code.expiresAt).format("ll")}
 					</Typography.Text>
 				) : (
-					<span className={styles.none}>—</span>
+					<span className={tableStyles.none}>—</span>
 				),
 		},
 		{
@@ -165,7 +158,7 @@ export function PromoCodesTable({
 						)}
 					</Tag>
 				) : (
-					<span className={styles.none}>—</span>
+					<span className={tableStyles.none}>—</span>
 				),
 		},
 		{
@@ -257,17 +250,16 @@ export function PromoCodesTable({
 
 	return (
 		<Table<PromoCodeDto>
-			className={styles.table}
+			className={tableStyles.table}
 			rowKey="id"
-			columns={
+			columns={loading ? skeletonColumns(columns) : columns}
+			dataSource={
 				loading
-					? columns.map((column) => ({
-							...column,
-							render: () => (column.key === "action" ? null : skeleton),
-						}))
-					: columns
+					? skeletonRows<PromoCodeDto>(5, "id")
+					: status === "error"
+						? []
+						: codes
 			}
-			dataSource={loading ? SKELETON_ROWS : status === "error" ? [] : codes}
 			pagination={false}
 			scroll={{ x: 1060 }}
 			locale={{ emptyText }}

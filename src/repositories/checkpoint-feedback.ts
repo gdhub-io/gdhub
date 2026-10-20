@@ -8,6 +8,22 @@ import type { CheckpointFeedbackDto } from "@/types/checkpoints";
  * read only by administrators.
  */
 
+export const FEEDBACK_SELECT = {
+	rating: true,
+	comment: true,
+	createdAt: true,
+} satisfies Prisma.CheckpointFeedbackSelect;
+
+export const toDto = (row: {
+	rating: number;
+	comment: string | null;
+	createdAt: Date;
+}): CheckpointFeedbackDto => ({
+	rating: row.rating,
+	comment: row.comment,
+	createdAt: row.createdAt.toISOString(),
+});
+
 /** Who may rate: the payer of the checkpoint's latest payment, else the project's author. */
 export const raterOf = async (checkpointId: string) => {
 	const [payment, checkpoint] = await Promise.all([
@@ -18,7 +34,11 @@ export const raterOf = async (checkpointId: string) => {
 		}),
 		prisma.projectCheckpoint.findUnique({
 			where: { id: checkpointId },
-			select: { verdict: true, project: { select: { authorId: true } } },
+			select: {
+				verdict: true,
+				project: { select: { authorId: true } },
+				feedback: { select: FEEDBACK_SELECT },
+			},
 		}),
 	]);
 	if (!checkpoint) return null;
@@ -26,30 +46,16 @@ export const raterOf = async (checkpointId: string) => {
 	return {
 		raterId: payment ? payment.payerId : checkpoint.project.authorId,
 		verdictSent: !!checkpoint.verdict,
+		feedback: checkpoint.feedback,
 	};
 };
-
-const toDto = (row: {
-	rating: number;
-	comment: string | null;
-	createdAt: Date;
-}): CheckpointFeedbackDto => ({
-	rating: row.rating,
-	comment: row.comment,
-	createdAt: row.createdAt.toISOString(),
-});
 
 /** What the results modal shows the viewer; null for anyone but the rater. */
 export const feedbackFor = async (checkpointId: string, viewerId: string) => {
 	const rater = await raterOf(checkpointId);
 	if (!rater?.verdictSent || rater.raterId !== viewerId) return null;
 
-	const row = await prisma.checkpointFeedback.findUnique({
-		where: { checkpointId },
-		select: { rating: true, comment: true, createdAt: true },
-	});
-
-	return { feedback: row && toDto(row) };
+	return { feedback: rater.feedback && toDto(rater.feedback) };
 };
 
 export const rateCheckpoint = async (
@@ -66,19 +72,7 @@ export const rateCheckpoint = async (
 		return { ok: false as const, error: "noVerdict" as const };
 	}
 
-	// Final once written: a second send finds the first one and changes nothing.
-	const existing = await prisma.checkpointFeedback.findUnique({
-		where: { checkpointId },
-		select: { rating: true, comment: true, createdAt: true },
-	});
-	if (existing) {
-		return {
-			ok: false as const,
-			error: "alreadyRated" as const,
-			feedback: toDto(existing),
-		};
-	}
-
+	// Final once written: the unique checkpoint refuses a second one, and the first is returned.
 	const row = await prisma.checkpointFeedback
 		.create({
 			data: {
@@ -87,9 +81,8 @@ export const rateCheckpoint = async (
 				rating,
 				comment: comment?.trim() || null,
 			},
-			select: { rating: true, comment: true, createdAt: true },
+			select: FEEDBACK_SELECT,
 		})
-		// Another tab sent one a moment earlier: the unique checkpoint refuses this one.
 		.catch((error) => {
 			if (
 				error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -102,7 +95,7 @@ export const rateCheckpoint = async (
 	if (!row) {
 		const first = await prisma.checkpointFeedback.findUnique({
 			where: { checkpointId },
-			select: { rating: true, comment: true, createdAt: true },
+			select: FEEDBACK_SELECT,
 		});
 		return {
 			ok: false as const,

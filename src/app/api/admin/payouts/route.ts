@@ -7,7 +7,6 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { monthOf } from "@/lib/checkpoint-costs";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { listPayouts, markPayoutPaid } from "@/repositories/checkpoint-payouts";
 
@@ -17,21 +16,16 @@ const Month = z
 	.regex(/^\d{4}-\d{2}$/)
 	.transform((value) => new Date(`${value}-01T00:00:00.000Z`));
 
-const QuerySchema = z.object({ month: Month.optional() });
+const QuerySchema = z.object({ month: Month });
 
-/** Frame 13.2: last month unless one is asked for. */
+/** Frame 13.2: one month's payouts. */
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "admin.payouts.view" }),
 	withValidation(QuerySchema, "query"),
 )(async (_req, _ctx, { body }) => {
 	const { month } = body as z.infer<typeof QuerySchema>;
-	const now = new Date();
-	const lastMonth = monthOf(
-		new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)),
-	);
-
-	return json(await listPayouts(month ?? lastMonth, now));
+	return json(await listPayouts(month));
 });
 
 const MarkPaidSchema = z.object({

@@ -10,6 +10,7 @@ import type {
 	ProjectArtifactType,
 	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
+import type { NoFeeReason } from "@/lib/checkpoint-fee";
 import type { AuthorNextStep } from "@/lib/checkpoint-plan";
 import type {
 	RefundReason,
@@ -17,6 +18,7 @@ import type {
 	reasonRefused,
 } from "@/lib/checkpoint-refund";
 import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
+import type { CuratorStatus } from "@/lib/curator-status";
 
 /**
  * What the checkpoint endpoints send to the browser.
@@ -497,7 +499,7 @@ export type AdminCheckpointRowDto = {
 	/** The curator's frozen fee; null while running, for the AI, or when none is owed. */
 	fee: { amount: number; reason: CheckpointFeeReason; parts: number } | null;
 	/** Why a finished human checkpoint pays its curator nothing. */
-	noFee: "stopped" | "adminVerdict" | null;
+	noFee: NoFeeReason | null;
 	/** Minor units, fractional: a call costs cents. */
 	calls: {
 		personMinutes: number;
@@ -632,14 +634,15 @@ export type CuratorEarningsDto = {
 	/** Masked; null when no payout details are given. */
 	account: string | null;
 	earned: { month: string; amount: number; dueOn: string };
-	due: { amount: number; dueOn: string; month: string } | null;
+	/** Amount 0 and the previous month when nothing is due. */
+	due: { amount: number; dueOn: string; month: string };
 	paidTotal: { amount: number; count: number; since: string | null };
 	checkpoints: (Omit<PayoutCheckpointDto, "feeId" | "reason"> & {
 		feeId: string | null;
 		/** Null with "noFee": the curator stopped, or an admin wrote the verdict. */
 		reason: CheckpointFeeReason | null;
 		status: "earned" | "due" | "paid" | "noFee";
-		noFee: "stopped" | "adminVerdict" | null;
+		noFee: NoFeeReason | null;
 		/** When the fee is due by, or was paid on. */
 		on: string | null;
 	})[];
@@ -667,4 +670,32 @@ export type CheckpointFeedbackDto = {
 	rating: number;
 	comment: string | null;
 	createdAt: string;
+};
+
+// Project curation (GDHUB-74)
+
+export type CurationDto = {
+	/** True until the Expert Services Terms are accepted and payout details saved. */
+	locked: boolean;
+	on: boolean;
+	stages: string[];
+	stageOptions: string[];
+	status: CuratorStatus | null;
+	requestedAt: string | null;
+	approvedAt: string | null;
+	/** The admin's note on a decline or a revoke. */
+	note: string | null;
+};
+
+export type AdminCuratorRowDto = {
+	userId: string;
+	name: string | null;
+	image: string | null;
+	/** Their public expert page: /expert/{specialityId}. */
+	specialityId: string | null;
+	level: SkillLevel | null;
+	stages: string[];
+	status: CuratorStatus;
+	requestedAt: string | null;
+	approvedAt: string | null;
 };

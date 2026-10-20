@@ -430,6 +430,7 @@ export function CheckpointOffer({
 					currentCuratorId={detail.curator?.id}
 					unavailable={detail.declinedCuratorIds}
 					price={detail.heldPrice}
+					stage={detail.stageName}
 					open={replacing}
 					onClose={() => setReplacing(false)}
 				/>

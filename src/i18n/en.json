@@ -664,6 +664,7 @@
 			},
 			"tab": {
 				"checkpoints": "Checkpoints",
+				"curators": "Curators",
 				"promoCodes": "Promo codes"
 			},
 			"title": "Checkpoints",
@@ -673,6 +674,40 @@
 				"refundLine": "Calls the curator never joined are refunded",
 				"refundValue": "{parts} of {total} parts · {amount}",
 				"submitWithRefund": "Send verdict and refund {amount}"
+			}
+		},
+		"curators": {
+			"alreadyDecided": "Already decided — reloaded",
+			"approve": "Approve",
+			"approved": "Approved",
+			"column": {
+				"curator": "Curator",
+				"level": "Level",
+				"stages": "Stages",
+				"status": "Status"
+			},
+			"decideFailed": "That did not go through. Try again.",
+			"decline": "Decline",
+			"declineTitle": "Decline {name} as a curator?",
+			"declined": "Declined",
+			"empty": "Nothing waiting for review",
+			"emptyAll": "No curators found",
+			"error": "Couldn't load curators",
+			"filter": {
+				"all": "All curators",
+				"pending": "Waiting for review"
+			},
+			"notePlaceholder": "What is wrong — the curator sees it",
+			"retry": "Try again",
+			"revoke": "Revoke",
+			"revokeTitle": "Revoke {name} as a curator?",
+			"revoked": "Revoked",
+			"search": "Search by name",
+			"since": "since {date}",
+			"status": {
+				"approved": "Approved",
+				"notApproved": "Not approved",
+				"pending": "Waiting for review"
 			}
 		},
 		"payouts": {
@@ -953,6 +988,19 @@
 					"label": "IBAN or account number",
 					"placeholder": "New IBAN or account number"
 				},
+				"curator": {
+					"approved": "Approved · {date}",
+					"askAgain": "Ask again",
+					"locked": "Accept the Expert Services Terms and save your payout details first",
+					"notApproved": "Not approved",
+					"notOffered": "You're not offered to authors until GDHub approves you.",
+					"offered": "Authors are offered you at these stages.",
+					"pending": "Waiting for review · sent {date}",
+					"saveFailed": "Couldn't save project curation. Try again.",
+					"saved": "Project curation saved",
+					"stages": "Stages you curate",
+					"stagesPlaceholder": "Select stages"
+				},
 				"expert-services": "Expert Services",
 				"invoicing": {
 					"company": {
@@ -972,6 +1020,7 @@
 				},
 				"loadFailed": "Your payout details could not be loaded.",
 				"payoutNote": "Paid by bank transfer in USD within 15 days after the month ends. Bank charges on your side are yours.",
+				"projectCuration": "Project curation",
 				"retry": "Try again",
 				"saveFailed": "Couldn't save your payout details. Try again.",
 				"saved": "Payout details saved",
@@ -1490,6 +1539,7 @@
 			"humanName": "A person, on five calls",
 			"humanPrice": "from {currency}{price}",
 			"next": "Next — payment",
+			"noneAtPrice": "Nobody else at this price is taking checkpoints right now.",
 			"noneOpen": "Nobody is taking checkpoints at the moment. The AI curator runs these 28 days, or the draft waits until someone is.",
 			"perCycle": "per cycle",
 			"pickerLabel": "Curators for this stage",
@@ -1583,6 +1633,7 @@
 				"full": "Full fee",
 				"refundReduced": "Reduced by a refund",
 				"replacement": "Took over · {parts} of {total} parts",
+				"stopped": "Stopped — no fee",
 				"stoppedCurator": "You stopped — no fee"
 			}
 		},
@@ -1732,6 +1783,7 @@
 			"replaceNote": "The 28 days will wait for whoever you pick. Nothing is charged again.",
 			"replaceNoteFirstCall": "The 28 days will wait for whoever you pick, from the first call you book with them. Nothing is charged again.",
 			"replaceOk": "Hand it to them",
+			"replaceSamePrice": "Only experts at the price you reserved are listed.",
 			"replaceTitle": "Replace the curator",
 			"reservedSub": "Charged when the curator accepts.",
 			"reservedTitle": "Payment reserved",

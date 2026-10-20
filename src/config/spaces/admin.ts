@@ -29,6 +29,8 @@ export const adminSpace = defineSpace({
 		// Curator payouts: bank details and money out. The owner alone by default;
 		// anyone else is granted it by hand in the role matrix.
 		payouts: ["view", "manage"],
+		// Who may curate checkpoints: approving a person lets authors pay them.
+		curators: ["view", "manage"],
 		audit_logs: ["view"],
 		// Who accepted which legal text. Read-only: acceptances are never edited.
 		legal: ["view"],
@@ -40,8 +42,13 @@ export const adminSpace = defineSpace({
 		[SpaceRole.Admin]: {
 			"admin.payouts.view": false,
 			"admin.payouts.manage": false,
+			"admin.curators.view": false,
+			"admin.curators.manage": false,
 		},
-		[SpaceRole.Member]: { "admin.payouts.view": false },
+		[SpaceRole.Member]: {
+			"admin.payouts.view": false,
+			"admin.curators.view": false,
+		},
 	},
 	inheritRoleFrom: { space: "hub", atLeast: SpaceRole.Admin },
 });

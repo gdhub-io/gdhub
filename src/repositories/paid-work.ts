@@ -4,8 +4,7 @@ import {
 	type RequestMeta,
 	resolveLegal,
 } from "@/lib/legal/accept";
-import { normalisePayoutAccount } from "@/lib/payout-account";
-import { maskAccount } from "@/repositories/checkpoint-payouts";
+import { maskAccount, normalisePayoutAccount } from "@/lib/payout-account";
 import {
 	latestAcceptance,
 	needsAcceptance,
@@ -56,16 +55,12 @@ export const savePaidWork = async (
 	meta: RequestMeta,
 	now = new Date(),
 ) => {
-	const [profile, terms, user] = await Promise.all([
+	const [profile, terms] = await Promise.all([
 		prisma.expertProfile.findUnique({
 			where: { userId },
 			select: { payoutHolder: true, payoutAccount: true, invoicing: true },
 		}),
 		latestAcceptance(userId, "ExpertServicesTerms"),
-		prisma.user.findUnique({
-			where: { id: userId },
-			select: { id: true, email: true },
-		}),
 	]);
 
 	const account = input.account
@@ -84,12 +79,12 @@ export const savePaidWork = async (
 		: [];
 
 	const holder = input.holder.trim();
-	const accountChanged =
-		!!profile?.payoutAccount && account !== profile.payoutAccount;
-	const changed =
-		holder !== profile?.payoutHolder ||
-		account !== profile?.payoutAccount ||
-		input.invoicing !== profile?.invoicing;
+	const diff = {
+		holder: holder !== profile?.payoutHolder,
+		account: account !== profile?.payoutAccount,
+		invoicing: input.invoicing !== profile?.invoicing,
+	};
+	const changed = diff.holder || diff.account || diff.invoicing;
 	const details = {
 		payoutHolder: holder,
 		payoutAccount: account,
@@ -115,11 +110,7 @@ export const savePaidWork = async (
 							entityId: userId,
 							action: AuditAction.UPDATE,
 							// That they changed, never what to: the values are personal.
-							meta: {
-								holder: holder !== profile?.payoutHolder,
-								account: account !== profile?.payoutAccount,
-								invoicing: input.invoicing !== profile?.invoicing,
-							},
+							meta: diff,
 						},
 					}),
 				]
@@ -127,7 +118,14 @@ export const savePaidWork = async (
 	]);
 
 	// Against a hijacked account: the owner hears that the money now goes elsewhere.
-	if (accountChanged && user) {
+	const user =
+		diff.account && profile?.payoutAccount
+			? await prisma.user.findUnique({
+					where: { id: userId },
+					select: { id: true, email: true },
+				})
+			: null;
+	if (user) {
 		await notify(user, `paid-work-account-${userId}-${now.getTime()}`, {
 			title: "Your payout account was changed",
 			message: `Payouts now go to ${maskAccount(account)}. If you did not change it, tell us at once.`,

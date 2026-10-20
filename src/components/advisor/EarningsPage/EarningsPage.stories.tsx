@@ -136,8 +136,8 @@ type Story = StoryObj<typeof EarningsPage>;
 /** 13.4: Earned, Due, Paid and No fee rows; three payouts. */
 export const Data: Story = { args: { data: DATA, status: "success" } };
 
-/** 13.4: past twelve rows, Load more appears under the table. */
-export const LoadMore: Story = {
+/** 13.4: past twelve rows the table pages. */
+export const Paged: Story = {
 	args: {
 		data: {
 			...DATA,
@@ -173,7 +173,7 @@ export const Empty: Story = {
 		data: {
 			...DATA,
 			earned: { ...DATA.earned, amount: 0 },
-			due: null,
+			due: { ...DATA.due, amount: 0 },
 			paidTotal: { amount: 0, count: 0, since: null },
 			checkpoints: [],
 			payouts: [],

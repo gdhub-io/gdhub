@@ -1,35 +1,30 @@
+import { AuditAction, PayableType, Prisma } from "@gdhub-io/gdhub-prisma";
 import {
-	AuditAction,
-	PayableType,
-	PaymentStatus,
-	Prisma,
-} from "@gdhub-io/gdhub-prisma";
-import { CHECKPOINT_CURRENCY } from "@/config/checkpoint";
+	CHECKPOINT_CURRENCY,
+	RATINGS_BEFORE_AVERAGE,
+} from "@/config/checkpoint";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
-import { monthOf, payoutDueOn } from "@/lib/checkpoint-costs";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
+import {
+	monthOf,
+	nextMonth,
+	payoutDueOn,
+	payoutStatus,
+} from "@/lib/checkpoint-costs";
+import { hasPayoutDetails, maskAccount } from "@/lib/payout-account";
+import { checkpointNumbers } from "@/repositories/checkpoint-number";
+import { CAPTURED, refundedTotal } from "@/repositories/checkpoint-refund";
 import { appUrl, notify } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import type {
 	AdminPayoutRowDto,
 	AdminPayoutsDto,
 	PayoutCheckpointDto,
-	PayoutStatus,
 } from "@/types/checkpoints";
 
 /**
  * Curator payouts (Expert Services Terms §5): what each curator earned in a
  * month, the bank transfer an admin marks paid, and the curator's own view.
  */
-
-const CAPTURED: PaymentStatus[] = [
-	PaymentStatus.COMPLETED,
-	PaymentStatus.PARTIALLY_REFUNDED,
-	PaymentStatus.REFUNDED,
-];
-
-const nextMonth = (month: Date) =>
-	new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 1));
 
 const monthLabel = (month: Date) =>
 	month.toLocaleString("en-US", {
@@ -38,37 +33,16 @@ const monthLabel = (month: Date) =>
 		timeZone: "UTC",
 	});
 
-/** First 4 and last 4: enough to recognise an account, never enough to use it. */
-export const maskAccount = (account: string) => {
-	const plain = account.replace(/\s+/g, "");
-	return plain.length > 8
-		? `${plain.slice(0, 4)} •••• ${plain.slice(-4)}`
-		: "••••";
-};
-
-/** Fewer than this many answers say too little: no average is shown. */
-const MIN_RATINGS = 5;
-
 export const averageRating = (ratings: number[]) => ({
 	count: ratings.length,
 	average:
-		ratings.length >= MIN_RATINGS
+		ratings.length >= RATINGS_BEFORE_AVERAGE
 			? Math.round(
 					(ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) *
 						10,
 				) / 10
 			: null,
 });
-
-export const payoutStatus = (
-	month: Date,
-	paid: boolean,
-	now: Date,
-): PayoutStatus => {
-	if (paid) return "paid";
-	if (monthOf(now) <= month) return "notDue";
-	return now > payoutDueOn(month) ? "late" : "due";
-};
 
 export const feeSelect = {
 	id: true,
@@ -110,14 +84,10 @@ export const describeFees = async (
 				refunds: { select: { amount: true } },
 			},
 		}),
-		Promise.all(
-			fees.map((fee) =>
-				fee.checkpoint ? checkpointNumber(fee.checkpoint) : 0,
-			),
-		),
+		checkpointNumbers(fees.flatMap((fee) => fee.checkpoint ?? [])),
 	]);
 
-	return fees.map((fee, index) => {
+	return fees.map((fee) => {
 		const payment = payments.find(
 			(one) => one.payableId === fee.checkpoint?.id,
 		);
@@ -125,12 +95,11 @@ export const describeFees = async (
 			feeId: fee.id,
 			checkpointId: fee.checkpoint?.id ?? null,
 			projectName: fee.checkpoint?.project.name ?? null,
-			number: numbers[index],
+			number: fee.checkpoint ? (numbers.get(fee.checkpoint.id) ?? 0) : 0,
 			stageName: fee.checkpoint?.stageName ?? null,
 			closedAt: fee.earnedAt.toISOString(),
 			paid: payment?.amount ?? 0,
-			refunded:
-				payment?.refunds.reduce((sum, refund) => sum + refund.amount, 0) ?? 0,
+			refunded: payment ? refundedTotal(payment.refunds) : 0,
 			fee: fee.amount,
 			reason: fee.reason,
 			parts: fee.parts,
@@ -201,14 +170,13 @@ export const listPayouts = async (
 		const payout = payouts.find((one) => one.curatorId === curatorId);
 		const profile = profiles.find((one) => one.userId === curatorId);
 		const curator = curators.find((one) => one.id === curatorId);
-		const details =
-			profile?.payoutHolder && profile.payoutAccount && profile.invoicing
-				? {
-						holder: profile.payoutHolder,
-						account: maskAccount(profile.payoutAccount),
-						invoicing: profile.invoicing,
-					}
-				: null;
+		const details = hasPayoutDetails(profile)
+			? {
+					holder: profile.payoutHolder,
+					account: maskAccount(profile.payoutAccount),
+					invoicing: profile.invoicing,
+				}
+			: null;
 
 		return {
 			curatorId,
@@ -278,8 +246,8 @@ export type MarkPaidInput = {
 	detailsSeenAt: Date;
 };
 
-const alreadyPaid = async (curatorId: string, month: Date) => {
-	const payout = await prisma.curatorPayout.findUnique({
+const findPayout = (curatorId: string, month: Date) =>
+	prisma.curatorPayout.findUnique({
 		where: { curatorId_month: { curatorId, month } },
 		select: {
 			paidOn: true,
@@ -287,16 +255,16 @@ const alreadyPaid = async (curatorId: string, month: Date) => {
 			paidBy: { select: { name: true } },
 		},
 	});
-	return {
-		ok: false as const,
-		error: "alreadyPaid" as const,
-		paid: payout && {
-			paidOn: payout.paidOn.toISOString(),
-			reference: payout.reference,
-			paidBy: payout.paidBy.name,
-		},
-	};
-};
+
+const alreadyPaid = (payout: Awaited<ReturnType<typeof findPayout>>) => ({
+	ok: false as const,
+	error: "alreadyPaid" as const,
+	paid: payout && {
+		paidOn: payout.paidOn.toISOString(),
+		reference: payout.reference,
+		paidBy: payout.paidBy.name,
+	},
+});
 
 class FeesTaken extends Error {}
 
@@ -327,13 +295,13 @@ export const markPayoutPaid = async (
 			where: { id: curatorId },
 			select: { id: true, email: true },
 		}),
-		prisma.curatorPayout.count({ where: { curatorId, month } }),
+		findPayout(curatorId, month),
 	]);
-	if (existing) return alreadyPaid(curatorId, month);
+	if (existing) return alreadyPaid(existing);
 	if (!curator || !fees.length) {
 		return { ok: false as const, error: "nothingToPay" as const };
 	}
-	if (!profile?.payoutHolder || !profile.payoutAccount || !profile.invoicing) {
+	if (!hasPayoutDetails(profile)) {
 		return { ok: false as const, error: "noDetails" as const };
 	}
 	if (
@@ -379,7 +347,7 @@ export const markPayoutPaid = async (
 			(error instanceof Prisma.PrismaClientKnownRequestError &&
 				error.code === "P2002")
 		) {
-			return alreadyPaid(curatorId, month);
+			return alreadyPaid(await findPayout(curatorId, month));
 		}
 		throw error;
 	}
