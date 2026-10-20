@@ -5,7 +5,7 @@ Frames: [`docs/design/platform-design.pen`](../platform-design.pen), row **Legal
 Intent: [docs/intent/GDHUB-54-legal-layer.md](../../intent/GDHUB-54-legal-layer.md).
 
 **Built in the checkpoint branch, not drawn here** (`feature/gdhub-31-add-checkpoints-to-projects`):
-the pay step (Purchase Terms + Withdrawal Waiver, two checkboxes) and the curator's
+the pay step (two checkboxes: the Purchase Terms, and the request to start at once under their 5.2) and the curator's
 take-on (the Advisor Agreement, in `LegalAcceptModal`, only when the version in effect is not accepted). Both use `ClickwrapField`.
 
 ---
@@ -133,7 +133,7 @@ signed (event) certificates.
 
 **/legal.** Index (Platform: Terms, Privacy, Cookie, Refund, Legal Details; Features:
 Project Requirements, Advisor Agreement, Checkpoint Purchase Terms,
-Withdrawal Waiver, Course Agreement), document page, archived page.
+Course Agreement), document page, archived page.
 
 **Admin.** One page "Legal acceptances", no tabs: search by user, document, version
 (disabled until a document is chosen), context, date range, *Export CSV* (→ `AuditLog`).

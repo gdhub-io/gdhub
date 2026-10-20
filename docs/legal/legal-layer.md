@@ -35,7 +35,7 @@ drawn in [legal-layer-flow.d2](legal-layer-flow.d2) ([svg](legal-layer-flow.svg)
 | Kind | Documents | Agreed when | Linked to |
 |---|---|---|---|
 | Platform offer | Terms of Use, Project Requirements, Advisor Agreement; later Course and Event terms | sign-up, project creation, switching the Advisor space on | — |
-| Checkpoint | Purchase Terms and the Withdrawal Waiver (author) | the author presses Pay | `checkpointId` |
+| Checkpoint | Purchase Terms, with the request to start at once (author) | the author presses Pay | `checkpointId` |
 | Project agreement | Co-Development Agreement (shares, IP, exit) | a member is given a share for the first time, or their share changes | `projectId` |
 | Certificate | event, course, checkpoint | issued, not accepted | its source |
 
@@ -169,7 +169,7 @@ moment; the others are archived and still readable at `/legal/<slug>/v<n>`.
 | Sign-up | Terms of Use |
 | Create project | Project Requirements |
 | Advisor space switch-on | Advisor Agreement; the space does not open without it |
-| Checkpoint pay step | Purchase Terms + Withdrawal Waiver, two checkboxes sent with Pay; the checkout refuses without them |
+| Checkpoint pay step | two checkboxes sent with Pay: the Purchase Terms, and the request to start at once (their 5.2, Art. 8(8) of Directive 2011/83/EU), recorded as `params.startNow` on the terms' acceptance; the checkout refuses without either |
 | Curator taking on a checkpoint | Advisor Agreement, when the version in effect is not accepted; asked in a modal only when the server says it is missing |
 | Advisor space → Settings → Paid work | payout details; the Advisor Agreement only when the version in effect is not accepted |
 | `/legal`, `/legal/<slug>`, `/legal/<slug>/v<n>` | every published document, its current text and its archived versions; old URLs 308 here |

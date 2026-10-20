@@ -120,6 +120,7 @@ export const useCheckpointCheckout = (id?: string) =>
 			(
 				await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`, {
 					legal,
+					startNow: true,
 				})
 			).data,
 	});

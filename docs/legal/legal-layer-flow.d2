@@ -44,7 +44,7 @@ gates: "Actions that refuse without their acceptance" {
   project: "POST /api/user/project\nProjectRequirements · ProjectCreate\n+ CoDevelopmentAgreement as author, params {title, shares}"
   advisor: "PUT /api/user/profile/mentorship (switch on)\nAdvisorAgreement · AdvisorJoin\nspace adapter: no acceptance → 404"
   paid: "PUT /api/advisor/settings · Paid work\nAdvisorAgreement, only if the version in effect is not accepted · PaidWork\n+ payout details complete\nelse paid consultations and curation stay off"
-  pay: "POST /api/checkpoint/[id]/pay (branch 31)\nCheckpointPurchaseTerms + WithdrawalWaiver\ncontext CheckpointPurchase · checkpointId\n(replaces acceptedTermsAt / acceptedTermsTemplateId)"
+  pay: "POST /api/checkpoint/[id]/pay (branch 31)\nCheckpointPurchaseTerms + startNow (params)\ncontext CheckpointPurchase · checkpointId\n(replaces acceptedTermsAt / acceptedTermsTemplateId)"
   curator: "Curator accepts a checkpoint (branch 31)\nAdvisorAgreement, only if the version in effect is not accepted\ncontext CuratorAccept · checkpointId\n→ then the held payment is captured"
 }
 gates.signup -> accept: "{TermsOfUse, v}"

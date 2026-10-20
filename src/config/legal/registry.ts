@@ -90,7 +90,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"f74d4c0c1f4f32cd5f3ae6c090b293a785afd9d67b3c3e6fab0709c0bf4b84e3",
+					"62f751ed7d56878aed05e1ad22a86f804f86cc016080ababbd49c1bc2dc8ba6a",
 			},
 		],
 	},
@@ -138,23 +138,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"a4dddc7f5ccb09b3da08563929940ae93bdec5941d05122e655c60d6a8bb6c01",
-			},
-		],
-	},
-	WithdrawalWaiver: {
-		slug: "withdrawal-waiver",
-		title: "Withdrawal Waiver",
-		issuer: "hub",
-		group: "features",
-		versions: [
-			{
-				version: 1,
-				effectiveAt: "2026-10-17",
-				entity: "vsi",
-				materialChange: false,
-				checksum:
-					"7b9942b9ae94effde5fdbba249e3239457bdf091672a22ec28b811312bfe59ae",
+					"de7ce0e789941eb1adc6594013b9c5d715644f44a0af92207fb5b51472d92c9a",
 			},
 		],
 	},

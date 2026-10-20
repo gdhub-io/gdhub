@@ -47,7 +47,11 @@ import {
  * Pay is also where the purchase terms are accepted: the tick travels with the
  * click, and the acceptance is recorded with the checkout it opened.
  */
-const PaySchema = z.object({ legal: LegalAcceptancesSchema });
+const PaySchema = z.object({
+	legal: LegalAcceptancesSchema,
+	// The express request to start inside the withdrawal period (Purchase Terms 5.2).
+	startNow: z.literal(true),
+});
 
 export const POST = pipe(
 	withAuth({ mode: "user" }),
@@ -77,12 +81,13 @@ export const POST = pipe(
 	try {
 		acceptances = resolveLegal(
 			(body as z.infer<typeof PaySchema>).legal,
-			["CheckpointPurchaseTerms", "WithdrawalWaiver"],
+			["CheckpointPurchaseTerms"],
 			{
 				userId: payer.id,
 				context: "CheckpointPurchase",
 				checkpointId: id,
 				meta: requestMeta(req),
+				params: { startNow: "requested" },
 			},
 		);
 	} catch (error) {

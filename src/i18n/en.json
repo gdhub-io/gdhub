@@ -2945,6 +2945,10 @@
 			},
 			"expert-services": {
 				"error": "You need to accept the Expert Services Terms to get paid"
+			},
+			"startNow": {
+				"label": "I ask for the checkpoint to start before the 14-day withdrawal period ends. If I withdraw, I pay for what was already provided, and once it is fully provided I can no longer withdraw (<doc>Purchase Terms, 5.2</doc>)",
+				"required": "Ask for the checkpoint to start now to pay"
 			}
 		}
 	},

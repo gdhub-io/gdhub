@@ -124,7 +124,7 @@ export function PaymentStep() {
 		try {
 			setStale(null);
 			const { url } = await checkout.mutateAsync(
-				legalAcceptances(["CheckpointPurchaseTerms", "WithdrawalWaiver"]),
+				legalAcceptances(["CheckpointPurchaseTerms"]),
 			);
 			window.location.href = url;
 		} catch (error) {
@@ -396,16 +396,16 @@ export function PaymentStep() {
 							)}
 						/>
 						<ClickwrapField
-							code="WithdrawalWaiver"
-							stale={stale === "WithdrawalWaiver"}
+							code="CheckpointPurchaseTerms"
+							name="startNow"
 							requiredMessage={t(
-								"legal.clickwrap.WithdrawalWaiver.required",
-								"Agree that the checkpoint starts before the withdrawal period ends to pay",
+								"legal.clickwrap.startNow.required",
+								"Ask for the checkpoint to start now to pay",
 							)}
 							label={(doc) => (
 								<T
-									keyName="legal.clickwrap.WithdrawalWaiver.label"
-									defaultValue="I want the checkpoint to start now and understand I lose the right of withdrawal for what is already provided (<doc>Withdrawal Waiver</doc>)"
+									keyName="legal.clickwrap.startNow.label"
+									defaultValue="I ask for the checkpoint to start before the 14-day withdrawal period ends. If I withdraw, I pay for what was already provided, and once it is fully provided I can no longer withdraw (<doc>Purchase Terms, 5.2</doc>)"
 									params={{ doc }}
 								/>
 							)}

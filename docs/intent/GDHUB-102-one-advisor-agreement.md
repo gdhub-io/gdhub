@@ -38,3 +38,14 @@ list, not in the text. Fewer documents is the rule of the legal layer.
 
 - Consultation pricing and booking — not built; the agreement describes them as before.
 - Questions for the Lithuanian lawyer stay in [open-points.md](../legal/open-points.md).
+
+## GDHUB-103 — the Withdrawal Waiver folded into the Purchase Terms
+
+Same reasoning, on the buyer's side: the Waiver was a separate text for one statement made
+at checkout. Article 8(8) of Directive 2011/83/EU asks for an **express request** — a box
+of its own — not a document of its own. The request and both acknowledgements are now 5.2
+of the Checkpoint Purchase Terms; the second box stays at checkout and is recorded as
+`params.startNow` on the terms' acceptance, so the evidence is one row with the version,
+checksum, time and address. The Waiver cited Article 16(m), which is digital content; a
+Checkpoint is a service, so 5.2 cites 8(8), 14(3) and 16(a), checked against the
+consolidated directive (2026-09-27) through EUR-Lex.
