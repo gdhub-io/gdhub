@@ -15,21 +15,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { purchaseParams } from "@/config/analytics-events";
-import {
-	CHECKPOINT_AI_PRICE,
-	CHECKPOINT_DAYS,
-	CURATOR_ANSWER_DAYS,
-} from "@/config/checkpoint";
-import { curatorPrice } from "@/config/checkpoint-pricing";
+import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
-import {
-	useCancelCheckpoint,
-	useCheckpointCurators,
-} from "@/hooks/checkpoints";
+import { useCancelCheckpoint } from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { MoneyNotice } from "../MoneyNotice";
+import { useCheckpointPrice } from "../start/useDraft";
 import { ReplaceCuratorModal } from "./ReplaceCuratorModal";
 import styles from "./style.module.scss";
 
@@ -109,16 +102,11 @@ export function PaidPanel({
 			checkpoint.status === CheckpointStatus.Review);
 
 	const reserved = checkpoint.status === CheckpointStatus.AwaitingCurator;
-	// The wizard's own query key, so it is usually in the cache already.
-	const curators = useCheckpointCurators(checkpoint.stageName);
-	// A person's level, which sets the list price, is on the curator list.
-	const level = reserved
-		? curators.data?.find((row) => row.userId === checkpoint.curator?.id)?.level
-		: null;
-	const levelKnown = !reserved || !curators.isPending;
+	const listed = useCheckpointPrice(checkpoint);
+	const level = listed.curator?.level;
+	const listPrice = listed.price;
 	useEffect(() => {
-		if (!(onTheWay || reserved) || !levelKnown) return;
-		const listPrice = level ? curatorPrice(level) : CHECKPOINT_AI_PRICE;
+		if (!(onTheWay || reserved) || listed.isPending) return;
 		trackCheckpoint(
 			"checkpoint_paid",
 			{
@@ -129,7 +117,7 @@ export function PaidPanel({
 			},
 			{ once: `paid:${checkpoint.id}`, persist: true },
 		);
-	}, [onTheWay, reserved, levelKnown, level, checkpoint]);
+	}, [onTheWay, reserved, listed.isPending, level, listPrice, checkpoint]);
 
 	const [waitingSince, setWaitingSince] = useState(() => Date.now());
 	const [gaveUp, setGaveUp] = useState(false);

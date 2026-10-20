@@ -32,10 +32,7 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
-import {
-	checkpointNumber,
-	previousCuratorKind,
-} from "@/repositories/checkpoint-number";
+import { checkpointLineage } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
@@ -505,19 +502,19 @@ export const getCheckpoint = async (id: string) => {
 	if (!row) return null;
 
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
-	const [held, number, builds, previousKind] = await Promise.all([
+	const [held, lineage, builds] = await Promise.all([
 		row.paymentId ? heldAmount(id) : null,
-		// A draft has no number yet and no sprints to file builds in.
-		row.status === CheckpointStatus.Draft ? undefined : checkpointNumber(row),
+		checkpointLineage(row),
+		// A draft has no sprints to file builds in.
 		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
-		previousCuratorKind(row),
 	]);
 
 	return {
 		...toCheckpointDetail(row),
-		number,
+		// A draft has no number yet.
+		number: row.status === CheckpointStatus.Draft ? undefined : lineage.number,
 		builds,
-		previousCuratorKind: previousKind,
+		previousCuratorKind: lineage.previousCuratorKind,
 		heldPrice: held === null ? null : toWholePrice(held),
 	};
 };
@@ -584,18 +581,17 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const { reports, pulses, project, curator, ...checkpoint } =
 		withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
-	const [failed, number, previousKind] = await Promise.all([
+	const [failed, lineage] = await Promise.all([
 		paymentFailed(checkpoint),
-		checkpointNumber(checkpoint),
-		previousCuratorKind(checkpoint),
+		checkpointLineage(checkpoint),
 	]);
 
 	return {
 		...checkpoint,
 		paymentFailed: failed,
 		// A draft's is the number it takes once paid; analytics reads it with the kind before it.
-		number,
-		previousCuratorKind: previousKind,
+		number: lineage.number,
+		previousCuratorKind: lineage.previousCuratorKind,
 		curator: withCraft(curator),
 		sprints: buildSprints(startedAt),
 		// Only a running checkpoint asks anything of its author on a given day.

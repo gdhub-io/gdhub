@@ -9,7 +9,7 @@ import {
 	useVerdictCopy,
 	VerdictChip,
 } from "@/components/checkpoints/VerdictChip";
-import { curatorKindParam } from "@/config/analytics-events";
+import { curatorKindParam, nextPlannedParams } from "@/config/analytics-events";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -202,11 +202,10 @@ export function AfterVerdict({
 								disabled={locked}
 								icon={locked ? <IconLock size={16} /> : undefined}
 								onClick={() => {
-									trackCheckpoint("checkpoint_next_planned", {
-										next_number: number + 1,
-										verdict,
-										previous_curator_kind: curatorKindParam(curatorKind),
-									});
+									trackCheckpoint(
+										"checkpoint_next_planned",
+										nextPlannedParams({ number, verdict, curatorKind }),
+									);
 									router.push(entryHubHref(project.slug));
 								}}
 							>

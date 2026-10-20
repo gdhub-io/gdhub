@@ -134,9 +134,11 @@ export function ProjectClient({ projectSlug }: ProjectClientProps) {
 					artifactId: row.artifact?.id ?? null,
 				})),
 			});
-			const carried = prefill.data?.carriedFrom
-				? new Set(prefill.data.items.map((item) => item.text.trim()))
-				: new Set<string>();
+			const carried = new Set(
+				prefill.data?.carriedFrom
+					? prefill.data.items.map((item) => item.text.trim())
+					: [],
+			);
 			trackCheckpoint("checkpoint_project_done", {
 				project: projectId === createdId ? "new" : "existing",
 				lines: filled.length,

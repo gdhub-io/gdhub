@@ -138,11 +138,15 @@ describe("trackCheckpoint", () => {
 		const callback = vi.fn();
 		trackCheckpoint("checkpoint_payment_cancelled", {}, { callback });
 
-		expect(dataLayer[0]).toMatchObject({ eventTimeout: 1000 });
 		expect(callback).not.toHaveBeenCalled();
 		(dataLayer[0].eventCallback as () => void)();
 		vi.advanceTimersByTime(2000);
 		expect(callback).toHaveBeenCalledTimes(1);
+
+		const unanswered = vi.fn();
+		trackCheckpoint("checkpoint_payment_cancelled", {}, { callback: unanswered });
+		vi.advanceTimersByTime(1000);
+		expect(unanswered).toHaveBeenCalledTimes(1);
 	});
 });
 

@@ -1,9 +1,9 @@
 import { CheckpointCuratorKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { describe, expect, it, vi } from "vitest";
 import {
+	checkpointLineage,
 	checkpointNumber,
 	checkpointNumbers,
-	previousCuratorKind,
 } from "@/repositories/checkpoint-number";
 import { prisma } from "@/services/prisma";
 
@@ -22,7 +22,7 @@ type Where = {
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { count: vi.fn(), findMany: vi.fn(), findFirst: vi.fn() },
+		projectCheckpoint: { count: vi.fn(), findMany: vi.fn() },
 	},
 }));
 
@@ -53,18 +53,42 @@ vi.mocked(prisma.projectCheckpoint.count).mockImplementation((async ({
 }: {
 	where: Where;
 }) => rows.filter((row) => matches(row, where)).length) as never);
+const kinds: Record<string, CheckpointCuratorKind> = {
+	a1: CheckpointCuratorKind.Human,
+	a2: CheckpointCuratorKind.AI,
+	a3: CheckpointCuratorKind.AI,
+	a4: CheckpointCuratorKind.AI,
+	a5: CheckpointCuratorKind.AI,
+	a6: CheckpointCuratorKind.Human,
+	b1: CheckpointCuratorKind.Human,
+	b2: CheckpointCuratorKind.Human,
+};
+
 vi.mocked(prisma.projectCheckpoint.findMany).mockImplementation((async ({
 	where,
+	orderBy,
 }: {
 	where: Where;
-}) => rows.filter((row) => matches(row, where))) as never);
+	orderBy?: { createdAt: "desc" };
+}) => {
+	const found = rows
+		.filter((row) => matches(row, where))
+		.map((row) => ({ ...row, curatorKind: kinds[row.id] }));
+	return orderBy
+		? found.sort((x, y) => y.createdAt.getTime() - x.createdAt.getTime())
+		: found;
+}) as never);
 
 describe("numbering checkpoints in one query", () => {
 	it("gives every row the number checkpointNumber gives it", async () => {
 		const batch = await checkpointNumbers(rows);
 		const single = await Promise.all(rows.map((row) => checkpointNumber(row)));
+		const lineage = await Promise.all(rows.map((row) => checkpointLineage(row)));
+		vi.mocked(prisma.projectCheckpoint.findMany).mockClear();
+		await checkpointNumbers(rows);
 
 		expect(rows.map((row) => batch.get(row.id))).toEqual(single);
+		expect(lineage.map((one) => one.number)).toEqual(single);
 		expect(single).toEqual([1, 2, 2, 2, 2, 4, 1, 2]);
 		expect(prisma.projectCheckpoint.findMany).toHaveBeenCalledTimes(1);
 	});
@@ -77,30 +101,10 @@ describe("numbering checkpoints in one query", () => {
 });
 
 describe("the curator kind of the checkpoint before", () => {
-	const kinds: Record<string, CheckpointCuratorKind> = {
-		a1: CheckpointCuratorKind.Human,
-		a2: CheckpointCuratorKind.AI,
-		a3: CheckpointCuratorKind.AI,
-		a4: CheckpointCuratorKind.AI,
-		a5: CheckpointCuratorKind.AI,
-		a6: CheckpointCuratorKind.Human,
-		b1: CheckpointCuratorKind.Human,
-		b2: CheckpointCuratorKind.Human,
-	};
 
-	vi.mocked(prisma.projectCheckpoint.findFirst).mockImplementation((async ({
-		where,
-	}: {
-		where: Where;
-	}) => {
-		const latest = rows
-			.filter((row) => matches(row, where))
-			.sort((x, y) => y.createdAt.getTime() - x.createdAt.getTime())[0];
-		return latest ? { curatorKind: kinds[latest.id] } : null;
-	}) as never);
-
-	const of = (id: string) =>
-		previousCuratorKind(rows.find((row) => row.id === id) as Row);
+	const of = async (id: string) =>
+		(await checkpointLineage(rows.find((row) => row.id === id) as Row))
+			.previousCuratorKind;
 
 	it("is null for the project's first", async () => {
 		expect(await of("a1")).toBeNull();

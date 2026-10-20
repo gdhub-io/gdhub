@@ -23,7 +23,7 @@ import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceC
 import { PURCHASE_STEPS } from "@/components/checkpoints/start/PurchaseLayout";
 import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
-import { curatorKindParam } from "@/config/analytics-events";
+import { nextPlannedParams } from "@/config/analytics-events";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_DAYS,
@@ -106,13 +106,12 @@ export function CheckpointOffer({
 
 	if (!draft) {
 		const plan = () => {
-			trackCheckpoint("checkpoint_next_planned", {
-				next_number: previous ? previous.number + 1 : 1,
-				verdict: previous?.checkpoint.verdict ?? null,
-				previous_curator_kind: previous
-					? curatorKindParam(previous.checkpoint.curatorKind)
-					: null,
-			});
+			trackCheckpoint(
+				"checkpoint_next_planned",
+				nextPlannedParams(
+					previous && { ...previous.checkpoint, number: previous.number },
+				),
+			);
 			router.push(entryHubHref(project.slug));
 		};
 

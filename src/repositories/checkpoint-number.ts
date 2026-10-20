@@ -25,24 +25,30 @@ export const checkpointNumber = async (row: {
 	})) + 1;
 
 /**
- * The curator kind of the checkpoint before this one that ran — the same rows
- * `checkpointNumber` counts — or null for the project's first.
+ * `checkpointNumber` and the curator kind of the checkpoint before this one that
+ * ran (null for the project's first), from one query.
  */
-export const previousCuratorKind = async (row: {
+export const checkpointLineage = async (row: {
 	projectId: string;
 	createdAt: Date;
-}): Promise<CheckpointCuratorKind | null> =>
-	(
-		await prisma.projectCheckpoint.findFirst({
-			where: {
-				projectId: row.projectId,
-				createdAt: { lt: row.createdAt },
-				status: { notIn: UNNUMBERED },
-			},
-			orderBy: { createdAt: "desc" },
-			select: { curatorKind: true },
-		})
-	)?.curatorKind ?? null;
+}): Promise<{
+	number: number;
+	previousCuratorKind: CheckpointCuratorKind | null;
+}> => {
+	const before = await prisma.projectCheckpoint.findMany({
+		where: {
+			projectId: row.projectId,
+			createdAt: { lt: row.createdAt },
+			status: { notIn: UNNUMBERED },
+		},
+		orderBy: { createdAt: "desc" },
+		select: { curatorKind: true },
+	});
+	return {
+		number: before.length + 1,
+		previousCuratorKind: before[0]?.curatorKind ?? null,
+	};
+};
 
 /** `checkpointNumber` for many rows in one query, keyed by id. */
 export const checkpointNumbers = async (

@@ -115,11 +115,6 @@ export const curatorKindParam = (
 	kind: CheckpointCuratorKind,
 ): CuratorKindParam => (kind === CheckpointCuratorKind.AI ? "ai" : "human");
 
-export const curatorLevelParam = (
-	level: CuratorLevel | null | undefined,
-): CuratorLevelParam | null =>
-	level ? (level.toLowerCase() as CuratorLevelParam) : null;
-
 export const curatorSwitch = (
 	previous: CuratorKindParam | null,
 	current: CuratorKindParam,
@@ -150,8 +145,26 @@ export const purchaseParams = (
 		project_id: checkpoint.projectId,
 		checkpoint_number: checkpoint.number ?? 1,
 		curator_kind: kind,
-		curator_level: kind === "ai" ? null : curatorLevelParam(level),
+		curator_level:
+			kind === "human" && level
+				? (level.toLowerCase() as CuratorLevelParam)
+				: null,
 		previous_curator_kind: previous,
 		curator_switch: curatorSwitch(previous, kind),
 	};
 };
+
+/** "Plan the next checkpoint" from the one that came before it, or none. */
+export const nextPlannedParams = (
+	previous: {
+		number: number;
+		verdict: CheckpointVerdict | null;
+		curatorKind: CheckpointCuratorKind;
+	} | null,
+): CheckpointEvents["checkpoint_next_planned"] => ({
+	next_number: previous ? previous.number + 1 : 1,
+	verdict: previous?.verdict ?? null,
+	previous_curator_kind: previous
+		? curatorKindParam(previous.curatorKind)
+		: null,
+});

@@ -288,9 +288,10 @@ export const useCheckpointChat = (id?: string) =>
 	});
 
 /** Approved curators at an expert level; with a stage, only those who curate it. */
-export const useCheckpointCurators = (stage?: string | null) =>
+export const useCheckpointCurators = (stage?: string | null, enabled = true) =>
 	useQuery({
 		queryKey: ["checkpoint-curators", stage ?? null],
+		enabled,
 		queryFn: async () =>
 			(
 				await axios.get<CheckpointCurator[]>("/api/checkpoint/curators", {

@@ -124,6 +124,11 @@ export function NowStep() {
 	const remark = warned?.goal === text.trim() ? warned.remark : null;
 	const tooLarge = team.members.length > CHECKPOINT_MAX_TEAM;
 
+	const proceed = (afterWarning: boolean) => {
+		trackCheckpoint("checkpoint_goal_set", { warned: afterWarning });
+		go("curator");
+	};
+
 	const next = async () => {
 		try {
 			await update.mutateAsync({ goal: text.trim() });
@@ -132,10 +137,7 @@ export function NowStep() {
 			return;
 		}
 
-		if (remark) {
-			trackCheckpoint("checkpoint_goal_set", { warned: true });
-			return go("curator");
-		}
+		if (remark) return proceed(true);
 
 		// Advice, never a gate: a check that does not come back lets them through —
 		// except a 429, which asks them to wait rather than skip it.
@@ -149,8 +151,7 @@ export function NowStep() {
 			setWarned({ goal: text.trim(), remark: result });
 			return;
 		}
-		trackCheckpoint("checkpoint_goal_set", { warned: false });
-		go("curator");
+		proceed(false);
 	};
 
 	const stat = (label: string, value: string) => (

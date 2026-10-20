@@ -34,65 +34,55 @@ export const gtmEventTrigger = (event: string, data: Record<string, any>) => {
 const fired = new Set<string>();
 const ONCE_PREFIX = "gd.cp.once.";
 
-const firedBefore = (key: string, persist: boolean) => {
-	if (fired.has(key)) return true;
-	if (!persist) return false;
-	try {
-		return window.localStorage.getItem(ONCE_PREFIX + key) !== null;
-	} catch {
-		return false;
-	}
-};
-
-const markFired = (key: string, persist: boolean) => {
+/** True the first time a key is claimed; with `persist`, the first time in this browser. */
+const claimOnce = (key: string, persist: boolean) => {
+	if (fired.has(key)) return false;
 	fired.add(key);
-	if (!persist) return;
+	if (!persist) return true;
 	try {
+		if (window.localStorage.getItem(ONCE_PREFIX + key) !== null) return false;
 		window.localStorage.setItem(ONCE_PREFIX + key, "1");
 	} catch {}
+	return true;
 };
 
 /**
  * Pushes a checkpoint funnel event flat — `{ event, ...params }` — so GTM reads
  * each param by name. `once` keeps a moment from firing again on a re-render or
  * refetch; with `persist` it survives a reload too. `callback` runs when GTM has
- * taken the event (at most a second later), or straight away when GTM is absent.
+ * taken the event (at most a second later), or straight away when nothing is pushed.
  */
 export const trackCheckpoint = <E extends CheckpointEvent>(
 	event: E,
 	params: CheckpointEvents[E],
-	opts: { once?: string; persist?: boolean; callback?: () => void } = {},
+	{
+		once,
+		persist = false,
+		callback,
+	}: { once?: string; persist?: boolean; callback?: () => void } = {},
 ) => {
-	const { once, persist = false, callback } = opts;
-	if (typeof window === "undefined") {
-		callback?.();
-		return;
-	}
-	if (once && firedBefore(once, persist)) {
-		callback?.();
-		return;
-	}
-	if (once) markFired(once, persist);
-
-	if (!Array.isArray(window.dataLayer)) {
+	const push =
+		typeof window !== "undefined" &&
+		(!once || claimOnce(once, persist)) &&
+		Array.isArray(window.dataLayer);
+	if (!push) {
 		callback?.();
 		return;
 	}
 
+	if (!callback) {
+		window.dataLayer.push({ event, ...params });
+		return;
+	}
 	let done = false;
 	const finish = () => {
 		if (done) return;
 		done = true;
-		callback?.();
+		callback();
 	};
-
-	window.dataLayer.push({
-		event,
-		...params,
-		...(callback ? { eventCallback: finish, eventTimeout: 1000 } : {}),
-	});
+	window.dataLayer.push({ event, ...params, eventCallback: finish });
 	// A dataLayer with no GTM behind it (blocked, or consent not given) never calls back.
-	if (callback) window.setTimeout(finish, 1100);
+	window.setTimeout(finish, 1000);
 };
 
 const SIGNIN_FLAG = "gd.cp.signin";

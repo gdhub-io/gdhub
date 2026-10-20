@@ -52,10 +52,11 @@ export const useCheckpointDraft = () => {
  * list arrives a human checkpoint reads at the AI price, the minimum.
  */
 export const useCheckpointPrice = (checkpoint?: CheckpointDto | null) => {
-	const curators = useCheckpointCurators(checkpoint?.stageName);
+	const human = checkpoint?.curatorKind === CheckpointCuratorKind.Human;
+	const curators = useCheckpointCurators(checkpoint?.stageName, human);
 
-	if (checkpoint?.curatorKind !== CheckpointCuratorKind.Human)
-		return { price: CHECKPOINT_AI_PRICE, curator: undefined };
+	if (!human)
+		return { price: CHECKPOINT_AI_PRICE, curator: undefined, isPending: false };
 
 	const curator = curators.data?.find(
 		(row) => row.userId === checkpoint.curator?.id,
@@ -64,5 +65,6 @@ export const useCheckpointPrice = (checkpoint?: CheckpointDto | null) => {
 	return {
 		price: curator ? curatorPrice(curator.level) : CHECKPOINT_AI_PRICE,
 		curator,
+		isPending: curators.isPending,
 	};
 };
