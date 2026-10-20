@@ -1,5 +1,6 @@
 import {
 	AuditAction,
+	type CheckpointCuratorKind,
 	CheckpointStatus,
 	PayableType,
 	PaymentStatus,
@@ -220,20 +221,27 @@ const ADMIN_PAGE_SIZE = 20;
  */
 export const listAdminCheckpoints = async ({
 	status,
+	stage,
+	curatorKind,
 	query,
 	page = 1,
 }: {
 	status?: CheckpointStatus;
+	stage?: string;
+	curatorKind?: CheckpointCuratorKind;
 	query?: string;
 	page?: number;
 }): Promise<AdminCheckpointsPageDto> => {
+	const paid = { status: { not: CheckpointStatus.Draft } };
 	const where: Prisma.ProjectCheckpointWhereInput = {
-		status: status ?? { not: CheckpointStatus.Draft },
+		...(status ? { status } : paid),
+		...(stage && { stageName: stage }),
+		...(curatorKind && { curatorKind }),
 		...(query && {
 			project: { name: { contains: query, mode: "insensitive" } },
 		}),
 	};
-	const [total, rows] = await Promise.all([
+	const [total, rows, stages] = await Promise.all([
 		prisma.projectCheckpoint.count({ where }),
 		prisma.projectCheckpoint.findMany({
 			where,
@@ -246,9 +254,17 @@ export const listAdminCheckpoints = async ({
 				createdAt: true,
 				stageName: true,
 				status: true,
+				startedAt: true,
+				dueAt: true,
 				curator: { select: { name: true } },
 				project: { select: { name: true } },
 			},
+		}),
+		prisma.projectCheckpoint.findMany({
+			where: paid,
+			distinct: ["stageName"],
+			orderBy: { stageName: "asc" },
+			select: { stageName: true },
 		}),
 	]);
 
@@ -273,6 +289,7 @@ export const listAdminCheckpoints = async ({
 	return {
 		total,
 		pageSize: ADMIN_PAGE_SIZE,
+		stages: stages.map((row) => row.stageName),
 		items: rows.map((row, index) => {
 			// A declined checkpoint paid again has two rows; the newest speaks for it.
 			const payment = payments.find((one) => one.payableId === row.id);
@@ -285,6 +302,8 @@ export const listAdminCheckpoints = async ({
 				status: row.status,
 				curatorName: row.curator?.name ?? null,
 				projectName: row.project.name,
+				startedAt: row.startedAt?.toISOString() ?? null,
+				dueAt: row.dueAt?.toISOString() ?? null,
 				paid: payment?.amount ?? null,
 				refunded: refunded || null,
 				refundReason:

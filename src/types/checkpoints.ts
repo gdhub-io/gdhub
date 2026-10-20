@@ -479,6 +479,9 @@ export type AdminCheckpointRowDto = {
 	/** Null for the AI curator. */
 	curatorName: string | null;
 	projectName: string;
+	/** Day 1 and day 28; null until the curator accepts. */
+	startedAt: string | null;
+	dueAt: string | null;
 	/** Null for one started without a payment — seeded, or given by an admin. */
 	paid: number | null;
 	refunded: number | null;
@@ -490,6 +493,8 @@ export type AdminCheckpointsPageDto = {
 	total: number;
 	pageSize: number;
 	items: AdminCheckpointRowDto[];
+	/** Every stage a paid checkpoint has run on, for the stage filter. */
+	stages: string[];
 };
 
 /** What a refund would return (frames 11.6–11.6d); the same sum for every reason. */

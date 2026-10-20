@@ -16,6 +16,8 @@ const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 	status: CheckpointStatus.Active,
 	curatorName: "Marta Ilves",
 	projectName: "Hollow Tide",
+	startedAt: "2026-10-12T00:00:00.000Z",
+	dueAt: "2026-11-08T00:00:00.000Z",
 	paid: 45000,
 	refunded: null,
 	refundReason: null,
@@ -26,6 +28,7 @@ const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 const PAGE: AdminCheckpointsPageDto = {
 	total: 4,
 	pageSize: 20,
+	stages: ["Ideation", "Prototyping"],
 	items: [
 		row({}),
 		row({
@@ -73,7 +76,10 @@ export const List: Story = {
 /** Frame 11.5b (`r9tCT7`): plain text, no button. */
 export const Empty: Story = {
 	decorators: [
-		withQueries({ key: KEY, data: { ...PAGE, total: 0, items: [] } }),
+		withQueries({
+			key: KEY,
+			data: { ...PAGE, total: 0, items: [], stages: [] },
+		}),
 	],
 };
 

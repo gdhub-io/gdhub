@@ -8,7 +8,10 @@ import {
 } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import axios from "axios";
-import type { CheckpointStatus } from "@/config/prisma-enums";
+import type {
+	CheckpointCuratorKind,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
 import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
 import type {
 	AdminCheckpointsPageDto,
@@ -23,6 +26,8 @@ const URL = "/api/admin/checkpoints";
 
 export type AdminCheckpointsFilter = {
 	status?: CheckpointStatus;
+	stage?: string;
+	curatorKind?: CheckpointCuratorKind;
 	q?: string;
 	page: number;
 };

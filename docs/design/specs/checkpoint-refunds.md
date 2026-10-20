@@ -175,3 +175,11 @@ and it is not destructive to data. Ship a story per state for `RefundCheckpointM
 - The promo code is not stored on the payment, so the list and the dialog show what was
   paid without the code's name ("$360", not "$360 · code SPRING20").
 - Older refunds read by their reason: "Cancelled before day 1", "Curator declined", "In Stripe".
+- The row action is a ⋮ menu with **Refund payment** (written in full, no ellipsis), as on the
+  Users table.
+- A **Dates** column after Curator: day 1 – day 28 ("9 Oct – 5 Nov 2026"), `—` before the
+  curator accepts.
+- The toolbar has two more filters beside the status: **stage** (the stages paid checkpoints
+  have run on, from the server) and **curator** (a person / AI curator); search stays on the
+  project name.
+- A checkpoint started without a payment (seeded) shows `—` under Paid and has no menu.

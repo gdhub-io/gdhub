@@ -440,10 +440,12 @@
 	"admin": {
 		"checkpoints": {
 			"list": {
+				"actions": "Действия",
 				"aiCurator": "Куратор ИИ",
 				"checkpoint": "Контрольная точка {number} · этап {stage}",
 				"column": {
 					"curator": "Куратор",
+					"dates": "Дата",
 					"paid": "Платное",
 					"project": "Проект",
 					"refunded": "Возвращено",
@@ -457,9 +459,12 @@
 					"title": "Не удалось загрузить чекпоинты"
 				},
 				"filter": {
-					"all": "Все"
+					"all": "Все",
+					"curator": "Все кураторы",
+					"human": "Человек",
+					"stage": "Все этапы"
 				},
-				"refund": "Возврат…",
+				"refundPayment": "Возврат оплаты",
 				"search": "Поиск по проекту",
 				"status": {
 					"active": "Активные",

@@ -440,10 +440,12 @@
 	"admin": {
 		"checkpoints": {
 			"list": {
+				"actions": "Actions",
 				"aiCurator": "AI curator",
 				"checkpoint": "Checkpoint {number} · {stage}",
 				"column": {
 					"curator": "Curator",
+					"dates": "Dates",
 					"paid": "Paid",
 					"project": "Project",
 					"refunded": "Refunded",
@@ -457,9 +459,12 @@
 					"title": "Couldn't load checkpoints"
 				},
 				"filter": {
-					"all": "All"
+					"all": "All",
+					"curator": "All curators",
+					"human": "A person",
+					"stage": "All stages"
 				},
-				"refund": "Refund…",
+				"refundPayment": "Refund payment",
 				"search": "Search by project",
 				"status": {
 					"active": "Active",

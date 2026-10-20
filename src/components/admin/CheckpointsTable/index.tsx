@@ -1,23 +1,31 @@
 "use client";
 
-import { IconAlertCircle, IconRefresh } from "@tabler/icons-react";
+import {
+	IconAlertCircle,
+	IconDotsVertical,
+	IconReceiptRefund,
+	IconRefresh,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
+	Dropdown,
 	Flex,
 	Input,
 	Segmented,
+	Select,
 	Skeleton,
 	Table,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import dayjs from "dayjs";
 import { useState } from "react";
 import styles from "@/components/admin/PromoCodesTable/style.module.scss";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
 import { EmptyState, StatusDot, type StatusTone } from "@/components/ui";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
-import { CheckpointStatus } from "@/config/prisma-enums";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import {
 	type AdminCheckpointsFilter,
 	useAdminCheckpoints,
@@ -94,6 +102,22 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 				row.curatorName ?? t("admin.checkpoints.list.aiCurator", "AI curator"),
 		},
 		{
+			title: t("admin.checkpoints.list.column.dates", "Dates"),
+			key: "dates",
+			width: 180,
+			render: (_, row) =>
+				row.startedAt && row.dueAt ? (
+					<span className={own.dates}>
+						{t("checkpoints.paid.dates", "{from} – {to}", {
+							from: dayjs.utc(row.startedAt).format("D MMM"),
+							to: dayjs.utc(row.dueAt).format("D MMM YYYY"),
+						})}
+					</span>
+				) : (
+					<span className={styles.none}>—</span>
+				),
+		},
+		{
 			title: t("admin.checkpoints.list.column.status", "Status"),
 			key: "status",
 			width: 160,
@@ -139,19 +163,41 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		},
 		{
 			key: "action",
-			width: 120,
+			width: 56,
 			align: "right",
 			render: (_, row) =>
 				canManage &&
 				row.canRefund && (
-					<Button type="text" onClick={() => setRefunding(row)}>
-						{t("admin.checkpoints.list.refund", "Refund…")}
-					</Button>
+					<Dropdown
+						trigger={["click"]}
+						placement="bottomRight"
+						menu={{
+							items: [
+								{
+									key: "refund",
+									icon: <IconReceiptRefund size={14} />,
+									label: t(
+										"admin.checkpoints.list.refundPayment",
+										"Refund payment",
+									),
+									onClick: () => setRefunding(row),
+								},
+							],
+						}}
+					>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconDotsVertical size={16} />}
+							aria-label={t("admin.checkpoints.list.actions", "Actions")}
+						/>
+					</Dropdown>
 				),
 		},
 	];
 
-	const filtered = !!filter.status || !!filter.q;
+	const filtered =
+		!!filter.status || !!filter.stage || !!filter.curatorKind || !!filter.q;
 	const emptyText = failed ? (
 		<EmptyState
 			size="compact"
@@ -203,6 +249,43 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						})),
 					]}
 				/>
+				<Flex gap={8} wrap>
+					<Select
+						allowClear
+						className={own.filter}
+						placeholder={t("admin.checkpoints.list.filter.stage", "All stages")}
+						value={filter.stage}
+						options={list.data?.stages.map((stage) => ({
+							value: stage,
+							label: stage,
+						}))}
+						onChange={(stage) =>
+							setFilter((current) => ({ ...current, stage, page: 1 }))
+						}
+					/>
+					<Select
+						allowClear
+						className={own.filter}
+						placeholder={t(
+							"admin.checkpoints.list.filter.curator",
+							"All curators",
+						)}
+						value={filter.curatorKind}
+						options={[
+							{
+								value: CheckpointCuratorKind.Human,
+								label: t("admin.checkpoints.list.filter.human", "A person"),
+							},
+							{
+								value: CheckpointCuratorKind.AI,
+								label: t("admin.checkpoints.list.aiCurator", "AI curator"),
+							},
+						]}
+						onChange={(curatorKind) =>
+							setFilter((current) => ({ ...current, curatorKind, page: 1 }))
+						}
+					/>
+				</Flex>
 				<Input.Search
 					allowClear
 					className={own.search}
@@ -249,7 +332,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 							}
 						: false
 				}
-				scroll={{ x: 1260 }}
+				scroll={{ x: 1440 }}
 				locale={{ emptyText }}
 			/>
 
