@@ -291,7 +291,31 @@ abroad.
   found. The risk is softer: Uzbekistan sits on the "circumvention risk" lists, and banks
   that serve Russian money transfer systems draw questions (the July 2026 Zolotaya Korona
   operator switch). Choose a bank with no Russian business and Western shareholders, and
-  ask Freedom Pay which bank it settles through.
+  ask Freedom Pay which bank it settles through — curator payouts leave from that bank.
+  The central bank marks banks with foreign capital but does not publish their
+  shareholders; of 34 banks (March 2026), 10 are private, 7 of them with foreign capital.
+  **Confirm** each stake in the bank's latest disclosure:
+
+  | Bank | Owner | Note |
+  |---|---|---|
+  | **TBC Bank Uzbekistan** | TBC Bank Group (Georgia, London-listed); EBRD and IFC up to 20% each (2021 deal) | the most Western compliance culture; strong digital bank |
+  | **Ipoteka Bank** | OTP Group (Hungary), privatised in 2023 — the IMF calls it a foreign subsidiary | an EU banking group; systemically important |
+  | **KDB Bank Uzbekistan** | Korea Development Bank (state, Korea) | conservative, corporate clients |
+  | **Hamkorbank** | marked by the central bank as foreign capital; international financial institutions among past shareholders | **confirm** today's shareholders |
+  | Ziraat Bank Uzbekistan | Ziraat (state, Türkiye) | neutral |
+  | Tenge Bank | Halyk group (Kazakhstan) | neutral |
+  | Asakabank, SQB | the state; EBRD taking 15% of Asakabank in 2026, IFC / EBRD convertible loans in SQB | neutral |
+  | **Saderat** | Bank Saderat (Iran) | **avoid** — Iran is under US sanctions |
+
+  Also avoid any bank with Russian shareholders or serving Russian transfer systems
+  (Zolotaya Korona, Unistream). First choice: **TBC Uzbekistan** or **Ipoteka (OTP)**.
+
+  ([CBU: head offices of banks](https://cbu.uz/ru/credit-organizations/banks/head-offices/),
+  [CBU: systemically important banks](https://cbu.uz/ru/financial-stability/banks-list/list/),
+  [IFC: TBC UZ stakes](https://pressroom.ifc.org/all/pages/PressDetail.aspx?ID=26653),
+  [US State Dept: Investment Climate 2026](https://www.state.gov/reports/2026-investment-climate-statements/uzbekistan),
+  [IMF country report 2025](https://www.imf.org/-/media/files/publications/cr/2025/english/1uzbea2025003-print-pdf.pdf),
+  [UzDaily: EBRD and Asakabank](https://www.uzdaily.uz/en/ebrd-may-acquire-15-stake-in-asakabank/))
 - **EU obligations stay:** an EU representative under GDPR Art. 27, non-Union OSS for the
   AI curator's VAT, EU consumer law.
 - **Paddle** does not list Uzbekistan as unsupported, but **does** list Belarus for
