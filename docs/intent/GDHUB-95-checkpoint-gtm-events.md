@@ -11,6 +11,14 @@ reached (hub, about you, project, goal, curator, payment opened, paid, cancelled
 and, once running, a review or call opened, the plan saved, a pulse answered, the verdict
 seen, the next checkpoint planned, the move to the next stage.
 
+Two questions must be answerable from the data: **do authors buy another checkpoint after one
+they paid for**, and **do they switch between the AI curator and an expert** (either way). So
+every purchase event (curator chosen, payment opened, paid) carries the project's checkpoint
+number (`checkpoint_number`: 1 for the first), the curator kind and level of this one, and the
+kind of the previous paid checkpoint (`previous_curator_kind`: `ai` / `human` / none), plus
+`curator_switch` (`same` / `ai_to_human` / `human_to_ai` / `first`). "Next checkpoint planned"
+carries the same pair.
+
 ## Why now
 
 Checkpoints are about to go on sale. Without milestones in the data layer nobody can tell a
@@ -36,6 +44,8 @@ calls, pulses and the verdict at all.
 
 - [ ] Walking the funnel on localhost with the GTM preview on shows each milestone once, in
       order, with its params.
+- [ ] A second checkpoint on the same project reports `checkpoint_number: 2` and the right
+      `curator_switch`, so repeat purchases and AI ↔ expert switches can be counted in GA4.
 - [ ] No event carries a name, email, free text or a person-linked amount.
 - [ ] The events doc and the container import file exist and match the typed map.
 
