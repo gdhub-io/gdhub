@@ -1,0 +1,65 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-101 — refunds computed and issued by the platform" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+list: "Admin · Checkpoints — 11.5 `G3Dyx`" {
+  get: "GET /api/admin/checkpoints?status&q&page\nwithAuth admin\npaid checkpoints only (a captured or held Payment)"
+  row: "row: project · Checkpoint N · stage · curator (or AI) · status\npaid (Payment.amount, promo code) · refunded (Refund rows)\ncanRefund = status ∈ {Active, Review}\n  ∧ payment COMPLETED ∧ no checkpoint refund yet"
+  get -> row
+}
+
+modal: "Modal — Refund a checkpoint — 11.6 `zkz19`" {
+  quote: "GET /api/admin/checkpoints/[id]/refund\none breakdown per reason, computed on the server"
+  pick: "admin picks a reason" {shape: diamond}
+  confirm: "POST /api/admin/checkpoints/[id]/refund {reason}\nthe amount is recomputed here, never taken from the client"
+  quote -> pick -> confirm
+}
+list.row -> modal.quote: "Refund…"
+
+calc: "refundQuote(checkpoint, reason) — config/checkpoint.ts + lib" {
+  parts: "parts: person 6 (5 calls + verdict) · AI 4 (3 reviews + final review with verdict)\nCHECKPOINT_PARTS in config — the curator's fee (GDHUB-74) reads the same"
+  provided: "provided:\nperson — sessions with curatorJoinedAt + 1 if the verdict was sent\nAI — reviews written + 1 if the verdict was sent"
+  amount: "paid = Payment.amount (minor units, after the promo code)\nkept = floor(paid × provided ÷ parts)   ← rounding favours the author\nrefund = paid − kept"
+  parts -> provided -> amount
+}
+modal.quote -> calc.parts
+
+reasons: "Allowed when" {
+  w: "withdrawal\nnow − paidAt ≤ 14 days (paidAt = completedAt ?? createdAt)\n11.6b: disabled with the date"
+  c: "curatorGone\nperson curator, status Active"
+  v: "noVerdict\nverdict null and now > dueAt + VERDICT_DUE_DAYS (day 31)"
+}
+calc.amount -> reasons
+
+send: "issueCheckpointRefund" {
+  once: "a checkpoint refund already exists?" {shape: diamond}
+  done: "409 alreadyRefunded → 11.6c"
+  stripe: "stripe.refunds.create({ payment_intent, amount },\n  { idempotencyKey: checkpoint-refund-<id> })"
+  fail: "Stripe refused → nothing written\n500 refundFailed → 11.6d"
+  write: "one transaction:\nRefund {amount, reason, providerRefundId}\nPayment → PARTIALLY_REFUNDED / REFUNDED\ncheckpoint → Cancelled (no verdict, no certificate)\nupcoming sessions removed\nAuditLog {actor: admin, checkpoint, reason, amount}"
+  after: "after the transaction:\nchat room closed (closeCheckpointRoom)\nauthor: email + in-app notification"
+  once -> done: yes
+  once -> stripe: no
+  stripe -> fail: error
+  stripe -> write: ok
+  write -> after
+}
+modal.confirm -> send.once
+
+hook: "Stripe webhook charge.refunded (existing)\nupsert Refund by providerRefundId → no second row\nsets PARTIALLY_REFUNDED / REFUNDED" {style.stroke-dash: 3}
+send.stripe -> hook: "later, async"
+
+price: "CHECKPOINT_AI_PRICE 19 → 20 (splits by 4)\n300 / 450 already split by 6" {style.stroke-dash: 3}
+calc.parts -> price
+
+untouched: "Unchanged: cancel before day 1 (full refund / release, checkpoint deleted)\ncurator declined or silent 3 days (hold released)" {style.stroke-dash: 3}
