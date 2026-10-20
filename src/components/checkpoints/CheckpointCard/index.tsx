@@ -24,8 +24,7 @@ export type CheckpointCardProps = {
 
 /**
  * The checkpoint under way — frame `TJ2dF`: what it is and who curates it, the
- * four sprints, the goal, and the outcomes as squares. A draft is `DraftCard`
- * instead: it has no goal to quote and no day to count.
+ * four sprints, the goal, and the outcomes as squares.
  */
 export function CheckpointCard({
 	checkpoint,

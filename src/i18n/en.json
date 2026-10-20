@@ -539,16 +539,7 @@
 				"calls": "Calls",
 				"fee": "Curator's fee · {reason}",
 				"feeOnClose": "Fee on close",
-				"noFee": {
-					"adminVerdict": "Verdict written by an admin — no fee",
-					"stopped": "Stopped — no fee"
-				},
 				"paid": "Paid",
-				"reason": {
-					"full": "full",
-					"refundReduced": "reduced by a refund",
-					"replacement": "took over · {parts} of {total} parts"
-				},
 				"recording": "Recording · {minutes} min",
 				"refunded": "Refunded",
 				"tokens": "Tokens · notes, reviews, advice",
@@ -947,7 +938,6 @@
 				"paidTotal": "Paid in total",
 				"payoutsSince": "{count, plural, one {# payout since {month}} other {# payouts since {month}}}"
 			},
-			"loadMore": "Load more",
 			"noDetails": {
 				"action": "Add payout details",
 				"body": "{amount} is waiting. We pay by bank transfer once the details are in.",
@@ -1005,17 +995,14 @@
 				"expert-services": "Expert Services",
 				"invoicing": {
 					"company": {
-						"label": "Company",
 						"note": "Your company invoices us."
 					},
 					"error": "Choose how you invoice",
 					"label": "How you invoice",
 					"selfBilling": {
-						"label": "Self-billing",
 						"note": "We issue the invoice on your behalf; you accept it."
 					},
 					"selfEmployed": {
-						"label": "Self-employed",
 						"note": "You invoice us from your registered individual activity."
 					}
 				},
@@ -1513,7 +1500,6 @@
 			"title": "Cancel this draft?"
 		},
 		"card": {
-			"awaiting": "Paid. The 28 days start when the curator takes it on.",
 			"goal": "Checkpoint goal",
 			"legendCut": "Cut on day {day} · not counted",
 			"legendReworded": "Reworded on day {day}",
@@ -1568,34 +1554,14 @@
 			"write": "Write the devlog"
 		},
 		"draft": {
-			"add": "Add {pieces}.",
 			"chip": "Draft",
-			"continue": "Continue setup",
-			"discard": "Discard draft",
-			"discardFailed": "The draft could not be discarded",
-			"missing": {
-				"curator": "curator",
-				"goal": "a goal",
-				"startDate": "start date"
-			},
-			"more": "More",
 			"nothingCharged": "Nothing has been charged and no days are counting.",
 			"pageSub": "Prepare · Setup incomplete",
 			"pageTitle": "Checkpoint draft",
-			"pickAnother": "Select another expert for this checkpoint.",
-			"pickAnotherDated": "Select another expert ({dates}).",
-			"readyToPay": "Everything is answered — only the payment is left.",
-			"selectOther": "Select other curator",
 			"title": "Checkpoint"
 		},
 		"empty": {
-			"cta": "Plan my first checkpoint",
-			"description": "28 days, one goal, a curator, and a verdict that opens the next stage.",
-			"title": "Your first checkpoint starts here"
-		},
-		"error": {
-			"retry": "Try again",
-			"title": "Checkpoints could not be loaded"
+			"description": "28 days, one goal, a curator, and a verdict that opens the next stage."
 		},
 		"evidence": {
 			"accepted": "Counted by the curator",
@@ -1797,16 +1763,8 @@
 		},
 		"past": {
 			"column": {
-				"checkpoint": "Checkpoint",
-				"curator": "Curator",
-				"dates": "Dates",
-				"decidedBy": "Decided by",
-				"goal": "Goal",
-				"stage": "Stage",
-				"verdict": "Verdict"
-			},
-			"title": "Past checkpoints",
-			"total": "{count} closed checkpoints"
+				"decidedBy": "Decided by"
+			}
 		},
 		"path": {
 			"bought": "what was bought",
@@ -1873,7 +1831,6 @@
 		"prepare": {
 			"back": "Back",
 			"cancel": "Cancel",
-			"disabled": "One checkpoint at a time. This one ends {date}.",
 			"draftNote": "You can revise this with the curator before the cycle starts.",
 			"failed": "The checkpoint could not be started",
 			"h1": "Review what carried over from the last checkpoint.",
@@ -1885,9 +1842,7 @@
 			"next3": "Next — planning",
 			"noDraft": "There is no draft to continue",
 			"noDraftHint": "Start a checkpoint from the list and the goal card opens here.",
-			"noStage": "The project is not on a workflow stage yet.",
 			"payPending": "Checkout is not open yet",
-			"planFailed": "Could not open the checkpoint plan — try again",
 			"q4": "When do you want to start?",
 			"saved": "Saved as a draft",
 			"step": {
