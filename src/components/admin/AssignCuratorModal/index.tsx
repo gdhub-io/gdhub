@@ -1,7 +1,6 @@
 "use client";
 
 import { IconInfoCircle } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Alert,
@@ -15,13 +14,11 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
-import debounce from "lodash/debounce";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { useAssignCurator } from "@/hooks/admin-checkpoints";
+import { useUserSearch } from "@/hooks/user-search";
 import type { AdminCheckpointRowDto } from "@/types/checkpoints";
-
-type UserOption = { id: string; name?: string | null; email?: string | null };
 
 /**
  * Frames `z20Q3F` (a running checkpoint: replace its curator) and 11.9 (a
@@ -45,23 +42,9 @@ export function AssignCuratorModal({
 			? CheckpointCuratorKind.AI
 			: CheckpointCuratorKind.Human,
 	);
-	const [search, setSearch] = useState("");
 	const assign = useAssignCurator(checkpoint.id);
 
-	const { data: users = [], isFetching } = useQuery({
-		queryKey: ["user-search", search],
-		queryFn: () =>
-			axios
-				.get<UserOption[]>("/api/users/search", {
-					params: { q: search, includeSelf: true },
-				})
-				.then((res) => res.data),
-		enabled: kind === CheckpointCuratorKind.Human,
-	});
-	const onSearch = useMemo(
-		() => debounce((value: string) => setSearch(value), 400),
-		[],
-	);
+	const userSearch = useUserSearch(kind === CheckpointCuratorKind.Human);
 
 	const failures: Record<string, string> = {
 		slotTaken: t(
@@ -151,18 +134,11 @@ export function AssignCuratorModal({
 							rules={[{ required: true }]}
 						>
 							<Select
-								showSearch
-								filterOption={false}
-								loading={isFetching}
-								onSearch={onSearch}
+								{...userSearch}
 								placeholder={t(
 									"admin.checkpoints.assign.search",
 									"Search any user by name or email",
 								)}
-								options={users.map((user) => ({
-									label: user.name || user.email || user.id,
-									value: user.id,
-								}))}
 							/>
 						</Form.Item>
 					)}

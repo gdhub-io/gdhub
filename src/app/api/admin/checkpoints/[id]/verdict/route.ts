@@ -56,7 +56,6 @@ export const GET = pipe(
 		missed: missed && {
 			parts: missed.parts,
 			provided: missed.provided,
-			part: missed.part,
 			refund: missed.refund,
 		},
 	});

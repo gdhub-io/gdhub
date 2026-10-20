@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
+import { CURATOR_ANSWER_DAYS, VERDICT_DUE_DAYS } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 	SpaceRole,
 } from "@/config/prisma-enums";
-import { dayNumberOn, utcStartOfDay } from "@/lib/checkpoint-days";
+import { dayNumberOn, MS_PER_DAY, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
 import {
@@ -15,7 +15,6 @@ import {
 	sprintOfDay,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
-import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { NovuService } from "./novu";
@@ -185,29 +184,31 @@ const checkpointAdmins = () =>
  * each goes out on its one day and the transaction id covers a second run.
  */
 export const remindVerdictsDue = async (now = new Date()) => {
-	const undecided = await prisma.projectCheckpoint.findMany({
-		where: {
-			status: CheckpointStatus.Review,
-			curatorKind: CheckpointCuratorKind.Human,
-			verdict: null,
-			dueAt: { not: null },
-		},
-		select: {
-			id: true,
-			dueAt: true,
-			project: { select: { name: true } },
-			curator: recipient,
-		},
-	});
-
-	const today = utcStartOfDay(now).getTime();
-	const day = 24 * 60 * 60 * 1000;
-	const dueTomorrow = undecided.filter(
-		(row) => row.dueAt && verdictDueBy(row.dueAt).getTime() === today + day,
-	);
-	const lateToday = undecided.filter(
-		(row) => row.dueAt && verdictDueBy(row.dueAt).getTime() === today - day,
-	);
+	// A verdict is due by the day VERDICT_DUE_DAYS after the day of dueAt.
+	const dueOn = (offset: number) => {
+		const gte = new Date(
+			utcStartOfDay(now).getTime() + (offset - VERDICT_DUE_DAYS) * MS_PER_DAY,
+		);
+		return { gte, lt: new Date(gte.getTime() + MS_PER_DAY) };
+	};
+	const undecided = (offset: number) =>
+		prisma.projectCheckpoint.findMany({
+			where: {
+				status: CheckpointStatus.Review,
+				curatorKind: CheckpointCuratorKind.Human,
+				verdict: null,
+				dueAt: dueOn(offset),
+			},
+			select: {
+				id: true,
+				project: { select: { name: true } },
+				curator: recipient,
+			},
+		});
+	const [dueTomorrow, lateToday] = await Promise.all([
+		undecided(1),
+		undecided(-1),
+	]);
 	const admins = lateToday.length ? await checkpointAdmins() : [];
 
 	await Promise.all([

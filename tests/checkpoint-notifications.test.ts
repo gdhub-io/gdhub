@@ -165,28 +165,29 @@ describe("notifyAuthorOfAnswer", () => {
 });
 
 describe("remindVerdictsDue", () => {
-	// dueAt is day 28; the verdict is due by the end of day 31.
-	const undecided = (id: string, dueAt: string) => ({
+	const undecided = (id: string) => ({
 		id,
-		dueAt: new Date(dueAt),
 		project: { name: `Project ${id}` },
 		curator: person(`curator-${id}`),
 	});
 
 	it("chases the curator the day before, and the admins the day after", async () => {
-		checkpointFindMany.mockResolvedValue([
-			// Due by 23 Oct: reminded on the 22nd.
-			undecided("soon", "2026-10-20T00:00:00Z"),
-			// Due by 21 Oct: overdue on the 22nd.
-			undecided("late", "2026-10-18T00:00:00Z"),
-			// Due by 20 Oct: was told yesterday, not again.
-			undecided("older", "2026-10-17T00:00:00Z"),
-		]);
+		checkpointFindMany
+			.mockResolvedValueOnce([undecided("soon")])
+			.mockResolvedValueOnce([undecided("late")]);
 		userFindMany.mockResolvedValue([person("admin1"), person("admin2")]);
 
 		const result = await remindVerdictsDue(new Date("2026-10-22T09:00:00Z"));
 
 		expect(result).toEqual({ dueTomorrow: 1, overdue: 1 });
+		// dueAt is day 28; the verdict is due by the end of day 31.
+		const windows = checkpointFindMany.mock.calls.map(([arg]) => arg.where.dueAt);
+		expect(windows).toEqual([
+			// Due by 23 Oct: reminded on the 22nd.
+			{ gte: new Date("2026-10-20T00:00:00Z"), lt: new Date("2026-10-21T00:00:00Z") },
+			// Due by 21 Oct: overdue on the 22nd, and on no other day.
+			{ gte: new Date("2026-10-18T00:00:00Z"), lt: new Date("2026-10-19T00:00:00Z") },
+		]);
 		const ids = send.mock.calls.map(([arg]) => arg.transactionId).sort();
 		expect(ids).toEqual([
 			"cp-verdict-due-soon",

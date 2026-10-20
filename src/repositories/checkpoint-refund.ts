@@ -9,6 +9,11 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
 import {
+	adminVerdictOpen,
+	CURATOR_SWAPPABLE_STATUSES,
+	draftComplete,
+} from "@/lib/checkpoint-admin";
+import {
 	isRunning,
 	REFUND_REASONS,
 	type RefundCase,
@@ -17,7 +22,7 @@ import {
 	reasonRefused,
 	refundAmount,
 } from "@/lib/checkpoint-refund";
-import { verdictDueBy, verdictOverdue } from "@/lib/checkpoint-verdict-window";
+import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
@@ -96,6 +101,57 @@ export const refundCaseOf = async (checkpointId: string) => {
 	return { refund, payment };
 };
 
+/**
+ * Asks Stripe for part of a checkpoint's payment back; null when it refuses.
+ * Keyed to the checkpoint, so a retry or a double click is the same refund.
+ */
+export const sendCheckpointRefund = (
+	checkpointId: string,
+	sessionId: string,
+	amount: number,
+) =>
+	refundCheckout(sessionId, {
+		amount,
+		idempotencyKey: `checkpoint-refund-${checkpointId}`,
+	}).catch((error) => {
+		console.error("[checkpoint-refund] Stripe refused", checkpointId, error);
+		return null;
+	});
+
+/**
+ * What a Stripe refund leaves behind: its own row and the payment's status.
+ * The webhook may have written the row first — the Stripe id is the key, so
+ * there is one either way.
+ */
+export const refundWrites = (
+	db: Pick<typeof prisma, "refund" | "payment">,
+	payment: { id: string; amount: number },
+	stripeRefund: { id: string; amount: number; currency: string },
+	reason: RefundRowReason,
+) =>
+	[
+		db.refund.upsert({
+			where: { providerRefundId: stripeRefund.id },
+			create: {
+				paymentId: payment.id,
+				amount: stripeRefund.amount,
+				currency: stripeRefund.currency.toUpperCase(),
+				reason,
+				providerRefundId: stripeRefund.id,
+			},
+			update: { reason },
+		}),
+		db.payment.update({
+			where: { id: payment.id },
+			data: {
+				status:
+					stripeRefund.amount >= payment.amount
+						? PaymentStatus.REFUNDED
+						: PaymentStatus.PARTIALLY_REFUNDED,
+			},
+		}),
+	] as const;
+
 /** What the admin's dialog shows: the paid sum and, per reason, what goes back. */
 export const quoteCheckpointRefund = async (
 	checkpointId: string,
@@ -151,41 +207,18 @@ export const issueCheckpointRefund = async (
 	const { refund: amount, provided, parts } = refundAmount(refund);
 	if (amount <= 0) return { ok: false as const, error: "nothingOwed" as const };
 
-	const stripeRefund = await refundCheckout(sessionId, {
+	const stripeRefund = await sendCheckpointRefund(
+		checkpointId,
+		sessionId,
 		amount,
-		idempotencyKey: `checkpoint-refund-${checkpointId}`,
-	}).catch((error) => {
-		console.error("[checkpoint-refund] Stripe refused", checkpointId, error);
-		return null;
-	});
+	);
 	if (!stripeRefund)
 		return { ok: false as const, error: "refundFailed" as const };
 
 	const meta = { reason, amount, provided, parts, paid: payment.amount };
 
-	// The webhook for this refund may already have written its row: the
-	// Stripe id is the key, so either way there is one.
 	await prisma.$transaction([
-		prisma.refund.upsert({
-			where: { providerRefundId: stripeRefund.id },
-			create: {
-				paymentId: payment.id,
-				amount: stripeRefund.amount,
-				currency: stripeRefund.currency.toUpperCase(),
-				reason,
-				providerRefundId: stripeRefund.id,
-			},
-			update: { reason },
-		}),
-		prisma.payment.update({
-			where: { id: payment.id },
-			data: {
-				status:
-					stripeRefund.amount >= payment.amount
-						? PaymentStatus.REFUNDED
-						: PaymentStatus.PARTIALLY_REFUNDED,
-			},
-		}),
+		...refundWrites(prisma, payment, stripeRefund, reason),
 		// No verdict, no certificate: it ends as Cancelled, not Closed.
 		prisma.projectCheckpoint.update({
 			where: { id: checkpointId },
@@ -284,13 +317,6 @@ const adminCheckpointTotals = async ({
  * a checkpoint leaves Draft through a payment (seeded ones aside), and one
  * cancelled before day 1 is deleted rather than kept.
  */
-/** A curator can be swapped while one is asked or running; not after the verdict. */
-const ASSIGNABLE: CheckpointStatus[] = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
-
 export const listAdminCheckpoints = async (
 	{ page = 1, ...filter }: AdminFilter & { page?: number },
 	now = new Date(),
@@ -366,13 +392,7 @@ export const listAdminCheckpoints = async (
 			// A declined checkpoint paid again has two rows; the newest speaks for it.
 			const payment = payments.find((one) => one.payableId === row.id);
 			const refunded = payment ? refundedTotal(payment.refunds) : 0;
-			const human = row.curatorKind === CheckpointCuratorKind.Human;
-			const overdue =
-				human &&
-				row.status === CheckpointStatus.Review &&
-				!row.verdict &&
-				!!row.dueAt &&
-				verdictOverdue(row.dueAt, now);
+			const overdue = adminVerdictOpen(row, now);
 
 			return {
 				id: row.id,
@@ -395,12 +415,11 @@ export const listAdminCheckpoints = async (
 					!!payment &&
 					CAPTURED.includes(payment.status) &&
 					isRunning(row.status),
-				canWriteVerdict: overdue,
-				// A draft is given away only once it holds what a payment would buy.
 				canAssign:
 					row.status === CheckpointStatus.Draft
-						? !!row.goal.trim() && row._count.items > 0
-						: human && ASSIGNABLE.includes(row.status),
+						? draftComplete({ goal: row.goal, inputs: row._count.items })
+						: row.curatorKind === CheckpointCuratorKind.Human &&
+							CURATOR_SWAPPABLE_STATUSES.includes(row.status),
 			};
 		}),
 	};

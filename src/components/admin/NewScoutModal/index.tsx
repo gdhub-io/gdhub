@@ -1,18 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Form, Input, Modal, Segmented, Select, Switch } from "antd";
 import axios from "axios";
-import debounce from "lodash/debounce";
-import { useMemo, useState } from "react";
 import { ScoutType } from "@/config/prisma-enums";
-
-type UserOption = {
-	id: string;
-	name?: string | null;
-	email?: string | null;
-};
+import { useUserSearch } from "@/hooks/user-search";
 
 const TYPE_OPTIONS = Object.values(ScoutType).map((value) => ({
 	label: value,
@@ -31,25 +24,8 @@ export function NewScoutModal({
 	const { message } = App.useApp();
 	const [form] = Form.useForm();
 	const queryClient = useQueryClient();
-	const [search, setSearch] = useState("");
 
-	const { data: users = [], isFetching } = useQuery({
-		queryKey: ["user-search", search],
-		queryFn: () =>
-			axios
-				.get<UserOption[]>("/api/users/search", {
-					// An admin granting themselves a cabinet is ordinary — and the
-					// only way to try the space on production.
-					params: { q: search, includeSelf: true },
-				})
-				.then((res) => res.data),
-		enabled: open,
-	});
-
-	const onSearch = useMemo(
-		() => debounce((value: string) => setSearch(value), 400),
-		[],
-	);
+	const userSearch = useUserSearch(open);
 
 	const create = useMutation({
 		mutationFn: (values: Record<string, unknown>) =>
@@ -87,18 +63,11 @@ export function NewScoutModal({
 					rules={[{ required: true }]}
 				>
 					<Select
-						showSearch
-						filterOption={false}
-						loading={isFetching}
-						onSearch={onSearch}
+						{...userSearch}
 						placeholder={t(
 							"admin.scouts.representative.placeholder",
 							"Search for a user by name or email",
 						)}
-						options={users.map((user) => ({
-							label: user.name || user.email || user.id,
-							value: user.id,
-						}))}
 					/>
 				</Form.Item>
 

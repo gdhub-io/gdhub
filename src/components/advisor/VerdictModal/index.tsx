@@ -639,6 +639,7 @@ function VerdictForm({
 	const [note, setNote] = useState(context.draft?.note ?? "");
 	const saveDraft = useSaveVerdictDraft(checkpoint.id);
 	const send = useSendVerdict(checkpoint.id);
+	const sender = admin ?? { send: send.mutateAsync, sending: send.isPending };
 
 	const isSend = !!admin || context.stage === "send";
 	const ready = !!verdict && note.trim().length > 0;
@@ -680,7 +681,7 @@ function VerdictForm({
 			cancelText: t("common.cancel", "Cancel"),
 			onOk: async () => {
 				try {
-					await (admin ? admin.send : send.mutateAsync)({ verdict, note });
+					await sender.send({ verdict, note });
 					message.success(t("advisor.verdict.sent", "The verdict is sent"));
 					onSent();
 				} catch {
@@ -712,7 +713,7 @@ function VerdictForm({
 				className={clsx(isSend && styles.grow)}
 				disabled={!!lockedReason}
 				icon={lockedReason ? <IconLock size={16} /> : undefined}
-				loading={admin ? admin.sending : send.isPending}
+				loading={sender.sending}
 				onClick={confirmSend}
 			>
 				{admin?.missed?.refund

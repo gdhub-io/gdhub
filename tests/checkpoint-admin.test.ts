@@ -28,7 +28,10 @@ vi.mock("@/services/prisma", () => {
 	return { prisma: client };
 });
 vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
-vi.mock("@/repositories/checkpoint-refund", () => ({ refundCaseOf: vi.fn() }));
+vi.mock("@/repositories/checkpoint-refund", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoint-refund")>()),
+	refundCaseOf: vi.fn(),
+}));
 vi.mock("@/repositories/checkpoint-verdict.repository", () => ({
 	afterVerdictSent: vi.fn(),
 }));
@@ -103,6 +106,11 @@ describe("an administrator's verdict", () => {
 			amount: 15000,
 			idempotencyKey: "checkpoint-refund-cp1",
 		});
+		expect(prisma.refund.upsert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				create: expect.objectContaining({ amount: 15000, reason: "missedCalls" }),
+			}),
+		);
 		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
 				where: { id: "cp1", status: CheckpointStatus.Review, verdict: null },

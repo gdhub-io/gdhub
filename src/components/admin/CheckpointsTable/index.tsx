@@ -204,8 +204,8 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			width: 56,
 			align: "right",
 			render: (_, row) => {
-				const items = [
-					row.canWriteVerdict && {
+				const curating = [
+					row.overdue && {
 						key: "verdict",
 						icon: <IconSignature size={14} />,
 						label: t(
@@ -220,16 +220,27 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						label: t("admin.checkpoints.menu.assign", "Assign a curator"),
 						onClick: () => setAssigning(row),
 					},
-					row.canRefund && { type: "divider" as const },
-					row.canRefund && {
-						key: "refund",
-						icon: <IconReceiptRefund size={14} />,
-						label: t("admin.checkpoints.list.refundPayment", "Refund payment"),
-						onClick: () => setRefunding(row),
-					},
 				].filter((item) => !!item);
-				// A leading divider means nothing came before the refund.
-				if (items[0] && "type" in items[0]) items.shift();
+				const money = row.canRefund
+					? [
+							{
+								key: "refund",
+								icon: <IconReceiptRefund size={14} />,
+								label: t(
+									"admin.checkpoints.list.refundPayment",
+									"Refund payment",
+								),
+								onClick: () => setRefunding(row),
+							},
+						]
+					: [];
+				const items = [
+					...curating,
+					...(curating.length && money.length
+						? [{ type: "divider" as const }]
+						: []),
+					...money,
+				];
 
 				return (
 					canManage &&

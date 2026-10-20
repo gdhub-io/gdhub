@@ -128,7 +128,6 @@ export type AdminVerdictDto = {
 	missed: {
 		parts: number;
 		provided: number;
-		part: number;
 		refund: number;
 	} | null;
 };

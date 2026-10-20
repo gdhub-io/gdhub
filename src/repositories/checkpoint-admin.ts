@@ -3,18 +3,25 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
-	PaymentStatus,
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
+import {
+	adminVerdictOpen,
+	CURATOR_SWAPPABLE_STATUSES,
+	draftComplete,
+} from "@/lib/checkpoint-admin";
 import { refundAmount } from "@/lib/checkpoint-refund";
-import { verdictOverdue } from "@/lib/checkpoint-verdict-window";
 import {
 	bookSessions,
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import { startAiCheckpoint } from "@/repositories/checkpoint-payment";
-import { refundCaseOf } from "@/repositories/checkpoint-refund";
+import {
+	refundCaseOf,
+	refundWrites,
+	sendCheckpointRefund,
+} from "@/repositories/checkpoint-refund";
 import {
 	afterVerdictSent,
 	type CuratorVerdictInput,
@@ -27,7 +34,6 @@ import {
 	recipient,
 } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
-import { refundCheckout } from "@/services/stripe/server";
 
 /**
  * What only an administrator does to a checkpoint: write a verdict its curator
@@ -56,9 +62,12 @@ export const missedCallsRefund = async (checkpointId: string) => {
 	const found = await refundCaseOf(checkpointId);
 	if (!found || found.payment.refunds.length) return null;
 
-	const amount = refundAmount({ ...found.refund, verdictSent: true });
+	const { parts, provided, refund } = refundAmount({
+		...found.refund,
+		verdictSent: true,
+	});
 
-	return { ...amount, sessionId: found.payment.providerTransactionId, found };
+	return { parts, provided, refund, payment: found.payment };
 };
 
 export const writeAdminVerdict = async (
@@ -77,28 +86,26 @@ export const writeAdminVerdict = async (
 	if (checkpoint.verdict || checkpoint.status !== CheckpointStatus.Review) {
 		return { ok: false as const, error: "alreadyDecided" as const };
 	}
-	if (!checkpoint.dueAt || !verdictOverdue(checkpoint.dueAt, now)) {
+	if (!adminVerdictOpen(checkpoint, now)) {
 		return { ok: false as const, error: "notOverdue" as const };
 	}
 
 	// The money first: a verdict written without its refund would leave a
 	// closed checkpoint nothing can refund any more.
 	const missed = await missedCallsRefund(checkpointId);
+	const payment = missed?.payment;
 	const stripeRefund =
-		missed && missed.refund > 0 && missed.sessionId
-			? await refundCheckout(missed.sessionId, {
-					amount: missed.refund,
-					idempotencyKey: `checkpoint-refund-${checkpointId}`,
-				}).catch((error) => {
-					console.error("[admin-verdict] Stripe refused", checkpointId, error);
-					return null;
-				})
+		missed && missed.refund > 0 && payment?.providerTransactionId
+			? await sendCheckpointRefund(
+					checkpointId,
+					payment.providerTransactionId,
+					missed.refund,
+				)
 			: undefined;
 	if (stripeRefund === null) {
 		return { ok: false as const, error: "refundFailed" as const };
 	}
 
-	const payment = missed?.found.payment;
 	const { count } = await prisma.$transaction(async (tx) => {
 		const written = await tx.projectCheckpoint.updateMany({
 			where: {
@@ -118,26 +125,7 @@ export const writeAdminVerdict = async (
 			},
 		});
 		if (stripeRefund && payment) {
-			await tx.refund.upsert({
-				where: { providerRefundId: stripeRefund.id },
-				create: {
-					paymentId: payment.id,
-					amount: stripeRefund.amount,
-					currency: stripeRefund.currency.toUpperCase(),
-					reason: "missedCalls",
-					providerRefundId: stripeRefund.id,
-				},
-				update: { reason: "missedCalls" },
-			});
-			await tx.payment.update({
-				where: { id: payment.id },
-				data: {
-					status:
-						stripeRefund.amount >= payment.amount
-							? PaymentStatus.REFUNDED
-							: PaymentStatus.PARTIALLY_REFUNDED,
-				},
-			});
+			await Promise.all(refundWrites(tx, payment, stripeRefund, "missedCalls"));
 		}
 		await tx.auditLog.create({
 			data: audit(adminId, checkpointId, {
@@ -164,13 +152,6 @@ export const writeAdminVerdict = async (
 
 	return { ok: true as const, refunded: stripeRefund?.amount ?? 0 };
 };
-
-/** A curator can be swapped while one is asked or running; not after the verdict. */
-const SWAPPABLE: CheckpointStatus[] = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 export type AssignCuratorInput = {
 	kind: CheckpointCuratorKind;
@@ -232,7 +213,9 @@ export const assignCurator = async (
 	};
 
 	if (checkpoint.status === CheckpointStatus.Draft) {
-		if (!checkpoint.goal.trim() || !checkpoint._count.items) {
+		if (
+			!draftComplete({ goal: checkpoint.goal, inputs: checkpoint._count.items })
+		) {
 			return { ok: false as const, error: "draftIncomplete" as const };
 		}
 		if (human && !checkpoint.startedAt) {
@@ -271,9 +254,9 @@ export const assignCurator = async (
 	}
 
 	if (
-		!SWAPPABLE.includes(checkpoint.status) ||
+		!CURATOR_SWAPPABLE_STATUSES.includes(checkpoint.status) ||
 		checkpoint.curatorKind !== CheckpointCuratorKind.Human ||
-		!human
+		!curator
 	) {
 		return { ok: false as const, error: "notSwappable" as const };
 	}
@@ -281,7 +264,7 @@ export const assignCurator = async (
 	await prisma.$transaction([
 		prisma.projectCheckpoint.update({
 			where: { id: checkpointId },
-			data: { curatorId: curator?.id },
+			data: { curatorId: curator.id },
 		}),
 		prisma.auditLog.create({
 			data: audit(adminId, checkpointId, {
@@ -294,16 +277,15 @@ export const assignCurator = async (
 	]);
 
 	await Promise.all([
-		curator &&
-			notify(curator, `cp-curator-assigned-${checkpointId}-${curator.id}`, {
-				title: `You now curate ${checkpoint.project.name}`,
-				message:
-					"An administrator handed this checkpoint to you. The calls keep their times; open it to read where it stands.",
-				redirectUrl: `${appUrl()}/advisor/checkpoints`,
-			}),
+		notify(curator, `cp-curator-assigned-${checkpointId}-${curator.id}`, {
+			title: `You now curate ${checkpoint.project.name}`,
+			message:
+				"An administrator handed this checkpoint to you. The calls keep their times; open it to read where it stands.",
+			redirectUrl: `${appUrl()}/advisor/checkpoints`,
+		}),
 		notify(
 			checkpoint.project.author,
-			`cp-curator-replaced-${checkpointId}-${curator?.id}`,
+			`cp-curator-replaced-${checkpointId}-${curator.id}`,
 			{
 				title: `${checkpoint.project.name} has a new curator`,
 				message:

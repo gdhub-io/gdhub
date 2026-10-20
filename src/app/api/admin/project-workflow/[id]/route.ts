@@ -159,7 +159,8 @@ export const PUT = pipe(
 
 	if (!existing) return apiError.notFound("Project workflow not found");
 
-	if (steps && planSteps(steps, existing.steps).deleteIds.length) {
+	const plan = steps && planSteps(steps, existing.steps);
+	if (plan?.deleteIds.length) {
 		const lock = await runningCheckpointLock(existing.projectId);
 		if (lock) return apiError.conflict("checkpointRunning", lock);
 	}
@@ -167,8 +168,7 @@ export const PUT = pipe(
 	const updated = await prisma.$transaction(async (tx) => {
 		let survivingIds = existing.steps.map((step) => step.id);
 
-		if (steps) {
-			const plan = planSteps(steps, existing.steps);
+		if (plan) {
 			const tasksByStepId = new Map(
 				existing.steps.map((step) => [step.id, step.tasks]),
 			);
