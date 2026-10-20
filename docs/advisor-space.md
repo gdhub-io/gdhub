@@ -43,8 +43,8 @@ the version, the text's checksum, the time, IP and user agent.
    withdraws nothing: turning it back on later needs no new tick unless a new
    version made a material change.
 
-Paid work — curation today, paid consultations later — is the **Expert Services
-Terms**, accepted once before the first paid work. Nothing here is signed
+Paid work — curation today, paid consultations later — is part of the same
+**Advisor Agreement**; switching it on asks only for the payout details. Nothing here is signed
 through Documenso; it stays only for the event certificates it already signs.
 
 ## 3. Space definition

@@ -59,8 +59,8 @@ const curator = { id: "u9", roles: ["Member"], onboardingDone: true };
 
 const terms = [
 	{
-		code: "ExpertServicesTerms",
-		version: versionInEffect("ExpertServicesTerms")?.version ?? 1,
+		code: "AdvisorAgreement",
+		version: versionInEffect("AdvisorAgreement")?.version ?? 1,
 	},
 ];
 
@@ -106,12 +106,12 @@ beforeEach(() => {
 describe("a curator answering", () => {
 	// Accepting is the moment the author is actually charged: buying the
 	// checkpoint only held the money on their card.
-	it("takes nothing on without the Expert Services Terms accepted", async () => {
+	it("takes nothing on without the Advisor Agreement accepted", async () => {
 		const response = await answer(true, []);
 
 		expect(response.status).toBe(400);
 		expect(await response.json()).toMatchObject({
-			details: { reason: "legal.required", code: "ExpertServicesTerms" },
+			details: { reason: "legal.required", code: "AdvisorAgreement" },
 		});
 		expect(captureCheckout).not.toHaveBeenCalled();
 		expect(checkpointUpdate).not.toHaveBeenCalled();
@@ -124,7 +124,7 @@ describe("a curator answering", () => {
 			data: [
 				expect.objectContaining({
 					userId: "u9",
-					code: "ExpertServicesTerms",
+					code: "AdvisorAgreement",
 					context: "CuratorAccept",
 					checkpointId: "cp1",
 				}),

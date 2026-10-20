@@ -64,11 +64,10 @@ const post = async (body: unknown) => {
 	});
 };
 
-const tick = (code: "CheckpointPurchaseTerms" | "WithdrawalWaiver") => ({
-	code,
-	version: versionInEffect(code)?.version ?? 1,
+const terms = () => ({
+	code: "CheckpointPurchaseTerms",
+	version: versionInEffect("CheckpointPurchaseTerms")?.version ?? 1,
 });
-const both = () => [tick("CheckpointPurchaseTerms"), tick("WithdrawalWaiver")];
 
 beforeEach(() => {
 	vi.clearAllMocks();
@@ -87,7 +86,7 @@ describe("POST /api/checkpoint/[id]/pay", () => {
 			yearOfBirth: new Date().getUTCFullYear() - 16,
 		});
 
-		const response = await post({ legal: both() });
+		const response = await post({ legal: [terms()], startNow: true });
 
 		expect(response.status).toBe(400);
 		expect(await response.json()).toMatchObject({ error: "underage" });
@@ -96,7 +95,7 @@ describe("POST /api/checkpoint/[id]/pay", () => {
 	});
 
 	it("opens no checkout without the purchase terms accepted", async () => {
-		const response = await post({ legal: [] });
+		const response = await post({ legal: [], startNow: true });
 
 		expect(response.status).toBe(400);
 		expect(await response.json()).toMatchObject({
@@ -106,28 +105,27 @@ describe("POST /api/checkpoint/[id]/pay", () => {
 		expect(paymentCreate).not.toHaveBeenCalled();
 	});
 
-	it("opens no checkout without the withdrawal waiver", async () => {
-		const response = await post({ legal: [tick("CheckpointPurchaseTerms")] });
+	// Without the express request a withdrawal inside 14 days would cost the buyer nothing.
+	it("opens no checkout without the request to start at once", async () => {
+		const response = await post({ legal: [terms()] });
 
 		expect(response.status).toBe(400);
-		expect(await response.json()).toMatchObject({
-			details: { reason: "legal.required", code: "WithdrawalWaiver" },
-		});
+		expect(createMany).not.toHaveBeenCalled();
 		expect(paymentCreate).not.toHaveBeenCalled();
 	});
 
 	it("refuses an outdated version of the terms", async () => {
-		const [terms, waiver] = both();
 		const response = await post({
-			legal: [{ ...terms, version: terms.version + 1 }, waiver],
+			legal: [{ ...terms(), version: terms().version + 1 }],
+			startNow: true,
 		});
 
 		expect(response.status).toBe(409);
 		expect(paymentCreate).not.toHaveBeenCalled();
 	});
 
-	it("records both acceptances against the checkpoint it pays for", async () => {
-		const response = await post({ legal: both() });
+	it("records the terms with the request to start at once against the checkpoint", async () => {
+		const response = await post({ legal: [terms()], startNow: true });
 
 		expect(response.status).toBe(200);
 		expect(createMany).toHaveBeenCalledWith({
@@ -138,10 +136,7 @@ describe("POST /api/checkpoint/[id]/pay", () => {
 					context: "CheckpointPurchase",
 					checkpointId: "cp1",
 					ipAddress: "192.0.2.7",
-				}),
-				expect.objectContaining({
-					code: "WithdrawalWaiver",
-					checkpointId: "cp1",
+					params: { startNow: "requested" },
 				}),
 			],
 		});

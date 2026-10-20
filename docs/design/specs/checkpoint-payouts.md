@@ -1,7 +1,7 @@
 # Checkpoints · Curator payouts (GDHUB-74, money part)
 
 Intent: [docs/intent/GDHUB-74-curator-payout-rating-onboarding.md](../../intent/GDHUB-74-curator-payout-rating-onboarding.md).
-Rules: [Expert Services Terms §2, §3 and §5](../../legal/expert-services-terms/v1.md).
+Rules: [Advisor Agreement §5, §7 and §9](../../legal/advisor-agreement/v1.md).
 Builds on [checkpoint-refunds.md](checkpoint-refunds.md) (11.5–11.9): same admin shell, KPI card,
 table, row menu and modal anatomy. Read that spec for anything not repeated here. The Paid work
 settings section (§10) extends [legal.md](legal.md).
@@ -407,7 +407,7 @@ frames rather than drawn again. 13.4b's **Add payout details** and Earnings' **C
 
 | Frame | Node id | Change in this pass |
 |---|---|---|
-| Legal · Advisor settings · Paid work · not set up | `Q8dNW0` | Holder help line; "Invoicing" → **How you invoice** with one line under each option; "I accept self-billing" → **Self-billing**; payout note at the end of the Expert Services block. Frame grown to 1268 so Save shows. |
+| Legal · Advisor settings · Paid work · not set up | `Q8dNW0` | Holder help line; "Invoicing" → **How you invoice** with one line under each option; "I accept self-billing" → **Self-billing**; payout note at the end of the payout details block. Frame grown to 1268 so Save shows. |
 | Legal · Advisor settings · Paid work · error | `SyTre` | Same changes; frame 1324. |
 | Legal · Advisor settings · Paid work · set up | `S5YkC` | Same changes; the account shows **masked, read-only, with Change** inside the field. Frame 1292. |
 | 13.5 · … — change the account, saving, saved, save failed | `g9B7RS` | New, in the 13.x row: the states between the three. |
@@ -425,7 +425,7 @@ keep their old bar.
 ### Layout
 
 Rule 7 settings shell as drawn in GDHUB-54: section menu 220, one white card, *Save* under the
-card. The card's first block is the outlined **Expert Services** block (padding 20, gap 20), in
+card. The card's first block is the outlined **Payout details** block (padding 20, gap 20), in
 this order:
 
 1. **Account holder** — `Input`, help under it.
@@ -435,8 +435,8 @@ this order:
    payout goes to the new account." and a **Keep LT12 •••• 4421** link that cancels the change (13.5).
 3. **How you invoice** — `Radio.Group` vertical, each option a label and one line under it
    (13 secondary, indented 26 to the label).
-4. **Expert Services Terms** — not yet accepted: `ClickwrapField` "I accept the Expert Services
-   Terms" (link opens the current version). Accepted: `IconTile` success + "Expert Services Terms"
+4. **Advisor Agreement** — the version in effect not accepted: `ClickwrapField` (link opens the
+   current version). Accepted: `IconTile` success + "Advisor Agreement"
    / "Accepted on {date} · version {n}" + **View document** (opens that exact version).
 5. **Payout note** — `IconInfoCircle` 16 tertiary + one line, 14 secondary.
 
@@ -459,8 +459,8 @@ block is saved. No country or tax-id fields — they wait on counsel.
   (starts with two letters) must pass the IBAN checksum, anything else needs at least 8 digits.
   "Enter a full IBAN or account number" (existing key).
 - **How you invoice**: required. "Choose how you invoice".
-- **Terms**: required while not accepted — "You need to accept the Expert Services Terms to get
-  paid" (existing clickwrap error). An outdated version refused by the server unticks with the
+- **Terms**: required while the version in effect is not accepted — "You need to accept the
+  Advisor Agreement to get paid". An outdated version refused by the server unticks with the
   clickwrap's *text updated* message (legal.md §5).
 - Errors show under each field (`SyTre`); Save is never disabled by the form; the first field
   with an error gets focus.
@@ -484,7 +484,7 @@ block is saved. No country or tax-id fields — they wait on counsel.
 | Key | English |
 |---|---|
 | `advisor.settings.paid-work.title` (existing) | Paid work |
-| `advisor.settings.paid-work.expert-services` (existing) | Expert Services |
+| `advisor.settings.paid-work.payout-details` | Payout details |
 | `advisor.settings.paid-work.account-holder` (existing) | Account holder |
 | `advisor.settings.paid-work.account-holder.help` | Your name or your company's, as on your invoices. We pay only to an account in that name. |
 | `advisor.settings.paid-work.account-holder.error` | Enter the account holder's name |
@@ -504,7 +504,7 @@ block is saved. No country or tax-id fields — they wait on counsel.
 | `advisor.settings.paid-work.invoicing.error` | Choose how you invoice |
 | `advisor.settings.paid-work.terms-accepted` (existing) | Accepted on {date} · version {version} |
 | `advisor.settings.paid-work.view-document` | View document |
-| `legal.clickwrap.expert-services.label` / `.error` (existing) | I accept the Expert Services Terms / You need to accept the Expert Services Terms to get paid |
+| `legal.clickwrap.AdvisorAgreement.paid-work` | You need to accept the Advisor Agreement to get paid |
 | `advisor.settings.paid-work.payoutNote` | Paid by bank transfer in USD within 15 days after the month ends. Bank charges on your side are yours. |
 | `advisor.settings.paid-work.saved` | Payout details saved |
 | `advisor.settings.paid-work.saveFailed` | Couldn't save your payout details. Try again. |
@@ -513,7 +513,7 @@ block is saved. No country or tax-id fields — they wait on counsel.
 ### Data needs
 
 - **Read**: `ExpertProfile.payoutHolder`, the account **masked** (first 4 + last 4; the full value
-  never goes back to the browser), `invoicing`; the user's Expert Services Terms acceptance
+  never goes back to the browser), `invoicing`; the user's Advisor Agreement acceptance
   (version, date) and the current version's code and number.
 - **Save**: holder, account (only when new or changed), invoicing, and — when not accepted yet —
   the clickwrap `{ code, version }`. The acceptance is written in the same transaction (legal-layer

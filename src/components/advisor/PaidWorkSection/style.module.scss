@@ -1,4 +1,4 @@
-// Frame `Q8dNW0`: the outlined Expert Services block, padding and gap 20.
+// Frame `Q8dNW0`: the outlined payout details block, padding and gap 20.
 .block {
 	display: flex;
 	flex-direction: column;
@@ -46,7 +46,7 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-// Frame `S5YkC`: 20 between the Expert Services block, the hairline and Project curation.
+// Frame `S5YkC`: 20 between the payout details block, the hairline and Project curation.
 .divider {
 	margin-block: calc(var(--gd-space-4) + var(--gd-space-1));
 }

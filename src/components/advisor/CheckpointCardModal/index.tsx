@@ -93,9 +93,7 @@ export function CheckpointCardModal({
 		try {
 			await answer.mutateAsync({
 				accept,
-				legal: withTerms
-					? legalAcceptances(["ExpertServicesTerms"])
-					: undefined,
+				legal: withTerms ? legalAcceptances(["AdvisorAgreement"]) : undefined,
 			});
 			setTermsOpen(false);
 			onClose();
@@ -104,7 +102,7 @@ export function CheckpointCardModal({
 				setTermsStale(true);
 				return;
 			}
-			if (missingLegalCode(error) === "ExpertServicesTerms") {
+			if (missingLegalCode(error) === "AdvisorAgreement") {
 				setTermsOpen(true);
 				return;
 			}
@@ -315,13 +313,13 @@ export function CheckpointCardModal({
 				)}
 			</Modal>
 			<LegalAcceptModal
-				code="ExpertServicesTerms"
+				code="AdvisorAgreement"
 				open={termsOpen}
 				stale={termsStale}
 				okText={t("advisor.checkpoints.acceptTerms", "Accept and take it on")}
 				requiredMessage={t(
-					"legal.clickwrap.ExpertServicesTerms.required",
-					"You need to accept the Expert Services Terms to curate a checkpoint",
+					"legal.clickwrap.AdvisorAgreement.curate",
+					"You need to accept the Advisor Agreement to curate a checkpoint",
 				)}
 				onCancel={() => setTermsOpen(false)}
 				onAccept={() => reply(true, true)}

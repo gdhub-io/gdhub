@@ -37,7 +37,7 @@ import { captureCheckout } from "@/services/stripe/server";
 
 const AnswerSchema = z.object({
 	accept: z.boolean(),
-	/** The Expert Services Terms, until accepted once: curating is paid work. */
+	/** The Advisor Agreement, when the version in effect is not accepted yet. */
 	legal: LegalAcceptancesSchema.optional(),
 });
 
@@ -87,18 +87,18 @@ export const POST = pipe(
 		return apiError.badRequest("checkpointNotAwaiting");
 	}
 
-	// Refused before any money moves: curating is paid work, done under the
-	// Expert Services Terms, accepted once and again after a material change.
+	// Refused before any money moves: curating is done under the Advisor
+	// Agreement, accepted once and again after a material change.
 	let acceptances: ReturnType<typeof resolveLegal> = [];
 	if (
 		accept &&
 		needsAcceptance(
-			"ExpertServicesTerms",
-			(await latestAcceptance(curator.id, "ExpertServicesTerms"))?.version,
+			"AdvisorAgreement",
+			(await latestAcceptance(curator.id, "AdvisorAgreement"))?.version,
 		)
 	) {
 		try {
-			acceptances = resolveLegal(legal, ["ExpertServicesTerms"], {
+			acceptances = resolveLegal(legal, ["AdvisorAgreement"], {
 				userId: curator.id,
 				context: "CuratorAccept",
 				checkpointId: id,

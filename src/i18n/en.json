@@ -992,6 +992,7 @@
 					"approved": "Approved · {date}",
 					"askAgain": "Ask again",
 					"locked": "Accept the Expert Services Terms and save your payout details first",
+					"locked-payout": "Save your payout details first",
 					"notApproved": "Not approved",
 					"notOffered": "You're not offered to authors until GDHub approves you.",
 					"offered": "Authors are offered you at these stages.",
@@ -1019,6 +1020,7 @@
 					}
 				},
 				"loadFailed": "Your payout details could not be loaded.",
+				"payout-details": "Payout details",
 				"payoutNote": "Paid by bank transfer in USD within 15 days after the month ends. Bank charges on your side are yours.",
 				"projectCuration": "Project curation",
 				"retry": "Try again",
@@ -2937,8 +2939,16 @@
 	"lecturer": "Lecturer",
 	"legal": {
 		"clickwrap": {
+			"AdvisorAgreement": {
+				"curate": "You need to accept the Advisor Agreement to curate a checkpoint",
+				"paid-work": "You need to accept the Advisor Agreement to get paid"
+			},
 			"expert-services": {
 				"error": "You need to accept the Expert Services Terms to get paid"
+			},
+			"startNow": {
+				"label": "I ask for the checkpoint to start before the 14-day withdrawal period ends. If I withdraw, I pay for what was already provided, and once it is fully provided I can no longer withdraw (<doc>Purchase Terms, 5.2</doc>)",
+				"required": "Ask for the checkpoint to start now to pay"
 			}
 		}
 	},

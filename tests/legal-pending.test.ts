@@ -52,6 +52,17 @@ describe("pendingLegalCodes", () => {
 		]);
 	});
 
+	it("holds a curator to the Advisor Agreement even with no speciality open for mentoring", async () => {
+		expertFindUnique.mockResolvedValue({
+			paidConsultations: false,
+			curation: true,
+		});
+		expect(await pendingLegalCodes("u1")).toEqual([
+			"TermsOfUse",
+			"AdvisorAgreement",
+		]);
+	});
+
 	it("is empty once the versions in effect are accepted", async () => {
 		specialityCount.mockResolvedValue(1);
 		acceptanceFindMany.mockResolvedValue([

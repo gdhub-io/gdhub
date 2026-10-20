@@ -1,7 +1,7 @@
 "use client";
 
 import { T, useTranslate } from "@tolgee/react";
-import { Checkbox, Form } from "antd";
+import { Checkbox, Form, type FormItemProps } from "antd";
 import Link from "next/link";
 import type { ReactElement, ReactNode } from "react";
 import { LEGAL_DOCUMENTS, type LegalCode } from "@/config/legal/registry";
@@ -42,6 +42,8 @@ export function legalAcceptances(codes: LegalCode[]): LegalAcceptanceInput[] {
 
 type Props = {
 	code: LegalCode;
+	/** A second box about the same document, e.g. a request it names; defaults to the document's acceptance. */
+	name?: FormItemProps["name"];
 	/** The server refused the version this box showed — the text changed under the form. */
 	stale?: boolean;
 	/** Replaces the generic "You need to accept…", e.g. "…to create a project". */
@@ -54,7 +56,13 @@ type Props = {
  * The one checkbox every legal acceptance goes through: never pre-ticked, it
  * names the document, and the name is the only link to the exact version.
  */
-export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
+export function ClickwrapField({
+	code,
+	name,
+	stale,
+	requiredMessage,
+	label,
+}: Props) {
 	const { t } = useTranslate();
 	const { title, slug } = LEGAL_DOCUMENTS[code];
 	const version = versionInEffect(code);
@@ -68,7 +76,7 @@ export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
 
 	return (
 		<Form.Item
-			name={clickwrapFieldName(code)}
+			name={name ?? clickwrapFieldName(code)}
 			valuePropName="checked"
 			initialValue={false}
 			// Full width whatever the form's column layout: the label is a sentence.

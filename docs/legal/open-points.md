@@ -105,11 +105,22 @@ documents surfaced in what is already published.
      verification, <https://www.paddle.com/help/start/account-verification/what-is-business-verification>.
 7. **Volunteering.** The formalities under the Law on Volunteering: what a volunteering
    agreement must contain, the tax-free limits on expense reimbursement, and whether
-   accident insurance for volunteers is expected of the organiser.
+   accident insurance for volunteers is expected of the organiser — and whether free
+   consultations may sit inside the one Advisor Agreement (GDHUB-102) or the volunteering
+   has to be its own agreement; the draft offers one on request (4.6).
 8. **The withdrawal checkbox.** Days 8-14 are covered only if the buyer expressly requests
    immediate performance and acknowledges losing the right once fully performed, at
    checkout, as a separate affirmative action. Without it the full 14-day right survives
-   and a proportionate deduction cannot be applied.
+   and a proportionate deduction cannot be applied. Since GDHUB-103 the request is 5.2 of
+   the Purchase Terms with its own checkbox, citing Articles 8(8), 14(3) and 16(a) of
+   Directive 2011/83/EU; confirm that a box of its own is enough without a document of its
+   own, and give the Civil Code articles to cite in place of "the corresponding provisions".
+8a. **The withdrawal function, Article 11a.** Directive 2023/2673 added to 2011/83/EU a
+   duty for contracts concluded online: a "withdraw from contract here" function, available
+   for the whole withdrawal period, with a confirmation step and an acknowledgement on a
+   durable medium. The Purchase Terms (5.2) still ask the buyer to write an email, and the
+   app has no such button. Confirm the date it applies from in Lithuania and how it was
+   transposed; the button itself is product work.
 9. **Non-circumvention.** Whether six months against taking an author off-platform is
    proportionate under Lithuanian and EU competition rules for an NGO of this size.
 10. **P2B Regulation (EU) 2019/1150.** Whether paid consultations, where advisors set their

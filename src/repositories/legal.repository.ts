@@ -34,13 +34,8 @@ async function documentsThatApply(userId: string): Promise<LegalCode[]> {
 			select: { paidConsultations: true, curation: true },
 		}),
 	]);
-	return [
-		"TermsOfUse",
-		...(advisor > 0 ? (["AdvisorAgreement"] as const) : []),
-		...(expert?.paidConsultations || expert?.curation
-			? (["ExpertServicesTerms"] as const)
-			: []),
-	];
+	const advising = advisor > 0 || expert?.paidConsultations || expert?.curation;
+	return ["TermsOfUse", ...(advising ? (["AdvisorAgreement"] as const) : [])];
 }
 
 /**

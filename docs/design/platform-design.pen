@@ -297415,99 +297415,6 @@
                     },
                     {
                       "type": "frame",
-                      "id": "uo7RU",
-                      "name": "Row · Expert Services Terms",
-                      "width": "fill_container",
-                      "height": 72,
-                      "stroke": "$border",
-                      "strokeWidth": {
-                        "bottom": 1
-                      },
-                      "strokeAlignment": "inner",
-                      "gap": 16,
-                      "padding": [
-                        0,
-                        24
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "rmFhW",
-                          "name": "IconTile",
-                          "width": 40,
-                          "height": 40,
-                          "fill": "$neutral-100",
-                          "cornerRadius": "$radius-md",
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "Ajars",
-                              "name": "IconFileText",
-                              "width": 20,
-                              "height": 20,
-                              "icon": "file-text",
-                              "library": "lucide",
-                              "fill": "$text-secondary"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "TnNnG",
-                          "name": "Title (link)",
-                          "fill": "$text-primary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Expert Services Terms",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "iAL8N",
-                          "name": "Version",
-                          "width": 200,
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "t14bi",
-                              "fill": "$text-primary",
-                              "content": "Version 1",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "vatDv",
-                              "fill": "$text-tertiary",
-                              "content": "in effect since 1 Nov 2026",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "icon",
-                          "id": "BJOpZ",
-                          "name": "IconChevronRight",
-                          "width": 16,
-                          "height": 16,
-                          "icon": "chevron-right",
-                          "library": "lucide",
-                          "fill": "$text-tertiary"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "U7kn3",
                       "name": "Row · Checkpoint Terms",
                       "width": "fill_container",
@@ -297683,96 +297590,6 @@
                         {
                           "type": "icon",
                           "id": "elk4M",
-                          "name": "IconChevronRight",
-                          "width": 16,
-                          "height": 16,
-                          "icon": "chevron-right",
-                          "library": "lucide",
-                          "fill": "$text-tertiary"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "yDarr",
-                      "name": "Row · Withdrawal Waiver",
-                      "width": "fill_container",
-                      "height": 72,
-                      "stroke": "$border",
-                      "strokeAlignment": "inner",
-                      "gap": 16,
-                      "padding": [
-                        0,
-                        24
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "f7jz4s",
-                          "name": "IconTile",
-                          "width": 40,
-                          "height": 40,
-                          "fill": "$neutral-100",
-                          "cornerRadius": "$radius-md",
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "fieAv",
-                              "name": "IconFileText",
-                              "width": 20,
-                              "height": 20,
-                              "icon": "file-text",
-                              "library": "lucide",
-                              "fill": "$text-secondary"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "ZTH0Z",
-                          "name": "Title (link)",
-                          "fill": "$text-primary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Withdrawal Waiver",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "500"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "awcFG",
-                          "name": "Version",
-                          "width": 200,
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "Ng0vK",
-                              "fill": "$text-primary",
-                              "content": "Version 1",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "g2IXaH",
-                              "fill": "$text-tertiary",
-                              "content": "in effect since 1 Nov 2026",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "icon",
-                          "id": "Idc8c",
                           "name": "IconChevronRight",
                           "width": 16,
                           "height": 16,
@@ -301717,376 +301534,8 @@
                 },
                 {
                   "type": "frame",
-                  "id": "xSPZj",
-                  "name": "Row · Anna Petrova · Withdrawal Waiver",
-                  "width": "fill_container",
-                  "height": 56,
-                  "stroke": "$border",
-                  "strokeWidth": {
-                    "bottom": 1
-                  },
-                  "strokeAlignment": "inner",
-                  "padding": [
-                    0,
-                    8
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "KRLTl",
-                      "name": "td-user",
-                      "width": 200,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "yGLWC",
-                          "name": "Avatar",
-                          "width": 24,
-                          "height": 24,
-                          "fill": "$neutral-100",
-                          "cornerRadius": 999,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "op8Kh",
-                              "name": "T",
-                              "fill": "$text-secondary",
-                              "content": "AP",
-                              "fontFamily": "$font",
-                              "fontSize": 10,
-                              "fontWeight": "600"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "O2cOH",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "w7VhHo",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Anna Petrova",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "HF8RH",
-                              "name": "T",
-                              "fill": "$text-tertiary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "anna@hollowtide.io",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "N3P9qN",
-                      "name": "td-document",
-                      "width": 190,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "U3O23j",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "R26Jdr",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Withdrawal Waiver",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "xpS1M",
-                              "name": "T",
-                              "fill": "$text-tertiary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "v1 · en",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "h9YrzY",
-                      "name": "td-checkpoint",
-                      "width": 170,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "bijQv",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "cXV8a",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Hollow Tide",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "rnWLW",
-                              "name": "T",
-                              "fill": "$text-tertiary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Checkpoint 2",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "B5OAU",
-                      "name": "td-accepted",
-                      "width": 130,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "bg53x",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "uO7T0",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "content": "14 Oct 2026",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "Khs7L",
-                              "name": "T",
-                              "fill": "$text-tertiary",
-                              "content": "11:22:38",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "KAFC2",
-                      "name": "td-ip",
-                      "width": 120,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Q7qrn",
-                          "name": "T",
-                          "fill": "$text-primary",
-                          "content": "78.56.4.91",
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "D8rm1",
-                      "name": "td-ua",
-                      "width": "fill_container",
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "XhNcE",
-                          "name": "T",
-                          "fill": "$text-secondary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Mozilla/5.0…",
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "J7BAH",
-                      "name": "td-checksum",
-                      "width": 150,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Izi2N",
-                          "name": "T",
-                          "fill": "$text-primary",
-                          "content": "2c9f4d11…8b03",
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "xoIcx",
-                          "name": "IconButton · Copy checksum",
-                          "width": 32,
-                          "height": 32,
-                          "cornerRadius": "$radius-md",
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "M2tYxj",
-                              "name": "IconCopy",
-                              "width": 14,
-                              "height": 14,
-                              "icon": "copy",
-                              "library": "lucide",
-                              "fill": "$text-tertiary"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "OSxoA",
-                      "name": "td-context",
-                      "width": 160,
-                      "height": "fill_container",
-                      "gap": 8,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "Ejcwm",
-                          "name": "Tag · Checkpoint purchase",
-                          "height": 22,
-                          "fill": "$neutral-100",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            0,
-                            8
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "B4n2kM",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "content": "Checkpoint purchase",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
                   "id": "Hgwix",
-                  "name": "Row · Marek Kowalski · Expert Services Terms",
+                  "name": "Row · Marek Kowalski · Advisor Agreement",
                   "width": "fill_container",
                   "height": 56,
                   "padding": [
@@ -302193,7 +301642,7 @@
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Expert Services Terms",
+                              "content": "Advisor Agreement",
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -302412,7 +301861,7 @@
                               "id": "NG5WP",
                               "name": "T",
                               "fill": "$text-primary",
-                              "content": "Expert services on",
+                              "content": "Paid work on",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "normal"
@@ -308110,7 +307559,7 @@
                             {
                               "type": "frame",
                               "id": "y4356",
-                              "name": "Expert Services (first)",
+                              "name": "Payout details (first)",
                               "width": "fill_container",
                               "cornerRadius": "$radius-lg",
                               "stroke": "$card-border",
@@ -308125,7 +307574,7 @@
                                   "id": "tYZ8w",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "Expert Services",
+                                  "content": "Payout details",
                                   "lineHeight": 1.5,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
@@ -308461,7 +307910,7 @@
                                 {
                                   "type": "frame",
                                   "id": "zGirN",
-                                  "name": "ClickwrapField · ExpertServicesTerms",
+                                  "name": "ClickwrapField · AdvisorAgreement",
                                   "width": "fill_container",
                                   "layout": "vertical",
                                   "gap": 4,
@@ -308518,7 +307967,7 @@
                                               "id": "tfl3e",
                                               "name": "T",
                                               "fill": "$link",
-                                              "content": "Expert Services Terms",
+                                              "content": "Advisor Agreement",
                                               "lineHeight": 1.5,
                                               "fontFamily": "$font",
                                               "fontSize": 14,
@@ -309350,7 +308799,7 @@
                             {
                               "type": "frame",
                               "id": "S5xY5W",
-                              "name": "Expert Services (first)",
+                              "name": "Payout details (first)",
                               "width": "fill_container",
                               "cornerRadius": "$radius-lg",
                               "stroke": "$card-border",
@@ -309365,7 +308814,7 @@
                                   "id": "qhD3H",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "Expert Services",
+                                  "content": "Payout details",
                                   "lineHeight": 1.5,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
@@ -309725,7 +309174,7 @@
                                 {
                                   "type": "frame",
                                   "id": "Fvcy9",
-                                  "name": "ClickwrapField · ExpertServicesTerms (error)",
+                                  "name": "ClickwrapField · AdvisorAgreement (error)",
                                   "width": "fill_container",
                                   "layout": "vertical",
                                   "gap": 4,
@@ -309782,7 +309231,7 @@
                                               "id": "DE8Sv",
                                               "name": "T",
                                               "fill": "$link",
-                                              "content": "Expert Services Terms",
+                                              "content": "Advisor Agreement",
                                               "lineHeight": 1.5,
                                               "fontFamily": "$font",
                                               "fontSize": 14,
@@ -309807,7 +309256,7 @@
                                           "id": "Nr9gC",
                                           "name": "T",
                                           "fill": "$error",
-                                          "content": "You need to accept the Expert Services Terms to get paid",
+                                          "content": "You need to accept the Advisor Agreement to get paid",
                                           "lineHeight": 1.5,
                                           "fontFamily": "$font",
                                           "fontSize": 14,
@@ -310637,7 +310086,7 @@
                             {
                               "type": "frame",
                               "id": "Hd4ct",
-                              "name": "Expert Services (first)",
+                              "name": "Payout details (first)",
                               "width": "fill_container",
                               "cornerRadius": "$radius-lg",
                               "stroke": "$card-border",
@@ -310652,7 +310101,7 @@
                                   "id": "cPA1m",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "Expert Services",
+                                  "content": "Payout details",
                                   "lineHeight": 1.5,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
@@ -311010,7 +310459,7 @@
                                 {
                                   "type": "frame",
                                   "id": "ioNqL",
-                                  "name": "Expert Services Terms · accepted",
+                                  "name": "Advisor Agreement · accepted",
                                   "width": "fill_container",
                                   "gap": 12,
                                   "alignItems": "center",
@@ -311050,7 +310499,7 @@
                                           "id": "z9iaKw",
                                           "name": "T",
                                           "fill": "$text-primary",
-                                          "content": "Expert Services Terms",
+                                          "content": "Advisor Agreement",
                                           "lineHeight": 1.5,
                                           "fontFamily": "$font",
                                           "fontSize": 14,
@@ -312461,176 +311910,6 @@
                                 {
                                   "type": "icon",
                                   "id": "yGkvN",
-                                  "name": "IconExternalLink",
-                                  "width": 12,
-                                  "height": 12,
-                                  "icon": "external-link",
-                                  "library": "lucide",
-                                  "fill": "$link"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "NInxc",
-                          "name": "Row",
-                          "width": "fill_container",
-                          "height": 52,
-                          "stroke": "$border",
-                          "strokeWidth": {
-                            "bottom": 1
-                          },
-                          "strokeAlignment": "inner",
-                          "padding": [
-                            0,
-                            8
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "ILXWQ",
-                              "width": "fill_container",
-                              "height": "fill_container",
-                              "gap": 6,
-                              "padding": [
-                                0,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "cbgcg",
-                                  "name": "T",
-                                  "fill": "$text-primary",
-                                  "content": "Expert Services Terms",
-                                  "lineHeight": 1.4,
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "cOvCd",
-                              "width": 90,
-                              "height": "fill_container",
-                              "gap": 6,
-                              "padding": [
-                                0,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "wE7cq",
-                                  "name": "T",
-                                  "fill": "$text-primary",
-                                  "content": "v1",
-                                  "lineHeight": 1.4,
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "Wpl7C",
-                              "width": 130,
-                              "height": "fill_container",
-                              "gap": 6,
-                              "padding": [
-                                0,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "r76OD2",
-                                  "name": "T",
-                                  "fill": "$text-primary",
-                                  "content": "12 Oct 2026",
-                                  "lineHeight": 1.4,
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "hWS9Y",
-                              "width": 170,
-                              "height": "fill_container",
-                              "gap": 6,
-                              "padding": [
-                                0,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "lq1zr",
-                                  "name": "Tag · Expert services on",
-                                  "height": 22,
-                                  "fill": "$neutral-100",
-                                  "cornerRadius": "$radius-sm",
-                                  "padding": [
-                                    0,
-                                    8
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "sEcbc",
-                                      "name": "T",
-                                      "fill": "$text-primary",
-                                      "content": "Expert services on",
-                                      "lineHeight": 1.4,
-                                      "fontFamily": "$font",
-                                      "fontSize": 12,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "q2Uk0",
-                              "width": 80,
-                              "height": "fill_container",
-                              "gap": 6,
-                              "padding": [
-                                0,
-                                16
-                              ],
-                              "justifyContent": "end",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "iGCCv",
-                                  "name": "T",
-                                  "fill": "$link",
-                                  "content": "Open",
-                                  "lineHeight": 1.4,
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "500"
-                                },
-                                {
-                                  "type": "icon",
-                                  "id": "nWoiS",
                                   "name": "IconExternalLink",
                                   "width": 12,
                                   "height": 12,
@@ -323804,7 +323083,7 @@
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Paid consultations follow the Expert Services Terms.",
+                              "content": "Paid consultations follow the Advisor Agreement.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -327845,7 +327124,7 @@
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Paid consultations follow the Expert Services Terms.",
+                              "content": "Paid consultations follow the Advisor Agreement.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -373131,7 +372410,7 @@
                                     {
                                       "type": "frame",
                                       "id": "TU1FY",
-                                      "name": "Clickwrap — Withdrawal Waiver",
+                                      "name": "Clickwrap — Start now (Purchase Terms 5.2)",
                                       "width": "fill_container",
                                       "gap": 12,
                                       "children": [
@@ -373168,7 +372447,7 @@
                                           "fill": "$text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "I want the checkpoint to start now and understand I lose the right of withdrawal for what is already provided (Withdrawal Waiver).",
+                                          "content": "I ask for the checkpoint to start before the 14-day withdrawal period ends. If I withdraw, I pay for what was already provided, and once it is fully provided I can no longer withdraw (Purchase Terms, 5.2).",
                                           "lineHeight": 1.45,
                                           "fontFamily": "$font",
                                           "fontSize": 12,

@@ -675,7 +675,7 @@ export type CheckpointFeedbackDto = {
 // Project curation (GDHUB-74)
 
 export type CurationDto = {
-	/** True until the Expert Services Terms are accepted and payout details saved. */
+	/** True until the Advisor Agreement in effect is accepted and payout details saved. */
 	locked: boolean;
 	on: boolean;
 	stages: string[];

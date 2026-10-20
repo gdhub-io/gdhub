@@ -31,7 +31,7 @@ export const aiCostMicros = (
 	return Math.round(inputTokens * price.input + outputTokens * price.output);
 };
 
-/** The curator's fee for the parts they delivered, rounded down (Expert Services Terms §3). */
+/** The curator's fee for the parts they delivered, rounded down (Advisor Agreement §7). */
 export const curatorFee = (paid: number, parts: number) => {
 	// In whole percent: 1 − 0.3 is 0.6999… in floating point, a cent short.
 	const percent = Math.round((1 - PLATFORM_SHARE) * 100);

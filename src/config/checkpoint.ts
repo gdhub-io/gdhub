@@ -145,7 +145,7 @@ export const CURATOR_PRICE = {
 	Expert: 450,
 } as const satisfies Partial<Record<SkillLevel, number>>;
 
-// Curator payouts (Expert Services Terms §3, §5)
+// Curator payouts (Advisor Agreement §7, §9)
 
 /** What the platform keeps of a human checkpoint's price; the curator's fee is the rest. */
 export const PLATFORM_SHARE = 0.3;

@@ -83,7 +83,7 @@ model ProjectCheckpoint {
   paymentId String?  @unique
 
   // The ticks before paying are LegalAcceptance rows with this checkpointId
-  // (Purchase Terms, Withdrawal Waiver) — see docs/legal/legal-layer.md.
+  // (the Purchase Terms, with params.startNow) — see docs/legal/legal-layer.md.
 
   goalAgreedAt   DateTime?                // consultation 1: the card the 28 days are judged against
   goalAgreedById String?                  // null when the AI curator confirmed it
@@ -595,10 +595,10 @@ treat the curator as a contractor who owes them a finished demo; a curator whose
 team went quiet does not carry the blame for a verdict that says so.
 
 `POST /api/checkpoint/[id]/pay` takes the two ticks with the click — the
-Checkpoint Purchase Terms and the Withdrawal Waiver — and refuses without them
+Checkpoint Purchase Terms and the request to start at once (`startNow`, their 5.2) — and refuses without them
 (400 `legal.required`, 409 `legal.outdated`), so a client that hides a checkbox
-still cannot start a checkout. Each is recorded as a `LegalAcceptance` with the
-version, the text's checksum and the `checkpointId`: a dispute a year later is
+still cannot start a checkout. Both are recorded as one `LegalAcceptance` — the
+request as `params.startNow` — with the version, the text's checksum and the `checkpointId`: a dispute a year later is
 about the text that was on screen that day, not today's.
 
 **The three lines on that screen are product copy, not the agreement.** What the
@@ -606,10 +606,10 @@ checkbox has to point at is a real document — the terms of a paid checkpoint,
 sitting beside [docs/legal/terms-of-use/v1.md](legal/terms-of-use/v1.md) and covering
 who owes what, what a refund is, what happens when a curator disappears and who
 holds the rights to what the team makes: the
-[Checkpoint Purchase Terms](legal/checkpoint-purchase-terms/v1.md), with the
-[Withdrawal Waiver](legal/withdrawal-waiver/v1.md) beside it. A curator takes a
-checkpoint on under the [Expert Services Terms](legal/expert-services-terms/v1.md),
-asked once before the first one.
+[Checkpoint Purchase Terms](legal/checkpoint-purchase-terms/v1.md); the request to start
+before the withdrawal period ends is their 5.2, ticked as its own box. A curator takes a
+checkpoint on under the [Advisor Agreement](legal/advisor-agreement/v1.md) they
+accepted when they switched the Advisor space on.
 
 The AI curator has one price in config for now. The human curator's price is
 computed from their hourly rate and lands with that issue.
@@ -850,7 +850,7 @@ feature that ships on manual checks.
   list; after it, neither can until day 14.
 - The first wording survives an edit on day 1 and a rewording on day 14 — one
   `originalText`, written once.
-- Paying is refused without the Purchase Terms and the Withdrawal Waiver in
+- Paying is refused without the Purchase Terms and the request to start at once in
   the request, even when it comes straight to the API.
 - The artifact check: a login page answering `200` is `unreachable`, not
   `readable`; a content type that contradicts the chosen kind is refused.

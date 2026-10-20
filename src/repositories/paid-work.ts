@@ -20,7 +20,7 @@ export const getPaidWork = async (userId: string): Promise<PaidWorkDto> => {
 			where: { userId },
 			select: { payoutHolder: true, payoutAccount: true, invoicing: true },
 		}),
-		latestAcceptance(userId, "ExpertServicesTerms"),
+		latestAcceptance(userId, "AdvisorAgreement"),
 	]);
 
 	return {
@@ -31,7 +31,7 @@ export const getPaidWork = async (userId: string): Promise<PaidWorkDto> => {
 			version: terms.version,
 			acceptedAt: terms.acceptedAt.toISOString(),
 		},
-		termsNeeded: needsAcceptance("ExpertServicesTerms", terms?.version),
+		termsNeeded: needsAcceptance("AdvisorAgreement", terms?.version),
 	};
 };
 
@@ -60,7 +60,7 @@ export const savePaidWork = async (
 			where: { userId },
 			select: { payoutHolder: true, payoutAccount: true, invoicing: true },
 		}),
-		latestAcceptance(userId, "ExpertServicesTerms"),
+		latestAcceptance(userId, "AdvisorAgreement"),
 	]);
 
 	const account = input.account
@@ -69,10 +69,10 @@ export const savePaidWork = async (
 	if (!account)
 		return { ok: false as const, error: "accountRequired" as const };
 
-	const acceptances = needsAcceptance("ExpertServicesTerms", terms?.version)
-		? resolveLegal(input.legal, ["ExpertServicesTerms"], {
+	const acceptances = needsAcceptance("AdvisorAgreement", terms?.version)
+		? resolveLegal(input.legal, ["AdvisorAgreement"], {
 				userId,
-				context: "ExpertServices",
+				context: "PaidWork",
 				meta,
 				now,
 			})
