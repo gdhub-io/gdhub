@@ -439,6 +439,16 @@
 	"actual vacancies": "actual vacancies",
 	"admin": {
 		"checkpoints": {
+			"kpi": {
+				"curators": "AI · person",
+				"curatorsNote": "{share}% with the AI curator",
+				"net": "Net",
+				"netNote": "Paid less refunded, before curators' fees",
+				"paid": "Paid",
+				"paidNote": "Taken from cards; holds aside",
+				"refunded": "Refunded",
+				"refundedNote": "Back to authors"
+			},
 			"list": {
 				"actions": "Actions",
 				"aiCurator": "AI curator",

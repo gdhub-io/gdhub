@@ -4,7 +4,7 @@ import {
 	CheckpointStatus,
 	PayableType,
 	PaymentStatus,
-	type Prisma,
+	Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
 import {
@@ -214,24 +214,79 @@ export const issueCheckpointRefund = async (
 
 const ADMIN_PAGE_SIZE = 20;
 
+type AdminFilter = {
+	status?: CheckpointStatus;
+	stage?: string;
+	curatorKind?: CheckpointCuratorKind;
+	query?: string;
+};
+
+/**
+ * The money and the curator mix behind the admin list, over every checkpoint
+ * the filter matches rather than the page shown. Money counts only what was
+ * taken: a hold still waiting is not revenue yet.
+ */
+const adminCheckpointTotals = async ({
+	status,
+	stage,
+	curatorKind,
+	query,
+}: AdminFilter) => {
+	const conditions = [
+		status
+			? Prisma.sql`c.status = ${status}::"CheckpointStatus"`
+			: Prisma.sql`c.status <> 'Draft'`,
+		...(stage ? [Prisma.sql`c."stageName" = ${stage}`] : []),
+		...(curatorKind
+			? [Prisma.sql`c."curatorKind" = ${curatorKind}::"CheckpointCuratorKind"`]
+			: []),
+		...(query ? [Prisma.sql`pr.name ILIKE ${`%${query}%`}`] : []),
+	];
+	const [row] = await prisma.$queryRaw<
+		{ paid: bigint; refunded: bigint; ai: bigint; human: bigint }[]
+	>`
+		WITH cp AS (
+			SELECT c.id, c."curatorKind"
+			FROM "ProjectCheckpoint" c
+			JOIN "Project" pr ON pr.id = c."projectId"
+			WHERE ${Prisma.join(conditions, " AND ")}
+		),
+		taken AS (
+			SELECT p.id, p.amount
+			FROM "Payment" p
+			JOIN cp ON cp.id = p."payableId"
+			WHERE p."payableType" = 'CHECKPOINT'
+				AND p.status IN ('COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED')
+		)
+		SELECT
+			(SELECT COALESCE(SUM(amount), 0) FROM taken) AS paid,
+			(SELECT COALESCE(SUM(r.amount), 0) FROM "Refund" r JOIN taken ON taken.id = r."paymentId") AS refunded,
+			(SELECT COUNT(*) FROM cp WHERE "curatorKind" = 'AI') AS ai,
+			(SELECT COUNT(*) FROM cp WHERE "curatorKind" = 'Human') AS human
+	`;
+
+	const paid = Number(row?.paid ?? 0);
+	const refunded = Number(row?.refunded ?? 0);
+
+	return {
+		paid,
+		refunded,
+		net: paid - refunded,
+		ai: Number(row?.ai ?? 0),
+		human: Number(row?.human ?? 0),
+	};
+};
+
 /**
  * Every checkpoint past Draft, newest first, for the admin checkpoints list:
  * a checkpoint leaves Draft through a payment (seeded ones aside), and one
  * cancelled before day 1 is deleted rather than kept.
  */
 export const listAdminCheckpoints = async ({
-	status,
-	stage,
-	curatorKind,
-	query,
 	page = 1,
-}: {
-	status?: CheckpointStatus;
-	stage?: string;
-	curatorKind?: CheckpointCuratorKind;
-	query?: string;
-	page?: number;
-}): Promise<AdminCheckpointsPageDto> => {
+	...filter
+}: AdminFilter & { page?: number }): Promise<AdminCheckpointsPageDto> => {
+	const { status, stage, curatorKind, query } = filter;
 	const paid = { status: { not: CheckpointStatus.Draft } };
 	const where: Prisma.ProjectCheckpointWhereInput = {
 		...(status ? { status } : paid),
@@ -241,7 +296,7 @@ export const listAdminCheckpoints = async ({
 			project: { name: { contains: query, mode: "insensitive" } },
 		}),
 	};
-	const [total, rows, stages] = await Promise.all([
+	const [total, rows, stages, totals] = await Promise.all([
 		prisma.projectCheckpoint.count({ where }),
 		prisma.projectCheckpoint.findMany({
 			where,
@@ -266,6 +321,7 @@ export const listAdminCheckpoints = async ({
 			orderBy: { stageName: "asc" },
 			select: { stageName: true },
 		}),
+		adminCheckpointTotals(filter),
 	]);
 
 	const [payments, numbers] = await Promise.all([
@@ -290,6 +346,7 @@ export const listAdminCheckpoints = async ({
 		total,
 		pageSize: ADMIN_PAGE_SIZE,
 		stages: stages.map((row) => row.stageName),
+		totals,
 		items: rows.map((row, index) => {
 			// A declined checkpoint paid again has two rows; the newest speaks for it.
 			const payment = payments.find((one) => one.payableId === row.id);

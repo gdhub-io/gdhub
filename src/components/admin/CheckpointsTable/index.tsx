@@ -21,6 +21,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
 import styles from "@/components/admin/PromoCodesTable/style.module.scss";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
 import { EmptyState, StatusDot, type StatusTone } from "@/components/ui";
@@ -149,14 +150,16 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			align: "right",
 			render: (_, row) =>
 				row.refunded ? (
-					<span className={styles.number}>
-						{formatCheckpointMoney(row.refunded)}
+					<Flex vertical align="flex-end">
+						<span className={styles.number}>
+							{formatCheckpointMoney(row.refunded)}
+						</span>
 						{row.refundReason && (
 							<Typography.Text type="secondary" className={own.sub}>
-								{` · ${reasonLabels[row.refundReason]}`}
+								{reasonLabels[row.refundReason]}
 							</Typography.Text>
 						)}
-					</span>
+					</Flex>
 				) : (
 					<span className={styles.none}>—</span>
 				),
@@ -228,6 +231,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 
 	return (
 		<Flex vertical gap={16}>
+			<CheckpointKpis totals={list.data?.totals} />
 			<Flex justify="space-between" gap={16} wrap>
 				<Segmented<"all" | CheckpointStatus>
 					value={filter.status ?? "all"}

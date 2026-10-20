@@ -202,6 +202,8 @@ export function buildAntdTheme({
 				multipleItemHeight: 26,
 				hoverBorderColor: r.borderStrong,
 				activeBorderColor: r.accent,
+				// Without it antd draws its own graphite ring around the brand border.
+				activeOutlineColor: "rgba(241, 85, 65, 0.2)",
 			},
 			// A segmented switch stands next to inputs and selects, so it has to be
 			// the same height and carry the same corner. The inner item nests

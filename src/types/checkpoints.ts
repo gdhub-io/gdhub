@@ -495,6 +495,15 @@ export type AdminCheckpointsPageDto = {
 	items: AdminCheckpointRowDto[];
 	/** Every stage a paid checkpoint has run on, for the stage filter. */
 	stages: string[];
+	/** Over every checkpoint the filter matches, not the page. Minor units. */
+	totals: {
+		paid: number;
+		refunded: number;
+		/** Before the curators' fees (GDHUB-74). */
+		net: number;
+		ai: number;
+		human: number;
+	};
 };
 
 /** What a refund would return (frames 11.6–11.6d); the same sum for every reason. */

@@ -29,6 +29,7 @@ const PAGE: AdminCheckpointsPageDto = {
 	total: 4,
 	pageSize: 20,
 	stages: ["Ideation", "Prototyping"],
+	totals: { paid: 113000, refunded: 24000, net: 89000, ai: 1, human: 3 },
 	items: [
 		row({}),
 		row({
@@ -78,7 +79,13 @@ export const Empty: Story = {
 	decorators: [
 		withQueries({
 			key: KEY,
-			data: { ...PAGE, total: 0, items: [], stages: [] },
+			data: {
+				...PAGE,
+				total: 0,
+				items: [],
+				stages: [],
+				totals: { paid: 0, refunded: 0, net: 0, ai: 0, human: 0 },
+			},
 		}),
 	],
 };

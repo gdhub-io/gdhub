@@ -183,3 +183,10 @@ and it is not destructive to data. Ship a story per state for `RefundCheckpointM
   have run on, from the server) and **curator** (a person / AI curator); search stays on the
   project name.
 - A checkpoint started without a payment (seeded) shows `—` under Paid and has no menu.
+- Four KPI cards above the toolbar (`CheckpointKpis`, styled as the Views KPI cards): **Paid**
+  (captured, holds aside), **Refunded**, **Net** (paid less refunded, before curators' fees),
+  **AI · person** (counts and the AI share). They follow every filter and the search, over all
+  matching checkpoints rather than the page.
+- Refunded: the reason sits under the sum, not beside it.
+- Selects get the brand focus ring (`activeOutlineColor`), app-wide — antd drew its own
+  graphite ring around the brand border.
