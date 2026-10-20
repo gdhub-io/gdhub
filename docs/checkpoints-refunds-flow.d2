@@ -46,7 +46,7 @@ send: "issueCheckpointRefund" {
   done: "409 alreadyRefunded → 11.6c"
   stripe: "stripe.refunds.create({ payment_intent, amount },\n  { idempotencyKey: checkpoint-refund-<id> })"
   fail: "Stripe refused → nothing written\n500 refundFailed → 11.6d"
-  write: "one transaction:\nRefund {amount, reason, providerRefundId}\nPayment → PARTIALLY_REFUNDED / REFUNDED\ncheckpoint → Cancelled (no verdict, no certificate)\nupcoming sessions removed\nAuditLog {actor: admin, checkpoint, reason, amount}"
+  write: "one transaction:\nRefund {amount, reason, providerRefundId}\nPayment → PARTIALLY_REFUNDED / REFUNDED\ncheckpoint → Cancelled (no verdict, no certificate;\n  frees the curator's hours, stops the reminders)\nAuditLog {actor: admin, checkpoint, reason, amount}"
   after: "after the transaction:\nchat room closed (closeCheckpointRoom)\nauthor: email + in-app notification"
   once -> done: yes
   once -> stripe: no

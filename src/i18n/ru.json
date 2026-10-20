@@ -439,6 +439,45 @@
 	"actual vacancies": "открытых вакансий",
 	"admin": {
 		"checkpoints": {
+			"list": {
+				"aiCurator": "Куратор ИИ",
+				"checkpoint": "Контрольная точка {number} · этап {stage}",
+				"column": {
+					"curator": "Куратор",
+					"paid": "Платное",
+					"project": "Проект",
+					"refunded": "Возвращено",
+					"status": "Статус"
+				},
+				"empty": "Пока нет оплаченных контрольных точек",
+				"emptyFiltered": "Нет контрольных точек",
+				"error": {
+					"description": "Сервер не ответил. Повторите попытку через минуту.",
+					"retry": "Попробовать снова",
+					"title": "Не удалось загрузить чекпоинты"
+				},
+				"filter": {
+					"all": "Все"
+				},
+				"reason": {
+					"cancelled": "Отменено до дня 1",
+					"curatorGone": "Куратор отсутствует",
+					"declined": "Куратор отклонил",
+					"noVerdict": "Нет вердикта",
+					"stripe": "В Stripe",
+					"withdrawal": "Снятие"
+				},
+				"refund": "Возврат…",
+				"search": "Поиск по проекту",
+				"status": {
+					"active": "Активные",
+					"awaitingCurator": "Ожидание куратора",
+					"cancelled": "Отменён",
+					"closed": "Закрыта",
+					"review": "Ревью"
+				},
+				"total": "{count} оплаченных контрольных точек"
+			},
 			"promoCodes": {
 				"column": {
 					"code": "Код",
@@ -509,7 +548,36 @@
 				},
 				"toggleFailed": "Не удалось изменить код. Попробуйте снова."
 			},
+			"refund": {
+				"amount": "Возврат",
+				"consequence": "Контрольная точка закрывается; автор получает электронное письмо.",
+				"done": "Возвращено {amount} на {date} · {reason}",
+				"onePart": "Одна часть",
+				"paid": "Платное",
+				"partsDetail": {
+					"ai": "Написанные отзывы {reviews} · вердикт {verdictSent, select, true {отправлено} other {не отправлено}}",
+					"human": "Проведенные звонки {calls} · вердикт {verdictSent, select, true {отправлено} other {не отправлено}}"
+				},
+				"partsProvided": "Запчасти предоставлены",
+				"partsValue": "{предоставлено} из {всего}",
+				"pickReason": "Выберите причину",
+				"reason": {
+					"curatorGone": "Куратор ушел, замены нет",
+					"noVerdict": "Нет вердикта к дню 31",
+					"withdrawal": "Снятие в течение 14 дней"
+				},
+				"reasonLabel": "Причина",
+				"stripeFailed": "Stripe не вернул деньги — ничего не записано. Попробуйте еще раз.",
+				"submit": "Возврат {amount}",
+				"success": "Возвращено {amount}",
+				"title": "Возврат {project} · Контрольная точка {number}",
+				"withdrawal": {
+					"over": "Оплачено {date} — 14 дней истекли",
+					"within": "Только в течение 14 дней с момента оплаты — оплачено {date}, {days} дней назад."
+				}
+			},
 			"tab": {
+				"checkpoints": "Контрольные точки",
 				"promoCodes": "Промокоды"
 			},
 			"title": "Контрольные точки"
@@ -1727,6 +1795,7 @@
 		"apply": "Применить",
 		"back": "Назад",
 		"cancel": "Отмена",
+		"close": "Закрыть",
 		"delete": "Удалить",
 		"save": "Сохранить"
 	},
@@ -3611,6 +3680,7 @@
 	},
 	"promised equity will become actual": "обещанная доля перейдет в ваше владение",
 	"public-menu": {
+		"checkpoint": "Чекпоинт",
 		"contacts": "Контакты",
 		"events": "Мероприятия",
 		"for-authors": "Авторам",

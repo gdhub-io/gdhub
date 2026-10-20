@@ -169,3 +169,9 @@ and it is not destructive to data. Ship a story per state for `RefundCheckpointM
 - Does the confirm need a second step (`modal.confirm`)? Assumed no — the dialog already shows the
   amount on the button.
 - Currency assumed USD as in the promo codes spec.
+
+## 10. As built (2026-10-20)
+
+- The promo code is not stored on the payment, so the list and the dialog show what was
+  paid without the code's name ("$360", not "$360 · code SPRING20").
+- Older refunds read by their reason: "Cancelled before day 1", "Curator declined", "In Stripe".

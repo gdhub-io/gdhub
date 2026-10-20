@@ -116,7 +116,19 @@ export const CHECKPOINT_CURRENCY = "USD";
 export const CHECKPOINT_MINOR_UNITS = 100;
 
 /** The AI curator has one price and it does not move with the team. */
-export const CHECKPOINT_AI_PRICE = 19;
+export const CHECKPOINT_AI_PRICE = 20;
+
+// Refunds
+
+/**
+ * What a checkpoint is split into, for a refund and for the curator's fee
+ * (GDHUB-74): five calls and the verdict with a person — the goal card is fixed
+ * on call 1 and counts with it — and three reviews and the final one with the
+ * verdict for the AI. Every price splits by these with no remainder.
+ */
+export const CHECKPOINT_PARTS = { Human: 6, AI: 4 } as const;
+/** EU right of withdrawal, from the day the price is paid. */
+export const WITHDRAWAL_DAYS = 14;
 
 /**
  * A curator's price by level, for any team up to `CHECKPOINT_MAX_TEAM`. A level

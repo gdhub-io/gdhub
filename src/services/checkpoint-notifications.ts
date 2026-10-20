@@ -123,6 +123,37 @@ export const notifyAuthorOfAnswer = async (
 	});
 };
 
+/** Money back on a checkpoint that stops, and why. `amount` is in whole units. */
+export const notifyAuthorOfRefund = async (
+	checkpointId: string,
+	amount: string,
+	reason: "withdrawal" | "curatorGone" | "noVerdict",
+) => {
+	const row = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			projectId: true,
+			createdAt: true,
+			project: { select: { slug: true, author: recipient } },
+		},
+	});
+	if (!row) return;
+
+	const number = await checkpointNumber(row);
+	const why = {
+		withdrawal: "You withdrew from it within the 14 days.",
+		curatorGone:
+			"Your curator stopped and we could not find a replacement in time.",
+		noVerdict: "No verdict was sent by the end of day 31.",
+	}[reason];
+
+	await notify(row.project.author, `cp-refund-${checkpointId}`, {
+		title: `Checkpoint ${number} is closed and ${amount} is on its way back`,
+		message: `${why} The refund reaches your card in 5–10 business days. It covers everything that was not delivered.`,
+		redirectUrl: workflowUrl(row.project.slug),
+	});
+};
+
 const HOUR = 60 * 60 * 1000;
 
 /** A team member, with the time zone their reminders are written in. */

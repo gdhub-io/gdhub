@@ -1,4 +1,8 @@
-import { CURATOR_PRICE } from "@/config/checkpoint";
+import {
+	CHECKPOINT_MINOR_UNITS,
+	CHECKPOINT_PRICE_CURRENCY,
+	CURATOR_PRICE,
+} from "@/config/checkpoint";
 
 /**
  * Who may curate a checkpoint and what they cost, in one place so both change
@@ -34,3 +38,10 @@ export const CHECKPOINT_MIN_CURATOR_PRICE = Math.min(
 /** Server-only: whether a new checkpoint can be bought at all. */
 export const checkpointPurchaseOpen = () =>
 	process.env.CHECKPOINTS_PURCHASE_OPEN === "true";
+
+/** A sum in minor units as the screens write it: "$450", or "$13.30" with cents. */
+export const formatCheckpointMoney = (minor: number) => {
+	const whole = minor / CHECKPOINT_MINOR_UNITS;
+
+	return `${CHECKPOINT_PRICE_CURRENCY}${Number.isInteger(whole) ? whole : whole.toFixed(2)}`;
+};

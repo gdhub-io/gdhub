@@ -5,6 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Tabs } from "antd";
 import { useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { CheckpointsTable } from "@/components/admin/CheckpointsTable";
 import { NewPromoCodeModal } from "@/components/admin/NewPromoCodeModal";
 import { PromoCodesTable } from "@/components/admin/PromoCodesTable";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
@@ -17,6 +18,7 @@ export default function AdminCheckpointsPage() {
 	const { can } = useAccess();
 	const canManage = can("admin.checkpoints.manage");
 	const [creating, setCreating] = useState(false);
+	const [tab, setTab] = useState("checkpoints");
 	const promoCodes = usePromoCodes();
 
 	return (
@@ -25,7 +27,8 @@ export default function AdminCheckpointsPage() {
 				<ProtectedPageHeader
 					title={t("admin.checkpoints.title", "Checkpoints")}
 					extra={
-						canManage && (
+						canManage &&
+						tab === "promo-codes" && (
 							<Button
 								type="primary"
 								icon={<IconPlus size={16} />}
@@ -39,7 +42,14 @@ export default function AdminCheckpointsPage() {
 
 				<Tabs
 					className={styles.tabs}
+					activeKey={tab}
+					onChange={setTab}
 					items={[
+						{
+							key: "checkpoints",
+							label: t("admin.checkpoints.tab.checkpoints", "Checkpoints"),
+							children: <CheckpointsTable canManage={canManage} />,
+						},
 						{
 							key: "promo-codes",
 							label: t("admin.checkpoints.tab.promoCodes", "Promo codes"),

@@ -147,6 +147,25 @@ export const refundCheckout = async (sessionId: string) => {
 };
 
 /**
+ * Returns part of a captured checkout. The key makes a repeated call — a
+ * double click, a retry after a timeout — the same refund rather than a second.
+ */
+export const refundCheckoutPart = async (
+	sessionId: string,
+	amount: number,
+	idempotencyKey: string,
+) => {
+	const intent = await intentOfSession(sessionId);
+
+	return intent
+		? stripe().refunds.create(
+				{ payment_intent: intent, amount },
+				{ idempotencyKey },
+			)
+		: null;
+};
+
+/**
  * The checkout session a payment intent belongs to.
  *
  * `Payment.providerTransactionId` holds the session id, but refund and dispute
