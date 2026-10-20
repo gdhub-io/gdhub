@@ -9,6 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { runningCheckpointLock } from "@/repositories/checkpoint-guards";
 import {
 	stepName,
 	taskName,
@@ -147,6 +148,7 @@ export const PUT = pipe(
 		where: { id },
 		select: {
 			id: true,
+			projectId: true,
 			currentStepId: true,
 			steps: {
 				select: { id: true, tasks: { select: { id: true } } },
@@ -157,11 +159,16 @@ export const PUT = pipe(
 
 	if (!existing) return apiError.notFound("Project workflow not found");
 
+	const plan = steps && planSteps(steps, existing.steps);
+	if (plan?.deleteIds.length) {
+		const lock = await runningCheckpointLock(existing.projectId);
+		if (lock) return apiError.conflict("checkpointRunning", lock);
+	}
+
 	const updated = await prisma.$transaction(async (tx) => {
 		let survivingIds = existing.steps.map((step) => step.id);
 
-		if (steps) {
-			const plan = planSteps(steps, existing.steps);
+		if (plan) {
 			const tasksByStepId = new Map(
 				existing.steps.map((step) => [step.id, step.tasks]),
 			);

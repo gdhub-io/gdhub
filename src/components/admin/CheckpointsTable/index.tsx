@@ -5,6 +5,8 @@ import {
 	IconDotsVertical,
 	IconReceiptRefund,
 	IconRefresh,
+	IconSignature,
+	IconUserPlus,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -23,6 +25,8 @@ import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import debounce from "lodash/debounce";
 import { useMemo, useState } from "react";
+import { AdminVerdictModal } from "@/components/admin/AdminVerdictModal";
+import { AssignCuratorModal } from "@/components/admin/AssignCuratorModal";
 import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
 import styles from "@/components/admin/PromoCodesTable/style.module.scss";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
@@ -44,6 +48,7 @@ const LISTED = [
 	CheckpointStatus.Review,
 	CheckpointStatus.Closed,
 	CheckpointStatus.Cancelled,
+	CheckpointStatus.Draft,
 ] as const;
 
 const TONE: Partial<Record<CheckpointStatus, StatusTone>> = {
@@ -63,6 +68,8 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 	const { t } = useTranslate();
 	const [filter, setFilter] = useState<AdminCheckpointsFilter>({ page: 1 });
 	const [refunding, setRefunding] = useState<Row | null>(null);
+	const [deciding, setDeciding] = useState<Row | null>(null);
+	const [assigning, setAssigning] = useState<Row | null>(null);
 	const list = useAdminCheckpoints(filter);
 	const [typed, setTyped] = useState("");
 	const projectOptions = useCheckpointProjectOptions(typed);
@@ -81,6 +88,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		Review: t("admin.checkpoints.list.status.review", "Review"),
 		Closed: t("admin.checkpoints.list.status.closed", "Closed"),
 		Cancelled: t("admin.checkpoints.list.status.cancelled", "Cancelled"),
+		Draft: t("admin.checkpoints.list.status.draft", "Draft"),
 	};
 
 	const loading = list.isPending;
@@ -130,13 +138,31 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		{
 			title: t("admin.checkpoints.list.column.status", "Status"),
 			key: "status",
-			width: 160,
-			render: (_, row) => (
-				<StatusDot
-					tone={TONE[row.status] ?? "neutral"}
-					label={statusLabels[row.status] ?? row.status}
-				/>
-			),
+			width: 240,
+			render: (_, row) =>
+				row.overdue && row.verdictDueBy ? (
+					<Flex vertical>
+						<StatusDot
+							tone="danger"
+							label={t("admin.checkpoints.list.status.overdue", "Overdue")}
+						/>
+						<Typography.Text type="secondary" className={own.sub}>
+							{t(
+								"admin.checkpoints.list.overdueNote",
+								"Verdict due {date} — {days, plural, one {# day} other {# days}} late",
+								{
+									date: dayjs.utc(row.verdictDueBy).format("D MMM"),
+									days: dayjs().diff(dayjs.utc(row.verdictDueBy), "day"),
+								},
+							)}
+						</Typography.Text>
+					</Flex>
+				) : (
+					<StatusDot
+						tone={TONE[row.status] ?? "neutral"}
+						label={statusLabels[row.status] ?? row.status}
+					/>
+				),
 		},
 		{
 			title: t("admin.checkpoints.list.column.paid", "Paid"),
@@ -177,34 +203,63 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			key: "action",
 			width: 56,
 			align: "right",
-			render: (_, row) =>
-				canManage &&
-				row.canRefund && (
-					<Dropdown
-						trigger={["click"]}
-						placement="bottomRight"
-						menu={{
-							items: [
-								{
-									key: "refund",
-									icon: <IconReceiptRefund size={14} />,
-									label: t(
-										"admin.checkpoints.list.refundPayment",
-										"Refund payment",
-									),
-									onClick: () => setRefunding(row),
-								},
-							],
-						}}
-					>
-						<Button
-							type="text"
-							size="small"
-							icon={<IconDotsVertical size={16} />}
-							aria-label={t("admin.checkpoints.list.actions", "Actions")}
-						/>
-					</Dropdown>
-				),
+			render: (_, row) => {
+				const curating = [
+					row.overdue && {
+						key: "verdict",
+						icon: <IconSignature size={14} />,
+						label: t(
+							"admin.checkpoints.menu.writeVerdict",
+							"Write the verdict",
+						),
+						onClick: () => setDeciding(row),
+					},
+					row.canAssign && {
+						key: "assign",
+						icon: <IconUserPlus size={14} />,
+						label: t("admin.checkpoints.menu.assign", "Assign a curator"),
+						onClick: () => setAssigning(row),
+					},
+				].filter((item) => !!item);
+				const money = row.canRefund
+					? [
+							{
+								key: "refund",
+								icon: <IconReceiptRefund size={14} />,
+								label: t(
+									"admin.checkpoints.list.refundPayment",
+									"Refund payment",
+								),
+								onClick: () => setRefunding(row),
+							},
+						]
+					: [];
+				const items = [
+					...curating,
+					...(curating.length && money.length
+						? [{ type: "divider" as const }]
+						: []),
+					...money,
+				];
+
+				return (
+					canManage &&
+					items.length > 0 && (
+						<Dropdown
+							trigger={["click"]}
+							placement="bottomRight"
+							menu={{ items }}
+						>
+							<Button
+								type="text"
+								size="small"
+								icon={<IconDotsVertical size={16} />}
+								aria-label={t("admin.checkpoints.list.actions", "Actions")}
+							/>
+						</Dropdown>
+					)
+				);
+			},
 		},
 	];
 
@@ -361,6 +416,18 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			/>
 
 			{/* Keyed so each checkpoint opens on a fresh reason and mutation. */}
+			{deciding && (
+				<AdminVerdictModal
+					checkpointId={deciding.id}
+					onClose={() => setDeciding(null)}
+				/>
+			)}
+			{assigning && (
+				<AssignCuratorModal
+					checkpoint={assigning}
+					onClose={() => setAssigning(null)}
+				/>
+			)}
 			<RefundCheckpointModal
 				key={refunding?.id}
 				checkpoint={refunding}

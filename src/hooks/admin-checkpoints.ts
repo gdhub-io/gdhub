@@ -11,11 +11,15 @@ import axios from "axios";
 import type {
 	CheckpointCuratorKind,
 	CheckpointStatus,
+	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
 import type {
 	AdminCheckpointsPageDto,
+	AdvisorCheckpointDto,
+	AdvisorProjectDto,
 	CheckpointRefundQuoteDto,
+	VerdictContextDto,
 } from "@/types/checkpoints";
 
 const ROOT = ["admin", "checkpoints"];
@@ -89,6 +93,10 @@ export const useRefundReasonLabels = (): Record<RefundRowReason, string> => {
 			"admin.checkpoints.refund.reason.noVerdict",
 			"No verdict by day 31",
 		),
+		missedCalls: t(
+			"admin.checkpoints.refund.reason.missedCalls",
+			"Calls never held",
+		),
 		checkpointCancelled: t(
 			"admin.checkpoints.refund.reason.checkpointCancelled",
 			"Cancelled before day 1",
@@ -112,3 +120,50 @@ export const useCheckpointProjectOptions = (query: string) =>
 				.data,
 		placeholderData: keepPreviousData,
 	});
+
+export type AdminVerdictDto = {
+	checkpoint: AdvisorCheckpointDto;
+	context: VerdictContextDto;
+	project: AdvisorProjectDto;
+	missed: {
+		parts: number;
+		provided: number;
+		refund: number;
+	} | null;
+};
+
+export const useAdminVerdict = (checkpointId?: string) =>
+	useQuery({
+		queryKey: [...ROOT, "verdict", checkpointId],
+		queryFn: async () =>
+			(await axios.get<AdminVerdictDto>(`${URL}/${checkpointId}/verdict`)).data,
+		enabled: !!checkpointId,
+	});
+
+export const useSendAdminVerdict = (checkpointId: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: { verdict: CheckpointVerdict; note: string }) =>
+			(
+				await axios.post<{ refunded: number }>(
+					`${URL}/${checkpointId}/verdict`,
+					body,
+				)
+			).data,
+		onSettled: () => queryClient.invalidateQueries({ queryKey: LIST_KEY }),
+	});
+};
+
+export const useAssignCurator = (checkpointId: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: {
+			kind: CheckpointCuratorKind;
+			userId?: string;
+			reason: string;
+		}) => (await axios.post(`${URL}/${checkpointId}/curator`, body)).data,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: LIST_KEY }),
+	});
+};

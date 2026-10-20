@@ -9,6 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { runningCheckpointLock } from "@/repositories/checkpoint-guards";
 import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
 import { applyResetPlan } from "@/services/workflow/applyResetPlan";
@@ -46,6 +47,7 @@ export const POST = pipe(
 		where: { id },
 		select: {
 			id: true,
+			projectId: true,
 			workflowSchemaId: true,
 			currentStepId: true,
 			steps: {
@@ -63,6 +65,10 @@ export const POST = pipe(
 	});
 
 	if (!workflow) return apiError.notFound("Project workflow not found");
+
+	// The dry run says the same, so the dialog can name it before anyone confirms.
+	const lock = await runningCheckpointLock(workflow.projectId);
+	if (lock) return apiError.conflict("checkpointRunning", lock);
 
 	const schemaId = templateId ?? workflow.workflowSchemaId;
 	if (!schemaId) {

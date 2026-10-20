@@ -253,3 +253,21 @@
 .grow {
 	flex: 1;
 }
+
+/* Frame 11.8: what an administrator's verdict refunds, above the button. */
+.missed {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.missedValue {
+	font-feature-settings: "tnum";
+}
+
+.adminAlert {
+	margin: var(--gd-space-4) var(--gd-space-6) 0;
+}

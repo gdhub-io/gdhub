@@ -26,11 +26,13 @@ export const REFUND_REASONS = [
 export type RefundReason = (typeof REFUND_REASONS)[number];
 
 /**
- * Every reason a `Refund` row carries: the admin's three, the two the app
- * returns money for on its own, and one issued by hand in the Stripe dashboard.
+ * Every reason a `Refund` row carries: the admin's three, the calls an admin's
+ * verdict refunds, the two the app returns money for on its own, and one issued
+ * by hand in the Stripe dashboard.
  */
 export type RefundRowReason =
 	| RefundReason
+	| "missedCalls"
 	| "checkpointCancelled"
 	| "curatorDeclined"
 	| "stripeRefund";

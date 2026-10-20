@@ -195,3 +195,119 @@ and it is not destructive to data. Ship a story per state for `RefundCheckpointM
   `Input.Search`, 300 ms debounce; `GET /api/admin/checkpoints/projects?q=` returns up to ten
   projects with a paid checkpoint). Picking one filters the list and the cards; Enter searches
   by the text typed.
+
+## 11. GDHUB-80/40 frames
+
+Intent: [docs/intent/GDHUB-80-40-checkpoint-admin-controls.md](../../intent/GDHUB-80-40-checkpoint-admin-controls.md).
+Same band (y 78297), to the right of `z20Q3F`. Pencil draws lucide; Tabler names are given below.
+
+### Frames
+
+| Frame | Node id | What |
+|---|---|---|
+| 11.7 · … — row menu (⋮ open, overdue row) | `CGp5v` | Table fragment: an overdue row with its ⋮ open — **Write the verdict** · **Assign a curator** · divider · **Refund payment**. |
+| 11.7b · … — Overdue row + status filter with Draft | `Ni6mC` | Status `Segmented` gains **Draft** last; one row with status "Overdue" (danger dot) and the line "Verdict due 3 Nov — 2 days late". |
+| 11.8 · … — Modal · Write the verdict (admin) | `RvmBP` | Copy of the curator's `vC7gn` (1048 wide, evidence left, verdict right) plus the admin band, a warning `Alert` under the head, the refund line above the actions, Cancel · **Send verdict and refund $150**. |
+| 11.8b · … — Write the verdict (admin) · every call held | `R4SnD` | Same; refund line "Every call was held — nothing to refund", primary **Send verdict**. |
+| 11.9 · … — Modal · Assign a curator · draft (free) | `oOBkh` | Copy of `z20Q3F` for a draft: status "Draft · not paid", Runs "Starts when the curator is assigned", Curator now `—`, Payment "Not paid", warning box with the free-start text, primary **Give for free**. |
+| Dialog — Workflow locked by an active checkpoint (admin) | `rhKOo` | Existing, approved — used unchanged for GDHUB-40 (stage delete / workflow reset refused, and the dry-run result). |
+| Modal — Assign a curator (admin) | `z20Q3F` | Existing, approved — replacing the curator of a running checkpoint. |
+
+### Components
+
+- **Row menu**: antd `Dropdown` `menu.items` on the existing ⋮ `Button type="text"`. Items are
+  built from the row: *Write the verdict* (`IconSignature`) only when the row is overdue;
+  *Assign a curator* (`IconUserPlus`) on Draft, Awaiting curator, Active and Review; divider;
+  *Refund payment* (`IconReceiptRefund`) as today (`canRefund`). No menu when no item applies.
+- **Status filter**: append `Draft` to the existing `Segmented` options. Drafts appear only under
+  this option; "All" stays paid checkpoints.
+- **Overdue status**: `StatusDot tone="danger"` "Overdue" + `Typography.Text type="secondary"` 13
+  under it. Overdue is derived (status Review, past day 31, no verdict), not a stored status. The
+  Status column grows 160 → 240 (Project flex absorbs it) so the due line stays on one line.
+- **Admin verdict modal**: new `src/components/admin/AdminVerdictModal/` wrapping the curator's
+  verdict body (reuse the existing VerdictModal content component — evidence column + verdict
+  options + reasoning) with: the admin band from `z20Q3F`; antd `Alert type="warning" showIcon`
+  (`IconAlertTriangle`) under the head; an outlined refund line (`IconReceiptRefund` /
+  `IconCircleCheck`) above the actions; actions `Button` Cancel + `Button type="primary"`. No
+  "Save draft" for the admin. Head chip uses `StatusDot tone="danger"` "Overdue · was due {date}".
+- **Assign a curator (draft)**: same component as `z20Q3F` (`AssignCuratorModal`), switched by the
+  checkpoint's status; the free box is the existing warning block with new copy.
+
+### Tokens
+
+As 11.5/11.6. New uses: danger dot `--gd-color-error` via `StatusDot`; alert `--gd-warning-tint` /
+`--gd-warning-on-tint`; refund line transparent, 1px `--gd-color-border`, radius `card`, padding 12
+(`--gd-space-3`), gap 12, label 13 `--gd-color-text-secondary`, value 14/500 `tnum`; Draft dot
+`neutral`. Menu: theme `Dropdown` (surface, `e2` shadow, radius `control`). Primary `colorPrimary`.
+
+### States
+
+- **Menu**: overdue → three items; running/awaiting → Assign + Refund (if `canRefund`); draft →
+  Assign only; closed/cancelled → Refund only if refundable, otherwise no ⋮.
+- **Write the verdict** opens with the curator's draft reasoning if one was saved, otherwise empty;
+  primary disabled until an option and reasoning are given (tooltip as the curator's modal).
+  Confirming: primary `loading`, Cancel disabled. Success: modal closes,
+  `message.success`, row → Closed with Refunded filled when a refund was made.
+- **Curator sent it meanwhile**: the server answers "already decided" → modal closes, info message,
+  list refetches.
+- **Refund refused by Stripe**: verdict is still recorded (checkpoint Closed); error message
+  "Verdict sent; the refund failed — use Refund payment" and the row keeps its ⋮ Refund.
+- **Assign (draft)**: Reason required; primary disabled until a person (or AI) and a reason are
+  set. Draft without a goal: primary disabled, tooltip "The author has not set a goal yet".
+- **Permission denied**: without `admin.checkpoints.manage` no ⋮ menu; endpoints refuse.
+- **Workflow locked** (GDHUB-40): `rhKOo` as drawn.
+
+### Copy (Tolgee keys, English defaults)
+
+| Key | English |
+|---|---|
+| `admin.checkpoints.menu.writeVerdict` | Write the verdict |
+| `admin.checkpoints.menu.assignCurator` | Assign a curator |
+| `admin.checkpoints.menu.refund` | Refund payment |
+| `admin.checkpoints.list.status.overdue` | Overdue |
+| `admin.checkpoints.list.status.draft` | Draft |
+| `admin.checkpoints.list.overdueLine` | Verdict due {date} — {days, plural, one {# day} other {# days}} late |
+| `admin.checkpoints.verdict.chip` | Overdue · was due {date} |
+| `admin.checkpoints.verdict.alert` | The curator did not send the verdict. You sign it as an administrator; the author sees it as the checkpoint's verdict. |
+| `admin.checkpoints.verdict.refundLine` | Calls the curator never joined are refunded |
+| `admin.checkpoints.verdict.refundValue` | {parts} of {total} parts · {amount} |
+| `admin.checkpoints.verdict.nothingToRefund` | Every call was held — nothing to refund |
+| `admin.checkpoints.verdict.note` | Sending is final: the checkpoint closes and the author gets the verdict. |
+| `admin.checkpoints.verdict.submitWithRefund` | Send verdict and refund {amount} |
+| `admin.checkpoints.verdict.submit` | Send verdict |
+| `admin.checkpoints.verdict.success` | Verdict sent |
+| `admin.checkpoints.verdict.alreadyDecided` | The curator has just sent the verdict |
+| `admin.checkpoints.verdict.refundFailed` | Stripe did not refund — nothing was recorded. Try again. |
+| `admin.checkpoints.assign.draftStatus` | Draft · not paid |
+| `admin.checkpoints.assign.startsOnAssign` | Starts when the curator is assigned |
+| `admin.checkpoints.assign.notPaid` | Not paid |
+| `admin.checkpoints.assign.free.title` | No payment is taken |
+| `admin.checkpoints.assign.free.body` | The checkpoint starts as a paid one would: a person is asked and the calls are booked; the AI starts today. |
+| `admin.checkpoints.assign.giveForFree` | Give for free |
+| `admin.checkpoints.assign.noGoal` | The author has not set a goal yet |
+
+### Data needs
+
+- **List**: rows gain `overdue` (+ verdict due date, days late) and a per-row set of allowed
+  actions (`canWriteVerdict`, `canAssignCurator`, `canRefund`) decided by the server. Status filter
+  accepts `draft` (drafts with or without a goal; Paid `—`).
+- **Admin verdict quote**: the checkpoint's evidence (as the curator's modal reads it), the
+  curator's saved draft if any, and the missed-calls refund: parts not delivered, total parts, one
+  part, amount (0 → 11.8b).
+- **Admin verdict submit**: checkpoint id, verdict option, reasoning. Records the verdict as the
+  admin, closes, issues the certificate, refunds missed calls once; returns the result or
+  "already decided" / "refund failed" (nothing written).
+- **Assign (draft)**: checkpoint id, curator kind, person id (when a person), reason. Refused when
+  the draft has no goal or is no longer a draft.
+
+### Open questions
+
+- 11.9 changes three values `z20Q3F` shows for a running checkpoint (Runs, Curator now, Payment) —
+  a draft has none of them; everything else is identical.
+- The admin verdict modal drops "Save draft"; assumed an admin writes it in one sitting.
+- Where the "Overdue" row sorts (assumed: same newest-payment order, no pinning).
+- **Decided:** a curator's saved draft only pre-fills the admin's form; what the admin sends is
+  the verdict.
+- **Decided:** the refund goes first. If Stripe refuses, nothing is written — no verdict, no
+  refund — and the admin tries again (as 11.6d). A closed checkpoint cannot take
+  "Refund payment" afterwards, so the two never split.

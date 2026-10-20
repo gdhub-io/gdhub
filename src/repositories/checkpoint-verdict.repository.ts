@@ -132,19 +132,22 @@ export async function writeCuratorVerdict(
 		},
 	);
 
-	if (result.ok)
-		await Promise.all([
-			syncChat(`verdict ${checkpointId}`, () =>
-				closeCheckpointRoom(checkpointId),
-			),
-			notifyVerdictSent(checkpointId),
-			issueCheckpointCertificate(checkpointId).catch((error) =>
-				console.error(`[certificate] checkpoint ${checkpointId}`, error),
-			),
-		]);
+	if (result.ok) await afterVerdictSent(checkpointId);
 
 	return result;
 }
+
+/** A sent verdict closes the chat, tells the team and issues the certificate. */
+export const afterVerdictSent = (checkpointId: string) =>
+	Promise.all([
+		syncChat(`verdict ${checkpointId}`, () =>
+			closeCheckpointRoom(checkpointId),
+		),
+		notifyVerdictSent(checkpointId),
+		issueCheckpointCertificate(checkpointId).catch((error) =>
+			console.error(`[certificate] checkpoint ${checkpointId}`, error),
+		),
+	]);
 
 /** Saves the unsent verdict, from sprint 4 until it is sent. Only the curator reads it. */
 export const saveVerdictDraft = (

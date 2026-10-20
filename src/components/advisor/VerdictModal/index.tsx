@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
+	Alert,
 	App,
 	Button,
 	Flex,
@@ -47,6 +48,7 @@ import {
 	VERDICT_DRAFT_FROM_SPRINT,
 	VERDICT_NOTE_MAX,
 } from "@/config/checkpoint";
+import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
 import { CheckpointItemKind, CheckpointVerdict } from "@/config/prisma-enums";
 import {
 	useAdvisorProject,
@@ -85,14 +87,50 @@ export type VerdictModalProps = {
 };
 
 /**
+ * An administrator writing the verdict a curator never sent (frames 11.8,
+ * 11.8b): no draft, sending is open, and the refund for calls never held is
+ * shown above the button.
+ */
+export type AdminVerdict = {
+	missed: { provided: number; parts: number; refund: number } | null;
+	send: (input: {
+		verdict: CheckpointVerdict;
+		note: string;
+	}) => Promise<unknown>;
+	sending: boolean;
+};
+
+/**
  * The human curator's verdict (frames `vC7gn`, `F041BL`): the evidence on the
  * left, the choice and its reasoning on the right. A draft can be kept from
  * sprint 4; sending opens with the final call and cannot be undone.
  */
 export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
-	const { t } = useTranslate();
 	const { data: context } = useVerdictContext(checkpoint.id);
 	const { data: project } = useAdvisorProject(checkpoint.id);
+
+	return (
+		<VerdictModalView
+			checkpoint={checkpoint}
+			context={context}
+			project={project}
+			onClose={onClose}
+		/>
+	);
+}
+
+export function VerdictModalView({
+	checkpoint,
+	context,
+	project,
+	onClose,
+	admin,
+}: VerdictModalProps & {
+	context: VerdictContextDto | undefined;
+	project: AdvisorProjectDto | undefined;
+	admin?: AdminVerdict;
+}) {
+	const { t } = useTranslate();
 
 	const stageName = (stage: { name: string; key: string | null }) =>
 		stage.key ? t(stage.key, stage.name) : stage.name;
@@ -148,41 +186,57 @@ export function VerdictModal({ checkpoint, onClose }: VerdictModalProps) {
 					<Skeleton active paragraph={{ rows: 10 }} />
 				</div>
 			) : (
-				<div className={styles.split}>
-					<div className={styles.left}>
-						<GoalCard checkpoint={checkpoint} />
-						<LastBuild checkpoint={checkpoint} build={context.lastBuild} />
-						<Devlogs devlogs={project.devlogs} />
-						<TeamPulse team={project.team} />
+				<>
+					{admin && (
+						<Alert
+							type="warning"
+							showIcon
+							className={styles.adminAlert}
+							title={t(
+								"admin.checkpoints.verdict.alert",
+								"The curator did not send the verdict. You sign it as an administrator; the author sees it as the checkpoint's verdict.",
+							)}
+						/>
+					)}
+					<div className={styles.split}>
+						<div className={styles.left}>
+							<GoalCard checkpoint={checkpoint} />
+							<LastBuild checkpoint={checkpoint} build={context.lastBuild} />
+							<Devlogs devlogs={project.devlogs} />
+							<TeamPulse team={project.team} />
+						</div>
+						<div className={styles.right}>
+							{admin ||
+							context.stage === "draft" ||
+							context.stage === "send" ? (
+								<VerdictForm
+									checkpoint={checkpoint}
+									context={context}
+									admin={admin}
+									stages={
+										context.nextStage
+											? {
+													from: stageName(context.currentStage),
+													to: stageName(context.nextStage),
+												}
+											: null
+									}
+									onSent={onClose}
+								/>
+							) : (
+								<Text type="secondary">
+									{context.stage === "early"
+										? t(
+												"advisor.verdict.opensIn",
+												"The verdict opens in sprint {n}.",
+												{ n: VERDICT_DRAFT_FROM_SPRINT },
+											)
+										: t("advisor.verdict.alreadySent", "The verdict is sent.")}
+								</Text>
+							)}
+						</div>
 					</div>
-					<div className={styles.right}>
-						{context.stage === "draft" || context.stage === "send" ? (
-							<VerdictForm
-								checkpoint={checkpoint}
-								context={context}
-								stages={
-									context.nextStage
-										? {
-												from: stageName(context.currentStage),
-												to: stageName(context.nextStage),
-											}
-										: null
-								}
-								onSent={onClose}
-							/>
-						) : (
-							<Text type="secondary">
-								{context.stage === "early"
-									? t(
-											"advisor.verdict.opensIn",
-											"The verdict opens in sprint {n}.",
-											{ n: VERDICT_DRAFT_FROM_SPRINT },
-										)
-									: t("advisor.verdict.alreadySent", "The verdict is sent.")}
-							</Text>
-						)}
-					</div>
-				</div>
+				</>
 			)}
 		</Modal>
 	);
@@ -567,11 +621,13 @@ function VerdictForm({
 	context,
 	stages,
 	onSent,
+	admin,
 }: {
 	checkpoint: AdvisorCheckpointDto;
 	context: VerdictContextDto;
 	stages: { from: string; to: string } | null;
 	onSent: () => void;
+	admin?: AdminVerdict;
 }) {
 	const { t } = useTranslate();
 	const { message, modal } = App.useApp();
@@ -583,8 +639,9 @@ function VerdictForm({
 	const [note, setNote] = useState(context.draft?.note ?? "");
 	const saveDraft = useSaveVerdictDraft(checkpoint.id);
 	const send = useSendVerdict(checkpoint.id);
+	const sender = admin ?? { send: send.mutateAsync, sending: send.isPending };
 
-	const isSend = context.stage === "send";
+	const isSend = !!admin || context.stage === "send";
 	const ready = !!verdict && note.trim().length > 0;
 	const options = VERDICT_ORDER.filter(
 		(option) => option !== CheckpointVerdict.StageClosed || stages,
@@ -624,7 +681,7 @@ function VerdictForm({
 			cancelText: t("common.cancel", "Cancel"),
 			onOk: async () => {
 				try {
-					await send.mutateAsync({ verdict, note });
+					await sender.send({ verdict, note });
 					message.success(t("advisor.verdict.sent", "The verdict is sent"));
 					onSent();
 				} catch {
@@ -656,10 +713,16 @@ function VerdictForm({
 				className={clsx(isSend && styles.grow)}
 				disabled={!!lockedReason}
 				icon={lockedReason ? <IconLock size={16} /> : undefined}
-				loading={send.isPending}
+				loading={sender.sending}
 				onClick={confirmSend}
 			>
-				{t("advisor.verdict.send", "Send the verdict")}
+				{admin?.missed?.refund
+					? t(
+							"admin.checkpoints.verdict.submitWithRefund",
+							"Send verdict and refund {amount}",
+							{ amount: formatCheckpointMoney(admin.missed.refund) },
+						)
+					: t("advisor.verdict.send", "Send the verdict")}
 			</Button>
 		</Tooltip>
 	);
@@ -746,9 +809,38 @@ function VerdictForm({
 							.join(" ")}
 			</Text>
 
+			{admin && (
+				<div className={styles.missed}>
+					<Text type="secondary">
+						{admin.missed?.refund
+							? t(
+									"admin.checkpoints.verdict.refundLine",
+									"Calls the curator never joined are refunded",
+								)
+							: t(
+									"admin.checkpoints.verdict.nothingToRefund",
+									"Every call was held — nothing to refund",
+								)}
+					</Text>
+					{!!admin.missed?.refund && (
+						<Text strong className={styles.missedValue}>
+							{t(
+								"admin.checkpoints.verdict.refundValue",
+								"{parts} of {total} parts · {amount}",
+								{
+									parts: admin.missed.parts - admin.missed.provided,
+									total: admin.missed.parts,
+									amount: formatCheckpointMoney(admin.missed.refund),
+								},
+							)}
+						</Text>
+					)}
+				</div>
+			)}
+
 			<Flex gap={8}>
 				{sendButton}
-				{saveButton}
+				{!admin && saveButton}
 			</Flex>
 		</Flex>
 	);

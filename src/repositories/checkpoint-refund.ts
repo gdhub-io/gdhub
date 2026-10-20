@@ -1,12 +1,18 @@
 import {
 	AuditAction,
-	type CheckpointCuratorKind,
+	CheckpointCuratorKind,
+	CheckpointItemKind,
 	CheckpointStatus,
 	PayableType,
 	PaymentStatus,
 	Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
+import {
+	adminVerdictOpen,
+	CURATOR_SWAPPABLE_STATUSES,
+	draftComplete,
+} from "@/lib/checkpoint-admin";
 import {
 	isRunning,
 	REFUND_REASONS,
@@ -16,6 +22,7 @@ import {
 	reasonRefused,
 	refundAmount,
 } from "@/lib/checkpoint-refund";
+import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
@@ -45,7 +52,7 @@ const CAPTURED: PaymentStatus[] = [
 const refundedTotal = (refunds: { amount: number }[]) =>
 	refunds.reduce((sum, row) => sum + row.amount, 0);
 
-const caseOf = async (checkpointId: string) => {
+export const refundCaseOf = async (checkpointId: string) => {
 	const [checkpoint, payment] = await Promise.all([
 		prisma.projectCheckpoint.findUnique({
 			where: { id: checkpointId },
@@ -94,12 +101,63 @@ const caseOf = async (checkpointId: string) => {
 	return { refund, payment };
 };
 
+/**
+ * Asks Stripe for part of a checkpoint's payment back; null when it refuses.
+ * Keyed to the checkpoint, so a retry or a double click is the same refund.
+ */
+export const sendCheckpointRefund = (
+	checkpointId: string,
+	sessionId: string,
+	amount: number,
+) =>
+	refundCheckout(sessionId, {
+		amount,
+		idempotencyKey: `checkpoint-refund-${checkpointId}`,
+	}).catch((error) => {
+		console.error("[checkpoint-refund] Stripe refused", checkpointId, error);
+		return null;
+	});
+
+/**
+ * What a Stripe refund leaves behind: its own row and the payment's status.
+ * The webhook may have written the row first — the Stripe id is the key, so
+ * there is one either way.
+ */
+export const refundWrites = (
+	db: Pick<typeof prisma, "refund" | "payment">,
+	payment: { id: string; amount: number },
+	stripeRefund: { id: string; amount: number; currency: string },
+	reason: RefundRowReason,
+) =>
+	[
+		db.refund.upsert({
+			where: { providerRefundId: stripeRefund.id },
+			create: {
+				paymentId: payment.id,
+				amount: stripeRefund.amount,
+				currency: stripeRefund.currency.toUpperCase(),
+				reason,
+				providerRefundId: stripeRefund.id,
+			},
+			update: { reason },
+		}),
+		db.payment.update({
+			where: { id: payment.id },
+			data: {
+				status:
+					stripeRefund.amount >= payment.amount
+						? PaymentStatus.REFUNDED
+						: PaymentStatus.PARTIALLY_REFUNDED,
+			},
+		}),
+	] as const;
+
 /** What the admin's dialog shows: the paid sum and, per reason, what goes back. */
 export const quoteCheckpointRefund = async (
 	checkpointId: string,
 	now = new Date(),
 ): Promise<CheckpointRefundQuoteDto | null> => {
-	const found = await caseOf(checkpointId);
+	const found = await refundCaseOf(checkpointId);
 	if (!found) return null;
 
 	const { refund, payment } = found;
@@ -132,7 +190,7 @@ export const issueCheckpointRefund = async (
 	adminId: string,
 	now = new Date(),
 ) => {
-	const found = await caseOf(checkpointId);
+	const found = await refundCaseOf(checkpointId);
 	const sessionId = found?.payment.providerTransactionId;
 	if (!found || !sessionId) {
 		return { ok: false as const, error: "notFound" as const };
@@ -149,41 +207,18 @@ export const issueCheckpointRefund = async (
 	const { refund: amount, provided, parts } = refundAmount(refund);
 	if (amount <= 0) return { ok: false as const, error: "nothingOwed" as const };
 
-	const stripeRefund = await refundCheckout(sessionId, {
+	const stripeRefund = await sendCheckpointRefund(
+		checkpointId,
+		sessionId,
 		amount,
-		idempotencyKey: `checkpoint-refund-${checkpointId}`,
-	}).catch((error) => {
-		console.error("[checkpoint-refund] Stripe refused", checkpointId, error);
-		return null;
-	});
+	);
 	if (!stripeRefund)
 		return { ok: false as const, error: "refundFailed" as const };
 
 	const meta = { reason, amount, provided, parts, paid: payment.amount };
 
-	// The webhook for this refund may already have written its row: the
-	// Stripe id is the key, so either way there is one.
 	await prisma.$transaction([
-		prisma.refund.upsert({
-			where: { providerRefundId: stripeRefund.id },
-			create: {
-				paymentId: payment.id,
-				amount: stripeRefund.amount,
-				currency: stripeRefund.currency.toUpperCase(),
-				reason,
-				providerRefundId: stripeRefund.id,
-			},
-			update: { reason },
-		}),
-		prisma.payment.update({
-			where: { id: payment.id },
-			data: {
-				status:
-					stripeRefund.amount >= payment.amount
-						? PaymentStatus.REFUNDED
-						: PaymentStatus.PARTIALLY_REFUNDED,
-			},
-		}),
+		...refundWrites(prisma, payment, stripeRefund, reason),
 		// No verdict, no certificate: it ends as Cancelled, not Closed.
 		prisma.projectCheckpoint.update({
 			where: { id: checkpointId },
@@ -282,10 +317,10 @@ const adminCheckpointTotals = async ({
  * a checkpoint leaves Draft through a payment (seeded ones aside), and one
  * cancelled before day 1 is deleted rather than kept.
  */
-export const listAdminCheckpoints = async ({
-	page = 1,
-	...filter
-}: AdminFilter & { page?: number }): Promise<AdminCheckpointsPageDto> => {
+export const listAdminCheckpoints = async (
+	{ page = 1, ...filter }: AdminFilter & { page?: number },
+	now = new Date(),
+): Promise<AdminCheckpointsPageDto> => {
 	const { status, stage, curatorKind, query } = filter;
 	const paid = { status: { not: CheckpointStatus.Draft } };
 	const where: Prisma.ProjectCheckpointWhereInput = {
@@ -311,8 +346,14 @@ export const listAdminCheckpoints = async ({
 				status: true,
 				startedAt: true,
 				dueAt: true,
+				verdict: true,
+				curatorKind: true,
+				goal: true,
 				curator: { select: { name: true } },
 				project: { select: { name: true } },
+				_count: {
+					select: { items: { where: { kind: CheckpointItemKind.Input } } },
+				},
 			},
 		}),
 		prisma.projectCheckpoint.findMany({
@@ -351,6 +392,7 @@ export const listAdminCheckpoints = async ({
 			// A declined checkpoint paid again has two rows; the newest speaks for it.
 			const payment = payments.find((one) => one.payableId === row.id);
 			const refunded = payment ? refundedTotal(payment.refunds) : 0;
+			const overdue = adminVerdictOpen(row, now);
 
 			return {
 				id: row.id,
@@ -366,11 +408,18 @@ export const listAdminCheckpoints = async ({
 				refundReason:
 					(payment?.refunds.at(0)?.reason as RefundRowReason | undefined) ??
 					null,
+				verdictDueBy: row.dueAt ? verdictDueBy(row.dueAt).toISOString() : null,
+				overdue,
 				canRefund:
 					!refunded &&
 					!!payment &&
 					CAPTURED.includes(payment.status) &&
 					isRunning(row.status),
+				canAssign:
+					row.status === CheckpointStatus.Draft
+						? draftComplete({ goal: row.goal, inputs: row._count.items })
+						: row.curatorKind === CheckpointCuratorKind.Human &&
+							CURATOR_SWAPPABLE_STATUSES.includes(row.status),
 			};
 		}),
 	};

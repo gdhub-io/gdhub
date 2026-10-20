@@ -56,6 +56,8 @@ export const notifyVerdictSent = async (checkpointId: string) => {
 			projectId: true,
 			createdAt: true,
 			verdict: true,
+			curatorId: true,
+			decidedById: true,
 			curator: { select: { name: true } },
 			project: {
 				select: {
@@ -69,8 +71,14 @@ export const notifyVerdictSent = async (checkpointId: string) => {
 	if (!row?.verdict) return;
 	const number = await checkpointNumber(row);
 
+	// An administrator writes it when the curator did not: it is the platform's word then.
+	const by =
+		row.decidedById && row.decidedById !== row.curatorId
+			? "GDHub"
+			: (row.curator?.name ?? "The AI curator");
+
 	await notify(row.project.author, `cp-verdict-sent-${checkpointId}`, {
-		title: `${row.curator?.name ?? "The AI curator"} sent the verdict on Checkpoint ${number}`,
+		title: `${by} sent the verdict on Checkpoint ${number}`,
 		message: `${VERDICT_LABEL[row.verdict]}. Read the curator's reasoning and choose how to go on.`,
 		redirectUrl: `${appUrl()}/user/project/${row.project.slug}/workflow?results=${row.id}`,
 	});
