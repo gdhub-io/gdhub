@@ -1,5 +1,7 @@
 import { SessionProvider } from "next-auth/react";
 import type { ReactNode } from "react";
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
+import { CheckpointPurchaseProvider } from "@/contexts/CheckpointPurchaseContext";
 
 /**
  * Marketing (landing) route group — dark theme.
@@ -18,7 +20,9 @@ export default function LandingGroupLayout({
 	return (
 		<SessionProvider>
 			<style>{`:root{--background-color:var(--gd-neutral-950)}`}</style>
-			{children}
+			<CheckpointPurchaseProvider value={checkpointPurchaseOpen()}>
+				{children}
+			</CheckpointPurchaseProvider>
 		</SessionProvider>
 	);
 }
