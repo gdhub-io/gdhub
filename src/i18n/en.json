@@ -439,6 +439,30 @@
 	"actual vacancies": "actual vacancies",
 	"admin": {
 		"checkpoints": {
+			"assign": {
+				"done": "The curator is assigned",
+				"failed": "The curator was not assigned",
+				"firstCallMissing": "The author has not picked a time for the first call yet.",
+				"free": {
+					"body": "The checkpoint starts as a paid one would: a person is asked and the calls are booked; the AI starts today.",
+					"title": "No payment is taken"
+				},
+				"giveForFree": "Give for free",
+				"given": "The checkpoint is given for free",
+				"noGoal": "The author has not set a goal yet",
+				"person": "Person",
+				"reason": "Reason",
+				"reasonDraft": "Partner studio — checkpoint given for free",
+				"reasonHelp": "Required for the audit log.",
+				"reasonSwap": "Replacing a curator who missed two calls",
+				"search": "Search any user by name or email",
+				"slotTaken": "That curator is not free at the first call the author chose.",
+				"submit": "Assign curator",
+				"swap": {
+					"body": "The new curator takes over the calls at their booked times. The author and the new curator are told."
+				},
+				"title": "Assign a curator"
+			},
 			"kpi": {
 				"ai": "AI",
 				"curators": "AI · person",
@@ -476,6 +500,7 @@
 					"human": "A person",
 					"stage": "All stages"
 				},
+				"overdueNote": "{days, plural, one {Verdict due {date} — # day late} other {Verdict due {date} — # days late}}",
 				"refundPayment": "Refund payment",
 				"search": "Search by project",
 				"status": {
@@ -483,9 +508,15 @@
 					"awaitingCurator": "Awaiting curator",
 					"cancelled": "Cancelled",
 					"closed": "Closed",
+					"draft": "Draft",
+					"overdue": "Overdue",
 					"review": "Review"
 				},
 				"total": "{count} paid checkpoints"
+			},
+			"menu": {
+				"assign": "Assign a curator",
+				"writeVerdict": "Write the verdict"
 			},
 			"promoCodes": {
 				"column": {
@@ -574,6 +605,7 @@
 					"checkpointCancelled": "Cancelled before day 1",
 					"curatorDeclined": "Curator declined",
 					"curatorGone": "Curator gone, no replacement",
+					"missedCalls": "Calls never held",
 					"noVerdict": "No verdict by day 31",
 					"stripeRefund": "In Stripe",
 					"withdrawal": "Withdrawal within 14 days"
@@ -592,7 +624,14 @@
 				"checkpoints": "Checkpoints",
 				"promoCodes": "Promo codes"
 			},
-			"title": "Checkpoints"
+			"title": "Checkpoints",
+			"verdict": {
+				"alert": "The curator did not send the verdict. You sign it as an administrator; the author sees it as the checkpoint's verdict.",
+				"nothingToRefund": "Every call was held — nothing to refund",
+				"refundLine": "Calls the curator never joined are refunded",
+				"refundValue": "{parts} of {total} parts · {amount}",
+				"submitWithRefund": "Send verdict and refund {amount}"
+			}
 		}
 	},
 	"advisor": {

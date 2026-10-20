@@ -486,7 +486,13 @@ export type AdminCheckpointRowDto = {
 	paid: number | null;
 	refunded: number | null;
 	refundReason: RefundRowReason | null;
+	/** The day the verdict is due by; null until the 28 days are set. */
+	verdictDueBy: string | null;
+	/** A person's verdict not sent after day 31. */
+	overdue: boolean;
 	canRefund: boolean;
+	canWriteVerdict: boolean;
+	canAssign: boolean;
 };
 
 export type AdminCheckpointsPageDto = {

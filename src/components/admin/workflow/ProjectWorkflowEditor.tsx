@@ -33,6 +33,11 @@ import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import { describeCondition } from "@/services/workflow/describeCondition";
 import type { LocalChange } from "@/services/workflow/diffFromTemplate";
+import {
+	checkpointLockOf,
+	checkpointLockText,
+	checkpointLockTitle,
+} from "./CheckpointLock";
 import { LocalChangeList } from "./LocalChangeList";
 import styles from "./ProjectWorkflowEditor.module.scss";
 import { ResetWorkflowModal } from "./ResetWorkflowModal";
@@ -146,7 +151,17 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 				queryKey: ["admin", "project-workflows"],
 			});
 		},
-		onError: () => message.error("Could not save the workflow"),
+		onError: (error) => {
+			const lock = checkpointLockOf(error);
+			if (lock) {
+				modal.warning({
+					title: checkpointLockTitle,
+					content: checkpointLockText(lock),
+				});
+				return;
+			}
+			message.error("Could not save the workflow");
+		},
 	});
 
 	const totals = useMemo(() => {

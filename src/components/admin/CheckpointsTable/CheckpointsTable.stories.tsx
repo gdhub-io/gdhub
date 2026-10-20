@@ -21,7 +21,11 @@ const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 	paid: 45000,
 	refunded: null,
 	refundReason: null,
+	verdictDueBy: "2026-11-11T00:00:00.000Z",
+	overdue: false,
 	canRefund: true,
+	canWriteVerdict: false,
+	canAssign: true,
 	...over,
 });
 

@@ -1,6 +1,7 @@
 import {
 	AuditAction,
-	type CheckpointCuratorKind,
+	CheckpointCuratorKind,
+	CheckpointItemKind,
 	CheckpointStatus,
 	PayableType,
 	PaymentStatus,
@@ -16,6 +17,7 @@ import {
 	reasonRefused,
 	refundAmount,
 } from "@/lib/checkpoint-refund";
+import { verdictDueBy, verdictOverdue } from "@/lib/checkpoint-verdict-window";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
@@ -45,7 +47,7 @@ const CAPTURED: PaymentStatus[] = [
 const refundedTotal = (refunds: { amount: number }[]) =>
 	refunds.reduce((sum, row) => sum + row.amount, 0);
 
-const caseOf = async (checkpointId: string) => {
+export const refundCaseOf = async (checkpointId: string) => {
 	const [checkpoint, payment] = await Promise.all([
 		prisma.projectCheckpoint.findUnique({
 			where: { id: checkpointId },
@@ -99,7 +101,7 @@ export const quoteCheckpointRefund = async (
 	checkpointId: string,
 	now = new Date(),
 ): Promise<CheckpointRefundQuoteDto | null> => {
-	const found = await caseOf(checkpointId);
+	const found = await refundCaseOf(checkpointId);
 	if (!found) return null;
 
 	const { refund, payment } = found;
@@ -132,7 +134,7 @@ export const issueCheckpointRefund = async (
 	adminId: string,
 	now = new Date(),
 ) => {
-	const found = await caseOf(checkpointId);
+	const found = await refundCaseOf(checkpointId);
 	const sessionId = found?.payment.providerTransactionId;
 	if (!found || !sessionId) {
 		return { ok: false as const, error: "notFound" as const };
@@ -282,10 +284,17 @@ const adminCheckpointTotals = async ({
  * a checkpoint leaves Draft through a payment (seeded ones aside), and one
  * cancelled before day 1 is deleted rather than kept.
  */
-export const listAdminCheckpoints = async ({
-	page = 1,
-	...filter
-}: AdminFilter & { page?: number }): Promise<AdminCheckpointsPageDto> => {
+/** A curator can be swapped while one is asked or running; not after the verdict. */
+const ASSIGNABLE: CheckpointStatus[] = [
+	CheckpointStatus.AwaitingCurator,
+	CheckpointStatus.Active,
+	CheckpointStatus.Review,
+];
+
+export const listAdminCheckpoints = async (
+	{ page = 1, ...filter }: AdminFilter & { page?: number },
+	now = new Date(),
+): Promise<AdminCheckpointsPageDto> => {
 	const { status, stage, curatorKind, query } = filter;
 	const paid = { status: { not: CheckpointStatus.Draft } };
 	const where: Prisma.ProjectCheckpointWhereInput = {
@@ -311,8 +320,14 @@ export const listAdminCheckpoints = async ({
 				status: true,
 				startedAt: true,
 				dueAt: true,
+				verdict: true,
+				curatorKind: true,
+				goal: true,
 				curator: { select: { name: true } },
 				project: { select: { name: true } },
+				_count: {
+					select: { items: { where: { kind: CheckpointItemKind.Input } } },
+				},
 			},
 		}),
 		prisma.projectCheckpoint.findMany({
@@ -351,6 +366,13 @@ export const listAdminCheckpoints = async ({
 			// A declined checkpoint paid again has two rows; the newest speaks for it.
 			const payment = payments.find((one) => one.payableId === row.id);
 			const refunded = payment ? refundedTotal(payment.refunds) : 0;
+			const human = row.curatorKind === CheckpointCuratorKind.Human;
+			const overdue =
+				human &&
+				row.status === CheckpointStatus.Review &&
+				!row.verdict &&
+				!!row.dueAt &&
+				verdictOverdue(row.dueAt, now);
 
 			return {
 				id: row.id,
@@ -366,11 +388,19 @@ export const listAdminCheckpoints = async ({
 				refundReason:
 					(payment?.refunds.at(0)?.reason as RefundRowReason | undefined) ??
 					null,
+				verdictDueBy: row.dueAt ? verdictDueBy(row.dueAt).toISOString() : null,
+				overdue,
 				canRefund:
 					!refunded &&
 					!!payment &&
 					CAPTURED.includes(payment.status) &&
 					isRunning(row.status),
+				canWriteVerdict: overdue,
+				// A draft is given away only once it holds what a payment would buy.
+				canAssign:
+					row.status === CheckpointStatus.Draft
+						? !!row.goal.trim() && row._count.items > 0
+						: human && ASSIGNABLE.includes(row.status),
 			};
 		}),
 	};

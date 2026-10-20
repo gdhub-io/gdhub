@@ -402,7 +402,8 @@ export const settleCheckpointCheckout = async (
  */
 export const startAiCheckpoint = async (
 	checkpointId: string,
-	paymentId: string,
+	/** Null when an administrator gives it for free. */
+	paymentId: string | null,
 	now = new Date(),
 ) => {
 	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({

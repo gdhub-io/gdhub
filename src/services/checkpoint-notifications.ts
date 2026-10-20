@@ -2,7 +2,11 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
-import { CheckpointStatus } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointStatus,
+	SpaceRole,
+} from "@/config/prisma-enums";
 import { dayNumberOn, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
@@ -11,6 +15,7 @@ import {
 	sprintOfDay,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { NovuService } from "./novu";
@@ -153,6 +158,84 @@ export const notifyAuthorOfRefund = async (
 		message: `${why} The refund reaches your card in 5–10 business days. It covers everything that was not delivered.`,
 		redirectUrl: workflowUrl(row.project.slug),
 	});
+};
+
+/** Who hears about a checkpoint only an administrator can unblock. */
+const checkpointAdmins = () =>
+	prisma.user.findMany({
+		where: {
+			OR: [
+				{ isSuperAdmin: true },
+				{
+					spaceMembers: {
+						some: {
+							spaceType: "hub",
+							role: { in: [SpaceRole.Owner, SpaceRole.Admin] },
+						},
+					},
+				},
+			],
+		},
+		select: { id: true, email: true },
+	});
+
+/**
+ * The verdict nobody has sent: the day before it is due its curator is
+ * reminded; the first day after, the administrators are told — once, because
+ * each goes out on its one day and the transaction id covers a second run.
+ */
+export const remindVerdictsDue = async (now = new Date()) => {
+	const undecided = await prisma.projectCheckpoint.findMany({
+		where: {
+			status: CheckpointStatus.Review,
+			curatorKind: CheckpointCuratorKind.Human,
+			verdict: null,
+			dueAt: { not: null },
+		},
+		select: {
+			id: true,
+			dueAt: true,
+			project: { select: { name: true } },
+			curator: recipient,
+		},
+	});
+
+	const today = utcStartOfDay(now).getTime();
+	const day = 24 * 60 * 60 * 1000;
+	const dueTomorrow = undecided.filter(
+		(row) => row.dueAt && verdictDueBy(row.dueAt).getTime() === today + day,
+	);
+	const lateToday = undecided.filter(
+		(row) => row.dueAt && verdictDueBy(row.dueAt).getTime() === today - day,
+	);
+	const admins = lateToday.length ? await checkpointAdmins() : [];
+
+	await Promise.all([
+		...dueTomorrow.flatMap((row) =>
+			row.curator
+				? [
+						notify(row.curator, `cp-verdict-due-${row.id}`, {
+							title: `Your verdict on ${row.project.name} is due tomorrow`,
+							message:
+								"Send it before the day ends. After that an administrator closes the checkpoint.",
+							redirectUrl: `${appUrl()}/advisor/checkpoints`,
+						}),
+					]
+				: [],
+		),
+		...lateToday.flatMap((row) =>
+			admins.map((admin) =>
+				notify(admin, `cp-verdict-overdue-${row.id}-${admin.id}`, {
+					title: `The verdict on ${row.project.name} is overdue`,
+					message:
+						"Its curator did not send it by day 31. Write it or refund the checkpoint from the admin list.",
+					redirectUrl: `${appUrl()}/admin/checkpoints`,
+				}),
+			),
+		),
+	]);
+
+	return { dueTomorrow: dueTomorrow.length, overdue: lateToday.length };
 };
 
 const HOUR = 60 * 60 * 1000;

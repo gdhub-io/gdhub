@@ -91,7 +91,7 @@ export function RefundCheckpointModal({
 					type="info"
 					showIcon
 					icon={<IconInfoCircle size={16} />}
-					message={t(
+					title={t(
 						"admin.checkpoints.refund.done",
 						"Refunded {amount} on {date} · {reason}",
 						{
@@ -113,7 +113,7 @@ export function RefundCheckpointModal({
 						type="error"
 						showIcon
 						icon={<IconAlertCircle size={16} />}
-						message={t(
+						title={t(
 							"admin.checkpoints.refund.stripeFailed",
 							"Stripe did not refund — nothing was recorded. Try again.",
 						)}

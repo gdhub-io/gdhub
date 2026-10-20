@@ -6,6 +6,7 @@ const sessionFindMany = vi.fn();
 const checkpointFindMany = vi.fn();
 const checkpointFindUnique = vi.fn();
 const reportCount = vi.fn();
+const userFindMany = vi.fn();
 
 vi.mock("@/services/novu", () => ({
 	NovuService: { send: (...a: unknown[]) => send(...a) },
@@ -23,11 +24,16 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 		},
 		projectReport: { count: (...a: unknown[]) => reportCount(...a) },
+		user: { findMany: (...a: unknown[]) => userFindMany(...a) },
 	},
 }));
 
-const { notifyAuthorOfAnswer, remindCallsSoon, remindDevlogsDue } =
-	await import("@/services/checkpoint-notifications");
+const {
+	notifyAuthorOfAnswer,
+	remindCallsSoon,
+	remindDevlogsDue,
+	remindVerdictsDue,
+} = await import("@/services/checkpoint-notifications");
 
 const person = (id: string) => ({ id, email: `${id}@x.test` });
 
@@ -155,5 +161,54 @@ describe("notifyAuthorOfAnswer", () => {
 		await expect(
 			notifyAuthorOfAnswer("cp", "Patrick", "silent"),
 		).resolves.toBeUndefined();
+	});
+});
+
+describe("remindVerdictsDue", () => {
+	// dueAt is day 28; the verdict is due by the end of day 31.
+	const undecided = (id: string, dueAt: string) => ({
+		id,
+		dueAt: new Date(dueAt),
+		project: { name: `Project ${id}` },
+		curator: person(`curator-${id}`),
+	});
+
+	it("chases the curator the day before, and the admins the day after", async () => {
+		checkpointFindMany.mockResolvedValue([
+			// Due by 23 Oct: reminded on the 22nd.
+			undecided("soon", "2026-10-20T00:00:00Z"),
+			// Due by 21 Oct: overdue on the 22nd.
+			undecided("late", "2026-10-18T00:00:00Z"),
+			// Due by 20 Oct: was told yesterday, not again.
+			undecided("older", "2026-10-17T00:00:00Z"),
+		]);
+		userFindMany.mockResolvedValue([person("admin1"), person("admin2")]);
+
+		const result = await remindVerdictsDue(new Date("2026-10-22T09:00:00Z"));
+
+		expect(result).toEqual({ dueTomorrow: 1, overdue: 1 });
+		const ids = send.mock.calls.map(([arg]) => arg.transactionId).sort();
+		expect(ids).toEqual([
+			"cp-verdict-due-soon",
+			"cp-verdict-overdue-late-admin1",
+			"cp-verdict-overdue-late-admin2",
+		]);
+	});
+
+	it("asks only human curators' checkpoints still in review", async () => {
+		checkpointFindMany.mockResolvedValue([]);
+
+		await remindVerdictsDue(new Date("2026-10-22T09:00:00Z"));
+
+		expect(checkpointFindMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: expect.objectContaining({
+					status: CheckpointStatus.Review,
+					curatorKind: "Human",
+					verdict: null,
+				}),
+			}),
+		);
+		expect(userFindMany).not.toHaveBeenCalled();
 	});
 });
