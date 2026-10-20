@@ -439,6 +439,54 @@
 	"actual vacancies": "actual vacancies",
 	"admin": {
 		"checkpoints": {
+			"kpi": {
+				"ai": "AI",
+				"curators": "AI · person",
+				"curatorsCount": "{ai} with the AI curator · {human} with a person",
+				"net": "Net",
+				"netNote": "Paid less refunded, before curators' fees",
+				"paid": "Paid",
+				"paidNote": "Taken from cards; holds aside",
+				"person": "Person",
+				"refunded": "Refunded",
+				"refundedNote": "Back to authors"
+			},
+			"list": {
+				"actions": "Actions",
+				"aiCurator": "AI curator",
+				"checkpoint": "Checkpoint {number} · {stage}",
+				"column": {
+					"curator": "Curator",
+					"dates": "Dates",
+					"paid": "Paid",
+					"project": "Project",
+					"refunded": "Refunded",
+					"status": "Status"
+				},
+				"empty": "No paid checkpoints yet",
+				"emptyFiltered": "No checkpoints match",
+				"error": {
+					"description": "The server did not answer. Try again in a moment.",
+					"retry": "Try again",
+					"title": "Couldn't load checkpoints"
+				},
+				"filter": {
+					"all": "All",
+					"curator": "All curators",
+					"human": "A person",
+					"stage": "All stages"
+				},
+				"refundPayment": "Refund payment",
+				"search": "Search by project",
+				"status": {
+					"active": "Active",
+					"awaitingCurator": "Awaiting curator",
+					"cancelled": "Cancelled",
+					"closed": "Closed",
+					"review": "Review"
+				},
+				"total": "{count} paid checkpoints"
+			},
 			"promoCodes": {
 				"column": {
 					"code": "Code",
@@ -509,7 +557,39 @@
 				},
 				"toggleFailed": "Couldn't change the code. Try again."
 			},
+			"refund": {
+				"amount": "Refund",
+				"consequence": "The checkpoint closes; the author gets an email.",
+				"done": "Refunded {amount} on {date} · {reason}",
+				"onePart": "One part",
+				"paid": "Paid",
+				"partsDetail": {
+					"ai": "Reviews written {reviews} · verdict {verdictSent, select, true {sent} other {not sent}}",
+					"human": "Calls held {calls} · verdict {verdictSent, select, true {sent} other {not sent}}"
+				},
+				"partsProvided": "Parts provided",
+				"partsValue": "{provided} of {total}",
+				"pickReason": "Pick a reason",
+				"reason": {
+					"checkpointCancelled": "Cancelled before day 1",
+					"curatorDeclined": "Curator declined",
+					"curatorGone": "Curator gone, no replacement",
+					"noVerdict": "No verdict by day 31",
+					"stripeRefund": "In Stripe",
+					"withdrawal": "Withdrawal within 14 days"
+				},
+				"reasonLabel": "Reason",
+				"stripeFailed": "Stripe did not refund — nothing was recorded. Try again.",
+				"submit": "Refund {amount}",
+				"success": "Refunded {amount}",
+				"title": "Refund {project} · Checkpoint {number}",
+				"withdrawal": {
+					"over": "Paid {date} — the 14 days are over",
+					"within": "Only within 14 days of payment — paid {date}, {days} days ago."
+				}
+			},
 			"tab": {
+				"checkpoints": "Checkpoints",
 				"promoCodes": "Promo codes"
 			},
 			"title": "Checkpoints"
@@ -1727,6 +1807,7 @@
 		"apply": "Apply",
 		"back": "Back",
 		"cancel": "Cancel",
+		"close": "Close",
 		"delete": "Delete",
 		"save": "Save"
 	},
@@ -3611,6 +3692,7 @@
 	},
 	"promised equity will become actual": "promised equity will become actual",
 	"public-menu": {
+		"checkpoint": "Checkpoint",
 		"contacts": "Contacts",
 		"events": "Events",
 		"for-authors": "For Authors",

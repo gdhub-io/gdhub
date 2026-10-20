@@ -55,9 +55,9 @@ Flow:
 ## 2. Frames
 
 `docs/design/platform-design.pen`, **one row**, left to right in the order the user
-goes, equal 120 gaps, starting at x −420, y 84780 (under the `11.x · Admin ·
-Checkpoints` row). Row note `oGEsy` above the start. Every frame carries the same
-**facts row** under the title.
+goes, equal 120 gaps, starting at x −420, y 80861 (label at y 80261) (under the `11.x · Admin ·
+Checkpoints` row). Row note `oGEsy` above the start. No facts row under the title
+(removed 2026-10-20).
 
 | Frame | Node id | What it shows |
 |---|---|---|

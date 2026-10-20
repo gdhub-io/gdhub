@@ -155,7 +155,7 @@ export const Loading: Story = {
 	parameters: at(),
 };
 
-/** Frame 12.3 (`mfAfN`): the work resource and the goal, "from $19". */
+/** Frame 12.3 (`mfAfN`): the work resource and the goal. */
 export const Goal: Story = {
 	decorators: [withCheckpoint(draft)],
 	parameters: at("goal"),
@@ -195,7 +195,7 @@ export const Settling: Story = {
 	parameters: at("ready"),
 };
 
-/** Frame 12.6 (`hl76Z`): the AI curator runs at once — "$19 paid". */
+/** Frame 12.6 (`hl76Z`): the AI curator runs at once. */
 export const PaidAI: Story = {
 	decorators: [
 		withCheckpoint({

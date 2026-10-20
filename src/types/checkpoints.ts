@@ -9,6 +9,11 @@ import type {
 	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
 import type { AuthorNextStep } from "@/lib/checkpoint-plan";
+import type {
+	RefundReason,
+	RefundRowReason,
+	reasonRefused,
+} from "@/lib/checkpoint-refund";
 import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
 
 /**
@@ -463,4 +468,61 @@ export type EntryProjectPrefillDto = {
 	items: EntryItemDto[];
 	/** The number of the checkpoint the lines came from, when they were carried over. */
 	carriedFrom: number | null;
+};
+
+/** One row of the admin checkpoints list (frame 11.5). Sums in minor units. */
+export type AdminCheckpointRowDto = {
+	id: string;
+	number: number;
+	stageName: string;
+	status: CheckpointStatus;
+	/** Null for the AI curator. */
+	curatorName: string | null;
+	projectName: string;
+	/** Day 1 and day 28; null until the curator accepts. */
+	startedAt: string | null;
+	dueAt: string | null;
+	/** Null for one started without a payment — seeded, or given by an admin. */
+	paid: number | null;
+	refunded: number | null;
+	refundReason: RefundRowReason | null;
+	canRefund: boolean;
+};
+
+export type AdminCheckpointsPageDto = {
+	total: number;
+	pageSize: number;
+	items: AdminCheckpointRowDto[];
+	/** Every stage a paid checkpoint has run on, for the stage filter. */
+	stages: string[];
+	/** Over every checkpoint the filter matches, not the page. Minor units. */
+	totals: {
+		paid: number;
+		refunded: number;
+		/** Before the curators' fees (GDHUB-74). */
+		net: number;
+		ai: number;
+		human: number;
+	};
+};
+
+/** What a refund would return (frames 11.6–11.6d); the same sum for every reason. */
+export type CheckpointRefundQuoteDto = {
+	paid: number;
+	paidAt: string;
+	curatorKind: CheckpointCuratorKind;
+	verdictSent: boolean;
+	parts: number;
+	provided: number;
+	part: number;
+	refund: number;
+	refunded: {
+		amount: number;
+		reason: RefundRowReason | null;
+		at: string;
+	} | null;
+	reasons: {
+		reason: RefundReason;
+		refused: ReturnType<typeof reasonRefused>;
+	}[];
 };

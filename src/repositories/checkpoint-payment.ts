@@ -17,6 +17,7 @@ import {
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
+import type { RefundRowReason } from "@/lib/checkpoint-refund";
 import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	bookSessions,
@@ -204,7 +205,7 @@ export const checkpointCheckout = async (checkpointId: string) => {
  */
 export const returnCheckpointMoney = async (
 	checkpointId: string,
-	reason: string,
+	reason: Extract<RefundRowReason, "checkpointCancelled" | "curatorDeclined">,
 ) => {
 	const payment = await prisma.payment.findFirst({
 		where: heldPaymentWhere(checkpointId),

@@ -17,6 +17,7 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
 import { signOutWithChat } from "@/components/Chat/session";
+import { useCheckpointPurchaseOpen } from "@/contexts/CheckpointPurchaseContext";
 import styles from "./style.module.scss";
 
 export const MainHeader = ({ className }: { className?: string }) => {
@@ -27,6 +28,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const { t } = useTranslate();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [activeMenuKey, setActiveMenuKey] = useState<string>("");
+	const checkpointOpen = useCheckpointPurchaseOpen();
 
 	// hide mobile menu on resize window
 	useEffect(() => {
@@ -188,6 +190,22 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				popupClassName: styles.menuPopup,
 				children: platformMenu,
 			},
+			...(checkpointOpen
+				? [
+						{
+							label: (
+								<Link
+									href="/checkpoint"
+									title={t("public-menu.checkpoint", "Checkpoint")}
+									onClick={(e) => scrollToTopIfHere(e, "/checkpoint")}
+								>
+									{t("public-menu.checkpoint", "Checkpoint")}
+								</Link>
+							),
+							key: "/checkpoint",
+						},
+					]
+				: []),
 			{
 				label: (
 					<Link
@@ -225,7 +243,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				key: "/events",
 			},
 		],
-		[screens, session, platformMenu],
+		[screens, session, platformMenu, checkpointOpen],
 	);
 
 	const actionButton = useMemo(() => {

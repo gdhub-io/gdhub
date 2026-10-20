@@ -8,10 +8,11 @@ const PROMO_CODES_QUERY_KEY = ["admin", "checkpoints", "promo-codes"];
 
 const URL = "/api/admin/checkpoints/promo-codes";
 
-export const usePromoCodes = () =>
+export const usePromoCodes = (enabled = true) =>
 	useQuery({
 		queryKey: PROMO_CODES_QUERY_KEY,
 		queryFn: async () => (await axios.get<PromoCodeDto[]>(URL)).data,
+		enabled,
 	});
 
 export const useCreatePromoCode = () => {
