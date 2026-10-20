@@ -35,7 +35,6 @@ drawn in [legal-layer-flow.d2](legal-layer-flow.d2) ([svg](legal-layer-flow.svg)
 | Kind | Documents | Agreed when | Linked to |
 |---|---|---|---|
 | Platform offer | Terms of Use, Project Requirements, Advisor Agreement; later Course and Event terms | sign-up, project creation, switching the Advisor space on | — |
-| Paid expert work | Expert Services Terms | before the first paid work: a curator taking on a checkpoint today; later Advisor space → Settings → Paid work, with payout details | the checkpoint that asked for it |
 | Checkpoint | Purchase Terms and the Withdrawal Waiver (author) | the author presses Pay | `checkpointId` |
 | Project agreement | Co-Development Agreement (shares, IP, exit) | a member is given a share for the first time, or their share changes | `projectId` |
 | Certificate | event, course, checkpoint | issued, not accepted | its source |
@@ -47,15 +46,16 @@ of Use.
 
 Every kind except the certificate is the same mechanism with a different code.
 
-**The advisor role is three documents, one for each moment the obligations change.** The
-Advisor space is where consultations (free and paid) and curation happen. The Advisor
-Agreement (status, conduct, AI, confidentiality, data, volunteering) opens the space and
-with it free consultations. Expert Services Terms (fees, the platform's cut,
-payouts, invoicing or self-billing, withholding, refunds) open paid consultations and
-curation, and are accepted together with payout details, because getting paid needs both.
-What a curator owes on a checkpoint is a section of the Expert Services Terms, accepted
-once and again after a material change — there is no per-checkpoint document (the
-"Checkpoint Standard" of the early plan is the product's standard, not a legal text).
+**The advisor role is one document.** The Advisor space is where consultations (free and
+paid) and curation happen, and the Advisor Agreement covers all three: status, conduct, AI,
+confidentiality, data, volunteering, what a curator owes on a checkpoint, the fee, payouts,
+taxes. It is accepted once, when the space is switched on, and again after a material
+change. Paid work asks for no further document: switching it on is the payout details and
+how the advisor invoices, which is their declaration of a lawful basis to be paid. Fees and
+the platform's share live in the price list, so changing them is not a new version. There
+is no per-checkpoint document (the "Checkpoint Standard" of the early plan is the
+product's standard, not a legal text). GDHUB-87 split the paid half out as Expert Services
+Terms; GDHUB-102 folded it back before either was accepted in production.
 
 ## 2a. Legal entities
 
@@ -170,8 +170,8 @@ moment; the others are archived and still readable at `/legal/<slug>/v<n>`.
 | Create project | Project Requirements |
 | Advisor space switch-on | Advisor Agreement; the space does not open without it |
 | Checkpoint pay step | Purchase Terms + Withdrawal Waiver, two checkboxes sent with Pay; the checkout refuses without them |
-| Curator taking on a checkpoint | Expert Services Terms, until accepted; asked in a modal only when the server says they are missing |
-| Advisor space → Settings → Paid work (later) | Expert Services Terms + payout details for paid consultations |
+| Curator taking on a checkpoint | Advisor Agreement, when the version in effect is not accepted; asked in a modal only when the server says it is missing |
+| Advisor space → Settings → Paid work | payout details; the Advisor Agreement only when the version in effect is not accepted |
 | `/legal`, `/legal/<slug>`, `/legal/<slug>/v<n>` | every published document, its current text and its archived versions; old URLs 308 here |
 | `/admin/legal` | the acceptances log with filters and CSV export (written to `AuditLog`) |
 | Share given or changed (team page) | Co-Development Agreement with the project's values filled in; invites and offers carry none |
@@ -247,7 +247,7 @@ model LegalAcceptance {
   version      Int
   /// SHA-256 of the text as shown: file + entity + params.
   checksum     String
-  /// Registry context: SignUp, ProjectCreate, AdvisorJoin, ExpertServices,
+  /// Registry context: SignUp, ProjectCreate, AdvisorJoin, PaidWork,
   /// CheckpointPurchase, CuratorAccept, ShareChange, ReAcceptance.
   context      String
   checkpointId String?

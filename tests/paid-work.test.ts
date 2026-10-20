@@ -23,7 +23,7 @@ vi.mock("@/repositories/legal.repository", () => ({
 	needsAcceptance: vi.fn(),
 }));
 vi.mock("@/lib/legal/accept", () => ({
-	resolveLegal: vi.fn(() => [{ code: "ExpertServicesTerms" }]),
+	resolveLegal: vi.fn(() => [{ code: "AdvisorAgreement" }]),
 }));
 vi.mock("@/services/checkpoint-notifications", () => ({
 	notify: vi.fn(),

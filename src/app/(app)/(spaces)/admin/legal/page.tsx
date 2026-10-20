@@ -46,7 +46,7 @@ const CONTEXT_LABELS: Record<LegalContext, string> = {
 	SignUp: "Sign-up",
 	ProjectCreate: "Project created",
 	AdvisorJoin: "Advisor switch-on",
-	ExpertServices: "Expert services on",
+	PaidWork: "Paid work on",
 	CheckpointPurchase: "Checkpoint purchase",
 	CuratorAccept: "Curator accept",
 	ShareChange: "Share change",

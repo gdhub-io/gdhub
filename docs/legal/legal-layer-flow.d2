@@ -43,9 +43,9 @@ gates: "Actions that refuse without their acceptance" {
   signup: "Sign-up · onboarding/profile\nTermsOfUse · context SignUp\n(replaces User.agreements.agreeWithTermsAndPrivacy;\nnewsletter flag stays)"
   project: "POST /api/user/project\nProjectRequirements · ProjectCreate\n+ CoDevelopmentAgreement as author, params {title, shares}"
   advisor: "PUT /api/user/profile/mentorship (switch on)\nAdvisorAgreement · AdvisorJoin\nspace adapter: no acceptance → 404"
-  paid: "PUT /api/advisor/settings · Paid work\nExpertServicesTerms · ExpertServices\n+ payout details complete\nelse paid consultations and curation stay off"
+  paid: "PUT /api/advisor/settings · Paid work\nAdvisorAgreement, only if the version in effect is not accepted · PaidWork\n+ payout details complete\nelse paid consultations and curation stay off"
   pay: "POST /api/checkpoint/[id]/pay (branch 31)\nCheckpointPurchaseTerms + WithdrawalWaiver\ncontext CheckpointPurchase · checkpointId\n(replaces acceptedTermsAt / acceptedTermsTemplateId)"
-  curator: "Curator accepts a checkpoint (branch 31)\nCheckpointStandard in effect on that day\ncontext CuratorAccept · checkpointId\n→ then the held payment is captured"
+  curator: "Curator accepts a checkpoint (branch 31)\nAdvisorAgreement, only if the version in effect is not accepted\ncontext CuratorAccept · checkpointId\n→ then the held payment is captured"
 }
 gates.signup -> accept: "{TermsOfUse, v}"
 gates.project -> accept
@@ -91,7 +91,7 @@ life: "A version's life (by dates, no status column)" {
 }
 life.gate -> accept
 
-applies: "Documents that apply to a user (for the gate)\nTermsOfUse — everyone\nAdvisorAgreement — advisor on\nExpertServicesTerms — paid work on\nCheckpoint docs — never re-asked (per checkpoint)\nProject agreement — not re-asked by version; by shares" {shape: page}
+applies: "Documents that apply to a user (for the gate)\nTermsOfUse — everyone\nAdvisorAgreement — advisor on, or paid work on\nCheckpoint docs — never re-asked (per checkpoint)\nProject agreement — not re-asked by version; by shares" {shape: page}
 life.gate -> applies
 
 pages: "Read side" {

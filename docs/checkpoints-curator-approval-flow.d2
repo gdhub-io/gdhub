@@ -13,8 +13,8 @@ title: "GDHUB-74 — an expert offers to curate, an admin approves them; the sta
 }
 
 curator: "Advisor settings → Paid work → Project curation (S5YkC)" {
-  terms: "Expert Services Terms accepted?" {shape: diamond}
-  locked: "block locked, link to the terms"
+  terms: "Advisor Agreement in effect accepted\nand payout details saved?" {shape: diamond}
+  locked: "block locked: save payout details first"
   on: "turns Project curation on (or asks again after a decline)\n→ curatorRequestedAt = now, curatorReviewNote cleared"
   stages: "Stages you curate: names from the workflow templates (WorkflowSchema.steps)\ncuratorStages — their own setting, changed any time, no review"
   terms -> locked: no

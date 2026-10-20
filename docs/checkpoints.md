@@ -608,8 +608,8 @@ who owes what, what a refund is, what happens when a curator disappears and who
 holds the rights to what the team makes: the
 [Checkpoint Purchase Terms](legal/checkpoint-purchase-terms/v1.md), with the
 [Withdrawal Waiver](legal/withdrawal-waiver/v1.md) beside it. A curator takes a
-checkpoint on under the [Expert Services Terms](legal/expert-services-terms/v1.md),
-asked once before the first one.
+checkpoint on under the [Advisor Agreement](legal/advisor-agreement/v1.md) they
+accepted when they switched the Advisor space on.
 
 The AI curator has one price in config for now. The human curator's price is
 computed from their hourly rate and lands with that issue.

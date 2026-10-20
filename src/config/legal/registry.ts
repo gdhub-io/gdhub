@@ -122,23 +122,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "vsi",
 				materialChange: false,
 				checksum:
-					"f58586e32250ef49c19bbab618e9183045fc74a7b1ef98fd649d61c8e0f93964",
-			},
-		],
-	},
-	ExpertServicesTerms: {
-		slug: "expert-services-terms",
-		title: "Expert Services Terms",
-		issuer: "hub",
-		group: "features",
-		versions: [
-			{
-				version: 1,
-				effectiveAt: "2026-10-17",
-				entity: "vsi",
-				materialChange: false,
-				checksum:
-					"50c9f56b70c60b16e67b7d4a9cca1e47a92d8b204cbb199dac0981767fb9ca56",
+					"20c4b9524580c5267acafe9b78b868beb517de5e6fbc73e4b1415090f779ce42",
 			},
 		],
 	},
@@ -211,7 +195,7 @@ export const LEGAL_CONTEXTS = [
 	"SignUp",
 	"ProjectCreate",
 	"AdvisorJoin",
-	"ExpertServices",
+	"PaidWork",
 	"CheckpointPurchase",
 	"CuratorAccept",
 	"ShareChange",

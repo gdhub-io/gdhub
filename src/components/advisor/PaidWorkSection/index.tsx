@@ -45,7 +45,7 @@ import styles from "./style.module.scss";
 
 const { Text } = Typography;
 
-const TERMS = "ExpertServicesTerms";
+const TERMS = "AdvisorAgreement";
 
 const PAYOUT_FIELDS = [
 	"holder",
@@ -98,8 +98,8 @@ export function PaidWorkSection({
 	const editingAccount = !paidWork.account || changing;
 	const termsTitle = LEGAL_DOCUMENTS[TERMS].title;
 	const termsRequired = t(
-		"legal.clickwrap.expert-services.error",
-		"You need to accept the Expert Services Terms to get paid",
+		"legal.clickwrap.AdvisorAgreement.paid-work",
+		"You need to accept the Advisor Agreement to get paid",
 	);
 	const accountError = t(
 		"advisor.settings.paid-work.account.error",
@@ -237,10 +237,7 @@ export function PaidWorkSection({
 				>
 					<div className={styles.block}>
 						<Text strong>
-							{t(
-								"advisor.settings.paid-work.expert-services",
-								"Expert Services",
-							)}
+							{t("advisor.settings.paid-work.payout-details", "Payout details")}
 						</Text>
 
 						<Form.Item
@@ -481,8 +478,8 @@ function CurationBlock({
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const lockedReason = t(
-		"advisor.settings.paid-work.curator.locked",
-		"Accept the Expert Services Terms and save your payout details first",
+		"advisor.settings.paid-work.curator.locked-payout",
+		"Save your payout details first",
 	);
 	const notOffered = t(
 		"advisor.settings.paid-work.curator.notOffered",

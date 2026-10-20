@@ -18,7 +18,7 @@ export type FeeCase = {
 	tookOverAt: number | null;
 };
 
-/** Refunds after which the curator earns nothing (Expert Services Terms §3.4). */
+/** Refunds after which the curator earns nothing (Advisor Agreement §7.4). */
 const STOPPED: RefundRowReason[] = [
 	"curatorGone",
 	"noVerdict",

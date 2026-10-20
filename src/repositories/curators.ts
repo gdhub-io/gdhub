@@ -59,14 +59,14 @@ export const getCuration = async (userId: string): Promise<CurationDto> => {
 			where: { userId },
 			select: curationSelect,
 		}),
-		latestAcceptance(userId, "ExpertServicesTerms"),
+		latestAcceptance(userId, "AdvisorAgreement"),
 		stageNames(),
 	]);
 
 	return {
-		// Curating is paid work: the terms and the account come first.
+		// Curating is paid work: the agreement and the account come first.
 		locked:
-			needsAcceptance("ExpertServicesTerms", terms?.version) ||
+			needsAcceptance("AdvisorAgreement", terms?.version) ||
 			!hasPayoutDetails(profile),
 		on: profile?.curation ?? false,
 		stages: profile?.curatorStages ?? [],

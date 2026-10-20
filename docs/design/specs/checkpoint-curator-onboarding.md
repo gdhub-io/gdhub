@@ -22,7 +22,7 @@ All in `docs/design/platform-design.pen`.
 | Frame | Node id | What it shows |
 |---|---|---|
 | Legal · Advisor settings · Paid work · set up (changed in place) | `S5YkC` | The **Project curation** block: switch, *Stages you curate* (plain multi-select), one curator status — "Waiting for review · sent 20 Oct", "You're not offered to authors until GDHub approves you." |
-| Legal · Advisor settings · Paid work · not set up / error (label changed in place) | `Q8dNW0`, `SyTre` | As GDHUB-54 drew them — the block locked until Expert Services is saved — with the row titled **Project curation** (`K9gDc`, `MHdAJ`; `TO95P` in `S5YkC`). |
+| Legal · Advisor settings · Paid work · not set up / error (label changed in place) | `Q8dNW0`, `SyTre` | As GDHUB-54 drew them — the block locked until the payout details are saved — with the row titled **Project curation** (`K9gDc`, `MHdAJ`; `TO95P` in `S5YkC`). |
 | 13.7c · Advisor settings · Paid work — Project curation: approved, not approved | `JPpKq` | Fragment of the block: Approved · 18 Oct; Not approved with the admin's note and **Ask again**. |
 | 13.7a · Admin · Checkpoints — Curators tab | `ORPpO` | Tab **Curators** next to Promo codes; one row per person: profile link, level, their stages (read-only, for context), status; Approve / Decline when waiting, Revoke when approved. |
 | 13.7b · Admin · Curators — Decline / Revoke | `FRDTR` | The `Popover` that asks for a short note. |
@@ -34,7 +34,7 @@ Row note: `eAJZv` ("Row — 13.7 · Curator onboarding (GDHUB-74)", y 90200).
 ### Specialist — Advisor settings → Paid work → Project curation
 
 The curation block GDHUB-54 already put in Paid work; no new section. Locked (lock icon, tooltip)
-until the Expert Services Terms are accepted and the payout details saved (`Q8dNW0`).
+until the Advisor Agreement in effect is accepted and the payout details saved (`Q8dNW0`).
 - Row **Project curation** with its `Switch`.
 - **Stages you curate** — `Select mode="multiple"` of the platform's stage names; plain tags, no
   markers.
@@ -86,7 +86,7 @@ Stories: the Curation block (locked, off, waiting, approved, not approved); `Cur
 ## 6. States
 
 **Specialist**
-- **Locked** until the Expert Services Terms are accepted and payout details saved (`Q8dNW0`).
+- **Locked** until the Advisor Agreement in effect is accepted and payout details saved (`Q8dNW0`).
 - **Off, never asked**: no status line.
 - Turning curation **on** and saving sends the request → **Waiting for review**.
 - **Approved**: offered at their stages while curation is on. Changing the stages needs no review.
@@ -174,5 +174,5 @@ not approved, no note; **not approved** — not approved, note set.
 - Turning curation off and on keeps the approval.
 - Declined and revoked are one state for the curator, "Not approved" + the note + Ask again; no
   decision date. The admin's Revoke stays as an action.
-- The block is locked until the Expert Services Terms are accepted; one email per decision; no
+- The block is locked until the payout details are saved; one email per decision; no
   "curator since" or checkpoint count in the admin row; the row is titled "Project curation".

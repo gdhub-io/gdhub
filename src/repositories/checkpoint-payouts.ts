@@ -22,7 +22,7 @@ import type {
 } from "@/types/checkpoints";
 
 /**
- * Curator payouts (Expert Services Terms §5): what each curator earned in a
+ * Curator payouts (Advisor Agreement §9): what each curator earned in a
  * month, the bank transfer an admin marks paid, and the curator's own view.
  */
 
