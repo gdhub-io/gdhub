@@ -8,10 +8,10 @@ import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Modal, Typography } from "antd";
 import axios from "axios";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
-import { gtmEventTrigger } from "@/helpers/gtm";
+import { gtmEventTrigger, trackCheckpoint } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 
 import { AfterVerdict } from "./AfterVerdict";
@@ -91,6 +91,12 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			axios.put("/api/project/move", { projectId: project.id, direction }),
 		onSuccess: () => refetch(),
 	});
+	// Which button asked for the move, kept across the equity confirmation.
+	const movedFromVerdict = useRef(false);
+	const trackMoved = () =>
+		trackCheckpoint("checkpoint_stage_moved", {
+			after_verdict: movedFromVerdict.current,
+		});
 
 	if (!workflow) return null;
 
@@ -127,12 +133,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		(task) => task.required && !task.done,
 	);
 	const nextStep = steps[current.order + 1];
-	const goNext = () => {
+	const goNext = (fromVerdict = false) => {
+		movedFromVerdict.current = fromVerdict;
 		if (current.equityPromises?.length) {
 			setEquityOpen(true);
 			return;
 		}
-		move.mutate("next");
+		move.mutate("next", { onSuccess: trackMoved });
 		gtmEventTrigger("workflow_move", {
 			projectId: project.id,
 			direction: "next",
@@ -258,7 +265,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				next={
 					state === "current" && canMove && nextStep
 						? {
-								onClick: goNext,
+								onClick: () => goNext(),
 								loading: move.isPending,
 								lockedReason: requiredOpen
 									? t(
@@ -385,7 +392,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 												nextStep
 													? {
 															stage: stepName(current.order + 1),
-															onClick: goNext,
+															onClick: () => goNext(true),
 															loading: move.isPending,
 															lockedReason: requiredOpen
 																? t(
@@ -439,6 +446,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				open={equityOpen}
 				onOk={async () => {
 					await move.mutateAsync("next");
+					trackMoved();
 					setEquityOpen(false);
 				}}
 				onCancel={() => setEquityOpen(false)}

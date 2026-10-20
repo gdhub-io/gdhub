@@ -30,6 +30,7 @@ import {
 	CHECKPOINT_LARGE_TEAM_EMAIL,
 	CHECKPOINT_MAX_TEAM,
 } from "@/config/checkpoint";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useCheckGoal, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
@@ -131,7 +132,10 @@ export function NowStep() {
 			return;
 		}
 
-		if (remark) return go("curator");
+		if (remark) {
+			trackCheckpoint("checkpoint_goal_set", { warned: true });
+			return go("curator");
+		}
 
 		// Advice, never a gate: a check that does not come back lets them through —
 		// except a 429, which asks them to wait rather than skip it.
@@ -145,6 +149,7 @@ export function NowStep() {
 			setWarned({ goal: text.trim(), remark: result });
 			return;
 		}
+		trackCheckpoint("checkpoint_goal_set", { warned: false });
 		go("curator");
 	};
 

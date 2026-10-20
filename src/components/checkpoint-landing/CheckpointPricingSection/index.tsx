@@ -17,6 +17,7 @@ import {
 	type CuratorLevel,
 	curatorPrice,
 } from "@/config/checkpoint-pricing";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
@@ -156,7 +157,13 @@ export const CheckpointPricingSection = () => {
 					</p>
 				</div>
 
-				<Link href={CHECKPOINT_ENTRY_HREF} className={styles.ctaLink}>
+				<Link
+					href={CHECKPOINT_ENTRY_HREF}
+					className={styles.ctaLink}
+					onClick={() =>
+						trackCheckpoint("checkpoint_landing_cta", { section: "pricing" })
+					}
+				>
 					<Button type="primary" className={styles.cta}>
 						{t("checkpointLanding.cta.plan", "Plan my next Checkpoint")}
 					</Button>

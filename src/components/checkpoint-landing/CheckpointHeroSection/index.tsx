@@ -9,6 +9,7 @@ import {
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import { CHECKPOINT_MIN_CURATOR_PRICE } from "@/config/checkpoint-pricing";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { CheckpointSection } from "../CheckpointSection";
 import styles from "./style.module.scss";
 
@@ -45,7 +46,13 @@ export const CheckpointHeroSection = () => {
 						)}
 					</p>
 
-					<Link href={CHECKPOINT_ENTRY_HREF} className={styles.ctaLink}>
+					<Link
+						href={CHECKPOINT_ENTRY_HREF}
+						className={styles.ctaLink}
+						onClick={() =>
+							trackCheckpoint("checkpoint_landing_cta", { section: "hero" })
+						}
+					>
 						<Button type="primary" className={styles.primary}>
 							{t("checkpointLanding.cta.plan", "Plan my next Checkpoint")}
 						</Button>

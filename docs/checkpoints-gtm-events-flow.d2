@@ -42,7 +42,7 @@ running: "Running and after" {
   call: "checkpoint_call_joined {session_index, role: team | curator}\nDaily join resolved, once per session"
   plan: "checkpoint_plan_saved {session_index}\nthe 'Save changes' button only"
   pulse: "checkpoint_pulse_answered {sprint}"
-  verdict: "checkpoint_verdict_seen {verdict, curator_kind, source: button | link}\nresults modal opened, once per checkpoint"
+  verdict: "checkpoint_verdict_seen {verdict, curator_kind, opened_from: button | link}\nresults modal opened, once per checkpoint"
   next: "checkpoint_next_planned {next_number, verdict, previous_curator_kind}\n'Plan Checkpoint N' / 'Plan this checkpoint'"
   stage: "checkpoint_stage_moved {after_verdict}\nafter the move succeeds, both paths (with or without equity promises)"
 }

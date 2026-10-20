@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
 import {
+	CHECKPOINT_INTENT,
 	entryHubHref,
 	entryProjectHref,
 } from "@/components/checkpoints/entry/hrefs";
@@ -28,6 +29,7 @@ import {
 } from "@/config/checkpoint";
 import type { SkillLevel } from "@/config/prisma-enums";
 import { deleteCookie, getCookie } from "@/helpers/cookie";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { resyncSession } from "@/helpers/session";
 import {
 	useEntryProfile,
@@ -55,10 +57,10 @@ type ValidationIssue = {
 	message: string;
 };
 
-const PRE_REGISTRATION_COOKIES = [
-	"auth.email.pre-registration",
-	"auth.google.pre-registration",
-];
+const PRE_REGISTRATION_COOKIES = {
+	email: "auth.email.pre-registration",
+	google: "auth.google.pre-registration",
+} as const;
 
 /** Every IANA zone the browser knows, labelled with its current offset. */
 const timezoneOptions = () =>
@@ -76,13 +78,17 @@ const yearOptions = () =>
 
 /** The consents ticked on the registration page, when the user came from there. */
 const readPreRegistration = () => {
-	for (const name of PRE_REGISTRATION_COOKIES) {
+	for (const [provider, name] of Object.entries(PRE_REGISTRATION_COOKIES)) {
 		const raw = getCookie(name);
 		if (!raw) continue;
 		try {
-			return JSON.parse(decodeURIComponent(raw)) as {
-				legal?: LegalAcceptanceInput[];
-				needSubscribeToNewsletter?: boolean;
+			return {
+				...(JSON.parse(decodeURIComponent(raw)) as {
+					intent?: string;
+					legal?: LegalAcceptanceInput[];
+					needSubscribeToNewsletter?: boolean;
+				}),
+				provider: provider as keyof typeof PRE_REGISTRATION_COOKIES,
 			};
 		} catch {
 			return undefined;
@@ -118,6 +124,16 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 	// The server can still refuse for missing consent; then the checkbox appears regardless.
 	const [termsRefused, setTermsRefused] = useState(false);
 	const [termsStale, setTermsStale] = useState(false);
+
+	const userId = session?.user.id;
+	useEffect(() => {
+		if (!userId || preRegistration?.intent !== CHECKPOINT_INTENT) return;
+		trackCheckpoint(
+			"checkpoint_signed_up",
+			{ provider: preRegistration.provider },
+			{ once: `signed_up:${userId}`, persist: true },
+		);
+	}, [userId, preRegistration]);
 
 	const loading = profile.isPending || speciality.isPending || status.isPending;
 	const askTerms =
@@ -171,10 +187,14 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 					: preRegistration?.legal,
 			});
 			// Advisory AI warnings are shown and never block the save.
+			trackCheckpoint("checkpoint_about_done", {
+				first_time: !status.data?.aboutDone,
+			});
 			for (const warning of result.validation?.warnings ?? []) {
 				message.warning(t(warning.messageKey, warning.message));
 			}
-			for (const name of PRE_REGISTRATION_COOKIES) deleteCookie(name);
+			for (const name of Object.values(PRE_REGISTRATION_COOKIES))
+				deleteCookie(name);
 			// The proxy reads `onboardingDone` from the JWT, so it is re-read before leaving.
 			await resyncSession(updateSession);
 			// Done before means it was opened from the hub to edit; otherwise on to the project.

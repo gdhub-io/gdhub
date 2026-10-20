@@ -14,9 +14,19 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
-import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
+import { purchaseParams } from "@/config/analytics-events";
+import {
+	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_DAYS,
+	CURATOR_ANSWER_DAYS,
+} from "@/config/checkpoint";
+import { curatorPrice } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import { useCancelCheckpoint } from "@/hooks/checkpoints";
+import { trackCheckpoint } from "@/helpers/gtm";
+import {
+	useCancelCheckpoint,
+	useCheckpointCurators,
+} from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { MoneyNotice } from "../MoneyNotice";
@@ -97,6 +107,29 @@ export function PaidPanel({
 		checkpoint.curatorKind === CheckpointCuratorKind.AI &&
 		(checkpoint.status === CheckpointStatus.Active ||
 			checkpoint.status === CheckpointStatus.Review);
+
+	const reserved = checkpoint.status === CheckpointStatus.AwaitingCurator;
+	// The wizard's own query key, so it is usually in the cache already.
+	const curators = useCheckpointCurators(checkpoint.stageName);
+	// A person's level, which sets the list price, is on the curator list.
+	const level = reserved
+		? curators.data?.find((row) => row.userId === checkpoint.curator?.id)?.level
+		: null;
+	const levelKnown = !reserved || !curators.isPending;
+	useEffect(() => {
+		if (!(onTheWay || reserved) || !levelKnown) return;
+		const listPrice = level ? curatorPrice(level) : CHECKPOINT_AI_PRICE;
+		trackCheckpoint(
+			"checkpoint_paid",
+			{
+				...purchaseParams(checkpoint, level),
+				outcome: onTheWay ? "ai_started" : "expert_reserved",
+				promo_used:
+					checkpoint.heldPrice != null && checkpoint.heldPrice < listPrice,
+			},
+			{ once: `paid:${checkpoint.id}`, persist: true },
+		);
+	}, [onTheWay, reserved, levelKnown, level, checkpoint]);
 
 	const [waitingSince, setWaitingSince] = useState(() => Date.now());
 	const [gaveUp, setGaveUp] = useState(false);

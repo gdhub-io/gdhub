@@ -17,6 +17,7 @@ import { useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { PulseCell } from "@/components/checkpoints/PulseCell";
 import { IconTile, ViewAllLink } from "@/components/ui";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useConfirmPulse } from "@/hooks/checkpoints";
 import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
 import styles from "./style.module.scss";
@@ -145,6 +146,7 @@ export function PulseCard({ view: initial, token }: PulseCardProps) {
 			onSuccess: (next) => {
 				setView(next);
 				setAnswered(true);
+				trackCheckpoint("checkpoint_pulse_answered", { sprint: next.sprint });
 			},
 			onError: (error) => {
 				if (isAxiosError(error) && error.response?.status === 404)

@@ -18,6 +18,7 @@ import {
 	CHECKPOINT_ITEM_TEXT_MAX,
 	CHECKPOINT_MAX_ITEMS_PER_KIND,
 } from "@/config/checkpoint";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useChangePlan } from "@/hooks/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
@@ -146,13 +147,26 @@ export const adviceSlots = ({
 	until,
 	loading,
 	onAdvise,
+	sessionIndex,
 }: {
 	until: string | null;
 	loading: boolean;
 	onAdvise: () => void;
+	sessionIndex: number;
 }): Pick<PlanBodyProps, "listAction" | "footer"> => ({
 	listAction: <SuggestTasks loading={loading} onClick={onAdvise} />,
-	footer: <AdviseFooter until={until} loading={loading} onClick={onAdvise} />,
+	footer: (
+		<AdviseFooter
+			until={until}
+			loading={loading}
+			onClick={() => {
+				trackCheckpoint("checkpoint_plan_saved", {
+					session_index: sessionIndex,
+				});
+				onAdvise();
+			}}
+		/>
+	),
 });
 
 function SuggestTasks({

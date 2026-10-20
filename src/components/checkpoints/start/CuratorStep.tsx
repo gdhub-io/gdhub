@@ -21,11 +21,13 @@ import {
 import dayjs, { type Dayjs } from "dayjs";
 import { type ReactNode, useState } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
+import { purchaseParams } from "@/config/analytics-events";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { isSlotTaken } from "@/hooks/advisor-availability";
 import {
 	useCheckpointCurators,
@@ -136,6 +138,15 @@ export function CuratorStep() {
 				curatorId: isHuman ? chosenPerson : null,
 				startedAt: isHuman ? firstCall : startDay.format("YYYY-MM-DD"),
 			});
+			if (next === "payment") {
+				trackCheckpoint(
+					"checkpoint_curator_chosen",
+					purchaseParams(
+						{ ...draft, curatorKind: chosen },
+						isHuman ? curator?.level : null,
+					),
+				);
+			}
 			go(next);
 		} catch (error) {
 			if (isSlotTaken(error)) {

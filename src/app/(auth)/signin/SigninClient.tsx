@@ -12,7 +12,7 @@ import {
 	CHECKPOINT_ENTRY_HREF,
 	entryRegistrationHref,
 } from "@/components/checkpoints/entry/hrefs";
-import { gtmEventTrigger } from "@/helpers/gtm";
+import { gtmEventTrigger, markCheckpointSignIn } from "@/helpers/gtm";
 import styles from "./style.module.scss";
 
 const { Paragraph, Title } = Typography;
@@ -27,6 +27,7 @@ export function SigninClient() {
 
 	const error = searchParams?.get("error");
 	const callbackUrl = searchParams?.get("callbackUrl") || "/hub";
+	const toCheckpoint = callbackUrl.startsWith(CHECKPOINT_ENTRY_HREF);
 
 	useEffect(() => {
 		if (error === "RefreshTokenExpired") {
@@ -54,6 +55,7 @@ export function SigninClient() {
 		const { email } = await form.validateFields();
 
 		try {
+			if (toCheckpoint) markCheckpointSignIn("email");
 			const response = await signIn("email", {
 				email,
 				redirect: false,
@@ -105,19 +107,20 @@ export function SigninClient() {
 									type="primary"
 									style={{ width: "100%" }}
 									icon={<IconBrandGoogle size={16} />}
-									onClick={() =>
+									onClick={() => {
+										if (toCheckpoint) markCheckpointSignIn("google");
 										signIn(
 											"google",
 											{ callbackUrl },
 											{ prompt: "select_account consent" },
-										)
-									}
+										);
+									}}
 								>
 									{t("signin.google.title", "Log in with Google")}
 								</Button>
 								<Link
 									href={
-										callbackUrl.startsWith(CHECKPOINT_ENTRY_HREF)
+										toCheckpoint
 											? entryRegistrationHref(
 													new URL(callbackUrl, "http://x").searchParams.get(
 														"project",

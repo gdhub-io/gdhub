@@ -11,7 +11,7 @@ import { App, Button, Card, Flex, Form, Skeleton, Typography } from "antd";
 import { isAxiosError } from "axios";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
 import { entryProjectHref } from "@/components/checkpoints/entry/hrefs";
 import {
@@ -21,6 +21,7 @@ import {
 	outdatedLegalCode,
 } from "@/components/legal/ClickwrapField";
 import { EmptyState, IconTile } from "@/components/ui";
+import { purchaseParams } from "@/config/analytics-events";
 import {
 	AI_PLAN_DAYS,
 	CHECKPOINT_DAYS,
@@ -33,8 +34,10 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { isSlotTaken } from "@/hooks/advisor-availability";
 import { useCheckpointCheckout } from "@/hooks/checkpoints";
+import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import { CuratorBadge } from "../CuratorBadge";
@@ -64,6 +67,10 @@ export function PaymentStep() {
 	const { price, curator: chosen } = useCheckpointPrice(draft);
 	const [form] = Form.useForm();
 	const [stale, setStale] = useState<LegalCode | null>(null);
+	const cancelled = useTakeSearchParam("cancelled");
+	useEffect(() => {
+		if (cancelled) trackCheckpoint("checkpoint_payment_cancelled", {});
+	}, [cancelled]);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 8 }} />;
 
@@ -126,7 +133,18 @@ export function PaymentStep() {
 			const { url } = await checkout.mutateAsync(
 				legalAcceptances(["CheckpointPurchaseTerms"]),
 			);
-			window.location.href = url;
+			trackCheckpoint(
+				"checkpoint_payment_opened",
+				{
+					...purchaseParams(draft, chosen?.level),
+					retry: !!draft.paymentFailed,
+				},
+				{
+					callback: () => {
+						window.location.href = url;
+					},
+				},
+			);
 		} catch (error) {
 			const outdated = outdatedLegalCode(error);
 			if (outdated) {

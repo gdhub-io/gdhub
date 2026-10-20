@@ -32,7 +32,10 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
+import {
+	checkpointNumber,
+	previousCuratorKind,
+} from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
@@ -502,17 +505,19 @@ export const getCheckpoint = async (id: string) => {
 	if (!row) return null;
 
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
-	const [held, number, builds] = await Promise.all([
+	const [held, number, builds, previousKind] = await Promise.all([
 		row.paymentId ? heldAmount(id) : null,
 		// A draft has no number yet and no sprints to file builds in.
 		row.status === CheckpointStatus.Draft ? undefined : checkpointNumber(row),
 		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
+		previousCuratorKind(row),
 	]);
 
 	return {
 		...toCheckpointDetail(row),
 		number,
 		builds,
+		previousCuratorKind: previousKind,
 		heldPrice: held === null ? null : toWholePrice(held),
 	};
 };
@@ -579,10 +584,18 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const { reports, pulses, project, curator, ...checkpoint } =
 		withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
+	const [failed, number, previousKind] = await Promise.all([
+		paymentFailed(checkpoint),
+		checkpointNumber(checkpoint),
+		previousCuratorKind(checkpoint),
+	]);
 
 	return {
 		...checkpoint,
-		paymentFailed: await paymentFailed(checkpoint),
+		paymentFailed: failed,
+		// A draft's is the number it takes once paid; analytics reads it with the kind before it.
+		number,
+		previousCuratorKind: previousKind,
 		curator: withCraft(curator),
 		sprints: buildSprints(startedAt),
 		// Only a running checkpoint asks anything of its author on a given day.

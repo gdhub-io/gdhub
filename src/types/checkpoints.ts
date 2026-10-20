@@ -198,6 +198,8 @@ export type CheckpointDto = {
 	signals?: CheckpointSignalsDto | null;
 	/** The list's current row only: a draft whose last checkout did not go through. */
 	paymentFailed?: boolean;
+	/** The curator kind of the project's checkpoint before this one, null for the first. Current row and detail. */
+	previousCuratorKind?: CheckpointCuratorKind | null;
 	/** The list's current row only: what its author has to do next, if anything. */
 	next?: AuthorNextStep | null;
 	/** Counted in UTC on the server — see `checkpointProgress`. */
