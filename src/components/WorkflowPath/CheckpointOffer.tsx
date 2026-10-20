@@ -23,6 +23,7 @@ import { ReplaceCuratorModal } from "@/components/checkpoints/PaidPanel/ReplaceC
 import { PURCHASE_STEPS } from "@/components/checkpoints/start/PurchaseLayout";
 import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import { IconTile, StatusDot, type StatusTone } from "@/components/ui";
+import { nextPlannedParams } from "@/config/analytics-events";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_DAYS,
@@ -31,6 +32,7 @@ import {
 } from "@/config/checkpoint";
 import { CHECKPOINT_MIN_CURATOR_PRICE } from "@/config/checkpoint-pricing";
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { trackCheckpoint } from "@/helpers/gtm";
 import {
 	useCancelCheckpoint,
 	useCheckpoint,
@@ -103,7 +105,15 @@ export function CheckpointOffer({
 	);
 
 	if (!draft) {
-		const plan = () => router.push(entryHubHref(project.slug));
+		const plan = () => {
+			trackCheckpoint(
+				"checkpoint_next_planned",
+				nextPlannedParams(
+					previous && { ...previous.checkpoint, number: previous.number },
+				),
+			);
+			router.push(entryHubHref(project.slug));
+		};
 
 		const option = (
 			icon: ReactNode,

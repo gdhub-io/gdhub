@@ -32,6 +32,7 @@ import {
 	CuratorAside,
 	teamProject,
 } from "@/components/checkpoints/CuratorReview/CuratorAside";
+import { trackCheckpoint } from "@/helpers/gtm";
 import {
 	isCallRefusal,
 	useEndCall,
@@ -103,7 +104,16 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 	const onJoin = () =>
 		join.mutate(undefined, {
 			onSuccess: ({ url, token }) =>
-				daily?.join({ url, token }).catch(joinFailed),
+				daily
+					?.join({ url, token })
+					.then(() =>
+						trackCheckpoint(
+							"checkpoint_call_joined",
+							{ session_index: call.index, role: call.role },
+							{ once: `call_joined:${call.checkpointId}:${call.index}` },
+						),
+					)
+					.catch(joinFailed),
 			// The curator left before we asked, or the window shut: show what is true now.
 			onError: (error) => (isCallRefusal(error) ? refetch() : joinFailed()),
 		});

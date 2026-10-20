@@ -11,7 +11,7 @@ import axios from "axios";
 import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
-import { gtmEventTrigger } from "@/helpers/gtm";
+import { gtmEventTrigger, trackCheckpoint } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 
 import { AfterVerdict } from "./AfterVerdict";
@@ -50,7 +50,8 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	// How many stages behind the current one are open. Each "Show earlier"
 	// opens one more; null is the running-checkpoint default, nothing behind.
 	const [behind, setBehind] = useState<number | null>(null);
-	const [equityOpen, setEquityOpen] = useState(false);
+	// Open while the equity promises are confirmed; holds which button asked for the move.
+	const [equityAsk, setEquityAsk] = useState<{ afterVerdict: boolean }>();
 	const [earlierOpen, setEarlierOpen] = useState(false);
 
 	const { data: workflow, refetch } = useProjectWorkflow(project.id);
@@ -87,9 +88,17 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	}, [ownKey]);
 
 	const move = useMutation({
-		mutationFn: (direction: "next") =>
-			axios.put("/api/project/move", { projectId: project.id, direction }),
-		onSuccess: () => refetch(),
+		mutationFn: (_move: { afterVerdict: boolean }) =>
+			axios.put("/api/project/move", {
+				projectId: project.id,
+				direction: "next",
+			}),
+		onSuccess: (_data, { afterVerdict }) => {
+			trackCheckpoint("checkpoint_stage_moved", {
+				after_verdict: afterVerdict,
+			});
+			refetch();
+		},
 	});
 
 	if (!workflow) return null;
@@ -127,12 +136,12 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		(task) => task.required && !task.done,
 	);
 	const nextStep = steps[current.order + 1];
-	const goNext = () => {
+	const goNext = (afterVerdict: boolean) => {
 		if (current.equityPromises?.length) {
-			setEquityOpen(true);
+			setEquityAsk({ afterVerdict });
 			return;
 		}
-		move.mutate("next");
+		move.mutate({ afterVerdict });
 		gtmEventTrigger("workflow_move", {
 			projectId: project.id,
 			direction: "next",
@@ -258,7 +267,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				next={
 					state === "current" && canMove && nextStep
 						? {
-								onClick: goNext,
+								onClick: () => goNext(false),
 								loading: move.isPending,
 								lockedReason: requiredOpen
 									? t(
@@ -385,7 +394,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 												nextStep
 													? {
 															stage: stepName(current.order + 1),
-															onClick: goNext,
+															onClick: () => goNext(true),
 															loading: move.isPending,
 															lockedReason: requiredOpen
 																? t(
@@ -436,12 +445,12 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 					"workflow.equity-transfer.title",
 					"Equity Transfer Confirmation",
 				)}
-				open={equityOpen}
+				open={!!equityAsk}
 				onOk={async () => {
-					await move.mutateAsync("next");
-					setEquityOpen(false);
+					if (equityAsk) await move.mutateAsync(equityAsk);
+					setEquityAsk(undefined);
 				}}
-				onCancel={() => setEquityOpen(false)}
+				onCancel={() => setEquityAsk(undefined)}
 				confirmLoading={move.isPending}
 			>
 				<Flex vertical gap={8}>

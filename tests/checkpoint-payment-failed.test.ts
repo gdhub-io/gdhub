@@ -5,7 +5,7 @@ import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { findFirst: vi.fn() },
+		projectCheckpoint: { findFirst: vi.fn(), findMany: vi.fn(async () => []) },
 		payment: { findFirst: vi.fn() },
 	},
 }));

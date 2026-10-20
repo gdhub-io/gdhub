@@ -4,7 +4,11 @@ import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { findUnique: vi.fn(), findFirst: vi.fn(), count: vi.fn() },
+		projectCheckpoint: {
+			findUnique: vi.fn(),
+			findFirst: vi.fn(),
+			findMany: vi.fn(async () => []),
+		},
 		projectArtifact: { findMany: vi.fn(async () => []) },
 	},
 }));

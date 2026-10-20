@@ -175,6 +175,7 @@ export function PanelBlock({
 										?.scheduledAt ?? null,
 								loading: advise.loading,
 								onAdvise: advise.onAdvise,
+								sessionIndex: current,
 							}),
 						})}
 				/>

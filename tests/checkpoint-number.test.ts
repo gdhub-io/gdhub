@@ -1,6 +1,7 @@
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { CheckpointCuratorKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { describe, expect, it, vi } from "vitest";
 import {
+	checkpointLineage,
 	checkpointNumber,
 	checkpointNumbers,
 } from "@/repositories/checkpoint-number";
@@ -20,7 +21,9 @@ type Where = {
 };
 
 vi.mock("@/services/prisma", () => ({
-	prisma: { projectCheckpoint: { count: vi.fn(), findMany: vi.fn() } },
+	prisma: {
+		projectCheckpoint: { count: vi.fn(), findMany: vi.fn() },
+	},
 }));
 
 const at = (day: number) => new Date(Date.UTC(2026, 0, day));
@@ -50,18 +53,42 @@ vi.mocked(prisma.projectCheckpoint.count).mockImplementation((async ({
 }: {
 	where: Where;
 }) => rows.filter((row) => matches(row, where)).length) as never);
+const kinds: Record<string, CheckpointCuratorKind> = {
+	a1: CheckpointCuratorKind.Human,
+	a2: CheckpointCuratorKind.AI,
+	a3: CheckpointCuratorKind.AI,
+	a4: CheckpointCuratorKind.AI,
+	a5: CheckpointCuratorKind.AI,
+	a6: CheckpointCuratorKind.Human,
+	b1: CheckpointCuratorKind.Human,
+	b2: CheckpointCuratorKind.Human,
+};
+
 vi.mocked(prisma.projectCheckpoint.findMany).mockImplementation((async ({
 	where,
+	orderBy,
 }: {
 	where: Where;
-}) => rows.filter((row) => matches(row, where))) as never);
+	orderBy?: { createdAt: "desc" };
+}) => {
+	const found = rows
+		.filter((row) => matches(row, where))
+		.map((row) => ({ ...row, curatorKind: kinds[row.id] }));
+	return orderBy
+		? found.sort((x, y) => y.createdAt.getTime() - x.createdAt.getTime())
+		: found;
+}) as never);
 
 describe("numbering checkpoints in one query", () => {
 	it("gives every row the number checkpointNumber gives it", async () => {
 		const batch = await checkpointNumbers(rows);
 		const single = await Promise.all(rows.map((row) => checkpointNumber(row)));
+		const lineage = await Promise.all(rows.map((row) => checkpointLineage(row)));
+		vi.mocked(prisma.projectCheckpoint.findMany).mockClear();
+		await checkpointNumbers(rows);
 
 		expect(rows.map((row) => batch.get(row.id))).toEqual(single);
+		expect(lineage.map((one) => one.number)).toEqual(single);
 		expect(single).toEqual([1, 2, 2, 2, 2, 4, 1, 2]);
 		expect(prisma.projectCheckpoint.findMany).toHaveBeenCalledTimes(1);
 	});
@@ -70,5 +97,30 @@ describe("numbering checkpoints in one query", () => {
 		vi.mocked(prisma.projectCheckpoint.findMany).mockClear();
 		await expect(checkpointNumbers([])).resolves.toEqual(new Map());
 		expect(prisma.projectCheckpoint.findMany).not.toHaveBeenCalled();
+	});
+});
+
+describe("the curator kind of the checkpoint before", () => {
+
+	const of = async (id: string) =>
+		(await checkpointLineage(rows.find((row) => row.id === id) as Row))
+			.previousCuratorKind;
+
+	it("is null for the project's first", async () => {
+		expect(await of("a1")).toBeNull();
+		expect(await of("b1")).toBeNull();
+	});
+
+	// a2 (draft) and a3 (cancelled) never ran, so a4 looks back past them to a1.
+	it("skips drafts and cancelled checkpoints", async () => {
+		expect(await of("a4")).toBe(CheckpointCuratorKind.Human);
+	});
+
+	it("is the latest earlier one that ran, for a draft too", async () => {
+		expect(await of("a6")).toBe(CheckpointCuratorKind.AI);
+	});
+
+	it("stays within the project", async () => {
+		expect(await of("b2")).toBe(CheckpointCuratorKind.Human);
 	});
 });

@@ -31,6 +31,7 @@ import {
 	CheckpointSessionContentStatus,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useAdvisePlan, useCheckpointReview } from "@/hooks/checkpoint-review";
 import { type PlanEdit, planSession } from "@/lib/checkpoint-call";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
@@ -77,6 +78,16 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 					),
 				),
 		});
+
+	const loaded = !!review;
+	useEffect(() => {
+		if (!loaded) return;
+		trackCheckpoint(
+			"checkpoint_review_opened",
+			{ session_index: index, curator_kind: "ai" },
+			{ once: `review_opened:${checkpointId}:${index}` },
+		);
+	}, [loaded, checkpointId, index]);
 
 	// The start greets the team with suggestions before anything is saved.
 	const greeted = useRef(false);
@@ -233,6 +244,7 @@ export function AiReviewView({
 												until: plan.editUntil,
 												loading: advising,
 												onAdvise,
+												sessionIndex: selected,
 											})}
 										/>
 									),

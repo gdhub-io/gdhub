@@ -2,13 +2,15 @@ import { IconArrowRight, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import {
 	useVerdictCopy,
 	VerdictChip,
 } from "@/components/checkpoints/VerdictChip";
+import { curatorKindParam, nextPlannedParams } from "@/config/analytics-events";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointResult } from "./ClosedCheckpoint";
@@ -50,13 +52,31 @@ export function AfterVerdict({
 	const router = useRouter();
 	const { meaning } = useVerdictCopy();
 	const [results, setResults] = useState(false);
+	const { id, verdict, curatorKind } = checkpoint;
+
+	const openResults = useCallback(
+		(openedFrom: "button" | "link") => {
+			setResults(true);
+			if (!verdict) return;
+			trackCheckpoint(
+				"checkpoint_verdict_seen",
+				{
+					verdict,
+					curator_kind: curatorKindParam(curatorKind),
+					opened_from: openedFrom,
+				},
+				{ once: `verdict_seen:${id}`, persist: true },
+			);
+		},
+		[id, verdict, curatorKind],
+	);
 
 	const linked = useTakeSearchParam("results");
 	useEffect(() => {
-		if (linked === checkpoint.id) setResults(true);
-	}, [linked, checkpoint.id]);
+		if (linked === id) openResults("link");
+	}, [linked, id, openResults]);
 
-	if (!checkpoint.verdict) return null;
+	if (!verdict) return null;
 
 	const meta = [
 		checkpoint.stageName,
@@ -91,13 +111,13 @@ export function AfterVerdict({
 							number: String(number),
 						})}
 					</span>
-					<VerdictChip verdict={checkpoint.verdict} />
+					<VerdictChip verdict={verdict} />
 				</span>
 				<span className={styles.meta}>{meta}</span>
 			</Flex>
 
 			<Flex vertical gap={8}>
-				<span className={styles.secondary}>{meaning(checkpoint.verdict)}</span>
+				<span className={styles.secondary}>{meaning(verdict)}</span>
 				{checkpoint.verdictNote && (
 					<span className={styles.prose}>{checkpoint.verdictNote}</span>
 				)}
@@ -108,7 +128,7 @@ export function AfterVerdict({
 								name: checkpoint.curator.name,
 							})}
 					</span>
-					<Button type="link" onClick={() => setResults(true)}>
+					<Button type="link" onClick={() => openResults("button")}>
 						{t("workflow.path.check.view-results", "View results")}
 					</Button>
 				</Flex>
@@ -181,7 +201,13 @@ export function AfterVerdict({
 								type="primary"
 								disabled={locked}
 								icon={locked ? <IconLock size={16} /> : undefined}
-								onClick={() => router.push(entryHubHref(project.slug))}
+								onClick={() => {
+									trackCheckpoint(
+										"checkpoint_next_planned",
+										nextPlannedParams({ number, verdict, curatorKind }),
+									);
+									router.push(entryHubHref(project.slug));
+								}}
 							>
 								{t("workflow.after.plan", "Plan Checkpoint {number}", {
 									number: String(number + 1),

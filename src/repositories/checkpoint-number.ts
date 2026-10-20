@@ -1,4 +1,7 @@
-import { CheckpointStatus } from "@/config/prisma-enums";
+import {
+	type CheckpointCuratorKind,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
 import { currentSprint } from "@/lib/checkpoint-sprints";
 import { prisma } from "@/services/prisma";
 import type { PreviousVerdict } from "@/types/checkpoints";
@@ -20,6 +23,32 @@ export const checkpointNumber = async (row: {
 			status: { notIn: UNNUMBERED },
 		},
 	})) + 1;
+
+/**
+ * `checkpointNumber` and the curator kind of the checkpoint before this one that
+ * ran (null for the project's first), from one query.
+ */
+export const checkpointLineage = async (row: {
+	projectId: string;
+	createdAt: Date;
+}): Promise<{
+	number: number;
+	previousCuratorKind: CheckpointCuratorKind | null;
+}> => {
+	const before = await prisma.projectCheckpoint.findMany({
+		where: {
+			projectId: row.projectId,
+			createdAt: { lt: row.createdAt },
+			status: { notIn: UNNUMBERED },
+		},
+		orderBy: { createdAt: "desc" },
+		select: { curatorKind: true },
+	});
+	return {
+		number: before.length + 1,
+		previousCuratorKind: before[0]?.curatorKind ?? null,
+	};
+};
 
 /** `checkpointNumber` for many rows in one query, keyed by id. */
 export const checkpointNumbers = async (

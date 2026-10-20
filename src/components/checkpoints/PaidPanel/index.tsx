@@ -14,12 +14,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
+import { purchaseParams } from "@/config/analytics-events";
 import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { MoneyNotice } from "../MoneyNotice";
+import { useCheckpointPrice } from "../start/useDraft";
 import { ReplaceCuratorModal } from "./ReplaceCuratorModal";
 import styles from "./style.module.scss";
 
@@ -97,6 +100,24 @@ export function PaidPanel({
 		checkpoint.curatorKind === CheckpointCuratorKind.AI &&
 		(checkpoint.status === CheckpointStatus.Active ||
 			checkpoint.status === CheckpointStatus.Review);
+
+	const reserved = checkpoint.status === CheckpointStatus.AwaitingCurator;
+	const listed = useCheckpointPrice(checkpoint);
+	const level = listed.curator?.level;
+	const listPrice = listed.price;
+	useEffect(() => {
+		if (!(onTheWay || reserved) || listed.isPending) return;
+		trackCheckpoint(
+			"checkpoint_paid",
+			{
+				...purchaseParams(checkpoint, level),
+				outcome: onTheWay ? "ai_started" : "expert_reserved",
+				promo_used:
+					checkpoint.heldPrice != null && checkpoint.heldPrice < listPrice,
+			},
+			{ once: `paid:${checkpoint.id}`, persist: true },
+		);
+	}, [onTheWay, reserved, listed.isPending, level, listPrice, checkpoint]);
 
 	const [waitingSince, setWaitingSince] = useState(() => Date.now());
 	const [gaveUp, setGaveUp] = useState(false);

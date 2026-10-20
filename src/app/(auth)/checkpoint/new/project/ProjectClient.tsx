@@ -24,6 +24,7 @@ import CreateProjectModal, {
 	type CreatedProject,
 } from "@/components/modals/CreateProjectModal";
 import { EmptyState } from "@/components/ui";
+import { trackCheckpoint } from "@/helpers/gtm";
 import {
 	entryKeys,
 	useEntryPrefill,
@@ -56,6 +57,7 @@ export function ProjectClient({ projectSlug }: ProjectClientProps) {
 
 	const [projectId, setProjectId] = useState<string>();
 	const [creating, setCreating] = useState(false);
+	const [createdId, setCreatedId] = useState<string>();
 
 	const projects = status.data?.projects ?? [];
 	const available = projects.filter((project) => !project.running);
@@ -118,6 +120,7 @@ export function ProjectClient({ projectSlug }: ProjectClientProps) {
 		);
 		queryClient.invalidateQueries({ queryKey: entryKeys.status });
 		setProjectId(project.id);
+		setCreatedId(project.id);
 	};
 
 	const submit = async () => {
@@ -130,6 +133,18 @@ export function ProjectClient({ projectSlug }: ProjectClientProps) {
 					text: row.text.trim(),
 					artifactId: row.artifact?.id ?? null,
 				})),
+			});
+			const carried = new Set(
+				prefill.data?.carriedFrom
+					? prefill.data.items.map((item) => item.text.trim())
+					: [],
+			);
+			trackCheckpoint("checkpoint_project_done", {
+				project: projectId === createdId ? "new" : "existing",
+				lines: filled.length,
+				with_evidence: filled.filter((row) => row.artifact).length,
+				carried_over: filled.filter((row) => carried.has(row.text.trim()))
+					.length,
 			});
 			// A draft saved before means it was opened from the hub to edit; otherwise on to the goal.
 			const slug = projects.find((project) => project.id === projectId)?.slug;

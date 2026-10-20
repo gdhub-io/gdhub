@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import roadImage from "@/assets/images/checkpoint/checkpoint-road.png";
 import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { CheckpointSection } from "../CheckpointSection";
 import styles from "./style.module.scss";
 
@@ -39,7 +40,13 @@ export const CheckpointFinalCtaSection = () => {
 						"Save what changed, set the next goals, and keep moving through repeatable 28-day cycles.",
 					)}
 				</p>
-				<Link href={CHECKPOINT_ENTRY_HREF} className={styles.ctaLink}>
+				<Link
+					href={CHECKPOINT_ENTRY_HREF}
+					className={styles.ctaLink}
+					onClick={() =>
+						trackCheckpoint("checkpoint_landing_cta", { section: "final_cta" })
+					}
+				>
 					<Button type="primary" className={styles.cta}>
 						{t("checkpointLanding.cta.plan", "Plan my next Checkpoint")}
 					</Button>

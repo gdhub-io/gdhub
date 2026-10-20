@@ -156,7 +156,7 @@ export const POST = pipe(
 		description: quote.description,
 		customerEmail: payer.email ?? undefined,
 		successUrl: `${base}${checkoutHref(slug, "ready")}`,
-		cancelUrl: `${base}${checkoutHref(slug, "payment")}`,
+		cancelUrl: `${base}${checkoutHref(slug, "payment")}&cancelled=1`,
 	});
 
 	if (!session.url) return apiError.internal("checkoutUnavailable");

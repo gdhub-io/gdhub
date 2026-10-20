@@ -30,6 +30,7 @@ import {
 	CHECKPOINT_LARGE_TEAM_EMAIL,
 	CHECKPOINT_MAX_TEAM,
 } from "@/config/checkpoint";
+import { trackCheckpoint } from "@/helpers/gtm";
 import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useCheckGoal, useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
@@ -123,6 +124,11 @@ export function NowStep() {
 	const remark = warned?.goal === text.trim() ? warned.remark : null;
 	const tooLarge = team.members.length > CHECKPOINT_MAX_TEAM;
 
+	const proceed = (afterWarning: boolean) => {
+		trackCheckpoint("checkpoint_goal_set", { warned: afterWarning });
+		go("curator");
+	};
+
 	const next = async () => {
 		try {
 			await update.mutateAsync({ goal: text.trim() });
@@ -131,7 +137,7 @@ export function NowStep() {
 			return;
 		}
 
-		if (remark) return go("curator");
+		if (remark) return proceed(true);
 
 		// Advice, never a gate: a check that does not come back lets them through —
 		// except a 429, which asks them to wait rather than skip it.
@@ -145,7 +151,7 @@ export function NowStep() {
 			setWarned({ goal: text.trim(), remark: result });
 			return;
 		}
-		go("curator");
+		proceed(false);
 	};
 
 	const stat = (label: string, value: string) => (
