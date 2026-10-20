@@ -191,3 +191,7 @@ and it is not destructive to data. Ship a story per state for `RefundCheckpointM
 - Refunded: the reason sits under the sum, not beside it.
 - Selects get the brand focus ring (`activeOutlineColor`), app-wide — antd drew its own
   graphite ring around the brand border.
+- The project search suggests names as the admin types (antd `AutoComplete` over
+  `Input.Search`, 300 ms debounce; `GET /api/admin/checkpoints/projects?q=` returns up to ten
+  projects with a paid checkpoint). Picking one filters the list and the cards; Enter searches
+  by the text typed.

@@ -103,3 +103,12 @@ export const useRefundReasonLabels = (): Record<RefundRowReason, string> => {
 		),
 	};
 };
+
+export const useCheckpointProjectOptions = (query: string) =>
+	useQuery({
+		queryKey: [...ROOT, "projects", query],
+		queryFn: async () =>
+			(await axios.get<string[]>(`${URL}/projects`, { params: { q: query } }))
+				.data,
+		placeholderData: keepPreviousData,
+	});

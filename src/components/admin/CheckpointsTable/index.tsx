@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
+	AutoComplete,
 	Button,
 	Dropdown,
 	Flex,
@@ -20,7 +21,8 @@ import {
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import { useState } from "react";
+import debounce from "lodash/debounce";
+import { useMemo, useState } from "react";
 import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
 import styles from "@/components/admin/PromoCodesTable/style.module.scss";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
@@ -30,6 +32,7 @@ import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import {
 	type AdminCheckpointsFilter,
 	useAdminCheckpoints,
+	useCheckpointProjectOptions,
 	useRefundReasonLabels,
 } from "@/hooks/admin-checkpoints";
 import type { AdminCheckpointRowDto as Row } from "@/types/checkpoints";
@@ -61,6 +64,12 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 	const [filter, setFilter] = useState<AdminCheckpointsFilter>({ page: 1 });
 	const [refunding, setRefunding] = useState<Row | null>(null);
 	const list = useAdminCheckpoints(filter);
+	const [typed, setTyped] = useState("");
+	const projectOptions = useCheckpointProjectOptions(typed);
+	const suggest = useMemo(
+		() => debounce((value: string) => setTyped(value.trim()), 300),
+		[],
+	);
 
 	const reasonLabels = useRefundReasonLabels();
 	const statusLabels: Partial<Record<CheckpointStatus, string>> = {
@@ -290,18 +299,29 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						}
 					/>
 				</Flex>
-				<Input.Search
-					allowClear
+				<AutoComplete
 					className={own.search}
-					placeholder={t("admin.checkpoints.list.search", "Search by project")}
-					onSearch={(value) =>
-						setFilter((current) => ({
-							...current,
-							q: value.trim() || undefined,
-							page: 1,
-						}))
+					options={projectOptions.data?.map((name) => ({ value: name }))}
+					onSearch={suggest}
+					onSelect={(name: string) =>
+						setFilter((current) => ({ ...current, q: name, page: 1 }))
 					}
-				/>
+				>
+					<Input.Search
+						allowClear
+						placeholder={t(
+							"admin.checkpoints.list.search",
+							"Search by project",
+						)}
+						onSearch={(value) =>
+							setFilter((current) => ({
+								...current,
+								q: value.trim() || undefined,
+								page: 1,
+							}))
+						}
+					/>
+				</AutoComplete>
 			</Flex>
 
 			<Table<Row>

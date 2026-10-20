@@ -375,3 +375,17 @@ export const listAdminCheckpoints = async ({
 		}),
 	};
 };
+
+/** Project names for the list's search, among projects with a paid checkpoint. */
+export const searchCheckpointProjects = async (query: string) =>
+	(
+		await prisma.project.findMany({
+			where: {
+				name: { contains: query, mode: "insensitive" },
+				checkpoints: { some: { status: { not: CheckpointStatus.Draft } } },
+			},
+			orderBy: { name: "asc" },
+			take: 10,
+			select: { name: true },
+		})
+	).map((project) => project.name);
