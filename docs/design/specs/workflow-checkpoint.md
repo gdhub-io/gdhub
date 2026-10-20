@@ -11,7 +11,7 @@ the task list under it is outline-only. States:
 
 | State | Frame | Code |
 |---|---|---|
-| None | `kSXbn` | "Plan a checkpoint" — `StartCheckpointButton`, disabled with its reason |
+| None | `kSXbn` | "Plan a checkpoint" — `CheckpointOffer` |
 | Draft | `jnZ3d` | "Continue preparing" |
 | Waiting for the curator | `l3dPO` | `CuratorBadge` |
 | Active | `TfVJG` | day chip, current sprint dates |

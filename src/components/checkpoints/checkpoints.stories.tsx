@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { IconAlertTriangle, IconFlag } from "@tabler/icons-react";
-import { Button, Flex } from "antd";
-import { EmptyState } from "@/components/ui";
+import { Flex } from "antd";
 import {
 	ArtifactCheckStatus,
 	CheckpointCuratorKind,
@@ -18,9 +16,7 @@ import { CheckpointCard } from "./CheckpointCard";
 import { CheckpointPath } from "./CheckpointPath";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
 import { CheckpointStepPanel } from "./CheckpointStepPanel";
-import { CheckpointsSkeleton } from "./CheckpointsSkeleton";
 import { CuratorBadge } from "./CuratorBadge";
-import { DraftCard } from "./DraftCard";
 import { GoalStrip } from "./GoalStrip";
 import { InputsPanel } from "./InputsPanel";
 import { PaidPanel } from "./PaidPanel";
@@ -141,61 +137,6 @@ export const RunningCardAI: StoryObj = {
 		<CheckpointCard
 			checkpoint={{ ...base, sprints }}
 			projectSlug="neon-drift"
-		/>
-	),
-};
-
-/** Nothing charged, no days counting, and the sentence naming what is left. */
-export const Draft: StoryObj = {
-	render: () => (
-		<DraftCard
-			checkpoint={{
-				...base,
-				status: CheckpointStatus.Draft,
-				goal: "",
-				curatorKind: CheckpointCuratorKind.Human,
-				startedAt: null,
-				dueAt: null,
-				day: null,
-				daysLeft: null,
-			}}
-			projectSlug="neon-drift"
-			onDiscard={() => {}}
-		/>
-	),
-};
-
-/** Everything answered; only the payment stands between it and day 1. */
-export const DraftReadyToPay: StoryObj = {
-	render: () => (
-		<DraftCard
-			checkpoint={{
-				...base,
-				status: CheckpointStatus.Draft,
-				items,
-				day: null,
-				daysLeft: null,
-			}}
-			projectSlug="neon-drift"
-			onDiscard={() => {}}
-		/>
-	),
-};
-
-/** Bought, and the person asked to run it has not answered — frame `NYbvl`. */
-export const AwaitingCurator: StoryObj = {
-	render: () => (
-		<DraftCard
-			checkpoint={{
-				...base,
-				status: CheckpointStatus.AwaitingCurator,
-				paymentId: "pay_1",
-				items,
-				day: null,
-				daysLeft: null,
-			}}
-			projectSlug="neon-drift"
-			onDiscard={() => {}}
 		/>
 	),
 };
@@ -604,31 +545,4 @@ export const SprintRoom: StoryObj = {
 
 export const SprintRoomEmpty: StoryObj = {
 	render: () => <Room facts={sprintFactsOf(withItems, sprints[1])} />,
-};
-
-/** The three states of the tab before there is anything to read — frames `zAqpb`, `O0tgre`, `J0pS4h`. */
-export const ListLoading: StoryObj = {
-	render: () => <CheckpointsSkeleton />,
-};
-
-export const ListEmpty: StoryObj = {
-	render: () => (
-		<EmptyState
-			icon={IconFlag}
-			description="Your first checkpoint starts here"
-			action={<Button type="primary">Plan my first checkpoint</Button>}
-		/>
-	),
-};
-
-export const ListFailed: StoryObj = {
-	render: () => (
-		<EmptyState
-			icon={IconAlertTriangle}
-			tint="var(--gd-danger-tint)"
-			ink="var(--gd-danger-solid)"
-			description="Checkpoints could not be loaded"
-			action={<Button type="primary">Try again</Button>}
-		/>
-	),
 };
