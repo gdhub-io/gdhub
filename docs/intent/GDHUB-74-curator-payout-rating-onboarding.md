@@ -10,12 +10,12 @@
   verdict; one who stopped earns nothing. Once a month an administrator sees, per curator,
   what was earned last month, transfers it by bank and marks it **Paid** with the date and
   the transfer reference. The admin checkpoints list shows, per checkpoint, the fee, the
-  call cost and the margin next to the net.
+  running cost (calls and AI tokens) and the margin next to the net.
 - **Seen by the curator.** The advisor space shows the curator what each checkpoint earned,
   what is waiting for the next payout and what was paid when.
 - **Rated.** After the verdict the author rates the assessment — stars and an optional
-  comment — from the verdict entry; once, editable later. The curator sees their average
-  and count; the admin list shows each checkpoint's rating.
+  comment — from the verdict entry; once, editable later. For now only administrators see
+  it: each checkpoint's rating in the admin list, and each curator's average and count.
 - **Let in.** A specialist reads the curator handbook, applies to curate (released game,
   the stage they took it through), accepts the Expert Services Terms and gives payout
   details. An administrator accepts or declines with a level; only accepted curators are
@@ -34,13 +34,14 @@ is offered as a curator, with the released-game check done by hand outside the p
   included), reduced in the same proportion as a refund, nothing for a curator who stopped,
   the replacement's part from `fromSession` in the `checkpoint_admin` audit row
   (GDHUB-40). One split — `CHECKPOINT_PARTS` — for refunds and fees alike.
-- Every number (30%, Daily and recording/transcript rates, the payout day) lives in
+- Every number (30%, Daily and recording/transcript rates, model token prices, the payout
+  day) lives in
   `config/checkpoint.ts`.
 - A fee is frozen when earned; a later rate or price change does not rewrite it. A paid
   payout is never edited, only annotated.
 - Money is moved by a person, outside the product. No Stripe Connect.
 - The schema change goes through `gdhub-prisma` (the two-repo loop in CLAUDE.md).
-- The AI curator earns no fee; its checkpoints still show call cost and margin.
+- The AI curator earns no fee; its checkpoints still show running cost (tokens) and margin.
 
 ## Done when
 
@@ -49,11 +50,13 @@ is offered as a curator, with the released-game check done by hand outside the p
       a replaced curator's checkpoint shows the replacement's part only.
 - [ ] Admin → payouts lists last month's earnings per curator with their payout details;
       **Mark paid** with a date and reference moves them to paid and the curator is told.
-- [ ] The admin checkpoints list shows fee, call cost (participant-minutes × rates) and
-      margin per row and in the totals.
+- [ ] Every AI call made for a checkpoint (the AI curator, call notes, devlog reviews, task
+      advice) records its model and tokens; the admin checkpoints list shows fee, running
+      cost (participant-minutes × Daily rates + tokens × model prices) and margin per row
+      and in the totals.
 - [ ] The curator sees earned / due / paid per checkpoint in the advisor space.
 - [ ] The author can rate a closed checkpoint once from the verdict entry and change it;
-      the curator sees their average.
+      an admin sees it and the curator's average; the curator does not.
 - [ ] A specialist can apply to curate; until an admin accepts them they are not offered;
       an accepted one is, at the level the admin set.
 
@@ -67,8 +70,8 @@ is offered as a curator, with the released-game check done by hand outside the p
 
 ## Open questions
 
-- Curators offered today without an application: assumed they stay offered until an admin
-  reviews them in the applicants list — nobody disappears from the pool on release day.
-- Rating visible to the author's next curator choice? Assumed not yet: shown to the curator
-  and the admin only, until enough ratings exist (docs/checkpoints.md on small counts).
+- Specialists offered today without an application: checkpoints are not on sale yet, so
+  everyone applies and is accepted — no one is carried over.
+- Rating shown to curators or to authors choosing one: later, once enough ratings exist
+  (docs/checkpoints.md on small counts).
 - Payout currency: the checkpoint's currency (USD); bank conversion is the curator's.

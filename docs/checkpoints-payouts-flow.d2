@@ -1,0 +1,57 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-74 — the curator's fee, the monthly payout, running cost and margin" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+earn: "A fee is earned (one CheckpointFee row per checkpoint × curator, frozen)" {
+  when: "Human checkpoint leaves running:\n• Closed with the curator's own verdict (decidedById = curatorId)\n• Cancelled by refund 'withdrawal' (§3.3: calls held so far)\n• curatorDeclined / checkpointCancelled before any call → nothing"
+  zero: "Nothing for a curator who stopped (§3.4):\nrefund 'curatorGone' · 'noVerdict' · admin's verdict ·\nthe curator an admin replaced (AuditLog curatorAssigned.fromCuratorId)"
+  parts: "their parts = calls they joined + the verdict if they sent it\n(replacement: calls from AuditLog.fromSession onwards + verdict;\nCHECKPOINT_PARTS.Human = 6)"
+  amount: "fee = floor(Payment.amount × their parts / 6 × (1 − PLATFORM_SHARE 0.30))\n= 70% of what the author keeps paying for their parts\n(promo code already in Payment.amount; refund already excluded by parts)"
+  why: "reason: full · refundReduced · replacement\nearnedAt = decidedAt or the refund's time → the month it belongs to (UTC)"
+  write: "upsert CheckpointFee {checkpointId, curatorId} — idempotent;\nwritten in afterVerdictSent and after issueCheckpointRefund('withdrawal')"
+  when -> parts -> amount -> why -> write
+  zero -> write: "no row"
+}
+
+payout: "Admin → Payouts (13.2)" {
+  month: "month M (default: last month)\nrows = CheckpointFee earnedAt in M, grouped by curator"
+  status: "Due: no CuratorPayout {curatorId, M}\nLate: Due and today > 15th of M+1 (PAYOUT_DUE_DAY)\nPaid: CuratorPayout exists"
+  details: "ExpertProfile payoutHolder / payoutAccount / invoicing\nmissing → Mark paid disabled"
+  mark: "POST /api/admin/payouts {curatorId, month, paidOn, reference}\nPayout = sum of the month's unpaid fees, read on the server, not sent by the client\none transaction: CuratorPayout row · CheckpointFee.payoutId · AuditLog\nunique (curatorId, month) → a second click is refused"
+  note: "Add a note (13.3c): PATCH note only — amount, date, reference never change"
+  tell: "curator notified: 'GDHub paid you <amount> for <month>'"
+  month -> status
+  status -> mark: "Due / Late"
+  details -> mark
+  mark -> tell
+  mark -> note: "later"
+}
+earn.write -> payout.month
+
+earnings: "Advisor → Earnings (13.4)" {
+  rows: "own CheckpointFee rows (where curatorId = me)\nEarned (month not over) · Due on 15th · Paid on date · No fee (stopped)"
+  cards: "earned this month · due next · paid total"
+  past: "own CuratorPayout rows"
+}
+earn.write -> earnings.rows
+
+cost: "Running cost per checkpoint (11.5 margin line, 13.1 tooltip)" {
+  calls: "calls = Σ participantMinutes × DAILY_VIDEO_RATE\n+ Σ (endedAt − curatorJoinedAt) min × (RECORDING_RATE + TRANSCRIPT_RATE)"
+  ai: "AI = Σ CheckpointAiUsage.cost\ncost frozen at the call: input × in-price + output × out-price\n(per model, per million tokens, AI_MODEL_PRICES in config)"
+  log: "every AI call for a checkpoint records {checkpointId, purpose, model, inputTokens, outputTokens, cost}:\nAI curator (checkGoal, reviews, verdict) · call notes · devlog reviews · task advice\nfire-and-forget: a failed log never fails the AI call"
+  margin: "margin = paid − refunded − fees − calls − AI\ncard counts Closed checkpoints only; Stripe fee not counted"
+  log -> ai
+  calls -> margin
+  ai -> margin
+}
+earn.write -> cost.margin: "fees"
