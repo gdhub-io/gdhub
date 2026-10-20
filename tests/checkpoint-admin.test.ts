@@ -170,6 +170,7 @@ describe("assigning a curator by hand", () => {
 		startedAt: new Date("2026-11-02T09:00:00.000Z"),
 		project: { name: "Hollow Tide", slug: "hollow-tide", author: { id: "a1", email: "a@x" } },
 		_count: { items: 2 },
+		sessions: [{ index: 3 }],
 		...over,
 	});
 
@@ -239,6 +240,16 @@ describe("assigning a curator by hand", () => {
 				reason: "Missed two calls",
 			}),
 		).resolves.toEqual({ ok: true });
+		// The payout reads from which call the new curator took over.
+		expect(prisma.auditLog.create).toHaveBeenCalledWith({
+			data: expect.objectContaining({
+				meta: expect.objectContaining({
+					fromCuratorId: "u1",
+					toCuratorId: "u9",
+					fromSession: 3,
+				}),
+			}),
+		});
 		await expect(
 			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "x x" }),
 		).resolves.toEqual({ ok: false, error: "notSwappable" });

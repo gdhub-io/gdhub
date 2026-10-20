@@ -182,8 +182,8 @@ export function AssignCuratorModal({
 										"The checkpoint starts as a paid one would: a person is asked and the calls are booked; the AI starts today.",
 									)
 								: t(
-										"admin.checkpoints.assign.swap.body",
-										"The new curator takes over the calls at their booked times. The author and the new curator are told.",
+										"admin.checkpoints.assign.swap.payBody",
+										"The new curator is paid for the calls they hold and the verdict; the one who left is paid nothing. The calls keep their times, and the author and the new curator are told.",
 									)
 						}
 					/>

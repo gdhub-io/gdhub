@@ -459,7 +459,8 @@
 				"slotTaken": "That curator is not free at the first call the author chose.",
 				"submit": "Assign curator",
 				"swap": {
-					"body": "The new curator takes over the calls at their booked times. The author and the new curator are told."
+					"payBody": "The new curator is paid for the calls they hold and the verdict; the one who left is paid nothing. The calls keep their times, and the author and the new curator are told.",
+					"title": "The author is not charged again"
 				},
 				"title": "Assign a curator"
 			},

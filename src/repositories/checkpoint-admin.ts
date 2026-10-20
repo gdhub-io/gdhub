@@ -201,6 +201,12 @@ export const assignCurator = async (
 			_count: {
 				select: { items: { where: { kind: CheckpointItemKind.Input } } },
 			},
+			sessions: {
+				where: { curatorJoinedAt: null },
+				orderBy: { index: "asc" },
+				take: 1,
+				select: { index: true },
+			},
 		},
 	});
 	if (!checkpoint) return { ok: false as const, error: "notFound" as const };
@@ -277,7 +283,14 @@ export const assignCurator = async (
 			where: { id: checkpointId },
 			data: { curatorId: curator?.id },
 		}),
-		prisma.auditLog.create({ data: audit(adminId, checkpointId, meta) }),
+		prisma.auditLog.create({
+			data: audit(adminId, checkpointId, {
+				...meta,
+				// The first call the new curator holds: the payout (GDHUB-74) pays them
+				// from here and the verdict, and the one who left nothing.
+				fromSession: checkpoint.sessions[0]?.index ?? null,
+			}),
+		}),
 	]);
 
 	await Promise.all([
