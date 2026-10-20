@@ -6,7 +6,7 @@ type Seed =
 	| { key: unknown[]; state: "pending" | "error" };
 
 /**
- * Seeds the admin tables' queries for a story — data, a load that never ends,
+ * Seeds TanStack queries for a story — data, a load that never ends,
  * or a failure — and keeps them from fetching on mount.
  */
 export function withQueries(...seeds: Seed[]) {

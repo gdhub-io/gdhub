@@ -6,15 +6,18 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
 import axios from "axios";
 import type { CheckpointStatus } from "@/config/prisma-enums";
-import type { RefundReason } from "@/lib/checkpoint-refund";
+import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
 import type {
-	AdminCheckpointsPage,
-	CheckpointRefundQuote,
-} from "@/repositories/checkpoint-refund";
+	AdminCheckpointsPageDto,
+	CheckpointRefundQuoteDto,
+} from "@/types/checkpoints";
 
-const LIST_KEY = ["admin", "checkpoints", "list"];
+const ROOT = ["admin", "checkpoints"];
+const LIST_KEY = [...ROOT, "list"];
+const quoteKey = (checkpointId?: string) => [...ROOT, "refund", checkpointId];
 
 const URL = "/api/admin/checkpoints";
 
@@ -28,16 +31,19 @@ export const useAdminCheckpoints = (filter: AdminCheckpointsFilter) =>
 	useQuery({
 		queryKey: [...LIST_KEY, filter],
 		queryFn: async () =>
-			(await axios.get<AdminCheckpointsPage>(URL, { params: filter })).data,
+			(await axios.get<AdminCheckpointsPageDto>(URL, { params: filter })).data,
 		placeholderData: keepPreviousData,
 	});
 
 export const useRefundQuote = (checkpointId?: string) =>
 	useQuery({
-		queryKey: ["admin", "checkpoints", "refund", checkpointId],
+		queryKey: quoteKey(checkpointId),
 		queryFn: async () =>
-			(await axios.get<CheckpointRefundQuote>(`${URL}/${checkpointId}/refund`))
-				.data,
+			(
+				await axios.get<CheckpointRefundQuoteDto>(
+					`${URL}/${checkpointId}/refund`,
+				)
+			).data,
 		enabled: !!checkpointId,
 	});
 
@@ -54,6 +60,41 @@ export const useIssueRefund = (checkpointId: string) => {
 			).data,
 		// Refetched whichever way it went: a refusal can mean it was refunded meanwhile.
 		onSettled: () =>
-			queryClient.invalidateQueries({ queryKey: ["admin", "checkpoints"] }),
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: LIST_KEY }),
+				queryClient.invalidateQueries({ queryKey: quoteKey(checkpointId) }),
+			]),
 	});
+};
+
+/** Why money went back, in the words the list and the refund dialog both use. */
+export const useRefundReasonLabels = (): Record<RefundRowReason, string> => {
+	const { t } = useTranslate();
+
+	return {
+		withdrawal: t(
+			"admin.checkpoints.refund.reason.withdrawal",
+			"Withdrawal within 14 days",
+		),
+		curatorGone: t(
+			"admin.checkpoints.refund.reason.curatorGone",
+			"Curator gone, no replacement",
+		),
+		noVerdict: t(
+			"admin.checkpoints.refund.reason.noVerdict",
+			"No verdict by day 31",
+		),
+		checkpointCancelled: t(
+			"admin.checkpoints.refund.reason.checkpointCancelled",
+			"Cancelled before day 1",
+		),
+		curatorDeclined: t(
+			"admin.checkpoints.refund.reason.curatorDeclined",
+			"Curator declined",
+		),
+		stripeRefund: t(
+			"admin.checkpoints.refund.reason.stripeRefund",
+			"In Stripe",
+		),
+	};
 };

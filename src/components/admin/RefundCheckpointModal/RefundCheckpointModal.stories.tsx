@@ -1,16 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import type { CheckpointRefundQuote } from "@/repositories/checkpoint-refund";
-import { withQueries } from "../storyQueries";
+import { withQueries } from "@/mocks/queries";
+import type { CheckpointRefundQuoteDto } from "@/types/checkpoints";
 import { RefundCheckpointModal } from ".";
 
 const KEY = ["admin", "checkpoints", "refund", "cp1"];
 const paidAt = new Date(Date.now() - 11 * 24 * 3600 * 1000).toISOString();
 
-const QUOTE: CheckpointRefundQuote = {
+const QUOTE: CheckpointRefundQuoteDto = {
 	paid: 45000,
 	paidAt,
-	withdrawalEndsAt: new Date(Date.now() + 3 * 24 * 3600 * 1000).toISOString(),
 	refunded: null,
 	curatorKind: CheckpointCuratorKind.Human,
 	verdictSent: false,

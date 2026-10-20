@@ -459,14 +459,6 @@
 				"filter": {
 					"all": "Все"
 				},
-				"reason": {
-					"cancelled": "Отменено до дня 1",
-					"curatorGone": "Куратор отсутствует",
-					"declined": "Куратор отклонил",
-					"noVerdict": "Нет вердикта",
-					"stripe": "В Stripe",
-					"withdrawal": "Снятие"
-				},
 				"refund": "Возврат…",
 				"search": "Поиск по проекту",
 				"status": {
@@ -562,8 +554,11 @@
 				"partsValue": "{предоставлено} из {всего}",
 				"pickReason": "Выберите причину",
 				"reason": {
+					"checkpointCancelled": "Отменено до дня 1",
+					"curatorDeclined": "Куратор отклонил",
 					"curatorGone": "Куратор ушел, замены нет",
 					"noVerdict": "Нет вердикта к дню 31",
+					"stripeRefund": "В Stripe",
 					"withdrawal": "Снятие в течение 14 дней"
 				},
 				"reasonLabel": "Причина",

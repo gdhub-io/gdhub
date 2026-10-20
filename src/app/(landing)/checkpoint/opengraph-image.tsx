@@ -23,6 +23,9 @@ export const contentType = "image/png";
 
 const asset = (path: string) => readFile(join(process.cwd(), path));
 
+/** Built once: the card changes only with the price, which needs a deploy anyway. */
+export const dynamic = "force-static";
+
 const POINTS = [
 	"Set your game a goal for four weeks",
 	"Work towards it with a curator beside you",

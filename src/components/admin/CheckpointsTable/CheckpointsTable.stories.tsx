@@ -1,21 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import type { AdminCheckpointsPage } from "@/repositories/checkpoint-refund";
-import { withQueries } from "../storyQueries";
+import { withQueries } from "@/mocks/queries";
+import type {
+	AdminCheckpointRowDto,
+	AdminCheckpointsPageDto,
+} from "@/types/checkpoints";
 import { CheckpointsTable } from ".";
 
 const KEY = ["admin", "checkpoints", "list", { page: 1 }];
 
-const row = (
-	over: Partial<AdminCheckpointsPage["items"][number]>,
-): AdminCheckpointsPage["items"][number] => ({
+const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 	id: "cp1",
 	number: 2,
 	stageName: "Prototyping",
 	status: CheckpointStatus.Active,
-	curatorKind: CheckpointCuratorKind.Human,
 	curatorName: "Marta Ilves",
-	project: { name: "Hollow Tide", slug: "hollow-tide" },
+	projectName: "Hollow Tide",
 	paid: 45000,
 	refunded: null,
 	refundReason: null,
@@ -23,30 +23,29 @@ const row = (
 	...over,
 });
 
-const PAGE: AdminCheckpointsPage = {
+const PAGE: AdminCheckpointsPageDto = {
 	total: 4,
 	pageSize: 20,
 	items: [
 		row({}),
 		row({
 			id: "cp2",
-			project: { name: "Lantern Keeper", slug: "lantern-keeper" },
+			projectName: "Lantern Keeper",
 			number: 1,
 			stageName: "Ideation",
-			curatorKind: CheckpointCuratorKind.AI,
 			curatorName: null,
 			paid: 2000,
 		}),
 		row({
 			id: "cp3",
-			project: { name: "Saltmarsh", slug: "saltmarsh" },
+			projectName: "Saltmarsh",
 			status: CheckpointStatus.AwaitingCurator,
 			paid: 30000,
 			canRefund: false,
 		}),
 		row({
 			id: "cp4",
-			project: { name: "Paper Moons", slug: "paper-moons" },
+			projectName: "Paper Moons",
 			status: CheckpointStatus.Cancelled,
 			paid: 36000,
 			refunded: 24000,

@@ -14,7 +14,7 @@ import {
 import { issueCheckpointRefund } from "@/repositories/checkpoint-refund";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
-import { refundCheckoutPart } from "@/services/stripe/server";
+import { refundCheckout } from "@/services/stripe/server";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -25,7 +25,7 @@ vi.mock("@/services/prisma", () => ({
 		auditLog: { create: vi.fn() },
 	},
 }));
-vi.mock("@/services/stripe/server", () => ({ refundCheckoutPart: vi.fn() }));
+vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
 vi.mock("@/services/checkpoint-notifications", () => ({
 	notifyAuthorOfRefund: vi.fn(),
 }));
@@ -173,7 +173,7 @@ describe("issuing a refund", () => {
 			sessions: [1, 2, 3, 4, 5].map((index) => call(index, index <= 2)),
 		} as never);
 		vi.mocked(prisma.payment.findFirst).mockResolvedValue(payment() as never);
-		vi.mocked(refundCheckoutPart).mockResolvedValue({
+		vi.mocked(refundCheckout).mockResolvedValue({
 			id: "re_1",
 			amount: 30000,
 			currency: "usd",
@@ -184,11 +184,10 @@ describe("issuing a refund", () => {
 		const result = await issueCheckpointRefund("cp1", "withdrawal", "admin1", NOW);
 
 		expect(result).toEqual({ ok: true, amount: 30000 });
-		expect(refundCheckoutPart).toHaveBeenCalledWith(
-			"cs_1",
-			30000,
-			"checkpoint-refund-cp1",
-		);
+		expect(refundCheckout).toHaveBeenCalledWith("cs_1", {
+			amount: 30000,
+			idempotencyKey: "checkpoint-refund-cp1",
+		});
 		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith({
 			where: { id: "cp1" },
 			data: { status: CheckpointStatus.Cancelled },
@@ -217,11 +216,11 @@ describe("issuing a refund", () => {
 		await expect(
 			issueCheckpointRefund("cp1", "withdrawal", "admin1", NOW),
 		).resolves.toEqual({ ok: false, error: "alreadyRefunded" });
-		expect(refundCheckoutPart).not.toHaveBeenCalled();
+		expect(refundCheckout).not.toHaveBeenCalled();
 	});
 
 	it("writes nothing when Stripe refuses", async () => {
-		vi.mocked(refundCheckoutPart).mockRejectedValue(new Error("card"));
+		vi.mocked(refundCheckout).mockRejectedValue(new Error("card"));
 
 		await expect(
 			issueCheckpointRefund("cp1", "withdrawal", "admin1", NOW),
@@ -234,6 +233,6 @@ describe("issuing a refund", () => {
 		await expect(
 			issueCheckpointRefund("cp1", "noVerdict", "admin1", NOW),
 		).resolves.toEqual({ ok: false, error: "verdictNotOverdue" });
-		expect(refundCheckoutPart).not.toHaveBeenCalled();
+		expect(refundCheckout).not.toHaveBeenCalled();
 	});
 });

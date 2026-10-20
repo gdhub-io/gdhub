@@ -135,34 +135,26 @@ const intentOfSession = async (sessionId: string) => {
 };
 
 /**
- * Refunds a completed checkout in full, or null when the session never charged.
+ * Refunds a completed checkout — in full, or `amount` of it — or null when the
+ * session never charged. The key makes a repeated call (a double click, a retry
+ * after a timeout) the same refund rather than a second.
  *
  * Stripe is the record of what was returned, so nothing is decided here: the
  * caller writes its own row only once this comes back.
  */
-export const refundCheckout = async (sessionId: string) => {
-	const intent = await intentOfSession(sessionId);
-
-	return intent ? stripe().refunds.create({ payment_intent: intent }) : null;
-};
-
-/**
- * Returns part of a captured checkout. The key makes a repeated call — a
- * double click, a retry after a timeout — the same refund rather than a second.
- */
-export const refundCheckoutPart = async (
+export const refundCheckout = async (
 	sessionId: string,
-	amount: number,
-	idempotencyKey: string,
+	part?: { amount: number; idempotencyKey: string },
 ) => {
 	const intent = await intentOfSession(sessionId);
+	if (!intent) return null;
 
-	return intent
+	return part
 		? stripe().refunds.create(
-				{ payment_intent: intent, amount },
-				{ idempotencyKey },
+				{ payment_intent: intent, amount: part.amount },
+				{ idempotencyKey: part.idempotencyKey },
 			)
-		: null;
+		: stripe().refunds.create({ payment_intent: intent });
 };
 
 /**

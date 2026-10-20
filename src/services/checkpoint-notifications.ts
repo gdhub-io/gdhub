@@ -5,6 +5,7 @@ import { CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { dayNumberOn, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
+import type { RefundReason } from "@/lib/checkpoint-refund";
 import {
 	devlogDayOf,
 	sprintOfDay,
@@ -127,7 +128,7 @@ export const notifyAuthorOfAnswer = async (
 export const notifyAuthorOfRefund = async (
 	checkpointId: string,
 	amount: string,
-	reason: "withdrawal" | "curatorGone" | "noVerdict",
+	reason: RefundReason,
 ) => {
 	const row = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },

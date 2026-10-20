@@ -21,11 +21,10 @@ import { CheckpointStatus } from "@/config/prisma-enums";
 import {
 	type AdminCheckpointsFilter,
 	useAdminCheckpoints,
+	useRefundReasonLabels,
 } from "@/hooks/admin-checkpoints";
-import type { AdminCheckpointsPage } from "@/repositories/checkpoint-refund";
+import type { AdminCheckpointRowDto as Row } from "@/types/checkpoints";
 import own from "./style.module.scss";
-
-type Row = AdminCheckpointsPage["items"][number];
 
 const LISTED = [
 	CheckpointStatus.AwaitingCurator,
@@ -54,7 +53,8 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 	const [refunding, setRefunding] = useState<Row | null>(null);
 	const list = useAdminCheckpoints(filter);
 
-	const statusLabels: Record<(typeof LISTED)[number], string> = {
+	const reasonLabels = useRefundReasonLabels();
+	const statusLabels: Partial<Record<CheckpointStatus, string>> = {
 		AwaitingCurator: t(
 			"admin.checkpoints.list.status.awaitingCurator",
 			"Awaiting curator",
@@ -63,20 +63,6 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		Review: t("admin.checkpoints.list.status.review", "Review"),
 		Closed: t("admin.checkpoints.list.status.closed", "Closed"),
 		Cancelled: t("admin.checkpoints.list.status.cancelled", "Cancelled"),
-	};
-	const reasonLabels: Record<string, string> = {
-		withdrawal: t("admin.checkpoints.list.reason.withdrawal", "Withdrawal"),
-		curatorGone: t("admin.checkpoints.list.reason.curatorGone", "Curator gone"),
-		noVerdict: t("admin.checkpoints.list.reason.noVerdict", "No verdict"),
-		checkpointCancelled: t(
-			"admin.checkpoints.list.reason.cancelled",
-			"Cancelled before day 1",
-		),
-		curatorDeclined: t(
-			"admin.checkpoints.list.reason.declined",
-			"Curator declined",
-		),
-		stripeRefund: t("admin.checkpoints.list.reason.stripe", "In Stripe"),
 	};
 
 	const loading = list.isPending;
@@ -89,7 +75,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			key: "project",
 			render: (_, row) => (
 				<Flex vertical>
-					<Typography.Text strong>{row.project.name}</Typography.Text>
+					<Typography.Text strong>{row.projectName}</Typography.Text>
 					<Typography.Text type="secondary" className={own.sub}>
 						{t(
 							"admin.checkpoints.list.checkpoint",
@@ -114,9 +100,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			render: (_, row) => (
 				<StatusDot
 					tone={TONE[row.status] ?? "neutral"}
-					label={
-						statusLabels[row.status as (typeof LISTED)[number]] ?? row.status
-					}
+					label={statusLabels[row.status] ?? row.status}
 				/>
 			),
 		},
@@ -125,9 +109,14 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			key: "paid",
 			width: 200,
 			align: "right",
-			render: (_, row) => (
-				<span className={styles.number}>{formatCheckpointMoney(row.paid)}</span>
-			),
+			render: (_, row) =>
+				row.paid === null ? (
+					<span className={styles.none}>—</span>
+				) : (
+					<span className={styles.number}>
+						{formatCheckpointMoney(row.paid)}
+					</span>
+				),
 		},
 		{
 			title: t("admin.checkpoints.list.column.refunded", "Refunded"),
@@ -140,7 +129,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 						{formatCheckpointMoney(row.refunded)}
 						{row.refundReason && (
 							<Typography.Text type="secondary" className={own.sub}>
-								{` · ${reasonLabels[row.refundReason] ?? row.refundReason}`}
+								{` · ${reasonLabels[row.refundReason]}`}
 							</Typography.Text>
 						)}
 					</span>
@@ -264,14 +253,10 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 				locale={{ emptyText }}
 			/>
 
+			{/* Keyed so each checkpoint opens on a fresh reason and mutation. */}
 			<RefundCheckpointModal
-				checkpoint={
-					refunding && {
-						id: refunding.id,
-						number: refunding.number,
-						projectName: refunding.project.name,
-					}
-				}
+				key={refunding?.id}
+				checkpoint={refunding}
 				onClose={() => setRefunding(null)}
 			/>
 		</Flex>

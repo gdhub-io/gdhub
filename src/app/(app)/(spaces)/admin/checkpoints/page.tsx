@@ -19,7 +19,8 @@ export default function AdminCheckpointsPage() {
 	const canManage = can("admin.checkpoints.manage");
 	const [creating, setCreating] = useState(false);
 	const [tab, setTab] = useState("checkpoints");
-	const promoCodes = usePromoCodes();
+	// Fetched once the tab is opened: Checkpoints is the one that shows first.
+	const promoCodes = usePromoCodes(tab === "promo-codes");
 
 	return (
 		<AdminSpace>

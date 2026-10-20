@@ -15,10 +15,14 @@ import {
 	Typography,
 } from "antd";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { useIssueRefund, useRefundQuote } from "@/hooks/admin-checkpoints";
+import {
+	useIssueRefund,
+	useRefundQuote,
+	useRefundReasonLabels,
+} from "@/hooks/admin-checkpoints";
 import type { RefundReason } from "@/lib/checkpoint-refund";
 import styles from "./style.module.scss";
 
@@ -41,30 +45,8 @@ export function RefundCheckpointModal({
 	const issue = useIssueRefund(checkpoint?.id ?? "");
 	const [reason, setReason] = useState<RefundReason>();
 
-	useEffect(() => {
-		if (checkpoint) {
-			setReason(undefined);
-			issue.reset();
-		}
-	}, [checkpoint, issue.reset]);
-
 	const data = quote.data;
-	const labels: Record<RefundReason, string> = {
-		withdrawal: t(
-			"admin.checkpoints.refund.reason.withdrawal",
-			"Withdrawal within 14 days",
-		),
-		curatorGone: t(
-			"admin.checkpoints.refund.reason.curatorGone",
-			"Curator gone, no replacement",
-		),
-		noVerdict: t(
-			"admin.checkpoints.refund.reason.noVerdict",
-			"No verdict by day 31",
-		),
-	};
-	const reasonLabel = (value: string | null) =>
-		value && value in labels ? labels[value as RefundReason] : (value ?? "");
+	const labels = useRefundReasonLabels();
 
 	const submit = () => {
 		if (!reason || !data) return;
@@ -98,7 +80,6 @@ export function RefundCheckpointModal({
 				);
 	};
 
-	const failed = issue.isError && !data?.refunded;
 	const done = data?.refunded;
 
 	const body = () => {
@@ -116,7 +97,7 @@ export function RefundCheckpointModal({
 						{
 							amount: formatCheckpointMoney(done.amount),
 							date: dayjs(done.at).format("D MMM"),
-							reason: reasonLabel(done.reason),
+							reason: done.reason ? labels[done.reason] : "",
 						},
 					)}
 				/>
@@ -127,7 +108,7 @@ export function RefundCheckpointModal({
 
 		return (
 			<Flex vertical gap={20}>
-				{failed && (
+				{issue.isError && (
 					<Alert
 						type="error"
 						showIcon
@@ -148,18 +129,22 @@ export function RefundCheckpointModal({
 						onChange={(event) => setReason(event.target.value)}
 					>
 						<Flex vertical gap={12}>
-							{data.reasons.map((row) => (
-								<Flex key={row.reason} vertical gap={2}>
-									<Radio value={row.reason} disabled={!!row.refused}>
-										{labels[row.reason]}
-									</Radio>
-									{note(row.reason) && (
-										<Typography.Text type="secondary" className={styles.note}>
-											{note(row.reason)}
-										</Typography.Text>
-									)}
-								</Flex>
-							))}
+							{data.reasons.map((row) => {
+								const hint = note(row.reason);
+
+								return (
+									<Flex key={row.reason} vertical gap={2}>
+										<Radio value={row.reason} disabled={!!row.refused}>
+											{labels[row.reason]}
+										</Radio>
+										{hint && (
+											<Typography.Text type="secondary" className={styles.note}>
+												{hint}
+											</Typography.Text>
+										)}
+									</Flex>
+								);
+							})}
 						</Flex>
 					</Radio.Group>
 				</Flex>

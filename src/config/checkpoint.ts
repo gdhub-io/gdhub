@@ -84,6 +84,12 @@ export const CHECKPOINT_OPEN_STATUSES = [
 	CheckpointStatus.Review,
 ];
 
+/** Under way: the 28 days or their review. A refund only ever stops one of these. */
+export const CHECKPOINT_RUNNING_STATUSES: CheckpointStatus[] = [
+	CheckpointStatus.Active,
+	CheckpointStatus.Review,
+];
+
 /** "What's done so far" on the way in: at least one line, at most this many. */
 export const CHECKPOINT_ENTRY_ITEMS_MAX = 5;
 

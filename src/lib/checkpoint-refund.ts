@@ -1,13 +1,14 @@
 import dayjs from "dayjs";
 import {
 	CHECKPOINT_PARTS,
+	CHECKPOINT_RUNNING_STATUSES,
 	FINAL_SESSION,
 	WITHDRAWAL_DAYS,
 } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
-	CheckpointStatus,
+	type CheckpointStatus,
 } from "@/config/prisma-enums";
 import { verdictOverdue } from "@/lib/checkpoint-verdict-window";
 
@@ -16,12 +17,23 @@ import { verdictOverdue } from "@/lib/checkpoint-verdict-window";
  * delivered. Browser-safe: the admin's dialog and the server run the same sums.
  */
 
+/** Why an administrator returns money on a running checkpoint. */
 export const REFUND_REASONS = [
 	"withdrawal",
 	"curatorGone",
 	"noVerdict",
 ] as const;
 export type RefundReason = (typeof REFUND_REASONS)[number];
+
+/**
+ * Every reason a `Refund` row carries: the admin's three, the two the app
+ * returns money for on its own, and one issued by hand in the Stripe dashboard.
+ */
+export type RefundRowReason =
+	| RefundReason
+	| "checkpointCancelled"
+	| "curatorDeclined"
+	| "stripeRefund";
 
 export type RefundCase = {
 	curatorKind: CheckpointCuratorKind;
@@ -37,6 +49,9 @@ export type RefundCase = {
 		contentStatus: CheckpointSessionContentStatus | null;
 	}[];
 };
+
+export const isRunning = (status: CheckpointStatus) =>
+	CHECKPOINT_RUNNING_STATUSES.includes(status);
 
 /**
  * Parts already delivered. A call counts once the curator joined it; an AI
@@ -74,9 +89,6 @@ export const refundAmount = (refund: RefundCase) => {
 	};
 };
 
-export const withdrawalEndsAt = (paidAt: Date) =>
-	dayjs(paidAt).add(WITHDRAWAL_DAYS, "day").toDate();
-
 /** Why a reason does not apply to this checkpoint, or null when it does. */
 export const reasonRefused = (
 	refund: RefundCase,
@@ -88,16 +100,13 @@ export const reasonRefused = (
 	| "notRunning"
 	| "verdictNotOverdue"
 	| null => {
-	if (
-		refund.status !== CheckpointStatus.Active &&
-		refund.status !== CheckpointStatus.Review
-	) {
-		return "notRunning";
-	}
+	if (!isRunning(refund.status)) return "notRunning";
 
 	switch (reason) {
 		case "withdrawal":
-			return now > withdrawalEndsAt(refund.paidAt) ? "withdrawalOver" : null;
+			return now > dayjs(refund.paidAt).add(WITHDRAWAL_DAYS, "day").toDate()
+				? "withdrawalOver"
+				: null;
 		case "curatorGone":
 			return refund.curatorKind === CheckpointCuratorKind.Human
 				? null

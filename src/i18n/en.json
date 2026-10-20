@@ -459,14 +459,6 @@
 				"filter": {
 					"all": "All"
 				},
-				"reason": {
-					"cancelled": "Cancelled before day 1",
-					"curatorGone": "Curator gone",
-					"declined": "Curator declined",
-					"noVerdict": "No verdict",
-					"stripe": "In Stripe",
-					"withdrawal": "Withdrawal"
-				},
 				"refund": "Refund…",
 				"search": "Search by project",
 				"status": {
@@ -562,8 +554,11 @@
 				"partsValue": "{provided} of {total}",
 				"pickReason": "Pick a reason",
 				"reason": {
+					"checkpointCancelled": "Cancelled before day 1",
+					"curatorDeclined": "Curator declined",
 					"curatorGone": "Curator gone, no replacement",
 					"noVerdict": "No verdict by day 31",
+					"stripeRefund": "In Stripe",
 					"withdrawal": "Withdrawal within 14 days"
 				},
 				"reasonLabel": "Reason",

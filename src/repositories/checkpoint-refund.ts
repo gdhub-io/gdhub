@@ -7,17 +7,23 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
 import {
+	isRunning,
 	REFUND_REASONS,
 	type RefundCase,
 	type RefundReason,
+	type RefundRowReason,
 	reasonRefused,
 	refundAmount,
-	withdrawalEndsAt,
 } from "@/lib/checkpoint-refund";
+import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
-import { refundCheckoutPart } from "@/services/stripe/server";
+import { refundCheckout } from "@/services/stripe/server";
+import type {
+	AdminCheckpointsPageDto,
+	CheckpointRefundQuoteDto,
+} from "@/types/checkpoints";
 
 /**
  * Refunds a running checkpoint owes: withdrawal within 14 days, a curator gone
@@ -34,6 +40,9 @@ const CAPTURED: PaymentStatus[] = [
 	PaymentStatus.PARTIALLY_REFUNDED,
 	PaymentStatus.REFUNDED,
 ];
+
+const refundedTotal = (refunds: { amount: number }[]) =>
+	refunds.reduce((sum, row) => sum + row.amount, 0);
 
 const caseOf = async (checkpointId: string) => {
 	const [checkpoint, payment] = await Promise.all([
@@ -59,7 +68,6 @@ const caseOf = async (checkpointId: string) => {
 			select: {
 				id: true,
 				amount: true,
-				currency: true,
 				createdAt: true,
 				providerTransactionId: true,
 				refunds: {
@@ -89,36 +97,33 @@ const caseOf = async (checkpointId: string) => {
 export const quoteCheckpointRefund = async (
 	checkpointId: string,
 	now = new Date(),
-) => {
+): Promise<CheckpointRefundQuoteDto | null> => {
 	const found = await caseOf(checkpointId);
 	if (!found) return null;
 
 	const { refund, payment } = found;
-	const done = payment.refunds.at(0) ?? null;
+	const done = payment.refunds.at(0);
 
 	return {
 		paid: payment.amount,
 		paidAt: payment.createdAt.toISOString(),
-		withdrawalEndsAt: withdrawalEndsAt(payment.createdAt).toISOString(),
-		refunded: done && {
-			amount: payment.refunds.reduce((sum, row) => sum + row.amount, 0),
-			reason: done.reason,
-			at: done.createdAt.toISOString(),
-		},
 		curatorKind: refund.curatorKind,
 		verdictSent: refund.verdictSent,
 		// The same sum whatever the reason: only whether it applies differs.
 		...refundAmount(refund),
+		refunded: done
+			? {
+					amount: refundedTotal(payment.refunds),
+					reason: done.reason as RefundRowReason | null,
+					at: done.createdAt.toISOString(),
+				}
+			: null,
 		reasons: REFUND_REASONS.map((reason) => ({
 			reason,
 			refused: reasonRefused(refund, reason, now),
 		})),
 	};
 };
-
-export type CheckpointRefundQuote = NonNullable<
-	Awaited<ReturnType<typeof quoteCheckpointRefund>>
->;
 
 export const issueCheckpointRefund = async (
 	checkpointId: string,
@@ -143,11 +148,10 @@ export const issueCheckpointRefund = async (
 	const { refund: amount, provided, parts } = refundAmount(refund);
 	if (amount <= 0) return { ok: false as const, error: "nothingOwed" as const };
 
-	const stripeRefund = await refundCheckoutPart(
-		sessionId,
+	const stripeRefund = await refundCheckout(sessionId, {
 		amount,
-		`checkpoint-refund-${checkpointId}`,
-	).catch((error) => {
+		idempotencyKey: `checkpoint-refund-${checkpointId}`,
+	}).catch((error) => {
 		console.error("[checkpoint-refund] Stripe refused", checkpointId, error);
 		return null;
 	});
@@ -209,10 +213,11 @@ export const issueCheckpointRefund = async (
 
 const ADMIN_PAGE_SIZE = 20;
 
-/** Payments that make a checkpoint "paid" for the admin list: held, taken or returned. */
-const PAID: PaymentStatus[] = [PaymentStatus.PROCESSING, ...CAPTURED];
-
-/** Every paid checkpoint, newest payment first, for the admin checkpoints list. */
+/**
+ * Every checkpoint past Draft, newest first, for the admin checkpoints list:
+ * a checkpoint leaves Draft through a payment (seeded ones aside), and one
+ * cancelled before day 1 is deleted rather than kept.
+ */
 export const listAdminCheckpoints = async ({
 	status,
 	query,
@@ -221,27 +226,9 @@ export const listAdminCheckpoints = async ({
 	status?: CheckpointStatus;
 	query?: string;
 	page?: number;
-}) => {
-	const payments = await prisma.payment.findMany({
-		where: { payableType: PayableType.CHECKPOINT, status: { in: PAID } },
-		orderBy: { createdAt: "desc" },
-		select: {
-			payableId: true,
-			amount: true,
-			status: true,
-			refunds: { select: { amount: true, reason: true } },
-		},
-	});
-	// A declined checkpoint paid again has two rows; the newest one speaks for it.
-	const paymentOf = new Map<string, (typeof payments)[number]>();
-	for (const payment of payments) {
-		if (!paymentOf.has(payment.payableId))
-			paymentOf.set(payment.payableId, payment);
-	}
-
+}): Promise<AdminCheckpointsPageDto> => {
 	const where: Prisma.ProjectCheckpointWhereInput = {
-		id: { in: [...paymentOf.keys()] },
-		...(status && { status }),
+		status: status ?? { not: CheckpointStatus.Draft },
 		...(query && {
 			project: { name: { contains: query, mode: "insensitive" } },
 		}),
@@ -255,46 +242,60 @@ export const listAdminCheckpoints = async ({
 			take: ADMIN_PAGE_SIZE,
 			select: {
 				id: true,
-				order: true,
+				projectId: true,
+				createdAt: true,
 				stageName: true,
 				status: true,
-				curatorKind: true,
 				curator: { select: { name: true } },
-				project: { select: { name: true, slug: true } },
+				project: { select: { name: true } },
 			},
 		}),
+	]);
+
+	const [payments, numbers] = await Promise.all([
+		prisma.payment.findMany({
+			where: {
+				payableType: PayableType.CHECKPOINT,
+				payableId: { in: rows.map((row) => row.id) },
+				status: { in: [PaymentStatus.PROCESSING, ...CAPTURED] },
+			},
+			orderBy: { createdAt: "desc" },
+			select: {
+				payableId: true,
+				amount: true,
+				status: true,
+				refunds: { select: { amount: true, reason: true } },
+			},
+		}),
+		Promise.all(rows.map((row) => checkpointNumber(row))),
 	]);
 
 	return {
 		total,
 		pageSize: ADMIN_PAGE_SIZE,
-		items: rows.map((row) => {
-			const payment = paymentOf.get(row.id);
-			const refunded =
-				payment?.refunds.reduce((sum, r) => sum + r.amount, 0) ?? 0;
+		items: rows.map((row, index) => {
+			// A declined checkpoint paid again has two rows; the newest speaks for it.
+			const payment = payments.find((one) => one.payableId === row.id);
+			const refunded = payment ? refundedTotal(payment.refunds) : 0;
 
 			return {
 				id: row.id,
-				number: row.order,
+				number: numbers[index],
 				stageName: row.stageName,
 				status: row.status,
-				curatorKind: row.curatorKind,
 				curatorName: row.curator?.name ?? null,
-				project: row.project,
-				paid: payment?.amount ?? 0,
+				projectName: row.project.name,
+				paid: payment?.amount ?? null,
 				refunded: refunded || null,
-				refundReason: payment?.refunds[0]?.reason ?? null,
+				refundReason:
+					(payment?.refunds.at(0)?.reason as RefundRowReason | undefined) ??
+					null,
 				canRefund:
 					!refunded &&
 					!!payment &&
 					CAPTURED.includes(payment.status) &&
-					(row.status === CheckpointStatus.Active ||
-						row.status === CheckpointStatus.Review),
+					isRunning(row.status),
 			};
 		}),
 	};
 };
-
-export type AdminCheckpointsPage = Awaited<
-	ReturnType<typeof listAdminCheckpoints>
->;
