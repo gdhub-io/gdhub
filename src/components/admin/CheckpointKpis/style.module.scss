@@ -7,3 +7,64 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
+
+/* AI against a person as one bar with a legend; the counts are in its tooltip. */
+.mix {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding-top: var(--gd-space-3);
+	cursor: default;
+}
+
+.split {
+	display: flex;
+	gap: 2px;
+	height: 8px;
+	overflow: hidden;
+	background: var(--gd-neutral-100);
+	border-radius: var(--gd-radius-chip);
+}
+
+.ai,
+.human {
+	flex-basis: 0;
+	min-width: 0;
+}
+
+.ai {
+	background: var(--gd-chart-series-1);
+}
+
+.human {
+	background: var(--gd-chart-series-2);
+}
+
+.legend {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.key {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+
+	i {
+		display: block;
+		flex: 0 0 8px;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		corner-shape: round;
+	}
+
+	b {
+		color: var(--gd-color-text);
+		font-weight: 600;
+		font-feature-settings: "tnum";
+	}
+}

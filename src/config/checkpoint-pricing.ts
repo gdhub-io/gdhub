@@ -39,9 +39,13 @@ export const CHECKPOINT_MIN_CURATOR_PRICE = Math.min(
 export const checkpointPurchaseOpen = () =>
 	process.env.CHECKPOINTS_PURCHASE_OPEN === "true";
 
-/** A sum in minor units as the screens write it: "$450", or "$13.30" with cents. */
+/** A sum in minor units as the screens write it: "$450", "$1,832.30". */
 export const formatCheckpointMoney = (minor: number) => {
 	const whole = minor / CHECKPOINT_MINOR_UNITS;
+	const digits = Number.isInteger(whole) ? 0 : 2;
 
-	return `${CHECKPOINT_PRICE_CURRENCY}${Number.isInteger(whole) ? whole : whole.toFixed(2)}`;
+	return `${CHECKPOINT_PRICE_CURRENCY}${whole.toLocaleString("en-US", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits,
+	})}`;
 };

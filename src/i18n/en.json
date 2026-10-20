@@ -440,12 +440,14 @@
 	"admin": {
 		"checkpoints": {
 			"kpi": {
+				"ai": "AI",
 				"curators": "AI · person",
-				"curatorsNote": "{share}% with the AI curator",
+				"curatorsCount": "{ai} with the AI curator · {human} with a person",
 				"net": "Net",
 				"netNote": "Paid less refunded, before curators' fees",
 				"paid": "Paid",
 				"paidNote": "Taken from cards; holds aside",
+				"person": "Person",
 				"refunded": "Refunded",
 				"refundedNote": "Back to authors"
 			},
