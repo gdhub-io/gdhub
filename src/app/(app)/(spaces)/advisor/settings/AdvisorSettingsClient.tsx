@@ -20,8 +20,9 @@ import {
 	Typography,
 } from "antd";
 import dayjs, { type Dayjs } from "dayjs";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { AvailabilityPeriods } from "@/components/advisor/AvailabilityPeriods";
+import { PaidWorkSection } from "@/components/advisor/PaidWorkSection";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SectionHeading } from "@/components/ui";
 import { AVAILABILITY_REMIND_DAYS } from "@/config/checkpoint";
@@ -32,16 +33,49 @@ import {
 	useConfirmAvailability,
 	useSaveAvailability,
 } from "@/hooks/advisor-availability";
+import { useAskAgain, useCuration, useSaveCuration } from "@/hooks/curators";
+import {
+	type PaidWorkBody,
+	usePaidWork,
+	useSavePaidWork,
+} from "@/hooks/payouts";
+import { useUrlTab } from "@/hooks/useUrlTab";
 import type { AvailabilityRule } from "@/lib/advisor-availability";
 import type { AvailabilityDto } from "@/repositories/advisor-availability";
 import styles from "./style.module.scss";
 
 const DATE_FORMAT = "D MMMM YYYY";
 
+type Section = "availability" | "paid-work";
+
+const SECTIONS: Section[] = ["availability", "paid-work"];
+
 export function AdvisorSettingsClient() {
+	// useSearchParams needs a Suspense boundary to prerender.
+	return (
+		<Suspense>
+			<AdvisorSettings />
+		</Suspense>
+	);
+}
+
+function AdvisorSettings() {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
-	const { data, isLoading, isError, refetch } = useAvailability();
+	const [section, openSection] = useUrlTab("section", SECTIONS, "availability");
+
+	const items = [
+		{
+			key: "availability",
+			label: t("advisor.settings.menu.availability", "Availability"),
+		},
+		{
+			key: "paid-work",
+			label: t("advisor.settings.paid-work.title", "Paid work"),
+		},
+	];
+
+	const open = ({ key }: { key: string }) => openSection(key);
 
 	return (
 		<div className="layout-background">
@@ -58,45 +92,116 @@ export function AdvisorSettingsClient() {
 					<Layout.Sider width={220} theme="light" className={styles.sider}>
 						<Menu
 							mode="vertical"
-							selectedKeys={["availability"]}
-							items={[
-								{
-									key: "availability",
-									label: t(
-										"advisor.settings.menu.availability",
-										"Availability",
-									),
-								},
-							]}
+							selectedKeys={[section]}
+							items={items}
+							onClick={open}
 						/>
 					</Layout.Sider>
 				)}
 
 				<Layout.Content className={styles.content}>
-					{isError ? (
-						<Alert
-							type="error"
-							showIcon
-							title={t(
-								"advisor.availability.error.load",
-								"Your hours could not be loaded.",
-							)}
-							action={
-								<Button size="small" onClick={() => refetch()}>
-									{t("advisor.availability.error.retry", "Try again")}
-								</Button>
-							}
+					{!screens.lg && (
+						<Menu
+							mode="horizontal"
+							selectedKeys={[section]}
+							items={items}
+							onClick={open}
+							className={styles.topMenu}
 						/>
-					) : isLoading ? (
-						<Card variant="borderless">
-							<Skeleton active paragraph={{ rows: 6 }} />
-						</Card>
-					) : (
-						<AvailabilityForm availability={data ?? null} />
 					)}
+					{section === "paid-work" ? <PaidWork /> : <Availability />}
 				</Layout.Content>
 			</Layout>
 		</div>
+	);
+}
+
+function Availability() {
+	const { t } = useTranslate();
+	const { data, isLoading, isError, refetch } = useAvailability();
+
+	if (isError)
+		return (
+			<Alert
+				type="error"
+				showIcon
+				title={t(
+					"advisor.availability.error.load",
+					"Your hours could not be loaded.",
+				)}
+				action={
+					<Button size="small" onClick={() => refetch()}>
+						{t("advisor.availability.error.retry", "Try again")}
+					</Button>
+				}
+			/>
+		);
+
+	if (isLoading)
+		return (
+			<Card variant="borderless">
+				<Skeleton active paragraph={{ rows: 6 }} />
+			</Card>
+		);
+
+	return <AvailabilityForm availability={data ?? null} />;
+}
+
+function PaidWork() {
+	const { t } = useTranslate();
+	const { data, isLoading, isError, refetch } = usePaidWork();
+	const curation = useCuration();
+	const save = useSavePaidWork();
+	const saveCuration = useSaveCuration();
+	const askAgain = useAskAgain();
+
+	// Saving the payout details is what unlocks curation.
+	const savePaidWork = async (body: PaidWorkBody) => {
+		const saved = await save.mutateAsync(body);
+		await curation.refetch();
+		return saved;
+	};
+
+	if (isError || (curation.isError && !curation.data))
+		return (
+			<Alert
+				type="error"
+				showIcon
+				title={t(
+					"advisor.settings.paid-work.loadFailed",
+					"Your payout details could not be loaded.",
+				)}
+				action={
+					<Button
+						size="small"
+						onClick={() => {
+							refetch();
+							curation.refetch();
+						}}
+					>
+						{t("advisor.settings.paid-work.retry", "Try again")}
+					</Button>
+				}
+			/>
+		);
+
+	if (isLoading || !data || !curation.data)
+		return (
+			<Card variant="borderless">
+				<Skeleton active paragraph={{ rows: 8 }} />
+			</Card>
+		);
+
+	return (
+		<PaidWorkSection
+			paidWork={data}
+			curation={curation.data}
+			saving={save.isPending || saveCuration.isPending}
+			askingAgain={askAgain.isPending}
+			onSave={savePaidWork}
+			onSaveCuration={saveCuration.mutateAsync}
+			onAskAgain={askAgain.mutateAsync}
+		/>
 	);
 }
 

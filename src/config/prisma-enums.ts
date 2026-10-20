@@ -10,6 +10,7 @@ import type {
 	ChatRoomKind as ChatRoomKindType,
 	ChatRoomStatus as ChatRoomStatusType,
 	CheckpointCuratorKind as CheckpointCuratorKindType,
+	CheckpointFeeReason as CheckpointFeeReasonType,
 	CheckpointItemKind as CheckpointItemKindType,
 	CheckpointSessionContentStatus as CheckpointSessionContentStatusType,
 	CheckpointStatus as CheckpointStatusType,
@@ -151,6 +152,13 @@ export const CheckpointCuratorKind = {
 	CheckpointCuratorKindType
 >;
 export type CheckpointCuratorKind = CheckpointCuratorKindType;
+
+export const CheckpointFeeReason = {
+	Full: "Full",
+	RefundReduced: "RefundReduced",
+	Replacement: "Replacement",
+} as const satisfies Record<CheckpointFeeReasonType, CheckpointFeeReasonType>;
+export type CheckpointFeeReason = CheckpointFeeReasonType;
 
 export const CheckpointItemKind = {
 	Input: "Input",

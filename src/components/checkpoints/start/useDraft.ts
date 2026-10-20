@@ -52,7 +52,7 @@ export const useCheckpointDraft = () => {
  * list arrives a human checkpoint reads at the AI price, the minimum.
  */
 export const useCheckpointPrice = (checkpoint?: CheckpointDto | null) => {
-	const curators = useCheckpointCurators();
+	const curators = useCheckpointCurators(checkpoint?.stageName);
 
 	if (checkpoint?.curatorKind !== CheckpointCuratorKind.Human)
 		return { price: CHECKPOINT_AI_PRICE, curator: undefined };

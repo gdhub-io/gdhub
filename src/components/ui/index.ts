@@ -7,6 +7,8 @@ export {
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { IconTile, type IconTileProps } from "./IconTile";
 export { InverseBand, type InverseBandProps } from "./InverseBand";
+export { KpiCard, type KpiCardProps } from "./KpiCard";
+export { KpiSplit, type KpiSplitPart, type KpiSplitProps } from "./KpiSplit";
 export {
 	BOX_TICK_STROKE,
 	META_ICON_STROKE,
@@ -29,4 +31,10 @@ export {
 	type StatusDotProps,
 	type StatusTone,
 } from "./StatusDot";
+export {
+	skeletonColumns,
+	skeletonRows,
+	tableScrollX,
+	tableStyles,
+} from "./table";
 export { ViewAllLink, type ViewAllLinkProps } from "./ViewAllLink";

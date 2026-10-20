@@ -195,7 +195,10 @@ export const runGoalCheck = async (
 		return checkpoint.goalCheck;
 	}
 
-	const result = await checkpointCurator.checkGoal(input, options);
+	const result = await checkpointCurator.checkGoal(input, {
+		...options,
+		checkpointId,
+	});
 	if (!result) return null;
 
 	await prisma.projectCheckpoint.update({
@@ -248,7 +251,7 @@ export const suggestCardLines = async (
 				inputs: card.inputs.map((item) => item.text),
 				stage,
 			},
-			options,
+			{ ...options, checkpointId },
 		);
 	}
 
@@ -261,7 +264,7 @@ export const suggestCardLines = async (
 			stage,
 			previousOutcomes: previous.map((item) => item.text),
 		},
-		options,
+		{ ...options, checkpointId },
 	);
 };
 
@@ -305,7 +308,7 @@ export const writeMidNote = async (
 			day: checkpointDay(checkpoint.startedAt),
 			devlogs: checkpoint.reports.map(toDevlog),
 		},
-		options,
+		{ ...options, checkpointId },
 	);
 
 	if (!written) return null;
@@ -396,7 +399,7 @@ export const closeCheckpoint = async (
 			devlogs: checkpoint.reports.map(toDevlog),
 			pulses: pulseMatrix(checkpoint.pulses),
 		},
-		options,
+		{ ...options, checkpointId },
 	);
 
 	if (!proposed) return null;

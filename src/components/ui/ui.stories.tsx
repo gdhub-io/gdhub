@@ -4,12 +4,16 @@ import {
 	IconChecks,
 	IconCode,
 	IconPlus,
+	IconRobot,
+	IconWallet,
 } from "@tabler/icons-react";
 import { Button } from "antd";
 import { WORK_DIRECTIONS } from "@/components/DirectionBadge";
 import { SkillLevel } from "@/config/prisma-enums";
 import { EmptyState } from "./EmptyState";
 import { IconTile } from "./IconTile";
+import { KpiCard } from "./KpiCard";
+import { KpiSplit } from "./KpiSplit";
 import { SectionHeading } from "./SectionHeading";
 import { SkillLevelMeter } from "./SkillLevelMeter";
 import { StatusDot, type StatusTone } from "./StatusDot";
@@ -162,6 +166,49 @@ export const Composed: StoryObj = {
 				))}
 			</div>
 			<Button type="primary">Post a vacancy</Button>
+		</div>
+	),
+};
+
+/** Metric cards: a figure with its caption, the loading bars, and a split bar with its legend. */
+export const Kpis: StoryObj = {
+	render: () => (
+		<div
+			style={{
+				display: "grid",
+				gridTemplateColumns: "repeat(3, 240px)",
+				gap: 12,
+			}}
+		>
+			<KpiCard
+				icon={IconWallet}
+				name="To pay"
+				value="$1,375.50"
+				note="Due by 15 Oct"
+			/>
+			<KpiCard icon={IconWallet} name="To pay" loading />
+			<KpiCard icon={IconRobot} name="AI · person">
+				<KpiSplit
+					spread
+					tooltip="22 with the AI curator · 28 with a person"
+					parts={[
+						{
+							key: "ai",
+							label: "AI",
+							value: "44%",
+							count: 22,
+							color: "var(--gd-chart-series-1)",
+						},
+						{
+							key: "person",
+							label: "Person",
+							value: "56%",
+							count: 28,
+							color: "var(--gd-chart-series-2)",
+						},
+					]}
+				/>
+			</KpiCard>
 		</div>
 	),
 };

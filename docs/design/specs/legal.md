@@ -104,7 +104,7 @@ Advisor Agreement for advisors) gets this prompt over the app. It follows the co
 - `/advisor/settings` gets a fourth section **Paid work** between Requests and Danger zone
   (menu + one form card, rule 7, *Save* under the card). The card starts with an outlined
   **Expert Services** block: account holder, IBAN or account number, invoicing
-  (self-employed / company / I accept self-billing), and the Expert Services Terms
+  (self-employed / company / self-billing), and the Expert Services Terms
   clickwrap. Below it: *Paid consultations* (switch + price per consultation) and *Curation*
   (switch + stages you curate). Both switches are locked (lock icon, tooltip) until the
   block is saved. Set up: the clickwrap is replaced by "Accepted on {date} · version {n}"
@@ -176,7 +176,7 @@ User-agent · Checksum (copy) · Context.
 | `advisor.settings.paid-work.title` | Paid work |
 | `advisor.settings.paid-work.expert-services` | Expert Services |
 | `advisor.settings.paid-work.account-holder` / `.account` / `.invoicing` | Account holder / IBAN or account number / Invoicing |
-| `advisor.settings.paid-work.invoicing.*` | Self-employed · Company · I accept self-billing |
+| `advisor.settings.paid-work.invoicing.*` | Self-employed · Company · Self-billing (one line under each — see checkpoint-payouts.md §10) |
 | `advisor.settings.paid-work.account.error` | Enter a full IBAN or account number |
 | `advisor.settings.paid-work.terms-accepted` | Accepted on {date} · version {version} |
 | `advisor.settings.paid-work.consultations` / `.price` | Paid consultations / Price per consultation |

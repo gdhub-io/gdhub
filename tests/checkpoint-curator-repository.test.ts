@@ -133,7 +133,7 @@ describe("runGoalCheck", () => {
 					},
 				},
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 	});
 
@@ -168,7 +168,7 @@ describe("runGoalCheck", () => {
 					experience: "Two jam games in Godot",
 				},
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 	});
 
@@ -185,7 +185,7 @@ describe("runGoalCheck", () => {
 				project: { name: "Lantern Keeper", pitch: null, genre: null },
 				author: null,
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 	});
 
@@ -232,7 +232,7 @@ describe("runGoalCheck", () => {
 					note: "Nobody outside the team played it.",
 				},
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 		expect(prisma.projectCheckpoint.findFirst).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -257,7 +257,7 @@ describe("runGoalCheck", () => {
 					hoursPerWeek: { from: 10, to: 20 },
 				}),
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 	});
 
@@ -277,7 +277,7 @@ describe("runGoalCheck", () => {
 					hoursPerRun: null,
 				}),
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 	});
 
@@ -405,7 +405,7 @@ describe("writeMidNote", () => {
 					{ id: "o2", text: "outcome o2", reason: "missing" },
 				],
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 		expect(prisma.projectCheckpoint.update).toHaveBeenCalled();
 	});
@@ -528,7 +528,7 @@ describe("closeCheckpoint", () => {
 					expect.objectContaining({ id: "o3", reason: "missing" }),
 				],
 			}),
-			{},
+			{ checkpointId: "cp1" },
 		);
 	});
 });

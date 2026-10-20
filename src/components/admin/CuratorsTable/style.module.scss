@@ -1,0 +1,60 @@
+.search {
+	width: 280px;
+	max-width: 100%;
+}
+
+.count {
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-body-sm);
+	font-feature-settings: "tnum";
+}
+
+.person {
+	min-width: 0;
+}
+
+.profile {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	min-width: 0;
+	color: var(--gd-color-text);
+}
+
+.name {
+	font-weight: 500;
+}
+
+.arrow {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+}
+
+// One line of read-only chips; the full list is in the ellipsis tooltip.
+.stages {
+	display: block;
+	max-width: 100%;
+
+	:global(.ant-tag) + :global(.ant-tag) {
+		margin-inline-start: var(--gd-space-1);
+	}
+}
+
+.status {
+	gap: 2px;
+	min-width: 0;
+}
+
+.sub {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// Frame `FRDTR`: 360 wide, 16 padding.
+.popover {
+	width: 360px;
+	padding: var(--gd-space-4);
+}
+
+.popoverTitle {
+	font-weight: 500;
+}

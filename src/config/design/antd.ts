@@ -326,6 +326,14 @@ export function buildAntdTheme({
 				radioSize: 18,
 				dotSize: 8,
 			},
+			// Amber filled over the disabled grey (checkpoint rating, spec §5).
+			Rate: {
+				starColor: semantic.warning.solid,
+				starBg: isInverse ? neutral[700] : neutral[300],
+				starSize: 20,
+				starSizeSM: 16,
+				marginXS: space[1],
+			},
 			Progress: {
 				defaultColor: r.accent,
 				remainingColor: r.surfaceSunken,

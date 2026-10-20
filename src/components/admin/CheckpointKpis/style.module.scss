@@ -1,57 +1,32 @@
 .grid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: var(--gd-space-4);
+	/* Six money cards share the width; the split bar keeps room for its legend. */
+	grid-template-columns: repeat(6, minmax(0, 1fr)) 200px;
+	gap: var(--gd-space-3);
+
+	@media (max-width: 1279px) {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
 
 	@media (max-width: 991px) {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
-/* AI against a person as one bar with a legend; the counts are in its tooltip. */
-.mix {
+/* Running cost: a caption-sized legend in place of the note; exact sums in its tooltip. */
+.costs {
 	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-3);
-	padding-top: var(--gd-space-3);
-	cursor: default;
-}
-
-.split {
-	display: flex;
-	gap: 2px;
-	height: 8px;
-	overflow: hidden;
-	background: var(--gd-neutral-100);
-	border-radius: var(--gd-radius-chip);
-}
-
-.ai,
-.human {
-	flex-basis: 0;
-	min-width: 0;
-}
-
-.ai {
-	background: var(--gd-chart-series-1);
-}
-
-.human {
-	background: var(--gd-chart-series-2);
-}
-
-.legend {
-	display: flex;
-	justify-content: space-between;
 	gap: var(--gd-space-3);
 	color: var(--gd-color-text-secondary);
-	font-size: var(--gd-font-size-body-sm);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	cursor: default;
 }
 
 .key {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--gd-space-2);
+	gap: var(--gd-space-1);
 
 	i {
 		display: block;
@@ -67,4 +42,22 @@
 		font-weight: 600;
 		font-feature-settings: "tnum";
 	}
+}
+
+.ai {
+	background: var(--gd-chart-series-1);
+}
+
+.calls {
+	background: var(--gd-chart-series-3);
+}
+
+.tip {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.health {
+	font-weight: 500;
 }

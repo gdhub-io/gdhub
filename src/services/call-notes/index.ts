@@ -3,6 +3,7 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { CallNotes } from "@/types/checkpoints";
 
 /** A plan task as every curator prompt reads it. */
@@ -102,8 +103,9 @@ export const artifactLines = (
  */
 export const writeCallNotes = async (
 	input: CallNotesInput,
+	meter?: AiMeter,
 ): Promise<CallNotes | null> => {
-	const { output } = await generateText({
+	const { output, usage } = await generateText({
 		model: openai(AI_MODELS.callNotes),
 		output: Output.object({ schema, name: "call_notes" }),
 		instructions: stripIndents`
@@ -142,5 +144,6 @@ export const writeCallNotes = async (
 			${input.transcript}
 		`,
 	});
+	await recordAiUsage(meter, AI_MODELS.callNotes, usage);
 	return output ?? null;
 };

@@ -212,7 +212,7 @@ export function AfterVerdict({
 				})}
 			>
 				<div className={styles.result}>
-					<CheckpointResult checkpoint={checkpoint} />
+					<CheckpointResult checkpoint={checkpoint} rateable />
 				</div>
 			</Modal>
 		</Flex>

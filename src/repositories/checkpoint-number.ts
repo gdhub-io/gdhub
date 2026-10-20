@@ -3,6 +3,8 @@ import { currentSprint } from "@/lib/checkpoint-sprints";
 import { prisma } from "@/services/prisma";
 import type { PreviousVerdict } from "@/types/checkpoints";
 
+const UNNUMBERED = [CheckpointStatus.Draft, CheckpointStatus.Cancelled];
+
 /**
  * The checkpoint's number through the whole project: the ones before it that
  * actually ran, plus one. Drafts and cancelled ones never took a number.
@@ -15,11 +17,33 @@ export const checkpointNumber = async (row: {
 		where: {
 			projectId: row.projectId,
 			createdAt: { lt: row.createdAt },
-			status: {
-				notIn: [CheckpointStatus.Draft, CheckpointStatus.Cancelled],
-			},
+			status: { notIn: UNNUMBERED },
 		},
 	})) + 1;
+
+/** `checkpointNumber` for many rows in one query, keyed by id. */
+export const checkpointNumbers = async (
+	rows: { id: string; projectId: string; createdAt: Date }[],
+): Promise<Map<string, number>> => {
+	if (!rows.length) return new Map();
+	const counted = await prisma.projectCheckpoint.findMany({
+		where: {
+			projectId: { in: [...new Set(rows.map((row) => row.projectId))] },
+			status: { notIn: UNNUMBERED },
+		},
+		select: { projectId: true, createdAt: true },
+	});
+
+	return new Map(
+		rows.map((row) => [
+			row.id,
+			counted.filter(
+				(one) =>
+					one.projectId === row.projectId && one.createdAt < row.createdAt,
+			).length + 1,
+		]),
+	);
+};
 
 /** The checkpoint a project's `cpN` address names: the Nth that actually ran. */
 export const checkpointIdByNumber = async (
@@ -30,9 +54,7 @@ export const checkpointIdByNumber = async (
 		await prisma.projectCheckpoint.findFirst({
 			where: {
 				project: { slug: projectSlug },
-				status: {
-					notIn: [CheckpointStatus.Draft, CheckpointStatus.Cancelled],
-				},
+				status: { notIn: UNNUMBERED },
 			},
 			orderBy: { createdAt: "asc" },
 			skip: number - 1,

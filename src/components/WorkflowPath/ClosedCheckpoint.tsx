@@ -8,6 +8,7 @@ import { useTranslate } from "@tolgee/react";
 import { Divider } from "antd";
 import { useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
+import { CheckpointRating } from "@/components/checkpoints/CheckpointRating";
 import {
 	useVerdictCopy,
 	VerdictChip,
@@ -76,8 +77,11 @@ export function ClosedCheckpoint({
 /** What a closed checkpoint came to: the goal, what was delivered, the verdict. */
 export function CheckpointResult({
 	checkpoint,
+	rateable = false,
 }: {
 	checkpoint: CheckpointDto;
+	/** The results modal is the one place the rating is asked. */
+	rateable?: boolean;
 }) {
 	const { t } = useTranslate();
 	const { meaning } = useVerdictCopy();
@@ -159,6 +163,7 @@ export function CheckpointResult({
 							</span>
 						)}
 					</div>
+					{rateable && <CheckpointRating checkpointId={checkpoint.id} />}
 				</>
 			)}
 		</>

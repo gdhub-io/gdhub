@@ -163,15 +163,18 @@ const writeNotesFor = async (sessionId: string) => {
 		(row) => row.index === session.index - 1,
 	)?.content as CallNotes | null | undefined;
 
-	const notes = await writeCallNotes({
-		callIndex: session.index,
-		goal: checkpoint.goal,
-		tasks: checkpoint.items.map(toCuratorTask),
-		transcript: parts.map((part) => part.text.trim()).join("\n\n"),
-		devlog,
-		artifacts,
-		agreedLastCall: previous?.agreed.map((line) => line.text) ?? [],
-	});
+	const notes = await writeCallNotes(
+		{
+			callIndex: session.index,
+			goal: checkpoint.goal,
+			tasks: checkpoint.items.map(toCuratorTask),
+			transcript: parts.map((part) => part.text.trim()).join("\n\n"),
+			devlog,
+			artifacts,
+			agreedLastCall: previous?.agreed.map((line) => line.text) ?? [],
+		},
+		{ checkpointId: checkpoint.id, purpose: "callNotes" },
+	);
 	if (!notes) return false;
 
 	const content = knownOnly(notes, checkpoint.items);

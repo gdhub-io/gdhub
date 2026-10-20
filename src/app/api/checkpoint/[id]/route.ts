@@ -93,7 +93,12 @@ export const PUT = pipe(
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
-		select: { status: true, curatorKind: true, curatorId: true },
+		select: {
+			status: true,
+			curatorKind: true,
+			curatorId: true,
+			stageName: true,
+		},
 	});
 
 	if (!checkpoint) return apiError.notFound();
@@ -125,7 +130,10 @@ export const PUT = pipe(
 		}
 
 		const eligible = await prisma.speciality.findFirst({
-			where: { ...curatorEligibleWhere, userId: curatorId },
+			where: {
+				...curatorEligibleWhere(checkpoint.stageName),
+				userId: curatorId,
+			},
 			select: { id: true },
 		});
 
@@ -142,6 +150,7 @@ export const PUT = pipe(
 				: await curatorCharge(
 						curatorKind ?? checkpoint.curatorKind,
 						curatorId === undefined ? checkpoint.curatorId : curatorId,
+						checkpoint.stageName,
 					);
 
 		if (held !== null && charge !== held) {

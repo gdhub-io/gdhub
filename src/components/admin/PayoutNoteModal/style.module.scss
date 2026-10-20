@@ -1,0 +1,9 @@
+/* 13.3c draws the paid line at body size, not the table's 13. */
+.paidLine {
+	font-size: var(--gd-font-size-body);
+}
+
+/* antd hangs the count below the field without reserving its line. */
+.counted {
+	margin-bottom: calc(var(--gd-font-size-body) * var(--gd-line-height-body));
+}

@@ -286,12 +286,16 @@ export const useCheckpointChat = (id?: string) =>
 			(await axios.post<{ roomId: string }>(`/api/checkpoint/${id}/chat`)).data,
 	});
 
-/** Specialists who have said they take mentees, at an expert level. */
-export const useCheckpointCurators = () =>
+/** Approved curators at an expert level; with a stage, only those who curate it. */
+export const useCheckpointCurators = (stage?: string | null) =>
 	useQuery({
-		queryKey: ["checkpoint-curators"],
+		queryKey: ["checkpoint-curators", stage ?? null],
 		queryFn: async () =>
-			(await axios.get<CheckpointCurator[]>("/api/checkpoint/curators")).data,
+			(
+				await axios.get<CheckpointCurator[]>("/api/checkpoint/curators", {
+					params: { stage },
+				})
+			).data,
 	});
 
 export const useCreateCheckpoint = (projectId?: string) => {

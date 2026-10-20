@@ -1,13 +1,16 @@
 import type {
 	ArtifactCheckStatus,
 	CheckpointCuratorKind,
+	CheckpointFeeReason,
 	CheckpointItemKind,
 	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	CheckpointVerdict,
+	ExpertInvoicing,
 	ProjectArtifactType,
 	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
+import type { NoFeeReason } from "@/lib/checkpoint-fee";
 import type { AuthorNextStep } from "@/lib/checkpoint-plan";
 import type {
 	RefundReason,
@@ -15,6 +18,7 @@ import type {
 	reasonRefused,
 } from "@/lib/checkpoint-refund";
 import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
+import type { CuratorStatus } from "@/lib/curator-status";
 
 /**
  * What the checkpoint endpoints send to the browser.
@@ -492,6 +496,24 @@ export type AdminCheckpointRowDto = {
 	overdue: boolean;
 	canRefund: boolean;
 	canAssign: boolean;
+	/** The curator's frozen fee; null while running, for the AI, or when none is owed. */
+	fee: { amount: number; reason: CheckpointFeeReason; parts: number } | null;
+	/** Why a finished human checkpoint pays its curator nothing. */
+	noFee: NoFeeReason | null;
+	/** Minor units, fractional: a call costs cents. */
+	calls: {
+		personMinutes: number;
+		minutes: number;
+		video: number;
+		recording: number;
+		transcript: number;
+		total: number;
+	};
+	aiCost: number;
+	/** Paid − refunded − fee − running cost; null while running. */
+	margin: number | null;
+	/** The author's rating; admins only. */
+	rating: CheckpointFeedbackDto | null;
 };
 
 export type AdminCheckpointsPageDto = {
@@ -504,8 +526,15 @@ export type AdminCheckpointsPageDto = {
 	totals: {
 		paid: number;
 		refunded: number;
-		/** Before the curators' fees (GDHUB-74). */
 		net: number;
+		fees: number;
+		calls: number;
+		aiCost: number;
+		/** Over finished checkpoints only. */
+		margin: number;
+		/** AI-curated checkpoints the author rated, and those rated 1–2. */
+		aiRated: number;
+		aiRatedLow: number;
 		ai: number;
 		human: number;
 	};
@@ -530,4 +559,143 @@ export type CheckpointRefundQuoteDto = {
 		reason: RefundReason;
 		refused: ReturnType<typeof reasonRefused>;
 	}[];
+};
+
+// Curator payouts (GDHUB-74)
+
+export type PayoutStatus = "due" | "late" | "notDue" | "paid";
+
+/** One fee in a payout, with the inputs of its "why". Minor units. */
+export type PayoutCheckpointDto = {
+	feeId: string;
+	/** Null once the project was deleted: the fee stays for the books. */
+	checkpointId: string | null;
+	projectName: string | null;
+	number: number;
+	stageName: string | null;
+	closedAt: string;
+	paid: number;
+	refunded: number;
+	fee: number;
+	reason: CheckpointFeeReason;
+	parts: number;
+};
+
+export type AdminPayoutRowDto = {
+	curatorId: string;
+	name: string | null;
+	image: string | null;
+	level: SkillLevel | null;
+	/** All time; `average` is null below five answers. Admins only. */
+	rating: { average: number | null; count: number };
+	/** Masked account; null when the curator has not given them. */
+	details: {
+		holder: string;
+		account: string;
+		invoicing: ExpertInvoicing;
+	} | null;
+	checkpoints: PayoutCheckpointDto[];
+	amount: number;
+	status: PayoutStatus;
+	payout: {
+		id: string;
+		paidOn: string;
+		reference: string;
+		note: string | null;
+		paidBy: string | null;
+	} | null;
+};
+
+export type AdminPayoutsDto = {
+	/** The month's first day, UTC. */
+	month: string;
+	dueOn: string;
+	/** The earliest month with a fee, for the switcher's bound. */
+	firstMonth: string | null;
+	rows: AdminPayoutRowDto[];
+	totals: {
+		toPay: number;
+		paid: number;
+		curatorsPaid: number;
+		curatorsDue: number;
+	};
+};
+
+/** The full details, for the Mark paid dialog only. */
+export type PayoutDetailsDto = {
+	holder: string | null;
+	account: string | null;
+	invoicing: ExpertInvoicing | null;
+	/** When they were read: sent back so a later change refuses the payout. */
+	seenAt: string;
+};
+
+export type CuratorEarningsDto = {
+	/** Masked; null when no payout details are given. */
+	account: string | null;
+	earned: { month: string; amount: number; dueOn: string };
+	/** Amount 0 and the previous month when nothing is due. */
+	due: { amount: number; dueOn: string; month: string };
+	paidTotal: { amount: number; count: number; since: string | null };
+	checkpoints: (Omit<PayoutCheckpointDto, "feeId" | "reason"> & {
+		feeId: string | null;
+		/** Null with "noFee": the curator stopped, or an admin wrote the verdict. */
+		reason: CheckpointFeeReason | null;
+		status: "earned" | "due" | "paid" | "noFee";
+		noFee: NoFeeReason | null;
+		/** When the fee is due by, or was paid on. */
+		on: string | null;
+	})[];
+	payouts: {
+		month: string;
+		count: number;
+		amount: number;
+		paidOn: string;
+		reference: string;
+	}[];
+};
+
+export type PaidWorkDto = {
+	holder: string | null;
+	/** Masked; the full number never comes back to the browser. */
+	account: string | null;
+	invoicing: ExpertInvoicing | null;
+	terms: { version: number; acceptedAt: string } | null;
+	/** True when the terms must be (re)accepted before saving. */
+	termsNeeded: boolean;
+};
+
+/** The author's rating of an assessment; admins read it, nobody else (GDHUB-74). */
+export type CheckpointFeedbackDto = {
+	rating: number;
+	comment: string | null;
+	createdAt: string;
+};
+
+// Project curation (GDHUB-74)
+
+export type CurationDto = {
+	/** True until the Expert Services Terms are accepted and payout details saved. */
+	locked: boolean;
+	on: boolean;
+	stages: string[];
+	stageOptions: string[];
+	status: CuratorStatus | null;
+	requestedAt: string | null;
+	approvedAt: string | null;
+	/** The admin's note on a decline or a revoke. */
+	note: string | null;
+};
+
+export type AdminCuratorRowDto = {
+	userId: string;
+	name: string | null;
+	image: string | null;
+	/** Their public expert page: /expert/{specialityId}. */
+	specialityId: string | null;
+	level: SkillLevel | null;
+	stages: string[];
+	status: CuratorStatus;
+	requestedAt: string | null;
+	approvedAt: string | null;
 };

@@ -1,0 +1,43 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-74 — an expert offers to curate, an admin approves them; the stages are their own" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+curator: "Advisor settings → Paid work → Project curation (S5YkC)" {
+  terms: "Expert Services Terms accepted?" {shape: diamond}
+  locked: "block locked, link to the terms"
+  on: "turns Project curation on (or asks again after a decline)\n→ curatorRequestedAt = now, curatorReviewNote cleared"
+  stages: "Stages you curate: names from the workflow templates (WorkflowSchema.steps)\ncuratorStages — their own setting, changed any time, no review"
+  terms -> locked: no
+  terms -> on: yes
+  on -> stages
+}
+
+admin: "Admin → Checkpoints → Curators (ORPpO), admin.curators.*" {
+  list: "Waiting first: person (profile link — experience, portfolio),\nprofile level, their stages (context only)"
+  approve: "Approve → curatorApprovedAt = now, note cleared, AuditLog"
+  decline: "Decline {note} → curatorApprovedAt stays null, note"
+  revoke: "Revoke {note} → curatorApprovedAt = null, note"
+  mail: "one email to the expert per decision"
+  list -> approve
+  list -> decline
+  list -> revoke
+  approve -> mail
+  decline -> mail
+  revoke -> mail
+}
+curator.on -> admin.list
+
+pool: "Who authors are offered" {
+  where: "curator list, naming a curator (PUT), paying:\nspeciality open for mentoring at a curator level (as today)\n+ ExpertProfile.curation and curatorApprovedAt set\n+ curatorStages has the checkpoint's stageName"
+}
+admin.approve -> pool.where

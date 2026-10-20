@@ -1,0 +1,79 @@
+/* Frame 13.3 (`A9bzy`): the details and the amount are one outlined block, as 11.6. */
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.copy {
+	display: inline-flex;
+	align-items: center;
+
+	:global(.ant-typography-actions) {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	:global(.ant-typography-copy) {
+		display: inline-flex;
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.number {
+	font-feature-settings: "tnum";
+}
+
+.none {
+	color: var(--gd-color-text-tertiary);
+}
+
+.sub {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.divider {
+	margin: 0;
+	border-color: var(--gd-color-border-subtle);
+}
+
+.amountLabel {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+.amount {
+	font-size: var(--gd-font-size-h2);
+	font-feature-settings: "tnum";
+	white-space: nowrap;
+}
+
+/* Transfer date 200 and Reference taking the rest, 16 apart. */
+.fields {
+	display: flex;
+	gap: var(--gd-space-4);
+
+	:global(.ant-form-item) {
+		margin-bottom: 0;
+	}
+}
+
+.date {
+	flex: 0 0 200px;
+}
+
+.reference {
+	flex: 1;
+	min-width: 0;
+}
+
+.full {
+	width: 100%;
+}
+
+.mail {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+}

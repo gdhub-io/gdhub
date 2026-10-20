@@ -102,7 +102,7 @@ describe("POST /api/checkpoint/[id]/suggest", () => {
 				inputs: ["a grey-box level"],
 				stage: { name: "Prototype", requirements: ["A vertical slice"] },
 			},
-			{ locale: "ru" },
+			{ locale: "ru", checkpointId: "cp1" },
 		);
 		// The project is not the author's material for this side of the card.
 		expect(lastClosedOutcomes).not.toHaveBeenCalled();
@@ -118,7 +118,7 @@ describe("POST /api/checkpoint/[id]/suggest", () => {
 				stage: { name: "Prototype", requirements: ["A vertical slice"] },
 				previousOutcomes: ["a tide shader"],
 			},
-			{ locale: "ru" },
+			{ locale: "ru", checkpointId: "cp1" },
 		);
 		expect(lastClosedOutcomes).toHaveBeenCalledWith("p1");
 	});

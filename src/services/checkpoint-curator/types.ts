@@ -34,6 +34,8 @@ export type CuratorStage = {
 export type CuratorOptions = {
 	/** Forwarded to the model so the author is answered in their own language. */
 	locale?: string;
+	/** The checkpoint the tokens are charged to. */
+	checkpointId?: string;
 };
 
 export type CuratorHours = { from: number; to: number };

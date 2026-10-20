@@ -29,6 +29,8 @@ export type CuratorTableProps = {
 	unavailable?: string[];
 	/** Only curators at this price, whole units: the one money is already held for. */
 	price?: number | null;
+	/** The checkpoint's stage: only curators who curate it are listed. */
+	stage?: string | null;
 };
 
 /**
@@ -50,9 +52,10 @@ export function CuratorTable({
 	exclude,
 	unavailable,
 	price,
+	stage,
 }: CuratorTableProps) {
 	const { t } = useTranslate();
-	const curators = useCheckpointCurators();
+	const curators = useCheckpointCurators(stage);
 	const [preview, setPreview] = useState<string>();
 
 	const talentCard = t("checkpoints.curator.talentCard", "Talent card");

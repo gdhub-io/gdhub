@@ -19,6 +19,11 @@
 
 import { isValidJSON } from "@/helpers/format";
 import {
+	type AiMeter,
+	type AiPurpose,
+	recordAiUsage,
+} from "@/services/ai-usage";
+import {
 	GOAL_CHECK_FUNCTION_NAME,
 	goalCheckMessages,
 	goalCheckSchema,
@@ -52,6 +57,11 @@ import type {
 
 type Message = { role: "system" | "user"; content: string };
 
+const meter = (options: CuratorOptions, purpose: AiPurpose) =>
+	options.checkpointId
+		? { checkpointId: options.checkpointId, purpose }
+		: undefined;
+
 class CheckpointCuratorService {
 	private get model() {
 		return (
@@ -69,6 +79,7 @@ class CheckpointCuratorService {
 		name: string,
 		parameters: Record<string, unknown>,
 		messages: Message[],
+		meter?: AiMeter,
 	): Promise<T | null> {
 		try {
 			// Lazy: constructing the OpenAI client needs OPENAI_API_KEY, and the
@@ -80,6 +91,10 @@ class CheckpointCuratorService {
 				tools: [{ type: "function", function: { name, parameters } }],
 				tool_choice: { type: "function", function: { name } },
 				temperature: 0,
+			});
+			await recordAiUsage(meter, this.model, {
+				inputTokens: completion.usage?.prompt_tokens,
+				outputTokens: completion.usage?.completion_tokens,
 			});
 
 			const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
@@ -106,6 +121,7 @@ class CheckpointCuratorService {
 			GOAL_CHECK_FUNCTION_NAME,
 			goalCheckSchema(input),
 			goalCheckMessages(input, options.locale),
+			meter(options, "goalCheck"),
 		);
 	}
 
@@ -115,6 +131,7 @@ class CheckpointCuratorService {
 			MID_NOTE_FUNCTION_NAME,
 			midNoteSchema(),
 			midNoteMessages(input, options.locale),
+			meter(options, "midNote"),
 		);
 	}
 
@@ -124,6 +141,7 @@ class CheckpointCuratorService {
 			REPORT_FUNCTION_NAME,
 			reportSchema(),
 			reportMessages(input, options.locale),
+			meter(options, "report"),
 		);
 	}
 
@@ -133,6 +151,7 @@ class CheckpointCuratorService {
 			SUGGEST_LINES_FUNCTION_NAME,
 			suggestLinesSchema(input),
 			suggestLinesMessages(input, options.locale),
+			meter(options, "suggestLines"),
 		);
 	}
 }
