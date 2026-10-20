@@ -16,10 +16,10 @@
 - **Rated.** After the verdict the author rates the assessment — stars and an optional
   comment — from the verdict entry; once, editable later. For now only administrators see
   it: each checkpoint's rating in the admin list, and each curator's average and count.
-- **Let in.** A specialist reads the curator handbook, applies to curate (released game,
-  the stage they took it through), accepts the Expert Services Terms and gives payout
-  details. An administrator accepts or declines with a level; only accepted curators are
-  offered to authors.
+- **Let in.** In Advisor settings an expert turns on project curation and picks the stages
+  they curate (their own setting, no review). An administrator approves the expert as a
+  curator — or declines, or later revokes, with a note — so random people do not get in.
+  Authors are offered only approved curators, on the stages they chose, at their profile level.
 
 ## Why now
 
@@ -57,8 +57,8 @@ is offered as a curator, with the released-game check done by hand outside the p
 - [ ] The curator sees earned / due / paid per checkpoint in the advisor space.
 - [ ] The author can rate a closed checkpoint once from the verdict entry and change it;
       an admin sees it and the curator's average; the curator does not.
-- [ ] A specialist can apply to curate; until an admin accepts them they are not offered;
-      an accepted one is, at the level the admin set.
+- [ ] An expert who turned on curation is offered to authors only once an admin approved
+      them, on the stages they chose, at their profile level; declined or revoked — not offered.
 
 ## Out of scope
 
