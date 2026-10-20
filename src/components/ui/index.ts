@@ -7,6 +7,7 @@ export {
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { IconTile, type IconTileProps } from "./IconTile";
 export { InverseBand, type InverseBandProps } from "./InverseBand";
+export { KpiCard, type KpiCardProps } from "./KpiCard";
 export {
 	BOX_TICK_STROKE,
 	META_ICON_STROKE,

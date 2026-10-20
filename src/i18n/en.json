@@ -466,15 +466,26 @@
 			},
 			"kpi": {
 				"ai": "AI",
+				"aiRatedFew": "{count, plural, one {# AI verdict rated — too few to say} other {# AI verdicts rated — too few to say}}",
+				"aiRatedLow": "AI verdicts rated 1–2: {share}% of {count} rated",
+				"calls": "Calls",
 				"curators": "AI · person",
 				"curatorsCount": "{ai} with the AI curator · {human} with a person",
+				"fees": "Fees",
+				"feesNote": "Earned by curators",
+				"margin": "Margin",
+				"marginNote": "On closed checkpoints",
 				"net": "Net",
 				"netNote": "Paid less refunded, before curators' fees",
+				"netNoteShort": "Paid less refunded",
 				"paid": "Paid",
 				"paidNote": "Taken from cards; holds aside",
+				"paidNoteShort": "Captured, not holds",
 				"person": "Person",
 				"refunded": "Refunded",
-				"refundedNote": "Back to authors"
+				"refundedNote": "Back to authors",
+				"runningCost": "Running cost",
+				"runningCostTooltip": "Calls {calls} · AI tokens {ai}"
 			},
 			"list": {
 				"actions": "Actions",
@@ -483,6 +494,7 @@
 				"column": {
 					"curator": "Curator",
 					"dates": "Dates",
+					"margin": "Margin",
 					"paid": "Paid",
 					"project": "Project",
 					"refunded": "Refunded",
@@ -501,7 +513,14 @@
 					"human": "A person",
 					"stage": "All stages"
 				},
+				"margin": {
+					"ai": "AI −{amount}",
+					"calls": "calls −{amount}",
+					"fee": "fee −{amount}"
+				},
 				"overdueNote": "{days, plural, one {Verdict due {date} — # day late} other {Verdict due {date} — # days late}}",
+				"ratingBy": "— the author, {project}",
+				"ratingOf": "{rating} of 5 · {date}",
 				"refundPayment": "Refund payment",
 				"search": "Search by project",
 				"status": {
@@ -514,6 +533,28 @@
 					"review": "Review"
 				},
 				"total": "{count} paid checkpoints"
+			},
+			"margin": {
+				"ai": "AI",
+				"calls": "Calls",
+				"fee": "Curator's fee · {reason}",
+				"feeOnClose": "Fee on close",
+				"noFee": {
+					"adminVerdict": "Verdict written by an admin — no fee",
+					"stopped": "Stopped — no fee"
+				},
+				"paid": "Paid",
+				"reason": {
+					"full": "full",
+					"refundReduced": "reduced by a refund",
+					"replacement": "took over · {parts} of {total} parts"
+				},
+				"recording": "Recording · {minutes} min",
+				"refunded": "Refunded",
+				"tokens": "Tokens · notes, reviews, advice",
+				"total": "Margin",
+				"transcript": "Transcript · {minutes} min",
+				"video": "Video · {personMinutes} person-min"
 			},
 			"menu": {
 				"assign": "Assign a curator",
@@ -633,6 +674,104 @@
 				"refundValue": "{parts} of {total} parts · {amount}",
 				"submitWithRefund": "Send verdict and refund {amount}"
 			}
+		},
+		"payouts": {
+			"actions": "Actions",
+			"column": {
+				"amount": "Amount",
+				"checkpoints": "Checkpoints",
+				"curator": "Curator",
+				"details": "Payout details",
+				"status": "Status"
+			},
+			"empty": "Nobody earned a fee in {month}",
+			"error": {
+				"description": "The server did not answer. Try again in a moment.",
+				"retry": "Try again",
+				"title": "Couldn't load payouts"
+			},
+			"expand": "Show checkpoints",
+			"expanded": {
+				"checkpoint": "Checkpoint",
+				"closed": "Closed",
+				"fee": "Fee",
+				"number": "Checkpoint {number}",
+				"paid": "Paid",
+				"refunded": "Refunded",
+				"why": "Why this fee"
+			},
+			"invoicing": {
+				"company": "Company",
+				"selfBilling": "Self-billing",
+				"selfEmployed": "Self-employed"
+			},
+			"kpi": {
+				"curators": "Curators",
+				"curatorsTooltip": "{paid} paid · {due} due",
+				"dueBy": "Due by {date}",
+				"legend": {
+					"due": "Due",
+					"paid": "Paid"
+				},
+				"paid": "Paid",
+				"toPay": "To pay",
+				"transfers": "{count, plural, one {# transfer} other {# transfers}}"
+			},
+			"markPaid": {
+				"alreadyPaid": "Already paid on {date} · ref {reference}",
+				"alreadyPaidNote": "Marked by {admin}. Nothing was changed.",
+				"amount": "Amount",
+				"amountNote": "{count, plural, one {# checkpoint closed in {month}} other {# checkpoints closed in {month}}}",
+				"consequence": "{name} gets an email. A paid month can't be edited later.",
+				"copied": "Copied",
+				"copy": "Copy",
+				"date": "Transfer date",
+				"detailsChanged": "The payout details changed — check them and try again",
+				"failed": "Couldn't mark it paid. Try again.",
+				"holder": "Account holder",
+				"iban": "IBAN",
+				"invoicing": "Invoicing",
+				"invoicingNote": {
+					"company": "Invoice from the company",
+					"selfBilling": "We issue the self-billing document",
+					"selfEmployed": "Invoice from the curator"
+				},
+				"reference": "Reference",
+				"referenceMissing": "Type the bank reference",
+				"submit": "Mark {amount} paid",
+				"success": "Marked paid — {name} gets an email",
+				"title": "Mark {name}'s {month} paid"
+			},
+			"menu": {
+				"addNote": "Add a note",
+				"editNote": "Edit note",
+				"markPaid": "Mark paid",
+				"noDetails": "No payout details. {name} has to add them in Advisor settings → Paid work."
+			},
+			"month": {
+				"next": "Next month",
+				"previous": "Previous month"
+			},
+			"noDetails": "No payout details",
+			"noDetailsNote": "The curator has not added them",
+			"note": {
+				"help": "Only admins see it. The payout itself stays as it was.",
+				"label": "Note",
+				"paidLine": "Paid {amount} on {date} · ref {reference}",
+				"save": "Save",
+				"saveFailed": "Couldn't save the note. Try again.",
+				"saved": "Note saved",
+				"title": "Note on {name}'s {month} payout"
+			},
+			"ratingAverage": "★ {average} · {count} ratings",
+			"ratingCount": "{count, plural, one {# rating} other {# ratings}}",
+			"status": {
+				"due": "Due by {date}",
+				"late": "Late · due {date}",
+				"notDue": "Not due yet",
+				"paid": "Paid {date} · ref {reference}"
+			},
+			"title": "Payouts"
 		}
 	},
 	"advisor": {
@@ -744,6 +883,54 @@
 			"subtitle": "Checkpoints assigned to you.",
 			"title": "Checkpoints"
 		},
+		"earnings": {
+			"change": "Change",
+			"checkpoints": "Checkpoints",
+			"column": {
+				"amount": "Amount",
+				"closed": "Closed",
+				"count": "Checkpoints",
+				"fee": "Fee",
+				"month": "Month earned",
+				"paidOn": "Paid on",
+				"project": "Project",
+				"reference": "Reference",
+				"status": "Status"
+			},
+			"empty": "No checkpoint of yours has closed yet",
+			"error": {
+				"description": "The server did not answer. Try again in a moment.",
+				"retry": "Try again",
+				"title": "Couldn't load your earnings"
+			},
+			"kpi": {
+				"due": "Due on {date}",
+				"dueNote": "Earned in {month}",
+				"earned": "Earned in {month}",
+				"noPayouts": "No payouts yet",
+				"paidBy": "Paid by {date}",
+				"paidTotal": "Paid in total",
+				"payoutsSince": "{count, plural, one {# payout since {month}} other {# payouts since {month}}}"
+			},
+			"loadMore": "Load more",
+			"noDetails": {
+				"action": "Add payout details",
+				"body": "{amount} is waiting. We pay by bank transfer once the details are in.",
+				"title": "Add your payout details to get paid"
+			},
+			"noPayouts": "No payouts yet",
+			"paidTo": "Paid to {account}",
+			"payouts": "Payouts",
+			"status": {
+				"by": "By {date}",
+				"due": "Due",
+				"earned": "Earned",
+				"noFee": "No fee",
+				"paid": "Paid"
+			},
+			"sub": "Fees for the checkpoints you curate.",
+			"title": "Earnings"
+		},
 		"project": {
 			"role": "Role",
 			"teamEmpty": "Nobody has joined the team yet."
@@ -751,6 +938,46 @@
 		"settings": {
 			"menu": {
 				"availability": "Availability"
+			},
+			"paid-work": {
+				"account-holder": {
+					"error": "Enter the account holder's name",
+					"help": "Your name or your company's, as on your invoices. We pay only to an account in that name.",
+					"label": "Account holder"
+				},
+				"account": {
+					"change": "Change",
+					"changeHelp": "The next payout goes to the new account.",
+					"error": "Enter a full IBAN or account number",
+					"keep": "Keep {account}",
+					"label": "IBAN or account number",
+					"placeholder": "New IBAN or account number"
+				},
+				"expert-services": "Expert Services",
+				"invoicing": {
+					"company": {
+						"label": "Company",
+						"note": "Your company invoices us."
+					},
+					"error": "Choose how you invoice",
+					"label": "How you invoice",
+					"selfBilling": {
+						"label": "Self-billing",
+						"note": "We issue the invoice on your behalf; you accept it."
+					},
+					"selfEmployed": {
+						"label": "Self-employed",
+						"note": "You invoice us from your registered individual activity."
+					}
+				},
+				"loadFailed": "Your payout details could not be loaded.",
+				"payoutNote": "Paid by bank transfer in USD within 15 days after the month ends. Bank charges on your side are yours.",
+				"retry": "Try again",
+				"saveFailed": "Couldn't save your payout details. Try again.",
+				"saved": "Payout details saved",
+				"terms-accepted": "Accepted on {date} · version {version}",
+				"title": "Paid work",
+				"view-document": "View document"
 			},
 			"subtitle": "What you advise on and how teams reach you.",
 			"title": "Advisor settings"
@@ -1345,6 +1572,20 @@
 			"search": "Search the project's artifacts",
 			"whatItProves": "What it proves"
 		},
+		"fee": {
+			"formula": {
+				"full": "{share}% of {paid}",
+				"refundReduced": "{share}% of ({paid} − {refunded})",
+				"replacement": "{calls, plural, one {# call and the verdict} other {# calls and the verdict}}"
+			},
+			"reason": {
+				"adminVerdict": "Verdict written by an admin — no fee",
+				"full": "Full fee",
+				"refundReduced": "Reduced by a refund",
+				"replacement": "Took over · {parts} of {total} parts",
+				"stoppedCurator": "You stopped — no fee"
+			}
+		},
 		"firstCall": {
 			"label": "First call with {name}",
 			"next": "Next week",
@@ -1619,6 +1860,26 @@
 			"close": "Close",
 			"saveAndClose": "Save and close",
 			"title": "New checkpoint"
+		},
+		"rating": {
+			"cancel": "Cancel",
+			"commentLabel": "Comment",
+			"commentOptional": "(optional)",
+			"commentPlaceholder": "What was right or wrong about it?",
+			"failed": "Couldn't send your rating. Try again.",
+			"final": "Once sent, it can't be changed.",
+			"hint": "Only the GDHub team sees your rating. The curator doesn't.",
+			"question": "Was this assessment any use?",
+			"saved": "Thanks — your rating is saved",
+			"send": "Send",
+			"stars": {
+				"1": "Not at all",
+				"2": "Not much use",
+				"3": "Somewhat",
+				"4": "Useful",
+				"5": "Very useful"
+			},
+			"yours": "Your rating"
 		},
 		"ready": {
 			"declinedTitle": "Pick another curator",
@@ -2622,6 +2883,13 @@
 		"yes": "Yes"
 	},
 	"lecturer": "Lecturer",
+	"legal": {
+		"clickwrap": {
+			"expert-services": {
+				"error": "You need to accept the Expert Services Terms to get paid"
+			}
+		}
+	},
 	"mainFooter": {
 		"appShortDescription": "A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
 		"blog": "Blog",

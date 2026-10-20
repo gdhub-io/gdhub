@@ -3,6 +3,7 @@
 import {
 	IconAlertCircle,
 	IconDotsVertical,
+	IconMessage,
 	IconReceiptRefund,
 	IconRefresh,
 	IconSignature,
@@ -12,13 +13,17 @@ import { useTranslate } from "@tolgee/react";
 import {
 	AutoComplete,
 	Button,
+	ConfigProvider,
+	Divider,
 	Dropdown,
 	Flex,
 	Input,
+	Rate,
 	Segmented,
 	Select,
 	Skeleton,
 	Table,
+	Tooltip,
 	Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -30,16 +35,29 @@ import { AssignCuratorModal } from "@/components/admin/AssignCuratorModal";
 import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
 import styles from "@/components/admin/PromoCodesTable/style.module.scss";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
+import { rateTheme } from "@/components/checkpoints/CheckpointRating/theme";
 import { EmptyState, StatusDot, type StatusTone } from "@/components/ui";
+import {
+	CHECKPOINT_MINOR_UNITS,
+	CHECKPOINT_PARTS,
+	CHECKPOINT_PRICE_CURRENCY,
+} from "@/config/checkpoint";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
-import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointFeeReason,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
 import {
 	type AdminCheckpointsFilter,
 	useAdminCheckpoints,
 	useCheckpointProjectOptions,
 	useRefundReasonLabels,
 } from "@/hooks/admin-checkpoints";
-import type { AdminCheckpointRowDto as Row } from "@/types/checkpoints";
+import type {
+	CheckpointFeedbackDto,
+	AdminCheckpointRowDto as Row,
+} from "@/types/checkpoints";
 import own from "./style.module.scss";
 
 const LISTED = [
@@ -58,6 +76,96 @@ const TONE: Partial<Record<CheckpointStatus, StatusTone>> = {
 	Closed: "neutral",
 	Cancelled: "neutral",
 };
+
+/** The project's least width before the table scrolls; it takes what is left above that. */
+const PROJECT_WIDTH = 160;
+
+/** Running costs are fractions of a cent: always shown to the cent. */
+const formatCost = (minor: number) =>
+	`${CHECKPOINT_PRICE_CURRENCY}${(Math.round(minor) / CHECKPOINT_MINOR_UNITS).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const signedMoney = (minor: number, format = formatCheckpointMoney) =>
+	`${minor < 0 ? "−" : ""}${format(Math.abs(minor))}`;
+
+/** A cost that rounds to nothing is left out rather than written as $0. */
+const spent = (minor: number) => Math.round(minor) > 0;
+
+function BreakdownLine({
+	label,
+	value,
+	part,
+	head,
+}: {
+	label: string;
+	value: string;
+	part?: boolean;
+	head?: boolean;
+}) {
+	return (
+		<div
+			className={[own.line, part && own.part, head && own.head]
+				.filter(Boolean)
+				.join(" ")}
+		>
+			<span>{label}</span>
+			<span className={own.value}>{value}</span>
+		</div>
+	);
+}
+
+const TIP_RATE = rateTheme({ empty: "var(--gd-neutral-500)", sizeSm: 13 });
+
+/** 13.6f (`cEF7c`): the author's stars under the status; the comment in its tooltip. */
+function RatingLine({
+	rating,
+	project,
+}: {
+	rating: CheckpointFeedbackDto;
+	project: string;
+}) {
+	const { t } = useTranslate();
+
+	return (
+		<Tooltip
+			classNames={{ root: own.ratingTip }}
+			title={
+				<div className={own.ratingBody}>
+					<div className={own.ratingHead}>
+						<ConfigProvider theme={TIP_RATE}>
+							<Rate disabled size="small" value={rating.rating} />
+						</ConfigProvider>
+						<span className={own.ratingMeta}>
+							{t("admin.checkpoints.list.ratingOf", "{rating} of 5 · {date}", {
+								rating: rating.rating,
+								date: dayjs(rating.createdAt).format("D MMM"),
+							})}
+						</span>
+					</div>
+					{rating.comment && (
+						<>
+							<span>“{rating.comment}”</span>
+							<span className={own.ratingMeta}>
+								{t(
+									"admin.checkpoints.list.ratingBy",
+									"— the author, {project}",
+									{
+										project,
+									},
+								)}
+							</span>
+						</>
+					)}
+				</div>
+			}
+		>
+			<span className={own.rating}>
+				<span className={own.star}>★</span>
+				<span className={own.ratingValue}>{rating.rating}</span>
+				{rating.comment && <IconMessage size={14} className={own.ratingIcon} />}
+			</span>
+		</Tooltip>
+	);
+}
 
 const SKELETON_ROWS = Array.from({ length: 5 }, (_, index) => ({
 	id: `skeleton-${index}`,
@@ -91,6 +199,130 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		Draft: t("admin.checkpoints.list.status.draft", "Draft"),
 	};
 
+	const feeReason = (fee: NonNullable<Row["fee"]>) =>
+		({
+			[CheckpointFeeReason.Full]: t(
+				"admin.checkpoints.margin.reason.full",
+				"full",
+			),
+			[CheckpointFeeReason.RefundReduced]: t(
+				"admin.checkpoints.margin.reason.refundReduced",
+				"reduced by a refund",
+			),
+			[CheckpointFeeReason.Replacement]: t(
+				"admin.checkpoints.margin.reason.replacement",
+				"took over · {parts} of {total} parts",
+				{ parts: fee.parts, total: CHECKPOINT_PARTS.Human },
+			),
+		})[fee.reason];
+	const noFeeLabels: Record<NonNullable<Row["noFee"]>, string> = {
+		stopped: t("admin.checkpoints.margin.noFee.stopped", "Stopped — no fee"),
+		adminVerdict: t(
+			"admin.checkpoints.margin.noFee.adminVerdict",
+			"Verdict written by an admin — no fee",
+		),
+	};
+
+	const breakdown = (row: Row) => {
+		const ai = row.curatorName === null;
+		return (
+			<div className={own.breakdown}>
+				<BreakdownLine
+					label={t("admin.checkpoints.margin.paid", "Paid")}
+					value={row.paid === null ? "—" : formatCost(row.paid)}
+				/>
+				<BreakdownLine
+					label={t("admin.checkpoints.margin.refunded", "Refunded")}
+					value={row.refunded ? `−${formatCost(row.refunded)}` : "—"}
+				/>
+				{!ai &&
+					(row.fee ? (
+						<BreakdownLine
+							label={t(
+								"admin.checkpoints.margin.fee",
+								"Curator's fee · {reason}",
+								{ reason: feeReason(row.fee) },
+							)}
+							value={`−${formatCost(row.fee.amount)}`}
+						/>
+					) : (
+						<BreakdownLine
+							label={
+								row.noFee
+									? noFeeLabels[row.noFee]
+									: t("admin.checkpoints.margin.feeOnClose", "Fee on close")
+							}
+							value="—"
+						/>
+					))}
+				<Divider className={own.divider} />
+				{spent(row.calls.total) && (
+					<>
+						<BreakdownLine
+							head
+							label={t("admin.checkpoints.margin.calls", "Calls")}
+							value={`−${formatCost(row.calls.total)}`}
+						/>
+						<BreakdownLine
+							part
+							label={t(
+								"admin.checkpoints.margin.video",
+								"Video · {personMinutes} person-min",
+								{ personMinutes: Math.round(row.calls.personMinutes) },
+							)}
+							value={formatCost(row.calls.video)}
+						/>
+						<BreakdownLine
+							part
+							label={t(
+								"admin.checkpoints.margin.recording",
+								"Recording · {minutes} min",
+								{ minutes: Math.round(row.calls.minutes) },
+							)}
+							value={formatCost(row.calls.recording)}
+						/>
+						<BreakdownLine
+							part
+							label={t(
+								"admin.checkpoints.margin.transcript",
+								"Transcript · {minutes} min",
+								{ minutes: Math.round(row.calls.minutes) },
+							)}
+							value={formatCost(row.calls.transcript)}
+						/>
+					</>
+				)}
+				{spent(row.aiCost) && (
+					<>
+						<BreakdownLine
+							head
+							label={t("admin.checkpoints.margin.ai", "AI")}
+							value={`−${formatCost(row.aiCost)}`}
+						/>
+						<BreakdownLine
+							part
+							label={t(
+								"admin.checkpoints.margin.tokens",
+								"Tokens · notes, reviews, advice",
+							)}
+							value={formatCost(row.aiCost)}
+						/>
+					</>
+				)}
+				{(spent(row.calls.total) || spent(row.aiCost)) && (
+					<Divider className={own.divider} />
+				)}
+				<BreakdownLine
+					head
+					label={t("admin.checkpoints.margin.total", "Margin")}
+					value={
+						row.margin === null ? "—" : signedMoney(row.margin, formatCost)
+					}
+				/>
+			</div>
+		);
+	};
+
 	const loading = list.isPending;
 	const failed = list.isError && !list.data;
 	const skeleton = <Skeleton.Input active size="small" />;
@@ -115,14 +347,14 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		{
 			title: t("admin.checkpoints.list.column.curator", "Curator"),
 			key: "curator",
-			width: 180,
+			width: 160,
 			render: (_, row) =>
 				row.curatorName ?? t("admin.checkpoints.list.aiCurator", "AI curator"),
 		},
 		{
 			title: t("admin.checkpoints.list.column.dates", "Dates"),
 			key: "dates",
-			width: 180,
+			width: 176,
 			render: (_, row) =>
 				row.startedAt && row.dueAt ? (
 					<span className={own.dates}>
@@ -138,36 +370,42 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		{
 			title: t("admin.checkpoints.list.column.status", "Status"),
 			key: "status",
-			width: 240,
-			render: (_, row) =>
-				row.overdue && row.verdictDueBy ? (
-					<Flex vertical>
+			width: 160,
+			render: (_, row) => (
+				<Flex vertical>
+					{row.overdue && row.verdictDueBy ? (
+						<>
+							<StatusDot
+								tone="danger"
+								label={t("admin.checkpoints.list.status.overdue", "Overdue")}
+							/>
+							<Typography.Text type="secondary" className={own.sub}>
+								{t(
+									"admin.checkpoints.list.overdueNote",
+									"Verdict due {date} — {days, plural, one {# day} other {# days}} late",
+									{
+										date: dayjs.utc(row.verdictDueBy).format("D MMM"),
+										days: dayjs().diff(dayjs.utc(row.verdictDueBy), "day"),
+									},
+								)}
+							</Typography.Text>
+						</>
+					) : (
 						<StatusDot
-							tone="danger"
-							label={t("admin.checkpoints.list.status.overdue", "Overdue")}
+							tone={TONE[row.status] ?? "neutral"}
+							label={statusLabels[row.status] ?? row.status}
 						/>
-						<Typography.Text type="secondary" className={own.sub}>
-							{t(
-								"admin.checkpoints.list.overdueNote",
-								"Verdict due {date} — {days, plural, one {# day} other {# days}} late",
-								{
-									date: dayjs.utc(row.verdictDueBy).format("D MMM"),
-									days: dayjs().diff(dayjs.utc(row.verdictDueBy), "day"),
-								},
-							)}
-						</Typography.Text>
-					</Flex>
-				) : (
-					<StatusDot
-						tone={TONE[row.status] ?? "neutral"}
-						label={statusLabels[row.status] ?? row.status}
-					/>
-				),
+					)}
+					{row.rating && (
+						<RatingLine rating={row.rating} project={row.projectName} />
+					)}
+				</Flex>
+			),
 		},
 		{
 			title: t("admin.checkpoints.list.column.paid", "Paid"),
 			key: "paid",
-			width: 200,
+			width: 128,
 			align: "right",
 			render: (_, row) =>
 				row.paid === null ? (
@@ -181,7 +419,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		{
 			title: t("admin.checkpoints.list.column.refunded", "Refunded"),
 			key: "refunded",
-			width: 200,
+			width: 120,
 			align: "right",
 			render: (_, row) =>
 				row.refunded ? (
@@ -198,6 +436,49 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 				) : (
 					<span className={styles.none}>—</span>
 				),
+		},
+		{
+			title: t("admin.checkpoints.list.column.margin", "Margin"),
+			key: "margin",
+			width: 256,
+			align: "right",
+			render: (_, row) => {
+				const parts = [
+					row.fee &&
+						t("admin.checkpoints.list.margin.fee", "fee −{amount}", {
+							amount: formatCheckpointMoney(row.fee.amount),
+						}),
+					spent(row.calls.total) &&
+						t("admin.checkpoints.list.margin.calls", "calls −{amount}", {
+							amount: formatCost(row.calls.total),
+						}),
+					spent(row.aiCost) &&
+						t("admin.checkpoints.list.margin.ai", "AI −{amount}", {
+							amount: formatCost(row.aiCost),
+						}),
+				].filter(Boolean);
+
+				return (
+					<Tooltip
+						title={breakdown(row)}
+						placement="left"
+						classNames={{ root: own.breakdownTip }}
+					>
+						<Flex vertical align="flex-end" className={own.margin}>
+							{row.margin === null ? (
+								<span className={styles.none}>—</span>
+							) : (
+								<span className={styles.number}>{signedMoney(row.margin)}</span>
+							)}
+							{parts.length > 0 && (
+								<Typography.Text type="secondary" className={own.sub}>
+									{parts.join(" · ")}
+								</Typography.Text>
+							)}
+						</Flex>
+					</Tooltip>
+				);
+			},
 		},
 		{
 			key: "action",
@@ -262,6 +543,11 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			},
 		},
 	];
+
+	const scrollX = columns.reduce(
+		(sum, column) => sum + (Number(column.width) || 0),
+		PROJECT_WIDTH,
+	);
 
 	const filtered =
 		!!filter.status || !!filter.stage || !!filter.curatorKind || !!filter.q;
@@ -411,7 +697,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 							}
 						: false
 				}
-				scroll={{ x: 1440 }}
+				scroll={{ x: scrollX }}
 				locale={{ emptyText }}
 			/>
 

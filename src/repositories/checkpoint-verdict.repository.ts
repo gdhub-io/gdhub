@@ -11,6 +11,7 @@ import {
 	type VerdictStage,
 	verdictStage,
 } from "@/lib/checkpoint-verdict-window";
+import { recordCheckpointFee } from "@/repositories/checkpoint-fee";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import {
@@ -137,7 +138,7 @@ export async function writeCuratorVerdict(
 	return result;
 }
 
-/** A sent verdict closes the chat, tells the team and issues the certificate. */
+/** A sent verdict closes the chat, tells the team, issues the certificate and the curator's fee. */
 export const afterVerdictSent = (checkpointId: string) =>
 	Promise.all([
 		syncChat(`verdict ${checkpointId}`, () =>
@@ -146,6 +147,9 @@ export const afterVerdictSent = (checkpointId: string) =>
 		notifyVerdictSent(checkpointId),
 		issueCheckpointCertificate(checkpointId).catch((error) =>
 			console.error(`[certificate] checkpoint ${checkpointId}`, error),
+		),
+		recordCheckpointFee(checkpointId).catch((error) =>
+			console.error(`[fee] checkpoint ${checkpointId}`, error),
 		),
 	]);
 

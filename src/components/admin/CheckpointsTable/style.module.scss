@@ -14,3 +14,100 @@
 	white-space: nowrap;
 	font-feature-settings: "tnum";
 }
+
+.margin {
+	cursor: default;
+}
+
+/* 13.1 (`Y0tHrw`): wider than antd's default bubble so a label and its sum share a line. */
+.breakdownTip {
+	max-width: 300px;
+}
+
+.breakdown {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	width: 276px;
+	padding: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+
+	.divider {
+		margin: 0;
+		border-color: var(--gd-neutral-700);
+	}
+}
+
+.line {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	color: var(--gd-neutral-400);
+
+	.value {
+		color: var(--gd-color-text-inverse);
+		font-feature-settings: "tnum";
+		white-space: nowrap;
+	}
+
+	&:last-child .value {
+		font-weight: 600;
+	}
+}
+
+.head {
+	color: var(--gd-color-text-inverse);
+}
+
+.part {
+	padding-left: var(--gd-space-3);
+
+	.value {
+		color: var(--gd-neutral-400);
+	}
+}
+
+/* 13.6f (`cEF7c`): indented under the status word, past the dot and its gap. */
+.rating {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding-left: var(--gd-space-4);
+	font-size: var(--gd-font-size-body-sm);
+	cursor: default;
+}
+
+.star {
+	color: var(--gd-warning-solid);
+}
+
+.ratingValue {
+	color: var(--gd-color-text-secondary);
+	font-feature-settings: "tnum";
+}
+
+.ratingIcon {
+	color: var(--gd-color-text-tertiary);
+}
+
+.ratingTip {
+	max-width: 320px;
+}
+
+.ratingBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.ratingHead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+.ratingMeta {
+	color: var(--gd-neutral-400);
+}

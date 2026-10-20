@@ -144,3 +144,32 @@ export const CURATOR_PRICE = {
 	Experienced: 300,
 	Expert: 450,
 } as const satisfies Partial<Record<SkillLevel, number>>;
+
+// Curator payouts (Expert Services Terms §3, §5)
+
+/** What the platform keeps of a human checkpoint's price; the curator's fee is the rest. */
+export const PLATFORM_SHARE = 0.3;
+/** Fees earned in a month are paid by this day of the next one. */
+export const PAYOUT_DUE_DAY = 15;
+
+// Running cost
+
+/** Daily, per participant-minute of video, in USD. */
+export const DAILY_VIDEO_RATE = 0.004;
+/** Daily cloud recording, per minute of call. */
+export const DAILY_RECORDING_RATE = 0.005;
+/** Daily post-call transcript, per minute of call. */
+export const DAILY_TRANSCRIPT_RATE = 0.0043;
+
+/**
+ * USD per million tokens, input and output, OpenAI's standard tier as of
+ * October 2026. A call to a model missing here is recorded at no cost and
+ * logged, so a new model shows up rather than hiding.
+ */
+export const AI_MODEL_PRICES: Record<
+	string,
+	{ input: number; output: number }
+> = {
+	"gpt-5.6-luna": { input: 0.2, output: 1.2 },
+	"gpt-6-sol": { input: 2, output: 10 },
+};

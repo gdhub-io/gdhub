@@ -214,7 +214,7 @@ Stories: `PayoutsTable` (due, expanded, no details, paid, paid with note, empty,
 - New: textarea empty, Save disabled until something is typed. Edit: opens with the note; Save
   disabled until it changes. Clearing the text and saving removes the note.
 - The note is the only thing about a paid payout that can change; amount, date and reference
-  are read-only. Every save is an audit row (who, when, old and new text). The curator is not
+  are read-only. Every save is an audit row (who, when, whether there was a note before and after — never the text, which is erased with the curator). The curator is not
   notified and does not see it.
 - Saving: primary `loading`. Success: modal closes, `message.success("Note saved")`, the row shows it.
 
@@ -372,7 +372,7 @@ Paid work keys are in §10.
   the admin saw. Returns the payout, or "already paid" (→ 13.3b), or "details changed". Records an
   audit row and sends the curator an email. Idempotent.
 - **Payout note**: payout id + text (up to 500, empty removes it). Only on a paid payout; audit row
-  with the old and new text. Not returned to the curator.
+  recording only that it changed, not the text. Not returned to the curator.
 - **Earnings** (curator, own rows only): earned this month, due amount + date, paid total + count
   + first month; checkpoints (paged, newest close first) with fee, reason, status, dates; payouts
   (paged) with month, count, amount, paid date, reference; whether payout details exist and the
@@ -388,7 +388,7 @@ Paid work keys are in §10.
   it closes (§3.3).
 - **Decided (2026-10-20):** running cost = calls + AI tokens, on every checkpoint; "Add a note" on
   a paid payout.
-- One note per payout, editable, every version in the audit log — assumed rather than an
+- One note per payout, editable; the audit log records each edit but not the text (GDPR: the note is erased with the curator) — rather than an
   append-only list of notes.
 - AI token cost is attributed to a checkpoint only for uses tied to it (curator runs, call notes,
   devlog reviews and task advice inside its 28 days). Uses outside a checkpoint are not in any

@@ -1,0 +1,88 @@
+// 07.4 (`b2YQQN`): outlined, not filled — it sits inside the modal's body.
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+}
+
+.sent {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.question.question {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.stars {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// Doubled to win over Typography's own colour.
+.tertiary.tertiary {
+	color: var(--gd-color-text-tertiary);
+}
+
+// 13.6b: the picked stars go grey while the answer is on its way.
+.sending.sending {
+	color: var(--gd-color-text-tertiary);
+}
+
+.field.field {
+	margin: 0;
+
+	:global(.ant-form-item-label > label) {
+		width: 100%;
+	}
+}
+
+.label {
+	display: flex;
+	flex: 1;
+	justify-content: space-between;
+	gap: var(--gd-space-2);
+}
+
+.comment {
+	font-size: var(--gd-font-size-body);
+	white-space: pre-wrap;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+.final {
+	flex: 1;
+	min-width: 0;
+}
+
+.hint {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+}

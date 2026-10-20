@@ -334,10 +334,12 @@ export const adviseOnPlan = async (
 	);
 	if (content?.advice?.hash === hashOf(input)) return null;
 
-	const written = await adviceFor(input, checkpoint.items).catch((error) => {
-		console.error("[curator-review] plan advice failed", checkpointId, error);
-		return null;
-	});
+	const written = await adviceFor(input, checkpoint.items, checkpointId).catch(
+		(error) => {
+			console.error("[curator-review] plan advice failed", checkpointId, error);
+			return null;
+		},
+	);
 	if (!written) return "failed";
 
 	await prisma.checkpointSession.update({
@@ -375,8 +377,15 @@ const adviceInput = (
 });
 
 /** The model's advice, kept for open tasks only and none it made up. */
-const adviceFor = async (input: PlanAdviceInput, items: TaskRow[]) => {
-	const written = await writePlanAdvice(input);
+const adviceFor = async (
+	input: PlanAdviceInput,
+	items: TaskRow[],
+	checkpointId: string,
+) => {
+	const written = await writePlanAdvice(input, {
+		checkpointId,
+		purpose: "planAdvice",
+	});
 	if (!written) return null;
 	const open = new Set(
 		items.filter((item) => !item.cut && !item.artifact).map((item) => item.id),
@@ -496,22 +505,25 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 		(row) => row.index === session.index - 1,
 	)?.content as CuratorReview | null | undefined;
 
-	const review = await writeSprintReview({
-		goal: checkpoint.goal,
-		stage: checkpoint.stageName,
-		sprint,
-		tasks: checkpoint.items.map(toCuratorTask),
-		devlog,
-		artifacts,
-		pulse: {
-			worked: pulses.filter((pulse) => pulse.confirmedAt).length,
-			missing: pulses.filter((pulse) => !pulse.confirmedAt).length,
+	const review = await writeSprintReview(
+		{
+			goal: checkpoint.goal,
+			stage: checkpoint.stageName,
+			sprint,
+			tasks: checkpoint.items.map(toCuratorTask),
+			devlog,
+			artifacts,
+			pulse: {
+				worked: pulses.filter((pulse) => pulse.confirmedAt).length,
+				missing: pulses.filter((pulse) => !pulse.confirmedAt).length,
+			},
+			focusLastReview: previous?.notes?.agreed.map((line) => line.text) ?? [],
+			verdict: checkpoint.verdict
+				? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
+				: null,
 		},
-		focusLastReview: previous?.notes?.agreed.map((line) => line.text) ?? [],
-		verdict: checkpoint.verdict
-			? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
-			: null,
-	});
+		{ checkpointId: session.checkpointId, purpose: "sprintReview" },
+	);
 	if (!review) return false;
 
 	const notes = knownOnly(review.notes, checkpoint.items);
@@ -521,6 +533,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 			? await adviceFor(
 					adviceInput(checkpoint, "midway", notes.inShort),
 					checkpoint.items,
+					session.checkpointId,
 				).catch(() => null)
 			: null;
 

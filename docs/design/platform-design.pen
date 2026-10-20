@@ -235170,6 +235170,144 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "b2YQQN",
+              "name": "Rating (outlined) · unanswered — Rate inline, nothing else until a star is picked",
+              "width": "fill_container",
+              "cornerRadius": "$radius-lg",
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lBtRU",
+                  "name": "question row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Uo93x",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Was this assessment any use?",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QCz54",
+                      "name": "stars + label",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TFUB1",
+                          "name": "Rate · 0 of 5",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "GFmNy",
+                              "name": "star 1",
+                              "fill": "$text-disabled",
+                              "content": "★",
+                              "lineHeight": 1,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "a0eike",
+                              "name": "star 2",
+                              "fill": "$text-disabled",
+                              "content": "★",
+                              "lineHeight": 1,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "SWUiJ",
+                              "name": "star 3",
+                              "fill": "$text-disabled",
+                              "content": "★",
+                              "lineHeight": 1,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Wu3Ic",
+                              "name": "star 4",
+                              "fill": "$text-disabled",
+                              "content": "★",
+                              "lineHeight": 1,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "A4aOEx",
+                              "name": "star 5",
+                              "fill": "$text-disabled",
+                              "content": "★",
+                              "lineHeight": 1,
+                              "fontFamily": "$font",
+                              "fontSize": 20,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vEMr4",
+                  "name": "hint",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "dfHCI",
+                      "name": "IconEyeOff",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "eye-off",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "oC2RE",
+                      "name": "t",
+                      "fill": "$text-tertiary",
+                      "content": "Only the GDHub team sees your rating. The curator doesn't.",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -380534,28 +380672,73 @@
                           "children": [
                             {
                               "type": "frame",
-                              "id": "OC2aZ",
-                              "name": "StatusDot",
-                              "gap": 8,
-                              "alignItems": "center",
+                              "id": "lQypT",
+                              "name": "status + rating",
+                              "layout": "vertical",
+                              "gap": 2,
                               "children": [
                                 {
-                                  "type": "ellipse",
-                                  "id": "C196sb",
-                                  "name": "Dot",
-                                  "fill": "$text-tertiary",
-                                  "width": 8,
-                                  "height": 8
+                                  "type": "frame",
+                                  "id": "OC2aZ",
+                                  "name": "StatusDot",
+                                  "gap": 8,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "C196sb",
+                                      "name": "Dot",
+                                      "fill": "$text-tertiary",
+                                      "width": 8,
+                                      "height": 8
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "AxZOE",
+                                      "name": "t",
+                                      "fill": "$text-primary",
+                                      "content": "Closed",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "AxZOE",
-                                  "name": "t",
-                                  "fill": "$text-primary",
-                                  "content": "Closed",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "Qm6tA",
+                                  "name": "Rating · tooltip: stars, date, comment",
+                                  "gap": 4,
+                                  "padding": [
+                                    0,
+                                    0,
+                                    0,
+                                    16
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ndW0b",
+                                      "name": "t",
+                                      "fill": "$warning",
+                                      "content": "★",
+                                      "lineHeight": 1,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "J5XW8",
+                                      "name": "n (tnum)",
+                                      "fill": "$text-secondary",
+                                      "content": "4",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -380800,28 +380983,83 @@
                           "children": [
                             {
                               "type": "frame",
-                              "id": "S16BeE",
-                              "name": "StatusDot",
-                              "gap": 8,
-                              "alignItems": "center",
+                              "id": "NYSmY",
+                              "name": "status + rating",
+                              "layout": "vertical",
+                              "gap": 2,
                               "children": [
                                 {
-                                  "type": "ellipse",
-                                  "id": "QgGS5",
-                                  "name": "Dot",
-                                  "fill": "$text-tertiary",
-                                  "width": 8,
-                                  "height": 8
+                                  "type": "frame",
+                                  "id": "S16BeE",
+                                  "name": "StatusDot",
+                                  "gap": 8,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "ellipse",
+                                      "id": "QgGS5",
+                                      "name": "Dot",
+                                      "fill": "$text-tertiary",
+                                      "width": 8,
+                                      "height": 8
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "ESD1I",
+                                      "name": "t",
+                                      "fill": "$text-primary",
+                                      "content": "Closed",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
                                 },
                                 {
-                                  "type": "text",
-                                  "id": "ESD1I",
-                                  "name": "t",
-                                  "fill": "$text-primary",
-                                  "content": "Closed",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
+                                  "type": "frame",
+                                  "id": "NnF77",
+                                  "name": "Rating · tooltip: stars, date, comment",
+                                  "gap": 4,
+                                  "padding": [
+                                    0,
+                                    0,
+                                    0,
+                                    16
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "b4n9q",
+                                      "name": "t",
+                                      "fill": "$warning",
+                                      "content": "★",
+                                      "lineHeight": 1,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "YOXEj",
+                                      "name": "n (tnum)",
+                                      "fill": "$text-secondary",
+                                      "content": "2",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "icon",
+                                      "id": "e8nSu",
+                                      "name": "IconMessage",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "message-square",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -394126,7 +394364,7 @@
                                       "id": "B9G9FK",
                                       "name": "sub",
                                       "fill": "$text-secondary",
-                                      "content": "Expert",
+                                      "content": "Expert · ★ 4.6 · 12 ratings",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -395224,7 +395462,7 @@
                                       "id": "X00Sr",
                                       "name": "sub",
                                       "fill": "$text-secondary",
-                                      "content": "Experienced",
+                                      "content": "Experienced · 3 ratings",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -395821,7 +396059,7 @@
                                       "id": "ZrjkD",
                                       "name": "sub",
                                       "fill": "$text-secondary",
-                                      "content": "Expert",
+                                      "content": "Expert · ★ 4.2 · 7 ratings",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -396106,7 +396344,7 @@
                                       "id": "lmwvM",
                                       "name": "sub",
                                       "fill": "$text-secondary",
-                                      "content": "Expert",
+                                      "content": "Expert · 2 ratings",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -397133,7 +397371,7 @@
                               "id": "NWLMf",
                               "name": "sub",
                               "fill": "$text-secondary",
-                              "content": "Experienced",
+                              "content": "Experienced · 3 ratings",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -397774,7 +398012,7 @@
                               "id": "G7D3W",
                               "name": "sub",
                               "fill": "$text-secondary",
-                              "content": "Expert",
+                              "content": "Expert · 2 ratings",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -406012,6 +406250,2205 @@
                   "fontWeight": "normal"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "id": "Y65GAC",
+      "x": -590,
+      "y": 89500,
+      "name": "Row — 13.6 · Rating (GDHUB-74)",
+      "width": 300,
+      "height": 300,
+      "content": "13.6 · Rating (GDHUB-74) — the buyer rates the assessment, once\n\n07.4 (dR8Bu) changed in place: the rating, unanswered, under the verdict.\n13.6a picking, 13.6b sending, 13.6c sent (final), 13.6e send failed.\n13.6f admin: the rating in the checkpoints list (11.5 in place) and its tooltip.\n13.6g admin: AI health in the AI · person tooltip.\nCurator average: in 13.2 Payouts (DM48P) under the level, in place.\n\nSpec: docs/design/specs/checkpoint-rating.md"
+    },
+    {
+      "type": "frame",
+      "id": "BNH67",
+      "x": -170,
+      "y": 89500,
+      "name": "13.6a · Results modal — Rating · stars picked, comment",
+      "width": 640,
+      "fill": "$surface",
+      "cornerRadius": "$radius-xl",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "L82QHZ",
+          "name": "caption",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Fragment of 07.4 (the modal's Body, under the verdict). Picking a star opens the comment and Send. Cancel puts it back to unanswered. A rating is sent once and is final.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "IACzZ",
+          "name": "Rating (outlined)",
+          "width": "fill_container",
+          "cornerRadius": "$radius-lg",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Mfvct",
+              "name": "question row",
+              "width": "fill_container",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "S7PhEY",
+                  "name": "t",
+                  "fill": "$text-primary",
+                  "content": "Was this assessment any use?",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "z08bQy",
+                  "name": "stars + label",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "acnOQ",
+                      "name": "Rate tooltip / label",
+                      "fill": "$text-secondary",
+                      "content": "Not much use",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sPtIv",
+                      "name": "Rate · 2 of 5",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "pCk3c",
+                          "name": "star 1",
+                          "fill": "$warning",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "qfydQ",
+                          "name": "star 2",
+                          "fill": "$warning",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "l2FZaZ",
+                          "name": "star 3",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Bhu9y",
+                          "name": "star 4",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "NiF1v",
+                          "name": "star 5",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qEVtO",
+              "name": "Field — Comment",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "rmxOa",
+                  "name": "Label",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "FsGKk",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Comment",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "K0U6R",
+                      "name": "counter",
+                      "fill": "$text-tertiary",
+                      "content": "(optional) · 0 / 500",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "wGHSl",
+                  "name": "Input.TextArea",
+                  "width": "fill_container",
+                  "height": 88,
+                  "fill": "$bg-muted",
+                  "cornerRadius": "$radius-md",
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tVKgR",
+                      "name": "t",
+                      "fill": "$text-tertiary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "What was right or wrong about it?",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ct2Yq",
+              "name": "actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "end",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "UE6JR",
+                  "name": "final note",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Once sent, it can't be changed.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "WY0kp",
+                  "name": "Button text · Cancel",
+                  "height": 32,
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "UPVKF",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "b29alt",
+                  "name": "Button primary · Send",
+                  "height": 32,
+                  "fill": "$app-primary",
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "bkgUo",
+                      "name": "t",
+                      "fill": "$text-invert",
+                      "content": "Send",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "icJQL",
+              "name": "hint",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "CsylQ",
+                  "name": "IconEyeOff",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "eye-off",
+                  "library": "lucide",
+                  "fill": "$text-tertiary"
+                },
+                {
+                  "type": "text",
+                  "id": "A5bSzk",
+                  "name": "t",
+                  "fill": "$text-tertiary",
+                  "content": "Only the GDHub team sees your rating. The curator doesn't.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "yBg2O",
+      "x": 590,
+      "y": 89500,
+      "name": "13.6b · Results modal — Rating · sending",
+      "width": 640,
+      "fill": "$surface",
+      "cornerRadius": "$radius-xl",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "vxs8q",
+          "name": "caption",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Fragment of 07.4 (the modal's Body, under the verdict). Send shows loading; stars and the comment are read-only until the answer.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "aUXen",
+          "name": "Rating (outlined)",
+          "width": "fill_container",
+          "cornerRadius": "$radius-lg",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "q2aS51",
+              "name": "question row",
+              "width": "fill_container",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Zl4Fa",
+                  "name": "t",
+                  "fill": "$text-primary",
+                  "content": "Was this assessment any use?",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "zuww3",
+                  "name": "stars + label",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "W5icB",
+                      "name": "Rate tooltip / label",
+                      "fill": "$text-secondary",
+                      "content": "Not much use",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "KtsmL",
+                      "name": "Rate (disabled) · 2 of 5",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h6oNr",
+                          "name": "star 1",
+                          "fill": "$text-tertiary",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "vrmHc",
+                          "name": "star 2",
+                          "fill": "$text-tertiary",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mWniU",
+                          "name": "star 3",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ewt3j",
+                          "name": "star 4",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "SRsFp",
+                          "name": "star 5",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "AFupV",
+              "name": "Field — Comment",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "yDsVP",
+                  "name": "Label",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Y7UUAl",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Comment",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "bC3oT",
+                      "name": "counter",
+                      "fill": "$text-tertiary",
+                      "content": "(optional) · 98 / 500",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Uq9El",
+                  "name": "Input.TextArea (disabled)",
+                  "width": "fill_container",
+                  "height": 88,
+                  "fill": "$bg-muted",
+                  "cornerRadius": "$radius-md",
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BN6lY",
+                      "name": "t",
+                      "fill": "$text-disabled",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "It read the pitch well, but the video was out of scope for this goal — that's why it says missed.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hOvQ9",
+              "name": "actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "end",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "r16VoB",
+                  "name": "final note",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Once sent, it can't be changed.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "BceYh",
+                  "name": "Button text · Cancel",
+                  "height": 32,
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "T6dnOF",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Xx3UO",
+                  "name": "Button primary · Send (loading)",
+                  "height": 32,
+                  "fill": "$app-primary",
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "aKTgw",
+                      "name": "LoadingOutlined",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "loader-circle",
+                      "library": "lucide",
+                      "fill": "$text-invert"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lCGoZ",
+                      "name": "t",
+                      "fill": "$text-invert",
+                      "content": "Send",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "QOWVW",
+              "name": "hint",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "E2n7g",
+                  "name": "IconEyeOff",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "eye-off",
+                  "library": "lucide",
+                  "fill": "$text-tertiary"
+                },
+                {
+                  "type": "text",
+                  "id": "Vldck",
+                  "name": "t",
+                  "fill": "$text-tertiary",
+                  "content": "Only the GDHub team sees your rating. The curator doesn't.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "OjHOg",
+      "x": 1350,
+      "y": 89500,
+      "name": "13.6c · Results modal — Rating · sent",
+      "width": 640,
+      "fill": "$surface",
+      "cornerRadius": "$radius-xl",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "owPmN",
+          "name": "caption",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Fragment of 07.4 (the modal's Body, under the verdict). Sent and final: the author's stars, the date and the comment, read-only — no edit. message.success \"Thanks — your rating is saved\".",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "X6OjF",
+          "name": "Rating (outlined)",
+          "width": "fill_container",
+          "cornerRadius": "$radius-lg",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "s3zLN",
+              "name": "sent row",
+              "width": "fill_container",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Xn8kT",
+                  "name": "left",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VV36b",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Your rating",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "C2vBN",
+                      "name": "Rate (read-only) · 2 of 5",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "b3aHpu",
+                          "name": "star 1",
+                          "fill": "$warning",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "swIW4",
+                          "name": "star 2",
+                          "fill": "$warning",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "t9sSP",
+                          "name": "star 3",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "XiWXc",
+                          "name": "star 4",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "kuIYZ",
+                          "name": "star 5",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "q8TjX",
+                      "name": "t",
+                      "fill": "$text-tertiary",
+                      "content": "12 Sep",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "K3neQl",
+              "name": "comment",
+              "fill": "$text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "It read the pitch well, but the video was out of scope for this goal — that's why it says missed.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "N17fju",
+              "name": "hint",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "cO5kS",
+                  "name": "IconEyeOff",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "eye-off",
+                  "library": "lucide",
+                  "fill": "$text-tertiary"
+                },
+                {
+                  "type": "text",
+                  "id": "Kzws8",
+                  "name": "t",
+                  "fill": "$text-tertiary",
+                  "content": "Only the GDHub team sees your rating. The curator doesn't.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "AWBjC",
+      "x": 2870,
+      "y": 89500,
+      "name": "13.6e · Results modal — Rating · send failed",
+      "width": 640,
+      "fill": "$surface",
+      "cornerRadius": "$radius-xl",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "Zpvk8",
+          "name": "caption",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Fragment of 07.4 (the modal's Body, under the verdict). Nothing saved; what was picked and typed stays; Send retries.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "rsr8q",
+          "name": "Rating (outlined)",
+          "width": "fill_container",
+          "cornerRadius": "$radius-lg",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "l7kxB",
+              "name": "question row",
+              "width": "fill_container",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "m1VV3",
+                  "name": "t",
+                  "fill": "$text-primary",
+                  "content": "Was this assessment any use?",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "i84uaf",
+                  "name": "stars + label",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "iNO61",
+                      "name": "Rate tooltip / label",
+                      "fill": "$text-secondary",
+                      "content": "Not much use",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "acbQ8",
+                      "name": "Rate · 2 of 5",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cuu4O",
+                          "name": "star 1",
+                          "fill": "$warning",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Yio8a",
+                          "name": "star 2",
+                          "fill": "$warning",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "OmEmy",
+                          "name": "star 3",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Q3NkqP",
+                          "name": "star 4",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "hd4Qi",
+                          "name": "star 5",
+                          "fill": "$text-disabled",
+                          "content": "★",
+                          "lineHeight": 1,
+                          "fontFamily": "$font",
+                          "fontSize": 20,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C3jDO",
+              "name": "Field — Comment",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Gh7zH",
+                  "name": "Label",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "z1EvK",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Comment",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "e0kmvc",
+                      "name": "counter",
+                      "fill": "$text-tertiary",
+                      "content": "(optional) · 98 / 500",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qH58j",
+                  "name": "Input.TextArea",
+                  "width": "fill_container",
+                  "height": 88,
+                  "fill": "$bg-muted",
+                  "cornerRadius": "$radius-md",
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "YDBNU",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "It read the pitch well, but the video was out of scope for this goal — that's why it says missed.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "p65xaQ",
+              "name": "Alert error (showIcon)",
+              "width": "fill_container",
+              "fill": "$error-tint",
+              "cornerRadius": "$radius-md",
+              "gap": 8,
+              "padding": [
+                8,
+                12
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "zhBuR",
+                  "name": "IconAlertCircle",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "circle-alert",
+                  "library": "lucide",
+                  "fill": "$error-on-tint"
+                },
+                {
+                  "type": "text",
+                  "id": "LaQwS",
+                  "name": "t",
+                  "fill": "$error-on-tint",
+                  "content": "Couldn't send your rating. Try again.",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MNTot",
+              "name": "actions",
+              "width": "fill_container",
+              "gap": 8,
+              "justifyContent": "end",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "thbYz",
+                  "name": "final note",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Once sent, it can't be changed.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "x7354j",
+                  "name": "Button text · Cancel",
+                  "height": 32,
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Q2oId",
+                      "name": "t",
+                      "fill": "$text-primary",
+                      "content": "Cancel",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "akHYK",
+                  "name": "Button primary · Send",
+                  "height": 32,
+                  "fill": "$app-primary",
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "H8cPIS",
+                      "name": "t",
+                      "fill": "$text-invert",
+                      "content": "Send",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hR6GD",
+              "name": "hint",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "OxlNi",
+                  "name": "IconEyeOff",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "eye-off",
+                  "library": "lucide",
+                  "fill": "$text-tertiary"
+                },
+                {
+                  "type": "text",
+                  "id": "M5ykWb",
+                  "name": "t",
+                  "fill": "$text-tertiary",
+                  "content": "Only the GDHub team sees your rating. The curator doesn't.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cEF7c",
+      "x": 3630,
+      "y": 89500,
+      "name": "13.6f · Admin · Checkpoints — rating under the status, comment in a tooltip",
+      "clip": true,
+      "width": 1260,
+      "height": 330,
+      "fill": "$page-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "isrxa",
+          "x": 0,
+          "y": 0,
+          "name": "caption",
+          "fill": "$text-secondary",
+          "content": "11.5, in place: a rated checkpoint shows ★ and the number under its status; a comment adds the speech icon. Hover shows the stars, date and comment. Not rated: nothing.",
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "J7rmTo",
+          "x": 0,
+          "y": 216,
+          "name": "Table card",
+          "clip": true,
+          "width": 1260,
+          "fill": "$surface",
+          "cornerRadius": "$radius-lg",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "nooEC",
+              "name": "Head",
+              "width": "fill_container",
+              "height": 44,
+              "fill": "$surface-sunken",
+              "stroke": "$border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "strokeAlignment": "inner",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "q1rSJi",
+                  "name": "td-project",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "NpT2e",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "PROJECT",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "V3LoL",
+                  "name": "td-curator",
+                  "width": 160,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "USzcG",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "CURATOR",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "LzmxP",
+                  "name": "td-dates",
+                  "width": 176,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "MPXMl",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "DATES",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "riUK4",
+                  "name": "td-status",
+                  "width": 160,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "k2Ceo",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "STATUS",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Y7eZUf",
+                  "name": "td-paid",
+                  "width": 128,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "UJcEi",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "PAID",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "s76RDD",
+                  "name": "td-refunded",
+                  "width": 120,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Q8hZY",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "REFUNDED",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ET8rH",
+                  "name": "td-margin",
+                  "width": 256,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "eNJvQ",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "MARGIN",
+                      "fontFamily": "$font",
+                      "fontSize": 11,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HP0dX",
+                  "name": "td-action",
+                  "width": 56,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Z52bYA",
+              "name": "Row — Driftwood",
+              "width": "fill_container",
+              "height": 56,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Zfjrb",
+                  "name": "td-project",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "eg6Iu",
+                      "name": "project",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "l1iYS",
+                          "name": "name",
+                          "fill": "$text-primary",
+                          "content": "Driftwood",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "oVw5N",
+                          "name": "checkpoint",
+                          "fill": "$text-secondary",
+                          "content": "Checkpoint 1 · Concept",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "P4Ns2",
+                  "name": "td-curator",
+                  "width": 160,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "coDjH",
+                      "name": "curator",
+                      "fill": "$text-secondary",
+                      "content": "AI curator",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "WDOXm",
+                  "name": "td-dates",
+                  "width": 176,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "j4IbKh",
+                      "name": "curator",
+                      "fill": "$text-secondary",
+                      "content": "15 Sep – 12 Oct 2026",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "kAugp",
+                  "name": "td-status",
+                  "width": 160,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "NrVeQ",
+                      "name": "status + rating",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "L8eQAl",
+                          "name": "StatusDot",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "TAQcE",
+                              "name": "Dot",
+                              "fill": "$text-tertiary",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
+                              "type": "text",
+                              "id": "UoYaS",
+                              "name": "t",
+                              "fill": "$text-primary",
+                              "content": "Closed",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "x8crb",
+                          "name": "Rating · tooltip: stars, date, comment",
+                          "gap": 4,
+                          "padding": [
+                            0,
+                            0,
+                            0,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zrtH7",
+                              "name": "t",
+                              "fill": "$warning",
+                              "content": "★",
+                              "lineHeight": 1,
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "YPurK",
+                              "name": "n (tnum)",
+                              "fill": "$text-secondary",
+                              "content": "2",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "ePWd2",
+                              "name": "IconMessage",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "message-square",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "j7Lok",
+                  "name": "td-paid",
+                  "width": 128,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "S4W89c",
+                      "name": "amount (tnum)",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "h9QpFE",
+                          "name": "amount",
+                          "fill": "$text-primary",
+                          "content": "$20",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xo4dW",
+                  "name": "td-refunded",
+                  "width": 120,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "qdN6N",
+                      "name": "none",
+                      "fill": "$text-tertiary",
+                      "content": "—",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EtrHi",
+                  "name": "td-margin",
+                  "width": 256,
+                  "height": "fill_container",
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "m4GyNr",
+                      "name": "margin (tnum) · tooltip: breakdown",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Ph4r0",
+                          "name": "margin",
+                          "fill": "$text-primary",
+                          "content": "$18.80",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "xcBNl",
+                          "name": "breakdown",
+                          "fill": "$text-secondary",
+                          "content": "AI −$1.20",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xnmuP",
+                  "name": "td-action",
+                  "width": 56,
+                  "height": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vFy9b",
+          "x": 556,
+          "y": 96,
+          "name": "Tooltip · rating (antd Tooltip)",
+          "width": 320,
+          "fill": "$inv-surface",
+          "cornerRadius": "$radius-sm",
+          "layout": "vertical",
+          "gap": 6,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "GMgje",
+              "name": "head",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "z7rdR",
+                  "name": "stars",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "KGcli",
+                      "name": "t",
+                      "fill": "$warning",
+                      "content": "★",
+                      "lineHeight": 1,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YDHOX",
+                      "name": "t",
+                      "fill": "$warning",
+                      "content": "★",
+                      "lineHeight": 1,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mWKo7",
+                      "name": "t",
+                      "fill": "$inv-text-tertiary",
+                      "content": "★",
+                      "lineHeight": 1,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "duyer",
+                      "name": "t",
+                      "fill": "$inv-text-tertiary",
+                      "content": "★",
+                      "lineHeight": 1,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ovWnv",
+                      "name": "t",
+                      "fill": "$inv-text-tertiary",
+                      "content": "★",
+                      "lineHeight": 1,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "u2gmFB",
+                  "name": "t",
+                  "fill": "$inv-text-secondary",
+                  "content": "2 of 5 · 13 Oct",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "Uxi4p",
+              "name": "t",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "“It ignored the build we attached and judged the concept from the pitch alone.”",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "qeLzZ",
+              "name": "t",
+              "fill": "$inv-text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "— the author, Driftwood",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "bhkcn",
+      "x": 5010,
+      "y": 89500,
+      "name": "13.6g · Admin · Checkpoints — AI · person card tooltip with the AI rating share",
+      "clip": true,
+      "width": 600,
+      "height": 330,
+      "fill": "$page-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "hrdUy",
+          "x": 0,
+          "y": 0,
+          "name": "caption",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": 560,
+          "content": "11.5: the AI · person card's tooltip gains the AI health line, under the same filters as the card. Below 5 rated AI verdicts it reads \"3 AI verdicts rated — too few to say\".",
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "Uds1S",
+          "x": 0,
+          "y": 180,
+          "name": "kpi-AI · person",
+          "clip": true,
+          "width": 200,
+          "fill": "$surface",
+          "cornerRadius": "$radius-lg",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "rlDVx",
+              "name": "head",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Sjy3j",
+                  "name": "IconTile 32",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "$neutral-100",
+                  "cornerRadius": "$radius-md",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "ypMX7",
+                      "name": "IconCalendarEvent",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "bot",
+                      "library": "lucide",
+                      "fill": "#3C3B38"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "n1rM2",
+                  "name": "type",
+                  "fill": "$text-primary",
+                  "content": "AI · person",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "i2agf",
+              "name": "figures",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "a7dNY",
+                  "x": 0,
+                  "y": 0,
+                  "name": "total (tnum)",
+                  "enabled": false,
+                  "fill": "$text-primary",
+                  "content": "44% · 56%",
+                  "lineHeight": 1.2,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "OHoJT",
+                  "name": "delta",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "rSRlB",
+                      "x": 0,
+                      "y": 1,
+                      "name": "arrow",
+                      "enabled": false,
+                      "width": 13,
+                      "height": 13,
+                      "icon": "trending-up",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "m62OW",
+                      "x": 0,
+                      "y": 0,
+                      "name": "d",
+                      "enabled": false,
+                      "fill": "$text-secondary",
+                      "content": "44% with the AI curator",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "LhfFL",
+                      "name": "Split · AI 44% / person 56% (tooltip: counts)",
+                      "clip": true,
+                      "width": "fill_container",
+                      "height": 8,
+                      "cornerRadius": "$radius-sm",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "id": "MQY6k",
+                          "name": "AI",
+                          "fill": "#3B6FD8",
+                          "width": 110,
+                          "height": 8
+                        },
+                        {
+                          "type": "rectangle",
+                          "id": "S7Hzfl",
+                          "name": "Person",
+                          "fill": "#E5603F",
+                          "width": "fill_container",
+                          "height": 8
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "j4OLVb",
+                      "name": "Legend",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "m4GPL",
+                          "name": "Key · AI",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "B4IV4",
+                              "name": "Dot",
+                              "fill": "#3B6FD8",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
+                              "type": "text",
+                              "id": "eyCp7",
+                              "name": "Label",
+                              "fill": "$text-secondary",
+                              "content": "AI",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "w8b4p",
+                              "name": "Share",
+                              "fill": "$text-primary",
+                              "content": "44%",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HvIMz",
+                          "name": "Key · Person",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "Sp7Iu",
+                              "name": "Dot",
+                              "fill": "#E5603F",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
+                              "type": "text",
+                              "id": "VOJAJ",
+                              "name": "Label",
+                              "fill": "$text-secondary",
+                              "content": "Person",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "PwvyB",
+                              "name": "Share",
+                              "fill": "$text-primary",
+                              "content": "56%",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YOQxp",
+          "x": 0,
+          "y": 100,
+          "name": "Tooltip · curators (antd Tooltip)",
+          "width": 340,
+          "fill": "$inv-surface",
+          "cornerRadius": "$radius-sm",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "text",
+              "id": "qdpcT",
+              "name": "t",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "22 with the AI curator · 28 with a person",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "MV93Q",
+              "name": "t",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "AI verdicts rated 1–2: 18% of 11 rated",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
             }
           ]
         }

@@ -1,0 +1,47 @@
+// Frame `Q8dNW0`: the outlined Expert Services block, padding and gap 20.
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--gd-space-4) + var(--gd-space-1));
+	padding: calc(var(--gd-space-4) + var(--gd-space-1));
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.item {
+	margin-bottom: 0;
+}
+
+.options {
+	gap: var(--gd-space-3);
+}
+
+.note {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.masked input {
+	color: var(--gd-color-text-secondary);
+}
+
+// A link sitting inside a field or its help row: no button box around the word.
+.inlineLink {
+	height: auto;
+	padding: 0;
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.termsTitle {
+	font-weight: 500;
+}
+
+// Optical: drops the icon onto the first line of text.
+.noteIcon {
+	flex: none;
+	margin-top: calc(var(--gd-space-1) / 2);
+	color: var(--gd-color-text-tertiary);
+}

@@ -1,7 +1,12 @@
 .grid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: var(--gd-space-4);
+	/* Six money cards share the width; the split bar keeps room for its legend. */
+	grid-template-columns: repeat(6, minmax(0, 1fr)) 200px;
+	gap: var(--gd-space-3);
+
+	@media (max-width: 1279px) {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
 
 	@media (max-width: 991px) {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -40,6 +45,24 @@
 	background: var(--gd-chart-series-2);
 }
 
+.calls {
+	background: var(--gd-chart-series-3);
+}
+
+/* Running cost: a caption-sized legend in place of the note; exact sums in its tooltip. */
+.costs {
+	display: flex;
+	gap: var(--gd-space-3);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	cursor: default;
+
+	.key {
+		gap: var(--gd-space-1);
+	}
+}
+
 .legend {
 	display: flex;
 	justify-content: space-between;
@@ -67,4 +90,14 @@
 		font-weight: 600;
 		font-feature-settings: "tnum";
 	}
+}
+
+.tip {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.health {
+	font-weight: 500;
 }

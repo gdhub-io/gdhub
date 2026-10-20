@@ -1,0 +1,140 @@
+/* 13.2: three cards, 12 apart, sharing the width. */
+.kpis {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+
+	@media (max-width: 767px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* Paid against due as one bar with a legend, as AI · person on 11.5; the counts are in its tooltip. */
+.mix {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding-top: var(--gd-space-3);
+	cursor: default;
+}
+
+.split {
+	display: flex;
+	gap: 2px;
+	height: 8px;
+	overflow: hidden;
+	background: var(--gd-neutral-100);
+	border-radius: var(--gd-radius-chip);
+}
+
+.paid,
+.due {
+	flex-basis: 0;
+	min-width: 0;
+}
+
+.paid {
+	background: var(--gd-success-solid);
+}
+
+.due {
+	background: var(--gd-warning-solid);
+}
+
+.legend {
+	display: flex;
+	gap: var(--gd-space-6);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.key {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+
+	i {
+		display: block;
+		flex: 0 0 8px;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		corner-shape: round;
+	}
+
+	b {
+		color: var(--gd-color-text);
+		font-weight: 600;
+		font-feature-settings: "tnum";
+	}
+}
+
+.person {
+	min-width: 0;
+}
+
+.stack {
+	gap: 2px;
+	min-width: 0;
+}
+
+.name {
+	font-weight: 500;
+}
+
+.sub {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+/* Indented 16 so the note lines up with the status word, past the dot. */
+.note {
+	min-width: 0;
+	padding-left: var(--gd-space-4);
+}
+
+.noteIcon {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+}
+
+.noteText {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.fee {
+	font-weight: 500;
+	font-feature-settings: "tnum";
+}
+
+.payouts {
+	/* A 32 expand button in the 48 column. */
+	:global(.ant-table-row-expand-icon-cell) {
+		padding-inline: var(--gd-space-2);
+	}
+
+	/* The expanded band, indented to the curator column and short of the action one. */
+	:global(.ant-table-tbody > tr.ant-table-expanded-row > td) {
+		height: auto;
+		padding: var(--gd-space-1) calc(var(--gd-space-12) + var(--gd-space-2))
+			var(--gd-space-2) var(--gd-space-16);
+		background: var(--gd-color-surface-sunken);
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	.feeTable :global(.ant-table-thead > tr > th) {
+		height: 36px;
+		background: transparent;
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	.feeTable :global(.ant-table-tbody > tr > td) {
+		height: 52px;
+		background: transparent;
+	}
+
+	.feeTable :global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+}

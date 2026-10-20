@@ -75,3 +75,9 @@
 	flex: 1;
 	min-width: 0;
 }
+
+// Below lg the section menu becomes a row above the card.
+.topMenu {
+	margin-bottom: var(--gd-space-4);
+	background: transparent;
+}

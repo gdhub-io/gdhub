@@ -31,6 +31,11 @@ const MENU_ITEMS: {
 		name: "Calendar",
 	},
 	{
+		key: "/advisor/earnings",
+		permission: "advisor.checkpoints.view",
+		name: "Earnings",
+	},
+	{
 		key: "/advisor/settings",
 		permission: "advisor.settings.view",
 		name: "Settings",

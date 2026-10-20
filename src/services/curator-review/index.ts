@@ -4,6 +4,7 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
 	artifactLines,
 	type CuratorTask,
@@ -87,8 +88,11 @@ const adviceSchema = z.object({
  * first days, and once more after the sprint 2 review. Advice only — the
  * author takes it or leaves it. Null when the model gives nothing usable.
  */
-export const writePlanAdvice = async (input: PlanAdviceInput) => {
-	const { output } = await generateText({
+export const writePlanAdvice = async (
+	input: PlanAdviceInput,
+	meter?: AiMeter,
+) => {
+	const { output, usage } = await generateText({
 		model: openai(AI_MODELS.curatorReview),
 		output: Output.object({ schema: adviceSchema, name: "plan_advice" }),
 		instructions: stripIndents`
@@ -113,6 +117,10 @@ export const writePlanAdvice = async (input: PlanAdviceInput) => {
 
 			${input.review ? `What the sprints so far showed:\n${input.review}` : ""}
 		`,
+	});
+	await recordAiUsage(meter, AI_MODELS.curatorReview, {
+		input: usage.inputTokens,
+		output: usage.outputTokens,
 	});
 	return output ?? null;
 };
@@ -160,9 +168,12 @@ const reviewSchema = z.object({
  * reads only the sprint's devlog, artifacts and pulse: nothing was said, so
  * nothing is retold. Null when the model gives nothing usable.
  */
-export const writeSprintReview = async (input: SprintReviewInput) => {
+export const writeSprintReview = async (
+	input: SprintReviewInput,
+	meter?: AiMeter,
+) => {
 	const final = input.verdict !== null;
-	const { output } = await generateText({
+	const { output, usage } = await generateText({
 		model: openai(AI_MODELS.curatorReview),
 		output: Output.object({ schema: reviewSchema, name: "sprint_review" }),
 		instructions: stripIndents`
@@ -191,6 +202,10 @@ export const writeSprintReview = async (input: SprintReviewInput) => {
 
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
+	});
+	await recordAiUsage(meter, AI_MODELS.curatorReview, {
+		input: usage.inputTokens,
+		output: usage.outputTokens,
 	});
 	if (!output) return null;
 	const { message, ...notes } = output;
