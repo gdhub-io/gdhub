@@ -1,0 +1,53 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-95 — checkpoint funnel events in the data layer" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+push: "trackCheckpoint(event, params) — src/helpers/gtm.ts\nflat push: {event, ...params} (GTM reads params by name)\nnames and params typed in src/config/analytics-events.ts\nids, enums, counts, booleans only\nonce-per-moment guard: in-memory set, or localStorage key for events that survive a reload\nno consent → GTM not loaded → nothing sent (as today)" {
+  style.font-size: 13
+}
+
+journey: "Purchase journey — every purchase event carries\ncheckpoint_number · curator_kind · curator_level · previous_curator_kind · curator_switch\n(previous_* comes from the server with the draft: the project's last paid checkpoint)" {
+  cta: "checkpoint_landing_cta {section: hero | pricing | final_cta}"
+  signup: "checkpoint_signed_up {provider}\nAbout page reads the pre-registration cookie with intent=checkpoint (once)"
+  signin: "checkpoint_signed_in {provider}\nSigninClient sets a session flag when callbackUrl is /checkpoint/new; the hub consumes it"
+  hub: "checkpoint_hub_reached {returning, projects_count}\nonce per session"
+  about: "checkpoint_about_done {first_time}"
+  project: "checkpoint_project_done {project: new | existing, lines, with_evidence, carried_over}"
+  goal: "checkpoint_goal_set {warned}"
+  curator: "checkpoint_curator_chosen {…purchase params}\nonly when going forward to payment"
+  pay: "checkpoint_payment_opened {…, retry}\npushed with eventCallback (≤1s) before window.location = Stripe"
+  cancel: "checkpoint_payment_cancelled\nStripe cancel_url gains ?cancelled=1; payment step fires once and drops the param"
+  paid: "checkpoint_paid {…, outcome: ai_started | expert_reserved, promo_used}\nPaidPanel, once per checkpoint (localStorage); not on 'settling'\npromo_used = held price < list price"
+  cta -> signup
+  cta -> signin
+  signup -> hub
+  signin -> hub
+  hub -> about -> project -> goal -> curator -> pay
+  pay -> paid
+  pay -> cancel
+}
+
+running: "Running and after" {
+  review: "checkpoint_review_opened {session_index, curator_kind}\nAI review page, once per checkpoint+session"
+  call: "checkpoint_call_joined {session_index, role: team | curator}\nDaily join resolved, once per session"
+  plan: "checkpoint_plan_saved {session_index}\nthe 'Save changes' button only"
+  pulse: "checkpoint_pulse_answered {sprint}"
+  verdict: "checkpoint_verdict_seen {verdict, curator_kind, source: button | link}\nresults modal opened, once per checkpoint"
+  next: "checkpoint_next_planned {next_number, verdict, previous_curator_kind}\n'Plan Checkpoint N' / 'Plan this checkpoint'"
+  stage: "checkpoint_stage_moved {after_verdict}\nafter the move succeeds, both paths (with or without equity promises)"
+}
+journey.paid -> running.review
+running.next -> journey.curator: "repeat purchase:\ncheckpoint_number 2, curator_switch"
+
+deliver: "docs/analytics/checkpoint-events.md — every event, when, params\ndocs/analytics/gtm-checkpoint-events.json — GTM import:\nGA4 event tag + custom-event trigger + data-layer variables per event\nDmitry imports and publishes"
+push -> deliver
