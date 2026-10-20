@@ -1,0 +1,72 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-80 + GDHUB-40 — overdue verdict, curator by hand, workflow guards" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+cron: "cron /api/cron/checkpoints (daily)" {
+  due: "Review, human curator, verdict null,\ntomorrow = verdictDueBy(dueAt) (day 30)"
+  remind: "curator: 'Your verdict on <project> is due tomorrow'\n→ /advisor/checkpoints · tx cp-verdict-due-<id>"
+  over: "Review, verdict null,\ntoday = the day after verdictDueBy(dueAt) (day 32)"
+  admins: "every hub Admin / Owner:\n'The verdict on <project> is overdue'\n→ /admin/checkpoints · tx cp-verdict-overdue-<id>-<user>\n(that one day only; the tx id guards a second cron run)"
+  due -> remind
+  over -> admins
+}
+
+list: "Admin list — 11.5 / 11.7 / 11.7b" {
+  row: "row DTO gains: overdue (+ due date, days late),\ncanWriteVerdict · canAssign · canRefund — decided on the server"
+  menu: "⋮ Write the verdict (overdue only) · Assign a curator · Refund payment"
+  draft: "Status filter 'Draft' → drafts listed (Paid —);\n'All' still means past Draft"
+  row -> menu
+}
+cron.admins -> list.row
+
+verdict: "Write the verdict — 11.8 / 11.8b" {
+  quote: "GET /api/admin/checkpoints/[id]/verdict\nthe curator's verdict context + the curator's saved draft (pre-fills)\n+ missed calls: refundAmount with verdictSent = true\n→ parts not delivered = calls never joined"
+  send: "POST /api/admin/checkpoints/[id]/verdict {verdict, note}"
+  check: "Review · verdict null · overdue?" {shape: diamond}
+  refuse: "400 alreadyDecided / notOverdue"
+  money: "missed calls > 0 → refundCheckout(amount, key checkpoint-refund-<id>)\nStripe refuses → nothing written (refundFailed)"
+  write: "one transaction:\nverdict, verdictNote, decidedAt, decidedById = admin,\nstatus Closed, draft fields cleared\nRefund {reason: missedCalls} · Payment status\nAuditLog {verdictByAdmin}"
+  after: "certificate · chat room closed · author: the verdict letter"
+  quote -> send -> check
+  check -> refuse: no
+  check -> money: yes
+  money -> write -> after
+}
+list.menu -> verdict.quote: "Write the verdict"
+
+assign: "Assign a curator — z20Q3F (running) / 11.9 (draft)" {
+  body: "POST /api/admin/checkpoints/[id]/curator\n{kind, userId?, reason (required)}"
+  which: "status?" {shape: diamond}
+  free: "Draft with a goal + day-1 inputs:\nno Payment; as settleCheckpointCheckout after money lands —\nAI → startAiCheckpoint · person → bookSessions + AwaitingCurator\n+ notifyCuratorAsked (the curator accepts as usual)"
+  swap: "Active / Review / AwaitingCurator, human:\ncuratorId → the new person, sessions keep their times;\nkind cannot change on a running checkpoint"
+  tell: "AuditLog {curatorAssigned, reason, from, to}\nauthor + new curator notified"
+  body -> which
+  which -> free: Draft
+  which -> swap: running
+  free -> tell
+  swap -> tell
+}
+list.menu -> assign.body: "Assign a curator"
+
+guards: "Workflow guards — rhKOo" {
+  put: "PUT /api/admin/project-workflow/[id] with plan.deleteIds"
+  reset: "POST …/reset (and its dryRun)"
+  open: "project has an Active / Review checkpoint?" {shape: diamond}
+  no: "409 checkpointRunning {checkpoint: name, number, ends}\n→ dialog rhKOo; dryRun returns the same instead of a plan"
+  put -> open
+  reset -> open
+  open -> no: yes
+}
+
+refund: "Refund payment → No verdict (GDHUB-101, unchanged)\ncancels instead" {style.stroke-dash: 3}
+list.menu -> refund

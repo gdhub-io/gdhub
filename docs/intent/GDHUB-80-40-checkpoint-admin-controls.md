@@ -36,7 +36,8 @@ database work; and a workflow edit can delete the stage a running checkpoint is 
 - The refund for missed calls uses GDHUB-101's split and Stripe path: parts not delivered,
   the admin's verdict counted as delivered; one refund per checkpoint; the checkpoint stays
   Closed.
-- "Once" for the admins' notice is the notification's own transaction id — no new column.
+- "Once" for the admins' notice is the day it goes out — the first day after the deadline —
+  with the notification's transaction id against a second cron run; no new column.
 - A free checkpoint reuses what a payment does after it lands (book the calls, ask the
   curator; or start the AI one) — no second start path.
 - No schema change.
