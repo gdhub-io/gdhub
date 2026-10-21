@@ -195,6 +195,32 @@ export const HumanCurator: StoryObj = {
 	),
 };
 
+/** The call that opened Sprint 2 passed with nobody ending it: done, with its notes, no Join. */
+export const HumanCuratorCallPassed: StoryObj = {
+	render: () => (
+		<div style={{ maxWidth: 800 }}>
+			<PathBranch ahead>
+				<RunningCheckpoint
+					checkpoint={{
+						...running,
+						sessions: [
+							session(1, true),
+							session(2),
+							session(3),
+							session(4),
+							session(5),
+						],
+					}}
+					project={project}
+					previous={null}
+					canManage
+					here={null}
+				/>
+			</PathBranch>
+		</div>
+	),
+};
+
 /** Day one: the call that opens Sprint 1 is today and has not happened yet. */
 export const HumanCuratorSessionToday: StoryObj = {
 	render: () => (
