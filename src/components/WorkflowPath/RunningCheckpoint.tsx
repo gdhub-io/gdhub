@@ -35,7 +35,7 @@ import {
 } from "@/config/prisma-enums";
 import { useMarkVerdictRead } from "@/hooks/checkpoints";
 import { downloadIcs } from "@/lib/calendar";
-import { callState } from "@/lib/checkpoint-call";
+import { sessionHeld } from "@/lib/checkpoint-call";
 import {
 	type ChecklistItem,
 	type ChecklistKey,
@@ -275,15 +275,8 @@ export function RunningCheckpoint({
 			: t("workflow.path.session.review-title", "Sprint {number} review", {
 					number: String(session.index - 1),
 				});
-	// Ended, or past its window with nobody ending it: over either way, as the call page reads it.
-	const sessionOver = (session: CheckpointSessionDto) =>
-		callState(
-			new Date(session.scheduledAt),
-			session.endedAt ? new Date(session.endedAt) : null,
-			new Date(),
-		) === "over";
-	const sessionHeld = (session: CheckpointSessionDto) =>
-		isAI ? !!session.endedAt || !!session.contentStatus : sessionOver(session);
+	const held = (session: CheckpointSessionDto) =>
+		sessionHeld(session, checkpoint.curatorKind);
 	/** A call or review already behind: one line, linking to its notes. */
 	const sessionDone = (session: CheckpointSessionDto) => (
 		<div className={styles.sessionDone}>
@@ -333,7 +326,7 @@ export function RunningCheckpoint({
 		]).size;
 		const open = opened.includes(sprint.number);
 		const session = sessions.find(
-			(item) => item.index === sprint.number && sessionHeld(item),
+			(item) => item.index === sprint.number && held(item),
 		);
 		const proofOf = new Map(
 			evidence.flatMap((item) =>
@@ -664,7 +657,7 @@ export function RunningCheckpoint({
 	const sessionToday =
 		!isAI &&
 		openingSession &&
-		!sessionOver(openingSession) &&
+		!held(openingSession) &&
 		daysUntil(openingSession.scheduledAt) <= 0
 			? openingSession
 			: null;
@@ -714,7 +707,7 @@ export function RunningCheckpoint({
 					{sessionToday && sessionBody(sessionToday, true)}
 
 					{openingSession &&
-						sessionHeld(openingSession) &&
+						held(openingSession) &&
 						sessionDone(openingSession)}
 
 					<div>
