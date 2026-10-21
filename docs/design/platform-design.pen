@@ -229546,6 +229546,425 @@
                                     },
                                     {
                                       "type": "frame",
+                                      "id": "k26prJ",
+                                      "name": "Sessions",
+                                      "width": "fill_container",
+                                      "layout": "vertical",
+                                      "gap": 8,
+                                      "children": [
+                                        {
+                                          "type": "frame",
+                                          "id": "d4Uen",
+                                          "name": "Head",
+                                          "width": "fill_container",
+                                          "justifyContent": "space_between",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "kkwMW",
+                                              "name": "L",
+                                              "fill": "$text-secondary",
+                                              "content": "Sessions",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "600"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "pNE2L",
+                                              "name": "C",
+                                              "fill": "$text-secondary",
+                                              "content": "5 held",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "iimd5",
+                                          "name": "Session — held",
+                                          "width": "fill_container",
+                                          "gap": 12,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "L5V2v",
+                                              "name": "Icon video",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "video",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "X75SKB",
+                                              "name": "L",
+                                              "fill": "$text-primary",
+                                              "content": "Session with Patrick",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "Kkkgn",
+                                              "name": "Meta",
+                                              "fill": "$text-secondary",
+                                              "content": "11 Aug",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "vJsCy",
+                                              "name": "Spacer",
+                                              "width": "fill_container",
+                                              "height": 1
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "TS6tj",
+                                              "name": "Link — notes",
+                                              "gap": 4,
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "vmVxf",
+                                                  "name": "L",
+                                                  "fill": "$link",
+                                                  "content": "Notes",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "myGWJ",
+                                                  "name": "Icon arrow-up-right",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-up-right",
+                                                  "library": "lucide",
+                                                  "fill": "$link"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "ok8Vf",
+                                          "name": "Session — held",
+                                          "width": "fill_container",
+                                          "gap": 12,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "eeqtd",
+                                              "name": "Icon video",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "video",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "ohNg9",
+                                              "name": "L",
+                                              "fill": "$text-primary",
+                                              "content": "Session with Patrick",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "UxPr7",
+                                              "name": "Meta",
+                                              "fill": "$text-secondary",
+                                              "content": "18 Aug",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "J4Cb9",
+                                              "name": "Spacer",
+                                              "width": "fill_container",
+                                              "height": 1
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "UCubZ",
+                                              "name": "Link — notes",
+                                              "gap": 4,
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "Kh2GC",
+                                                  "name": "L",
+                                                  "fill": "$link",
+                                                  "content": "Notes",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "DhauZ",
+                                                  "name": "Icon arrow-up-right",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-up-right",
+                                                  "library": "lucide",
+                                                  "fill": "$link"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "YbqiY",
+                                          "name": "Session — held",
+                                          "width": "fill_container",
+                                          "gap": 12,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "IDTdb",
+                                              "name": "Icon video",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "video",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "v9829",
+                                              "name": "L",
+                                              "fill": "$text-primary",
+                                              "content": "Session with Patrick",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "YOguE",
+                                              "name": "Meta",
+                                              "fill": "$text-secondary",
+                                              "content": "25 Aug",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "lhRZS",
+                                              "name": "Spacer",
+                                              "width": "fill_container",
+                                              "height": 1
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "MBMJz",
+                                              "name": "Link — notes",
+                                              "gap": 4,
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "F8iUd7",
+                                                  "name": "L",
+                                                  "fill": "$link",
+                                                  "content": "Notes",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "Mb4xg",
+                                                  "name": "Icon arrow-up-right",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-up-right",
+                                                  "library": "lucide",
+                                                  "fill": "$link"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "fGKiK",
+                                          "name": "Session — held",
+                                          "width": "fill_container",
+                                          "gap": 12,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "Q3LkH",
+                                              "name": "Icon video",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "video",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "jNscN",
+                                              "name": "L",
+                                              "fill": "$text-primary",
+                                              "content": "Session with Patrick",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "zZP7k",
+                                              "name": "Meta",
+                                              "fill": "$text-secondary",
+                                              "content": "1 Sep",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "PxiJ0",
+                                              "name": "Spacer",
+                                              "width": "fill_container",
+                                              "height": 1
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "BUoO6",
+                                              "name": "Link — notes",
+                                              "gap": 4,
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "WFKcF",
+                                                  "name": "L",
+                                                  "fill": "$link",
+                                                  "content": "Notes",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "FMQPW",
+                                                  "name": "Icon arrow-up-right",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-up-right",
+                                                  "library": "lucide",
+                                                  "fill": "$link"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "zEzIV",
+                                          "name": "Session — held",
+                                          "width": "fill_container",
+                                          "gap": 12,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "icon",
+                                              "id": "L6laK",
+                                              "name": "Icon video",
+                                              "width": 16,
+                                              "height": 16,
+                                              "icon": "video",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "xcQCC",
+                                              "name": "L",
+                                              "fill": "$text-primary",
+                                              "content": "Final review with Patrick",
+                                              "fontFamily": "$font",
+                                              "fontSize": 14,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "N4kcVb",
+                                              "name": "Meta",
+                                              "fill": "$text-secondary",
+                                              "content": "7 Sep",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "gqPzL",
+                                              "name": "Spacer",
+                                              "width": "fill_container",
+                                              "height": 1
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "ceEMN",
+                                              "name": "Link — notes",
+                                              "gap": 4,
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "jIwTo",
+                                                  "name": "L",
+                                                  "fill": "$link",
+                                                  "content": "Notes",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "a6LiJu",
+                                                  "name": "Icon arrow-up-right",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-up-right",
+                                                  "library": "lucide",
+                                                  "fill": "$link"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
                                       "id": "vIXOf",
                                       "name": "Divider",
                                       "width": "fill_container",
