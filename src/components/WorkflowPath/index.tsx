@@ -227,7 +227,11 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			),
 			...rows.slice(hidden).map(({ checkpoint, number }) => (
 				<PathNode key={checkpoint.id} marker="cleared" offset={18}>
-					<ClosedCheckpoint checkpoint={checkpoint} number={number} />
+					<ClosedCheckpoint
+						checkpoint={checkpoint}
+						number={number}
+						projectSlug={project.slug}
+					/>
 				</PathNode>
 			)),
 		];

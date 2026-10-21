@@ -29,6 +29,24 @@ export const callState = (
 	return now < closesAt ? "open" : "over";
 };
 
+/** A session behind the checkpoint: a call that is over, or a review the AI has written. */
+export const sessionHeld = (
+	session: {
+		scheduledAt: string;
+		endedAt: string | null;
+		contentStatus: unknown;
+	},
+	curatorKind: CheckpointCuratorKind,
+	now = new Date(),
+) =>
+	curatorKind === CheckpointCuratorKind.AI
+		? !!session.contentStatus
+		: callState(
+				new Date(session.scheduledAt),
+				session.endedAt ? new Date(session.endedAt) : null,
+				now,
+			) === "over";
+
 /** cuids carry no dash, so the name splits back into its two parts. */
 export const callRoomName = (checkpointId: string, index: number) =>
 	`cp-${checkpointId}-${index}`;

@@ -1,7 +1,15 @@
 import { createHmac } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CheckpointStatus } from "@/config/prisma-enums";
-import { callState, parseCallRoomName } from "@/lib/checkpoint-call";
+import {
+	CheckpointCuratorKind,
+	CheckpointSessionContentStatus,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
+import {
+	callState,
+	parseCallRoomName,
+	sessionHeld,
+} from "@/lib/checkpoint-call";
 
 const sessionFindUnique = vi.fn();
 const sessionUpdate = vi.fn();
@@ -112,6 +120,29 @@ describe("callState", () => {
 
 	it("is over once the curator ended it, inside the window too", () => {
 		expect(callState(scheduledAt, during, during)).toBe("over");
+	});
+});
+
+describe("a session behind the checkpoint", () => {
+	const at = scheduledAt.toISOString();
+	const late = new Date("2026-10-21T17:00:00Z");
+
+	it("is a call that is over, ended or not, for a human curator", () => {
+		const call = { scheduledAt: at, endedAt: null, contentStatus: null };
+		expect(sessionHeld(call, CheckpointCuratorKind.Human, during)).toBe(false);
+		expect(sessionHeld(call, CheckpointCuratorKind.Human, late)).toBe(true);
+	});
+
+	it("is a written review for the AI curator, whatever the hour", () => {
+		const review = { scheduledAt: at, endedAt: null, contentStatus: null };
+		expect(sessionHeld(review, CheckpointCuratorKind.AI, late)).toBe(false);
+		expect(
+			sessionHeld(
+				{ ...review, contentStatus: CheckpointSessionContentStatus.Ready },
+				CheckpointCuratorKind.AI,
+				during,
+			),
+		).toBe(true);
 	});
 });
 

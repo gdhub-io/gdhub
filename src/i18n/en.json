@@ -4491,6 +4491,8 @@
 				"dayOne": "Checkpoint {number} · day 1 · {date}",
 				"goal": "Goal",
 				"not-delivered": "Not delivered",
+				"sessions": "Sessions",
+				"sessions-held": "{count} held",
 				"started": "Checkpoint {number} started · {date}",
 				"tasks": "Tasks",
 				"title": "Checkpoint {number}"
@@ -4537,6 +4539,7 @@
 				"ai-start-sub": "The AI curator reads your tasks and says which fit the four weeks",
 				"calendar": "Add to calendar",
 				"final": "the final one",
+				"final-with": "Final review with {name}",
 				"join": "Join session",
 				"join-in": "Join in {days} days",
 				"join-tomorrow": "Join tomorrow",

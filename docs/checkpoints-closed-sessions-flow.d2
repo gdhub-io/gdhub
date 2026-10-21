@@ -1,0 +1,43 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-105 — a closed checkpoint lists its held sessions, each linking to the Curator's Review" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+data: "GET /api/checkpoint?projectId — listClosedCheckpoints" {
+  select: "checkpointSelect + sessions {index, scheduledAt, endedAt, contentStatus}\n(the fields the detail read already takes; no schema change)"
+  map: "rows → { ...row, sessions: buildSessions(startedAt, sessions) }"
+  select -> map
+}
+
+card: "Workflow path → Show previous path → closed checkpoint card (07.1, nBVNK), expanded" {
+  held: "held?" {shape: diamond}
+  human: "human curator: callState(scheduledAt, endedAt) = over\n(ended, or past its window — the rule the path and the call page share, GDHUB-104)"
+  ai: "AI curator: contentStatus set (the review was written)"
+  skip: "not listed"
+  row: "one line: icon · title · date · link\nhuman: 'Session with {name}', the 5th 'Final review with {name}' · Notes ↗\nAI: 'Set the tasks' / 'Sprint N review' · Review ↗"
+  head: "'Sessions' + '{n} held'; no held session → no section"
+  held -> human
+  held -> ai
+  human -> row: yes
+  ai -> row: yes
+  human -> skip: no
+  ai -> skip: no
+  row -> head
+}
+data.map -> card.held
+
+target: "/user/project/{slug}/workflow/cp{number}/review/{index}\n(the Curator's Review page; the call page shows a past call's notes)"
+card.row -> target
+
+out: "Not here: the results modal (07.4) and the 'previous checkpoint' block of the next one's first sprint —\nthe shared CheckpointResult stays as it is; the section lives in ClosedCheckpoint" {
+  style.font-size: 13
+}
