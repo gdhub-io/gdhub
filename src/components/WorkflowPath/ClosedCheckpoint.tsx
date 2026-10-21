@@ -1,12 +1,16 @@
 import {
+	IconArrowUpRight,
 	IconChevronDown,
 	IconChevronUp,
 	IconCircle,
 	IconCircleCheck,
+	IconSparkles,
+	IconVideo,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Divider } from "antd";
-import { useState } from "react";
+import Link from "next/link";
+import { type ReactNode, useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { CheckpointRating } from "@/components/checkpoints/CheckpointRating";
 import {
@@ -14,7 +18,11 @@ import {
 	VerdictChip,
 } from "@/components/checkpoints/VerdictChip";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { CheckpointItemKind } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+} from "@/config/prisma-enums";
+import { sessionHeld } from "@/lib/checkpoint-call";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
 import { formatShort } from "./dates";
@@ -23,6 +31,7 @@ import styles from "./style.module.scss";
 export type ClosedCheckpointProps = {
 	checkpoint: CheckpointDto;
 	number: number;
+	projectSlug: string;
 };
 
 /**
@@ -32,6 +41,7 @@ export type ClosedCheckpointProps = {
 export function ClosedCheckpoint({
 	checkpoint,
 	number,
+	projectSlug,
 }: ClosedCheckpointProps) {
 	const { t } = useTranslate();
 	const [open, setOpen] = useState(false);
@@ -67,9 +77,86 @@ export function ClosedCheckpoint({
 
 			{open && (
 				<div className={styles.panel}>
-					<CheckpointResult checkpoint={checkpoint} />
+					<CheckpointResult
+						checkpoint={checkpoint}
+						sessions={
+							<HeldSessions
+								checkpoint={checkpoint}
+								href={(index) =>
+									`/user/project/${projectSlug}/workflow/cp${number}/review/${index}`
+								}
+							/>
+						}
+					/>
 				</div>
 			)}
+		</div>
+	);
+}
+
+/** Frame 07.1: the calls or reviews held, each a line linking to its Curator's Review. */
+function HeldSessions({
+	checkpoint,
+	href,
+}: {
+	checkpoint: CheckpointDto;
+	href: (index: number) => string;
+}) {
+	const { t } = useTranslate();
+	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
+	const held = (checkpoint.sessions ?? []).filter((session) =>
+		sessionHeld(session, checkpoint.curatorKind),
+	);
+	if (!held.length) return null;
+
+	const name = checkpoint.curator?.name?.split(" ")[0] ?? "";
+	const last = checkpoint.sessions?.at(-1)?.index;
+	const title = (index: number) => {
+		if (isAI) {
+			return index === 1
+				? t("workflow.path.session.ai-start", "Set the tasks")
+				: t("workflow.path.session.review-title", "Sprint {number} review", {
+						number: String(index - 1),
+					});
+		}
+		return index === last
+			? t("workflow.path.session.final-with", "Final review with {name}", {
+					name,
+				})
+			: t("workflow.path.session.with", "Session with {name}", { name });
+	};
+
+	return (
+		<div className={styles.block}>
+			<div className={styles.sectionHead}>
+				<span className={styles.sectionLabel}>
+					{t("workflow.path.checkpoint.sessions", "Sessions")}
+				</span>
+				<span>
+					{t("workflow.path.checkpoint.sessions-held", "{count} held", {
+						count: String(held.length),
+					})}
+				</span>
+			</div>
+			{held.map((session) => (
+				<div key={session.index} className={styles.outcome}>
+					{isAI ? (
+						<IconSparkles size={16} className={styles.taskIcon} />
+					) : (
+						<IconVideo size={16} className={styles.taskIcon} />
+					)}
+					<span>{title(session.index)}</span>
+					<span className={`${styles.meta} ${styles.grow}`}>
+						{formatShort(session.scheduledAt)}
+					</span>
+					<Link href={href(session.index)} className={styles.link}>
+						{isAI
+							? t("workflow.path.session.review", "Review")
+							: t("workflow.path.session.notes", "Notes")}
+						<IconArrowUpRight size={14} />
+					</Link>
+				</div>
+			))}
 		</div>
 	);
 }
@@ -78,10 +165,13 @@ export function ClosedCheckpoint({
 export function CheckpointResult({
 	checkpoint,
 	rateable = false,
+	sessions,
 }: {
 	checkpoint: CheckpointDto;
 	/** The results modal is the one place the rating is asked. */
 	rateable?: boolean;
+	/** Between the tasks and the verdict; only the closed card on the path has it. */
+	sessions?: ReactNode;
 }) {
 	const { t } = useTranslate();
 	const { meaning } = useVerdictCopy();
@@ -135,6 +225,8 @@ export function CheckpointResult({
 					))}
 				</div>
 			)}
+
+			{sessions}
 
 			{checkpoint.verdict && (
 				<>

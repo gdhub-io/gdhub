@@ -124,6 +124,18 @@ export const checkpointSelect = {
 	items: { select: checkpointItemSelect, orderBy: { order: "asc" } },
 } as const;
 
+// The write-up and the transcript stay on the session page that reads them.
+const sessionRowSelect = {
+	select: {
+		index: true,
+		scheduledAt: true,
+		rescheduledAt: true,
+		curatorJoinedAt: true,
+		endedAt: true,
+		contentStatus: true,
+	},
+} as const;
+
 // The card and the page header name the curator's craft; their strongest speciality stands for it.
 const curatorWithCraftSelect = {
 	select: {
@@ -198,17 +210,7 @@ const checkpointDetailSelect = {
 		},
 	},
 	artifacts: { select: evidenceArtifactSelect },
-	// The write-up and the transcript stay on the session page that reads them.
-	sessions: {
-		select: {
-			index: true,
-			scheduledAt: true,
-			rescheduledAt: true,
-			curatorJoinedAt: true,
-			endedAt: true,
-			contentStatus: true,
-		},
-	},
+	sessions: sessionRowSelect,
 	project: {
 		select: {
 			team: {
@@ -686,12 +688,21 @@ export const listClosedCheckpoints = async (
 			orderBy: { createdAt: "desc" },
 			skip: (page - 1) * limit,
 			take: limit,
-			select: checkpointSelect,
+			// A closed card lists its held sessions, each a link to its notes.
+			select: { ...checkpointSelect, sessions: sessionRowSelect },
 		}),
 		prisma.projectCheckpoint.count({ where }),
 	]);
 
-	return { rows: rows.map(withAcceptedTerms), total, page, limit };
+	return {
+		rows: rows.map(({ sessions, ...row }) => ({
+			...withAcceptedTerms(row),
+			sessions: buildSessions(row.startedAt, sessions),
+		})),
+		total,
+		page,
+		limit,
+	};
 };
 
 /**

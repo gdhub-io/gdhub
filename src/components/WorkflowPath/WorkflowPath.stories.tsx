@@ -168,6 +168,7 @@ const closed: CheckpointDto = {
 	verdictNote:
 		"The pitch is sharp and the mood board sets one clear direction.",
 	decidedAt: day(-12),
+	sessions: [1, 2, 3, 4, 5].map((index) => session(index, true)),
 };
 
 const project = { id: "p1", name: "Hollow Tide", slug: "hollow-tide" };
@@ -251,7 +252,11 @@ export const ClosedOne: StoryObj = {
 	render: () => (
 		<div style={{ maxWidth: 800 }}>
 			<PathNode marker="cleared">
-				<ClosedCheckpoint checkpoint={closed} number={2} />
+				<ClosedCheckpoint
+					checkpoint={closed}
+					number={2}
+					projectSlug="hollow-tide"
+				/>
 			</PathNode>
 		</div>
 	),
