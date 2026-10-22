@@ -3,6 +3,7 @@ import { LegalDetailsClient } from "./LegalDetailsClient";
 
 export const metadata: Metadata = {
 	title: "Legal Details",
+	robots: { index: false, follow: false },
 	description:
 		"Official legal information about Game Developers Hub and its representative offices",
 	alternates: { canonical: "/legal-details" },
