@@ -1,16 +1,16 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Flex, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
+import { LogOutButton } from "@/components/layouts/AuthShell/AuthLogout";
 import styles from "./EntryShell.module.scss";
 
 export type EntryShellProps = {
 	/** The user has had a checkpoint before: the title heads for the next one. */
 	next?: boolean;
-	/** A quiet way out above the logo — the wizard's "Back to your checkpoint plan". */
-	back?: ReactNode;
 	/** Sits under the title — the wizard's Goal · Curator · Payment. */
 	stepper?: ReactNode;
 	/** A sub-page's own heading (24/700) and the line under it. */
@@ -22,13 +22,13 @@ export type EntryShellProps = {
 };
 
 /**
- * The light shell of the way into a checkpoint (row 12.x): logo, title, then
- * the page. Lives inside `AuthShell`, which owns the white ground and
- * the log-out corner.
+ * The light shell of the way into a checkpoint (row 12.x): a top row with the
+ * logo and the ways out, the title, then the page — all in the content column.
+ * Lives inside `AuthShell`, which owns the white ground; its log-out corner
+ * stands down here for the row's own.
  */
 export function EntryShell({
 	next,
-	back,
 	stepper,
 	heading,
 	subtitle,
@@ -41,9 +41,16 @@ export function EntryShell({
 		<div className={styles.page}>
 			<div className={styles.column}>
 				<header className={styles.header}>
-					<Flex vertical align="flex-start" gap={16}>
-						{back}
+					<Flex justify="space-between" align="center" className={styles.top}>
 						<GdhubLogo className={styles.logo} />
+						<Flex gap={4}>
+							<Link href="/">
+								<Button type="text">
+									{t("checkpointEntry.toHome", "To home")}
+								</Button>
+							</Link>
+							<LogOutButton />
+						</Flex>
 					</Flex>
 					<Typography.Title level={1} className={styles.title}>
 						{next

@@ -1,6 +1,7 @@
 import { IconChevronDown } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Collapse } from "antd";
+import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
@@ -50,16 +51,21 @@ export const CheckpointFaqSection = () => {
 				"Your devlogs, the artifacts you attach, and the team’s activity during the sprint. It holds no calls. On each session day it returns written feedback and shows what is not moving, and you decide what to cut.",
 			),
 		},
-		{
-			q: t(
-				"checkpointLanding.faq.missed.q",
-				"What if my curator misses sessions?",
-			),
-			a: t(
-				"checkpointLanding.faq.missed.a",
-				"Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day 30, an administrator closes the Checkpoint and that money goes back as well.",
-			),
-		},
+		// Only an expert holds sessions to miss; back with expert checkpoints.
+		...(EXPERT_CHECKPOINT_OPEN
+			? [
+					{
+						q: t(
+							"checkpointLanding.faq.missed.q",
+							"What if my curator misses sessions?",
+						),
+						a: t(
+							"checkpointLanding.faq.missed.a",
+							"Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day 30, an administrator closes the Checkpoint and that money goes back as well.",
+						),
+					},
+				]
+			: []),
 	];
 
 	return (

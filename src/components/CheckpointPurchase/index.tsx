@@ -1,9 +1,6 @@
 "use client";
 
-import { IconArrowLeft } from "@tabler/icons-react";
-import { useTranslate } from "@tolgee/react";
-import { Button, Skeleton } from "antd";
-import Link from "next/link";
+import { Skeleton } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { EntryShell } from "@/components/checkpoints/entry/EntryShell";
@@ -27,7 +24,6 @@ import {
 } from "@/components/checkpoints/start/useDraft";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
 import { purchaseState } from "./purchaseState";
-import styles from "./style.module.scss";
 
 export type CheckpointPurchaseProps = {
 	/** Resolved on the server, where the Founder check is made. */
@@ -41,7 +37,6 @@ export type CheckpointPurchaseProps = {
  * and so does the one way out — the draft keeps everything written so far.
  */
 export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
-	const { t } = useTranslate();
 	const router = useRouter();
 	const search = useSearchParams();
 	const { data: list, isPending } = useCheckpoints(project.id);
@@ -103,14 +98,6 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 		<PurchaseProjectProvider value={project}>
 			<EntryShell
 				next={(list?.closed.total ?? 0) > 0}
-				back={
-					// Where the space header's "Save and close" used to be: quiet, and back to the plan.
-					<Link href={CHECKPOINT_ENTRY_HREF} className={styles.back}>
-						<Button type="text" icon={<IconArrowLeft size={16} />}>
-							{t("checkout.backToPlan", "Back to your checkpoint plan")}
-						</Button>
-					</Link>
-				}
 				stepper={
 					!loading && (
 						<PurchaseSteps

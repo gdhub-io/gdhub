@@ -1,15 +1,18 @@
-import { IconSparkles } from "@tabler/icons-react";
+import { IconSparkles, IconUser } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Typography } from "antd";
+import { Button, Tag, Typography } from "antd";
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import rumourArt from "@/assets/images/checkpoint/checkpoint-rumour.png";
+import type { ReactNode } from "react";
+import curatorsArt from "@/assets/images/checkpoint/checkpoint-curators.webp";
 import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_LARGE_TEAM_EMAIL,
 	CHECKPOINT_MAX_TEAM,
 	CHECKPOINT_PRICE_CURRENCY,
+	EXPERT_CHECKPOINT_OPEN,
 } from "@/config/checkpoint";
 import {
 	CHECKPOINT_MIN_CURATOR_PRICE,
@@ -19,6 +22,7 @@ import {
 } from "@/config/checkpoint-pricing";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { CheckpointSection } from "../CheckpointSection";
+import { ExpertWaitlistForm } from "../ExpertWaitlistForm";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
 
@@ -59,102 +63,129 @@ export const CheckpointPricingSection = () => {
 					)}
 				/>
 
-				<div className={styles.tableRow}>
-					<div className={styles.priceCard}>
-						<div className={styles.tableHead}>
-							<Typography.Text className={styles.tableTitle}>
-								{t("checkpointLanding.pricing.human.title", "Human curator")}
-							</Typography.Text>
-							<Typography.Text className={styles.tableNote}>
-								{upTo}
-							</Typography.Text>
-						</div>
+				<div className={styles.offers}>
+					<OfferHead
+						className={styles.aiPanel}
+						icon={<IconSparkles size={21} />}
+						tone="accent"
+						title={t(
+							"checkpointLanding.pricing.ai.title",
+							"Checkpoint with the AI curator",
+						)}
+						body={t(
+							"checkpointLanding.pricing.ai.bodyTeam",
+							"One lower fixed price for a team of up to {max}. Written feedback instead of calls, and the same verdict on the platform.",
+							{ max: CHECKPOINT_MAX_TEAM },
+						)}
+						price={`${CHECKPOINT_PRICE_CURRENCY}${CHECKPOINT_AI_PRICE}`}
+						note={t(
+							"checkpointLanding.pricing.ai.noteTeam",
+							"per cycle · team of 1–{max}",
+							{ max: CHECKPOINT_MAX_TEAM },
+						)}
+					/>
 
-						<table className={styles.table}>
-							<thead>
-								<tr>
-									<th scope="col" className={styles.levelHead}>
-										{t(
-											"checkpointLanding.pricing.column.level",
-											"Curator level",
-										)}
-									</th>
-									<th scope="col">{upTo}</th>
-									<th scope="col" className={styles.wideOnly}>
-										{t("checkpointLanding.pricing.column.over", "Over {max}", {
-											max: CHECKPOINT_MAX_TEAM,
-										})}
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{CURATOR_LEVELS.map((level) => (
-									<tr key={level}>
-										<th scope="row" className={styles.level}>
-											{levelNames[level]}
+					{EXPERT_CHECKPOINT_OPEN ? (
+						<div className={styles.priceCard}>
+							<div className={styles.tableHead}>
+								<Typography.Text className={styles.tableTitle}>
+									{t("checkpointLanding.pricing.human.title", "Human curator")}
+								</Typography.Text>
+								<Typography.Text className={styles.tableNote}>
+									{upTo}
+								</Typography.Text>
+							</div>
+
+							<table className={styles.table}>
+								<thead>
+									<tr>
+										<th scope="col" className={styles.levelHead}>
+											{t(
+												"checkpointLanding.pricing.column.level",
+												"Curator level",
+											)}
 										</th>
-										<td>
-											{CHECKPOINT_PRICE_CURRENCY}
-											{curatorPrice(level)}
-										</td>
-										<td className={styles.wideOnly}>
-											<Typography.Link
-												href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}
-												className={styles.onRequest}
-											>
-												{t("checkpointLanding.pricing.onRequest", "On request")}
-											</Typography.Link>
-										</td>
+										<th scope="col">{upTo}</th>
+										<th scope="col" className={styles.wideOnly}>
+											{t(
+												"checkpointLanding.pricing.column.over",
+												"Over {max}",
+												{
+													max: CHECKPOINT_MAX_TEAM,
+												},
+											)}
+										</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+									{CURATOR_LEVELS.map((level) => (
+										<tr key={level}>
+											<th scope="row" className={styles.level}>
+												{levelNames[level]}
+											</th>
+											<td>
+												{CHECKPOINT_PRICE_CURRENCY}
+												{curatorPrice(level)}
+											</td>
+											<td className={styles.wideOnly}>
+												<Typography.Link
+													href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}
+													className={styles.onRequest}
+												>
+													{t(
+														"checkpointLanding.pricing.onRequest",
+														"On request",
+													)}
+												</Typography.Link>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					) : (
+						// Frame `o5oi2`.
+						<div className={styles.expertCard}>
+							<OfferHead
+								icon={<IconUser size={21} />}
+								tone="muted"
+								title={t(
+									"checkpointLanding.pricing.expert.title",
+									"Checkpoint with an expert",
+								)}
+								tag={
+									<Tag className={styles.soonTag}>
+										{t("checkpointLanding.pricing.soon", "Coming soon")}
+									</Tag>
+								}
+								body={t(
+									"checkpointLanding.pricing.expert.body",
+									"Calls with an industry expert every sprint and a final verdict. It opens later: leave your email and we'll write when it does.",
+								)}
+								price={t(
+									"checkpointLanding.pricing.expert.from",
+									"from {currency}{price}",
+									{
+										currency: CHECKPOINT_PRICE_CURRENCY,
+										price: CHECKPOINT_MIN_CURATOR_PRICE,
+									},
+								)}
+								note={upTo}
+							/>
+							<ExpertWaitlistForm />
+						</div>
+					)}
 
-					{/* Stands on the top edge of the AI panel below — frame `ELy4D`. */}
+					{/* Stands beside both offers — frame `ELy4D`. */}
 					<Image
-						src={rumourArt}
+						src={curatorsArt}
 						alt={t(
-							"checkpointLanding.pricing.rumour.alt",
-							"I have heard rumours that sometimes curators aren't entirely sane and can even take you to the next checkpoint for free",
+							"checkpointLanding.pricing.curators.alt",
+							"An industry expert and the AI curator in red hoodies, arms crossed, back to back",
 						)}
 						className={styles.art}
-						sizes="(min-width: 992px) 400px, 100vw"
+						sizes="(min-width: 1280px) 520px, 260px"
 					/>
-				</div>
-
-				<div className={styles.aiPanel}>
-					<span className={styles.aiTile}>
-						<IconSparkles size={21} />
-					</span>
-					<div className={styles.aiCopy}>
-						<p className={styles.aiTitle}>
-							{t(
-								"checkpointLanding.pricing.ai.title",
-								"Checkpoint with the AI curator",
-							)}
-						</p>
-						<p className={styles.aiBody}>
-							{t(
-								"checkpointLanding.pricing.ai.bodyTeam",
-								"One lower fixed price for a team of up to {max}. Written feedback instead of calls, and the same verdict on the platform.",
-								{ max: CHECKPOINT_MAX_TEAM },
-							)}
-						</p>
-					</div>
-					<p className={styles.aiPrice}>
-						<span className={styles.aiPriceValue}>
-							{CHECKPOINT_PRICE_CURRENCY}
-							{CHECKPOINT_AI_PRICE}
-						</span>
-						<span className={styles.aiPriceNote}>
-							{t(
-								"checkpointLanding.pricing.ai.noteTeam",
-								"per cycle · team of 1–{max}",
-								{ max: CHECKPOINT_MAX_TEAM },
-							)}
-						</span>
-					</p>
 				</div>
 
 				<Link
@@ -172,3 +203,44 @@ export const CheckpointPricingSection = () => {
 		</CheckpointSection>
 	);
 };
+
+type OfferHeadProps = {
+	className?: string;
+	icon: ReactNode;
+	tone: "accent" | "muted";
+	title: string;
+	tag?: ReactNode;
+	body: string;
+	price: string;
+	note: string;
+};
+
+function OfferHead({
+	className,
+	icon,
+	tone,
+	title,
+	tag,
+	body,
+	price,
+	note,
+}: OfferHeadProps) {
+	return (
+		<div className={clsx(styles.offerHead, className)}>
+			<span className={styles.tile} data-tone={tone}>
+				{icon}
+			</span>
+			<div className={styles.offerCopy}>
+				<p className={styles.offerTitle}>
+					{title}
+					{tag}
+				</p>
+				<p className={styles.offerBody}>{body}</p>
+			</div>
+			<p className={styles.offerPrice}>
+				<span className={styles.offerPriceValue}>{price}</span>
+				<span className={styles.offerPriceNote}>{note}</span>
+			</p>
+		</div>
+	);
+}

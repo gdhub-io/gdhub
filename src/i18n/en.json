@@ -656,7 +656,8 @@
 			"tab": {
 				"checkpoints": "Checkpoints",
 				"curators": "Curators",
-				"promoCodes": "Promo codes"
+				"promoCodes": "Promo codes",
+				"waitlist": "Expert waitlist"
 			},
 			"title": "Checkpoints",
 			"verdict": {
@@ -798,6 +799,34 @@
 				"paid": "Paid {date} · ref {reference}"
 			},
 			"title": "Payouts"
+		},
+		"waitlist": {
+			"column": {
+				"email": "Email",
+				"joined": "Joined"
+			},
+			"copied": "{count, plural, one {# email copied} other {# emails copied}}",
+			"copy": "Copy emails",
+			"copyFailed": "Couldn't copy",
+			"count": "{count, plural, one {# person asked for a checkpoint with an industry expert} other {# people asked for a checkpoint with an industry expert}}",
+			"empty": "Nobody is waiting yet",
+			"error": "Couldn't load the waitlist",
+			"retry": "Try again",
+			"search": "Search by email",
+			"selected": " · {count} selected",
+			"write": {
+				"failed": "Couldn't send. Try again.",
+				"help": "Sent to the bell and by email, with a button to start a checkpoint. {count} of {total} on the list.",
+				"messageLabel": "Message",
+				"partly": "Sent to {sent}, {failed} could not be reached",
+				"sent": "Sent to {sent}",
+				"submit": "{count, plural, other {Send to #} }",
+				"title": "{count, plural, one {Write to # person} other {Write to # people}}",
+				"titleHelp": "The bell's heading and the email's subject",
+				"titleLabel": "Title"
+			},
+			"writeAll": "Write to all · {count}",
+			"writeSome": "Write to {count}"
 		}
 	},
 	"advisor": {
@@ -1203,6 +1232,9 @@
 		"unsorted": "Unsorted",
 		"unsortedHint": "No stage"
 	},
+	"auth": {
+		"logOut": "Log out"
+	},
 	"blog": {
 		"create-post": {
 			"modal": {
@@ -1333,20 +1365,70 @@
 			"first": "Head for your first checkpoint",
 			"next": "Head for your next checkpoint"
 		},
+		"toHome": "To home",
 		"tooManyTries": "Too many tries — wait a minute and try again."
 	},
 	"checkpointLanding": {
+		"curatorChoice": {
+			"ai": {
+				"price": "{currency}{price} · any team size",
+				"summary": "No live calls. A written review-summary after each sprint.",
+				"title": "AI curator"
+			},
+			"industry": {
+				"badge": "Coming soon",
+				"price": "From {currency}{price} · by level, rate and team size",
+				"summary": "Years behind them, and five calls across the 28 days.",
+				"title": "Industry curator"
+			}
+		},
 		"example": {
 			"fact2": {
 				"label": "Day {day} · Re-scope"
 			}
 		},
+		"faq": {
+			"missed": {
+				"a": "Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day 30, an administrator closes the Checkpoint and that money goes back as well.",
+				"q": "What if my curator misses sessions?"
+			}
+		},
+		"hero": {
+			"headlineCurator": "Step by step to release, with a curator"
+		},
 		"pricing": {
+			"ai": {
+				"bodyTeam": "One lower fixed price for a team of up to {max}. Written feedback instead of calls, and the same verdict on the platform.",
+				"noteTeam": "per cycle · team of 1–{max}",
+				"title": "Checkpoint with the AI curator"
+			},
 			"column": {
+				"level": "Curator level",
 				"over": "Over {max}",
 				"upTo": "Team of 1–{max}"
 			},
-			"onRequest": "On request"
+			"curators": {
+				"alt": "An industry expert and the AI curator in red hoodies, arms crossed, back to back"
+			},
+			"expert": {
+				"body": "Calls with an industry expert every sprint and a final verdict. It opens later: leave your email and we'll write when it does.",
+				"from": "from {currency}{price}",
+				"title": "Checkpoint with an expert"
+			},
+			"human": {
+				"title": "Human curator"
+			},
+			"onRequest": "On request",
+			"soon": "Coming soon"
+		},
+		"waitlist": {
+			"email": "Email",
+			"emailNeeded": "Enter your email first",
+			"failed": "Couldn't add you. Check the email and try again.",
+			"fine": "We only write about this, once it opens.",
+			"join": "Join the waitlist",
+			"joined": "You're on the list — we'll write once it opens",
+			"placeholder": "you@studio.com"
 		}
 	},
 	"checkpoints": {
@@ -1520,6 +1602,7 @@
 			"expert": "Industry expert",
 			"expertCalls": "A call every sprint, a final verdict, clear deadlines and reminders.",
 			"expertDescription": "Live calls, written reviews and a verdict.",
+			"expertSoon": "Calls with an expert every sprint and a final verdict. Opens later.",
 			"expertsLabel": "Industry experts",
 			"fixedPrice": "Fixed price for AI curator",
 			"freeFrom": "· free from {date}",
@@ -1537,6 +1620,7 @@
 			"priceHint": "once, for the 28 days · + VAT",
 			"reviews": "Reviews",
 			"reviewsHint": "the verdict comes with the last",
+			"soon": "Coming soon",
 			"start": "Start",
 			"startHint": "from the start of the day · ends around {date}",
 			"talentCard": "Talent card",
@@ -1830,6 +1914,7 @@
 		},
 		"prepare": {
 			"back": "Back",
+			"backToStart": "Back to start",
 			"cancel": "Cancel",
 			"draftNote": "You can revise this with the curator before the cycle starts.",
 			"failed": "The checkpoint could not be started",
@@ -2082,6 +2167,17 @@
 			"body": "Your curator confirms the start date. You’ll be notified when they respond.",
 			"curator": "The curator",
 			"title": "{name} has not taken these 28 days yet"
+		},
+		"waitlist": {
+			"chooseAI": "Choose the AI curator",
+			"failed": "Could not join. Try again.",
+			"join": "Join the waitlist",
+			"joined": "You're on the waitlist",
+			"joinedNote": "We'll email you when running with an expert opens. Until then, the AI curator can run this checkpoint.",
+			"note": "An industry expert takes you to the checkpoint on calls. It opens later: join the waitlist and we'll email you when it does. Until then, the AI curator can run this checkpoint.",
+			"paid": "one payment",
+			"price": "from {currency}{price}",
+			"title": "Run with an expert is coming soon"
 		},
 		"when": {
 			"asap": "As soon as the curator accepts it",

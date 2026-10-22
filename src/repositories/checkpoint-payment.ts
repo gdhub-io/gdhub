@@ -11,6 +11,7 @@ import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
 	CHECKPOINT_MAX_TEAM,
+	EXPERT_CHECKPOINT_OPEN,
 	CHECKPOINT_MINOR_UNITS as MINOR,
 	SESSIONS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
@@ -133,6 +134,13 @@ export const checkpointCheckout = async (checkpointId: string) => {
 
 	if (checkpoint.status !== CheckpointStatus.Draft) {
 		return { ok: false as const, reason: "checkpointNotDraft" as const };
+	}
+
+	if (
+		!EXPERT_CHECKPOINT_OPEN &&
+		checkpoint.curatorKind === CheckpointCuratorKind.Human
+	) {
+		return { ok: false as const, reason: "expertClosed" as const };
 	}
 
 	// A checkpoint a curator declined goes back to Draft with the money already

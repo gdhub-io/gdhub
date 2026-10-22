@@ -175,6 +175,8 @@ export function NowStep() {
 				"One goal for the {days} days, and the hours your team can give.",
 				{ days: CHECKPOINT_DAYS },
 			)}
+			// The first question: back is the way out of the purchase.
+			onBack={exit}
 			forward={
 				<Button
 					type="primary"

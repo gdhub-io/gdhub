@@ -34,8 +34,8 @@ export const CheckpointHeroSection = () => {
 
 					<h1 className={styles.headline}>
 						{t(
-							"checkpointLanding.hero.headline",
-							"Reach your next Checkpoint in 28 days",
+							"checkpointLanding.hero.headlineCurator",
+							"Step by step to release, with a curator",
 						)}
 					</h1>
 

@@ -124,6 +124,12 @@ export const CHECKPOINT_MINOR_UNITS = 100;
 /** The AI curator has one price and it does not move with the team. */
 export const CHECKPOINT_AI_PRICE = 20;
 
+/**
+ * Whether a checkpoint with an expert can be bought. Off until there is a seller
+ * for human curation (GDHUB-107): choosing an expert leads to a waitlist.
+ */
+export const EXPERT_CHECKPOINT_OPEN = false;
+
 // Refunds
 
 /**

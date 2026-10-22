@@ -46,6 +46,7 @@ import type {
 	TeamMemberStatus as TeamMemberStatusType,
 	TeamVacancyStatus as TeamVacancyStatusType,
 	UserRole as UserRoleType,
+	WaitlistFeature as WaitlistFeatureType,
 } from "@gdhub-io/gdhub-prisma";
 
 /**
@@ -458,3 +459,8 @@ export const UserRole = {
 	Admin: "Admin",
 } as const satisfies Record<UserRoleType, UserRoleType>;
 export type UserRole = UserRoleType;
+
+export const WaitlistFeature = {
+	ExpertCheckpoint: "ExpertCheckpoint",
+} as const satisfies Record<WaitlistFeatureType, WaitlistFeatureType>;
+export type WaitlistFeature = WaitlistFeatureType;
