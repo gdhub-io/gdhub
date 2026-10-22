@@ -195454,19 +195454,6 @@
                       "letterSpacing": 1.4
                     },
                     {
-                      "type": "text",
-                      "id": "FDNNZ",
-                      "name": "H2",
-                      "fill": "#FFFFFF",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "AI for $20. A human curator from $300",
-                      "lineHeight": 1.12,
-                      "fontFamily": "Onest",
-                      "fontSize": 42,
-                      "fontWeight": "700"
-                    },
-                    {
                       "type": "frame",
                       "id": "VJtBy",
                       "name": "Lead",
@@ -196083,7 +196070,7 @@
               "fill": "#FFFFFF8A",
               "textGrowth": "fixed-width",
               "width": 780,
-              "content": "For scale: Indie Game Academy runs a two-month program at $999–5,400, while CG Spectrum starts at $9,999. One human-curated 28-day cycle starts at $300; the AI curator is $20.",
+              "content": "For scale: Indie Game Academy runs a two-month program at $999–5,400, while CG Spectrum starts at $9,999.",
               "lineHeight": 1.6,
               "fontFamily": "Onest",
               "fontSize": 13,
