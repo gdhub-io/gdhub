@@ -196012,9 +196012,9 @@
                       "name": "Input · email",
                       "width": 320,
                       "height": 40,
-                      "fill": "#FFFFFF",
+                      "fill": "#C5C4C0",
                       "cornerRadius": 10,
-                      "stroke": "#DCDBD8",
+                      "stroke": "#9C9B97",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "padding": [
@@ -196027,7 +196027,7 @@
                           "type": "text",
                           "id": "M0HZh",
                           "name": "Placeholder",
-                          "fill": "#9C9B97",
+                          "fill": "#5A5955",
                           "content": "you@studio.com",
                           "fontFamily": "Onest",
                           "fontSize": 14,
@@ -196040,8 +196040,9 @@
                       "id": "gUxjz",
                       "name": "Button · Join the waitlist",
                       "height": 40,
-                      "fill": "#FFFFFF",
+                      "fill": "#DCDBD8",
                       "cornerRadius": 10,
+                      "stroke": "#C5C4C0",
                       "padding": [
                         0,
                         16
@@ -199586,19 +199587,6 @@
             },
             {
               "type": "text",
-              "id": "rRlsU",
-              "name": "Headline",
-              "fill": "#FFFFFF",
-              "textGrowth": "fixed-width",
-              "width": "fill_container",
-              "content": "AI for $20. A human curator from $300",
-              "lineHeight": 1.1,
-              "fontFamily": "Onest",
-              "fontSize": 32,
-              "fontWeight": "700"
-            },
-            {
-              "type": "text",
               "id": "mJiBM",
               "name": "Lead",
               "fill": "#FFFFFFB3",
@@ -199612,59 +199600,142 @@
             },
             {
               "type": "frame",
-              "id": "b2PLd",
-              "name": "Human curator price",
+              "id": "sGsGp",
+              "name": "Curators art",
               "width": "fill_container",
               "layout": "vertical",
               "alignItems": "center",
               "children": [
                 {
                   "type": "frame",
-                  "id": "sGsGp",
-                  "name": "Curators art",
+                  "id": "UAS4z",
+                  "name": "Crop",
+                  "clip": true,
+                  "width": 260,
+                  "height": 192,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "psVn0",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Curators art",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "checkpoint-curators.png",
+                        "mode": "cover"
+                      },
+                      "width": 260,
+                      "height": 390
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zwHdL",
+              "name": "AI price",
+              "width": "fill_container",
+              "fill": "#FFFFFF0A",
+              "cornerRadius": 16,
+              "stroke": "$brand-primary",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Y2FKV",
+                  "name": "Copy",
                   "width": "fill_container",
                   "layout": "vertical",
-                  "alignItems": "center",
+                  "gap": 12,
                   "children": [
                     {
                       "type": "frame",
-                      "id": "UAS4z",
-                      "name": "Crop",
-                      "clip": true,
-                      "width": 260,
-                      "height": 192,
-                      "layout": "none",
+                      "id": "CicPa",
+                      "name": "Header",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
                       "children": [
                         {
-                          "type": "rectangle",
-                          "id": "psVn0",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Curators art",
-                          "fill": {
-                            "type": "image",
-                            "enabled": true,
-                            "url": "checkpoint-curators.png",
-                            "mode": "cover"
-                          },
-                          "width": 260,
-                          "height": 390
+                          "type": "text",
+                          "id": "o0AeF",
+                          "name": "Title",
+                          "fill": "#FFFFFF",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Checkpoint with the AI curator",
+                          "fontFamily": "Onest",
+                          "fontSize": 18,
+                          "fontWeight": "600"
                         }
                       ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "LiA6X",
+                      "name": "B",
+                      "fill": "#FFFFFFB3",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "One lower fixed price for a team of up to 10. Written feedback instead of calls, and the same verdict on the platform.",
+                      "lineHeight": 1.55,
+                      "fontFamily": "Onest",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "p5N2hy",
+                      "name": "Price",
+                      "fill": "#FFFFFF",
+                      "content": "$20",
+                      "fontFamily": "Onest",
+                      "fontSize": 28,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "NDqHk",
+                      "name": "Note",
+                      "fill": "#FFFFFF8A",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "per cycle · team of 1–10",
+                      "fontFamily": "Onest",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
-                },
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "b2PLd",
+              "name": "Expert offer",
+              "width": "fill_container",
+              "layout": "vertical",
+              "alignItems": "center",
+              "children": [
                 {
                   "type": "frame",
                   "id": "NtJqg",
-                  "name": "Human curator price",
+                  "name": "Expert card",
                   "width": "fill_container",
+                  "fill": "#FFFFFF0A",
                   "cornerRadius": 16,
                   "stroke": "#FFFFFF1F",
                   "strokeWidth": 1,
                   "strokeAlignment": "inner",
                   "layout": "vertical",
-                  "gap": 12,
+                  "gap": 16,
                   "padding": 20,
                   "children": [
                     {
@@ -199672,24 +199743,26 @@
                       "id": "AH5oZ",
                       "name": "Header",
                       "width": "fill_container",
-                      "gap": 12,
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
+                      "layout": "vertical",
+                      "gap": 8,
                       "children": [
                         {
                           "type": "text",
                           "id": "wQqpS",
                           "name": "Title",
                           "fill": "#FFFFFF",
-                          "content": "Human curator",
+                          "content": "Checkpoint with an expert",
                           "fontFamily": "Onest",
-                          "fontSize": 20,
+                          "fontSize": 18,
                           "fontWeight": "600"
                         },
                         {
                           "type": "frame",
                           "id": "SHyMs",
+                          "x": 183,
+                          "y": 0,
                           "name": "Team size select",
+                          "enabled": false,
                           "height": 32,
                           "fill": "#FFFFFF14",
                           "cornerRadius": 10,
@@ -199721,14 +199794,41 @@
                               "fill": "#FFFFFF8A"
                             }
                           ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "s9gFN",
+                          "name": "Tag · Coming soon",
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 6,
+                          "padding": [
+                            3,
+                            8
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "evySR",
+                              "name": "L",
+                              "fill": "#1A1917",
+                              "content": "COMING SOON",
+                              "fontFamily": "Onest",
+                              "fontSize": 11,
+                              "fontWeight": "700",
+                              "letterSpacing": 0.8
+                            }
+                          ]
                         }
                       ]
                     },
                     {
                       "type": "frame",
                       "id": "FfDmW",
+                      "x": 20,
+                      "y": 64,
                       "name": "Levels",
-                      "width": "fill_container",
+                      "enabled": false,
+                      "width": "fill_container(310)",
                       "layout": "vertical",
                       "children": [
                         {
@@ -199799,66 +199899,126 @@
                           ]
                         }
                       ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "zwHdL",
-              "name": "AI price",
-              "width": "fill_container",
-              "fill": "#FFFFFF0A",
-              "cornerRadius": 16,
-              "stroke": "#FFFFFF1F",
-              "strokeWidth": 1,
-              "strokeAlignment": "inner",
-              "layout": "vertical",
-              "gap": 12,
-              "padding": 20,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "CicPa",
-                  "name": "Header",
-                  "width": "fill_container",
-                  "justifyContent": "space_between",
-                  "alignItems": "center",
-                  "children": [
+                    },
                     {
                       "type": "text",
-                      "id": "o0AeF",
-                      "name": "Title",
-                      "fill": "#FFFFFF",
-                      "content": "AI curator",
+                      "id": "UHiQd",
+                      "name": "B",
+                      "fill": "#FFFFFFB3",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Calls with an industry expert every sprint and a final verdict. It opens later: leave your email and we'll write when it does.",
+                      "lineHeight": 1.55,
                       "fontFamily": "Onest",
-                      "fontSize": 20,
-                      "fontWeight": "600"
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "U7Roy1",
+                      "name": "Price",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "zNkqn",
+                          "name": "T",
+                          "fill": "#FFFFFF",
+                          "content": "from $300",
+                          "fontFamily": "Onest",
+                          "fontSize": 26,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "E7Uja7",
+                          "name": "B",
+                          "fill": "#FFFFFF8A",
+                          "content": "Team of 1–10",
+                          "fontFamily": "Onest",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "JanAI",
+                      "name": "Waitlist form",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "drI0A",
+                          "name": "Input · email",
+                          "width": "fill_container",
+                          "height": 40,
+                          "fill": "#C5C4C0",
+                          "cornerRadius": 10,
+                          "stroke": "#9C9B97",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Q8XWq",
+                              "name": "Placeholder",
+                              "fill": "#5A5955",
+                              "content": "you@studio.com",
+                              "fontFamily": "Onest",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "t2ONyI",
+                          "name": "Button · Join the waitlist",
+                          "height": 40,
+                          "fill": "#DCDBD8",
+                          "cornerRadius": 10,
+                          "stroke": "#C5C4C0",
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "R7STNe",
+                              "name": "Label",
+                              "fill": "#1A1917",
+                              "content": "Join the waitlist",
+                              "fontFamily": "Onest",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "FxVPQ",
+                      "name": "Fine print",
+                      "fill": "#76756F",
+                      "content": "We only write about this, once it opens.",
+                      "fontFamily": "Onest",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
-                },
-                {
-                  "type": "text",
-                  "id": "p5N2hy",
-                  "name": "Price",
-                  "fill": "#FFFFFF",
-                  "content": "$20",
-                  "fontFamily": "Onest",
-                  "fontSize": 28,
-                  "fontWeight": "700"
-                },
-                {
-                  "type": "text",
-                  "id": "NDqHk",
-                  "name": "Note",
-                  "fill": "#FFFFFFB3",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Any team size · written sprint summaries",
-                  "fontFamily": "Onest",
-                  "fontSize": 13,
-                  "fontWeight": "normal"
                 }
               ]
             },
