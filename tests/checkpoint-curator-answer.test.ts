@@ -3,6 +3,10 @@ import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { versionInEffect } from "@/lib/legal/versions";
 import { prisma } from "@/services/prisma";
+import { publishForTest } from "./helpers/legal";
+
+// Unpublished until paid advising has a seller (GDHUB-108); its rules still hold.
+publishForTest("AdvisorAgreement");
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();

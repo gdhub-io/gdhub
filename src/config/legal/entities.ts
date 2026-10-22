@@ -69,7 +69,7 @@ export type LegalEntityKey = keyof typeof LEGAL_ENTITIES;
  * otherwise), and the prices in config are restated in its currency.
  */
 export const HUB_LEGAL_ENTITIES = {
-	default: "vsi",
+	default: "founder",
 } as const satisfies Record<string, LegalEntityKey>;
 
 export type HubId = keyof typeof HUB_LEGAL_ENTITIES;

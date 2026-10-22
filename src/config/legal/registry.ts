@@ -39,10 +39,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: true,
 				checksum:
-					"c193172c25be20b1eb58fd5f7c03cf3a1267100034bcdc6be34aed777349c1c4",
+					"0a26b194777632ef6aae74153ccacae0ef94dfa9ecb0f8491e4973362dd9ecc0",
 			},
 		],
 	},
@@ -55,10 +55,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"e636fd0dbd3af9a544592c5dcf798c68b6ce4a335079855f06e9dbbdc309b901",
+					"934c1aab9f97c38f65bbe0e43ce3a2c56948a51c39f12e11a210b873bcdbe1c9",
 			},
 		],
 	},
@@ -71,7 +71,7 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
 					"53b46980251f7cb9855c2cff7cf5438a16ea46a933943eb3aac6a7912fe98a6b",
@@ -87,10 +87,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"62f751ed7d56878aed05e1ad22a86f804f86cc016080ababbd49c1bc2dc8ba6a",
+					"a1a65a10350e9e51e7fb54f12d0b5b15a4d46cce06c47c394f42d9efd7d1be37",
 			},
 		],
 	},
@@ -103,7 +103,7 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
 					"39b4e3f4f9a712288b1ffe99a59950182ce3fbe543b12ffa375a112c7f39fc43",
@@ -115,16 +115,8 @@ export const LEGAL_DOCUMENTS = {
 		title: "Advisor Agreement",
 		issuer: "hub",
 		group: "features",
-		versions: [
-			{
-				version: 1,
-				effectiveAt: "2026-10-17",
-				entity: "vsi",
-				materialChange: false,
-				checksum:
-					"20c4b9524580c5267acafe9b78b868beb517de5e6fbc73e4b1415090f779ce42",
-			},
-		],
+		// Unpublished until paid advising has a seller (GDHUB-108); the text stays as a draft.
+		versions: [],
 	},
 	CheckpointPurchaseTerms: {
 		slug: "checkpoint-purchase-terms",
@@ -135,10 +127,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"de7ce0e789941eb1adc6594013b9c5d715644f44a0af92207fb5b51472d92c9a",
+					"60779eba75cd00db7807b0b325c4d15a812a379031d40023dc1154334938a9ae",
 			},
 		],
 	},
@@ -151,10 +143,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"2efec0770f560867d955ca33612b06c74df8ebdf029bfef0f67bbe650d8b520c",
+					"8ca9e939cafcd051f33cf7149fe697ce9450b49c73a9d62d56a67035e210ae0e",
 			},
 		],
 	},

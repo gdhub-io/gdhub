@@ -1,4 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { publishForTest } from "./helpers/legal";
+
+// Unpublished until paid advising has a seller (GDHUB-108); its rules still hold.
+publishForTest("AdvisorAgreement");
 
 const specialityCount = vi.fn();
 const expertFindUnique = vi.fn();

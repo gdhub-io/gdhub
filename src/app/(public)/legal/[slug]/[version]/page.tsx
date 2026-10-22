@@ -30,7 +30,7 @@ export async function generateMetadata({
 	// The text the user accepted lives here; the unversioned page is the one to index.
 	return {
 		alternates: { canonical: `/legal/${slug}` },
-		robots: { index: false },
+		robots: { index: false, follow: false },
 	};
 }
 

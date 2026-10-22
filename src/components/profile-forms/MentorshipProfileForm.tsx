@@ -82,6 +82,7 @@ const MentorshipProfileForm = ({
 			axios
 				.get<{
 					enabled: boolean;
+					agreementPublished: boolean;
 					agreementAccepted: boolean;
 					agreement: { version: number; acceptedAt: string } | null;
 				}>("/api/user/profile/mentorship")
@@ -206,61 +207,74 @@ const MentorshipProfileForm = ({
 	// Frames `ep5EM` / `isYQT`: where the agreement stands, and the way into the space.
 	const agreementRows = (
 		<div className={styles.agreement}>
-			<Flex align="center" gap={12}>
-				{accepted && agreement ? (
-					<>
-						<IconTile
-							icon={IconFileCheck}
-							tint="var(--gd-success-tint)"
-							ink="var(--gd-success-on-tint)"
-						/>
-						<Flex vertical className={styles.rowText}>
-							<Text className={styles.rowTitle}>
-								{t(
-									"profile-forms.mentorship.agreement.accepted",
-									"Advisor Agreement accepted",
-								)}
-							</Text>
-							<Text className={styles.rowMeta}>
-								{t(
-									"profile-forms.mentorship.agreement.accepted-on",
-									"Accepted on {date} · version {version}",
-									{
-										date: dayjs(agreement.acceptedAt).format("D MMM YYYY"),
-										version: agreement.version,
-									},
-								)}
-							</Text>
-						</Flex>
-						<Link
-							href={`/legal/advisor-agreement/v${agreement.version}`}
-							target="_blank"
-						>
-							<Button icon={<IconArrowUpRight size={16} />} iconPlacement="end">
-								{t("profile-forms.mentorship.agreement.view", "View document")}
-							</Button>
-						</Link>
-					</>
-				) : (
-					<>
-						<IconTile
-							icon={IconFileText}
-							tint="var(--gd-warning-tint)"
-							ink="var(--gd-warning-on-tint)"
-						/>
-						<Text className={`${styles.rowText} ${styles.rowTitle}`}>
-							{t(
-								"profile-forms.mentorship.agreement.missing",
-								"Advisor Agreement not accepted",
-							)}
-						</Text>
-						<Button type="primary" onClick={() => setAgreementOpen(true)}>
-							{t("profile-forms.mentorship.agreement.read", "Read and accept")}
-						</Button>
-					</>
-				)}
-			</Flex>
-			<Divider className={styles.divider} />
+			{mentorship?.agreementPublished && (
+				<>
+					<Flex align="center" gap={12}>
+						{accepted && agreement ? (
+							<>
+								<IconTile
+									icon={IconFileCheck}
+									tint="var(--gd-success-tint)"
+									ink="var(--gd-success-on-tint)"
+								/>
+								<Flex vertical className={styles.rowText}>
+									<Text className={styles.rowTitle}>
+										{t(
+											"profile-forms.mentorship.agreement.accepted",
+											"Advisor Agreement accepted",
+										)}
+									</Text>
+									<Text className={styles.rowMeta}>
+										{t(
+											"profile-forms.mentorship.agreement.accepted-on",
+											"Accepted on {date} · version {version}",
+											{
+												date: dayjs(agreement.acceptedAt).format("D MMM YYYY"),
+												version: agreement.version,
+											},
+										)}
+									</Text>
+								</Flex>
+								<Link
+									href={`/legal/advisor-agreement/v${agreement.version}`}
+									target="_blank"
+								>
+									<Button
+										icon={<IconArrowUpRight size={16} />}
+										iconPlacement="end"
+									>
+										{t(
+											"profile-forms.mentorship.agreement.view",
+											"View document",
+										)}
+									</Button>
+								</Link>
+							</>
+						) : (
+							<>
+								<IconTile
+									icon={IconFileText}
+									tint="var(--gd-warning-tint)"
+									ink="var(--gd-warning-on-tint)"
+								/>
+								<Text className={`${styles.rowText} ${styles.rowTitle}`}>
+									{t(
+										"profile-forms.mentorship.agreement.missing",
+										"Advisor Agreement not accepted",
+									)}
+								</Text>
+								<Button type="primary" onClick={() => setAgreementOpen(true)}>
+									{t(
+										"profile-forms.mentorship.agreement.read",
+										"Read and accept",
+									)}
+								</Button>
+							</>
+						)}
+					</Flex>
+					<Divider className={styles.divider} />
+				</>
+			)}
 			<Flex align="center" gap={12}>
 				<Text
 					className={`${styles.rowText} ${styles.rowTitle}`}

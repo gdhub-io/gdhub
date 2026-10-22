@@ -66,6 +66,8 @@ export function ClickwrapField({
 	const { t } = useTranslate();
 	const { title, slug } = LEGAL_DOCUMENTS[code];
 	const version = versionInEffect(code);
+	// A document with no version in effect has nothing to accept.
+	if (!version) return null;
 	const href = version
 		? `/legal/${slug}/v${version.version}`
 		: `/legal/${slug}`;

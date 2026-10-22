@@ -3,6 +3,10 @@ import { isAllowedByDefault } from "@/config/permissions/defaults";
 import { SpaceRole } from "@/config/permissions/roles";
 import { advisorSpace } from "@/config/spaces/advisor";
 import { permissionsOf } from "@/config/spaces/define-space";
+import { publishForTest } from "./helpers/legal";
+
+// Unpublished until paid advising has a seller (GDHUB-108); its rules still hold.
+publishForTest("AdvisorAgreement");
 
 const authMock = vi.fn();
 const specialityCount = vi.fn();
