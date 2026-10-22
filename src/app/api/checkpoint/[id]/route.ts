@@ -3,6 +3,7 @@ import {
 	CheckpointItemKind,
 	CheckpointStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
 import {
 	apiError,
 	json,
@@ -120,6 +121,16 @@ export const PUT = pipe(
 		(checkpoint.status === CheckpointStatus.AwaitingCurator && onlyTheCurator);
 
 	if (!mayEdit) return apiError.badRequest("checkpointNotDraft");
+
+	// An expert is a waitlist until it opens. A paid draft a curator handed
+	// back keeps its expert path, so the author is not made to pay again.
+	if (
+		!EXPERT_CHECKPOINT_OPEN &&
+		curatorKind === CheckpointCuratorKind.Human &&
+		!(await isCheckpointPaid(id))
+	) {
+		return apiError.badRequest("expertClosed");
+	}
 
 	// The same rule the curator list shows, read here rather than trusted from
 	// the browser: open to mentees, Experienced or Expert, and never the author —

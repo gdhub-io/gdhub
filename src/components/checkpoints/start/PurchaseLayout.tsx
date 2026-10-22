@@ -25,6 +25,8 @@ export type PurchaseLayoutProps = {
 	/** A bought checkpoint is no longer a draft, so the foot drops the draft note. */
 	bought?: boolean;
 	onBack?: () => void;
+	/** Leaves the purchase for its start (the hub, or the workflow); the draft stays. */
+	onStart?: () => void;
 	/** The way on. Payment has none — its action is in the price card. */
 	forward?: ReactNode;
 };
@@ -36,6 +38,7 @@ export function PurchaseLayout({
 	children,
 	bought,
 	onBack,
+	onStart,
 	forward,
 }: PurchaseLayoutProps) {
 	const { t } = useTranslate();
@@ -63,12 +66,17 @@ export function PurchaseLayout({
 				</Flex>
 			</Flex>
 
-			{(onBack || forward || !bought) && (
+			{(onBack || onStart || forward || !bought) && (
 				<footer className={styles.foot}>
 					<Flex gap={8}>
 						{onBack && (
 							<Button onClick={onBack}>
 								{t("checkpoints.prepare.back", "Back")}
+							</Button>
+						)}
+						{onStart && (
+							<Button type="text" onClick={onStart}>
+								{t("checkpoints.prepare.backToStart", "Back to start")}
 							</Button>
 						)}
 						{forward}

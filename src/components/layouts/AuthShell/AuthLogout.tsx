@@ -2,7 +2,9 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Button } from "antd";
+import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import styles from "./style.module.scss";
 
 /**
@@ -18,16 +20,26 @@ import styles from "./style.module.scss";
  * sign-in and registration screens.
  */
 export function AuthLogout() {
-	const { t } = useTranslate();
 	const { status } = useSession();
+	const pathname = usePathname();
 
-	if (status !== "authenticated") return null;
+	// The way into a checkpoint puts it in its own top row, with the content.
+	if (status !== "authenticated" || pathname?.startsWith(CHECKPOINT_ENTRY_HREF))
+		return null;
 
 	return (
 		<div className={styles.logout}>
-			<Button type="text" onClick={() => signOut({ callbackUrl: "/signin" })}>
-				{t("auth.logOut", "Log out")}
-			</Button>
+			<LogOutButton />
 		</div>
+	);
+}
+
+export function LogOutButton() {
+	const { t } = useTranslate();
+
+	return (
+		<Button type="text" onClick={() => signOut({ callbackUrl: "/signin" })}>
+			{t("auth.logOut", "Log out")}
+		</Button>
 	);
 }

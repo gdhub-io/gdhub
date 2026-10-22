@@ -1,0 +1,46 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-107 — choosing an expert leads to a waitlist, never to payment" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+step: "Wizard · 2 Curator (12.4)" {
+  default: "the draft opens with curatorKind AI\nAI card selected: 'Run to the next checkpoint with AI' · 20 USD\nNext — payment enabled"
+  pick: "author clicks 'Industry expert' (Coming soon)" {shape: diamond}
+  block: "12.4a: 'Run with an expert is coming soon'\nexperts table and first-call picker hidden\nNext disabled; the draft stays AI on the server"
+  state: "GET /api/waitlist/ExpertCheckpoint → {joined}" {shape: diamond}
+  before: "Join the waitlist · Choose the AI curator"
+  after: "12.4b: 'You're on the waitlist' · Choose the AI curator"
+  back: "Choose the AI curator → AI card selected again"
+  default -> pick
+  pick -> block: yes
+  block -> state
+  state -> before: "not joined"
+  state -> after: joined
+  before -> back
+  after -> back
+}
+
+join: "POST /api/waitlist/ExpertCheckpoint (signed in)" {
+  upsert: "FeatureWaitlist upsert on (feature, email)\nemail = the account's email; createdAt kept on a repeat\n→ {joined: true}"
+}
+step.before -> join.upsert: "Join the waitlist"
+join.upsert -> step.after
+
+guard: "Server guard: PUT draft with curatorKind Human → 400 expertClosed\nPOST pay with a Human draft → 400 expertClosed\n(behind a config flag EXPERT_CHECKPOINT_OPEN = false; the code paths stay)\nexpert checkpoints already paid or running are untouched" {
+  style.font-size: 13
+}
+step.block -> guard: "even if the UI is bypassed"
+
+admin: "Admin · Checkpoints · tab 'Expert waitlist · N' (13.8)" {
+  list: "GET /api/admin/waitlist?feature=ExpertCheckpoint\ncount, email, createdAt desc; search by email\npermission: the one that opens /admin/checkpoints"
+}
+join.upsert -> admin.list

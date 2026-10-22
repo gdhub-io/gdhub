@@ -12,16 +12,20 @@ import {
 } from "@/components/admin/CuratorsTable";
 import { NewPromoCodeModal } from "@/components/admin/NewPromoCodeModal";
 import { PromoCodesTable } from "@/components/admin/PromoCodesTable";
+import { WaitlistTable } from "@/components/admin/WaitlistTable";
+import { WriteToWaitlistModal } from "@/components/admin/WriteToWaitlistModal";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { WaitlistFeature } from "@/config/prisma-enums";
 import { usePromoCodes } from "@/hooks/admin-promo-codes";
 import { useAdminCurators } from "@/hooks/curators";
+import { useAdminWaitlist } from "@/hooks/feature-waitlist";
 import { useUrlTab } from "@/hooks/useUrlTab";
 import styles from "./style.module.scss";
 
-type Tab = "checkpoints" | "curators" | "promo-codes";
+type Tab = "checkpoints" | "curators" | "promo-codes" | "waitlist";
 
-const TABS: Tab[] = ["checkpoints", "curators", "promo-codes"];
+const TABS: Tab[] = ["checkpoints", "curators", "promo-codes", "waitlist"];
 
 export default function AdminCheckpointsPage() {
 	// useSearchParams needs a Suspense boundary to prerender.
@@ -99,6 +103,11 @@ function AdminCheckpoints() {
 								/>
 							),
 						},
+						{
+							key: "waitlist",
+							label: t("admin.checkpoints.tab.waitlist", "Expert waitlist"),
+							children: <WaitlistTab canManage={canManage} />,
+						},
 					]}
 				/>
 
@@ -132,5 +141,42 @@ function CuratorsTab() {
 			pendingCount={waiting.data?.length}
 			canManage={can("admin.curators.manage")}
 		/>
+	);
+}
+
+/** Mounted only once its tab is opened, so the list is fetched then. */
+function WaitlistTab({ canManage }: { canManage: boolean }) {
+	const [query, setQuery] = useState("");
+	const [selected, setSelected] = useState<string[]>([]);
+	const [writing, setWriting] = useState(false);
+	const waitlist = useAdminWaitlist(WaitlistFeature.ExpertCheckpoint, query);
+	const total = waitlist.data?.total ?? 0;
+
+	return (
+		<>
+			<WaitlistTable
+				rows={waitlist.data?.rows}
+				total={waitlist.data?.total}
+				// A failed refetch keeps the rows it already has.
+				status={waitlist.data ? "success" : waitlist.status}
+				onRetry={() => waitlist.refetch()}
+				onSearch={setQuery}
+				selected={selected}
+				onSelect={setSelected}
+				onWrite={canManage ? () => setWriting(true) : undefined}
+			/>
+			<WriteToWaitlistModal
+				open={writing}
+				feature={WaitlistFeature.ExpertCheckpoint}
+				ids={selected}
+				count={selected.length || total}
+				total={total}
+				onClose={() => setWriting(false)}
+				onSent={() => {
+					setWriting(false);
+					setSelected([]);
+				}}
+			/>
+		</>
 	);
 }

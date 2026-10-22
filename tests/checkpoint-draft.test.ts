@@ -14,6 +14,16 @@ const paymentCount = vi.fn();
 const paymentFindFirst = vi.fn();
 const getCheckpoint = vi.fn();
 
+
+// The expert path is tested as it will run once open; `expert.open = false` tests the waitlist.
+const expert = vi.hoisted(() => ({ open: true }));
+vi.mock("@/config/checkpoint", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/config/checkpoint")>()),
+	get EXPERT_CHECKPOINT_OPEN() {
+		return expert.open;
+	},
+}));
+
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
 // Covered by space-guard.test.ts; mocked here so the assertions are about the
@@ -68,6 +78,7 @@ const put = async (body: unknown) => {
 };
 
 beforeEach(() => {
+	expert.open = true;
 	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
 		typeof arg === "function"
 			? (arg as (tx: typeof prisma) => unknown)(prisma)
@@ -297,5 +308,31 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "checkpointNotDraft",
 		});
+	});
+});
+
+describe("PUT /api/checkpoint/[id] — while an expert is a waitlist", () => {
+	it("refuses to put an expert on an unpaid draft", async () => {
+		expert.open = false;
+
+		const response = await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "expertClosed",
+		});
+		expect(checkpointUpdate).not.toHaveBeenCalled();
+	});
+
+	// A curator who declined a paid checkpoint must still be replaceable.
+	it("still lets a paid draft go to another expert", async () => {
+		expert.open = false;
+		paymentCount.mockResolvedValue(1);
+		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+
+		const response = await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(response.status).toBe(200);
 	});
 });

@@ -8,6 +8,16 @@ import { checkpointCheckout } from "@/repositories/checkpoint-payment";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 
+
+// The expert path is tested as it will run once open; `expert.open = false` tests the waitlist.
+const expert = vi.hoisted(() => ({ open: true }));
+vi.mock("@/config/checkpoint", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/config/checkpoint")>()),
+	get EXPERT_CHECKPOINT_OPEN() {
+		return expert.open;
+	},
+}));
+
 vi.mock("@/repositories/advisor-availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
@@ -45,6 +55,7 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 });
 
 beforeEach(() => {
+	expert.open = true;
 	vi.mocked(prisma.$transaction).mockImplementation((async (arg: unknown) =>
 		typeof arg === "function"
 			? (arg as (tx: typeof prisma) => unknown)(prisma)
@@ -186,5 +197,23 @@ describe("what a checkpoint checkout would charge", () => {
 			ok: false,
 			reason: "curatorUnavailable",
 		});
+	});
+});
+
+describe("while a checkpoint with an expert is a waitlist", () => {
+	it("refuses to sell one", async () => {
+		expert.open = false;
+		await expect(checkpointCheckout("cp1")).resolves.toEqual({
+			ok: false,
+			reason: "expertClosed",
+		});
+	});
+
+	it("still sells the AI curator", async () => {
+		expert.open = false;
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			checkpoint({ curatorKind: CheckpointCuratorKind.AI, curatorId: null }) as never,
+		);
+		expect((await checkpointCheckout("cp1")).ok).toBe(true);
 	});
 });

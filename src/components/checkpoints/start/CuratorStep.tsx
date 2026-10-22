@@ -25,19 +25,22 @@ import { purchaseParams } from "@/config/analytics-events";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
+	EXPERT_CHECKPOINT_OPEN,
 } from "@/config/checkpoint";
-import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { CheckpointCuratorKind, WaitlistFeature } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { isSlotTaken } from "@/hooks/advisor-availability";
 import {
 	useCheckpointCurators,
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
+import { useJoinWaitlist, useWaitlistStatus } from "@/hooks/feature-waitlist";
 import { dueDateFrom } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { sessionDay } from "@/lib/checkpoint-sessions";
 import styles from "./CuratorStep.module.scss";
 import { CuratorTable } from "./CuratorTable";
+import { ExpertWaitlist } from "./ExpertWaitlist";
 import { FirstCallPicker } from "./FirstCallPicker";
 import { usePrepareNav } from "./PrepareNav";
 import { PurchaseLayout, type PurchaseStep } from "./PurchaseLayout";
@@ -86,6 +89,15 @@ export function CuratorStep() {
 	// Undefined until touched: the draft's own answer stands until then.
 	const [slot, setSlot] = useState<string | null>();
 	const [aiDay, setAiDay] = useState<Dayjs | null>(null);
+	// Until an expert can be bought, choosing one shows the waitlist (GDHUB-107).
+	const waitlisted =
+		!EXPERT_CHECKPOINT_OPEN &&
+		(kind ?? draft?.curatorKind) === CheckpointCuratorKind.Human;
+	const waitlist = useWaitlistStatus(
+		WaitlistFeature.ExpertCheckpoint,
+		waitlisted,
+	);
+	const join = useJoinWaitlist(WaitlistFeature.ExpertCheckpoint);
 
 	if (loading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
@@ -107,10 +119,11 @@ export function CuratorStep() {
 	}
 
 	// The draft is opened with the AI curator, so the stored value is the choice
-	// until the author touches it.
+	// until the author touches it. A closed expert is shown, never saved.
 	const chosen = kind ?? draft.curatorKind;
+	const saved = waitlisted ? CheckpointCuratorKind.AI : chosen;
 	const chosenPerson = person ?? draft.curator?.id ?? null;
-	const isHuman = chosen === CheckpointCuratorKind.Human;
+	const isHuman = saved === CheckpointCuratorKind.Human;
 	const curator = curators.data?.find((row) => row.userId === chosenPerson);
 	// A first call belongs to the curator it was booked with.
 	const firstCall =
@@ -120,11 +133,14 @@ export function CuratorStep() {
 					draft.curator?.id === chosenPerson
 				? draft.startedAt
 				: null;
+	// A draft's day is only a wish: one already gone reads as today.
+	const savedDay =
+		draft.curatorKind === CheckpointCuratorKind.AI && draft.startedAt
+			? dayjs.utc(draft.startedAt)
+			: null;
 	const startDay =
 		aiDay ??
-		(draft.curatorKind === CheckpointCuratorKind.AI && draft.startedAt
-			? dayjs.utc(draft.startedAt)
-			: dayjs());
+		(savedDay && !savedDay.isBefore(dayjs(), "day") ? savedDay : dayjs());
 	const reviewDays = [2, 3, 4, 5].map((index) =>
 		dayjs.utc(dateOfDay(startDay.format("YYYY-MM-DD"), sessionDay(index))),
 	);
@@ -132,7 +148,7 @@ export function CuratorStep() {
 	const goTo = async (next: PurchaseStep) => {
 		try {
 			await update.mutateAsync({
-				curatorKind: chosen,
+				curatorKind: saved,
 				// The AI curator is nobody in particular, so choosing it lets the
 				// person go rather than leaving a stale name on the draft.
 				curatorId: isHuman ? chosenPerson : null,
@@ -142,7 +158,7 @@ export function CuratorStep() {
 				trackCheckpoint(
 					"checkpoint_curator_chosen",
 					purchaseParams(
-						{ ...draft, curatorKind: chosen },
+						{ ...draft, curatorKind: saved },
 						isHuman ? curator?.level : null,
 					),
 				);
@@ -168,6 +184,7 @@ export function CuratorStep() {
 		icon: Icon,
 		name: string,
 		description: string,
+		soon = false,
 	) => (
 		// ui-guard-ignore frame 04 type card: a whole-card choice with a tile, two lines and a radio
 		<button
@@ -185,7 +202,16 @@ export function CuratorStep() {
 				ink="var(--gd-color-text)"
 			/>
 			<span className={styles.optionText}>
-				<Typography.Text className={styles.optionName}>{name}</Typography.Text>
+				<Flex gap={8} align="center" wrap>
+					<Typography.Text className={styles.optionName}>
+						{name}
+					</Typography.Text>
+					{soon && (
+						<Tag className={styles.soon}>
+							{t("checkpoints.curator.soon", "Coming soon")}
+						</Tag>
+					)}
+				</Flex>
 				<Typography.Text className={styles.optionDescription}>
 					{description}
 				</Typography.Text>
@@ -205,6 +231,7 @@ export function CuratorStep() {
 				"An expert on calls, or the AI curator in writing.",
 			)}
 			onBack={() => goTo("goal")}
+			onStart={exit}
 			forward={
 				<Button
 					type="primary"
@@ -213,7 +240,7 @@ export function CuratorStep() {
 					// "Nothing chosen at all" cannot be blocked here: a draft is created
 					// with `curatorKind: AI`, so it is indistinguishable from the author
 					// having picked the AI curator until the schema records the choice.
-					disabled={isHuman && (!chosenPerson || !firstCall)}
+					disabled={waitlisted || (isHuman && (!chosenPerson || !firstCall))}
 					onClick={() => goTo("payment")}
 				>
 					{t("checkpoints.curator.next", "Next — payment")}
@@ -227,15 +254,6 @@ export function CuratorStep() {
 					</Typography.Text>
 					<Flex gap={12}>
 						{option(
-							CheckpointCuratorKind.Human,
-							IconUser,
-							t("checkpoints.curator.expert", "Industry expert"),
-							t(
-								"checkpoints.curator.expertCalls",
-								"A call every sprint, a final verdict, clear deadlines and reminders.",
-							),
-						)}
-						{option(
 							CheckpointCuratorKind.AI,
 							IconSparkles,
 							t("checkpoints.curator.ai", "AI curator"),
@@ -244,10 +262,42 @@ export function CuratorStep() {
 								"Written feedback every sprint, a final verdict, clear deadlines and reminders.",
 							),
 						)}
+						{option(
+							CheckpointCuratorKind.Human,
+							IconUser,
+							t("checkpoints.curator.expert", "Industry expert"),
+							EXPERT_CHECKPOINT_OPEN
+								? t(
+										"checkpoints.curator.expertCalls",
+										"A call every sprint, a final verdict, clear deadlines and reminders.",
+									)
+								: t(
+										"checkpoints.curator.expertSoon",
+										"Calls with an expert every sprint and a final verdict. Opens later.",
+									),
+							!EXPERT_CHECKPOINT_OPEN,
+						)}
 					</Flex>
 				</div>
 
-				{chosen === CheckpointCuratorKind.Human ? (
+				{waitlisted ? (
+					<ExpertWaitlist
+						joined={waitlist.isError ? false : waitlist.data?.joined}
+						joining={join.isPending}
+						onJoin={() =>
+							join.mutate(undefined, {
+								onError: () =>
+									message.error(
+										t(
+											"checkpoints.waitlist.failed",
+											"Could not join. Try again.",
+										),
+									),
+							})
+						}
+						onChooseAI={() => setKind(CheckpointCuratorKind.AI)}
+					/>
+				) : chosen === CheckpointCuratorKind.Human ? (
 					<Flex vertical gap={12}>
 						<div>
 							<Typography.Text className={styles.label}>

@@ -284,6 +284,7 @@ export function PaymentStep() {
 				)
 			}
 			onBack={() => go("curator")}
+			onStart={exit}
 		>
 			<Flex gap={48} align="flex-start" className={styles.split}>
 				<Flex vertical gap={24} className={styles.summary}>
