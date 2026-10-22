@@ -2,6 +2,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 	CheckpointStatus,
+	PaymentProvider,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CHECKPOINT_AI_PRICE, CURATOR_PRICE } from "@/config/checkpoint";
@@ -159,6 +160,7 @@ describe("issuing a refund", () => {
 		amount: 45000,
 		currency: "USD",
 		createdAt: new Date("2026-10-12T09:00:00.000Z"),
+		provider: PaymentProvider.STRIPE,
 		providerTransactionId: "cs_1",
 		refunds,
 	});

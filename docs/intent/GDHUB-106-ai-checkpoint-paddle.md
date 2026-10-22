@@ -65,12 +65,16 @@ Paddle, nothing can be sold.
       amount actually charged.
 - [ ] A replayed or duplicated Paddle webhook changes nothing a second time.
 - [ ] A promotion code created in GDHub's admin is a Paddle discount, and it
-      lowers the price in the checkout. A 100% code starts the checkpoint
-      without charging anything.
+      lowers the price in the checkout. The existing rules hold: 1–99% or a
+      fixed amount, optional expiry and use limit. Paddle has no "first purchase
+      only" restriction, so that option is hidden for Paddle codes. A free
+      checkpoint is still given by an admin (GDHUB-40), never by a code.
 - [ ] Disabling a code in the admin stops it working in the checkout.
-- [ ] The admin's Refund on an AI checkpoint sends a refund through Paddle.
-      When Paddle confirms it, a `Refund` row is recorded and the checkpoint
-      follows the existing refund rules.
+- [ ] The admin's Refund on an AI checkpoint sends the amount the platform
+      computes (GDHUB-101: the paid sum less the parts already provided) to
+      Paddle as a refund adjustment. The `Refund` row and the cancelled
+      checkpoint are written at once, as with Stripe. A refund Paddle later
+      rejects is written to the audit log, never silently dropped.
 - [ ] An expert draft still cannot be paid (`expertClosed`). No checkpoint
       checkout reaches Stripe while the Paddle path is on.
 - [ ] The author's receipt link opens the Paddle invoice.
@@ -92,5 +96,11 @@ Paddle, nothing can be sold.
 - **A checkout left open:** assumed the same rule as Stripe today. A new
   attempt cancels the earlier PENDING row, and the webhook ignores a
   transaction whose row is no longer PENDING.
-- **Refunds:** assumed full refunds only from the admin, as today. A partial
-  refund made in the Paddle dashboard is still recorded from the webhook.
+- **Refunds:** Paddle approves refunds itself, sometimes after a delay. Assumed
+  for now that the admin's refund is written at once, and that Paddle's
+  later approval or rejection only updates it. A refund made in the Paddle
+  dashboard is recorded from the webhook.
+- **A promotion code in a checkout opened by the server:** assumed the
+  Paddle checkout for a transaction created by the server still lets the
+  author enter a discount code. If it does not, the code is entered on
+  GDHub's payment step and passed to the transaction.

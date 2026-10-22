@@ -15,6 +15,12 @@ vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
 }));
 
+// These assertions are about the Stripe path; the Paddle one has its own tests.
+vi.mock("@/config/checkpoint", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/config/checkpoint")>()),
+	CHECKPOINT_PAYMENT_PROVIDER: "STRIPE",
+}));
+
 vi.mock("@/config/checkpoint-pricing", () => ({
 	checkpointPurchaseOpen: () => true,
 }));

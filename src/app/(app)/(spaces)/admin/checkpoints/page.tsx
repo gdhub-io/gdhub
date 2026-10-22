@@ -95,7 +95,7 @@ function AdminCheckpoints() {
 							label: t("admin.checkpoints.tab.promoCodes", "Promo codes"),
 							children: (
 								<PromoCodesTable
-									codes={promoCodes.data}
+									codes={promoCodes.data?.codes}
 									// A failed refetch keeps the rows it already has.
 									status={promoCodes.data ? "success" : promoCodes.status}
 									onRetry={() => promoCodes.refetch()}
@@ -111,7 +111,11 @@ function AdminCheckpoints() {
 					]}
 				/>
 
-				<NewPromoCodeModal open={creating} onClose={() => setCreating(false)} />
+				<NewPromoCodeModal
+					open={creating}
+					onClose={() => setCreating(false)}
+					firstPurchase={promoCodes.data?.firstPurchase ?? false}
+				/>
 			</div>
 		</AdminSpace>
 	);

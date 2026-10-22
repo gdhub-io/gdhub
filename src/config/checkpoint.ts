@@ -1,5 +1,9 @@
 import { hubLegalEntity } from "@/config/legal/entities";
-import { CheckpointStatus, type SkillLevel } from "@/config/prisma-enums";
+import {
+	CheckpointStatus,
+	PaymentProvider,
+	type SkillLevel,
+} from "@/config/prisma-enums";
 
 /**
  * Every number a checkpoint runs on. Code that needs one imports it from here;
@@ -124,11 +128,21 @@ export const CHECKPOINT_MINOR_UNITS = 100;
 /** The AI curator has one price and it does not move with the team. */
 export const CHECKPOINT_AI_PRICE = 20;
 
+/** An amount promotion code must leave at least this much to charge, in minor units. */
+export const MIN_CHARGE_AFTER_DISCOUNT = 50;
+
 /**
  * Whether a checkpoint with an expert can be bought. Off until there is a seller
  * for human curation (GDHUB-107): choosing an expert leads to a waitlist.
  */
 export const EXPERT_CHECKPOINT_OPEN = false;
+
+/**
+ * Who takes the money for a new checkpoint checkout and holds the promotion codes
+ * (GDHUB-106). A payment already made stays with the provider that took it.
+ */
+export const CHECKPOINT_PAYMENT_PROVIDER: PaymentProvider =
+	PaymentProvider.PADDLE;
 
 // Refunds
 

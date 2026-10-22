@@ -1,12 +1,12 @@
 import {
+	AuditAction,
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
 	PayableType,
-	PaymentProvider,
+	type PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
-import type Stripe from "stripe";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
@@ -26,15 +26,12 @@ import {
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
+import { refundedTotal } from "@/repositories/checkpoint-refund";
+import { recordProviderRefund } from "@/repositories/payment-records";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
+import { type CheckoutPaid, gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
-import {
-	captureCheckout,
-	refundCheckout,
-	releaseCheckout,
-	retrieveCheckout,
-} from "@/services/stripe/server";
 
 /** The money a checkpoint holds or has taken. */
 const heldPaymentWhere = (checkpointId: string) => ({
@@ -206,11 +203,11 @@ export const checkpointCheckout = async (checkpointId: string) => {
  * Gives the author their money back, whichever way it is still sitting.
  *
  * A hold is released and costs nothing; a payment that was already captured is
- * refunded, fee and all. Both are asked of Stripe first and written down only
- * once it agrees — a row claiming money went back when it did not is worse than
+ * refunded, fee and all. Both are asked of the provider first and written down
+ * only once it agrees — a row claiming money went back when it did not is worse than
  * no row at all.
  *
- * Returns what happened, `failed` when Stripe refused, or null when there was
+ * Returns what happened, `failed` when the provider refused, or null when there was
  * nothing to give back.
  */
 export const returnCheckpointMoney = async (
@@ -224,14 +221,17 @@ export const returnCheckpointMoney = async (
 			amount: true,
 			currency: true,
 			status: true,
+			provider: true,
 			providerTransactionId: true,
 		},
 	});
 
 	if (!payment?.providerTransactionId) return null;
 
-	if (payment.status === PaymentStatus.PROCESSING) {
-		const released = await releaseCheckout(payment.providerTransactionId);
+	const gateway = gatewayFor(payment.provider);
+
+	if (payment.status === PaymentStatus.PROCESSING && gateway.release) {
+		const released = await gateway.release(payment.providerTransactionId);
 
 		if (!released) return { failed: "holdNotReleased" as const };
 
@@ -243,7 +243,7 @@ export const returnCheckpointMoney = async (
 		return { released: true as const };
 	}
 
-	const refund = await refundCheckout(payment.providerTransactionId);
+	const refund = await gateway.refund(payment.providerTransactionId);
 
 	if (!refund) return { failed: "refundFailed" as const };
 
@@ -251,8 +251,8 @@ export const returnCheckpointMoney = async (
 		prisma.refund.create({
 			data: {
 				paymentId: payment.id,
-				amount: refund.amount ?? payment.amount,
-				currency: (refund.currency ?? payment.currency).toUpperCase(),
+				amount: refund.amount,
+				currency: refund.currency,
 				reason,
 				providerRefundId: refund.id,
 			},
@@ -294,7 +294,8 @@ export const returnToAuthor = (
 
 /**
  * A completed checkout, applied: the payment becomes a hold and the checkpoint
- * goes to its curator, or starts at once with the AI one.
+ * goes to its curator, or starts at once with the AI one. Paddle charges at once,
+ * so its payment is complete here; a Stripe hold for the AI curator is captured.
  *
  * The webhook and the reconciliation both land here, possibly for the same
  * purchase. Only a `PENDING` row moves, so whichever comes second finds nothing
@@ -304,18 +305,19 @@ export const returnToAuthor = (
  * Returns whether this call was the one that applied it.
  */
 export const settleCheckpointCheckout = async (
-	payment: { id: string; payableId: string },
-	session: Stripe.Checkout.Session,
+	payment: { id: string; payableId: string; provider: PaymentProvider },
+	paid: CheckoutPaid,
 ) => {
+	const gateway = gatewayFor(payment.provider);
 	const { count } = await prisma.payment.updateMany({
 		where: { id: payment.id, status: PaymentStatus.PENDING },
 		data: {
 			status: PaymentStatus.PROCESSING,
-			providerTransactionId: session.id,
-			providerCustomerId:
-				typeof session.customer === "string" ? session.customer : null,
+			providerTransactionId: paid.transactionId,
+			providerCustomerId: paid.customerId,
+			...(paid.invoiceId && { providerInvoiceId: paid.invoiceId }),
 			// What was actually charged, after any promotion code.
-			...(session.amount_total != null && { amount: session.amount_total }),
+			...(paid.amount != null && { amount: paid.amount }),
 		},
 	});
 
@@ -323,7 +325,7 @@ export const settleCheckpointCheckout = async (
 
 	// A 100% code made in the dashboard leaves nothing to hold or capture, and a
 	// free checkpoint is an admin's call (GDHUB-40), so it reads as a failed payment.
-	if (!session.payment_intent) {
+	if (!paid.charged) {
 		await prisma.payment.update({
 			where: { id: payment.id },
 			data: { status: PaymentStatus.CANCELED },
@@ -346,12 +348,14 @@ export const settleCheckpointCheckout = async (
 	// unpaid. A capture Stripe refuses starts nothing: the hold is let go and the
 	// draft reads as a failed payment the author can retry.
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
-		const captured = await captureCheckout(session.id).catch(() => null);
+		const captured =
+			!paid.held ||
+			(await gateway.capture?.(paid.transactionId).catch(() => null));
 
 		if (!captured) {
 			// Written only once Stripe agrees; a hold it would not release stays
 			// PROCESSING for the holds cron to try again.
-			if (await releaseCheckout(session.id).catch(() => null)) {
+			if (await gateway.release?.(paid.transactionId).catch(() => null)) {
 				await prisma.payment.update({
 					where: { id: payment.id },
 					data: { status: PaymentStatus.CANCELED },
@@ -390,7 +394,7 @@ export const settleCheckpointCheckout = async (
 	} catch (error) {
 		if (!(error instanceof SlotTakenError)) throw error;
 
-		if (await releaseCheckout(session.id).catch(() => null)) {
+		if (await gateway.release?.(paid.transactionId).catch(() => null)) {
 			await prisma.payment.update({
 				where: { id: payment.id },
 				data: { status: PaymentStatus.CANCELED },
@@ -450,25 +454,28 @@ export const startAiCheckpoint = async (
 type PendingCheckout = {
 	id: string;
 	payableId: string;
+	provider: PaymentProvider;
 	providerTransactionId: string | null;
 };
 
 /**
- * Asks Stripe what became of a checkout still `PENDING` here, and applies the
- * answer. A webhook that never arrived — not forwarded, misconfigured, failed
+ * Asks the provider what became of a checkout still `PENDING` here, and applies
+ * the answer. A webhook that never arrived — not forwarded, misconfigured, failed
  * past its retries — would otherwise leave money held on a card for a
  * checkpoint that still reads as unpaid.
  */
 export const reconcileCheckout = async (payment: PendingCheckout) => {
 	if (!payment.providerTransactionId) return false;
 
-	const session = await retrieveCheckout(payment.providerTransactionId);
+	const checkout = await gatewayFor(payment.provider).checkoutState(
+		payment.providerTransactionId,
+	);
 
-	if (session.status === "complete") {
-		return settleCheckpointCheckout(payment, session);
+	if (checkout.state === "paid") {
+		return settleCheckpointCheckout(payment, checkout);
 	}
 
-	if (session.status === "expired") {
+	if (checkout.state === "expired") {
 		await prisma.payment.updateMany({
 			where: { id: payment.id, status: PaymentStatus.PENDING },
 			data: { status: PaymentStatus.CANCELED },
@@ -484,9 +491,72 @@ export const pendingCheckout = (checkpointId: string) =>
 		where: {
 			payableType: PayableType.CHECKPOINT,
 			payableId: checkpointId,
-			provider: PaymentProvider.STRIPE,
 			status: PaymentStatus.PENDING,
 		},
 		orderBy: { createdAt: "desc" },
-		select: { id: true, payableId: true, providerTransactionId: true },
+		select: {
+			id: true,
+			payableId: true,
+			provider: true,
+			providerTransactionId: true,
+		},
 	});
+
+/**
+ * A Paddle refund for a checkpoint payment, from the webhook: ours, written
+ * already when the admin issued it, or one made in the Paddle dashboard. Paddle
+ * approves refunds itself: one it rejects is logged for an admin to settle by
+ * hand, the row the admin's refund wrote is kept, and one still waiting for
+ * approval changes nothing yet.
+ */
+export const recordPaddleAdjustment = async (
+	payment: { id: string; amount: number; payableId: string },
+	adjustment: {
+		id: string;
+		status: string;
+		amount: number | null;
+		currency: string;
+	},
+) => {
+	if (adjustment.status === "rejected" || adjustment.status === "reversed") {
+		console.error(
+			"[paddle.refund] Paddle did not refund",
+			adjustment.id,
+			adjustment.status,
+		);
+		await prisma.auditLog.create({
+			data: {
+				entity: "checkpoint",
+				entityId: payment.payableId,
+				action: AuditAction.UPDATE,
+				meta: {
+					action: "paddleRefundRefused",
+					adjustmentId: adjustment.id,
+					status: adjustment.status,
+				},
+			},
+		});
+
+		return;
+	}
+
+	if (adjustment.status !== "approved") return;
+
+	const refund = {
+		id: adjustment.id,
+		amount: adjustment.amount ?? payment.amount,
+		currency: adjustment.currency,
+		reason: "paddleRefund",
+	};
+	// What earlier refunds returned, plus this one: a repeat of it is not counted twice.
+	const earlier = await prisma.refund.findMany({
+		where: { paymentId: payment.id, providerRefundId: { not: adjustment.id } },
+		select: { amount: true },
+	});
+
+	await recordProviderRefund(
+		payment,
+		refund,
+		refundedTotal(earlier) + refund.amount >= payment.amount,
+	);
+};

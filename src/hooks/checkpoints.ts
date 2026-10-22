@@ -20,6 +20,7 @@ import type {
 	CheckpointItemInput,
 } from "@/schemas/checkpoint";
 import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
+import type { CheckoutStart } from "@/services/payments/types";
 import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
@@ -108,9 +109,10 @@ export const useAttachEvidence = (id?: string) =>
 	useCheckpointPost<CheckpointEvidenceBody>(id, "evidence");
 
 /**
- * Opens Stripe Checkout for a draft and hands back where to send the author.
+ * Opens the checkout for a draft and hands back where the author pays: a hosted
+ * page, or a Paddle transaction for its overlay.
  *
- * It starts nothing. The checkpoint leaves `Draft` when Stripe calls the
+ * It starts nothing. The checkpoint leaves `Draft` when the provider calls the
  * webhook, so an author who closes the tab has spent nothing and still has
  * their draft.
  */
@@ -118,7 +120,7 @@ export const useCheckpointCheckout = (id?: string) =>
 	useMutation({
 		mutationFn: async (legal: LegalAcceptanceInput[]) =>
 			(
-				await axios.post<{ url: string }>(`/api/checkpoint/${id}/pay`, {
+				await axios.post<CheckoutStart>(`/api/checkpoint/${id}/pay`, {
 					legal,
 					startNow: true,
 				})

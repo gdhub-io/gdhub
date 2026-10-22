@@ -8,12 +8,19 @@ const couponsCreate = vi.fn();
 const couponsDel = vi.fn();
 const promoCreate = vi.fn();
 const promoUpdate = vi.fn();
+const promoList = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
 // Covered by space-guard.test.ts; mocked so these assertions are about the codes.
 vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
+}));
+
+// These assertions are about the Stripe path; the Paddle one has its own tests.
+vi.mock("@/config/checkpoint", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/config/checkpoint")>()),
+	CHECKPOINT_PAYMENT_PROVIDER: "STRIPE",
 }));
 
 vi.mock("@/services/prisma", () => ({
@@ -29,6 +36,7 @@ vi.mock("@/services/stripe/server", () => ({
 		promotionCodes: {
 			create: (...a: unknown[]) => promoCreate(...a),
 			update: (...a: unknown[]) => promoUpdate(...a),
+			list: (...a: unknown[]) => promoList(...a),
 		},
 	}),
 }));
@@ -96,6 +104,25 @@ beforeEach(() => {
 	couponsDel.mockResolvedValue({});
 	promoCreate.mockResolvedValue(stripePromo());
 	promoUpdate.mockResolvedValue(stripePromo({ active: false }));
+});
+
+describe("listing promotion codes", () => {
+	it("answers with the codes and whether first-purchase codes exist", async () => {
+		promoList.mockResolvedValue({ data: [stripePromo()] });
+		const { GET } = await import("@/app/api/admin/checkpoints/promo-codes/route");
+
+		const response = await (
+			GET as (r: NextRequest, c: unknown) => Promise<Response>
+		)(new NextRequest("http://localhost/api/admin/checkpoints/promo-codes"), {
+			params: Promise.resolve({}),
+		});
+
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({
+			codes: [expect.objectContaining({ id: "promo_1", amountOff: 5000 })],
+			firstPurchase: true,
+		});
+	});
 });
 
 describe("creating a promotion code", () => {

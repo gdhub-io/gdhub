@@ -19,7 +19,7 @@ const meta: Meta<typeof NewPromoCodeModal> = {
 	component: NewPromoCodeModal,
 	decorators: [withProviders],
 	parameters: { layout: "fullscreen" },
-	args: { open: true, onClose: () => {} },
+	args: { open: true, onClose: () => {}, firstPurchase: false },
 };
 
 export default meta;
@@ -34,6 +34,9 @@ export const Percent: Story = {
 		await userEvent.type(body.getAllByRole("spinbutton")[0], "30");
 	},
 };
+
+/** Stripe can limit a code to a first purchase; Paddle cannot, so the box is hidden there. */
+export const WithFirstPurchase: Story = { args: { firstPurchase: true } };
 
 /** 11.3b: Amount mode, and the server answers that the code is taken. */
 export const AmountCodeTaken: Story = {

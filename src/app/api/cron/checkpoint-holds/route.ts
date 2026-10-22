@@ -29,12 +29,16 @@ const reconcilePending = async () => {
 	const pending = await prisma.payment.findMany({
 		where: {
 			payableType: PayableType.CHECKPOINT,
-			provider: PaymentProvider.STRIPE,
 			status: PaymentStatus.PENDING,
 			providerTransactionId: { not: null },
 			createdAt: { lt: new Date(Date.now() - WEBHOOK_GRACE_MS) },
 		},
-		select: { id: true, payableId: true, providerTransactionId: true },
+		select: {
+			id: true,
+			payableId: true,
+			provider: true,
+			providerTransactionId: true,
+		},
 	});
 
 	let settled = 0;
@@ -72,6 +76,8 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		const stale = await prisma.payment.findMany({
 			where: {
 				payableType: PayableType.CHECKPOINT,
+				// Only Stripe holds money it has not taken; Paddle charges at once.
+				provider: PaymentProvider.STRIPE,
 				status: PaymentStatus.PROCESSING,
 				createdAt: { lt: deadline },
 			},

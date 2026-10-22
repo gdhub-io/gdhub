@@ -32,8 +32,8 @@ import {
 	syncChat,
 } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
+import { gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
-import { captureCheckout } from "@/services/stripe/server";
 
 const AnswerSchema = z.object({
 	accept: z.boolean(),
@@ -119,12 +119,16 @@ export const POST = pipe(
 			payableId: id,
 			status: PaymentStatus.PROCESSING,
 		},
-		select: { id: true, providerTransactionId: true },
+		select: { id: true, provider: true, providerTransactionId: true },
 	});
 
 	if (accept) {
 		if (held?.providerTransactionId) {
-			const captured = await captureCheckout(held.providerTransactionId);
+			// Only a provider that holds money can capture it; Paddle has already taken it.
+			const { capture } = gatewayFor(held.provider);
+			const captured = capture
+				? await capture(held.providerTransactionId)
+				: true;
 
 			if (!captured) return apiError.internal("paymentNotSettled");
 

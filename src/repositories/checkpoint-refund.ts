@@ -4,6 +4,7 @@ import {
 	CheckpointItemKind,
 	CheckpointStatus,
 	PayableType,
+	type PaymentProvider,
 	PaymentStatus,
 	Prisma,
 } from "@gdhub-io/gdhub-prisma";
@@ -38,8 +39,8 @@ import {
 import { checkpointNumbers } from "@/repositories/checkpoint-number";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
+import { gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
-import { refundCheckout } from "@/services/stripe/server";
 import type {
 	AdminCheckpointsPageDto,
 	CheckpointRefundQuoteDto,
@@ -89,6 +90,7 @@ export const refundCaseOf = async (checkpointId: string) => {
 				id: true,
 				amount: true,
 				createdAt: true,
+				provider: true,
 				providerTransactionId: true,
 				refunds: {
 					orderBy: { createdAt: "asc" },
@@ -114,42 +116,45 @@ export const refundCaseOf = async (checkpointId: string) => {
 };
 
 /**
- * Asks Stripe for part of a checkpoint's payment back; null when it refuses.
- * Keyed to the checkpoint, so a retry or a double click is the same refund.
+ * Asks the provider that took the payment for part of it back; null when it
+ * refuses. Keyed to the checkpoint, so a retry or a double click is the same
+ * Stripe refund; Paddle has no key, and the one-refund check stands in for it.
  */
 export const sendCheckpointRefund = (
 	checkpointId: string,
-	sessionId: string,
+	payment: { provider: PaymentProvider; providerTransactionId: string },
 	amount: number,
 ) =>
-	refundCheckout(sessionId, {
-		amount,
-		idempotencyKey: `checkpoint-refund-${checkpointId}`,
-	}).catch((error) => {
-		console.error("[checkpoint-refund] Stripe refused", checkpointId, error);
-		return null;
-	});
+	gatewayFor(payment.provider)
+		.refund(payment.providerTransactionId, {
+			amount,
+			idempotencyKey: `checkpoint-refund-${checkpointId}`,
+		})
+		.catch((error) => {
+			console.error("[checkpoint-refund] refused", checkpointId, error);
+			return null;
+		});
 
 /**
- * What a Stripe refund leaves behind: its own row and the payment's status.
- * The webhook may have written the row first — the Stripe id is the key, so
- * there is one either way.
+ * What a refund leaves behind: its own row and the payment's status. The webhook
+ * may have written the row first — the provider's id is the key, so there is one
+ * either way.
  */
 export const refundWrites = (
 	db: Pick<typeof prisma, "refund" | "payment">,
 	payment: { id: string; amount: number },
-	stripeRefund: { id: string; amount: number; currency: string },
+	providerRefund: { id: string; amount: number; currency: string },
 	reason: RefundRowReason,
 ) =>
 	[
 		db.refund.upsert({
-			where: { providerRefundId: stripeRefund.id },
+			where: { providerRefundId: providerRefund.id },
 			create: {
 				paymentId: payment.id,
-				amount: stripeRefund.amount,
-				currency: stripeRefund.currency.toUpperCase(),
+				amount: providerRefund.amount,
+				currency: providerRefund.currency.toUpperCase(),
 				reason,
-				providerRefundId: stripeRefund.id,
+				providerRefundId: providerRefund.id,
 			},
 			update: { reason },
 		}),
@@ -157,7 +162,7 @@ export const refundWrites = (
 			where: { id: payment.id },
 			data: {
 				status:
-					stripeRefund.amount >= payment.amount
+					providerRefund.amount >= payment.amount
 						? PaymentStatus.REFUNDED
 						: PaymentStatus.PARTIALLY_REFUNDED,
 			},
@@ -219,18 +224,18 @@ export const issueCheckpointRefund = async (
 	const { refund: amount, provided, parts } = refundAmount(refund);
 	if (amount <= 0) return { ok: false as const, error: "nothingOwed" as const };
 
-	const stripeRefund = await sendCheckpointRefund(
+	const providerRefund = await sendCheckpointRefund(
 		checkpointId,
-		sessionId,
+		{ provider: payment.provider, providerTransactionId: sessionId },
 		amount,
 	);
-	if (!stripeRefund)
+	if (!providerRefund)
 		return { ok: false as const, error: "refundFailed" as const };
 
 	const meta = { reason, amount, provided, parts, paid: payment.amount };
 
 	await prisma.$transaction([
-		...refundWrites(prisma, payment, stripeRefund, reason),
+		...refundWrites(prisma, payment, providerRefund, reason),
 		// No verdict, no certificate: it ends as Cancelled, not Closed.
 		prisma.projectCheckpoint.update({
 			where: { id: checkpointId },
@@ -251,7 +256,7 @@ export const issueCheckpointRefund = async (
 		syncChat(`refund ${checkpointId}`, () => closeCheckpointRoom(checkpointId)),
 		notifyAuthorOfRefund(
 			checkpointId,
-			formatCheckpointMoney(stripeRefund.amount),
+			formatCheckpointMoney(providerRefund.amount),
 			reason,
 		),
 		// A withdrawal still pays the curator for the calls held (§3.3).
@@ -262,7 +267,7 @@ export const issueCheckpointRefund = async (
 			: null,
 	]);
 
-	return { ok: true as const, amount: stripeRefund.amount };
+	return { ok: true as const, amount: providerRefund.amount };
 };
 
 const ADMIN_PAGE_SIZE = 20;

@@ -1,6 +1,7 @@
 import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
+	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -32,6 +33,7 @@ vi.mock("@/services/stripe/server", () => ({
 const pending = {
 	id: "pay_1",
 	payableId: "cp1",
+	provider: PaymentProvider.STRIPE,
 	providerTransactionId: "cs_1",
 };
 
