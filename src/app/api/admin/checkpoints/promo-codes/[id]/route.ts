@@ -10,13 +10,13 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
-	isInvalidRequestError,
-	isMissingResourceError,
-	logPromoCodeChange,
-	setPromoCodeActive,
-} from "@/services/stripe/promo-codes";
+	checkoutGateway,
+	PromoCodeMissingError,
+	PromoCodeRefusedError,
+} from "@/services/payments/gateway";
+import { logPromoCodeChange } from "@/services/payments/promo-log";
 
-// On and off is the only edit: Stripe never changes a coupon's discount.
+// On and off is the only edit: a code's discount never changes once made.
 const UpdateSchema = z.object({ active: z.boolean() });
 
 export const PATCH = pipe(
@@ -31,17 +31,24 @@ export const PATCH = pipe(
 	const { active } = body as z.infer<typeof UpdateSchema>;
 
 	try {
-		const promo = await setPromoCodeActive(id, active);
+		const { provider, promoCodes } = checkoutGateway();
+		const promo = await promoCodes.setActive(id, active);
 
-		await logPromoCodeChange(currentUser.id, AuditAction.UPDATE, promo, {
-			active,
-		});
+		await logPromoCodeChange(
+			provider,
+			currentUser.id,
+			AuditAction.UPDATE,
+			promo,
+			{
+				active,
+			},
+		);
 
 		return json(promo);
 	} catch (error) {
-		if (isMissingResourceError(error)) return apiError.notFound();
-		// Stripe refuses to turn back on a code that expired or whose code another active one now holds.
-		if (active && isInvalidRequestError(error)) {
+		if (error instanceof PromoCodeMissingError) return apiError.notFound();
+		// A code that expired, or whose code another active one now holds, cannot come back on.
+		if (active && error instanceof PromoCodeRefusedError) {
 			return json(
 				{ error: "cannotActivate", statusCode: 409 },
 				{ status: 409 },

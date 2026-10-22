@@ -100,6 +100,7 @@ beforeEach(() => {
 	checkpointUpdate.mockResolvedValue({});
 	paymentFindFirst.mockResolvedValue({
 		id: "pay_1",
+		provider: "STRIPE",
 		providerTransactionId: "cs_1",
 	});
 	paymentUpdate.mockResolvedValue({});

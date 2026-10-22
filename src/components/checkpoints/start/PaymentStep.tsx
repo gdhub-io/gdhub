@@ -40,6 +40,7 @@ import { useCheckpointCheckout } from "@/hooks/checkpoints";
 import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
 import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { openPaddleTransaction } from "@/services/paddle";
 import { CuratorBadge } from "../CuratorBadge";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./PaymentStep.module.scss";
@@ -120,8 +121,8 @@ export function PaymentStep() {
 		.sort((a, b) => a.order - b.order);
 	const amount = `${CHECKPOINT_PRICE_CURRENCY}${price}`;
 
-	// Stripe hosts the payment, so leaving the app is the last thing this step
-	// does; what comes back is a webhook, not this tab.
+	// The provider takes the payment — Paddle in its overlay, Stripe on its own
+	// page — and what settles it is a webhook, not this tab.
 	const pay = async () => {
 		try {
 			await form.validateFields();
@@ -130,7 +131,7 @@ export function PaymentStep() {
 		}
 		try {
 			setStale(null);
-			const { url } = await checkout.mutateAsync(
+			const start = await checkout.mutateAsync(
 				legalAcceptances(["CheckpointPurchaseTerms"]),
 			);
 			trackCheckpoint(
@@ -141,7 +142,15 @@ export function PaymentStep() {
 				},
 				{
 					callback: () => {
-						window.location.href = url;
+						if ("url" in start) {
+							window.location.href = start.url;
+							return;
+						}
+						openPaddleTransaction({
+							transactionId: start.paddleTransactionId,
+							successUrl: start.successUrl,
+							customerEmail: start.customerEmail,
+						});
 					},
 				},
 			);

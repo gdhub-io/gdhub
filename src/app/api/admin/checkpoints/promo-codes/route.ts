@@ -10,11 +10,11 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
-	createPromoCode,
-	isCodeTakenError,
-	listPromoCodes,
-	logPromoCodeChange,
-} from "@/services/stripe/promo-codes";
+	checkoutGateway,
+	PromoCodeRefusedError,
+	PromoCodeTakenError,
+} from "@/services/payments/gateway";
+import { logPromoCodeChange } from "@/services/payments/promo-log";
 
 const CreateSchema = z
 	.object({
@@ -47,7 +47,14 @@ type CreateBody = z.infer<typeof CreateSchema>;
 export const GET = pipe(
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "admin.checkpoints.view" }),
-)(async () => json(await listPromoCodes()));
+)(async () => {
+	const { promoCodes } = checkoutGateway();
+
+	return json({
+		codes: await promoCodes.list(),
+		firstPurchase: promoCodes.firstPurchase,
+	});
+});
 
 export const POST = pipe(
 	withAuth({ mode: "user" }),
@@ -60,20 +67,33 @@ export const POST = pipe(
 	const input = body as CreateBody;
 
 	try {
-		const promo = await createPromoCode(input);
-
-		await logPromoCodeChange(currentUser.id, AuditAction.CREATE, promo, {
-			kind: input.kind,
-			value: input.value,
-			expiresAt: promo.expiresAt,
-			maxRedemptions: promo.maxRedemptions,
-			firstPurchaseOnly: promo.firstPurchaseOnly,
+		const { provider, promoCodes } = checkoutGateway();
+		const promo = await promoCodes.create({
+			...input,
+			firstPurchaseOnly: promoCodes.firstPurchase && input.firstPurchaseOnly,
 		});
+
+		await logPromoCodeChange(
+			provider,
+			currentUser.id,
+			AuditAction.CREATE,
+			promo,
+			{
+				kind: input.kind,
+				value: input.value,
+				expiresAt: promo.expiresAt,
+				maxRedemptions: promo.maxRedemptions,
+				firstPurchaseOnly: promo.firstPurchaseOnly,
+			},
+		);
 
 		return json(promo);
 	} catch (error) {
-		if (isCodeTakenError(error)) {
+		if (error instanceof PromoCodeTakenError) {
 			return json({ error: "codeTaken", statusCode: 409 }, { status: 409 });
+		}
+		if (error instanceof PromoCodeRefusedError) {
+			return apiError.badRequest(error.message || "codeRefused");
 		}
 		throw error;
 	}

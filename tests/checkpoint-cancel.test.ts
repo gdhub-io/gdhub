@@ -1,4 +1,8 @@
-import { CheckpointStatus, PaymentStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	CheckpointStatus,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -47,6 +51,7 @@ const charged = {
 	amount: 45000,
 	currency: "USD",
 	status: PaymentStatus.COMPLETED,
+	provider: PaymentProvider.STRIPE,
 	providerTransactionId: "cs_1",
 };
 
@@ -88,7 +93,8 @@ describe("cancelling a checkpoint", () => {
 			refunded: true,
 			released: false,
 		});
-		expect(refundCheckout).toHaveBeenCalledWith("cs_1");
+		// In full: no partial amount is passed on.
+		expect(refundCheckout).toHaveBeenCalledWith("cs_1", undefined);
 		// Deleted rather than kept as Cancelled: it never ran, and a row saying a
 		// purchase was undone is noise in the project's history.
 		expect(checkpointDelete).toHaveBeenCalledWith({ where: { id: "cp1" } });

@@ -1,10 +1,9 @@
-import type { AuditAction } from "@gdhub-io/gdhub-prisma";
 import type Stripe from "stripe";
 import {
 	CHECKPOINT_CURRENCY,
 	CHECKPOINT_MINOR_UNITS,
+	MIN_CHARGE_AFTER_DISCOUNT,
 } from "@/config/checkpoint";
-import { prisma } from "@/services/prisma";
 import { stripe } from "@/services/stripe/server";
 import type { NewPromoCode, PromoCodeDto } from "@/types/checkpoints";
 
@@ -12,9 +11,6 @@ import type { NewPromoCode, PromoCodeDto } from "@/types/checkpoints";
  * Checkpoint promotion codes. Stripe is the only record: nothing is stored on our
  * side, so the list is always what Checkout will actually accept.
  */
-
-/** An amount code must leave at least this much to charge, in minor units. */
-const MIN_CHARGE_AFTER_DISCOUNT = 50;
 
 const toDto = (promo: Stripe.PromotionCode): PromoCodeDto => {
 	const coupon =
@@ -110,29 +106,3 @@ export const isCodeTakenError = (error: unknown) => {
 export const isMissingResourceError = (error: unknown) =>
 	isInvalidRequestError(error) &&
 	(error as { code?: string }).code === "resource_missing";
-
-/**
- * Written by hand: the audit extension only sees Prisma writes, and a promotion
- * code lives in Stripe. Never fails the request — Stripe has already changed.
- */
-export const logPromoCodeChange = async (
-	actorUserId: string,
-	action: typeof AuditAction.CREATE | typeof AuditAction.UPDATE,
-	promo: PromoCodeDto,
-	meta: Record<string, unknown> = {},
-) => {
-	try {
-		await prisma.auditLog.create({
-			data: {
-				actorUserId,
-				entity: "stripe_promotion_code",
-				entityId: promo.id,
-				entityLabel: promo.code,
-				action,
-				meta: { code: promo.code, ...meta },
-			},
-		});
-	} catch (error) {
-		console.error("[promo-codes] failed to write the audit entry", error);
-	}
-};

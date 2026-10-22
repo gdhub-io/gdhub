@@ -67,4 +67,28 @@ export async function openPaddleCheckout(options: {
 	});
 }
 
-export default { getPaddleInstance, openPaddleCheckout };
+/**
+ * Opens the overlay for a transaction the server already made, so the price and
+ * the `Payment` row it settles are fixed there rather than in the browser.
+ */
+export async function openPaddleTransaction(options: {
+	transactionId: string;
+	successUrl: string;
+	customerEmail?: string;
+}): Promise<void> {
+	const paddle = await getPaddleInstance();
+
+	paddle.Checkout.open({
+		transactionId: options.transactionId,
+		customer: options.customerEmail
+			? { email: options.customerEmail }
+			: undefined,
+		settings: {
+			displayMode: "overlay",
+			theme: "light",
+			successUrl: options.successUrl,
+		},
+	});
+}
+
+export default { getPaddleInstance, openPaddleCheckout, openPaddleTransaction };

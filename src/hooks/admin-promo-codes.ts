@@ -11,7 +11,9 @@ const URL = "/api/admin/checkpoints/promo-codes";
 export const usePromoCodes = (enabled = true) =>
 	useQuery({
 		queryKey: PROMO_CODES_QUERY_KEY,
-		queryFn: async () => (await axios.get<PromoCodeDto[]>(URL)).data,
+		queryFn: async () =>
+			(await axios.get<{ codes: PromoCodeDto[]; firstPurchase: boolean }>(URL))
+				.data,
 		enabled,
 	});
 

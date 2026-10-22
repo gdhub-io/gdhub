@@ -2,6 +2,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 	CheckpointVerdict,
+	PaymentProvider,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { bookSessions, SlotTakenError } from "@/repositories/advisor-availability";
@@ -81,7 +82,13 @@ describe("an administrator's verdict", () => {
 			verdictSent: false,
 			sessions: [1, 2, 3, 4, 5].map((index) => call(index, index <= held)),
 		},
-		payment: { id: "pay1", amount: 45000, providerTransactionId: "cs_1", refunds: [] },
+		payment: {
+			id: "pay1",
+			amount: 45000,
+			provider: PaymentProvider.STRIPE,
+			providerTransactionId: "cs_1",
+			refunds: [],
+		},
 	});
 	const input = { verdict: CheckpointVerdict.GoalMissed, note: "No final build." };
 

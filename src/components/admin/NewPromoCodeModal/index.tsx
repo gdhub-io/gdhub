@@ -38,16 +38,19 @@ const INITIAL_VALUES: Partial<Values> = {
 	firstPurchaseOnly: false,
 };
 
-/** Stripe's own limit on a customer-facing code is wider; the API holds it to this. */
+/** The providers' own limits on a customer-facing code are wider; the API holds it to this. */
 const CODE_PATTERN = /^[A-Z0-9]{3,24}$/;
 
-/** Creates a Stripe promotion code for checkpoint purchases. */
+/** Creates a promotion code for checkpoint purchases at the checkout's provider. */
 export function NewPromoCodeModal({
 	open,
 	onClose,
+	firstPurchase,
 }: {
 	open: boolean;
 	onClose: () => void;
+	/** Whether the provider can limit a code to a first purchase (Paddle cannot). */
+	firstPurchase: boolean;
 }) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
@@ -252,14 +255,16 @@ export function NewPromoCodeModal({
 					/>
 				</Form.Item>
 
-				<Form.Item name="firstPurchaseOnly" valuePropName="checked">
-					<Checkbox>
-						{t(
-							"admin.checkpoints.promoCodes.form.firstPurchase",
-							"First purchase only",
-						)}
-					</Checkbox>
-				</Form.Item>
+				{firstPurchase && (
+					<Form.Item name="firstPurchaseOnly" valuePropName="checked">
+						<Checkbox>
+							{t(
+								"admin.checkpoints.promoCodes.form.firstPurchase",
+								"First purchase only",
+							)}
+						</Checkbox>
+					</Form.Item>
+				)}
 			</Form>
 		</Modal>
 	);

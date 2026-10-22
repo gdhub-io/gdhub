@@ -1,12 +1,13 @@
-import {
-	CheckpointStatus,
-	PaymentProvider,
-	PaymentStatus,
-} from "@gdhub-io/gdhub-prisma";
+import { PaymentProvider } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { settleCheckpointCheckout } from "@/repositories/checkpoint-payment";
-import { prisma } from "@/services/prisma";
+import {
+	paymentOf,
+	recordPaymentEvent,
+	recordProviderRefund,
+} from "@/repositories/payment-records";
+import { paidOfSession } from "@/services/payments/stripe";
 import { sessionOfPaymentIntent, stripeEvent } from "@/services/stripe/server";
 
 /** The row a completed checkout names in its metadata. */
@@ -16,7 +17,7 @@ const paymentOfSession = async (session: Stripe.Checkout.Session) => {
 
 	if (!id || !checkpointId) return null;
 
-	const payment = await prisma.payment.findUnique({ where: { id } });
+	const payment = await paymentOf(PaymentProvider.STRIPE, { id });
 
 	// The session must name the checkpoint its own row is for: metadata pointing
 	// at somebody else's checkpoint starts nothing.
@@ -35,7 +36,7 @@ const paymentOfCharge = async (charge: Stripe.Charge) => {
 	const sessionId = await sessionOfPaymentIntent(intent);
 
 	return sessionId
-		? prisma.payment.findUnique({ where: { providerTransactionId: sessionId } })
+		? paymentOf(PaymentProvider.STRIPE, { providerTransactionId: sessionId })
 		: null;
 };
 
@@ -47,49 +48,24 @@ const paymentOfCharge = async (charge: Stripe.Charge) => {
  * otherwise leave a returned payment reading as `COMPLETED` for ever. Writing
  * by `providerRefundId` makes the two paths meet without doubling the row.
  */
-const recordRefund = async (
-	payment: { id: string; amount: number; currency: string; payableId: string },
+const recordRefund = (
+	payment: { id: string; payableId: string },
 	charge: Stripe.Charge,
 ) => {
 	const refund = charge.refunds?.data?.[0];
-	const returned = charge.amount_refunded ?? 0;
-	const whole = returned >= charge.amount;
 
-	if (refund) {
-		await prisma.refund.upsert({
-			where: { providerRefundId: refund.id },
-			create: {
-				paymentId: payment.id,
-				amount: refund.amount,
-				currency: refund.currency.toUpperCase(),
-				reason: refund.reason ?? "stripeRefund",
-				providerRefundId: refund.id,
-			},
-			update: {},
-		});
-	}
-
-	await prisma.payment.update({
-		where: { id: payment.id },
-		data: {
-			status: whole ? PaymentStatus.REFUNDED : PaymentStatus.PARTIALLY_REFUNDED,
-		},
-	});
-
-	// Money back on a checkpoint that never started closes it. One already
-	// running is left alone: what is owed there is a conversation, and an
-	// administrator is the one having it.
-	if (!whole) return;
-
-	await prisma.projectCheckpoint.updateMany({
-		where: {
-			id: payment.payableId,
-			status: {
-				in: [CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
-			},
-		},
-		data: { status: CheckpointStatus.Cancelled },
-	});
+	return recordProviderRefund(
+		payment,
+		refund
+			? {
+					id: refund.id,
+					amount: refund.amount,
+					currency: refund.currency,
+					reason: refund.reason ?? "stripeRefund",
+				}
+			: null,
+		(charge.amount_refunded ?? 0) >= charge.amount,
+	);
 };
 
 /**
@@ -123,25 +99,13 @@ export async function POST(request: NextRequest) {
 		? await paymentOfCharge(event.data.object)
 		: await paymentOfSession(event.data.object);
 
-	try {
-		await prisma.paymentEvent.create({
-			data: {
-				provider: PaymentProvider.STRIPE,
-				eventId: event.id,
-				type: event.type,
-				payload: JSON.parse(raw),
-				paymentId: payment?.id ?? null,
-			},
-		});
-	} catch (error) {
-		// The unique id is the guard: a duplicate lands here before any side
-		// effect has run, and saying "received" stops Stripe retrying.
-		if ((error as { code?: string }).code === "P2002") {
-			return NextResponse.json({ received: true });
-		}
-
-		throw error;
-	}
+	// Saying "received" to a duplicate stops Stripe retrying it.
+	const fresh = await recordPaymentEvent(
+		PaymentProvider.STRIPE,
+		{ id: event.id, type: event.type, payload: JSON.parse(raw) },
+		payment?.id ?? null,
+	);
+	if (!fresh) return NextResponse.json({ received: true });
 
 	if (!payment) {
 		console.warn("[stripe.webhook] event for an unknown payment:", event.id);
@@ -155,7 +119,7 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({ received: true });
 	}
 
-	await settleCheckpointCheckout(payment, event.data.object);
+	await settleCheckpointCheckout(payment, paidOfSession(event.data.object));
 
 	return NextResponse.json({ received: true });
 }

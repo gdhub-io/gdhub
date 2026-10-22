@@ -1,6 +1,7 @@
 import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
+	PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import type { NextRequest } from "next/server";
@@ -81,6 +82,7 @@ const payment = {
 	payableId: "cp1",
 	amount: 45000,
 	currency: "USD",
+	provider: PaymentProvider.STRIPE,
 };
 
 const refunded = (over: Record<string, unknown> = {}) => ({
@@ -141,6 +143,18 @@ describe("the Stripe webhook", () => {
 	// The unique event id is the guard, and it is checked before any write.
 	it("starts one checkpoint when the same event lands twice", async () => {
 		vi.mocked(prisma.paymentEvent.create).mockRejectedValue({ code: "P2002" });
+
+		expect((await post()).status).toBe(200);
+		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	// The providers never cross: a Stripe event cannot settle a row Paddle took.
+	it("settles nothing for a payment another provider took", async () => {
+		vi.mocked(prisma.payment.findUnique).mockResolvedValue({
+			...payment,
+			provider: PaymentProvider.PADDLE,
+		} as never);
 
 		expect((await post()).status).toBe(200);
 		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
@@ -334,6 +348,19 @@ describe("the Stripe webhook", () => {
 // it did not make — money returned from the Stripe dashboard, which used to
 // leave the payment reading COMPLETED and the checkpoint alive.
 describe("a refund made outside the app", () => {
+	it("records nothing against a payment Paddle took", async () => {
+		vi.mocked(stripeEvent).mockReturnValue(refunded() as never);
+		vi.mocked(prisma.payment.findUnique).mockResolvedValue({
+			...payment,
+			provider: PaymentProvider.PADDLE,
+		} as never);
+
+		await post();
+
+		expect(prisma.refund.upsert).not.toHaveBeenCalled();
+		expect(prisma.payment.update).not.toHaveBeenCalled();
+	});
+
 	it("marks the payment returned and closes a checkpoint that never started", async () => {
 		vi.mocked(stripeEvent).mockReturnValue(refunded() as never);
 

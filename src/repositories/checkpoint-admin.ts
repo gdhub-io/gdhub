@@ -94,15 +94,18 @@ export const writeAdminVerdict = async (
 	// closed checkpoint nothing can refund any more.
 	const missed = await missedCallsRefund(checkpointId);
 	const payment = missed?.payment;
-	const stripeRefund =
+	const providerRefund =
 		missed && missed.refund > 0 && payment?.providerTransactionId
 			? await sendCheckpointRefund(
 					checkpointId,
-					payment.providerTransactionId,
+					{
+						provider: payment.provider,
+						providerTransactionId: payment.providerTransactionId,
+					},
 					missed.refund,
 				)
 			: undefined;
-	if (stripeRefund === null) {
+	if (providerRefund === null) {
 		return { ok: false as const, error: "refundFailed" as const };
 	}
 
@@ -124,14 +127,16 @@ export const writeAdminVerdict = async (
 				verdictDraftAt: null,
 			},
 		});
-		if (stripeRefund && payment) {
-			await Promise.all(refundWrites(tx, payment, stripeRefund, "missedCalls"));
+		if (providerRefund && payment) {
+			await Promise.all(
+				refundWrites(tx, payment, providerRefund, "missedCalls"),
+			);
 		}
 		await tx.auditLog.create({
 			data: audit(adminId, checkpointId, {
 				action: "verdictByAdmin",
 				verdict,
-				refunded: stripeRefund?.amount ?? 0,
+				refunded: providerRefund?.amount ?? 0,
 			}),
 		});
 		return written;
@@ -141,16 +146,16 @@ export const writeAdminVerdict = async (
 
 	await Promise.all([
 		afterVerdictSent(checkpointId),
-		stripeRefund
+		providerRefund
 			? notifyAuthorOfRefund(
 					checkpointId,
-					formatCheckpointMoney(stripeRefund.amount),
+					formatCheckpointMoney(providerRefund.amount),
 					"noVerdict",
 				)
 			: null,
 	]);
 
-	return { ok: true as const, refunded: stripeRefund?.amount ?? 0 };
+	return { ok: true as const, refunded: providerRefund?.amount ?? 0 };
 };
 
 export type AssignCuratorInput = {

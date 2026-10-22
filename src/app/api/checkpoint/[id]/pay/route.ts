@@ -1,8 +1,4 @@
-import {
-	PayableType,
-	PaymentProvider,
-	PaymentStatus,
-} from "@gdhub-io/gdhub-prisma";
+import { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { checkoutHref } from "@/components/checkpoints/entry/hrefs";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
@@ -29,15 +25,12 @@ import {
 	pendingCheckout,
 	reconcileCheckout,
 } from "@/repositories/checkpoint-payment";
+import { checkoutGateway, gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
-import {
-	createCheckpointCheckout,
-	expireCheckout,
-} from "@/services/stripe/server";
 
 /**
- * Opens the checkout for a checkpoint and hands back the URL to send the author
- * to. It starts nothing: the checkpoint leaves `Draft` on the webhook and on
+ * Opens the checkout for a checkpoint and hands back where the author pays: a
+ * hosted page to go to, or a Paddle transaction to open in its overlay. It starts nothing: the checkpoint leaves `Draft` on the webhook and on
  * nothing else, so an abandoned checkout costs a `PENDING` row and no more.
  *
  * The return addresses are built here rather than accepted from the caller — a
@@ -118,10 +111,14 @@ export const POST = pipe(
 
 	// A checkout left open keeps its row PENDING forever and would sit beside the
 	// new one in the author's receipts. Only one attempt is live at a time, and
-	// the old one is closed at Stripe too: paid later, nothing here would claim it.
+	// the old one is closed at the provider too: paid later, nothing here would claim it.
 	if (earlier?.providerTransactionId) {
-		await expireCheckout(earlier.providerTransactionId).catch(() => null);
+		await gatewayFor(earlier.provider)
+			.cancelCheckout(earlier.providerTransactionId)
+			.catch(() => null);
 	}
+
+	const gateway = checkoutGateway();
 
 	await prisma.payment.updateMany({
 		where: {
@@ -142,12 +139,12 @@ export const POST = pipe(
 			payableType: PayableType.CHECKPOINT,
 			payableId: id,
 			payerId: payer.id,
-			provider: PaymentProvider.STRIPE,
+			provider: gateway.provider,
 		},
 		select: { id: true },
 	});
 
-	const session = await createCheckpointCheckout({
+	const checkout = await gateway.startCheckout({
 		paymentId: payment.id,
 		checkpointId: id,
 		amount: quote.amount,
@@ -159,12 +156,10 @@ export const POST = pipe(
 		cancelUrl: `${base}${checkoutHref(slug, "payment")}&cancelled=1`,
 	});
 
-	if (!session.url) return apiError.internal("checkoutUnavailable");
-
 	await prisma.payment.update({
 		where: { id: payment.id },
-		data: { providerTransactionId: session.id },
+		data: { providerTransactionId: checkout.transactionId },
 	});
 
-	return json({ url: session.url });
+	return json(checkout.start);
 });

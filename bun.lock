@@ -51,6 +51,7 @@
         "@novu/react": "^3.12.0",
         "@observablehq/plot": "^0.6.17",
         "@paddle/paddle-js": "^1.6.5",
+        "@paddle/paddle-node-sdk": "3.10.0",
         "@pdf-lib/fontkit": "^1.1.1",
         "@react-email/components": "^0.0.34",
         "@react-icons/all-files": "https://github.com/react-icons/react-icons/releases/download/v5.3.0/react-icons-all-files-5.3.0.tgz",
@@ -1152,6 +1153,8 @@
     "@oxc-resolver/binding-win32-x64-msvc": ["@oxc-resolver/binding-win32-x64-msvc@11.21.2", "", { "os": "win32", "cpu": "x64" }, "sha512-VPoCAhKvCQTlG7vxqaBXcmuvbh77BfnGXj8g0pbvVXpm1F/R8rDVwqIWcEbMzrI1JvJlm8v7T9uMVQb6UctMRg=="],
 
     "@paddle/paddle-js": ["@paddle/paddle-js@1.6.5", "", {}, "sha512-uFRvptUzYRqRlqTU5XmfcZWC9BGVYpZNdANd3giJjZbJlHesnE4gn8PyjtYpesU1ar2ZGPuJxHvrrSIV9jjdVw=="],
+
+    "@paddle/paddle-node-sdk": ["@paddle/paddle-node-sdk@3.10.0", "", {}, "sha512-njqp+L6e/2aR99EYh/Ulyu6B9sIyVERTFclGOznKmLZcy11pAwHoHyIgq1BUH1ybQH+YmJQmrrUQC/Rfg8JAAw=="],
 
     "@panva/hkdf": ["@panva/hkdf@1.2.1", "", {}, "sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw=="],
 
