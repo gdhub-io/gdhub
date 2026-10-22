@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
 import {
 	type FeaturedCurator,
 	getFeaturedCurators,
@@ -31,7 +32,7 @@ export default async function CheckpointPage() {
 	let curators: FeaturedCurator[] = [];
 
 	// Has to render without a database; the curator section drops out when empty.
-	if (await prisma.$isHealthy()) {
+	if (EXPERT_CHECKPOINT_OPEN && (await prisma.$isHealthy())) {
 		try {
 			curators = await getFeaturedCurators();
 		} catch (error) {

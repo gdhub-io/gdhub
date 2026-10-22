@@ -18,6 +18,7 @@ import { CheckpointProofSection } from "@/components/checkpoint-landing/Checkpoi
 import { MainFooter } from "@/components/MainFooter";
 import { MainHeader } from "@/components/MainHeader";
 import { InverseBand } from "@/components/ui/InverseBand";
+import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
 import { publicTheme } from "@/config/design";
 import { designCssVariables } from "@/config/design/css";
 import type { FeaturedCurator } from "@/repositories/checkpoint-curators";
@@ -66,7 +67,10 @@ export function CheckpointClient({
 					<CheckpointExampleSection />
 					<CheckpointHowItWorksSection />
 					<CheckpointCuratorChoiceSection />
-					<CheckpointCuratorsSection curators={curators} />
+					{/* Experts are a waitlist until they can be bought (GDHUB-107). */}
+					{EXPERT_CHECKPOINT_OPEN && (
+						<CheckpointCuratorsSection curators={curators} />
+					)}
 					<CheckpointPricingSection />
 					<CheckpointAudienceSection />
 					<CheckpointFaqSection />

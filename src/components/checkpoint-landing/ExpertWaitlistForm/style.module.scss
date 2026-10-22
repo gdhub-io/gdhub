@@ -1,0 +1,19 @@
+.email {
+	width: 320px;
+	max-width: 100%;
+}
+
+.fine {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.done {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// The default button is see-through; on the dark band it needs its own ground.
+.join.join {
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+}

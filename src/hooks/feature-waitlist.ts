@@ -16,8 +16,14 @@ export const useWaitlistStatus = (feature: WaitlistFeature, enabled = true) =>
 export const useJoinWaitlist = (feature: WaitlistFeature) => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: async () =>
-			(await axios.post<{ joined: boolean }>(`/api/waitlist/${feature}`)).data,
+		// A guest sends the email; signed in, the account's is used.
+		mutationFn: async (email?: string) =>
+			(
+				await axios.post<{ joined: boolean }>(
+					`/api/waitlist/${feature}`,
+					email ? { email } : undefined,
+				)
+			).data,
 		onSuccess: (data) => queryClient.setQueryData(waitlistKey(feature), data),
 	});
 };

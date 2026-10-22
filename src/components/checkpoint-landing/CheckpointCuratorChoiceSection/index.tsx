@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_PRICE_CURRENCY,
+	EXPERT_CHECKPOINT_OPEN,
 } from "@/config/checkpoint";
 import { CHECKPOINT_MIN_CURATOR_PRICE } from "@/config/checkpoint-pricing";
 import { CheckpointSection } from "../CheckpointSection";
@@ -190,33 +191,7 @@ export const CheckpointCuratorChoiceSection = () => {
 						hoveredRow={hoveredRow}
 						onHoverRow={setHoveredRow}
 						tone="accent"
-						title={t(
-							"checkpointLanding.curatorChoice.industry.title",
-							"Industry curator",
-						)}
-						summary={t(
-							"checkpointLanding.curatorChoice.industry.summary",
-							"Years behind them, and five calls across the 28 days.",
-						)}
-						rows={rows}
-						side="industry"
-						vat={vat}
-						price={t(
-							"checkpointLanding.curatorChoice.industry.price",
-							"From {currency}{price} · by level, rate and team size",
-							{
-								currency: CHECKPOINT_PRICE_CURRENCY,
-								price: CHECKPOINT_MIN_CURATOR_PRICE,
-							},
-						)}
-					/>
-
-					<Column
-						hoveredRow={hoveredRow}
-						onHoverRow={setHoveredRow}
-						tone="muted"
 						title={t("checkpointLanding.curatorChoice.ai.title", "AI curator")}
-						badge={t("checkpointLanding.curatorChoice.ai.badge", "Soon")}
 						summary={t(
 							"checkpointLanding.curatorChoice.ai.summary",
 							"No live calls. A written review-summary after each sprint.",
@@ -230,6 +205,39 @@ export const CheckpointCuratorChoiceSection = () => {
 							{
 								currency: CHECKPOINT_PRICE_CURRENCY,
 								price: CHECKPOINT_AI_PRICE,
+							},
+						)}
+					/>
+					<Column
+						hoveredRow={hoveredRow}
+						onHoverRow={setHoveredRow}
+						tone="muted"
+						title={t(
+							"checkpointLanding.curatorChoice.industry.title",
+							"Industry curator",
+						)}
+						// Shown, not sold, until there is a seller for human curation (GDHUB-107).
+						badge={
+							EXPERT_CHECKPOINT_OPEN
+								? undefined
+								: t(
+										"checkpointLanding.curatorChoice.industry.badge",
+										"Coming soon",
+									)
+						}
+						summary={t(
+							"checkpointLanding.curatorChoice.industry.summary",
+							"Years behind them, and five calls across the 28 days.",
+						)}
+						rows={rows}
+						side="industry"
+						vat={vat}
+						price={t(
+							"checkpointLanding.curatorChoice.industry.price",
+							"From {currency}{price} · by level, rate and team size",
+							{
+								currency: CHECKPOINT_PRICE_CURRENCY,
+								price: CHECKPOINT_MIN_CURATOR_PRICE,
 							},
 						)}
 					/>
