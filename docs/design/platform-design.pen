@@ -196132,7 +196132,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "checkpoint-curators.png",
+                    "url": "checkpoint-curators-art.png",
                     "mode": "contain"
                   },
                   "width": 400,
@@ -199611,7 +199611,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "checkpoint-curators.png",
+                        "url": "checkpoint-curators-art.png",
                         "mode": "cover"
                       },
                       "width": 260,
