@@ -34,8 +34,9 @@ product, so the documents have to be right first.
 
 ## Done when
 
-- [ ] /legal-details names only the Georgian entity, with no founder country or
-      Lithuanian office.
+- [ ] /legal-details stays as it is: the founder (the Georgian entity) and the
+      Lithuanian VšĮ as a representative office (decided 2026-10-22). The VšĮ
+      stays in the config, but no document names it.
 - [ ] Terms of Use, Privacy Policy, Cookie Policy, Refund Policy and Project
       Requirements name the Georgian entity and Georgian law. They mention no
       Lithuanian body or law, no non-profit and no Stripe.
@@ -45,8 +46,10 @@ product, so the documents have to be right first.
       - no hold, no curator replacement;
       - withdrawal and refunds as Paddle and the Refund Policy run them.
 - [ ] The Advisor Agreement (with the Expert Services Terms folded in) has no
-      version in effect, so nobody is asked to accept it. Turning on project
-      curation stays locked.
+      version in effect, so nobody is asked to accept it. Turning on advising
+      works without it, and no checkbox asks for a document that is not
+      published. Project curation is still behind payout details. A Pro
+      Checkpoint cannot be bought until GDHUB-107.
 - [ ] The registry test and the legal tests pass.
 
 ## Out of scope

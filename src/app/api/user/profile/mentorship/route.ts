@@ -12,6 +12,7 @@ import {
 	LegalError,
 } from "@/lib/legal/accept";
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
+import { versionInEffect } from "@/lib/legal/versions";
 import {
 	hasAcceptedCurrent,
 	latestAcceptance,
@@ -65,7 +66,14 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 		latestAcceptance(currentUser.id, "AdvisorAgreement"),
 	]);
 
-	return json({ enabled: open > 0, agreementAccepted, agreement });
+	return json({
+		enabled: open > 0,
+		// Unpublished, there is nothing to accept: the space opens without it.
+		agreementPublished: !!versionInEffect("AdvisorAgreement"),
+		agreementAccepted:
+			agreementAccepted || !versionInEffect("AdvisorAgreement"),
+		agreement,
+	});
 });
 
 export const PUT = withAuth({ mode: "user" })(
@@ -103,10 +111,9 @@ export const PUT = withAuth({ mode: "user" })(
 
 		// Switching on is concluding the Advisor Agreement: without it accepted,
 		// the space does not open.
-		const mustAccept = !(await hasAcceptedCurrent(
-			currentUser.id,
-			"AdvisorAgreement",
-		));
+		const mustAccept =
+			!!versionInEffect("AdvisorAgreement") &&
+			!(await hasAcceptedCurrent(currentUser.id, "AdvisorAgreement"));
 
 		let updated: { count: number };
 		try {
