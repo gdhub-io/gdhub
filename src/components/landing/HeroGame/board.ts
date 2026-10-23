@@ -52,10 +52,17 @@ export const BOARD = {
 export const TEAM = ["author", "programmer", "artist"] as const;
 export type TeamId = (typeof TEAM)[number];
 
-export const START: Record<ActorId, Cell> = {
+// Where each member's zone is centred; where it first stands is START.
+const HOME: Record<TeamId, Cell> = {
 	author: { x: 5, z: 3 },
 	programmer: { x: 3, z: 2 },
 	artist: { x: 4, z: 6 },
+};
+
+export const START: Record<ActorId, Cell> = {
+	author: { x: 6, z: 4 },
+	programmer: HOME.programmer,
+	artist: { x: 6, z: 8 },
 	sage: { x: 0, z: 4 },
 	robot: { x: 0, z: 5 },
 	scout: { x: 8, z: 3 },
@@ -125,10 +132,10 @@ const guides = new Set(
 	(["sage", "robot", "scout"] as const).map((id) => cellKey(START[id])),
 );
 
-/** The tiles a member may ever stand on: one move's range around its start. */
+/** The tiles a member may ever stand on: one move's range around its home. */
 export const ZONE = Object.fromEntries(
 	TEAM.map((id) => [
 		id,
-		new Set([cellKey(START[id]), ...reachable(START[id], guides).keys()]),
+		new Set([cellKey(HOME[id]), ...reachable(HOME[id], guides).keys()]),
 	]),
 ) as Record<TeamId, Set<string>>;

@@ -20,17 +20,23 @@ import {
 } from "react";
 import {
 	AdditiveBlending,
+	type AnimationAction,
 	AnimationClip,
 	AnimationMixer,
 	CanvasTexture,
 	Color,
 	EdgesGeometry,
 	type Group,
+	LoopOnce,
+	LoopRepeat,
 	type Mesh,
 	MeshBasicMaterial,
 	MeshStandardMaterial,
+	Path,
 	type PerspectiveCamera,
 	PlaneGeometry,
+	Shape,
+	ShapeGeometry,
 	SRGBColorSpace,
 	Vector3,
 } from "three";
@@ -77,6 +83,24 @@ const CHEST_WOOD = new Color(amber[600])
 // A line's default pick radius is a whole world unit, so its outline would
 // otherwise answer for its neighbours.
 const ignoreRay = () => null;
+// The tile a member is walking to: a frame round its edge.
+const TILE_FRAME = (() => {
+	const outer = new Shape();
+	outer.moveTo(-0.46, -0.46);
+	outer.lineTo(0.46, -0.46);
+	outer.lineTo(0.46, 0.46);
+	outer.lineTo(-0.46, 0.46);
+	const hole = new Path();
+	hole.moveTo(-0.39, -0.39);
+	hole.lineTo(-0.39, 0.39);
+	hole.lineTo(0.39, 0.39);
+	hole.lineTo(0.39, -0.39);
+	outer.holes.push(hole);
+	return new ShapeGeometry(outer);
+})();
+// How high rings and highlights float over a plate: its tilt lifts an edge
+// about 0.012, and anything lower is lost under the stone.
+const OVERLAY = 0.035;
 const TILE_EDGES = new EdgesGeometry(new PlaneGeometry(0.9, 0.9));
 
 const ACTOR_COLOR: Record<ActorId, string> = {
@@ -548,6 +572,7 @@ const Game = ({
 	}, [positions, selected, move]);
 
 	const target = hovered ? targets.get(hovered) : undefined;
+	const destination = move ? cellKey(move.path[move.path.length - 1]) : null;
 
 	useEffect(() => {
 		gl.domElement.style.cursor = target || pointerOnPawn ? "pointer" : "";
@@ -590,11 +615,13 @@ const Game = ({
 						key={key}
 						cell={tile}
 						state={
-							!targets.has(key)
-								? "idle"
-								: key === hovered
-									? "hovered"
-									: "reachable"
+							key === destination
+								? "destination"
+								: !targets.has(key)
+									? "idle"
+									: key === hovered
+										? "hovered"
+										: "reachable"
 						}
 						onOver={() => setHovered(key)}
 						onOut={() => setHovered((h) => (h === key ? null : h))}
@@ -681,7 +708,7 @@ const TileHit = ({
 	onPick,
 }: {
 	cell: Cell;
-	state: "idle" | "reachable" | "hovered";
+	state: "idle" | "reachable" | "hovered" | "destination";
 	onOver: () => void;
 	onOut: () => void;
 	onPick: () => void;
@@ -705,9 +732,19 @@ const TileHit = ({
 				<boxGeometry args={[1, 0.66, 1]} />
 				<meshBasicMaterial visible={false} />
 			</mesh>
-			{state !== "idle" && (
+			{state === "destination" && (
+				<mesh
+					geometry={TILE_FRAME}
+					position={[0, lift(cell) + OVERLAY, 0]}
+					rotation={[-Math.PI / 2, 0, 0]}
+					raycast={ignoreRay}
+				>
+					<meshBasicMaterial color={brand[400]} />
+				</mesh>
+			)}
+			{(state === "reachable" || state === "hovered") && (
 				<group
-					position={[0, lift(cell) + 0.02, 0]}
+					position={[0, lift(cell) + OVERLAY, 0]}
 					rotation={[-Math.PI / 2, 0, 0]}
 				>
 					<mesh raycast={ignoreRay}>
@@ -875,8 +912,8 @@ const PathPreview = ({ path, cost }: { path: Cell[]; cost: number }) => {
 				const [x, y, z] = toWorld(cell);
 				return (
 					<mesh key={cellKey(cell)} position={[x, y + 0.05, z]}>
-						<sphereGeometry args={[0.06, 12, 12]} />
-						<meshBasicMaterial color={brand[300]} />
+						<sphereGeometry args={[0.07, 12, 12]} />
+						<meshBasicMaterial color={neutral[950]} />
 					</mesh>
 				);
 			})}
@@ -922,32 +959,148 @@ const useCostBadge = (cost: number) => {
 	return textures[cost];
 };
 
-// The sage, built and rigged by scripts/hero-game/build-sage.py. Its rest pose
-// is an A-pose with the staff hanging loose, so "idle" must always play.
-const Sage = () => {
-	const gltf = useLoader(GLTFLoader, "/models/hero-game/sage.glb") as GLTF;
-	const sage = useMemo(() => {
-		const copy = cloneSkinned(gltf.scene);
-		copy.traverse((o) => {
-			o.castShadow = true;
-		});
-		return copy;
-	}, [gltf]);
-	const mixer = useMemo(() => new AnimationMixer(sage), [sage]);
+type CharacterModel = {
+	url: string;
+	/** What he does most of the time, and comes back to after anything else. */
+	rest: string;
+	/** Played now and then instead of the rest idle. */
+	extras: string[];
+};
 
+// Rigged characters, built by scripts/hero-game/build-<name>.py. Every rest
+// pose is an A-pose, so an animation must always be playing. All idles share
+// their first and last pose; `walk` plays in place while the pawn moves.
+const MODELS: Partial<Record<ActorId, CharacterModel>> = {
+	sage: {
+		url: "/models/hero-game/sage.glb",
+		rest: "idle_breathe",
+		extras: ["idle_look", "idle_beard"],
+	},
+	programmer: {
+		url: "/models/hero-game/programmer.glb",
+		rest: "idle_breathe",
+		extras: ["idle_glasses", "idle_music"],
+	},
+	robot: {
+		url: "/models/hero-game/robot.glb",
+		rest: "idle_breathe",
+		extras: ["idle_scan", "idle_wave"],
+	},
+};
+
+const IDLE_FADE = 0.5;
+// The camera looks in from the board's +x, +z corner.
+const FACE_CAMERA = Math.PI / 4;
+const WALK_FADE = 0.2;
+const WALK_STEPS_PER_SECOND = 1.8;
+// The walk is played faster than authored so the feet keep up with the board
+// and don't skate.
+const WALK_TEMPO = 1.8;
+
+// Mostly the rest idle; now and then one of the extras, then back to rest.
+const nextIdle = (model: CharacterModel, last: string) =>
+	last !== model.rest || Math.random() > 0.25
+		? model.rest
+		: model.extras[Math.floor(Math.random() * model.extras.length)];
+
+const Character = ({
+	model,
+	walking,
+}: {
+	model: CharacterModel;
+	walking: boolean;
+}) => {
+	const gltf = useLoader(GLTFLoader, model.url) as GLTF;
+	// No cast shadow: the sun's is hard-edged; a soft blob sits under him.
+	const body = useMemo(() => cloneSkinned(gltf.scene), [gltf]);
+	const mixer = useMemo(() => new AnimationMixer(body), [body]);
+	const current = useRef<AnimationAction | null>(null);
+	const queued = useRef<string | null>(null);
+
+	const play = (name: string, fade = IDLE_FADE) => {
+		const clip = AnimationClip.findByName(gltf.animations, name);
+		if (!clip) return;
+		const next = mixer.clipAction(clip);
+		next.reset();
+		next.timeScale = name === "walk" ? WALK_TEMPO : 1;
+		if (name === "walk") next.setLoop(LoopRepeat, Number.POSITIVE_INFINITY);
+		else {
+			next.setLoop(LoopOnce, 1);
+			next.clampWhenFinished = true;
+		}
+		next.play();
+		if (current.current && current.current !== next)
+			current.current.crossFadeTo(next, fade, false);
+		current.current = next;
+		queued.current = null;
+	};
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: reacts to walking only
 	useEffect(() => {
-		const idle = AnimationClip.findByName(gltf.animations, "idle");
-		if (idle) mixer.clipAction(idle).play();
-		return () => {
+		play(walking ? "walk" : model.rest, WALK_FADE);
+	}, [walking, mixer]);
+
+	useEffect(
+		() => () => {
 			mixer.stopAllAction();
-		};
-	}, [gltf, mixer]);
+		},
+		[mixer],
+	);
 
-	useFrame((_, delta) => mixer.update(delta));
+	useFrame((_, delta) => {
+		mixer.update(delta);
+		const action = current.current;
+		if (walking || !action) return;
+		const clip = action.getClip();
+		// Picked once, as the clip nears its end: a different idle crossfades
+		// in, the same one simply starts over once this pass has finished —
+		// restarting it early would snap the pose back.
+		if (queued.current === null && action.time >= clip.duration - IDLE_FADE) {
+			const next = nextIdle(model, clip.name);
+			if (next !== clip.name) play(next);
+			else queued.current = next;
+		} else if (queued.current !== null && action.time >= clip.duration)
+			play(queued.current);
+	});
 
-	// Turned to face the camera, which looks in from the board's +x, +z corner.
 	// Scaled up so he reads as a character beside the pawns and firs.
-	return <primitive object={sage} rotation={[0, Math.PI / 4, 0]} scale={1.3} />;
+	return (
+		<>
+			<BlobShadow radius={0.42} />
+			<primitive object={body} scale={1.3} />
+		</>
+	);
+};
+
+// A soft dark spot on the plate, fading to nothing at the edge.
+const BlobShadow = ({ radius }: { radius: number }) => {
+	const texture = useMemo(() => {
+		const canvas = document.createElement("canvas");
+		canvas.width = canvas.height = 128;
+		const ctx = canvas.getContext("2d");
+		if (ctx) {
+			const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+			gradient.addColorStop(0, "rgba(0, 0, 0, 0.8)");
+			gradient.addColorStop(0.55, "rgba(0, 0, 0, 0.45)");
+			gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+			ctx.fillStyle = gradient;
+			ctx.fillRect(0, 0, 128, 128);
+		}
+		return new CanvasTexture(canvas);
+	}, []);
+
+	useEffect(() => () => texture.dispose(), [texture]);
+
+	return (
+		<mesh
+			position={[0, OVERLAY - 0.004, 0]}
+			rotation={[-Math.PI / 2, 0, 0]}
+			raycast={ignoreRay}
+		>
+			<planeGeometry args={[radius * 2, radius * 2]} />
+			<meshBasicMaterial map={texture} transparent depthWrite={false} />
+		</mesh>
+	);
 };
 
 const Pawn = ({
@@ -968,11 +1121,23 @@ const Pawn = ({
 	onPick?: () => void;
 }) => {
 	const ref = useRef<Group>(null);
+	const heading = useRef<Group>(null);
 	const progress = useRef(0);
 	const [hover, setHover] = useState(false);
 	const walking = useRef<Cell[]>(undefined);
+	const model = MODELS[id];
+
+	// Faces where he walks, and turns back to the camera once he stops.
+	const facing = useRef(FACE_CAMERA);
 
 	useFrame((_, delta) => {
+		if (heading.current) {
+			const turn =
+				((facing.current - heading.current.rotation.y + Math.PI * 3) %
+					(Math.PI * 2)) -
+				Math.PI;
+			heading.current.rotation.y += turn * Math.min(1, delta * 10);
+		}
 		const group = ref.current;
 		if (!group || !path) return;
 		if (walking.current !== path) {
@@ -981,20 +1146,28 @@ const Pawn = ({
 		}
 
 		progress.current = Math.min(
-			progress.current + delta * STEPS_PER_SECOND,
+			progress.current +
+				delta * (model ? WALK_STEPS_PER_SECOND : STEPS_PER_SECOND),
 			path.length - 1,
 		);
 		const step = Math.min(Math.floor(progress.current), path.length - 2);
 		const t = progress.current - step;
 		const [ax, ay, az] = toWorld(path[step]);
 		const [bx, by, bz] = toWorld(path[step + 1]);
+		// A character walks; a placeholder pawn hops.
+		const hop = model ? 0 : Math.sin(t * Math.PI) * 0.15;
 		group.position.set(
 			ax + (bx - ax) * t,
-			ay + (by - ay) * t + Math.sin(t * Math.PI) * 0.15,
+			ay + (by - ay) * t + hop,
 			az + (bz - az) * t,
 		);
+		// The models face +z.
+		facing.current = Math.atan2(bx - ax, bz - az);
 
-		if (progress.current >= path.length - 1) onArrive();
+		if (progress.current >= path.length - 1) {
+			facing.current = FACE_CAMERA;
+			onArrive();
+		}
 	});
 
 	return (
@@ -1018,8 +1191,10 @@ const Pawn = ({
 				onPick();
 			}}
 		>
-			{id === "sage" ? (
-				<Sage />
+			{model ? (
+				<group ref={heading} rotation={[0, FACE_CAMERA, 0]}>
+					<Character model={model} walking={!!path} />
+				</group>
 			) : (
 				<>
 					<mesh position={[0, 0.05, 0]} castShadow>
@@ -1038,7 +1213,10 @@ const Pawn = ({
 				</>
 			)}
 			{hover && onPick && (
-				<mesh position={[0, 0.012, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+				<mesh
+					position={[0, OVERLAY + 0.002, 0]}
+					rotation={[-Math.PI / 2, 0, 0]}
+				>
 					<circleGeometry args={[0.5, 48]} />
 					<meshBasicMaterial
 						color={brand[400]}
@@ -1048,11 +1226,29 @@ const Pawn = ({
 					/>
 				</mesh>
 			)}
-			{selected && (
-				<mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-					<ringGeometry args={[0.42, 0.5, 48]} />
-					<meshBasicMaterial color={brand[400]} />
-				</mesh>
+			{/* The player's own: grey, the selected one red. */}
+			{isTeam(id) && (
+				// A dark rim keeps the ring readable on light stone and on the
+				// coral move highlight alike.
+				<group position={[0, OVERLAY, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+					<mesh raycast={ignoreRay}>
+						<ringGeometry args={[0.38, 0.54, 48]} />
+						<meshBasicMaterial
+							color={neutral[950]}
+							transparent
+							opacity={0.55}
+							depthWrite={false}
+						/>
+					</mesh>
+					<mesh position={[0, 0, 0.001]} raycast={ignoreRay}>
+						<ringGeometry args={[0.41, 0.51, 48]} />
+						<meshBasicMaterial
+							color={selected ? brand[500] : neutral[100]}
+							depthWrite={false}
+							transparent
+						/>
+					</mesh>
+				</group>
 			)}
 			{(id === "sage" || id === "robot") && (
 				<pointLight

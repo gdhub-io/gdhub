@@ -12,10 +12,12 @@ shells with edge loops at the joints and one level of subdivision. The rigid
 parts (head, hands, hair, feet, staff) ride a single bone each, so their
 meshes are free to be metaballs or decimated.
 
-The rest pose is a relaxed A-pose. The armature carries one looping action,
-`idle` (two seconds of breathing and sway), which brings the hands in and
-holds the staff upright beside the right leg; the staff is skinned to the
-right hand, so in the bare rest pose it hangs from that hand at an angle.
+The rest pose is a relaxed A-pose. The armature carries three looping
+idles, `idle_breathe` (6 s), `idle_look` (4 s) and `idle_beard` (4 s), which
+all start and end on one neutral pose so the scene can crossfade between them.
+That pose brings the hands in and holds the staff upright beside the right
+leg; the staff is skinned to the right hand, so in the bare rest pose it hangs
+from that hand at an angle.
 
 Weights are computed here, not by Blender's heat solver: each part lists the
 bones it may follow, and within that set a vertex is shared between its
@@ -661,7 +663,8 @@ def build_armature(scale):
         bone.use_deform = name != "root"
         if parent:
             bone.parent = data.edit_bones[parent]
-            bone.use_connect = Vector(BONES[parent][1]) == Vector(head)
+            # Hands stay loose so the staff grip can place them exactly.
+            bone.use_connect = Vector(BONES[parent][1]) == Vector(head) and not name.startswith("hand")
     bpy.ops.object.mode_set(mode="OBJECT")
     for bone in rig.pose.bones:
         bone.rotation_mode = "QUATERNION"
@@ -679,71 +682,223 @@ def aim(bone, head, direction):
     bpy.context.view_layer.update()
 
 
-def reach(rig, tag, target, pole):
-    """Two-bone IK by hand: bends the arm so the hand's centre lands on
-    `target`, the elbow swinging toward `pole`."""
-    bones = rig.pose.bones
-    shoulder = bones[f"upper_arm.{tag}"].head.copy()
-    a = bones[f"upper_arm.{tag}"].length
-    b = bones[f"forearm.{tag}"].length + bones[f"hand.{tag}"].length / 2
-    offset = target - shoulder
+def turn(bone, axis, angle):
+    """Turns a posed bone about an armature-space axis through its head."""
+    head = bone.head.copy()
+    bone.matrix = Matrix.Translation(head) @ Matrix.Rotation(angle, 4, axis) @ Matrix.Translation(-head) @ bone.matrix
+    bpy.context.view_layer.update()
+
+
+def bend(upper, lower, target, pole, reach_past=0.0):
+    """Two-bone IK by hand: bends upper and lower so that a point
+    `reach_past` beyond the lower bone's tail lands on `target`, the middle
+    joint swinging toward `pole`. Returns the middle joint."""
+    root = upper.head.copy()
+    a = upper.length
+    b = lower.length + reach_past
+    offset = target - root
     c = min(offset.length, (a + b) * 0.999)
     u = offset.normalized()
     w = (pole - pole.dot(u) * u).normalized()
     angle = math.acos(max(-1, min(1, (a * a + c * c - b * b) / (2 * a * c))))
-    elbow = shoulder + a * (math.cos(angle) * u + math.sin(angle) * w)
-    aim(bones[f"upper_arm.{tag}"], shoulder, elbow - shoulder)
-    aim(bones[f"forearm.{tag}"], elbow, target - elbow)
-    aim(bones[f"hand.{tag}"], bones[f"forearm.{tag}"].tail.copy(), target - elbow)
+    joint = root + a * (math.cos(angle) * u + math.sin(angle) * w)
+    aim(upper, root, joint - root)
+    aim(lower, joint, target - joint)
+    return joint
 
 
-def idle_pose(rig, t, scale):
-    """The idle at phase t (0..1): a breath through the chest, a slow sway
-    and nod, the right hand held on the staff and the left drifting."""
-    wave = math.sin(2 * math.pi * t)
+def reach(rig, tag, target, pole):
+    """Puts the centre of a hand on `target`, the hand in line with the forearm."""
     bones = rig.pose.bones
-    for bone in bones:
-        bone.rotation_quaternion = (1, 0, 0, 0)
-        bone.location = (0, 0, 0)
-    bones["spine"].rotation_quaternion = Euler((0, 0.025 * wave, 0)).to_quaternion()
-    bones["chest"].rotation_quaternion = Euler((-0.03 * wave, 0, 0)).to_quaternion()
-    bones["head"].rotation_quaternion = Euler((0.04 * math.cos(2 * math.pi * t), -0.02 * wave, 0)).to_quaternion()
-    bones["shoulder.L"].rotation_quaternion = Euler((0, 0, 0.03 * wave)).to_quaternion()
-    bones["shoulder.R"].rotation_quaternion = Euler((0, 0, -0.03 * wave)).to_quaternion()
-    bpy.context.view_layer.update()
-    reach(rig, "R", IDLE_HAND_R * scale, Vector((-1, 0.6, 0)))
-    reach(rig, "L", (IDLE_HAND_L + Vector((0, -0.006 * wave, 0.004 * wave))) * scale, Vector((1, 0.6, 0)))
+    hand = bones[f"hand.{tag}"]
+    elbow = bend(bones[f"upper_arm.{tag}"], bones[f"forearm.{tag}"], target, pole, hand.length / 2)
+    aim(hand, bones[f"forearm.{tag}"].tail.copy(), target - elbow)
 
 
-def animate_idle(rig, scale, keys=5):
-    """Keys the loop over two seconds; the last key repeats the first."""
-    rig.animation_data_create()
-    frames = 2 * FPS
-    for k in range(keys):
-        t = k / (keys - 1)
-        idle_pose(rig, t % 1, scale)
-        for bone in rig.pose.bones:
-            bone.keyframe_insert("rotation_quaternion", frame=1 + t * frames)
-            bone.keyframe_insert("location", frame=1 + t * frames)
-    action = rig.animation_data.action
-    action.name = "idle"
-    scene = bpy.context.scene
-    scene.frame_start, scene.frame_end = 1, 1 + frames
-
-
-def stage_staff(rig, staff, scale):
-    """The staff is modelled in the idle grip; skinned to the right hand, it
-    must sit where that hand is at rest, so it is carried back by the inverse
-    of the hand's idle move."""
-    idle_pose(rig, 0, scale)
-    hand = rig.pose.bones["hand.R"]
-    back = hand.bone.matrix_local @ hand.matrix.inverted()
-    for obj in staff:
-        obj.data.transform(back)
+def clear_pose(rig):
     for bone in rig.pose.bones:
         bone.rotation_quaternion = (1, 0, 0, 0)
         bone.location = (0, 0, 0)
     bpy.context.view_layer.update()
+
+
+def grip_pose(rig, scale):
+    """The reference grip: body at rest, right hand on the staff as modelled.
+    Returns the right hand's matrix there, which the staff is staged from."""
+    clear_pose(rig)
+    reach(rig, "R", IDLE_HAND_R * scale, Vector((-1, 0.6, 0)))
+    return rig.pose.bones["hand.R"].matrix.copy()
+
+
+def pulse(t, start, end):
+    """0 outside [start, end], easing up to 1 and back down inside it."""
+    if not start < t < end:
+        return 0.0
+    return math.sin(math.pi * (t - start) / (end - start)) ** 2
+
+
+def ease(t, start, end):
+    """0 before `start`, 1 after `end`, smoothstepped in between."""
+    x = min(max((t - start) / (end - start), 0), 1)
+    return x * x * (3 - 2 * x)
+
+
+def pose(rig, k, grip, breath=0.0, sway=0.0, look=0.0, nod=0.0, held=0.0, slide=0.0, lift=0.0):
+    """Poses the sage from a few channels, each 0 in the shared neutral pose
+    every idle starts and ends on, so any idle can follow any other.
+
+    breath and sway run -1..1: the chest and shoulders rise as the hips dip,
+    and the weight rocks over one leg then the other. look turns the head to
+    his left with a tilt; nod dips it. held brings the free hand to the
+    beard, slide strokes it down, lift swings the hand out on the way so it
+    clears the cloak. The staff rocks on its foot with the sway and the right
+    hand rides it; the feet stay planted by IK.
+    """
+    bones = rig.pose.bones
+    clear_pose(rig)
+
+    hips = bones["hips"]
+    dip = -0.012 - 0.008 * (1 + breath) / 2
+    hips.matrix = Matrix.Translation(Vector((0.022 * sway, 0, dip)) * k) @ hips.matrix
+    bpy.context.view_layer.update()
+    turn(hips, "Y", -0.07 * sway)
+    turn(bones["spine"], "Y", 0.11 * sway)
+    turn(bones["chest"], "X", -0.07 * breath - 0.05 * held)
+    turn(bones["chest"], "Y", -0.03 * sway)
+    turn(bones["shoulder.L"], "Y", -0.09 * breath)
+    turn(bones["shoulder.R"], "Y", 0.06 * breath)
+    turn(bones["neck"], "X", 0.04 * breath)
+    head = bones["head"]
+    turn(head, "Z", 0.42 * look)
+    turn(head, "Y", -0.12 * look + 0.05 * sway)
+    turn(head, "X", 0.08 * nod + 0.08 * held)
+
+    # The staff pivots on its foot; the hand is carried with it.
+    foot = STAFF_AT * k
+    rock = (
+        Matrix.Translation(foot)
+        @ Matrix.Rotation(0.05 * sway, 4, "Y")
+        @ Matrix.Rotation(0.035 * breath, 4, "X")
+        @ Matrix.Translation(-foot)
+    )
+    bend(bones["upper_arm.R"], bones["forearm.R"], rock @ (IDLE_HAND_R * k), Vector((-1, 0.6, 0)), bones["hand.R"].length / 2)
+    bones["hand.R"].matrix = rock @ grip
+    bpy.context.view_layer.update()
+
+    beard = Vector((0.085, -0.235, 0.5 - 0.065 * slide))
+    rest = IDLE_HAND_L + Vector((0, 0, 0.006 * breath))
+    target = rest.lerp(beard, held) + Vector((0.03, -0.04, 0.02)) * lift
+    reach(rig, "L", target * k, Vector((1, 0.5, -0.6)))
+
+    for tag in ("L", "R"):
+        ankle = Vector(BONES[f"shin.{tag}"][1]) * k
+        bend(bones[f"thigh.{tag}"], bones[f"shin.{tag}"], ankle, Vector((0, -1, 0)))
+        foot_bone = bones[f"foot.{tag}"]
+        rest_foot = foot_bone.bone.matrix_local.copy()
+        rest_foot.translation = ankle
+        foot_bone.matrix = rest_foot
+        bpy.context.view_layer.update()
+
+
+def breathe(t):
+    return dict(breath=math.sin(4 * math.pi * t), sway=math.sin(2 * math.pi * t))
+
+
+def look_round(t):
+    gaze = ease(t, 0.08, 0.3) * (1 - ease(t, 0.6, 0.82))
+    return dict(
+        breath=0.6 * math.sin(6 * math.pi * t),
+        sway=0.3 * math.sin(2 * math.pi * t),
+        look=gaze,
+        nod=pulse(t, 0.8, 0.98),
+    )
+
+
+def stroke_beard(t):
+    held = ease(t, 0.12, 0.3) * (1 - ease(t, 0.72, 0.9))
+    return dict(
+        breath=0.6 * math.sin(6 * math.pi * t),
+        sway=0.3 * math.sin(2 * math.pi * t),
+        held=held,
+        slide=ease(t, 0.32, 0.7),
+        lift=pulse(t, 0.08, 0.94) - held,
+    )
+
+
+IDLES = {"idle_breathe": (breathe, 6), "idle_look": (look_round, 4), "idle_beard": (stroke_beard, 4)}
+
+
+def fcurves(action):
+    for layer in action.layers:
+        for strip in layer.strips:
+            for bag in strip.channelbags:
+                yield from bag.fcurves
+
+
+def animate(rig, scale, grip, name, channels, seconds, step=3):
+    """Keys one looping idle every `step` frames, densely enough for the IK
+    paths to survive interpolation; the last key repeats the first.
+    Quaternions are kept on one hemisphere from key to key, or the
+    interpolation would spin a bone the long way round. The action is left
+    unassigned with a fake user; the exporter's ACTIONS mode writes every
+    action that animates this armature as its own animation."""
+    data = rig.animation_data or rig.animation_data_create()
+    data.action = None
+    frames = seconds * FPS
+    last = {}
+    for frame in range(0, frames + 1, step):
+        pose(rig, scale, grip, **channels(frame / frames % 1))
+        for bone in rig.pose.bones:
+            q = bone.rotation_quaternion.copy()
+            if bone.name in last and last[bone.name].dot(q) < 0:
+                q.negate()
+                bone.rotation_quaternion = q
+            last[bone.name] = q
+            bone.keyframe_insert("rotation_quaternion", frame=frame)
+            bone.keyframe_insert("location", frame=frame)
+    action = data.action
+    action.name = name
+    # Cyclic curves get cycle-aware handles, so the velocity carries straight
+    # through the seam instead of easing to a stop on the first and last key.
+    for curve in fcurves(action):
+        curve.modifiers.new("CYCLES")
+        curve.update()
+    action.use_fake_user = True
+    data.action = None
+
+
+def stage_staff(rig, staff, grip):
+    """The staff is modelled in the grip; skinned to the right hand, it must
+    sit where that hand is at rest, so it is carried back by the inverse of
+    the hand's move into the grip."""
+    hand = rig.pose.bones["hand.R"]
+    back = hand.bone.matrix_local @ grip.inverted()
+    for obj in staff:
+        obj.data.transform(back)
+    clear_pose(rig)
+
+
+def bake_occlusion(parts, skip, distance=0.1, strength=0.6, floor=0.55):
+    """Bakes a light ambient occlusion into each part's `ao` vertex colours,
+    with the whole sage present so the beard shades the chest under it and
+    the cloak the tunic's edges. Kept light: open surfaces stay white, the
+    deepest creases come out near `floor`."""
+    scene = bpy.context.scene
+    scene.render.engine = "CYCLES"
+    scene.cycles.device = "CPU"
+    scene.cycles.samples = 64
+    scene.world = scene.world or bpy.data.worlds.new("world")
+    scene.world.light_settings.distance = distance
+    for obj in parts:
+        if obj.name in skip:
+            continue
+        colours = obj.data.color_attributes.new("ao", "BYTE_COLOR", "POINT")
+        obj.data.color_attributes.active_color = colours
+        activate(obj)
+        bpy.ops.object.bake(type="AO", target="VERTEX_COLORS")
+        for c in colours.data:
+            shade = max(1 - strength * (1 - c.color[0]), floor)
+            c.color = (shade, shade, shade, 1)
 
 
 def export(rig, meshes, name):
@@ -763,6 +918,12 @@ def export(rig, meshes, name):
         export_animations=True,
         export_animation_mode="ACTIONS",
         export_def_bones=False,
+        # The ao colours, as COLOR_0, multiply the base colour in glTF.
+        export_vertex_color="ACTIVE",
+        # The idles are keyed every 3 frames; sampling every 2 keeps them
+        # smooth at half the size.
+        export_frame_step=2,
+        export_all_vertex_colors=False,
     )
 
 
@@ -795,11 +956,18 @@ def build_sage():
         obj.data.transform(Matrix.Scale(scale, 4))
 
     rig = build_armature(scale)
-    stage_staff(rig, staff, scale)
+    grip = grip_pose(rig, scale)
+    stage_staff(rig, staff, grip)
     for obj in parts:
         obj.parent = rig
         obj.modifiers.new("rig", "ARMATURE").object = rig
-    animate_idle(rig, scale)
+    # Baked in the neutral pose every idle passes through, which is what is
+    # seen, not the A-pose.
+    pose(rig, scale, grip)
+    bake_occlusion(parts, skip={"orb", "eyes"})
+    for name, (channels, seconds) in IDLES.items():
+        animate(rig, scale, grip, name, channels, seconds)
+    clear_pose(rig)
 
     for obj in parts:
         print(f"{obj.name:12s} {triangles(obj):6d} tris")

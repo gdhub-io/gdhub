@@ -42,16 +42,25 @@ describe("hero game board", () => {
 		}
 	});
 
-	it.each(TEAM)("lets the %s reach its guide in one move", (id) => {
-		const reach = reachable(
-			START[id],
-			occupiedExcept(id),
-			MOVE_RANGE,
-			ZONE[id],
+	it.each(TEAM)("starts the %s inside its zone", (id) => {
+		expect(ZONE[id].has(cellKey(START[id]))).toBe(true);
+	});
+
+	it.each(TEAM)("lets the %s walk from its start to its guide", (id) => {
+		// Repeated moves inside the zone, each up to the move range.
+		const blocked = occupiedExcept(id);
+		const seen = new Set([cellKey(START[id])]);
+		let frontier = [START[id]];
+		while (frontier.length) {
+			frontier = frontier.flatMap((from) =>
+				[...reachable(from, blocked, MOVE_RANGE, ZONE[id]).values()]
+					.map((r) => r.path[r.path.length - 1])
+					.filter((c) => !seen.has(cellKey(c)) && seen.add(cellKey(c))),
+			);
+		}
+		expect(neighbours(START[GUIDE[id]]).some((c) => seen.has(cellKey(c)))).toBe(
+			true,
 		);
-		expect(
-			neighbours(START[GUIDE[id]]).some((c) => reach.has(cellKey(c))),
-		).toBe(true);
 	});
 
 	it("keeps every move inside the zone, off fog, trees, rocks and actors", () => {
