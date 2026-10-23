@@ -8,7 +8,7 @@ When the AI curator checks a goal, writes the day-1 plan, reviews a sprint or
 gives the verdict, it speaks from everything the project shows, the way a human
 curator who opened the project page would: every devlog of the sprint (and of the
 whole checkpoint for the verdict), what happened on the project (artifacts added,
-people joining or leaving, stage moves, open positions), who on the team actually
+people joining or leaving, open positions), who on the team actually
 worked each week and in what role, and where the project stands on its path —
 what this stage expects and what the next one needs. A "ready for the next stage"
 verdict rests on what the stage expects, not only on the checkpoint's tasks.
@@ -29,6 +29,7 @@ devlogs sees a review that saw one.
 - **Cost:** older material is summarised, not sent raw; tokens per call stay
   logged (AI usage, GDHUB-74). A long project must not blow the context.
 - **Reuse** the project activity feed and the workflow data that already exist.
+  Stage moves are left out: the stage does not change while a checkpoint runs.
 - The verdict guardrail (outcomes need a Ready artifact, GDHUB-56) does not move.
 
 ## Done when
