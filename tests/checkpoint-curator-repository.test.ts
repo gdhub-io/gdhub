@@ -7,6 +7,7 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import {
 	closeCheckpoint,
 	runGoalCheck,
@@ -26,6 +27,10 @@ vi.mock("@/services/prisma", () => ({
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
 	},
+}));
+
+vi.mock("@/repositories/artifact-check", () => ({
+	recheckCheckpointArtifacts: vi.fn(),
 }));
 
 vi.mock("@/services/checkpoint-curator", () => ({
@@ -430,6 +435,35 @@ describe("writeMidNote", () => {
 });
 
 describe("closeCheckpoint", () => {
+	it("checks the evidence again before the verdict reads it", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running() as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue({
+			summary: "Done.",
+			verdict: CheckpointVerdict.GoalMet,
+			verdictNote: "",
+		});
+
+		await closeCheckpoint("cp1");
+
+		expect(recheckCheckpointArtifacts).toHaveBeenCalledWith("cp1");
+		expect(
+			vi.mocked(recheckCheckpointArtifacts).mock.invocationCallOrder[0],
+		).toBeLessThan(
+			vi.mocked(checkpointCurator.writeReport).mock.invocationCallOrder[0],
+		);
+	});
+
+	it("leaves a closed checkpoint's evidence alone", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({ status: CheckpointStatus.Closed }) as never,
+		);
+
+		await expect(closeCheckpoint("cp1")).resolves.toBeNull();
+		expect(recheckCheckpointArtifacts).not.toHaveBeenCalled();
+	});
+
 	it("writes the report and the settled verdict, and closes", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			running() as never,

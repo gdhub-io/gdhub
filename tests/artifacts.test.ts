@@ -7,7 +7,7 @@ import {
 	TYPES_OF_KIND,
 	toRows,
 } from "@/components/MyProjectArtifacts/artifacts";
-import { ProjectArtifactType } from "@/config/prisma-enums";
+import { ArtifactCheckStatus, ProjectArtifactType } from "@/config/prisma-enums";
 
 const artifact = (
 	id: string,
@@ -21,6 +21,7 @@ const artifact = (
 	link: "https://example.com",
 	createdAt,
 	checkStatus: null,
+	checkNote: null,
 	createdByUser: { name: "Marta", image: null },
 	step,
 });
@@ -94,5 +95,27 @@ describe("artifact grouping", () => {
 		const [band] = toRows(sorted.slice(1, 2), sorted);
 
 		expect(band).toMatchObject({ row: "stage", name: "Prototyping", count: 2 });
+	});
+});
+
+describe("a link that cannot be opened", () => {
+	it("gets a fix row right under it, and only it does", () => {
+		const broken = {
+			...artifact("broken", "2026-03-01"),
+			checkStatus: ArtifactCheckStatus.Unreachable,
+			checkNote: "needsLogin",
+		};
+		const fine = artifact("fine", "2026-03-02");
+
+		const rows = toRows([broken, fine], [broken, fine]).map(
+			(row) => `${row.row}:${row.key}`,
+		);
+
+		expect(rows).toEqual([
+			"stage:stage-unsorted",
+			"artifact:broken",
+			"fix:broken-fix",
+			"artifact:fine",
+		]);
 	});
 });

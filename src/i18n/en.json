@@ -1130,6 +1130,15 @@
 		"check": {
 			"pending": "Checking…",
 			"ready": "Ready",
+			"reason": {
+				"needsLogin": "This link asks for a login. Make it public or use another link.",
+				"notFound": "Nothing is at this link any more. Check it or use another link.",
+				"timeout": "The link did not answer in time. Try again later or use another link.",
+				"tooManyRedirects": "The link redirects too many times. Use the final address.",
+				"unreachable": "The link could not be opened. Check it or use another link.",
+				"unsafe": "This address cannot be opened from outside. Use a public link."
+			},
+			"replace": "Replace the link",
 			"unreachable": "Cannot be opened",
 			"unsupported": "Saved, not readable"
 		},
@@ -1212,6 +1221,13 @@
 		"page": {
 			"description": "Project builds, videos, images and documents.",
 			"title": "Artifacts"
+		},
+		"replace": {
+			"cancel": "Cancel",
+			"invalid": "Paste a full link, starting with https://",
+			"label": "Link",
+			"save": "Save and check",
+			"title": "Replace the link"
 		},
 		"search": "Search artifacts",
 		"stage": {

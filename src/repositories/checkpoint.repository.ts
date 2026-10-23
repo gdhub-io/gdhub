@@ -70,6 +70,7 @@ const checkpointItemSelect = {
 			type: true,
 			link: true,
 			checkStatus: true,
+			checkNote: true,
 		},
 	},
 } as const;
@@ -168,6 +169,7 @@ const evidenceArtifactSelect = {
 	type: true,
 	link: true,
 	checkStatus: true,
+	checkNote: true,
 	createdAt: true,
 	createdByUser: { select: { id: true, name: true, image: true } },
 } as const;
@@ -249,15 +251,16 @@ export const toArtifactRef = ({
 	type,
 	link,
 	checkStatus,
-}: Pick<
-	EvidenceArtifact,
-	"id" | "name" | "type" | "link" | "checkStatus"
->): CheckpointArtifactRef => ({
+	checkNote,
+}: Pick<EvidenceArtifact, "id" | "name" | "type" | "link" | "checkStatus"> & {
+	checkNote?: string | null;
+}): CheckpointArtifactRef => ({
 	id,
 	name,
 	type,
 	link,
 	checkStatus,
+	checkNote: checkNote ?? null,
 });
 
 /** The four sprints, or nothing at all: a draft has no dates to divide. */

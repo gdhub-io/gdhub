@@ -7,7 +7,12 @@ import {
 	IconPlayerPlay,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { ProjectArtifactType } from "@/config/prisma-enums";
+import type { StatusTone } from "@/components/ui";
+import {
+	ArtifactCheckStatus,
+	ProjectArtifactType,
+} from "@/config/prisma-enums";
+import type { OpenFailure } from "@/services/artifact-check/safe-fetch";
 import type { ArtifactKind } from "./artifacts";
 
 export const KIND_ICON: Record<ArtifactKind, Icon> = {
@@ -61,6 +66,73 @@ export const useArtifactTypeLabel = () => {
 				return t("artifacts.type.gdd", "Game design document");
 			default:
 				return t("artifacts.type.other", "Other");
+		}
+	};
+};
+
+/** Whether the curator can open the artifact, as a dot and a word. */
+export const useCheckStatus = () => {
+	const { t } = useTranslate();
+
+	return (status: ArtifactCheckStatus): { tone: StatusTone; label: string } => {
+		switch (status) {
+			case ArtifactCheckStatus.Readable:
+				return { tone: "success", label: t("artifacts.check.ready", "Ready") };
+			case ArtifactCheckStatus.Unreachable:
+				return {
+					tone: "danger",
+					label: t("artifacts.check.unreachable", "Cannot be opened"),
+				};
+			case ArtifactCheckStatus.Unsupported:
+				return {
+					tone: "warning",
+					label: t("artifacts.check.unsupported", "Saved, not readable"),
+				};
+			default:
+				return {
+					tone: "neutral",
+					label: t("artifacts.check.pending", "Checking…"),
+				};
+		}
+	};
+};
+
+/** Why a link did not open (`checkNote`), said as what to do about it. */
+export const useCheckReason = () => {
+	const { t } = useTranslate();
+
+	return (note: OpenFailure | string | null) => {
+		switch (note) {
+			case "needsLogin":
+				return t(
+					"artifacts.check.reason.needsLogin",
+					"This link asks for a login. Make it public or use another link.",
+				);
+			case "notFound":
+				return t(
+					"artifacts.check.reason.notFound",
+					"Nothing is at this link any more. Check it or use another link.",
+				);
+			case "timeout":
+				return t(
+					"artifacts.check.reason.timeout",
+					"The link did not answer in time. Try again later or use another link.",
+				);
+			case "unsafe":
+				return t(
+					"artifacts.check.reason.unsafe",
+					"This address cannot be opened from outside. Use a public link.",
+				);
+			case "tooManyRedirects":
+				return t(
+					"artifacts.check.reason.tooManyRedirects",
+					"The link redirects too many times. Use the final address.",
+				);
+			default:
+				return t(
+					"artifacts.check.reason.unreachable",
+					"The link could not be opened. Check it or use another link.",
+				);
 		}
 	};
 };

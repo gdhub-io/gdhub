@@ -1,4 +1,5 @@
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import {
 	apiError,
 	json,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
+import { checkArtifact } from "@/repositories/artifact-check";
 import {
 	getCheckpoint,
 	withProgress,
@@ -75,13 +77,15 @@ export const POST = pipe(
 	if (artifactId) {
 		const artifact = await prisma.projectArtifact.findUnique({
 			where: { id: artifactId },
-			select: { projectId: true },
+			select: { projectId: true, checkStatus: true },
 		});
 
 		if (!artifact) return apiError.notFound();
 		if (artifact.projectId !== checkpoint.projectId) {
 			return apiError.badRequest("artifactNotInProject");
 		}
+		// Older than the check itself: it becomes evidence now, so it is checked now.
+		if (!artifact.checkStatus) after(() => checkArtifact(artifactId));
 	}
 
 	await prisma.checkpointItem.updateMany({

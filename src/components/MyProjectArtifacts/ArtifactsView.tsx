@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
+	Alert,
 	Button,
 	Flex,
 	Input,
@@ -46,19 +47,14 @@ import {
 	KIND_ICON,
 	useArtifactKindLabel,
 	useArtifactTypeLabel,
+	useCheckReason,
+	useCheckStatus,
 } from "./labels";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
 
 const PAGE_SIZE = 25;
-
-const CHECK_TONE: Record<ArtifactCheckStatus, StatusTone> = {
-	[ArtifactCheckStatus.Readable]: "success",
-	[ArtifactCheckStatus.Pending]: "neutral",
-	[ArtifactCheckStatus.Unreachable]: "danger",
-	[ArtifactCheckStatus.Unsupported]: "warning",
-};
 
 /** Frame `eEvzk`: a tile and one plain line. `EmptyState` sets its title in 16/600. */
 const Blank = ({ icon, text }: { icon: Icon; text: string }) => (
@@ -75,6 +71,8 @@ export type ArtifactsViewProps = {
 	canManage: boolean;
 	onRetry: () => void;
 	onDelete: (id: string) => void;
+	/** A link that cannot be opened is fixed in place (frame A01). */
+	onReplace: (artifact: ArtifactListItem) => void;
 };
 
 /** The project's artifact store — frames `R7JKH` (list) and `V3HRXh` (states). */
@@ -84,8 +82,11 @@ export function ArtifactsView({
 	canManage,
 	onRetry,
 	onDelete,
+	onReplace,
 }: ArtifactsViewProps) {
 	const { t } = useTranslate();
+	const checkReason = useCheckReason();
+	const checkStatus = useCheckStatus();
 	const kindLabel = useArtifactKindLabel();
 	const typeLabel = useArtifactTypeLabel();
 	const [kind, setKind] = useState<ArtifactKind | "all">("all");
@@ -174,6 +175,23 @@ export function ArtifactsView({
 			title: t("artifacts.column.artifact", "Artifact"),
 			onCell: (row) => (row.row === "artifact" ? {} : { colSpan: columnCount }),
 			render: (_, row) => {
+				if (row.row === "fix") {
+					return (
+						<Alert
+							type="error"
+							showIcon
+							title={checkReason(row.artifact.checkNote)}
+							action={
+								canManage && (
+									<Button size="small" onClick={() => onReplace(row.artifact)}>
+										{t("artifacts.check.replace", "Replace the link")}
+									</Button>
+								)
+							}
+						/>
+					);
+				}
+
 				if (row.row === "stage") {
 					return (
 						<Flex align="center" gap={10}>
@@ -222,23 +240,9 @@ export function ArtifactsView({
 				const check = row.artifact.checkStatus;
 				if (!check) return <Text type="secondary">—</Text>;
 
-				const label = {
-					[ArtifactCheckStatus.Readable]: t("artifacts.check.ready", "Ready"),
-					[ArtifactCheckStatus.Pending]: t(
-						"artifacts.check.pending",
-						"Checking…",
-					),
-					[ArtifactCheckStatus.Unreachable]: t(
-						"artifacts.check.unreachable",
-						"Cannot be opened",
-					),
-					[ArtifactCheckStatus.Unsupported]: t(
-						"artifacts.check.unsupported",
-						"Saved, not readable",
-					),
-				}[check];
+				const { tone, label } = checkStatus(check);
 
-				return <StatusDot tone={CHECK_TONE[check]} label={label} />;
+				return <StatusDot tone={tone} label={label} />;
 			},
 		},
 		{
@@ -360,7 +364,13 @@ export function ArtifactsView({
 				columns={columns}
 				dataSource={rows}
 				rowKey="key"
-				rowClassName={(row) => (row.row === "stage" ? styles.stageRow : "")}
+				rowClassName={(row) =>
+					row.row === "stage"
+						? styles.stageRow
+						: row.row === "fix"
+							? styles.fixRow
+							: ""
+				}
 				pagination={false}
 				tableLayout="fixed"
 				scroll={{ x: 720 }}
