@@ -1,0 +1,54 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-111 — the AI curator reads the whole project" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+project: "What the project shows (what the author can already see)" {
+  devlogs: "Devlogs\nevery one of this checkpoint"
+  activity: "Activity\nartifacts added · people joined / left\nstage moves · open positions"
+  team: "Team\nwho worked which week · roles · hours"
+  path: "The path\nthis stage: what it expects\nnext stage: what it needs"
+  history: "History\nthe last checkpoint's verdict\nolder: one short summary"
+}
+
+picture: "One project picture\nbuilt once, older parts summarised" {
+  style.fill: "#E8F0FE"
+}
+
+project.devlogs -> picture
+project.activity -> picture
+project.team -> picture
+project.path -> picture
+project.history -> picture
+
+moments: "Where the AI curator speaks" {
+  goal: "Goal check\nis it reachable, does it fit the stage"
+  plan: "Day-1 plan\ntasks against what the stage expects"
+  sprints: "Sprint reviews (days 8, 15, 22)\nall devlogs of the sprint, who worked"
+  final: "Final review and verdict\nthe whole checkpoint\nready for the next stage?"
+}
+
+picture -> moments.goal
+picture -> moments.plan
+picture -> moments.sprints
+picture -> moments.final
+
+author: "The author reads a review that saw\neverything they made\n/user/project/[slug]/workflow/[cp]/review/[index]"
+moments -> author
+
+critical: "Critical" {
+  shape: page
+  a: "Only what the author could already see"
+  b: "Verdict rule unchanged: an outcome needs an artifact that opens"
+  c: "Long projects are summarised, never cut off silently"
+  d: "Token use per call stays logged"
+}
