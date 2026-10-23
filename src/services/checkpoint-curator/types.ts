@@ -82,6 +82,8 @@ export type GoalCheckInput = {
 	team: CuratorTeam;
 	/** How the project's last checkpoint ended, with the same team behind it. */
 	previous: { verdict: CheckpointVerdict; note: string | null } | null;
+	/** The project as its page shows it: the stage's path, the team, recent activity. */
+	picture: string;
 };
 
 /**
@@ -114,6 +116,7 @@ export type MidNoteInput = {
 	unproven: UnprovenOutcome[];
 	day: number;
 	devlogs: { publishedAt: string; content: string }[];
+	picture: string;
 };
 
 export type MidNoteResult = {
@@ -139,6 +142,7 @@ export type ReportInput = {
 	devlogs: { publishedAt: string; content: string }[];
 	/** Member by week: who confirmed they worked on it. */
 	pulses: { member: string; weeks: boolean[] }[];
+	picture: string;
 };
 
 export type ReportResult = {

@@ -92,3 +92,13 @@ export const CURATOR_STANCE = stripIndents`
 
 export const localeLine = (locale = "en") =>
 	`Answer in the language with code "${locale}".`;
+
+/**
+ * The project around the card (GDHUB-111). It explains what happened; it never
+ * proves an outcome — only an artifact that opens does that.
+ */
+export const renderPicture = (picture: string) => stripIndents`
+	What the project shows — context for your judgement. It never proves an
+	outcome; only an artifact that opens does.
+	${picture}
+`;

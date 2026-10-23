@@ -1,7 +1,14 @@
 import { stripIndents } from "common-tags";
 import { CheckpointVerdict } from "@/config/prisma-enums";
+import { devlogText } from "@/lib/curator-text";
 import type { ReportInput } from "../types";
-import { CURATOR_STANCE, localeLine, renderCard, renderStage } from "./card";
+import {
+	CURATOR_STANCE,
+	localeLine,
+	renderCard,
+	renderPicture,
+	renderStage,
+} from "./card";
 
 /**
  * Day 28: the report and the proposed verdict (§8, §9).
@@ -49,8 +56,9 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			checkable against what is below.
 
 			The three verdicts:
-			- StageClosed: every outcome that was not cut is proven, AND the stage's
-			  own requirements are met. The project can leave this stage.
+			- StageClosed: every outcome that was not cut is proven, AND what has to
+			  be done on this stage to move on (listed under "What the project
+			  shows") is done. The project can leave this stage.
 			- GoalMet: every outcome that was not cut is proven, but the stage needs
 			  more. The next checkpoint runs on the same stage.
 			- GoalMissed: an outcome that was not cut has no readable evidence.
@@ -101,7 +109,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			Devlogs:
 			${
 				input.devlogs
-					.map((post) => `- ${post.publishedAt}: ${post.content.slice(0, 800)}`)
+					.map((post) => `- ${post.publishedAt}: ${devlogText(post.content)}`)
 					.join("\n") || "- (none)"
 			}
 
@@ -114,6 +122,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					)
 					.join("\n") || "- (no pulse recorded)"
 			}
+
+			${renderPicture(input.picture)}
 
 			Answer via the ${REPORT_FUNCTION_NAME} function.
 		`,

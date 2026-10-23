@@ -1,7 +1,8 @@
 import { stripIndents } from "common-tags";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
+import { devlogText } from "@/lib/curator-text";
 import type { MidNoteInput } from "../types";
-import { CURATOR_STANCE, localeLine, renderCard } from "./card";
+import { CURATOR_STANCE, localeLine, renderCard, renderPicture } from "./card";
 
 /**
  * The day-15 note (§7).
@@ -71,9 +72,11 @@ export const midNoteMessages = (input: MidNoteInput, locale = "en") => [
 			Devlogs so far:
 			${
 				input.devlogs
-					.map((post) => `- ${post.publishedAt}: ${post.content.slice(0, 600)}`)
+					.map((post) => `- ${post.publishedAt}: ${devlogText(post.content)}`)
 					.join("\n") || "- (none)"
 			}
+
+			${renderPicture(input.picture)}
 
 			Answer via the ${MID_NOTE_FUNCTION_NAME} function.
 		`,

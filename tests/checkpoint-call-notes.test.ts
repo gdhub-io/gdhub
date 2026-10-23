@@ -30,7 +30,7 @@ vi.mock("@/services/prisma", () => ({
 			update: (...a: unknown[]) => update(...a),
 			findUniqueOrThrow: (...a: unknown[]) => findUniqueOrThrow(...a),
 		},
-		projectReport: { findFirst: vi.fn(async () => ({ content: "Devlog" })) },
+		projectReport: { findMany: vi.fn(async () => [{ content: "Devlog" }]) },
 		projectArtifact: { findMany: vi.fn(async () => []) },
 	},
 }));

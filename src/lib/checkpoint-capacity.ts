@@ -18,7 +18,7 @@ import type { CuratorTeam } from "@/services/checkpoint-curator";
 type StatedHours = { timeForWork?: number[] | null };
 
 /** `[min, max]`, tolerating a single figure and a range written backwards. */
-const weeklyRange = (hours: number[] | null | undefined) => {
+export const weeklyRange = (hours: number[] | null | undefined) => {
 	if (!hours?.length) return null;
 
 	const [first, second = first] = hours;
