@@ -56,6 +56,6 @@ project. It still cannot tell a level from a menu screenshot.
 - **Videos on YouTube, Vimeo or Drive** (decided, Dmitry 2026-10-24): only direct
   video files are sampled into frames; a provider video is read from what the
   provider publishes (title, thumbnail) and is "cannot tell" when that is not
-  enough. Watching YouTube through Gemini is its own issue, later.
+  enough. Watching YouTube through Gemini is not planned for now.
 - **Where the match is shown:** assumed only inside the curator's reviews and the
   report, not as a badge on the Artifacts tab.
