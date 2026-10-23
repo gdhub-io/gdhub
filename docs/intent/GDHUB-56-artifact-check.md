@@ -29,9 +29,11 @@ every checkpoint ends `GoalMissed` whatever the team attached.
 - **SSRF-safe fetcher**, written once and reused by GDHUB-110: http/https only,
   resolve the host and refuse loopback, link-local and private ranges, at most
   three redirects with each target re-checked, a capped body, a timeout.
-- **`200` proves nothing:** the fetched content type is compared against the kind
-  the author chose; HTML where a video, PDF or image was promised is
-  `Unreachable`. The platform never runs or downloads a build in full.
+- **Two questions only** (Dmitry, 2026-10-24): is the link safe to open, and
+  does it open. A redirect to a login page (private Drive, Notion) does not
+  count as opening. What the page contains is not judged here — a YouTube or
+  Drive page is as good as a file. `Unsupported` is not used. The platform never
+  runs or downloads a build in full.
 - **When:** checked on add and on link edit, and again when the checkpoint
   closes (links rot, permissions change). No new queue infrastructure — the
   existing cron and request lifecycle are enough.
@@ -41,8 +43,9 @@ every checkpoint ends `GoalMissed` whatever the team attached.
 
 - [ ] Adding or editing an artifact sets it to Checking, then within a minute to
       Ready or Cannot be opened, with the reason shown.
-- [ ] A public PDF or image link is Ready; a private Google Drive or Notion link
-      is Cannot be opened ("needs a login"); a dead link is Cannot be opened.
+- [ ] A public link (a file, a YouTube or Drive page) is Ready; a private Google
+      Drive or Notion link is Cannot be opened ("needs a login"); a dead link is
+      Cannot be opened.
 - [ ] A link to `localhost`, a private IP or a redirect into one is refused and
       never fetched.
 - [ ] The status shows on the Artifacts tab and on each goal-card item.
@@ -50,7 +53,7 @@ every checkpoint ends `GoalMissed` whatever the team attached.
       verdict reads them; a Ready artifact lets its outcome count as delivered.
 - [ ] The result distinguishes "nothing attached" from "attached, could not be
       opened".
-- [ ] Unit tests cover the fetcher's refusals and the content-type rules.
+- [ ] Unit tests cover the fetcher's refusals and the login-page rule.
 
 ## Out of scope
 
@@ -62,10 +65,4 @@ every checkpoint ends `GoalMissed` whatever the team attached.
 
 ## Open questions
 
-- **Video links (YouTube, Vimeo):** a provider page is HTML. Assumed: known
-  video providers count as `Readable` when the page answers and the provider
-  says the video is public (oEmbed); any other page where a video was promised
-  is `Unreachable`.
-- **Executable builds (itch.io, a drive):** assumed `Readable` when the page
-  answers publicly — the build is never downloaded.
 - **Uploaded images (Sanity):** assumed `Readable` on upload without a fetch.
