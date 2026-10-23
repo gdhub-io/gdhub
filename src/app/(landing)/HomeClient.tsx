@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
+import { LazyHeroGame } from "@/components/landing/HeroGame/LazyHeroGame";
 import { LandingContactsSection } from "@/components/landing/LandingContactsSection";
 import { LandingFeedbackSection } from "@/components/landing/LandingFeedbackSection";
 import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
@@ -95,7 +96,7 @@ export function HomeClient({ stats }: { stats: HomeStats }) {
 		>
 			<LandingLayout className={styles.container}>
 				<div className={styles.main} data-gd-landing>
-					<LandingHeroSection stats={stats} />
+					<LandingHeroSection stats={stats} art={<LazyHeroGame />} />
 					<LandingWhoWeAreSection />
 					<LandingForAuthorsSection />
 					<LandingForSpecialistsSection />

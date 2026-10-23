@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import heroBgImage from "@/assets/images/landing/gdhub-hero-image.png";
 import StarIcon from "@/assets/images/landing/star.svg";
+import { AppImage } from "@/components/ui/AppImage";
 import { staticImageUrl } from "@/helpers/image";
 import { HeroStats } from "../HeroStats";
 import styles from "./style.module.scss";
@@ -15,7 +16,11 @@ export const LandingHeroSection = ({
 	stats,
 	art,
 }: {
-	/** Takes the right column's place of the illustration. */
+	/**
+	 * Takes the illustration's place, and the stats', from a tablet up. On a
+	 * phone the illustration and the stats stay, and the art is never mounted,
+	 * so it costs nothing there.
+	 */
 	art?: ReactNode;
 	stats: {
 		usersCount: number | null;
@@ -27,6 +32,9 @@ export const LandingHeroSection = ({
 }) => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
+	// Known only after mount; until then neither the game nor the old
+	// illustration is drawn, so nothing flashes before the game's still.
+	const showArt = Boolean(art && screens.md);
 
 	const hasEmptyStats =
 		!stats ||
@@ -111,8 +119,22 @@ export const LandingHeroSection = ({
 						lg={{ span: 12 }}
 						style={{ position: "relative" }}
 					>
-						{art}
-						{!hasEmptyStats && <HeroStats stats={stats} />}
+						{showArt && art}
+						{art ? (
+							// A phone keeps the illustration and the stats; CSS hides them
+							// from a tablet up, so they never flash before the game.
+							<div className={styles.phoneOnly}>
+								<AppImage
+									src={heroBgImage}
+									alt=""
+									sizes="100vw"
+									className={styles.phoneIllustration}
+								/>
+								{!hasEmptyStats && <HeroStats stats={stats} />}
+							</div>
+						) : (
+							!hasEmptyStats && <HeroStats stats={stats} />
+						)}
 					</Col>
 				</Row>
 			</div>

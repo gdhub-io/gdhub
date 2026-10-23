@@ -8,7 +8,7 @@ import {
 	useThree,
 } from "@react-three/fiber";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Popover, Typography } from "antd";
+import { Button, Flex, Typography } from "antd";
 import {
 	type CSSProperties,
 	memo,
@@ -238,7 +238,6 @@ export const HeroGame = ({
 					anchor={anchor}
 					// Opens leftwards when a rightward bubble would run off the scene.
 					leftward={anchor.x + BUBBLE_WIDTH > (root.current?.clientWidth ?? 0)}
-					container={() => root.current ?? document.body}
 					onClose={close}
 				/>
 			)}
@@ -394,8 +393,11 @@ const TeamPanel = ({
 };
 
 // Types a line out letter by letter. The rest is laid out but invisible, so
-// the bubble keeps its size while it fills.
-const Typed = ({ text }: { text: string }) => {
+// the bubble keeps its size while it fills. Tolgee's in-context mode tags each
+// string with invisible characters; cut in half they send its DOM observer
+// into a loop that freezes the page, so they are dropped first.
+const Typed = ({ text: tagged }: { text: string }) => {
+	const text = tagged.replace(/[\u200C\u200D]/g, "");
 	const [shown, setShown] = useState(0);
 	useEffect(() => {
 		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -403,14 +405,12 @@ const Typed = ({ text }: { text: string }) => {
 			return;
 		}
 		setShown(0);
-		const timer = setInterval(
-			() =>
-				setShown((n) => {
-					if (n >= text.length) clearInterval(timer);
-					return Math.min(n + 1, text.length);
-				}),
-			TYPE_MS,
-		);
+		let n = 0;
+		const timer = setInterval(() => {
+			n += 1;
+			setShown(n);
+			if (n >= text.length) clearInterval(timer);
+		}, TYPE_MS);
 		return () => clearInterval(timer);
 	}, [text]);
 	return (
@@ -427,13 +427,11 @@ const Dialogue = ({
 	meeting,
 	anchor,
 	leftward,
-	container,
 	onClose,
 }: {
 	meeting: Meeting;
 	anchor: { x: number; y: number };
 	leftward: boolean;
-	container: () => HTMLElement;
 	onClose: () => void;
 }) => {
 	const { t } = useTranslate();
@@ -741,77 +739,64 @@ const Dialogue = ({
 	const { line, accept } = said;
 
 	return (
-		<Popover
-			open
-			arrow={false}
-			placement={leftward ? "topRight" : "topLeft"}
-			autoAdjustOverflow={false}
-			// Puts the bubble's tail, not its corner, over the speaker.
-			align={{ offset: [leftward ? TAIL_INSET : -TAIL_INSET, -TAIL_GAP] }}
-			getPopupContainer={container}
-			classNames={{
-				container: `${styles.bubble} ${leftward ? styles.tailRight : ""}`,
-			}}
-			styles={{
-				container: {
+		// A plain block, not a Popover: rc-trigger's realign looped once the line
+		// finished typing and froze the landing. The band keeps product-sized
+		// controls inside the marketing page.
+		<div
+			className={`${styles.bubble} ${leftward ? styles.tailRight : ""}`}
+			style={
+				{
+					left: leftward
+						? anchor.x - BUBBLE_WIDTH + TAIL_INSET
+						: anchor.x - TAIL_INSET,
+					top: anchor.y - TAIL_GAP,
 					"--bubble-width": `${BUBBLE_WIDTH}px`,
 					"--tail-inset": `${TAIL_INSET}px`,
-				} as CSSProperties,
-			}}
-			content={
-				// The game's UI keeps product-sized controls inside the marketing page.
-				<InverseBand density="product" transparent>
-					<Flex vertical gap="small">
-						<Flex gap="small" align="center">
-							<AppAvatar
-								src={PORTRAIT[meeting.speaker]}
-								size={28}
-								className={styles.speakerPortrait}
-							/>
-							<Flex vertical>
-								<Typography.Text strong className={styles.speakerName}>
-									{who[meeting.speaker].name}
-								</Typography.Text>
-								<Typography.Text
-									type="secondary"
-									className={styles.speakerRole}
-								>
-									{who[meeting.speaker].role}
-								</Typography.Text>
-							</Flex>
-						</Flex>
-						<Typography.Text className={styles.line}>
-							<Typed text={line} />
-						</Typography.Text>
-						<Flex gap="small">
-							<Button
-								className={styles.accept}
-								type="primary"
-								size="small"
-								block
-								onClick={onClose}
-							>
-								{accept}
-							</Button>
-							<Button
-								className={styles.decline}
-								size="small"
-								block
-								onClick={onClose}
-							>
-								{t("landing.heroGame.decline", "Not yet")}
-							</Button>
-						</Flex>
-					</Flex>
-				</InverseBand>
+				} as CSSProperties
 			}
 		>
-			<div
-				key={`${anchor.x}:${anchor.y}`}
-				className={styles.anchor}
-				style={{ left: anchor.x, top: anchor.y }}
-			/>
-		</Popover>
+			<InverseBand density="product" transparent>
+				<Flex vertical gap="small">
+					<Flex gap="small" align="center">
+						<AppAvatar
+							src={PORTRAIT[meeting.speaker]}
+							size={28}
+							className={styles.speakerPortrait}
+						/>
+						<Flex vertical>
+							<Typography.Text strong className={styles.speakerName}>
+								{who[meeting.speaker].name}
+							</Typography.Text>
+							<Typography.Text type="secondary" className={styles.speakerRole}>
+								{who[meeting.speaker].role}
+							</Typography.Text>
+						</Flex>
+					</Flex>
+					<Typography.Text className={styles.line}>
+						<Typed text={line} />
+					</Typography.Text>
+					<Flex gap="small">
+						<Button
+							className={styles.accept}
+							type="primary"
+							size="small"
+							block
+							onClick={onClose}
+						>
+							{accept}
+						</Button>
+						<Button
+							className={styles.decline}
+							size="small"
+							block
+							onClick={onClose}
+						>
+							{t("landing.heroGame.decline", "Not yet")}
+						</Button>
+					</Flex>
+				</Flex>
+			</InverseBand>
+		</div>
 	);
 };
 
