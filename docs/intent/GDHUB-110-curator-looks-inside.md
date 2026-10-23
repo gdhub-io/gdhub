@@ -53,12 +53,9 @@ project. It still cannot tell a level from a menu screenshot.
 
 ## Open questions
 
-- **Videos on YouTube, Vimeo or Drive** are pages, not files; frames cannot be
-  taken without downloading the video, which their terms forbid. Assumed for now:
-  only direct video files are sampled into frames; a provider video is read from
-  what the provider publishes (title, description, thumbnail) and marked "cannot
-  tell" when that is not enough. A provider that understands YouTube links
-  directly (Gemini) would cover it, at the cost of a second AI vendor — a decision
-  for Dmitry.
+- **Videos on YouTube, Vimeo or Drive** (decided, Dmitry 2026-10-24): only direct
+  video files are sampled into frames; a provider video is read from what the
+  provider publishes (title, thumbnail) and is "cannot tell" when that is not
+  enough. Watching YouTube through Gemini is its own issue, later.
 - **Where the match is shown:** assumed only inside the curator's reviews and the
   report, not as a badge on the Artifacts tab.
