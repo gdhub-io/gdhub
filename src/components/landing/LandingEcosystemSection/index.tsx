@@ -99,7 +99,7 @@ export function LandingEcosystemSection({
 					<div className={styles.liveLine}>
 						<Avatar.Group>
 							{liveLine.avatars.map((image) => (
-								<AppAvatar key={image} src={image ?? undefined} size={40} />
+								<AppAvatar key={image} src={image} size={40} />
 							))}
 						</Avatar.Group>
 						<Text type="secondary" className={styles.line}>

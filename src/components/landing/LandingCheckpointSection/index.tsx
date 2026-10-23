@@ -72,14 +72,12 @@ export function LandingCheckpointSection() {
 		<section id="checkpoint" className={styles.section}>
 			<div className={styles.inner}>
 				<div className={styles.copy}>
-					<div className={styles.heading}>
-						<Title level={2} className={styles.title}>
-							{t(
-								"landing.checkpoint.title",
-								"Checkpoint: the engine that drives your game to release",
-							)}
-						</Title>
-					</div>
+					<Title level={2} className={styles.title}>
+						{t(
+							"landing.checkpoint.title",
+							"Checkpoint: the engine that drives your game to release",
+						)}
+					</Title>
 
 					{/* ui-guard-ignore frame vlVwn: a dot-and-rail timeline that turns vertical on a phone; antd Steps fights that shape */}
 					<ol className={styles.timeline}>

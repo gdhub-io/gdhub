@@ -3,6 +3,7 @@ import { z } from "zod";
 import { CONTACT_EMAIL, ContactTopic } from "@/config/contact";
 import { WaitlistFeature } from "@/config/prisma-enums";
 import { clientIp } from "@/helpers/request";
+import { escapeHtml } from "@/helpers/text";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
 import { limitAiCalls } from "@/lib/rate-limit";
 import { joinWaitlist } from "@/repositories/feature-waitlist";
@@ -14,15 +15,6 @@ const ContactSchema = z.object({
 	message: z.string().trim().min(1).max(5000),
 	topic: z.nativeEnum(ContactTopic).default(ContactTopic.General),
 });
-
-const escapeHtml = (text: string) =>
-	text.replace(
-		/[&<>"']/g,
-		(char) =>
-			({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-				char
-			] ?? char,
-	);
 
 type Letter = { replyTo: string; subject: string; html: string };
 
@@ -63,9 +55,7 @@ export const POST = withAuth({ mode: "any" })(
 		const limited = await limitAiCalls("contact", clientIp(req) || "unknown");
 		if (limited) return limited;
 
-		const { email, subject, message, topic } = body as z.infer<
-			typeof ContactSchema
-		>;
+		const { email, subject, message, topic } = body;
 
 		if (topic === ContactTopic.ScoutSpace) {
 			await joinWaitlist(WaitlistFeature.ScoutSpace, email);

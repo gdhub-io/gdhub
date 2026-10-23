@@ -10,10 +10,15 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, ConfigProvider } from "antd";
+import dynamic from "next/dynamic";
 import { type ReactNode, useState } from "react";
-import { ContactModal } from "@/components/landing/ContactModal";
 import { inverseProductTheme } from "@/config/design";
 import styles from "./style.module.scss";
+
+// Every public page has this footer; the form ships only once someone opens it.
+const ContactModal = dynamic(() =>
+	import("@/components/landing/ContactModal").then((m) => m.ContactModal),
+);
 
 type Social = { icon: Icon; label: string; href: string; lang: "EN" | "RU" };
 
@@ -76,7 +81,8 @@ function Pill({
 /** Frames `FPnHS` / `M5bfOr`: where to find us, each channel tagged with its language. */
 export function SocialLinks() {
 	const { t } = useTranslate();
-	const [writing, setWriting] = useState(false);
+	// null until first opened, so the modal is never fetched for nothing.
+	const [writing, setWriting] = useState<boolean | null>(null);
 
 	return (
 		// Product density: at the marketing one the pills outweigh the footer links.
@@ -109,7 +115,9 @@ export function SocialLinks() {
 						))}
 					</div>
 				))}
-				<ContactModal open={writing} onClose={() => setWriting(false)} />
+				{writing !== null && (
+					<ContactModal open={writing} onClose={() => setWriting(false)} />
+				)}
 			</div>
 		</ConfigProvider>
 	);

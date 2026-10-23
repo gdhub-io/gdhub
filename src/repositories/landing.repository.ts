@@ -1,5 +1,5 @@
 import type { PaymentRateType, SkillLevel } from "@gdhub-io/gdhub-prisma";
-import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
+import { EXPERT_SKILL_LEVELS, weeklyHours } from "@/helpers/speciality";
 import { prisma } from "@/services/prisma";
 import {
 	feedVisibleProjectFilter,
@@ -53,7 +53,7 @@ export type LandingStoreProject = Awaited<
 >[number];
 
 export type LandingData = {
-	liveLine: { count: number; avatars: (string | null)[] };
+	liveLine: { count: number; avatars: string[] };
 	projects: LandingProject[];
 	vacancies: LandingVacancy[];
 	talents: LandingTalent[];
@@ -87,7 +87,10 @@ async function liveLine() {
 		}),
 	]);
 
-	return { count, avatars: faces.map((face) => face.image) };
+	return {
+		count,
+		avatars: faces.flatMap((face) => (face.image ? [face.image] : [])),
+	};
 }
 
 async function latestProjects(): Promise<LandingProject[]> {
@@ -161,7 +164,7 @@ async function newTalents(): Promise<LandingTalent[]> {
 	});
 
 	return users.map((user) => {
-		const hours = user.profile?.timeForWork ?? [];
+		const hours = weeklyHours(user.profile?.timeForWork);
 		const speciality = user.specialities[0];
 
 		return {
@@ -169,20 +172,9 @@ async function newTalents(): Promise<LandingTalent[]> {
 			directionName: speciality?.direction.name ?? "",
 			specialityName: speciality?.name ?? "",
 			level: speciality?.level ?? null,
-			weeklyHours: hours.length
-				? Math.round(hours.reduce((sum, h) => sum + h, 0) / hours.length)
-				: null,
+			weeklyHours: hours ? Math.round(hours) : null,
 		};
 	});
-}
-
-async function onSteam() {
-	const projects = await getPublishedStoreProjects();
-	return projects
-		.filter((project) =>
-			project.storeLinks.some((link) => link.platform === "steam"),
-		)
-		.slice(0, STRIP_SIZE);
 }
 
 /** Featured experts first, then the most viewed. */
@@ -233,7 +225,10 @@ export async function getLandingData(): Promise<LandingData> {
 			settle(latestProjects(), []),
 			settle(openVacancies(), []),
 			settle(newTalents(), []),
-			settle(onSteam(), []),
+			settle(
+				getPublishedStoreProjects({ limit: STRIP_SIZE, platform: "steam" }),
+				[],
+			),
 			settle(topExperts(), []),
 		]);
 

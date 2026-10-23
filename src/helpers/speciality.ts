@@ -49,3 +49,11 @@ export const EXPERT_MIN_LEVEL = SkillLevel.Experienced;
 
 /** `[Experienced, Expert]` — the expert threshold as a Prisma filter list. */
 export const EXPERT_SKILL_LEVELS = skillLevelsAtLeast(EXPERT_MIN_LEVEL);
+
+/** The middle of the weekly hours a profile gave (`Profile.timeForWork`), or 0. */
+export function weeklyHours(timeForWork: number[] | null | undefined): number {
+	if (!timeForWork?.length) return 0;
+	return (
+		timeForWork.reduce((sum, hours) => sum + hours, 0) / timeForWork.length
+	);
+}

@@ -14,6 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button } from "antd";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import AuthorsArt from "@/assets/images/landing/v2/authors-art.webp";
@@ -33,12 +34,15 @@ import {
 	AudienceStrip,
 } from "../AudienceSection";
 import buttons from "../buttons.module.scss";
-import { ContactModal } from "../ContactModal";
 import {
 	LandingExpertCard,
 	LandingProjectCard,
 	LandingTalentCard,
 } from "../LandingStripCards";
+
+const ContactModal = dynamic(() =>
+	import("../ContactModal").then((m) => m.ContactModal),
+);
 
 const BRAND = "var(--gd-color-accent)";
 const AMBER = "var(--gd-color-accent-alt)";
@@ -46,11 +50,12 @@ const LIGHT = "var(--gd-color-text)";
 
 function Register({
 	href,
-	className,
+	amber,
 	note,
 }: {
 	href: string;
-	className?: string;
+	/** The talents' accent instead of the brand. */
+	amber?: boolean;
 	note: string;
 }) {
 	const { t } = useTranslate();
@@ -62,8 +67,8 @@ function Register({
 				<Link href={href}>
 					<Button
 						size="large"
-						type={className ? "default" : "primary"}
-						className={className ?? buttons.cta}
+						type={amber ? "default" : "primary"}
+						className={amber ? buttons.amber : buttons.cta}
 						block
 					>
 						{t("landing.register", "Register")}
@@ -220,7 +225,7 @@ export function LandingTalentsSection({
 			action={
 				<Register
 					href="/registration?for=specialist"
-					className={buttons.amber}
+					amber
 					note={t(
 						"landing.talents.ctaNote",
 						"and apply to open positions in projects",
@@ -235,7 +240,7 @@ export function LandingScoutsSection({
 	storeProjects,
 }: Pick<LandingData, "storeProjects">) {
 	const { t } = useTranslate();
-	const [requesting, setRequesting] = useState(false);
+	const [requesting, setRequesting] = useState<boolean | null>(null);
 
 	return (
 		<>
@@ -320,11 +325,13 @@ export function LandingScoutsSection({
 					/>
 				}
 			/>
-			<ContactModal
-				open={requesting}
-				onClose={() => setRequesting(false)}
-				topic={ContactTopic.ScoutSpace}
-			/>
+			{requesting !== null && (
+				<ContactModal
+					open={requesting}
+					onClose={() => setRequesting(false)}
+					topic={ContactTopic.ScoutSpace}
+				/>
+			)}
 		</>
 	);
 }

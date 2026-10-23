@@ -8,6 +8,8 @@
 		var(--gd-brand-600) 55%,
 		var(--gd-brand-700) 100%
 	);
+	// The inverse secondary grey turns pink on coral; a translucent white stays legible.
+	--gd-color-text-secondary: color-mix(in srgb, var(--gd-neutral-0) 82%, transparent);
 }
 
 .inner {
@@ -34,12 +36,9 @@
 	}
 }
 
-.heading {
-	@include landing.heading;
-}
-
 .title {
 	@include landing.title;
+	max-width: 720px;
 }
 
 // Vertical on a phone (rail on the left), a row of stops from a desktop up.
@@ -115,8 +114,7 @@
 .reasonLine {
 	font-size: var(--gd-font-size-body);
 	line-height: var(--gd-line-height-body);
-	// The inverse secondary grey turns pink on coral; a translucent white stays legible.
-	color: color-mix(in srgb, var(--gd-neutral-0) 82%, transparent) !important;
+	color: var(--gd-color-text-secondary);
 }
 
 .reasons {

@@ -48,8 +48,6 @@ export function ContactModal({
 			axios.post("/api/contact", { ...values, topic }),
 	});
 
-	const sentTo = send.variables?.email;
-
 	return (
 		// A light dialog at the product's density, over the dark landing.
 		<ConfigProvider
@@ -115,7 +113,7 @@ export function ContactModal({
 							{t(
 								"landing.contact.sentLine",
 								"Thanks! We'll reply to {email}.",
-								{ email: sentTo },
+								{ email: send.variables?.email },
 							)}
 						</Typography.Text>
 					</Flex>
