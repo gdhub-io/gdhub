@@ -4,6 +4,7 @@ import {
 	CURATOR_STANCE,
 	localeLine,
 	renderCard,
+	renderPicture,
 	renderStage,
 	renderTeam,
 } from "./card";
@@ -124,6 +125,8 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${renderStage(input.stage)}
 
 			${renderTeam(input.team)}
+
+			${renderPicture(input.picture)}
 
 			${
 				input.previous

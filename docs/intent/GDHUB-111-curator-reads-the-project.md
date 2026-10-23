@@ -46,8 +46,9 @@ devlogs sees a review that saw one.
 
 ## Out of scope
 
-- Reading what is inside artifacts (GDHUB-110) — artifacts stay names, kinds and
-  whether they open.
+- Reading what is inside artifacts, and the images and videos linked from devlogs
+  (GDHUB-110) — here artifacts stay names, kinds and whether they open, and
+  devlogs are read as text.
 - The expert curator's flow.
 - Changing the prompts' voice, the verdict guardrail or the schedule of reviews.
 

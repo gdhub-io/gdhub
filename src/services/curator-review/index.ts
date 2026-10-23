@@ -4,12 +4,14 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { devlogText } from "@/lib/curator-text";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
 	artifactLines,
 	type CuratorTask,
 	taskLine,
 } from "@/services/call-notes";
+import { renderPicture } from "@/services/checkpoint-curator/prompts/card";
 import { type CallNotes, TASK_ADVICE_KINDS } from "@/types/checkpoints";
 
 export type { CuratorTask };
@@ -22,6 +24,8 @@ export type PlanAdviceInput = {
 	moment: "start" | "midway";
 	/** Midway: what the first two sprints showed. */
 	review: string | null;
+	/** The project as its page shows it: the stage's path, the team, recent activity. */
+	picture: string;
 };
 
 export type SprintReviewInput = {
@@ -30,13 +34,15 @@ export type SprintReviewInput = {
 	/** The sprint looked back at, 1–4. */
 	sprint: number;
 	tasks: CuratorTask[];
-	devlog: string | null;
+	/** Every devlog posted in the sprint, oldest first. */
+	devlogs: string[];
 	artifacts: { type: string; name: string | null }[];
 	/** Who on the team confirmed working in the sprint, and who did not. */
 	pulse: { worked: number; missing: number };
 	focusLastReview: string[];
 	/** Day 29: the verdict already settled, for the letter to agree with it. */
 	verdict: { verdict: CheckpointVerdict; note: string } | null;
+	picture: string;
 };
 
 const VOICE = stripIndents`
@@ -116,6 +122,8 @@ export const writePlanAdvice = async (
 			${input.tasks.length ? input.tasks.map(taskLine).join("\n") : "(none yet)"}
 
 			${input.review ? `What the sprints so far showed:\n${input.review}` : ""}
+
+			${renderPicture(input.picture)}
 		`,
 	});
 	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
@@ -161,9 +169,9 @@ const reviewSchema = z.object({
 });
 
 /**
- * The review of one sprint, from what the team showed in it. The review
- * reads only the sprint's devlog, artifacts and pulse: nothing was said, so
- * nothing is retold. Null when the model gives nothing usable.
+ * The review of one sprint, from what the team showed in it: every devlog of
+ * the sprint, its artifacts and pulse, and the project around them. Nothing
+ * was said, so nothing is retold. Null when the model gives nothing usable.
  */
 export const writeSprintReview = async (
 	input: SprintReviewInput,
@@ -176,8 +184,9 @@ export const writeSprintReview = async (
 		instructions: stripIndents`
 			${VOICE}
 
-			Review sprint ${input.sprint} from what the team showed: its devlog,
-			the artifacts it added and who confirmed working. Judge by what
+			Review sprint ${input.sprint} from what the team showed: every devlog
+			of the sprint, the artifacts it added, who confirmed working, and what
+			happened on the project. Judge by what
 			anyone can open, not by intentions. A task is done only when an
 			artifact closes it.
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
@@ -191,11 +200,17 @@ export const writeSprintReview = async (
 
 			${input.focusLastReview.length ? `Focus set for this sprint:\n${input.focusLastReview.map((line) => `- ${line}`).join("\n")}` : ""}
 
-			${input.devlog ? `The sprint's devlog:\n${input.devlog}` : "No devlog for the sprint."}
+			${
+				input.devlogs.length
+					? `The sprint's devlogs (${input.devlogs.length}):\n${input.devlogs.map((post, index) => `--- devlog ${index + 1}\n${devlogText(post)}`).join("\n")}`
+					: "No devlog for the sprint."
+			}
 
 			${artifactLines(input.artifacts) || "No artifacts added in the sprint."}
 
 			Pulse: ${input.pulse.worked} confirmed working, ${input.pulse.missing} did not.
+
+			${renderPicture(input.picture)}
 
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,

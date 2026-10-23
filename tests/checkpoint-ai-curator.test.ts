@@ -36,9 +36,13 @@ vi.mock("@/services/prisma", () => ({
 			deleteMany: vi.fn(),
 			createMany: (...a: unknown[]) => sessionCreateMany(...a),
 		},
-		projectReport: { findFirst: vi.fn(async () => ({ content: "Devlog" })) },
+		projectReport: { findMany: vi.fn(async () => [{ content: "Devlog" }]) },
 		projectArtifact: { findMany: vi.fn(async () => []) },
 	},
+}));
+vi.mock("@/repositories/curator-context", () => ({
+	projectPicture: vi.fn(async () => "The project picture."),
+	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
 vi.mock("@/services/curator-review", () => ({
 	writeSprintReview: (...a: unknown[]) => writeSprintReview(...a),

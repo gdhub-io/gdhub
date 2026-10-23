@@ -15,6 +15,7 @@ import {
 	briefMemberSelect,
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
+import { projectPicture, runPeriod } from "@/repositories/curator-context";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
@@ -110,8 +111,12 @@ const stageRequirements = async (stepId: string | null) => {
  * What a stored read answers: everything the model is given and nothing else.
  * A card edited back to what it was hashes the same and costs no second call.
  */
-export const goalCheckHash = (input: GoalCheckInput) =>
-	createHash("sha256").update(JSON.stringify(input)).digest("hex");
+export const goalCheckHash = ({ picture: _, ...input }: GoalCheckInput) =>
+	// The picture carries today's date and the latest activity: it informs the
+	// read but does not make the same card worth paying for twice.
+	createHash("sha256")
+		.update(JSON.stringify(input))
+		.digest("hex");
 
 /**
  * Day 1: read the card back and say what will not fit.
@@ -188,6 +193,7 @@ export const runGoalCheck = async (
 			})),
 		),
 		previous,
+		picture: await projectPicture(checkpointId),
 	};
 
 	const hash = goalCheckHash(input);
@@ -308,6 +314,10 @@ export const writeMidNote = async (
 			unproven: unprovenOutcomes(items),
 			day: checkpointDay(checkpoint.startedAt),
 			devlogs: checkpoint.reports.map(toDevlog),
+			picture: await projectPicture(checkpointId, {
+				from: checkpoint.startedAt,
+				to: new Date(),
+			}),
 		},
 		{ ...options, checkpointId },
 	);
@@ -356,6 +366,8 @@ export const closeCheckpoint = async (
 			stepId: true,
 			revisedAt: true,
 			revisedNote: true,
+			startedAt: true,
+			dueAt: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			reports: {
 				orderBy: { publishedAt: "asc" },
@@ -405,6 +417,10 @@ export const closeCheckpoint = async (
 			unproven,
 			devlogs: checkpoint.reports.map(toDevlog),
 			pulses: pulseMatrix(checkpoint.pulses),
+			picture: await projectPicture(
+				checkpointId,
+				runPeriod(checkpoint.startedAt ?? new Date(), checkpoint.dueAt),
+			),
 		},
 		{ ...options, checkpointId },
 	);

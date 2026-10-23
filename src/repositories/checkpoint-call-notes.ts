@@ -29,10 +29,10 @@ export const sprintEvidence = async (
 ) => {
 	const range = sprintRange(startedAt, sprint);
 	const inSprint = { gte: range.from, lt: dateOfDay(range.to, 2) };
-	const [devlog, artifacts] = await Promise.all([
-		prisma.projectReport.findFirst({
+	const [devlogs, artifacts] = await Promise.all([
+		prisma.projectReport.findMany({
 			where: { projectId, isSystem: false, publishedAt: inSprint },
-			orderBy: { publishedAt: "desc" },
+			orderBy: { publishedAt: "asc" },
 			select: { content: true },
 		}),
 		prisma.projectArtifact.findMany({
@@ -40,7 +40,7 @@ export const sprintEvidence = async (
 			select: { type: true, name: true },
 		}),
 	]);
-	return { devlog: devlog?.content ?? null, artifacts };
+	return { devlogs: devlogs.map((post) => post.content), artifacts };
 };
 
 /** A task id the model made up points at nothing on the page: drop it. */
@@ -151,14 +151,14 @@ const writeNotesFor = async (sessionId: string) => {
 
 	// Call K opens sprint K, so it looks back at sprint K - 1.
 	const reviewed = session.index - 1;
-	const { devlog, artifacts } =
+	const { devlogs, artifacts } =
 		reviewed >= 1
 			? await sprintEvidence(
 					checkpoint.projectId,
 					checkpoint.startedAt,
 					reviewed,
 				)
-			: { devlog: null, artifacts: [] };
+			: { devlogs: [], artifacts: [] };
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === session.index - 1,
 	)?.content as CallNotes | null | undefined;
@@ -169,7 +169,8 @@ const writeNotesFor = async (sessionId: string) => {
 			goal: checkpoint.goal,
 			tasks: checkpoint.items.map(toCuratorTask),
 			transcript: parts.map((part) => part.text.trim()).join("\n\n"),
-			devlog,
+			// The human curator's notes read the sprint as one text.
+			devlog: devlogs.join("\n\n---\n\n") || null,
 			artifacts,
 			agreedLastCall: previous?.agreed.map((line) => line.text) ?? [],
 		},

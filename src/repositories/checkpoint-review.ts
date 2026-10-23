@@ -14,6 +14,7 @@ import {
 	planSession,
 } from "@/lib/checkpoint-call";
 import { scopeWindow } from "@/lib/checkpoint-scope";
+import { sprintRange } from "@/lib/checkpoint-sprints";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import {
 	knownOnly,
@@ -25,6 +26,7 @@ import {
 	previousVerdict,
 } from "@/repositories/checkpoint-number";
 import { canEditPlan } from "@/repositories/checkpoint-plan-edit";
+import { projectPicture, runPeriod } from "@/repositories/curator-context";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
 import {
@@ -116,8 +118,11 @@ type TaskRow = {
 };
 
 /** What a stored advice answers: everything the model is given. */
-const hashOf = (input: PlanAdviceInput) =>
-	createHash("sha256").update(JSON.stringify(input)).digest("hex");
+const hashOf = ({ picture: _, ...input }: PlanAdviceInput) =>
+	// The picture informs the read; the same plan is not read twice for it.
+	createHash("sha256")
+		.update(JSON.stringify(input))
+		.digest("hex");
 
 /** Which page a checkpoint's Curator's Review shows; null for none. */
 export const curatorKindOf = async (checkpointId: string) =>
@@ -331,6 +336,16 @@ export const adviseOnPlan = async (
 		checkpoint,
 		index === 1 ? "start" : "midway",
 		content?.notes?.inShort ?? null,
+		// Halfway reads the first two sprints, a period that does not move day by day.
+		await projectPicture(
+			checkpointId,
+			checkpoint.startedAt && index !== 1
+				? {
+						from: checkpoint.startedAt,
+						to: sprintRange(checkpoint.startedAt, 2).to,
+					}
+				: undefined,
+		),
 	);
 	if (content?.advice?.hash === hashOf(input)) return null;
 
@@ -368,12 +383,14 @@ const adviceInput = (
 	},
 	moment: PlanAdviceInput["moment"],
 	review: string | null,
+	picture: string,
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
 	stage: checkpoint.stageName,
 	tasks: checkpoint.items.map(toCuratorTask),
 	moment,
 	review,
+	picture,
 });
 
 /** The model's advice, kept for open tasks only and none it made up. */
@@ -470,6 +487,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 			goal: true,
 			stageName: true,
 			startedAt: true,
+			dueAt: true,
 			verdict: true,
 			verdictNote: true,
 			items: taskSelect,
@@ -495,11 +513,15 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 	if (!checkpoint.startedAt || (final && !checkpoint.verdict)) return false;
 
 	const sprint = session.index - 1;
-	const { devlog, artifacts } = await sprintEvidence(
-		checkpoint.projectId,
-		checkpoint.startedAt,
-		sprint,
-	);
+	const [{ devlogs, artifacts }, picture] = await Promise.all([
+		sprintEvidence(checkpoint.projectId, checkpoint.startedAt, sprint),
+		projectPicture(
+			session.checkpointId,
+			final
+				? runPeriod(checkpoint.startedAt, checkpoint.dueAt)
+				: sprintRange(checkpoint.startedAt, sprint),
+		),
+	]);
 	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === session.index - 1,
@@ -511,7 +533,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 			stage: checkpoint.stageName,
 			sprint,
 			tasks: checkpoint.items.map(toCuratorTask),
-			devlog,
+			devlogs,
 			artifacts,
 			pulse: {
 				worked: pulses.filter((pulse) => pulse.confirmedAt).length,
@@ -521,6 +543,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 			verdict: checkpoint.verdict
 				? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
 				: null,
+			picture,
 		},
 		{ checkpointId: session.checkpointId, purpose: "sprintReview" },
 	);
@@ -531,7 +554,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 	const midway =
 		session.index === SCOPE_SESSION
 			? await adviceFor(
-					adviceInput(checkpoint, "midway", notes.inShort),
+					adviceInput(checkpoint, "midway", notes.inShort, picture),
 					checkpoint.items,
 					session.checkpointId,
 				).catch(() => null)

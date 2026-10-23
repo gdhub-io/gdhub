@@ -10,6 +10,7 @@ import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import {
 	closeCheckpoint,
+	goalCheckHash,
 	runGoalCheck,
 	writeMidNote,
 } from "@/repositories/checkpoint-curator.repository";
@@ -27,6 +28,11 @@ vi.mock("@/services/prisma", () => ({
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
 	},
+}));
+
+vi.mock("@/repositories/curator-context", () => ({
+	projectPicture: vi.fn().mockResolvedValue("The project picture."),
+	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
 
 vi.mock("@/repositories/artifact-check", () => ({
@@ -579,6 +585,7 @@ describe("goal check schema", () => {
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
 			author: null,
+			picture: "",
 		});
 
 		expect(
@@ -601,11 +608,36 @@ describe("goal check schema", () => {
 				level: "Beginner",
 				experience: "Two jam games in Godot",
 			},
+			picture: "",
 		});
 
 		expect(user.content).toContain("Lantern Keeper (Puzzle)");
 		expect(user.content).toContain('"Two jam games in Godot"');
 		expect(user.content).toContain('"Ships by night"');
 		expect(user.content).toContain("Programmer, Beginner level");
+	});
+});
+
+describe("the goal check's stored read", () => {
+	it("is not paid for again because the project picture moved on", () => {
+		const input = {
+			card: { goal: "A greybox", inputs: [], outcomes: [] },
+			stage: { name: "Ideation", requirements: [] },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
+			previous: null,
+			project: { name: "Lantern Keeper", pitch: null, genre: null },
+			author: null,
+		};
+
+		expect(goalCheckHash({ ...input, picture: "Monday" })).toBe(
+			goalCheckHash({ ...input, picture: "Tuesday" }),
+		);
+		expect(goalCheckHash({ ...input, picture: "" })).not.toBe(
+			goalCheckHash({
+				...input,
+				card: { ...input.card, goal: "A vertical slice" },
+				picture: "",
+			}),
+		);
 	});
 });
