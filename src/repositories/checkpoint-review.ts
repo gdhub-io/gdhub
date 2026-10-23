@@ -476,7 +476,8 @@ export const writeDueReviews = async (now = new Date()) => {
 	return written;
 };
 
-const writeReviewFor = async (sessionId: string, now: Date) => {
+/** One session's review, now. The daily run claims it first; a dev script calls it directly. */
+export const writeReviewFor = async (sessionId: string, now: Date) => {
 	const session = await prisma.checkpointSession.findUniqueOrThrow({
 		where: { id: sessionId },
 		select: { index: true, checkpointId: true },
