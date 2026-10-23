@@ -10,8 +10,8 @@ curator who opened the project page would: every devlog of the sprint (and of th
 whole checkpoint for the verdict), what happened on the project (artifacts added,
 people joining or leaving, open positions), who on the team actually
 worked each week and in what role, and where the project stands on its path —
-what this stage expects and what the next one needs. A "ready for the next stage"
-verdict rests on what the stage expects, not only on the checkpoint's tasks.
+what has to be done on this stage to move to the next one. A "ready for the next
+stage" verdict rests on that, not only on the checkpoint's tasks.
 
 ## Why now
 
@@ -35,12 +35,12 @@ devlogs sees a review that saw one.
 ## Done when
 
 - [ ] A sprint review mentions work from every devlog of that sprint, not just the last.
-- [ ] The final review reads all devlogs of the checkpoint and names the stage's
-      expectations it does or does not meet.
+- [ ] The final review reads all devlogs of the checkpoint and names what is
+      still to be done on the stage before the project can move to the next one.
 - [ ] Reviews and the verdict mention team changes and who worked which week when
       they matter (someone left, nobody confirmed a week).
-- [ ] The goal check and the day-1 plan weigh the goal against what the current
-      stage expects and what the next stage needs.
+- [ ] The goal check and the day-1 plan weigh the goal against what has to be
+      done on this stage to move to the next one.
 - [ ] Per-call token use stays logged; a project with many devlogs stays within
       the model's context.
 
