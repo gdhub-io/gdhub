@@ -1,6 +1,8 @@
 import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import { z } from "zod";
 import { ARTIFACT_DESCRIPTION_MAX } from "@/components/MyProjectArtifacts/artifacts";
+import { ArtifactCheckStatus } from "@/config/prisma-enums";
 import {
 	apiError,
 	json,
@@ -10,6 +12,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { checkArtifact } from "@/repositories/artifact-check";
 import { prisma } from "@/services/prisma";
 
 const ProjectIdQuerySchema = z.object({
@@ -84,6 +87,7 @@ export const POST = pipe(
 			name,
 			description,
 			link,
+			checkStatus: ArtifactCheckStatus.Pending,
 			step: workflow?.currentStepId
 				? { connect: { id: workflow.currentStepId } }
 				: undefined,
@@ -91,6 +95,7 @@ export const POST = pipe(
 			createdByUser: { connect: { id: currentUser.id } },
 		},
 	});
+	after(() => checkArtifact(artifact.id));
 
 	return json(artifact);
 });

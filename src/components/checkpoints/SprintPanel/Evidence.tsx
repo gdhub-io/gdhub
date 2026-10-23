@@ -6,7 +6,11 @@ import { Button, Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
-import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
+import {
+	useArtifactTypeLabel,
+	useCheckReason,
+	useCheckStatus,
+} from "@/components/MyProjectArtifacts/labels";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { ArtifactCheckStatus, CheckpointStatus } from "@/config/prisma-enums";
@@ -27,6 +31,7 @@ export type EvidenceProps = {
 export function Evidence({ checkpoint, facts }: EvidenceProps) {
 	const { t } = useTranslate();
 	const typeLabel = useArtifactTypeLabel();
+	const checkReason = useCheckReason();
 	const [attaching, setAttaching] = useState(false);
 
 	// Once the verdict is written the card is the record, not a form.
@@ -34,28 +39,10 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 		checkpoint.status === CheckpointStatus.Active ||
 		checkpoint.status === CheckpointStatus.Draft;
 
-	const check = (status: string | null) => {
-		if (status === ArtifactCheckStatus.Readable)
-			return {
-				tone: "success" as const,
-				label: t("artifacts.check.ready", "Ready"),
-			};
-		if (status === ArtifactCheckStatus.Unreachable)
-			return {
-				tone: "danger" as const,
-				label: t("artifacts.check.unreachable", "Cannot be opened"),
-			};
-		if (status === ArtifactCheckStatus.Unsupported)
-			return {
-				tone: "warning" as const,
-				label: t("artifacts.check.unsupported", "Saved, not readable"),
-			};
-
-		return {
-			tone: "neutral" as const,
-			label: t("artifacts.check.pending", "Checking…"),
-		};
-	};
+	const checkStatus = useCheckStatus();
+	// Older than the check itself: it is checked once it becomes evidence.
+	const check = (status: ArtifactCheckStatus | null) =>
+		checkStatus(status ?? ArtifactCheckStatus.Pending);
 
 	const attachButton = (
 		<Button
@@ -132,6 +119,12 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 										.filter(Boolean)
 										.join(" · ")}
 								</Typography.Text>
+								{item.artifact.checkStatus ===
+									ArtifactCheckStatus.Unreachable && (
+									<Typography.Text type="danger" className={styles.rowMeta}>
+										{checkReason(item.artifact.checkNote ?? null)}
+									</Typography.Text>
+								)}
 								{proves.map((line) => (
 									<Typography.Text
 										key={line.id}

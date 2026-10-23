@@ -8,6 +8,7 @@ import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
+import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import {
 	briefAuthor,
@@ -332,14 +333,27 @@ export const closeCheckpoint = async (
 	checkpointId: string,
 	options: CuratorOptions = {},
 ) => {
+	const open = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: { status: true, verdict: true },
+	});
+	if (!open || open.verdict) return null;
+	if (
+		open.status !== CheckpointStatus.Active &&
+		open.status !== CheckpointStatus.Review
+	) {
+		return null;
+	}
+
+	// The verdict counts only evidence that opens today, not on the day it was added.
+	await recheckCheckpointArtifacts(checkpointId);
+
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
 			goal: true,
 			stageName: true,
 			stepId: true,
-			status: true,
-			verdict: true,
 			revisedAt: true,
 			revisedNote: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
@@ -356,14 +370,7 @@ export const closeCheckpoint = async (
 			},
 		},
 	});
-
-	if (!checkpoint || checkpoint.verdict) return null;
-	if (
-		checkpoint.status !== CheckpointStatus.Active &&
-		checkpoint.status !== CheckpointStatus.Review
-	) {
-		return null;
-	}
+	if (!checkpoint) return null;
 
 	const items = checkpoint.items;
 	const unproven = unprovenOutcomes(items);

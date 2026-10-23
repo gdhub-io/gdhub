@@ -1,5 +1,6 @@
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
+import { sweepArtifactChecks } from "@/repositories/artifact-check";
 import { requestPulses } from "@/repositories/checkpoint-pulse";
 import { writeDueReviews } from "@/repositories/checkpoint-review";
 import { moveFinishedToReview } from "@/repositories/checkpoint-verdict.repository";
@@ -21,6 +22,8 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		devlogReminders: await remindDevlogsDue(),
 		verdictReminders: await remindVerdictsDue(),
 		pulses: await requestPulses(),
+		// Before the reviews, so they read whether the evidence opens.
+		artifactChecks: await sweepArtifactChecks(),
 		reviews: await writeDueReviews(),
 	}));
 

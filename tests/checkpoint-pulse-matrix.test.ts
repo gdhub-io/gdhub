@@ -246,6 +246,7 @@ describe("evidence", () => {
 				type: "Build",
 				link: "https://example.test/a-old",
 				checkStatus: "Readable",
+				checkNote: null,
 			},
 			addedAt: "2026-07-01T10:00:00.000Z",
 			addedBy: { id: "u1", name: "Marta Ilves", image: null },

@@ -34,6 +34,8 @@ export type CheckpointArtifactRef = {
 	type: ProjectArtifactType;
 	link: string;
 	checkStatus: ArtifactCheckStatus | null;
+	/** Why it could not be opened (`useCheckReason`). */
+	checkNote?: string | null;
 };
 
 export type CheckpointItemDto = {
