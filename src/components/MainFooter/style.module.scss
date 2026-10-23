@@ -105,3 +105,39 @@
 @include meta.load-css("styles/lg.scss"); // screen ≥ 992px
 @include meta.load-css("styles/xl.scss"); // screen ≥ 1200px
 @include meta.load-css("styles/xxl.scss"); // screen ≥ 1600px
+
+.socials {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	margin-top: var(--gd-space-2);
+}
+
+.socialRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--gd-space-2);
+}
+
+.social:global(.ant-btn) {
+	gap: var(--gd-space-2);
+	border-color: var(--gd-color-border);
+	background: var(--gd-fill-base);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+// Frame FPnHS: a language badge on the pill, not a chip — it marks the channel, it is not a label.
+.lang {
+	display: inline-flex;
+	align-items: center;
+	height: 18px;
+	padding: 0 6px;
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-fill-strong);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	color: var(--gd-color-text);
+}

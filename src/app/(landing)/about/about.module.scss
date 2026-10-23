@@ -1,0 +1,7 @@
+@use "../../../styles/variables.scss";
+
+// The landing layout pulls content under its header for the hero; this page has none.
+.page {
+	padding-top: variables.$landing-header-height;
+	background: var(--gd-color-accent);
+}

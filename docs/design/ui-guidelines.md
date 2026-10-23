@@ -25,7 +25,7 @@ heavier weight — a coloured tab on a bar the user reads all day stops meaning
 
 A wall of brand-coloured buttons reads as errors, which is why the split exists.
 Filled brand is allowed on marketing surfaces (`inverse` mode) — there it carries
-an ink label, not a white one.
+a white label (`[data-gd-landing]` in globals.scss).
 A dark panel inside the product (`InverseBand density="product"`: the call
 stage, the curator's message) is not marketing: its committing button is white
 with an ink label, the mirror of the graphite one.
@@ -192,6 +192,8 @@ heights, control sizes: all multiples of 4, off the scale above.
   a superellipse squares off a 50% corner, which turns an avatar into an app
   icon and a status dot into a square. The guard test fails on a missing one.
   A whole subtree opts out with `--gd-corner-shape: round`.
+  Controls draw at 1.5× their token radius (`--gd-control-squircle`): a
+  superellipse at the canvas's radius reads squarer than Pencil's quarter circle.
 - **Type** — 13 / 14 / 16 / 20 / 24 / 32, with line heights as ratios. Type is
   sized by reading distance, not by a grid.
 - **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes

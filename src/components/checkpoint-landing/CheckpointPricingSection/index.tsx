@@ -181,7 +181,7 @@ export const CheckpointPricingSection = () => {
 						src={curatorsArt}
 						alt={t(
 							"checkpointLanding.pricing.curators.alt",
-							"An industry expert and the AI curator in red hoodies, arms crossed, back to back",
+							"A grey-bearded industry expert in a red cloak, arms crossed, beside the AI curator robot",
 						)}
 						className={styles.art}
 						sizes="(min-width: 1280px) 520px, 260px"

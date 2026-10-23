@@ -1408,7 +1408,7 @@
 				"upTo": "Team of 1–{max}"
 			},
 			"curators": {
-				"alt": "An industry expert and the AI curator in red hoodies, arms crossed, back to back"
+				"alt": "A grey-bearded industry expert in a red cloak, arms crossed, beside the AI curator robot"
 			},
 			"expert": {
 				"body": "Calls with an industry expert every sprint and a final verdict. It opens later: leave your email and we'll write when it does.",
@@ -2898,10 +2898,127 @@
 			"text3": "Each Author can choose the format of work on our portal: as a part of the Gamelab incubation program or work independently at his own pace",
 			"title": "FOR AUTHORS"
 		},
+		"authors": {
+			"ctaNote": "and create your first project",
+			"lead": "Tools let everyone create. Your own experience plus advice from game industry experts turns an idea into a game players haven't seen before.",
+			"line1": {
+				"lead": "Find the people",
+				"rest": "your game is missing — designers, programmers, artists, sound designers."
+			},
+			"line2": {
+				"lead": "Hire your way:",
+				"rest": "for experience, for a share of the game or for pay — post a free or a paid open position."
+			},
+			"line3": {
+				"lead": "Keep it moving:",
+				"rest": "devlogs show progress and a Checkpoint takes you to the next milestone."
+			},
+			"strip": "Games authors are building",
+			"title": "Anyone can make a game today"
+		},
+		"checkpoint": {
+			"cta": "Learn about Checkpoint",
+			"stop1": {
+				"line": "One goal for 28 days",
+				"name": "Goal"
+			},
+			"stop2": {
+				"line": "The curator checks the work",
+				"name": "Sprint review"
+			},
+			"stop3": {
+				"line": "Adjust the plan in time",
+				"name": "Goal correction"
+			},
+			"stop4": {
+				"line": "Reached or not, and why",
+				"name": "Verdict"
+			},
+			"stop5": {
+				"line": "Keep the game moving",
+				"name": "Next checkpoint"
+			},
+			"title": "Checkpoint: the engine that drives your game to release",
+			"why1": {
+				"line": "A goal, a deadline and a review every sprint: the bit of organisation indie teams so often lack.",
+				"name": "Just enough structure"
+			},
+			"why2": {
+				"line": "A curator sees problems before they cost you a month.",
+				"name": "An outside eye every sprint"
+			},
+			"why3": {
+				"line": "Each verdict stays on the project — proof for players, publishers and investors.",
+				"name": "Progress you can show"
+			}
+		},
+		"contact": {
+			"cancel": "Cancel",
+			"close": "Close",
+			"email": "Your email",
+			"emailHint": "We reply to this address.",
+			"emailInvalid": "Enter an email we can reply to",
+			"failed": "Couldn't send your message. Check your connection and try again.",
+			"message": "Message",
+			"messageRequired": "Write a few words",
+			"scout": {
+				"placeholder": "Tell us who you are — publisher, investor or angel — and what games you look for.",
+				"send": "Send request",
+				"sent": "Request sent",
+				"subject": "Access to Scout space",
+				"title": "Request access to Scout space"
+			},
+			"send": "Send",
+			"sending": "Sending…",
+			"sent": "Message sent",
+			"sentLine": "Thanks! We'll reply to {email}.",
+			"subject": "Subject",
+			"subjectRequired": "Add a subject",
+			"title": "Write to us"
+		},
 		"devlogs": {
 			"description": "Follow the progress of game development on our platform. Developers regularly share updates about their projects.",
 			"pretitle": "Active Development",
 			"title": "Recent Devlogs"
+		},
+		"ecosystem": {
+			"advisor": {
+				"line": "Experts help other teams with feedback or curate a project to keep it moving.",
+				"name": "Advisor Space"
+			},
+			"hub": {
+				"line": "Game industry talents who love making games come together here.",
+				"name": "Hub"
+			},
+			"lead": "Make games, share what you know or find the next hit to back — everyone finds something worth doing here.",
+			"live": "{count} specialists open to collaborate this week",
+			"projects": {
+				"line": "Where unique, author-driven games get made.",
+				"name": "Project Space"
+			},
+			"scout": {
+				"line": "Publishers and anyone who invests in games find and follow the projects that interest them.",
+				"name": "Scout Space"
+			},
+			"title": "Four places to build a game together"
+		},
+		"experts": {
+			"ctaNote": "and turn on Advisor space",
+			"lead": "Game industry professionals answer questions, hold paid calls and, soon, curate checkpoints.",
+			"line1": {
+				"lead": "Answer questions",
+				"rest": "from teams that need your experience, on your schedule."
+			},
+			"line2": {
+				"lead": "Hold paid calls",
+				"rest": "at your own price."
+			},
+			"line3": {
+				"lead": "Curate checkpoints:",
+				"rest": "guide a team for 28 days and give the verdict. Coming soon."
+			},
+			"strip": "Top experts",
+			"title": "Teams need what you already know"
 		},
 		"feedback": {
 			"description0": "Game designer",
@@ -2938,6 +3055,7 @@
 		},
 		"hero": {
 			"getStartedForFree": "Get started for free",
+			"lead": "If you want to make your own games, you're in the right place.",
 			"noCreditCardRequired": "No credit card required",
 			"text1": "Create your video game — find the people it is missing, or join a project that needs your craft.",
 			"text2": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
@@ -2951,6 +3069,25 @@
 			"goToApp": "Go to app",
 			"logIn": "Log in"
 		},
+		"register": "Register",
+		"scouts": {
+			"cta": "Request access",
+			"lead": "Not a pitch from strangers: each project shows its life on GDHub and what game industry experts say about it.",
+			"line1": {
+				"lead": "All in one place:",
+				"rest": "unique indie games, from the first idea to release."
+			},
+			"line2": {
+				"lead": "Track development:",
+				"rest": "stage, team, devlogs and progress every sprint."
+			},
+			"line3": {
+				"lead": "Expert verdicts:",
+				"rest": "what game industry curators said at each checkpoint."
+			},
+			"strip": "Games already on Steam",
+			"title": "Every unique game in one place, with its whole story"
+		},
 		"seo": {
 			"description": "Game Developers Hub is a platform for game developers and specialists.",
 			"title": "Game Developers Hub"
@@ -2960,6 +3097,30 @@
 			"text1": "Each Specialist in the gaming industry has an opportunity to join one of the indie projects under development in order to gain experience and make new friends.",
 			"text2": "You can become a part of a new video game or share your expertise as a Mentor",
 			"title": "FOR SPECIALISTS"
+		},
+		"strip": {
+			"game": "A game",
+			"projectBy": "{genre} by {author}",
+			"weeklyHours": "{hours, plural, one {Ready to invest about # hour a week} other {Ready to invest about # hours a week}}"
+		},
+		"talents": {
+			"ctaNote": "and apply to open positions in projects",
+			"lead": "Game designers, developers, artists and sound designers join projects being built right now.",
+			"line1": {
+				"lead": "Join a project",
+				"rest": "in development and ship real work for your portfolio."
+			},
+			"line2": {
+				"lead": "Get found:",
+				"rest": "your profile shows your speciality, level and projects to authors looking for people."
+			},
+			"line3": {
+				"lead": "Grow into an expert",
+				"rest": "by answering questions from other teams."
+			},
+			"strip": "Who teams are looking for right now",
+			"stripJoined": "Talents who just joined",
+			"title": "Put your craft into a real game"
 		}
 	},
 	"lastName": "Last Name",
@@ -3004,11 +3165,15 @@
 		}
 	},
 	"mainFooter": {
+		"aboutUs": "About us",
+		"allDocuments": "All documents",
 		"appShortDescription": "A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
 		"blog": "Blog",
 		"cookiePolicy": "Cookie Policy",
-		"copyright": "Game Develoeprs Hub. All rights reserved.",
+		"copyright": "Game Developers Hub. All rights reserved.",
+		"description": "A community of game industry professionals who form teams to make new games.",
 		"documentation": "Documentation",
+		"email": "Email",
 		"events": "Events",
 		"gameIndustryGuide": "Game Industry Guide",
 		"gameProjects": "Video games",
@@ -4117,8 +4282,12 @@
 		"contacts": "Contacts",
 		"events": "Events",
 		"for-authors": "For Authors",
+		"for-experts": "For Experts",
+		"for-scouts": "For Scouts",
 		"for-specialists": "For Specialists",
+		"for-talents": "For Talents",
 		"jobs": "Open positions",
+		"platform": "Platform",
 		"video-games": "Video Games"
 	},
 	"pulse": {

@@ -23,6 +23,7 @@ const WriteSchema = z.object({
 // The button in the letter: where each feature is taken up.
 const LINK: Record<WaitlistFeature, string> = {
 	ExpertCheckpoint: CHECKPOINT_ENTRY_HREF,
+	ScoutSpace: "/scout",
 };
 
 /** Frame 13.8a: write to everyone on a waitlist, or to the rows chosen. */

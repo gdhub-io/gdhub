@@ -1,10 +1,8 @@
-import Icon from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import heroBgImage from "@/assets/images/landing/gdhub-hero-image.png";
-import StarIcon from "@/assets/images/landing/star.svg";
 import { AppImage } from "@/components/ui/AppImage";
 import { staticImageUrl } from "@/helpers/image";
 import { HeroStats } from "../HeroStats";
@@ -58,7 +56,7 @@ export const LandingHeroSection = ({
 				<Row gutter={[screens.lg ? 64 : 0, 64]}>
 					<Col xs={{ span: 24 }} lg={{ span: 12 }}>
 						<Space
-							size={[64, 64]}
+							size={[32, 32]}
 							orientation="vertical"
 							className={styles.heroMain}
 						>
@@ -66,36 +64,12 @@ export const LandingHeroSection = ({
 								{t("landing.hero.title", "Ecosystem for video game creators")}
 							</Title>
 
-							<ul>
-								<li>
-									<Space>
-										<Icon
-											component={StarIcon}
-											style={{ fontSize: screens.md ? 32 : 19 }}
-										/>
-										<Text>
-											{t(
-												"landing.hero.text1",
-												"Make your game — find the people it is missing, or join a project that needs your craft.",
-											)}
-										</Text>
-									</Space>
-								</li>
-								<li>
-									<Space>
-										<Icon
-											component={StarIcon}
-											style={{ fontSize: screens.md ? 32 : 19 }}
-										/>
-										<Text>
-											{t(
-												"landing.hero.text2",
-												"Share what you know and help others — the experts here are members like you, answering from their own practice.",
-											)}
-										</Text>
-									</Space>
-								</li>
-							</ul>
+							<Text className={styles.lead}>
+								{t(
+									"landing.hero.lead",
+									"If you want to make your own games, you're in the right place.",
+								)}
+							</Text>
 							<Space orientation="vertical">
 								<Link href="/registration">
 									<Button className={styles.heroButton} type="primary">
