@@ -2,7 +2,7 @@ import Icon from "@ant-design/icons";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Grid, Row, Space, Typography } from "antd";
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import heroBgImage from "@/assets/images/landing/gdhub-hero-image.png";
 import StarIcon from "@/assets/images/landing/star.svg";
 import { staticImageUrl } from "@/helpers/image";
@@ -13,7 +13,10 @@ const { Title, Text } = Typography;
 
 export const LandingHeroSection = ({
 	stats,
+	art,
 }: {
+	/** Takes the right column's place of the illustration. */
+	art?: ReactNode;
 	stats: {
 		usersCount: number | null;
 		specialitiesCount: number | null;
@@ -36,9 +39,11 @@ export const LandingHeroSection = ({
 		<div
 			className={styles.section}
 			style={
-				{
-					"--hero-illustration": `url(${staticImageUrl(heroBgImage.src, 1920)})`,
-				} as CSSProperties
+				art
+					? undefined
+					: ({
+							"--hero-illustration": `url(${staticImageUrl(heroBgImage.src, 1920)})`,
+						} as CSSProperties)
 			}
 		>
 			<div className={styles.container}>
@@ -106,6 +111,7 @@ export const LandingHeroSection = ({
 						lg={{ span: 12 }}
 						style={{ position: "relative" }}
 					>
+						{art}
 						{!hasEmptyStats && <HeroStats stats={stats} />}
 					</Col>
 				</Row>

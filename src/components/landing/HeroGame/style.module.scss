@@ -1,0 +1,74 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 560px;
+}
+
+.canvas {
+  position: absolute !important;
+  inset: 0;
+  // Whatever reaches the scene's edge dissolves into the section, never a hard cut.
+  mask-image:
+    linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+    linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  mask-composite: intersect;
+}
+
+.anchor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.bubble {
+  position: relative;
+  width: 260px;
+  padding: var(--gd-space-3);
+  background: var(--gd-color-bg);
+  border: 1px solid var(--gd-color-accent);
+  border-radius: var(--gd-radius-card);
+
+  // The tail: a rotated square showing only its bottom-right borders. Its tip
+  // sits 30px from the edge — TAIL_INSET in index.tsx; the width is BUBBLE_WIDTH.
+  &::after {
+    content: "";
+    position: absolute;
+    left: 24px;
+    bottom: -7px;
+    width: 12px;
+    height: 12px;
+    background: var(--gd-color-bg);
+    border-right: 1px solid var(--gd-color-accent);
+    border-bottom: 1px solid var(--gd-color-accent);
+    transform: rotate(45deg);
+  }
+
+  &.tailRight::after {
+    left: auto;
+    right: 24px;
+  }
+}
+
+.line {
+  font-size: var(--gd-font-size-body);
+  line-height: 1.4;
+}
+
+// The inverse product theme's primary is white; the bubble keeps the landing's coral.
+.accept {
+  background: var(--gd-color-accent);
+  color: var(--gd-color-text);
+
+  &:hover {
+    background: var(--gd-color-accent-hover) !important;
+    color: var(--gd-color-text) !important;
+  }
+}
+
+.decline {
+  background: transparent;
+  border-color: var(--gd-color-accent);
+  color: var(--gd-color-text);
+}
