@@ -3,7 +3,6 @@
 import { useTranslate } from "@tolgee/react";
 import { Flex, Progress, Typography } from "antd";
 import { lazy, Suspense, useState } from "react";
-import type { HeroGameLook } from "./index";
 import styles from "./style.module.scss";
 
 // three.js and the scene load as their own chunk, after the hero has painted.
@@ -16,7 +15,7 @@ const HeroGame = lazy(() =>
  * while the code and models load, then dissolves into the live scene.
  * Re-capture preview.png when the board changes.
  */
-export const LazyHeroGame = (props: HeroGameLook) => {
+export const LazyHeroGame = () => {
 	const { t } = useTranslate();
 	const [ready, setReady] = useState(false);
 	const [progress, setProgress] = useState(0);
@@ -24,11 +23,7 @@ export const LazyHeroGame = (props: HeroGameLook) => {
 	return (
 		<div className={styles.root}>
 			<Suspense fallback={null}>
-				<HeroGame
-					{...props}
-					onReady={() => setReady(true)}
-					onProgress={setProgress}
-				/>
+				<HeroGame onReady={() => setReady(true)} onProgress={setProgress} />
 			</Suspense>
 			<div
 				className={`${styles.preview} ${ready ? styles.previewGone : ""}`}

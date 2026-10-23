@@ -14,8 +14,6 @@
 }
 
 .canvas {
-  position: absolute !important;
-  inset: 0;
   @include dissolve-edges;
 }
 
@@ -73,6 +71,7 @@
 }
 
 .loaderBar {
+  // The bar's own width; antd's `size` sets the track inside it only.
   width: 180px;
   margin: 0 !important;
 }
@@ -94,18 +93,18 @@
 
 .bubble {
   position: relative;
-  width: 260px;
+  width: var(--bubble-width);
   padding: var(--gd-space-3);
   background: var(--gd-color-bg);
   border: 1px solid var(--gd-color-text-inverse);
   border-radius: var(--gd-radius-card);
 
   // The tail: a rotated square showing only its bottom-right borders. Its tip
-  // sits 30px from the edge — TAIL_INSET in index.tsx; the width is BUBBLE_WIDTH.
+  // sits --tail-inset from the edge.
   &::after {
     content: "";
     position: absolute;
-    left: 24px;
+    left: calc(var(--tail-inset) - 6px);
     bottom: -7px;
     width: 12px;
     height: 12px;
@@ -117,7 +116,7 @@
 
   &.tailRight::after {
     left: auto;
-    right: 24px;
+    right: calc(var(--tail-inset) - 6px);
   }
 }
 

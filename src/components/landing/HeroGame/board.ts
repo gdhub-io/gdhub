@@ -48,7 +48,9 @@ const LAYOUT = [
 	"......P.....",
 ];
 
-export const BOARD = {
+export type Tile = Cell & { kind: TileKind; tall: boolean };
+
+export const BOARD: { cols: number; rows: number; tiles: Tile[] } = {
 	cols: LAYOUT[0].length,
 	rows: LAYOUT.length,
 	tiles: LAYOUT.flatMap((row, z) =>
@@ -137,9 +139,7 @@ export function reachable(
 	return result;
 }
 
-const guides = new Set(
-	(["sage", "robot", "scout"] as const).map((id) => cellKey(START[id])),
-);
+const guides = new Set(Object.values(GUIDE).map((id) => cellKey(START[id])));
 
 /** The tiles a member may ever stand on: one move's range around its home. */
 export const ZONE = Object.fromEntries(

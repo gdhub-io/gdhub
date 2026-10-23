@@ -157,6 +157,12 @@ const nextConfig = {
 		},
 	],
 	headers: async () => [
+		// The hero game's models: a week in the browser cache, so a returning
+		// visitor loads none of them; a rebuilt model reaches everyone within it.
+		{
+			source: "/models/hero-game/:path*",
+			headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+		},
 		{
 			source: "/api/:path*",
 			headers: [

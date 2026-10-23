@@ -5,7 +5,7 @@ import { Button } from "antd";
 import { Suspense, useRef } from "react";
 import type { Group } from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
-import { Island, Lights } from "./index";
+import { CAMERA_PROPS, Island, Lights } from "./index";
 
 /**
  * Saves the live island and its lights as island-source.glb, the input of
@@ -29,7 +29,7 @@ export const BakeSource = () => {
 
 	return (
 		<div style={{ height: 600, position: "relative" }}>
-			<Canvas camera={{ position: [10, 11, 10], fov: 30 }}>
+			<Canvas camera={CAMERA_PROPS}>
 				<group ref={scene}>
 					<Lights />
 					<Suspense fallback={null}>

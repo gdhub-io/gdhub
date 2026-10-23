@@ -10,7 +10,9 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Popover, Typography } from "antd";
 import {
-	type Ref,
+	type CSSProperties,
+	memo,
+	type RefObject,
 	Suspense,
 	useEffect,
 	useLayoutEffect,
@@ -19,12 +21,11 @@ import {
 	useState,
 } from "react";
 import {
-	ACESFilmicToneMapping,
 	AdditiveBlending,
-	AgXToneMapping,
 	type AnimationAction,
 	AnimationClip,
 	AnimationMixer,
+	BoxGeometry,
 	CanvasTexture,
 	Color,
 	DefaultLoadingManager,
@@ -36,17 +37,19 @@ import {
 	type Mesh,
 	MeshBasicMaterial,
 	MeshStandardMaterial,
-	NoToneMapping,
 	Path,
 	type PerspectiveCamera,
 	PlaneGeometry,
+	RingGeometry,
 	Shape,
 	ShapeGeometry,
+	SphereGeometry,
 	type Sprite,
 	type SpriteMaterial,
 	SRGBColorSpace,
 	Vector3,
 } from "three";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import {
 	type GLTF,
 	GLTFLoader,
@@ -69,18 +72,20 @@ import {
 	START,
 	TEAM,
 	type TeamId,
-	type TileKind,
+	type Tile,
 	ZONE,
 } from "./board";
 import styles from "./style.module.scss";
 
-const STEPS_PER_SECOND = 5;
-// Keep in step with `.bubble` in style.module.scss.
+// Handed to `.bubble` in style.module.scss as custom properties.
 const BUBBLE_WIDTH = 260;
 const TAIL_INSET = 30;
 const TAIL_GAP = 12;
 // About 38° above the board, looking from the corner.
 const CAMERA: [number, number, number] = [10, 11, 10];
+export const CAMERA_PROPS = { position: CAMERA, fov: 30, near: 0.1, far: 200 };
+// The scout's chest, out on the islet past the bridge.
+const CHEST_CELL: Cell = { x: 11, z: 3 };
 // No brown on the palette: the bridge planks are a darkened amber.
 const WOOD = new Color(amber[600]).multiplyScalar(0.6);
 // The chest's planks run redder than the bridge's.
@@ -110,15 +115,14 @@ const TILE_FRAME = (() => {
 // about 0.012, and anything lower is lost under the stone.
 const OVERLAY = 0.035;
 const TILE_EDGES = new EdgesGeometry(new PlaneGeometry(0.9, 0.9));
-
-const ACTOR_COLOR: Record<ActorId, string> = {
-	author: brand[500],
-	programmer: chartSeries.slot1,
-	artist: chartSeries.slot3,
-	sage: amber[400],
-	robot: chartSeries.slot6,
-	scout: chartSeries.slot5,
-};
+// Shared by every tile and pawn rather than built per mesh.
+const HIT_BOX = new BoxGeometry(1, 0.66, 1);
+const TILE_PLANE = new PlaneGeometry(0.9, 0.9);
+const PATH_DOT = new SphereGeometry(0.07, 12, 12);
+const RING_RIM = new RingGeometry(0.38, 0.54, 48);
+const RING = new RingGeometry(0.41, 0.51, 48);
+const HALO = new RingGeometry(0.52, 0.66, 48);
+const BLOB = new PlaneGeometry(0.84, 0.84);
 
 // Board cells are laid out from the origin; the scene is centred on the board.
 // The height is the top of the cell's plate.
@@ -162,37 +166,24 @@ const shade = ({ x, z }: Cell) =>
 	((Math.sin(x * 12.9898 + z * 78.233) * 43758.5453) % 1) * 0.5 + 0.5;
 
 /**
- * `baked` (the default) draws the island from island.glb, its light baked in
- * Blender; `live` builds it from the models and lights it in real time, and is
- * what the bake is made from (see the BakeSource story).
+ * The board, its island drawn from island.glb with the light baked in by
+ * Blender (the live, lit island it is baked from is the BakeSource story).
  */
-export type HeroGameLook = {
-	look?: "baked" | "live";
-	/** How the live characters' light is mapped to the screen. */
-	toneMapping?: "aces" | "agx" | "none";
-	/** The far side of the island fades into the section. */
-	fog?: boolean;
-	/** A CSS vignette, warm glow and film grain over the canvas. */
-	overlay?: boolean;
+export const HeroGame = ({
+	onReady,
+	onProgress,
+}: {
 	/** Called once every model has loaded and the first frame is drawn. */
 	onReady?: () => void;
 	/** Share of the models loaded so far, 0 to 1. */
 	onProgress?: (share: number) => void;
-};
-
-export const HeroGame = ({
-	look = "baked",
-	toneMapping = "aces",
-	fog = true,
-	overlay = true,
-	onReady,
-	onProgress,
-}: HeroGameLook) => {
+}) => {
 	const [meeting, setMeeting] = useState<Meeting | null>(null);
 	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 	const [selected, setSelected] = useState<TeamId>("author");
 	const [ready, setReady] = useState(false);
 	const root = useRef<HTMLDivElement>(null);
+	const onScreen = useOnScreen(root);
 
 	// useLoader goes through three's default manager, which counts every file.
 	useEffect(() => {
@@ -213,18 +204,19 @@ export const HeroGame = ({
 		<div className={styles.root} ref={root}>
 			<Canvas
 				className={styles.canvas}
-				shadows
+				style={{ position: "absolute", inset: 0 }}
+				// No shadow map: nothing here receives one, the island's are baked.
 				// Never below 1.5x: on a 1x screen that supersamples the small canvas,
 				// softening edges MSAA alone leaves jagged.
 				dpr={[1.5, 2]}
-				gl={{ antialias: true, toneMapping: TONE_MAPPING[toneMapping] }}
-				camera={{ position: CAMERA, fov: 30, near: 0.1, far: 200 }}
+				// Stops drawing while the hero is scrolled away or the tab is hidden.
+				frameloop={onScreen ? "always" : "never"}
+				camera={CAMERA_PROPS}
 			>
-				<FitCamera fog={fog} />
+				<FitCamera />
 				<Lights />
 				<Suspense fallback={null}>
 					<Game
-						look={look}
 						selected={selected}
 						onSelect={setSelected}
 						onMeet={(m) => (m ? setMeeting(m) : close())}
@@ -238,7 +230,7 @@ export const HeroGame = ({
 				</Suspense>
 				{meeting && <ScreenAnchor at={meeting.at} onChange={setAnchor} />}
 			</Canvas>
-			{overlay && <div className={styles.overlay} aria-hidden />}
+			<div className={styles.overlay} aria-hidden />
 			<TeamPanel selected={selected} onSelect={setSelected} shown={ready} />
 			{meeting && anchor && (
 				<Dialogue
@@ -252,6 +244,26 @@ export const HeroGame = ({
 			)}
 		</div>
 	);
+};
+
+const useOnScreen = (ref: RefObject<HTMLElement | null>) => {
+	const [inView, setInView] = useState(true);
+	const [tabShown, setTabShown] = useState(true);
+	useEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		const observer = new IntersectionObserver(([entry]) =>
+			setInView(entry.isIntersecting),
+		);
+		observer.observe(el);
+		const onTab = () => setTabShown(!document.hidden);
+		document.addEventListener("visibilitychange", onTab);
+		return () => {
+			observer.disconnect();
+			document.removeEventListener("visibilitychange", onTab);
+		};
+	}, [ref]);
+	return inView && tabShown;
 };
 
 // Mounts only once the Suspense boundary it shares with the game resolves,
@@ -719,13 +731,12 @@ const Dialogue = ({
 		},
 	];
 	const who = useWho();
-	const [roll] = useState(Math.random);
+	const [[coin, roll]] = useState(() => [Math.random(), Math.random()]);
 	const own = pool[`${meeting.speaker}>${meeting.listener}`] ?? [];
 	// Between teammates: half the time the pair's own lines, half a stock one.
 	const options =
-		isTeam(meeting.speaker) && (roll < 0.5 || !own.length) ? anyTeam : own;
-	const pick = (roll < 0.5 ? roll * 2 : (roll - 0.5) * 2) * options.length;
-	const said = options[Math.floor(pick)];
+		isTeam(meeting.speaker) && (coin < 0.5 || !own.length) ? anyTeam : own;
+	const said = options[Math.floor(roll * options.length)];
 	if (!said) return null;
 	const { line, accept } = said;
 
@@ -740,6 +751,12 @@ const Dialogue = ({
 			getPopupContainer={container}
 			classNames={{
 				container: `${styles.bubble} ${leftward ? styles.tailRight : ""}`,
+			}}
+			styles={{
+				container: {
+					"--bubble-width": `${BUBBLE_WIDTH}px`,
+					"--tail-inset": `${TAIL_INSET}px`,
+				} as CSSProperties,
 			}}
 			content={
 				// The game's UI keeps product-sized controls inside the marketing page.
@@ -810,7 +827,7 @@ const corners = BOARD.tiles.flatMap((tile) => {
 // Fits the island's real footprint, not the layout's bounding grid, and
 // centres it. Under perspective that has no closed form, so it converges:
 // each pass moves the camera to fill FILL of the frame and re-centres.
-const FitCamera = ({ fog }: { fog: boolean }) => {
+const FitCamera = () => {
 	const camera = useThree((s) => s.camera) as PerspectiveCamera;
 	const size = useThree((s) => s.size);
 	const scene = useThree((s) => s.scene);
@@ -850,17 +867,11 @@ const FitCamera = ({ fog }: { fog: boolean }) => {
 		}
 		// Starts just behind the island's centre, so the near side stays crisp
 		// and the far rows and trees sink into the section's background.
-		scene.fog = fog ? new Fog(neutral[950], distance, distance + 8) : null;
-	}, [camera, size, scene, fog]);
+		scene.fog = new Fog(neutral[950], distance, distance + 8);
+	}, [camera, size, scene]);
 
 	return null;
 };
-
-const TONE_MAPPING = {
-	aces: ACESFilmicToneMapping,
-	agx: AgXToneMapping,
-	none: NoToneMapping,
-} as const;
 
 // Warm light from the checkpoint where the team stands, cold light from the
 // unexplored back edge.
@@ -871,8 +882,10 @@ export const Lights = () => {
 
 	return (
 		<>
+			{/* Named: scripts/hero-game/bake-island.py finds each light by name. */}
 			<ambientLight intensity={0.85} />
 			<directionalLight
+				name="sun"
 				castShadow
 				// Low and from the side: the baked chips and bevels need a raking light.
 				position={[-7, 5, 3]}
@@ -887,6 +900,7 @@ export const Lights = () => {
 				shadow-camera-bottom={-9}
 			/>
 			<pointLight
+				name="warm"
 				color={amber[400]}
 				position={[wx, 1.4, wz]}
 				intensity={14}
@@ -894,6 +908,7 @@ export const Lights = () => {
 				decay={1.6}
 			/>
 			<pointLight
+				name="cold"
 				color={chartSeries.slot1}
 				position={[cx, 1.6, cz]}
 				intensity={50}
@@ -905,38 +920,97 @@ export const Lights = () => {
 	);
 };
 
-// A soft round spot of light in one colour, fading to nothing at the edge.
-const useGlowTexture = (color: string) => {
-	const texture = useMemo(() => {
-		const canvas = document.createElement("canvas");
-		canvas.width = canvas.height = 256;
-		const ctx = canvas.getContext("2d");
-		if (ctx) {
-			const { r, g, b } = new Color(color);
-			const rgba = (a: number) =>
-				`rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a})`;
-			const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-			gradient.addColorStop(0, rgba(0.9));
-			gradient.addColorStop(0.4, rgba(0.35));
-			gradient.addColorStop(1, rgba(0));
-			ctx.fillStyle = gradient;
-			ctx.fillRect(0, 0, 256, 256);
-		}
-		const t = new CanvasTexture(canvas);
-		t.colorSpace = SRGBColorSpace;
-		return t;
-	}, [color]);
-
-	useEffect(() => () => texture.dispose(), [texture]);
+// A texture drawn once on a 2D canvas and kept for the page's life: each is
+// small and shared by everything that shows it.
+const canvasTexture = (
+	width: number,
+	height: number,
+	draw: (ctx: CanvasRenderingContext2D) => void,
+) => {
+	const canvas = document.createElement("canvas");
+	canvas.width = width;
+	canvas.height = height;
+	const ctx = canvas.getContext("2d");
+	if (ctx) draw(ctx);
+	const texture = new CanvasTexture(canvas);
+	texture.colorSpace = SRGBColorSpace;
 	return texture;
 };
 
+const once = <T,>(make: () => T) => {
+	let value: T | undefined;
+	return () => {
+		value ??= make();
+		return value;
+	};
+};
+
+// A soft round spot in one colour, fading to nothing at the edge.
+const glowTexture = (color: string, stops: [number, number][]) =>
+	canvasTexture(256, 256, (ctx) => {
+		const { r, g, b } = new Color(color);
+		const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+		for (const [at, alpha] of stops)
+			gradient.addColorStop(
+				at,
+				`rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`,
+			);
+		ctx.fillStyle = gradient;
+		ctx.fillRect(0, 0, 256, 256);
+	});
+
+const glowOf = new Map<string, CanvasTexture>();
+const glow = (color: string) => {
+	let texture = glowOf.get(color);
+	if (!texture) {
+		texture = glowTexture(color, [
+			[0, 0.9],
+			[0.4, 0.35],
+			[1, 0],
+		]);
+		glowOf.set(color, texture);
+	}
+	return texture;
+};
+
+const blobTexture = once(() =>
+	glowTexture(neutral[950], [
+		[0, 0.8],
+		[0.55, 0.45],
+		[1, 0],
+	]),
+);
+
+const steamLabel = once(() =>
+	canvasTexture(256, 96, (ctx) => {
+		ctx.fillStyle = neutral[0];
+		ctx.font = "bold 66px sans-serif";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.fillText("STEAM", 128, 52);
+	}),
+);
+
+const costBadges = once(() =>
+	Array.from({ length: MOVE_RANGE + 1 }, (_, n) =>
+		canvasTexture(128, 128, (ctx) => {
+			ctx.fillStyle = brand[500];
+			ctx.beginPath();
+			ctx.arc(64, 64, 60, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.fillStyle = neutral[0];
+			ctx.font = "bold 72px sans-serif";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.fillText(String(n), 64, 68);
+		}),
+	),
+);
+
 // The baked coins don't catch light, so their shine is drawn live on top: a
 // warm glow that breathes, and a few sparkles that flare in turn.
-const GoldShimmer = () => {
-	const [x, y, z] = toWorld({ x: 11, z: 3 });
-	const glow = useGlowTexture(amber[400]);
-	const spark = useGlowTexture(neutral[0]);
+const GoldShimmer = memo(() => {
+	const [x, y, z] = toWorld(CHEST_CELL);
 	const halo = useRef<SpriteMaterial>(null);
 	const sparks = useRef<(Sprite | null)[]>([]);
 
@@ -958,7 +1032,7 @@ const GoldShimmer = () => {
 			<sprite scale={[0.9, 0.7, 1]} raycast={ignoreRay}>
 				<spriteMaterial
 					ref={halo}
-					map={glow}
+					map={glow(amber[400])}
 					transparent
 					depthWrite={false}
 					blending={AdditiveBlending}
@@ -974,7 +1048,7 @@ const GoldShimmer = () => {
 					raycast={ignoreRay}
 				>
 					<spriteMaterial
-						map={spark}
+						map={glow(neutral[0])}
 						transparent
 						depthWrite={false}
 						depthTest={false}
@@ -984,30 +1058,14 @@ const GoldShimmer = () => {
 			))}
 		</group>
 	);
-};
+});
 
 // Points into the woods behind: the way to Steam, where the game is released.
-const Signpost = () => {
-	const tile = BOARD.tiles.find((t) => t.kind === "sign");
-	const label = useMemo(() => {
-		const canvas = document.createElement("canvas");
-		canvas.width = 256;
-		canvas.height = 96;
-		const ctx = canvas.getContext("2d");
-		if (ctx) {
-			ctx.fillStyle = neutral[0];
-			ctx.font = "bold 66px sans-serif";
-			ctx.textAlign = "center";
-			ctx.textBaseline = "middle";
-			ctx.fillText("STEAM", 128, 52);
-		}
-		const t = new CanvasTexture(canvas);
-		t.colorSpace = SRGBColorSpace;
-		return t;
-	}, []);
-	useEffect(() => () => label.dispose(), [label]);
-	if (!tile) return null;
-	const [x, y, z] = toWorld(tile);
+const SIGN = BOARD.tiles.find((t) => t.kind === "sign");
+
+const Signpost = memo(() => {
+	if (!SIGN) return null;
+	const [x, y, z] = toWorld(SIGN);
 
 	return (
 		// Turned so the board faces the camera; the arrow points right, into the woods.
@@ -1027,12 +1085,16 @@ const Signpost = () => {
 				</mesh>
 				<mesh position={[0, 0, 0.026]} raycast={ignoreRay}>
 					<planeGeometry args={[0.64, 0.22]} />
-					<meshBasicMaterial map={label} transparent toneMapped={false} />
+					<meshBasicMaterial
+						map={steamLabel()}
+						transparent
+						toneMapped={false}
+					/>
 				</mesh>
 			</group>
 		</group>
 	);
-};
+});
 
 const SPARKS: [number, number, number][] = [
 	[-0.12, 0.04, 0.05],
@@ -1049,8 +1111,6 @@ const Glow = ({
 	at: [number, number, number];
 	color: string;
 }) => {
-	const texture = useGlowTexture(color);
-
 	return (
 		<sprite
 			position={at}
@@ -1059,7 +1119,7 @@ const Glow = ({
 			raycast={ignoreRay}
 		>
 			<spriteMaterial
-				map={texture}
+				map={glow(color)}
 				transparent
 				depthWrite={false}
 				// The cold light is the far edge itself; fog must not put it out.
@@ -1076,12 +1136,10 @@ type Move = { id: TeamId; path: Cell[] };
 type Meeting = { speaker: ActorId; listener: TeamId; at: Cell };
 
 const Game = ({
-	look,
 	selected,
 	onSelect: setSelected,
 	onMeet,
 }: {
-	look: "baked" | "live";
 	selected: TeamId;
 	onSelect: (id: TeamId) => void;
 	onMeet: (meeting: Meeting | null) => void;
@@ -1163,6 +1221,29 @@ const Game = ({
 	const isGuide = (id: ActorId) =>
 		cellKey(positions[id]) === guideKey && targets.has(guideKey);
 
+	const tileState = (key: string): TileState => {
+		if (key === destination) return "destination";
+		if (!targets.has(key)) return "idle";
+		return key === hovered ? "hovered" : "reachable";
+	};
+
+	// One stable set of tile handlers reading the latest state through a ref, so
+	// a hover re-renders only the tiles whose state changed.
+	const latest = useRef({ go, teammateUnder, hovered, setSelected });
+	latest.current = { go, teammateUnder, hovered, setSelected };
+	const tileHandlers = useMemo<TileHandlers>(
+		() => ({
+			over: (key) => setHovered(key),
+			out: (key) => setHovered((h) => (h === key ? null : h)),
+			pick: (key) => {
+				const { go, teammateUnder, hovered, setSelected } = latest.current;
+				if (teammateUnder && key === hovered) setSelected(teammateUnder);
+				else go(key);
+			},
+		}),
+		[],
+	);
+
 	return (
 		<group>
 			{BOARD.tiles.map((tile) => {
@@ -1170,23 +1251,10 @@ const Game = ({
 				return (
 					<TileHit
 						key={key}
+						tileKey={key}
 						cell={tile}
-						state={
-							key === destination
-								? "destination"
-								: !targets.has(key)
-									? "idle"
-									: key === hovered
-										? "hovered"
-										: "reachable"
-						}
-						onOver={() => setHovered(key)}
-						onOut={() => setHovered((h) => (h === key ? null : h))}
-						onPick={() =>
-							teammateUnder && key === hovered
-								? setSelected(teammateUnder)
-								: go(key)
-						}
+						state={tileState(key)}
+						handlers={tileHandlers}
 					/>
 				);
 			})}
@@ -1233,7 +1301,7 @@ const Game = ({
 				);
 			})}
 
-			{look === "live" ? <Island /> : <BakedIsland />}
+			<BakedIsland />
 			<GoldShimmer />
 			<Signpost />
 		</group>
@@ -1241,19 +1309,32 @@ const Game = ({
 };
 
 /** Everything that never moves: the stone, the firs and rocks, the bridge, the chest. */
-export const Island = ({ ref }: { ref?: Ref<Group> }) => (
-	<group ref={ref} name="island">
-		{BOARD.tiles.map((tile) => (
-			<Stone key={cellKey(tile)} cell={tile} kind={tile.kind} />
-		))}
+export const Island = () => (
+	<group name="island">
+		{BOARD.tiles.map((tile) =>
+			tile.kind === "bridge" ? (
+				<Bridge key={cellKey(tile)} at={toWorld(tile)} />
+			) : (
+				<Stone key={cellKey(tile)} tile={tile} />
+			),
+		)}
 		<Chest />
 	</group>
 );
 
+// The shipped models are meshopt-compressed by scripts/hero-game/optimize.mjs.
+const withMeshopt = (loader: GLTFLoader) => {
+	loader.setMeshoptDecoder(MeshoptDecoder);
+};
+
 // The island with its light baked in by scripts/hero-game/bake-island.py: one
 // mesh, one texture, no lighting to compute.
-const BakedIsland = () => {
-	const gltf = useLoader(GLTFLoader, "/models/hero-game/island.glb") as GLTF;
+const BakedIsland = memo(() => {
+	const gltf = useLoader(
+		GLTFLoader,
+		"/models/hero-game/island.glb",
+		withMeshopt,
+	) as GLTF;
 	const island = useMemo(() => {
 		const scene = gltf.scene.clone();
 		scene.traverse((o) => {
@@ -1266,86 +1347,84 @@ const BakedIsland = () => {
 		return scene;
 	}, [gltf]);
 	return <primitive object={island} />;
-};
+});
+
+type TileState = "idle" | "reachable" | "hovered" | "destination";
+type TileHandlers = Record<"over" | "out" | "pick", (key: string) => void>;
 
 // Where the pointer lands on a cell: an invisible box, plus the move highlight.
-const TileHit = ({
-	cell,
-	state,
-	onOver,
-	onOut,
-	onPick,
-}: {
-	cell: Cell;
-	state: "idle" | "reachable" | "hovered" | "destination";
-	onOver: () => void;
-	onOut: () => void;
-	onPick: () => void;
-}) => {
-	const [x, , z] = toWorld(cell);
-	return (
-		// biome-ignore lint/a11y/noStaticElementInteractions: a three.js object, not a DOM element
-		<group
-			position={[x, 0, z]}
-			onPointerOver={(e: ThreeEvent<PointerEvent>) => {
-				e.stopPropagation();
-				onOver();
-			}}
-			onPointerOut={onOut}
-			onClick={(e: ThreeEvent<MouseEvent>) => {
-				e.stopPropagation();
-				onPick();
-			}}
-		>
-			<mesh position={[0, -0.3, 0]}>
-				<boxGeometry args={[1, 0.66, 1]} />
-				<meshBasicMaterial visible={false} />
-			</mesh>
-			{state === "destination" && (
-				<mesh
-					geometry={TILE_FRAME}
-					position={[0, lift(cell) + OVERLAY, 0]}
-					rotation={[-Math.PI / 2, 0, 0]}
-					raycast={ignoreRay}
-				>
-					<meshBasicMaterial color={brand[400]} />
+const TileHit = memo(
+	({
+		tileKey,
+		cell,
+		state,
+		handlers,
+	}: {
+		tileKey: string;
+		cell: Cell;
+		state: TileState;
+		handlers: TileHandlers;
+	}) => {
+		const [x, , z] = toWorld(cell);
+		const over: [number, number, number] = [0, lift(cell) + OVERLAY, 0];
+		return (
+			// biome-ignore lint/a11y/noStaticElementInteractions: a three.js object, not a DOM element
+			<group
+				position={[x, 0, z]}
+				onPointerOver={(e: ThreeEvent<PointerEvent>) => {
+					e.stopPropagation();
+					handlers.over(tileKey);
+				}}
+				onPointerOut={() => handlers.out(tileKey)}
+				onClick={(e: ThreeEvent<MouseEvent>) => {
+					e.stopPropagation();
+					handlers.pick(tileKey);
+				}}
+			>
+				<mesh geometry={HIT_BOX} position={[0, -0.3, 0]}>
+					<meshBasicMaterial visible={false} />
 				</mesh>
-			)}
-			{(state === "reachable" || state === "hovered") && (
-				<group
-					position={[0, lift(cell) + OVERLAY, 0]}
-					rotation={[-Math.PI / 2, 0, 0]}
-				>
-					<mesh raycast={ignoreRay}>
-						<planeGeometry args={[0.9, 0.9]} />
-						<meshBasicMaterial
-							color={brand[500]}
-							transparent
-							opacity={state === "hovered" ? 0.7 : 0.38}
-							depthWrite={false}
-						/>
+				{state === "destination" && (
+					<mesh
+						geometry={TILE_FRAME}
+						position={over}
+						rotation={[-Math.PI / 2, 0, 0]}
+						raycast={ignoreRay}
+					>
+						<meshBasicMaterial color={brand[400]} />
 					</mesh>
-					<lineSegments geometry={TILE_EDGES} raycast={ignoreRay}>
-						<lineBasicMaterial color={brand[300]} />
-					</lineSegments>
-				</group>
-			)}
-		</group>
-	);
-};
+				)}
+				{(state === "reachable" || state === "hovered") && (
+					<group position={over} rotation={[-Math.PI / 2, 0, 0]}>
+						<mesh geometry={TILE_PLANE} raycast={ignoreRay}>
+							<meshBasicMaterial
+								color={brand[500]}
+								transparent
+								opacity={state === "hovered" ? 0.7 : 0.38}
+								depthWrite={false}
+							/>
+						</mesh>
+						<lineSegments geometry={TILE_EDGES} raycast={ignoreRay}>
+							<lineBasicMaterial color={brand[300]} />
+						</lineSegments>
+					</group>
+				)}
+			</group>
+		);
+	},
+);
 
-const Stone = ({ cell, kind }: { cell: Cell; kind: TileKind }) => {
-	const [x, , z] = toWorld(cell);
-	const depth = depthOf(cell);
+const Stone = ({ tile }: { tile: Tile }) => {
+	const { kind } = tile;
+	const [x, , z] = toWorld(tile);
+	const depth = depthOf(tile);
 	const paved = kind === "ground" || kind === "islet" || kind === "sign";
 	const stone = useModels();
-	const plateMaterial = useTinted(stone.plate.material, plateColor(cell));
+	const plateMaterial = useTinted(stone.plate.material, plateColor(tile));
 	const blockMaterial = useTinted(
 		stone.block.material,
-		new Color(paved ? neutral[900] : neutral[800]),
+		paved ? PAVED_BLOCK : BARE_BLOCK,
 	);
-
-	if (kind === "bridge") return <Bridge at={[x, 0, z]} />;
 
 	return (
 		<group position={[x, 0, z]}>
@@ -1359,12 +1438,12 @@ const Stone = ({ cell, kind }: { cell: Cell; kind: TileKind }) => {
 			{paved && (
 				// Laid by hand: each plate sits a touch off level.
 				<mesh
-					position={[0, -PLATE / 2 + lift(cell), 0]}
+					position={[0, -PLATE / 2 + lift(tile), 0]}
 					rotation={[
-						noise(cell, 2) * 0.025,
+						noise(tile, 2) * 0.025,
 						// A quarter turn per plate, so the chipped edges never repeat.
-						Math.floor(shade(cell) * 4) * (Math.PI / 2) + noise(cell, 3) * 0.06,
-						noise(cell, 4) * 0.025,
+						Math.floor(shade(tile) * 4) * (Math.PI / 2) + noise(tile, 3) * 0.06,
+						noise(tile, 4) * 0.025,
 					]}
 					geometry={stone.plate.geometry}
 					material={plateMaterial}
@@ -1375,14 +1454,14 @@ const Stone = ({ cell, kind }: { cell: Cell; kind: TileKind }) => {
 			<group position={[0, -PLATE, 0]}>
 				{kind === "tree" && (
 					<Tree
-						size={1.3 + shade(cell) * 0.8}
-						turn={noise(cell, 5) * Math.PI}
+						size={1.3 + shade(tile) * 0.8}
+						turn={noise(tile, 5) * Math.PI}
 					/>
 				)}
 				{kind === "rock" && (
 					<Rock
-						size={1.5 + shade(cell) * 0.5}
-						turn={noise(cell, 6) * Math.PI}
+						size={1.5 + shade(tile) * 0.5}
+						turn={noise(tile, 6) * Math.PI}
 					/>
 				)}
 			</group>
@@ -1393,7 +1472,7 @@ const Stone = ({ cell, kind }: { cell: Cell; kind: TileKind }) => {
 // Built by scripts/hero-game/build-models.py: bevelled stone with baked grain
 // and chips, a faceted fir and a boulder.
 const useModels = () => {
-	const [plate, block, fir, boulder, bridge, chest] = useLoader(GLTFLoader, [
+	const loaded = useLoader(GLTFLoader, [
 		"/models/hero-game/plate.glb",
 		"/models/hero-game/block.glb",
 		"/models/hero-game/fir.glb",
@@ -1401,6 +1480,16 @@ const useModels = () => {
 		"/models/hero-game/bridge.glb",
 		"/models/hero-game/chest.glb",
 	]) as GLTF[];
+	// Picked out once per load: every tile and prop asks for these.
+	let models = modelsOf.get(loaded[0]);
+	if (!models) {
+		models = pickMeshes(loaded);
+		modelsOf.set(loaded[0], models);
+	}
+	return models;
+};
+
+const pickMeshes = ([plate, block, fir, boulder, bridge, chest]: GLTF[]) => {
 	return {
 		plate: meshOf(plate),
 		block: meshOf(block),
@@ -1415,6 +1504,11 @@ const useModels = () => {
 		chestGold: meshOf(chest, "gold"),
 	};
 };
+
+const modelsOf = new WeakMap<GLTF, ReturnType<typeof pickMeshes>>();
+
+const PAVED_BLOCK = new Color(neutral[900]);
+const BARE_BLOCK = new Color(neutral[800]);
 
 const meshOf = (gltf: GLTF, name?: string) => {
 	let found: Mesh | undefined;
@@ -1447,6 +1541,8 @@ const IRON = new MeshStandardMaterial({
 	roughness: 0.5,
 });
 const GOLD = new MeshStandardMaterial({
+	// The bake gives this material its glow by name.
+	name: "gold",
 	color: amber[400],
 	emissive: amber[400],
 	emissiveIntensity: 0.15,
@@ -1480,7 +1576,6 @@ const PathPreview = ({
 	cost: number;
 	lastDot: boolean;
 }) => {
-	const badge = useCostBadge(cost);
 	const end = toWorld(path[path.length - 1]);
 
 	return (
@@ -1488,52 +1583,20 @@ const PathPreview = ({
 			{path.slice(1, lastDot ? undefined : -1).map((cell) => {
 				const [x, y, z] = toWorld(cell);
 				return (
-					<mesh key={cellKey(cell)} position={[x, y + 0.05, z]}>
-						<sphereGeometry args={[0.07, 12, 12]} />
+					<mesh
+						key={cellKey(cell)}
+						geometry={PATH_DOT}
+						position={[x, y + 0.05, z]}
+					>
 						<meshBasicMaterial color={neutral[950]} transparent opacity={0.5} />
 					</mesh>
 				);
 			})}
 			<sprite position={[end[0], end[1] + 0.75, end[2]]} scale={[0.5, 0.5, 1]}>
-				<spriteMaterial map={badge} depthTest={false} />
+				<spriteMaterial map={costBadges()[cost]} depthTest={false} />
 			</sprite>
 		</group>
 	);
-};
-
-const useCostBadge = (cost: number) => {
-	const textures = useMemo(
-		() =>
-			Array.from({ length: MOVE_RANGE + 1 }, (_, n) => {
-				const canvas = document.createElement("canvas");
-				canvas.width = canvas.height = 128;
-				const ctx = canvas.getContext("2d");
-				if (ctx) {
-					ctx.fillStyle = brand[500];
-					ctx.beginPath();
-					ctx.arc(64, 64, 60, 0, Math.PI * 2);
-					ctx.fill();
-					ctx.fillStyle = neutral[0];
-					ctx.font = "bold 72px sans-serif";
-					ctx.textAlign = "center";
-					ctx.textBaseline = "middle";
-					ctx.fillText(String(n), 64, 68);
-				}
-				const texture = new CanvasTexture(canvas);
-				texture.colorSpace = SRGBColorSpace;
-				return texture;
-			}),
-		[],
-	);
-
-	useEffect(
-		() => () => {
-			for (const t of textures) t.dispose();
-		},
-		[textures],
-	);
-
-	return textures[cost];
 };
 
 type CharacterModel = {
@@ -1542,16 +1605,21 @@ type CharacterModel = {
 	rest: string;
 	/** Played now and then instead of the rest idle. */
 	extras: string[];
+	/** Which way he faces standing; the camera unless set. */
+	facing?: number;
+	/** A soft light of this colour round him. */
+	glow?: string;
 };
 
 // Rigged characters, built by scripts/hero-game/build-<name>.py. Every rest
 // pose is an A-pose, so an animation must always be playing. All idles share
 // their first and last pose; `walk` plays in place while the pawn moves.
-const MODELS: Partial<Record<ActorId, CharacterModel>> = {
+const MODELS: Record<ActorId, CharacterModel> = {
 	sage: {
 		url: "/models/hero-game/sage.glb",
 		rest: "idle_breathe",
 		extras: ["idle_look", "idle_beard"],
+		glow: amber[400],
 	},
 	author: {
 		url: "/models/hero-game/designer.glb",
@@ -1567,6 +1635,7 @@ const MODELS: Partial<Record<ActorId, CharacterModel>> = {
 		url: "/models/hero-game/robot.glb",
 		rest: "idle_breathe",
 		extras: ["idle_scan", "idle_wave"],
+		glow: chartSeries.slot6,
 	},
 	artist: {
 		url: "/models/hero-game/artist.glb",
@@ -1577,14 +1646,14 @@ const MODELS: Partial<Record<ActorId, CharacterModel>> = {
 		url: "/models/hero-game/scout.glb",
 		rest: "idle_breathe",
 		extras: ["idle_tie", "idle_watch"],
+		// A quarter turn round, towards the team across the board.
+		facing: 0,
 	},
 };
 
 const IDLE_FADE = 0.5;
 // The camera looks in from the board's +x, +z corner.
 const FACE_CAMERA = Math.PI / 4;
-// The scout stands a quarter turn round, towards the team across the board.
-const REST_FACING: Partial<Record<ActorId, number>> = { scout: 0 };
 const WALK_FADE = 0.2;
 const WALK_STEPS_PER_SECOND = 1.8;
 // The walk is played faster than authored so the feet keep up with the board
@@ -1604,16 +1673,14 @@ const Character = ({
 	model: CharacterModel;
 	walking: boolean;
 }) => {
-	const gltf = useLoader(GLTFLoader, model.url) as GLTF;
+	const gltf = useLoader(GLTFLoader, model.url, withMeshopt) as GLTF;
 	// No cast shadow: the sun's is hard-edged; a soft blob sits under him.
 	// Characters stay out of the fog, which is for the far edge of the land.
 	const body = useMemo(() => {
 		const copy = cloneSkinned(gltf.scene);
 		copy.traverse((o) => {
 			const mesh = o as Mesh;
-			if (!mesh.isMesh) return;
-			mesh.material = (mesh.material as MeshStandardMaterial).clone();
-			(mesh.material as MeshStandardMaterial).fog = false;
+			if (mesh.isMesh) (mesh.material as MeshStandardMaterial).fog = false;
 		});
 		return copy;
 	}, [gltf]);
@@ -1670,45 +1737,27 @@ const Character = ({
 	// Scaled up so he reads as a character beside the pawns and firs.
 	return (
 		<>
-			<BlobShadow radius={0.42} />
+			<BlobShadow />
 			<primitive object={body} scale={1.3} />
 		</>
 	);
 };
 
 // A soft dark spot on the plate, fading to nothing at the edge.
-const BlobShadow = ({ radius }: { radius: number }) => {
-	const texture = useMemo(() => {
-		const canvas = document.createElement("canvas");
-		canvas.width = canvas.height = 128;
-		const ctx = canvas.getContext("2d");
-		if (ctx) {
-			const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-			gradient.addColorStop(0, "rgba(0, 0, 0, 0.8)");
-			gradient.addColorStop(0.55, "rgba(0, 0, 0, 0.45)");
-			gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-			ctx.fillStyle = gradient;
-			ctx.fillRect(0, 0, 128, 128);
-		}
-		return new CanvasTexture(canvas);
-	}, []);
-
-	useEffect(() => () => texture.dispose(), [texture]);
-
-	return (
-		<mesh
-			position={[0, OVERLAY - 0.004, 0]}
-			rotation={[-Math.PI / 2, 0, 0]}
-			raycast={ignoreRay}
-		>
-			<planeGeometry args={[radius * 2, radius * 2]} />
-			<meshBasicMaterial map={texture} transparent depthWrite={false} />
-		</mesh>
-	);
-};
+const BlobShadow = () => (
+	<mesh
+		geometry={BLOB}
+		position={[0, OVERLAY - 0.004, 0]}
+		rotation={[-Math.PI / 2, 0, 0]}
+		raycast={ignoreRay}
+	>
+		<meshBasicMaterial map={blobTexture()} transparent depthWrite={false} />
+	</mesh>
+);
 
 // A small cone over the selected member, bobbing and turning slowly.
-const SelectionMarker = ({ height }: { height: number }) => {
+const SelectionMarker = () => {
+	const height = 1.45;
 	const ref = useRef<Mesh>(null);
 	useFrame(({ clock }) => {
 		const marker = ref.current;
@@ -1765,9 +1814,10 @@ const Pawn = ({
 	const [hover, setHover] = useState(false);
 	const walking = useRef<Cell[]>(undefined);
 	const model = MODELS[id];
+	const team = isTeam(id);
 
-	// Faces where he walks, and turns back to the camera once he stops.
-	const rest = REST_FACING[id] ?? FACE_CAMERA;
+	// Faces where he walks, and turns back to rest once he stops.
+	const rest = model.facing ?? FACE_CAMERA;
 	const facing = useRef(rest);
 
 	useFrame((_, delta) => {
@@ -1786,19 +1836,16 @@ const Pawn = ({
 		}
 
 		progress.current = Math.min(
-			progress.current +
-				delta * (model ? WALK_STEPS_PER_SECOND : STEPS_PER_SECOND),
+			progress.current + delta * WALK_STEPS_PER_SECOND,
 			path.length - 1,
 		);
 		const step = Math.min(Math.floor(progress.current), path.length - 2);
 		const t = progress.current - step;
 		const [ax, ay, az] = toWorld(path[step]);
 		const [bx, by, bz] = toWorld(path[step + 1]);
-		// A character walks; a placeholder pawn hops.
-		const hop = model ? 0 : Math.sin(t * Math.PI) * 0.15;
 		group.position.set(
 			ax + (bx - ax) * t,
-			ay + (by - ay) * t + hop,
+			ay + (by - ay) * t,
 			az + (bz - az) * t,
 		);
 		// The models face +z.
@@ -1831,36 +1878,18 @@ const Pawn = ({
 				onPick();
 			}}
 		>
-			{model ? (
-				<group ref={heading} rotation={[0, rest, 0]}>
-					<Character model={model} walking={!!path} />
-				</group>
-			) : (
-				<>
-					<mesh position={[0, 0.05, 0]} castShadow>
-						<cylinderGeometry args={[0.36, 0.38, 0.1, 32]} />
-						<meshStandardMaterial color={neutral[900]} roughness={0.6} />
-					</mesh>
-					<mesh position={[0, 0.42, 0]} castShadow>
-						<sphereGeometry args={[0.3, 32, 32]} />
-						<meshStandardMaterial
-							color={ACTOR_COLOR[id]}
-							emissive={ACTOR_COLOR[id]}
-							emissiveIntensity={id === "robot" ? 0.5 : 0.15}
-							roughness={0.45}
-						/>
-					</mesh>
-				</>
-			)}
-			{(hover || tileHovered) && onPick && isTeam(id) && (
-				// A halo just outside the ring: inside it, the base and the blob
-				// shadow would cover it.
+			<group ref={heading} rotation={[0, rest, 0]}>
+				<Character model={model} walking={!!path} />
+			</group>
+			{(hover || tileHovered) && onPick && team && (
+				// A halo just outside the ring: inside it, the blob shadow would
+				// cover it.
 				<mesh
+					geometry={HALO}
 					position={[0, OVERLAY + 0.002, 0]}
 					rotation={[-Math.PI / 2, 0, 0]}
 					raycast={ignoreRay}
 				>
-					<ringGeometry args={[0.52, 0.66, 48]} />
 					<meshBasicMaterial
 						color={neutral[0]}
 						transparent
@@ -1869,14 +1898,12 @@ const Pawn = ({
 					/>
 				</mesh>
 			)}
-			{selected && <SelectionMarker height={model ? 1.45 : 0.95} />}
-			{/* The player's own: grey, the selected one red. */}
-			{isTeam(id) && (
+			{selected && <SelectionMarker />}
+			{team && (
 				// A dark rim keeps the ring readable on light stone and on the
 				// coral move highlight alike.
 				<group position={[0, OVERLAY, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-					<mesh raycast={ignoreRay}>
-						<ringGeometry args={[0.38, 0.54, 48]} />
+					<mesh geometry={RING_RIM} raycast={ignoreRay}>
 						<meshBasicMaterial
 							color={neutral[950]}
 							transparent
@@ -1884,8 +1911,7 @@ const Pawn = ({
 							depthWrite={false}
 						/>
 					</mesh>
-					<mesh position={[0, 0, 0.001]} raycast={ignoreRay}>
-						<ringGeometry args={[0.41, 0.51, 48]} />
+					<mesh geometry={RING} position={[0, 0, 0.001]} raycast={ignoreRay}>
 						<meshBasicMaterial
 							color={selected ? brand[500] : neutral[100]}
 							depthWrite={false}
@@ -1894,9 +1920,9 @@ const Pawn = ({
 					</mesh>
 				</group>
 			)}
-			{(id === "sage" || id === "robot") && (
+			{model.glow && (
 				<pointLight
-					color={ACTOR_COLOR[id]}
+					color={model.glow}
 					intensity={2.5}
 					distance={2.5}
 					position={[0, 0.8, 0]}
@@ -1910,7 +1936,7 @@ const Pawn = ({
 const Chest = () => {
 	// On top of its plate, which may sit a touch high: the spilled coins rest
 	// on the stone instead of sinking into it.
-	const [x, y, z] = toWorld({ x: 11, z: 3 });
+	const [x, y, z] = toWorld(CHEST_CELL);
 	const { chestWood, chestTrim, chestIron, chestGold } = useModels();
 
 	return (
@@ -1926,6 +1952,7 @@ const Chest = () => {
 			<mesh geometry={chestIron.geometry} material={IRON} castShadow />
 			<mesh geometry={chestGold.geometry} material={GOLD} castShadow />
 			<pointLight
+				name="chest"
 				color={amber[400]}
 				intensity={1.4}
 				distance={1.8}

@@ -162,6 +162,9 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
+		"@gltf-transform/core": "^4",
+		"@gltf-transform/extensions": "^4",
+		"@gltf-transform/functions": "^4",
 		"@playwright/test": "^1.63.0",
 		"@storybook/addon-docs": "^10",
 		"@storybook/nextjs": "^10",
@@ -200,6 +203,7 @@
 		"eslint-plugin-unused-imports": "^4.1.4",
 		"glob": "^13.0.6",
 		"husky": "^8.0.0",
+		"meshoptimizer": "^0.22",
 		"node-mocks-http": "^1.17.2",
 		"prettier": "^3.0.0",
 		"sass": "^1.93.0",

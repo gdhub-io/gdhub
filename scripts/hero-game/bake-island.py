@@ -83,9 +83,10 @@ def tune(light):
         data.angle = math.radians(30)
         return
     data.shadow_soft_size = 0.4
-    # The three point lights are told apart by colour: warm, cold, the chest's.
-    r, g, b = data.color
-    key = "cold" if b > r else ("chest" if light.location.z < 1 else "warm")
+    # Named in the scene's Lights and Chest; Blender may add a .001 suffix.
+    key = light.name.split(".")[0]
+    if key not in POINTS:
+        raise SystemExit(f"bake: unknown light {light.name!r}; name it in the scene")
     data.energy = POINTS[key]
 
 
@@ -98,12 +99,11 @@ def matte():
         bsdf = material.node_tree and material.node_tree.nodes.get("Principled BSDF")
         if not bsdf:
             continue
-        metal = bsdf.inputs["Metallic"].default_value > 0.3
         bsdf.inputs["Metallic"].default_value = 0.0
         bsdf.inputs["Roughness"].default_value = 1.0
         bsdf.inputs["Specular IOR Level"].default_value = 0.15
         r, g, b, _ = bsdf.inputs["Base Color"].default_value
-        if metal and r > 0.5 and b < 0.3:
+        if material.name.split(".")[0] == "gold":
             bsdf.inputs["Emission Color"].default_value = (r, g, b * 1.6, 1)
             bsdf.inputs["Emission Strength"].default_value = GOLD_GLOW
 
