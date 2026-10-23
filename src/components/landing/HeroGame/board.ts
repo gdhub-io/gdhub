@@ -12,7 +12,14 @@ export type Reach = { cost: number; path: Cell[] };
 
 export const MOVE_RANGE = 4;
 
-export type TileKind = "ground" | "bare" | "tree" | "rock" | "bridge" | "islet";
+export type TileKind =
+	| "ground"
+	| "bare"
+	| "tree"
+	| "rock"
+	| "bridge"
+	| "islet"
+	| "sign";
 
 const KIND: Record<string, TileKind> = {
 	"#": "ground",
@@ -22,15 +29,17 @@ const KIND: Record<string, TileKind> = {
 	R: "rock",
 	b: "bridge",
 	i: "islet",
+	S: "sign",
 };
 
-// `#` ground, `P` ground on a tall block jutting out of the edge, `d` a bare block with no paving, `T` tree, `R` rock, `b` bridge,
-// `i` the islet past it. Only ground is walkable. Trees and rocks stand in
-// groups, leaving the middle open; the bridge and the islet are scenery.
+// `#` ground, `P` ground on a tall block jutting out of the edge, `d` a bare
+// block with no paving, `T` tree, `R` rock, `b` bridge, `i` the islet past it,
+// `S` the signpost to Steam in the woods. Only ground is walkable. Trees and
+// rocks stand in groups, leaving the middle open; the rest is scenery.
 const LAYOUT = [
 	".TTTTdd.TT..",
 	"#TTR##..TR..",
-	"#######dT#..",
+	"#######dTS..",
 	"#########bii",
 	"#########.ii",
 	"#########...",

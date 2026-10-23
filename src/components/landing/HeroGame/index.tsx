@@ -19,24 +19,31 @@ import {
 	useState,
 } from "react";
 import {
+	ACESFilmicToneMapping,
 	AdditiveBlending,
+	AgXToneMapping,
 	type AnimationAction,
 	AnimationClip,
 	AnimationMixer,
 	CanvasTexture,
 	Color,
+	DefaultLoadingManager,
 	EdgesGeometry,
+	Fog,
 	type Group,
 	LoopOnce,
 	LoopRepeat,
 	type Mesh,
 	MeshBasicMaterial,
 	MeshStandardMaterial,
+	NoToneMapping,
 	Path,
 	type PerspectiveCamera,
 	PlaneGeometry,
 	Shape,
 	ShapeGeometry,
+	type Sprite,
+	type SpriteMaterial,
 	SRGBColorSpace,
 	Vector3,
 } from "three";
@@ -45,6 +52,7 @@ import {
 	GLTFLoader,
 } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
+import { AppAvatar } from "@/components/ui/AppAvatar";
 import { InverseBand } from "@/components/ui/InverseBand";
 import { amber, brand, chartSeries, neutral } from "@/config/design/tokens";
 import {
@@ -158,10 +166,43 @@ const shade = ({ x, z }: Cell) =>
  * Blender; `live` builds it from the models and lights it in real time, and is
  * what the bake is made from (see the BakeSource story).
  */
-export const HeroGame = ({ look = "baked" }: { look?: "baked" | "live" }) => {
+export type HeroGameLook = {
+	look?: "baked" | "live";
+	/** How the live characters' light is mapped to the screen. */
+	toneMapping?: "aces" | "agx" | "none";
+	/** The far side of the island fades into the section. */
+	fog?: boolean;
+	/** A CSS vignette, warm glow and film grain over the canvas. */
+	overlay?: boolean;
+	/** Called once every model has loaded and the first frame is drawn. */
+	onReady?: () => void;
+	/** Share of the models loaded so far, 0 to 1. */
+	onProgress?: (share: number) => void;
+};
+
+export const HeroGame = ({
+	look = "baked",
+	toneMapping = "aces",
+	fog = true,
+	overlay = true,
+	onReady,
+	onProgress,
+}: HeroGameLook) => {
 	const [meeting, setMeeting] = useState<Meeting | null>(null);
 	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
+	const [selected, setSelected] = useState<TeamId>("author");
+	const [ready, setReady] = useState(false);
 	const root = useRef<HTMLDivElement>(null);
+
+	// useLoader goes through three's default manager, which counts every file.
+	useEffect(() => {
+		if (!onProgress) return;
+		DefaultLoadingManager.onProgress = (_, loaded, total) =>
+			onProgress(total ? loaded / total : 0);
+		return () => {
+			DefaultLoadingManager.onProgress = () => {};
+		};
+	}, [onProgress]);
 
 	const close = () => {
 		setMeeting(null);
@@ -173,16 +214,32 @@ export const HeroGame = ({ look = "baked" }: { look?: "baked" | "live" }) => {
 			<Canvas
 				className={styles.canvas}
 				shadows
-				dpr={[1, 2]}
+				// Never below 1.5x: on a 1x screen that supersamples the small canvas,
+				// softening edges MSAA alone leaves jagged.
+				dpr={[1.5, 2]}
+				gl={{ antialias: true, toneMapping: TONE_MAPPING[toneMapping] }}
 				camera={{ position: CAMERA, fov: 30, near: 0.1, far: 200 }}
 			>
-				<FitCamera />
+				<FitCamera fog={fog} />
 				<Lights />
 				<Suspense fallback={null}>
-					<Game look={look} onMeet={(m) => (m ? setMeeting(m) : close())} />
+					<Game
+						look={look}
+						selected={selected}
+						onSelect={setSelected}
+						onMeet={(m) => (m ? setMeeting(m) : close())}
+					/>
+					<Ready
+						onReady={() => {
+							setReady(true);
+							onReady?.();
+						}}
+					/>
 				</Suspense>
 				{meeting && <ScreenAnchor at={meeting.at} onChange={setAnchor} />}
 			</Canvas>
+			{overlay && <div className={styles.overlay} aria-hidden />}
+			<TeamPanel selected={selected} onSelect={setSelected} shown={ready} />
 			{meeting && anchor && (
 				<Dialogue
 					meeting={meeting}
@@ -195,6 +252,18 @@ export const HeroGame = ({ look = "baked" }: { look?: "baked" | "live" }) => {
 			)}
 		</div>
 	);
+};
+
+// Mounts only once the Suspense boundary it shares with the game resolves,
+// and reports after the first frame with everything in it has been drawn.
+const Ready = ({ onReady }: { onReady: () => void }) => {
+	const done = useRef(false);
+	useFrame(() => {
+		if (done.current) return;
+		done.current = true;
+		requestAnimationFrame(onReady);
+	});
+	return null;
 };
 
 // Tracks where a point above a board cell lands on screen, for HTML laid over the canvas.
@@ -223,6 +292,125 @@ const ScreenAnchor = ({
 	return null;
 };
 
+const PORTRAIT: Record<ActorId, string> = {
+	author: "/models/hero-game/portraits/designer.jpg",
+	programmer: "/models/hero-game/portraits/programmer.jpg",
+	artist: "/models/hero-game/portraits/artist.jpg",
+	sage: "/models/hero-game/portraits/sage.jpg",
+	robot: "/models/hero-game/portraits/robot.jpg",
+	scout: "/models/hero-game/portraits/scout.jpg",
+};
+
+const useWho = (): Record<ActorId, { name: string; role: string }> => {
+	const { t } = useTranslate();
+	return {
+		author: {
+			name: t("landing.heroGame.who.author.name", "Max"),
+			role: t("landing.heroGame.who.author.role", "Game designer"),
+		},
+		programmer: {
+			name: t("landing.heroGame.who.programmer.name", "Leo"),
+			role: t("landing.heroGame.who.programmer.role", "Coder"),
+		},
+		artist: {
+			name: t("landing.heroGame.who.artist.name", "Mira"),
+			role: t("landing.heroGame.who.artist.role", "Artist"),
+		},
+		sage: {
+			name: t("landing.heroGame.who.sage.name", "Elder"),
+			role: t("landing.heroGame.who.sage.role", "Industry expert"),
+		},
+		robot: {
+			name: t("landing.heroGame.who.robot.name", "Bit"),
+			role: t("landing.heroGame.who.robot.role", "AI guide"),
+		},
+		scout: {
+			name: t("landing.heroGame.who.scout.name", "Victor"),
+			role: t("landing.heroGame.who.scout.role", "Publisher & investor"),
+		},
+	};
+};
+
+// Top right: the team in a fixed order. The member you control opens into a
+// pill with name and role; the others fold to grey discs that select them.
+const TeamPanel = ({
+	selected,
+	onSelect,
+	shown,
+}: {
+	selected: TeamId;
+	onSelect: (id: TeamId) => void;
+	/** Held back until the scene has loaded, then faded in. */
+	shown: boolean;
+}) => {
+	const who = useWho();
+	return (
+		<Flex
+			className={`${styles.team} ${shown ? styles.teamShown : ""}`}
+			gap="small"
+			align="center"
+		>
+			{TEAM.map((id) => {
+				const active = id === selected;
+				return (
+					<Button
+						key={id}
+						type="text"
+						className={`${styles.member} ${active ? styles.memberActive : ""}`}
+						aria-label={who[id].name}
+						aria-pressed={active}
+						onClick={() => onSelect(id)}
+					>
+						<AppAvatar
+							src={PORTRAIT[id]}
+							size={36}
+							className={styles.memberPortrait}
+						/>
+						<span className={styles.memberLabel}>
+							<Typography.Text strong className={styles.speakerName}>
+								{who[id].name}
+							</Typography.Text>
+							<Typography.Text type="secondary" className={styles.speakerRole}>
+								{who[id].role}
+							</Typography.Text>
+						</span>
+					</Button>
+				);
+			})}
+		</Flex>
+	);
+};
+
+// Types a line out letter by letter. The rest is laid out but invisible, so
+// the bubble keeps its size while it fills.
+const Typed = ({ text }: { text: string }) => {
+	const [shown, setShown] = useState(0);
+	useEffect(() => {
+		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			setShown(text.length);
+			return;
+		}
+		setShown(0);
+		const timer = setInterval(
+			() =>
+				setShown((n) => {
+					if (n >= text.length) clearInterval(timer);
+					return Math.min(n + 1, text.length);
+				}),
+			TYPE_MS,
+		);
+		return () => clearInterval(timer);
+	}, [text]);
+	return (
+		<>
+			{text.slice(0, shown)}
+			<span className={styles.untyped}>{text.slice(shown)}</span>
+		</>
+	);
+};
+
+const TYPE_MS = 28;
+
 const Dialogue = ({
 	meeting,
 	anchor,
@@ -238,96 +426,306 @@ const Dialogue = ({
 }) => {
 	const { t } = useTranslate();
 
-	// The one approached speaks; the buttons are the answers of the member who came.
-	const lines: Partial<
-		Record<`${ActorId}>${TeamId}`, { line: string; accept: string }>
+	// The one approached speaks; the button is the answer of the member who came.
+	// Each pair has a few lines, one picked at random per meeting; teammates also
+	// share the stock lines of any team.
+	const pool: Partial<
+		Record<`${ActorId}>${TeamId}`, { line: string; accept: string }[]>
 	> = {
-		"scout>author": {
-			line: t(
-				"landing.heroGame.dialogue.scoutToAuthor",
-				"A game with a team behind it, author? Show me a build, and I'll back it.",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.scoutToAuthorAccept",
-				"Show the build",
-			),
-		},
-		"sage>programmer": {
-			line: t(
-				"landing.heroGame.dialogue.sageToProgrammer",
-				"Lost, coder? I've walked this road to release. Need a guide?",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.sageToProgrammerAccept",
-				"Lead the way",
-			),
-		},
-		"robot>artist": {
-			line: t(
-				"landing.heroGame.dialogue.robotToArtist",
-				"Artist, 3 of 6 artifacts found. Draw the store capsule next?",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.robotToArtistAccept",
-				"Start drawing",
-			),
-		},
-		"programmer>author": {
-			line: t(
-				"landing.heroGame.dialogue.programmerToAuthor",
-				"The prototype runs, author. Want to play it before the scout does?",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.programmerToAuthorAccept",
-				"Play it",
-			),
-		},
-		"artist>author": {
-			line: t(
-				"landing.heroGame.dialogue.artistToAuthor",
-				"Concept art is done. Shall I start on the store page?",
-			),
-			accept: t("landing.heroGame.dialogue.artistToAuthorAccept", "Go ahead"),
-		},
-		"author>programmer": {
-			line: t(
-				"landing.heroGame.dialogue.authorToProgrammer",
-				"We still have no soundtrack. Ask the old sage where to find one?",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.authorToProgrammerAccept",
-				"I'll ask",
-			),
-		},
-		"artist>programmer": {
-			line: t(
-				"landing.heroGame.dialogue.artistToProgrammer",
-				"Can you get my new sprites into the build today?",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.artistToProgrammerAccept",
-				"Send them over",
-			),
-		},
-		"author>artist": {
-			line: t(
-				"landing.heroGame.dialogue.authorToArtist",
-				"The store page needs a capsule. Can you draw one this week?",
-			),
-			accept: t("landing.heroGame.dialogue.authorToArtistAccept", "On it"),
-		},
-		"programmer>artist": {
-			line: t(
-				"landing.heroGame.dialogue.programmerToArtist",
-				"The build still opens on a grey screen. Got a title screen?",
-			),
-			accept: t(
-				"landing.heroGame.dialogue.programmerToArtistAccept",
-				"Give me a day",
-			),
-		},
+		"scout>author": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.scoutToAuthor1",
+					"There'll be a build — there'll be money.",
+				),
+				accept: t("landing.heroGame.dialogue.scoutToAuthor1Accept", "Deal"),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.scoutToAuthor2",
+					"No money, and don't ask.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.scoutToAuthor2Accept",
+					"Fair enough",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.scoutToAuthor3",
+					"I've seen your game. We need to talk.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.scoutToAuthor3Accept",
+					"Let's talk",
+				),
+			},
+		],
+		"robot>artist": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.robotToArtist1",
+					"Creativity is great, but deadlines exist for a reason.",
+				),
+				accept: t("landing.heroGame.dialogue.robotToArtist1Accept", "Got it"),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.robotToArtist2",
+					"Saw the new art. It's coming along nicely.",
+				),
+				accept: t("landing.heroGame.dialogue.robotToArtist2Accept", "Thanks!"),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.robotToArtist3",
+					"Time is short. Cut the number of characters?",
+				),
+				accept: t("landing.heroGame.dialogue.robotToArtist3Accept", "Never"),
+			},
+		],
+		"sage>programmer": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.sageToProgrammer1",
+					"Saw the new prototype. Hard to put down.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.sageToProgrammer1Accept",
+					"Thank you",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.sageToProgrammer2",
+					"Do you write anything yourself, or does Claude do it all?",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.sageToProgrammer2Accept",
+					"We pair",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.sageToProgrammer3",
+					"Looked at your changes. Refactor, and refactor again.",
+				),
+				accept: t("landing.heroGame.dialogue.sageToProgrammer3Accept", "On it"),
+			},
+		],
+		"author>artist": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.authorToArtist1",
+					"We need to redraw everything. Can you make it by tomorrow?",
+				),
+				accept: t("landing.heroGame.dialogue.authorToArtist1Accept", "Sure…"),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.authorToArtist2",
+					"Can the hero look more… heroic? You know what I mean.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.authorToArtist2Accept",
+					"Not really",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.authorToArtist3",
+					"Players say it's too dark. Brighten it up a little?",
+				),
+				accept: t("landing.heroGame.dialogue.authorToArtist3Accept", "Will do"),
+			},
+		],
+		"artist>author": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.artistToAuthor1",
+					"The character's story is strong — I cried at the end.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.artistToAuthor1Accept",
+					"Thank you",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.artistToAuthor2",
+					"Describe the character for me — I don't know where to start.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.artistToAuthor2Accept",
+					"Here's the brief",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.artistToAuthor3",
+					"The concept's done. You can hand it to the 3D artist.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.artistToAuthor3Accept",
+					"Sending it",
+				),
+			},
+		],
+		"author>programmer": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.authorToProgrammer1",
+					"Is the new mechanic in yet?",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.authorToProgrammer1Accept",
+					"Almost",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.authorToProgrammer2",
+					"I think we should make a platformer — but first-person.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.authorToProgrammer2Accept",
+					"Why?",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.authorToProgrammer3",
+					"I opened the game's code… and closed it. How do you work with that?",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.authorToProgrammer3Accept",
+					"Carefully",
+				),
+			},
+		],
+		"programmer>author": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.programmerToAuthor1",
+					"Yes, yes, I remember — the level is almost built.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.programmerToAuthor1Accept",
+					"Good",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.programmerToAuthor2",
+					"Why do we need an artist? I'll generate it all.",
+				),
+				accept: t("landing.heroGame.dialogue.programmerToAuthor2Accept", "No"),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.programmerToAuthor3",
+					"Let's drop combat. It just won't come together.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.programmerToAuthor3Accept",
+					"Let's talk",
+				),
+			},
+		],
+		"artist>programmer": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.artistToProgrammer1",
+					"Make the button a bit softer — something players will enjoy.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.artistToProgrammer1Accept",
+					"Softer how?",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.artistToProgrammer2",
+					"That's not the colour I gave you.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.artistToProgrammer2Accept",
+					"It's close",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.artistToProgrammer3",
+					"Can the character blink? Just a little.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.artistToProgrammer3Accept",
+					"Sure",
+				),
+			},
+		],
+		"programmer>artist": [
+			{
+				line: t(
+					"landing.heroGame.dialogue.programmerToArtist1",
+					"The sprite sheet is off by a pixel again.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.programmerToArtist1Accept",
+					"Fixing it",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.programmerToArtist2",
+					"It looks great — but it weighs 80 MB.",
+				),
+				accept: t(
+					"landing.heroGame.dialogue.programmerToArtist2Accept",
+					"I'll compress",
+				),
+			},
+			{
+				line: t(
+					"landing.heroGame.dialogue.programmerToArtist3",
+					"Do we really need twelve frames for a blink?",
+				),
+				accept: t("landing.heroGame.dialogue.programmerToArtist3Accept", "Yes"),
+			},
+		],
 	};
-	const said = lines[`${meeting.speaker}>${meeting.listener}`];
+	const anyTeam = [
+		{
+			line: t("landing.heroGame.dialogue.team1", "So? Anything yet?"),
+			accept: t("landing.heroGame.dialogue.team1Accept", "Not yet"),
+		},
+		{
+			line: t(
+				"landing.heroGame.dialogue.team2",
+				'Is it done? It\'s been "almost done" all week.',
+			),
+			accept: t("landing.heroGame.dialogue.team2Accept", "Almost"),
+		},
+		{
+			line: t(
+				"landing.heroGame.dialogue.team3",
+				"Did you push it? I don't see it in the build.",
+			),
+			accept: t("landing.heroGame.dialogue.team3Accept", "Pushing now"),
+		},
+		{
+			line: t("landing.heroGame.dialogue.team4", "Standup in five minutes."),
+			accept: t("landing.heroGame.dialogue.team4Accept", "Coming"),
+		},
+	];
+	const who = useWho();
+	const [roll] = useState(Math.random);
+	const own = pool[`${meeting.speaker}>${meeting.listener}`] ?? [];
+	// Between teammates: half the time the pair's own lines, half a stock one.
+	const options =
+		isTeam(meeting.speaker) && (roll < 0.5 || !own.length) ? anyTeam : own;
+	const pick = (roll < 0.5 ? roll * 2 : (roll - 0.5) * 2) * options.length;
+	const said = options[Math.floor(pick)];
 	if (!said) return null;
 	const { line, accept } = said;
 
@@ -347,7 +745,27 @@ const Dialogue = ({
 				// The game's UI keeps product-sized controls inside the marketing page.
 				<InverseBand density="product" transparent>
 					<Flex vertical gap="small">
-						<Typography.Text className={styles.line}>{line}</Typography.Text>
+						<Flex gap="small" align="center">
+							<AppAvatar
+								src={PORTRAIT[meeting.speaker]}
+								size={28}
+								className={styles.speakerPortrait}
+							/>
+							<Flex vertical>
+								<Typography.Text strong className={styles.speakerName}>
+									{who[meeting.speaker].name}
+								</Typography.Text>
+								<Typography.Text
+									type="secondary"
+									className={styles.speakerRole}
+								>
+									{who[meeting.speaker].role}
+								</Typography.Text>
+							</Flex>
+						</Flex>
+						<Typography.Text className={styles.line}>
+							<Typed text={line} />
+						</Typography.Text>
 						<Flex gap="small">
 							<Button
 								className={styles.accept}
@@ -392,9 +810,10 @@ const corners = BOARD.tiles.flatMap((tile) => {
 // Fits the island's real footprint, not the layout's bounding grid, and
 // centres it. Under perspective that has no closed form, so it converges:
 // each pass moves the camera to fill FILL of the frame and re-centres.
-const FitCamera = () => {
+const FitCamera = ({ fog }: { fog: boolean }) => {
 	const camera = useThree((s) => s.camera) as PerspectiveCamera;
 	const size = useThree((s) => s.size);
+	const scene = useThree((s) => s.scene);
 
 	useLayoutEffect(() => {
 		const FILL = 0.88;
@@ -429,10 +848,19 @@ const FitCamera = () => {
 				.addScaledVector(up, ((minY + maxY) / 2) * halfHeight);
 			distance *= Math.max(maxX - minX, maxY - minY) / 2 / FILL;
 		}
-	}, [camera, size]);
+		// Starts just behind the island's centre, so the near side stays crisp
+		// and the far rows and trees sink into the section's background.
+		scene.fog = fog ? new Fog(neutral[950], distance, distance + 8) : null;
+	}, [camera, size, scene, fog]);
 
 	return null;
 };
+
+const TONE_MAPPING = {
+	aces: ACESFilmicToneMapping,
+	agx: AgXToneMapping,
+	none: NoToneMapping,
+} as const;
 
 // Warm light from the checkpoint where the team stands, cold light from the
 // unexplored back edge.
@@ -477,14 +905,8 @@ export const Lights = () => {
 	);
 };
 
-// The cold light made visible: a soft halo in the dark behind the island.
-const Glow = ({
-	at,
-	color,
-}: {
-	at: [number, number, number];
-	color: string;
-}) => {
+// A soft round spot of light in one colour, fading to nothing at the edge.
+const useGlowTexture = (color: string) => {
 	const texture = useMemo(() => {
 		const canvas = document.createElement("canvas");
 		canvas.width = canvas.height = 256;
@@ -506,6 +928,128 @@ const Glow = ({
 	}, [color]);
 
 	useEffect(() => () => texture.dispose(), [texture]);
+	return texture;
+};
+
+// The baked coins don't catch light, so their shine is drawn live on top: a
+// warm glow that breathes, and a few sparkles that flare in turn.
+const GoldShimmer = () => {
+	const [x, y, z] = toWorld({ x: 11, z: 3 });
+	const glow = useGlowTexture(amber[400]);
+	const spark = useGlowTexture(neutral[0]);
+	const halo = useRef<SpriteMaterial>(null);
+	const sparks = useRef<(Sprite | null)[]>([]);
+
+	useFrame(({ clock }) => {
+		const t = clock.getElapsedTime();
+		if (halo.current) halo.current.opacity = 0.35 + Math.sin(t * 1.6) * 0.15;
+		sparks.current.forEach((sprite, i) => {
+			if (!sprite) return;
+			// Each flares for a moment once per 2.4 s, offset from the others.
+			const phase = (t / 2.4 + i * 0.29) % 1;
+			const flare = Math.max(0, Math.sin(Math.min(phase / 0.18, 1) * Math.PI));
+			sprite.scale.setScalar(0.04 + flare * 0.12);
+			(sprite.material as SpriteMaterial).opacity = flare;
+		});
+	});
+
+	return (
+		<group position={[x, y + 0.48, z]}>
+			<sprite scale={[0.9, 0.7, 1]} raycast={ignoreRay}>
+				<spriteMaterial
+					ref={halo}
+					map={glow}
+					transparent
+					depthWrite={false}
+					blending={AdditiveBlending}
+				/>
+			</sprite>
+			{SPARKS.map((at, i) => (
+				<sprite
+					key={at.join()}
+					ref={(s) => {
+						sparks.current[i] = s;
+					}}
+					position={at}
+					raycast={ignoreRay}
+				>
+					<spriteMaterial
+						map={spark}
+						transparent
+						depthWrite={false}
+						depthTest={false}
+						blending={AdditiveBlending}
+					/>
+				</sprite>
+			))}
+		</group>
+	);
+};
+
+// Points into the woods behind: the way to Steam, where the game is released.
+const Signpost = () => {
+	const tile = BOARD.tiles.find((t) => t.kind === "sign");
+	const label = useMemo(() => {
+		const canvas = document.createElement("canvas");
+		canvas.width = 256;
+		canvas.height = 96;
+		const ctx = canvas.getContext("2d");
+		if (ctx) {
+			ctx.fillStyle = neutral[0];
+			ctx.font = "bold 66px sans-serif";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.fillText("STEAM", 128, 52);
+		}
+		const t = new CanvasTexture(canvas);
+		t.colorSpace = SRGBColorSpace;
+		return t;
+	}, []);
+	useEffect(() => () => label.dispose(), [label]);
+	if (!tile) return null;
+	const [x, y, z] = toWorld(tile);
+
+	return (
+		// Turned so the board faces the camera; the arrow points right, into the woods.
+		<group position={[x, y, z]} rotation={[0, Math.PI / 4, 0]}>
+			<mesh position={[0, 0.4, 0]} castShadow>
+				<cylinderGeometry args={[0.04, 0.05, 0.8, 8]} />
+				<meshStandardMaterial color={WOOD} roughness={0.9} />
+			</mesh>
+			<group position={[0.08, 0.66, 0.05]} rotation={[0, 0, -0.06]}>
+				<mesh castShadow>
+					<boxGeometry args={[0.72, 0.24, 0.05]} />
+					<meshStandardMaterial color={CHEST_WOOD} roughness={0.85} />
+				</mesh>
+				<mesh position={[0.36, 0, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
+					<boxGeometry args={[0.17, 0.17, 0.05]} />
+					<meshStandardMaterial color={CHEST_WOOD} roughness={0.85} />
+				</mesh>
+				<mesh position={[0, 0, 0.026]} raycast={ignoreRay}>
+					<planeGeometry args={[0.64, 0.22]} />
+					<meshBasicMaterial map={label} transparent toneMapped={false} />
+				</mesh>
+			</group>
+		</group>
+	);
+};
+
+const SPARKS: [number, number, number][] = [
+	[-0.12, 0.04, 0.05],
+	[0.1, 0.08, -0.04],
+	[0.02, 0.12, 0.1],
+	[-0.04, 0.02, -0.12],
+];
+
+// The cold light made visible: a soft halo in the dark behind the island.
+const Glow = ({
+	at,
+	color,
+}: {
+	at: [number, number, number];
+	color: string;
+}) => {
+	const texture = useGlowTexture(color);
 
 	return (
 		<sprite
@@ -518,6 +1062,8 @@ const Glow = ({
 				map={texture}
 				transparent
 				depthWrite={false}
+				// The cold light is the far edge itself; fog must not put it out.
+				fog={false}
 				blending={AdditiveBlending}
 				opacity={0.95}
 			/>
@@ -531,13 +1077,16 @@ type Meeting = { speaker: ActorId; listener: TeamId; at: Cell };
 
 const Game = ({
 	look,
+	selected,
+	onSelect: setSelected,
 	onMeet,
 }: {
 	look: "baked" | "live";
+	selected: TeamId;
+	onSelect: (id: TeamId) => void;
 	onMeet: (meeting: Meeting | null) => void;
 }) => {
 	const [positions, setPositions] = useState(START);
-	const [selected, setSelected] = useState<TeamId>("author");
 	const [hovered, setHovered] = useState<string | null>(null);
 	const [pointerOnPawn, setPointerOnPawn] = useState(false);
 	const [move, setMove] = useState<Move | null>(null);
@@ -573,10 +1122,18 @@ const Game = ({
 
 	const target = hovered ? targets.get(hovered) : undefined;
 	const destination = move ? cellKey(move.path[move.path.length - 1]) : null;
+	// A member's own tile answers the pointer as the member does.
+	const standing = hovered
+		? (Object.keys(positions) as ActorId[]).find(
+				(id) => cellKey(positions[id]) === hovered,
+			)
+		: undefined;
+	const teammateUnder = standing && !move && isTeam(standing) ? standing : null;
 
 	useEffect(() => {
-		gl.domElement.style.cursor = target || pointerOnPawn ? "pointer" : "";
-	}, [gl, target, pointerOnPawn]);
+		gl.domElement.style.cursor =
+			target || pointerOnPawn || teammateUnder ? "pointer" : "";
+	}, [gl, target, pointerOnPawn, teammateUnder]);
 
 	const arrive = () => {
 		if (!move) return;
@@ -625,13 +1182,22 @@ const Game = ({
 						}
 						onOver={() => setHovered(key)}
 						onOut={() => setHovered((h) => (h === key ? null : h))}
-						onPick={() => go(key)}
+						onPick={() =>
+							teammateUnder && key === hovered
+								? setSelected(teammateUnder)
+								: go(key)
+						}
 					/>
 				);
 			})}
 
 			{target && target.cost > 0 && (
-				<PathPreview path={target.path} cost={target.cost} />
+				<PathPreview
+					path={target.path}
+					cost={target.cost}
+					// Aiming at a guide: the walk ends beside him, so no dot under him.
+					lastDot={hovered !== guideKey}
+				/>
 			)}
 
 			{(Object.keys(positions) as ActorId[]).map((id) => {
@@ -644,6 +1210,7 @@ const Game = ({
 						cell={positions[id]}
 						path={move?.id === id ? move.path : undefined}
 						selected={id === selected}
+						tileHovered={standing === id}
 						onArrive={arrive}
 						onPointer={
 							pickable
@@ -667,6 +1234,8 @@ const Game = ({
 			})}
 
 			{look === "live" ? <Island /> : <BakedIsland />}
+			<GoldShimmer />
+			<Signpost />
 		</group>
 	);
 };
@@ -768,7 +1337,7 @@ const TileHit = ({
 const Stone = ({ cell, kind }: { cell: Cell; kind: TileKind }) => {
 	const [x, , z] = toWorld(cell);
 	const depth = depthOf(cell);
-	const paved = kind === "ground" || kind === "islet";
+	const paved = kind === "ground" || kind === "islet" || kind === "sign";
 	const stone = useModels();
 	const plateMaterial = useTinted(stone.plate.material, plateColor(cell));
 	const blockMaterial = useTinted(
@@ -902,18 +1471,26 @@ const useTinted = (base: MeshStandardMaterial, color: Color) => {
 	return material;
 };
 
-const PathPreview = ({ path, cost }: { path: Cell[]; cost: number }) => {
+const PathPreview = ({
+	path,
+	cost,
+	lastDot,
+}: {
+	path: Cell[];
+	cost: number;
+	lastDot: boolean;
+}) => {
 	const badge = useCostBadge(cost);
 	const end = toWorld(path[path.length - 1]);
 
 	return (
 		<group>
-			{path.slice(1, -1).map((cell) => {
+			{path.slice(1, lastDot ? undefined : -1).map((cell) => {
 				const [x, y, z] = toWorld(cell);
 				return (
 					<mesh key={cellKey(cell)} position={[x, y + 0.05, z]}>
 						<sphereGeometry args={[0.07, 12, 12]} />
-						<meshBasicMaterial color={neutral[950]} />
+						<meshBasicMaterial color={neutral[950]} transparent opacity={0.5} />
 					</mesh>
 				);
 			})}
@@ -976,6 +1553,11 @@ const MODELS: Partial<Record<ActorId, CharacterModel>> = {
 		rest: "idle_breathe",
 		extras: ["idle_look", "idle_beard"],
 	},
+	author: {
+		url: "/models/hero-game/designer.glb",
+		rest: "idle_breathe",
+		extras: ["idle_lantern", "idle_think"],
+	},
 	programmer: {
 		url: "/models/hero-game/programmer.glb",
 		rest: "idle_breathe",
@@ -986,11 +1568,23 @@ const MODELS: Partial<Record<ActorId, CharacterModel>> = {
 		rest: "idle_breathe",
 		extras: ["idle_scan", "idle_wave"],
 	},
+	artist: {
+		url: "/models/hero-game/artist.glb",
+		rest: "idle_breathe",
+		extras: ["idle_paint", "idle_beret"],
+	},
+	scout: {
+		url: "/models/hero-game/scout.glb",
+		rest: "idle_breathe",
+		extras: ["idle_tie", "idle_watch"],
+	},
 };
 
 const IDLE_FADE = 0.5;
 // The camera looks in from the board's +x, +z corner.
 const FACE_CAMERA = Math.PI / 4;
+// The scout stands a quarter turn round, towards the team across the board.
+const REST_FACING: Partial<Record<ActorId, number>> = { scout: 0 };
 const WALK_FADE = 0.2;
 const WALK_STEPS_PER_SECOND = 1.8;
 // The walk is played faster than authored so the feet keep up with the board
@@ -1012,7 +1606,17 @@ const Character = ({
 }) => {
 	const gltf = useLoader(GLTFLoader, model.url) as GLTF;
 	// No cast shadow: the sun's is hard-edged; a soft blob sits under him.
-	const body = useMemo(() => cloneSkinned(gltf.scene), [gltf]);
+	// Characters stay out of the fog, which is for the far edge of the land.
+	const body = useMemo(() => {
+		const copy = cloneSkinned(gltf.scene);
+		copy.traverse((o) => {
+			const mesh = o as Mesh;
+			if (!mesh.isMesh) return;
+			mesh.material = (mesh.material as MeshStandardMaterial).clone();
+			(mesh.material as MeshStandardMaterial).fog = false;
+		});
+		return copy;
+	}, [gltf]);
 	const mixer = useMemo(() => new AnimationMixer(body), [body]);
 	const current = useRef<AnimationAction | null>(null);
 	const queued = useRef<string | null>(null);
@@ -1103,6 +1707,38 @@ const BlobShadow = ({ radius }: { radius: number }) => {
 	);
 };
 
+// A small cone over the selected member, bobbing and turning slowly.
+const SelectionMarker = ({ height }: { height: number }) => {
+	const ref = useRef<Mesh>(null);
+	useFrame(({ clock }) => {
+		const marker = ref.current;
+		if (!marker) return;
+		const t = clock.getElapsedTime();
+		marker.position.y = height + Math.sin(t * 2.4) * 0.06;
+		marker.rotation.y = t * 0.8;
+	});
+	return (
+		// Flipped so the tip points down at him.
+		<mesh
+			ref={ref}
+			position={[0, height, 0]}
+			rotation={[Math.PI, 0, 0]}
+			raycast={ignoreRay}
+		>
+			<coneGeometry args={[0.1, 0.2, 4]} />
+			<meshStandardMaterial
+				color={neutral[0]}
+				emissive={neutral[0]}
+				emissiveIntensity={0.35}
+				roughness={0.4}
+				transparent
+				opacity={0.75}
+				flatShading
+			/>
+		</mesh>
+	);
+};
+
 const Pawn = ({
 	id,
 	cell,
@@ -1111,6 +1747,7 @@ const Pawn = ({
 	onArrive,
 	onPointer,
 	onPick,
+	tileHovered,
 }: {
 	id: ActorId;
 	cell: Cell;
@@ -1119,6 +1756,8 @@ const Pawn = ({
 	onArrive: () => void;
 	onPointer?: (on: boolean) => void;
 	onPick?: () => void;
+	/** The pointer is on his tile rather than on him. */
+	tileHovered?: boolean;
 }) => {
 	const ref = useRef<Group>(null);
 	const heading = useRef<Group>(null);
@@ -1128,7 +1767,8 @@ const Pawn = ({
 	const model = MODELS[id];
 
 	// Faces where he walks, and turns back to the camera once he stops.
-	const facing = useRef(FACE_CAMERA);
+	const rest = REST_FACING[id] ?? FACE_CAMERA;
+	const facing = useRef(rest);
 
 	useFrame((_, delta) => {
 		if (heading.current) {
@@ -1165,7 +1805,7 @@ const Pawn = ({
 		facing.current = Math.atan2(bx - ax, bz - az);
 
 		if (progress.current >= path.length - 1) {
-			facing.current = FACE_CAMERA;
+			facing.current = rest;
 			onArrive();
 		}
 	});
@@ -1192,7 +1832,7 @@ const Pawn = ({
 			}}
 		>
 			{model ? (
-				<group ref={heading} rotation={[0, FACE_CAMERA, 0]}>
+				<group ref={heading} rotation={[0, rest, 0]}>
 					<Character model={model} walking={!!path} />
 				</group>
 			) : (
@@ -1212,20 +1852,24 @@ const Pawn = ({
 					</mesh>
 				</>
 			)}
-			{hover && onPick && (
+			{(hover || tileHovered) && onPick && isTeam(id) && (
+				// A halo just outside the ring: inside it, the base and the blob
+				// shadow would cover it.
 				<mesh
 					position={[0, OVERLAY + 0.002, 0]}
 					rotation={[-Math.PI / 2, 0, 0]}
+					raycast={ignoreRay}
 				>
-					<circleGeometry args={[0.5, 48]} />
+					<ringGeometry args={[0.52, 0.66, 48]} />
 					<meshBasicMaterial
-						color={brand[400]}
+						color={neutral[0]}
 						transparent
-						opacity={0.45}
+						opacity={0.6}
 						depthWrite={false}
 					/>
 				</mesh>
 			)}
+			{selected && <SelectionMarker height={model ? 1.45 : 0.95} />}
 			{/* The player's own: grey, the selected one red. */}
 			{isTeam(id) && (
 				// A dark rim keeps the ring readable on light stone and on the

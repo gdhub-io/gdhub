@@ -5,14 +5,84 @@
   min-height: 560px;
 }
 
-.canvas {
-  position: absolute !important;
-  inset: 0;
-  // Whatever reaches the scene's edge dissolves into the section, never a hard cut.
+// Whatever reaches the scene's edge dissolves into the section, never a hard cut.
+@mixin dissolve-edges {
   mask-image:
     linear-gradient(to right, transparent, black 12%, black 88%, transparent),
     linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
   mask-composite: intersect;
+}
+
+.canvas {
+  position: absolute !important;
+  inset: 0;
+  @include dissolve-edges;
+}
+
+// A CSS finish over the canvas, drawn by the browser rather than WebGL:
+// a vignette into the section and a faint warm glow round the centre. Grain
+// was tried and dropped: on near-black any blend lifts the dark and shows the box.
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  // The glow lifts the dark a touch; unmasked it would draw the canvas's box.
+  @include dissolve-edges;
+  background:
+    radial-gradient(
+      ellipse 45% 40% at 45% 55%,
+      color-mix(in srgb, var(--gd-color-accent) 10%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 60% at 50% 50%,
+      transparent 55%,
+      color-mix(in srgb, var(--gd-color-bg) 60%, transparent) 100%
+    );
+}
+
+// The blurred still shown while the scene loads. The blur sits on an inner
+// layer so the canvas mask on this one also clips its spill — a blur on the
+// masked layer itself drew the box. A 64 px PNG: JPEG noise shows on the dark.
+.preview {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  // Rounder than the canvas's mask: the still's own edge is a shade off the
+  // section, and a straight fade still showed its box.
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, black 60%, transparent 100%);
+  transition: opacity 0.8s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -24px;
+    background: url("/models/hero-game/preview.png") center / cover no-repeat;
+    filter: blur(8px);
+  }
+}
+
+// The loader in the middle of the blurred still, gone with it.
+.loader {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.loaderBar {
+  width: 180px;
+  margin: 0 !important;
+}
+
+.loaderText {
+  font-size: var(--gd-font-size-caption);
+}
+
+.previewGone {
+  opacity: 0;
 }
 
 .anchor {
@@ -27,7 +97,7 @@
   width: 260px;
   padding: var(--gd-space-3);
   background: var(--gd-color-bg);
-  border: 1px solid var(--gd-color-accent);
+  border: 1px solid var(--gd-color-text-inverse);
   border-radius: var(--gd-radius-card);
 
   // The tail: a rotated square showing only its bottom-right borders. Its tip
@@ -40,8 +110,8 @@
     width: 12px;
     height: 12px;
     background: var(--gd-color-bg);
-    border-right: 1px solid var(--gd-color-accent);
-    border-bottom: 1px solid var(--gd-color-accent);
+    border-right: 1px solid var(--gd-color-text-inverse);
+    border-bottom: 1px solid var(--gd-color-text-inverse);
     transform: rotate(45deg);
   }
 
@@ -71,4 +141,107 @@
   background: transparent;
   border-color: var(--gd-color-accent);
   color: var(--gd-color-text);
+}
+
+.speakerPortrait {
+  flex: none;
+  border: 1.5px solid var(--gd-color-border-strong);
+}
+
+.speakerName {
+  font-size: var(--gd-font-size-body-sm);
+  line-height: 1.2;
+}
+
+.speakerRole {
+  font-size: var(--gd-font-size-label);
+  line-height: 1.2;
+}
+
+// The team, top right of the scene.
+.team {
+  position: absolute;
+  top: var(--gd-space-6);
+  right: var(--gd-space-6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    visibility 0s 0.5s;
+}
+
+.teamShown {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.5s ease 0.3s,
+    transform 0.5s ease 0.3s;
+}
+
+// Each member is one pill; only its label's width animates, so the selected
+// one opens and the others close without anything changing places.
+.member {
+  display: flex !important;
+  align-items: center;
+  gap: 0 !important;
+  height: 44px !important;
+  padding: 3px !important;
+  border: 1.5px solid var(--gd-color-border-strong) !important;
+  border-radius: var(--gd-radius-pill) !important;
+  corner-shape: round;
+  background: color-mix(in srgb, var(--gd-color-bg) 85%, transparent) !important;
+  opacity: 0.6;
+  filter: grayscale(1);
+  transition:
+    opacity 0.35s ease,
+    filter 0.35s ease,
+    border-color 0.35s ease;
+
+  &:hover {
+    opacity: 0.9;
+    filter: none;
+  }
+}
+
+.memberActive {
+  border-color: var(--gd-color-accent) !important;
+  opacity: 1;
+  filter: none;
+
+  .memberPortrait {
+    box-shadow: 0 0 0 2px var(--gd-color-accent);
+  }
+
+  .memberLabel {
+    max-width: 160px;
+    padding: 0 var(--gd-space-3) 0 var(--gd-space-2);
+    opacity: 1;
+  }
+}
+
+.memberPortrait {
+  flex: none;
+  transition: box-shadow 0.35s ease;
+}
+
+.memberLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 0;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 0.45s ease,
+    padding 0.45s ease,
+    opacity 0.3s ease;
+}
+
+.untyped {
+  visibility: hidden;
 }

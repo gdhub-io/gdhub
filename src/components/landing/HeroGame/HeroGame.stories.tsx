@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { InverseBand } from "@/components/ui/InverseBand";
 import { LandingHeroSection } from "../LandingHeroSection";
 import { BakeSource } from "./BakeSource";
-import { HeroGame } from "./index";
+import { HeroGame, type HeroGameLook } from "./index";
+import { LazyHeroGame } from "./LazyHeroGame";
 
 const meta: Meta<typeof HeroGame> = {
 	title: "Landing/HeroGame",
@@ -47,7 +48,7 @@ const noStats = {
 
 /** The landing hero with the prototype in place of the illustration. */
 export const InHero: Story = {
-	render: () => <LandingHeroSection stats={noStats} art={<HeroGame />} />,
+	render: () => <LandingHeroSection stats={noStats} art={<LazyHeroGame />} />,
 };
 
 /**
@@ -58,4 +59,19 @@ export const InHero: Story = {
 export const BakeSourceExport: Story = {
 	name: "Bake source",
 	render: () => <BakeSource />,
+};
+
+/** Cheap finishing touches to compare: tone mapping, fog and a CSS overlay. */
+export const Effects: StoryObj<HeroGameLook> = {
+	args: { toneMapping: "agx", fog: true, overlay: true },
+	argTypes: {
+		toneMapping: { control: "inline-radio", options: ["aces", "agx", "none"] },
+		fog: { control: "boolean" },
+		overlay: { control: "boolean" },
+	},
+	render: (args) => (
+		<div style={{ height: 660, maxWidth: 624, margin: "0 auto" }}>
+			<HeroGame {...args} />
+		</div>
+	),
 };
