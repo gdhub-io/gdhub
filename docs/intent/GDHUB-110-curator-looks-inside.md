@@ -34,6 +34,27 @@ project. It still cannot tell a level from a menu screenshot.
   curator's judgement has been seen on real checkpoints.
 - Runs off the request path (the daily checkpoints cron, before the reviews).
 
+## Links the curator can read (Dmitry, 2026-10-24)
+
+We keep no storage of our own, so evidence arrives as links. **Any public link is
+accepted**; the add-artifact form says, for the chosen kind, which ones the AI
+curator can actually read — the others are kept and shown, and the curator says
+it could not read them ("cannot tell").
+
+| Kind | Read by the curator | Kept, content not read |
+|---|---|---|
+| Image | a direct `.png/.jpg/.webp/.gif` link · a public Google Drive file · Dropbox · Imgur | a page around the image (ArtStation, Behance): title only |
+| Video | a direct `.mp4/.webm/.mov` link · a public Google Drive file · Dropbox · a GitHub release asset — up to 12 frames | YouTube, Vimeo: title and thumbnail only |
+| Document | public Google Docs / Sheets / Slides (as text or PDF) · a direct PDF · a public Notion page · a GitHub file · Dropbox | Figma, Miro: title only |
+| Build | its page on itch.io, Steam, GitHub Releases, Google Play, the App Store — never downloaded | — |
+
+- Share links are turned into direct ones by us: Drive `…/file/d/ID/view` →
+  direct download, Docs → text, Sheets and Slides → PDF, Dropbox `?dl=0` → `?dl=1`.
+- Images uploaded into a devlog live in our Sanity and are always read; links
+  inside a devlog follow the table. Artifacts have no upload of their own.
+- Limits: a video up to 50 MB (Drive serves larger files only behind a page:
+  cannot tell), a document up to 100 pages of text.
+
 ## Done when
 
 - [ ] A sprint review mentions what an attached image or document actually shows
