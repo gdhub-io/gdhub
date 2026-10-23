@@ -33,7 +33,7 @@ export const sprintEvidence = async (
 		prisma.projectReport.findMany({
 			where: { projectId, isSystem: false, publishedAt: inSprint },
 			orderBy: { publishedAt: "asc" },
-			select: { content: true, video: true, contentEditor: true },
+			select: { id: true, content: true, video: true, contentEditor: true },
 		}),
 		prisma.projectArtifact.findMany({
 			where: { projectId, createdAt: inSprint },

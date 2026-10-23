@@ -538,6 +538,7 @@ export const listAdminCheckpoints = async (
 				number: numbers.get(row.id) ?? 1,
 				stageName: row.stageName,
 				status: row.status,
+				curatorKind: row.curatorKind,
 				curatorName: row.curator?.name ?? null,
 				projectName: row.project.name,
 				startedAt: row.startedAt?.toISOString() ?? null,

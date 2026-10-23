@@ -41,10 +41,10 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 vi.mock("@/repositories/evidence-seen", () => ({
-	seeCheckpointEvidence: vi.fn(async () => 0),
-	describeDevlogMedia: vi.fn(async () => []),
-	SPRINT_VIDEO_SECONDS: 600,
+	seeCheckpointEvidence: vi.fn(async () => {}),
+	devlogMediaLines: vi.fn(async () => []),
 }));
+vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", () => ({
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),

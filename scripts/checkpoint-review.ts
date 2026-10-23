@@ -12,6 +12,7 @@
  */
 import { CheckpointSessionContentStatus } from "@gdhub-io/gdhub-prisma";
 import { writeReviewFor } from "@/repositories/checkpoint-review";
+import { getJournal } from "@/repositories/curator-journal";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
 
@@ -91,20 +92,23 @@ if (!ok) {
 	process.exit(1);
 }
 
-const [session, items] = await Promise.all([
+const [session, entries] = await Promise.all([
 	prisma.checkpointSession.findUnique({
 		where: { id: target.id },
 		select: { content: true },
 	}),
-	prisma.checkpointItem.findMany({
-		where: { checkpointId, evidenceMatch: { not: null } },
-		select: { text: true, evidenceMatch: true, evidenceMatchNote: true },
-	}),
+	getJournal(checkpointId),
 ]);
 
-console.info("\nWhat the curator saw in the evidence:");
-for (const item of items) {
-	console.info(`- ${item.text}: ${item.evidenceMatch} — ${item.evidenceMatchNote ?? ""}`);
+// The whole journal, with its inputs, is in the admin's Curator journal drawer.
+console.info("\nThe curator's journal, newest first:");
+for (const entry of entries) {
+	const read = entry.input as { unread?: string | null } | null;
+	console.info(
+		`- [sprint ${entry.sprint ?? "—"}] ${entry.kind}${entry.link ? ` ${entry.link}` : ""}`,
+	);
+	if (read?.unread) console.info(`    not read: ${read.unread}`);
+	console.info(`    ${JSON.stringify(entry.output).slice(0, 400)}`);
 }
 console.info("\nThe review:");
 console.info(JSON.stringify(session?.content, null, 2));

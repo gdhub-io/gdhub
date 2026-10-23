@@ -14,6 +14,7 @@ import {
 	runGoalCheck,
 	writeMidNote,
 } from "@/repositories/checkpoint-curator.repository";
+import { journal } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { prisma } from "@/services/prisma";
@@ -31,10 +32,10 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 vi.mock("@/repositories/evidence-seen", () => ({
-	seeCheckpointEvidence: vi.fn(async () => 0),
-	describeDevlogMedia: vi.fn(async () => []),
-	SPRINT_VIDEO_SECONDS: 600,
+	seeCheckpointEvidence: vi.fn(async () => {}),
+	devlogMediaLines: vi.fn(async () => []),
 }));
+vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", () => ({
 	projectPicture: vi.fn().mockResolvedValue("The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
@@ -517,6 +518,15 @@ describe("closeCheckpoint", () => {
 			expect.objectContaining({
 				data: expect.objectContaining({
 					verdict: CheckpointVerdict.GoalMissed,
+				}),
+			}),
+		);
+		expect(journal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				kind: "Verdict",
+				output: expect.objectContaining({
+					proposed: CheckpointVerdict.StageClosed,
+					settled: CheckpointVerdict.GoalMissed,
 				}),
 			}),
 		);

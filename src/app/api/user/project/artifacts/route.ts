@@ -12,7 +12,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { checkArtifact } from "@/repositories/artifact-check";
+import { checkAndLook } from "@/repositories/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ProjectIdQuerySchema = z.object({
@@ -95,7 +95,7 @@ export const POST = pipe(
 			createdByUser: { connect: { id: currentUser.id } },
 		},
 	});
-	after(() => checkArtifact(artifact.id));
+	after(() => checkAndLook(artifact.id));
 
 	return json(artifact);
 });

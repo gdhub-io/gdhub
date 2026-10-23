@@ -32,7 +32,9 @@ project. It still cannot tell a level from a menu screenshot.
   into the reviews and the report, but an outcome still counts when its artifact
   opens. Turning "does not match" into "not done" is a later decision, once the
   curator's judgement has been seen on real checkpoints.
-- Runs off the request path (the daily checkpoints cron, before the reviews).
+- Runs off the request path: when an artifact is attached or relinked and when a
+  devlog is posted or edited (after the response), and again before each review
+  for anything missed. The 10-minute video budget is per sprint, across both.
 
 ## Links the curator can read (Dmitry, 2026-10-24)
 
@@ -65,12 +67,21 @@ it could not read them ("cannot tell").
 - [ ] The final report names any outcome whose evidence does not match, without
       changing the verdict.
 - [ ] Token cost per checkpoint is logged.
+- [ ] Admins see a **curator journal** per AI checkpoint (frame 11.10, reached from
+      the row menu in /admin/checkpoints): every link looked at — what was read,
+      what was not and why, the match — every review with its input, and the
+      verdict proposed vs settled (Dmitry, 2026-10-24). Text only; the author
+      never sees it. Logic: [checkpoints-curator-journal-flow.d2](../checkpoints-curator-journal-flow.d2).
 
 ## Out of scope
 
 - Changing the verdict on a mismatch (later, see Constraints).
 - Running, downloading or installing builds; judging how a game feels to play.
 - Private links that need a login.
+- A chat-style agent thread (LangGraph) for the curator: the journal in our DB is
+  the memory; reviews read its short findings (Dmitry, 2026-10-24).
+- Testing the AI's judgement in e2e: the flow (attach → a journal line appears)
+  goes to the GDHUB-79 list; the judgement is checked with `checkpoint:review`.
 
 ## Open questions
 

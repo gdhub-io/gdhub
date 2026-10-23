@@ -19,6 +19,7 @@ import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
 	CheckpointRefundQuoteDto,
+	CuratorJournalEntryDto,
 	VerdictContextDto,
 } from "@/types/checkpoints";
 
@@ -42,6 +43,18 @@ export const useAdminCheckpoints = (filter: AdminCheckpointsFilter) =>
 		queryFn: async () =>
 			(await axios.get<AdminCheckpointsPageDto>(URL, { params: filter })).data,
 		placeholderData: keepPreviousData,
+	});
+
+/** Frame 11.10: what the AI curator looked at, wrote and decided. */
+export const useCuratorJournal = (checkpointId: string) =>
+	useQuery({
+		queryKey: [...ROOT, "journal", checkpointId],
+		queryFn: async () =>
+			(
+				await axios.get<CuratorJournalEntryDto[]>(
+					`${URL}/${checkpointId}/journal`,
+				)
+			).data,
 	});
 
 export const useRefundQuote = (checkpointId?: string) =>

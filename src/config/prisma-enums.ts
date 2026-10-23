@@ -12,6 +12,7 @@ import type {
 	CheckpointCuratorKind as CheckpointCuratorKindType,
 	CheckpointFeeReason as CheckpointFeeReasonType,
 	CheckpointItemKind as CheckpointItemKindType,
+	CheckpointJournalKind as CheckpointJournalKindType,
 	CheckpointSessionContentStatus as CheckpointSessionContentStatusType,
 	CheckpointStatus as CheckpointStatusType,
 	CheckpointVerdict as CheckpointVerdictType,
@@ -153,6 +154,17 @@ export const EvidenceMatch = {
 	CannotTell: "CannotTell",
 } as const satisfies Record<EvidenceMatchType, EvidenceMatchType>;
 export type EvidenceMatch = EvidenceMatchType;
+
+export const CheckpointJournalKind = {
+	Evidence: "Evidence",
+	DevlogMedia: "DevlogMedia",
+	Review: "Review",
+	Verdict: "Verdict",
+} as const satisfies Record<
+	CheckpointJournalKindType,
+	CheckpointJournalKindType
+>;
+export type CheckpointJournalKind = CheckpointJournalKindType;
 
 export const CheckpointCuratorKind = {
 	AI: "AI",

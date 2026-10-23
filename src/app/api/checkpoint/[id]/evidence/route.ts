@@ -10,11 +10,11 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
-import { checkArtifact } from "@/repositories/artifact-check";
 import {
 	getCheckpoint,
 	withProgress,
 } from "@/repositories/checkpoint.repository";
+import { checkAndLook } from "@/repositories/evidence-seen";
 import {
 	type CheckpointEvidenceBody,
 	CheckpointEvidenceSchema,
@@ -85,7 +85,7 @@ export const POST = pipe(
 			return apiError.badRequest("artifactNotInProject");
 		}
 		// Older than the check itself: it becomes evidence now, so it is checked now.
-		if (!artifact.checkStatus) after(() => checkArtifact(artifactId));
+		after(() => checkAndLook(artifactId, { checked: !!artifact.checkStatus }));
 	}
 
 	await prisma.checkpointItem.updateMany({
