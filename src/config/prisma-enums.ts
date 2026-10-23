@@ -27,6 +27,7 @@ import type {
 	EventMemberStatus as EventMemberStatusType,
 	EventStatus as EventStatusType,
 	EventType as EventTypeType,
+	EvidenceMatch as EvidenceMatchType,
 	ExpertInvoicing as ExpertInvoicingType,
 	InvitationStatus as InvitationStatusType,
 	Language as LanguageType,
@@ -144,6 +145,14 @@ export const ArtifactCheckStatus = {
 	Unsupported: "Unsupported",
 } as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
 export type ArtifactCheckStatus = ArtifactCheckStatusType;
+
+export const EvidenceMatch = {
+	Matches: "Matches",
+	Partly: "Partly",
+	DoesNotMatch: "DoesNotMatch",
+	CannotTell: "CannotTell",
+} as const satisfies Record<EvidenceMatchType, EvidenceMatchType>;
+export type EvidenceMatch = EvidenceMatchType;
 
 export const CheckpointCuratorKind = {
 	AI: "AI",

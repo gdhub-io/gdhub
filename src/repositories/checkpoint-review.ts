@@ -27,6 +27,11 @@ import {
 } from "@/repositories/checkpoint-number";
 import { canEditPlan } from "@/repositories/checkpoint-plan-edit";
 import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import {
+	describeDevlogMedia,
+	SPRINT_VIDEO_SECONDS,
+	seeCheckpointEvidence,
+} from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
 import {
@@ -99,6 +104,8 @@ const taskSelect = {
 		cut: true,
 		addedAt: true,
 		originalText: true,
+		evidenceMatch: true,
+		evidenceMatchNote: true,
 		artifact: {
 			select: {
 				id: true,
@@ -475,8 +482,13 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 		select: { index: true, checkpointId: true },
 	});
 	const final = session.index === FINAL_SESSION;
-	// The verdict comes first, so the last letter can agree with it.
+	// The verdict comes first, so the last letter can agree with it; it looks at
+	// the evidence itself. A sprint review looks at it first, on the sprint's budget.
 	if (final) await closeCheckpoint(session.checkpointId);
+	// The final review's video budget went on the evidence the verdict read.
+	const videoUsed = final
+		? SPRINT_VIDEO_SECONDS
+		: await seeCheckpointEvidence(session.checkpointId);
 
 	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
 		where: { id: session.checkpointId },
@@ -513,7 +525,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 	if (!checkpoint.startedAt || (final && !checkpoint.verdict)) return false;
 
 	const sprint = session.index - 1;
-	const [{ devlogs, artifacts }, picture] = await Promise.all([
+	const [{ devlogs, posts, artifacts }, picture] = await Promise.all([
 		sprintEvidence(checkpoint.projectId, checkpoint.startedAt, sprint),
 		projectPicture(
 			session.checkpointId,
@@ -522,6 +534,11 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 				: sprintRange(checkpoint.startedAt, sprint),
 		),
 	]);
+	const devlogMedia = await describeDevlogMedia(
+		session.checkpointId,
+		posts,
+		SPRINT_VIDEO_SECONDS - videoUsed,
+	);
 	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === session.index - 1,
@@ -534,6 +551,7 @@ const writeReviewFor = async (sessionId: string, now: Date) => {
 			sprint,
 			tasks: checkpoint.items.map(toCuratorTask),
 			devlogs,
+			devlogMedia,
 			artifacts,
 			pulse: {
 				worked: pulses.filter((pulse) => pulse.confirmedAt).length,

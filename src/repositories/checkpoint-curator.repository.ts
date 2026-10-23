@@ -16,6 +16,7 @@ import {
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
 import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import { seeCheckpointEvidence } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
@@ -50,6 +51,8 @@ const curatorItemSelect = {
 	cut: true,
 	addedAt: true,
 	acceptedNote: true,
+	evidenceMatch: true,
+	evidenceMatchNote: true,
 	artifact: {
 		select: {
 			type: true,
@@ -355,8 +358,10 @@ export const closeCheckpoint = async (
 		return null;
 	}
 
-	// The verdict counts only evidence that opens today, not on the day it was added.
+	// The verdict counts only evidence that opens today, not on the day it was added,
+	// and the report says what that evidence shows.
 	await recheckCheckpointArtifacts(checkpointId);
+	await seeCheckpointEvidence(checkpointId);
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
@@ -410,6 +415,12 @@ export const closeCheckpoint = async (
 								description: item.artifact.description,
 								link: item.artifact.link,
 								readable: item.artifact.checkStatus === "Readable",
+								seen: item.evidenceMatch
+									? {
+											match: item.evidenceMatch,
+											note: item.evidenceMatchNote,
+										}
+									: null,
 							},
 						]
 					: [],

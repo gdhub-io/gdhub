@@ -30,6 +30,11 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
+vi.mock("@/repositories/evidence-seen", () => ({
+	seeCheckpointEvidence: vi.fn(async () => 0),
+	describeDevlogMedia: vi.fn(async () => []),
+	SPRINT_VIDEO_SECONDS: 600,
+}));
 vi.mock("@/repositories/curator-context", () => ({
 	projectPicture: vi.fn().mockResolvedValue("The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),

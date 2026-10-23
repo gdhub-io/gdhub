@@ -15,13 +15,18 @@ const nextConfig = {
 	distDir: process.env.NEXT_DIST_DIR || ".next",
 	// Legal texts are read from disk at request time; without this they are not
 	// in the serverless bundle and every legal page renders empty in production.
-	outputFileTracingIncludes: { "/**": ["./docs/legal/**/*.md"] },
+	outputFileTracingIncludes: {
+		"/**": ["./docs/legal/**/*.md"],
+		// The AI curator samples video frames with this binary in the daily cron.
+		"/api/cron/checkpoints": ["./node_modules/ffmpeg-static/ffmpeg"],
+	},
 	serverExternalPackages: [
 		"discord.js",
 		"matrix-js-sdk",
 		"@gdhub-io/gdhub-prisma",
 		"@prisma/client",
 		"@prisma/adapter-pg",
+		"ffmpeg-static",
 	],
 	images: {
 		remotePatterns: [

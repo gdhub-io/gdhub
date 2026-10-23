@@ -65,12 +65,18 @@ const refusedAsUnsafe = (error: unknown): boolean => {
 	return false;
 };
 
+type Response = Awaited<ReturnType<typeof fetch>>;
+
 /**
- * Whether a link the author gave opens for an anonymous visitor. Only the
- * response head is read — the body is dropped unread, so a build is never
- * downloaded.
+ * GET a link the author gave, following at most three redirects, each checked
+ * again. Resolves with the final 2xx response, its body unread, or why not.
  */
-export async function openLink(link: string): Promise<OpenResult> {
+async function safeGet(
+	link: string,
+): Promise<
+	| { ok: true; response: Response; url: URL }
+	| { ok: false; reason: OpenFailure }
+> {
 	let url: URL;
 	try {
 		url = new URL(link);
@@ -96,7 +102,7 @@ export async function openLink(link: string): Promise<OpenResult> {
 		}
 		if (isLoginPage(url)) return { ok: false, reason: "needsLogin" };
 
-		let response: Awaited<ReturnType<typeof fetch>>;
+		let response: Response;
 		try {
 			// undici's own fetch: the global one may be a different undici that
 			// does not accept this dispatcher.
@@ -115,14 +121,15 @@ export async function openLink(link: string): Promise<OpenResult> {
 			}
 			return { ok: false, reason: "unreachable" };
 		}
-		await response.body?.cancel();
 
 		const location = response.headers.get("location");
 		if (response.status >= 300 && response.status < 400 && location) {
+			await response.body?.cancel();
 			url = new URL(location, url);
 			continue;
 		}
-		if (response.ok) return { ok: true };
+		if (response.ok) return { ok: true, response, url };
+		await response.body?.cancel();
 		if (response.status === 401 || response.status === 403) {
 			return { ok: false, reason: "needsLogin" };
 		}
@@ -133,4 +140,84 @@ export async function openLink(link: string): Promise<OpenResult> {
 	}
 
 	return { ok: false, reason: "tooManyRedirects" };
+}
+
+/**
+ * Whether a link the author gave opens for an anonymous visitor. Only the
+ * response head is read — the body is dropped unread, so a build is never
+ * downloaded.
+ */
+export async function openLink(link: string): Promise<OpenResult> {
+	const result = await safeGet(link);
+	if (!result.ok) return result;
+	await result.response.body?.cancel();
+	return { ok: true };
+}
+
+type FetchedBody = {
+	/** The content type the server named, without parameters. */
+	contentType: string;
+	bytes: Uint8Array;
+	/** Where the redirects ended. */
+	url: string;
+};
+
+/**
+ * The body of a link, up to `maxBytes`. A larger body is not read past the cap
+ * and comes back as `tooLarge` — the reader decides what that means.
+ */
+export async function fetchBody(
+	link: string,
+	maxBytes: number,
+	/** Checked on the headers: a body of another type is never read. */
+	accept?: (contentType: string) => boolean,
+): Promise<
+	| { ok: true; body: FetchedBody }
+	| { ok: false; reason: OpenFailure | "tooLarge" | "notAccepted" }
+> {
+	const result = await safeGet(link);
+	if (!result.ok) return result;
+	const { response, url } = result;
+
+	const contentType = (response.headers.get("content-type") ?? "")
+		.split(";")[0]
+		.trim()
+		.toLowerCase();
+	if (accept && !accept(contentType)) {
+		await response.body?.cancel();
+		return { ok: false, reason: "notAccepted" };
+	}
+
+	const declared = Number(response.headers.get("content-length") ?? 0);
+	if (declared > maxBytes) {
+		await response.body?.cancel();
+		return { ok: false, reason: "tooLarge" };
+	}
+
+	const chunks: Uint8Array[] = [];
+	let size = 0;
+	for await (const chunk of response.body ?? []) {
+		size += chunk.byteLength;
+		if (size > maxBytes) {
+			await response.body?.cancel().catch(() => {});
+			return { ok: false, reason: "tooLarge" };
+		}
+		chunks.push(chunk);
+	}
+
+	const bytes = new Uint8Array(size);
+	let offset = 0;
+	for (const chunk of chunks) {
+		bytes.set(chunk, offset);
+		offset += chunk.byteLength;
+	}
+
+	return {
+		ok: true,
+		body: {
+			contentType,
+			bytes,
+			url: url.toString(),
+		},
+	};
 }
