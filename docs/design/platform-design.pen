@@ -196132,7 +196132,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "checkpoint-curators-art.png",
+                    "url": "checkpoint-curators-duo.png",
                     "mode": "contain"
                   },
                   "width": 400,
@@ -199611,7 +199611,7 @@
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "checkpoint-curators-art.png",
+                        "url": "checkpoint-curators-duo.png",
                         "mode": "cover"
                       },
                       "width": 260,
@@ -428670,7 +428670,7 @@
                       "name": "heroMain",
                       "width": "fill_container",
                       "layout": "vertical",
-                      "gap": 64,
+                      "gap": 32,
                       "children": [
                         {
                           "type": "text",
@@ -428701,58 +428701,16 @@
                               "gap": 16,
                               "children": [
                                 {
-                                  "type": "icon",
-                                  "id": "o6WDc",
-                                  "name": "Star",
-                                  "width": 32,
-                                  "height": 32,
-                                  "icon": "sparkle",
-                                  "library": "lucide",
-                                  "fill": "#FFFFFF"
-                                },
-                                {
                                   "type": "text",
                                   "id": "cU2Cu",
                                   "name": "T",
                                   "fill": "#FFFFFFD9",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Create your video game — find the people it is missing, or join a project that needs your craft.",
+                                  "content": "If you want to make your own games, you're in the right place.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "$font",
-                                  "fontSize": 16,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "kp7Pd",
-                              "name": "li",
-                              "width": "fill_container",
-                              "gap": 16,
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "wtnwC",
-                                  "name": "Star",
-                                  "width": 32,
-                                  "height": 32,
-                                  "icon": "sparkle",
-                                  "library": "lucide",
-                                  "fill": "#FFFFFF"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Y89896",
-                                  "name": "T",
-                                  "fill": "#FFFFFFD9",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
-                                  "lineHeight": 1.5,
-                                  "fontFamily": "$font",
-                                  "fontSize": 16,
+                                  "fontSize": 18,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -428890,7 +428848,7 @@
                   "content": "Four places to build a game together",
                   "lineHeight": 1.1,
                   "fontFamily": "$font",
-                  "fontSize": 48,
+                  "fontSize": 42,
                   "fontWeight": "700",
                   "letterSpacing": -1
                 },
@@ -428904,7 +428862,7 @@
                   "content": "Make games, share what you know or find the next hit to back — everyone finds something worth doing here.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 20,
+                  "fontSize": 18,
                   "fontWeight": "normal"
                 }
               ]
@@ -428978,7 +428936,7 @@
                           "content": "Game industry talents who love making games come together here.",
                           "lineHeight": 1.55,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429035,7 +428993,7 @@
                           "content": "Where unique, author-driven games get made.",
                           "lineHeight": 1.55,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429104,7 +429062,7 @@
                           "content": "Experts help other teams with feedback or curate a project to keep it moving.",
                           "lineHeight": 1.55,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429173,7 +429131,7 @@
                           "content": "Publishers and anyone who invests in games find and follow the projects that interest them.",
                           "lineHeight": 1.55,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429267,7 +429225,7 @@
                   "content": "20 specialists open to collaborate this week",
                   "lineHeight": 1.4,
                   "fontFamily": "$font",
-                  "fontSize": 17,
+                  "fontSize": 16,
                   "fontWeight": "normal"
                 }
               ]
@@ -429332,22 +429290,9 @@
                       "content": "Checkpoint: the engine that drives your game to release",
                       "lineHeight": 1.1,
                       "fontFamily": "$font",
-                      "fontSize": 48,
+                      "fontSize": 42,
                       "fontWeight": "700",
                       "letterSpacing": -1
-                    },
-                    {
-                      "type": "text",
-                      "id": "i7c8pw",
-                      "name": "Lead",
-                      "fill": "$inv-text",
-                      "textGrowth": "fixed-width",
-                      "width": 560,
-                      "content": "A 28-day run towards one goal for your game, with an AI or an expert curator who reviews the team's work every sprint.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "$font",
-                      "fontSize": 20,
-                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -429411,7 +429356,7 @@
                               "content": "Goal",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "700"
                             },
                             {
@@ -429425,7 +429370,7 @@
                               "content": "One goal for 28 days",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 15,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -429485,7 +429430,7 @@
                               "content": "Sprint review",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "700"
                             },
                             {
@@ -429499,7 +429444,7 @@
                               "content": "The curator checks the work",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 15,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -429559,7 +429504,7 @@
                               "content": "Goal correction",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "700"
                             },
                             {
@@ -429573,7 +429518,7 @@
                               "content": "Adjust the plan in time",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 15,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -429633,7 +429578,7 @@
                               "content": "Verdict",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "700"
                             },
                             {
@@ -429647,7 +429592,7 @@
                               "content": "Reached or not, and why",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 15,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -429699,7 +429644,7 @@
                               "content": "Next checkpoint",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "700"
                             },
                             {
@@ -429713,7 +429658,7 @@
                               "content": "Keep the game moving",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 15,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -429773,7 +429718,7 @@
                           "width": "fill_container",
                           "content": "Just enough structure",
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -429787,7 +429732,7 @@
                           "content": "A goal, a deadline and a review every sprint: the bit of organisation indie teams so often lack.",
                           "lineHeight": 1.45,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429836,7 +429781,7 @@
                           "width": "fill_container",
                           "content": "An outside eye every sprint",
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -429850,7 +429795,7 @@
                           "content": "A curator sees problems before they cost you a month.",
                           "lineHeight": 1.45,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429899,7 +429844,7 @@
                           "width": "fill_container",
                           "content": "Progress you can show",
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -429913,7 +429858,7 @@
                           "content": "Each verdict stays on the project — proof for players, publishers and investors.",
                           "lineHeight": 1.45,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -429942,7 +429887,7 @@
                       "content": "Learn about Checkpoint",
                       "lineHeight": 1.4,
                       "fontFamily": "$font",
-                      "fontSize": 17,
+                      "fontSize": 16,
                       "fontWeight": "600"
                     }
                   ]
@@ -430020,7 +429965,7 @@
                           "content": "Anyone can make a game today",
                           "lineHeight": 1.1,
                           "fontFamily": "$font",
-                          "fontSize": 48,
+                          "fontSize": 42,
                           "fontWeight": "700",
                           "letterSpacing": -1
                         },
@@ -430034,7 +429979,7 @@
                           "content": "Tools let everyone create. Your own experience plus advice from game industry experts turns an idea into a game players haven't seen before.",
                           "lineHeight": 1.5,
                           "fontFamily": "$font",
-                          "fontSize": 20,
+                          "fontSize": 18,
                           "fontWeight": "normal"
                         }
                       ]
@@ -430093,7 +430038,7 @@
                                   "content": "Find the people",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -430106,7 +430051,7 @@
                                   "content": "your game is missing — designers, programmers, artists, sound designers.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -430159,7 +430104,7 @@
                                   "content": "Hire your way:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -430172,7 +430117,7 @@
                                   "content": "for experience, for a share of the game or for pay — post a free or a paid open position.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -430225,7 +430170,7 @@
                                   "content": "Keep it moving:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -430238,7 +430183,7 @@
                                   "content": "devlogs show progress and a Checkpoint takes you to the next milestone.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -430335,7 +430280,7 @@
                                           "content": "Ember Road",
                                           "lineHeight": 1.4,
                                           "fontFamily": "$font",
-                                          "fontSize": 17,
+                                          "fontSize": 16,
                                           "fontWeight": "600"
                                         },
                                         {
@@ -430409,7 +430354,7 @@
                                           "content": "Tiny Harbor",
                                           "lineHeight": 1.4,
                                           "fontFamily": "$font",
-                                          "fontSize": 17,
+                                          "fontSize": 16,
                                           "fontWeight": "600"
                                         },
                                         {
@@ -430492,7 +430437,7 @@
                                           "content": "Null Signal",
                                           "lineHeight": 1.4,
                                           "fontFamily": "$font",
-                                          "fontSize": 17,
+                                          "fontSize": 16,
                                           "fontWeight": "600"
                                         },
                                         {
@@ -430566,7 +430511,7 @@
                                           "content": "Mosswood",
                                           "lineHeight": 1.4,
                                           "fontFamily": "$font",
-                                          "fontSize": 17,
+                                          "fontSize": 16,
                                           "fontWeight": "600"
                                         },
                                         {
@@ -430621,7 +430566,7 @@
                               "content": "Register",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 17,
+                              "fontSize": 16,
                               "fontWeight": "600"
                             }
                           ]
@@ -430634,7 +430579,7 @@
                           "content": "and create your first project",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -430797,7 +430742,7 @@
                           "content": "Put your craft into a real game",
                           "lineHeight": 1.1,
                           "fontFamily": "$font",
-                          "fontSize": 48,
+                          "fontSize": 42,
                           "fontWeight": "700",
                           "letterSpacing": -1
                         },
@@ -430811,7 +430756,7 @@
                           "content": "Game designers, developers, artists and sound designers join projects being built right now.",
                           "lineHeight": 1.5,
                           "fontFamily": "$font",
-                          "fontSize": 20,
+                          "fontSize": 18,
                           "fontWeight": "normal"
                         }
                       ]
@@ -430870,7 +430815,7 @@
                                   "content": "Join a project",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -430883,7 +430828,7 @@
                                   "content": "in development and ship real work for your portfolio.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -430936,7 +430881,7 @@
                                   "content": "Get found:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -430949,7 +430894,7 @@
                                   "content": "your profile shows your speciality, level and projects to authors looking for people.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -431002,7 +430947,7 @@
                                   "content": "Grow into an expert",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -431015,7 +430960,7 @@
                                   "content": "by answering questions from other teams.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -431215,11 +431160,25 @@
                                     {
                                       "type": "frame",
                                       "id": "EOdaq",
-                                      "name": "Avatar (react-nice-avatar)",
-                                      "width": 48,
-                                      "height": 48,
+                                      "name": "Direction tile",
+                                      "width": 56,
+                                      "height": 56,
                                       "fill": "$dir-game-design",
-                                      "cornerRadius": "$radius-pill"
+                                      "cornerRadius": "$radius-xl",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "G2VpeB",
+                                          "name": "Icon",
+                                          "width": 26,
+                                          "height": 26,
+                                          "icon": "gamepad-2",
+                                          "library": "lucide",
+                                          "fill": "$ink"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "frame",
@@ -431230,17 +431189,49 @@
                                       "gap": 2,
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "w0fz3",
-                                          "name": "Name",
-                                          "fill": "$inv-text",
-                                          "textGrowth": "fixed-width",
+                                          "type": "frame",
+                                          "id": "Fot0i",
+                                          "name": "Speciality and level",
                                           "width": "fill_container",
-                                          "content": "Maya Chen",
-                                          "lineHeight": 1.4,
-                                          "fontFamily": "$font",
-                                          "fontSize": 16,
-                                          "fontWeight": "600"
+                                          "gap": "$space-2",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "w0fz3",
+                                              "name": "Name",
+                                              "fill": "$inv-text",
+                                              "content": "Game designer",
+                                              "lineHeight": 1.4,
+                                              "fontFamily": "$font",
+                                              "fontSize": 16,
+                                              "fontWeight": "600"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "d7lO6D",
+                                              "name": "Level chip",
+                                              "fill": "$inv-fill-base",
+                                              "cornerRadius": "$radius-sm",
+                                              "padding": [
+                                                "$space-1",
+                                                "$space-2"
+                                              ],
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "tBXIr",
+                                                  "name": "Level",
+                                                  "fill": "$inv-text",
+                                                  "content": "Experienced",
+                                                  "lineHeight": 1.4,
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            }
+                                          ]
                                         },
                                         {
                                           "type": "text",
@@ -431249,10 +431240,10 @@
                                           "fill": "$inv-text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "2D artist, joined today",
+                                          "content": "Ready to invest about 8 hours a week",
                                           "lineHeight": 1.5,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 14,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -431276,11 +431267,25 @@
                                     {
                                       "type": "frame",
                                       "id": "gdDuh",
-                                      "name": "Avatar (react-nice-avatar)",
-                                      "width": 48,
-                                      "height": 48,
+                                      "name": "Direction tile",
+                                      "width": 56,
+                                      "height": 56,
                                       "fill": "$dir-2d-art",
-                                      "cornerRadius": "$radius-pill"
+                                      "cornerRadius": "$radius-xl",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "rDWPv",
+                                          "name": "Icon",
+                                          "width": 26,
+                                          "height": 26,
+                                          "icon": "palette",
+                                          "library": "lucide",
+                                          "fill": "$ink"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "frame",
@@ -431291,17 +431296,49 @@
                                       "gap": 2,
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "WQ2q9",
-                                          "name": "Name",
-                                          "fill": "$inv-text",
-                                          "textGrowth": "fixed-width",
+                                          "type": "frame",
+                                          "id": "pfA98",
+                                          "name": "Speciality and level",
                                           "width": "fill_container",
-                                          "content": "Leo Martins",
-                                          "lineHeight": 1.4,
-                                          "fontFamily": "$font",
-                                          "fontSize": 16,
-                                          "fontWeight": "600"
+                                          "gap": "$space-2",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "WQ2q9",
+                                              "name": "Name",
+                                              "fill": "$inv-text",
+                                              "content": "2D artist",
+                                              "lineHeight": 1.4,
+                                              "fontFamily": "$font",
+                                              "fontSize": 16,
+                                              "fontWeight": "600"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "kJsDR",
+                                              "name": "Level chip",
+                                              "fill": "$inv-fill-base",
+                                              "cornerRadius": "$radius-sm",
+                                              "padding": [
+                                                "$space-1",
+                                                "$space-2"
+                                              ],
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "yaUbo",
+                                                  "name": "Level",
+                                                  "fill": "$inv-text",
+                                                  "content": "Skillful",
+                                                  "lineHeight": 1.4,
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            }
+                                          ]
                                         },
                                         {
                                           "type": "text",
@@ -431310,10 +431347,10 @@
                                           "fill": "$inv-text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Gameplay programmer, joined yesterday",
+                                          "content": "Ready to invest about 12 hours a week",
                                           "lineHeight": 1.5,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 14,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -431346,11 +431383,25 @@
                                     {
                                       "type": "frame",
                                       "id": "uReq2",
-                                      "name": "Avatar (react-nice-avatar)",
-                                      "width": 48,
-                                      "height": 48,
+                                      "name": "Direction tile",
+                                      "width": 56,
+                                      "height": 56,
                                       "fill": "$dir-marketing",
-                                      "cornerRadius": "$radius-pill"
+                                      "cornerRadius": "$radius-xl",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "l6HoE",
+                                          "name": "Icon",
+                                          "width": 26,
+                                          "height": 26,
+                                          "icon": "music",
+                                          "library": "lucide",
+                                          "fill": "$ink"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "frame",
@@ -431361,17 +431412,49 @@
                                       "gap": 2,
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "B2A3d",
-                                          "name": "Name",
-                                          "fill": "$inv-text",
-                                          "textGrowth": "fixed-width",
+                                          "type": "frame",
+                                          "id": "GSxy9",
+                                          "name": "Speciality and level",
                                           "width": "fill_container",
-                                          "content": "Sara Novak",
-                                          "lineHeight": 1.4,
-                                          "fontFamily": "$font",
-                                          "fontSize": 16,
-                                          "fontWeight": "600"
+                                          "gap": "$space-2",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "B2A3d",
+                                              "name": "Name",
+                                              "fill": "$inv-text",
+                                              "content": "Sound designer",
+                                              "lineHeight": 1.4,
+                                              "fontFamily": "$font",
+                                              "fontSize": 16,
+                                              "fontWeight": "600"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "AgtD3",
+                                              "name": "Level chip",
+                                              "fill": "$inv-fill-base",
+                                              "cornerRadius": "$radius-sm",
+                                              "padding": [
+                                                "$space-1",
+                                                "$space-2"
+                                              ],
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "Z1FN7",
+                                                  "name": "Level",
+                                                  "fill": "$inv-text",
+                                                  "content": "Middle",
+                                                  "lineHeight": 1.4,
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            }
+                                          ]
                                         },
                                         {
                                           "type": "text",
@@ -431380,10 +431463,10 @@
                                           "fill": "$inv-text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Sound designer, joined 2 days ago",
+                                          "content": "Ready to invest about 6 hours a week",
                                           "lineHeight": 1.5,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 14,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -431407,11 +431490,25 @@
                                     {
                                       "type": "frame",
                                       "id": "ZrDPD",
-                                      "name": "Avatar (react-nice-avatar)",
-                                      "width": 48,
-                                      "height": 48,
+                                      "name": "Direction tile",
+                                      "width": 56,
+                                      "height": 56,
                                       "fill": "$brand-accent",
-                                      "cornerRadius": "$radius-pill"
+                                      "cornerRadius": "$radius-xl",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "vdfCV",
+                                          "name": "Icon",
+                                          "width": 26,
+                                          "height": 26,
+                                          "icon": "map",
+                                          "library": "lucide",
+                                          "fill": "$ink"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "frame",
@@ -431422,17 +431519,49 @@
                                       "gap": 2,
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "Q17Ss",
-                                          "name": "Name",
-                                          "fill": "$inv-text",
-                                          "textGrowth": "fixed-width",
+                                          "type": "frame",
+                                          "id": "opxoq",
+                                          "name": "Speciality and level",
                                           "width": "fill_container",
-                                          "content": "Ivan Petrov",
-                                          "lineHeight": 1.4,
-                                          "fontFamily": "$font",
-                                          "fontSize": 16,
-                                          "fontWeight": "600"
+                                          "gap": "$space-2",
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "Q17Ss",
+                                              "name": "Name",
+                                              "fill": "$inv-text",
+                                              "content": "Level designer",
+                                              "lineHeight": 1.4,
+                                              "fontFamily": "$font",
+                                              "fontSize": 16,
+                                              "fontWeight": "600"
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "djHV4",
+                                              "name": "Level chip",
+                                              "fill": "$inv-fill-base",
+                                              "cornerRadius": "$radius-sm",
+                                              "padding": [
+                                                "$space-1",
+                                                "$space-2"
+                                              ],
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "c4N4O",
+                                                  "name": "Level",
+                                                  "fill": "$inv-text",
+                                                  "content": "Expert",
+                                                  "lineHeight": 1.4,
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 13,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            }
+                                          ]
                                         },
                                         {
                                           "type": "text",
@@ -431441,10 +431570,10 @@
                                           "fill": "$inv-text-secondary",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Level designer, joined 3 days ago",
+                                          "content": "Ready to invest about 10 hours a week",
                                           "lineHeight": 1.5,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 14,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -431486,7 +431615,7 @@
                               "content": "Register",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 17,
+                              "fontSize": 16,
                               "fontWeight": "600"
                             }
                           ]
@@ -431499,7 +431628,7 @@
                           "content": "and apply to open positions in projects",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -431554,7 +431683,7 @@
                           "content": "Every unique game in one place, with its whole story",
                           "lineHeight": 1.1,
                           "fontFamily": "$font",
-                          "fontSize": 48,
+                          "fontSize": 42,
                           "fontWeight": "700",
                           "letterSpacing": -1
                         },
@@ -431568,7 +431697,7 @@
                           "content": "Not a pitch from strangers: each project shows its life on GDHub and what game industry experts say about it.",
                           "lineHeight": 1.5,
                           "fontFamily": "$font",
-                          "fontSize": 20,
+                          "fontSize": 18,
                           "fontWeight": "normal"
                         }
                       ]
@@ -431627,7 +431756,7 @@
                                   "content": "All in one place:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -431640,7 +431769,7 @@
                                   "content": "unique indie games, from the first idea to release.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -431693,7 +431822,7 @@
                                   "content": "Track development:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -431706,7 +431835,7 @@
                                   "content": "stage, team, devlogs and progress every sprint.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -431759,7 +431888,7 @@
                                   "content": "Expert verdicts:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -431772,7 +431901,7 @@
                                   "content": "what game industry curators said at each checkpoint.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -431806,7 +431935,7 @@
                           "content": "Request access",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         }
                       ]
@@ -432303,7 +432432,7 @@
                           "content": "Teams need what you already know",
                           "lineHeight": 1.1,
                           "fontFamily": "$font",
-                          "fontSize": 48,
+                          "fontSize": 42,
                           "fontWeight": "700",
                           "letterSpacing": -1
                         },
@@ -432317,7 +432446,7 @@
                           "content": "Game industry professionals answer questions, hold paid calls and, soon, curate checkpoints.",
                           "lineHeight": 1.5,
                           "fontFamily": "$font",
-                          "fontSize": 20,
+                          "fontSize": 18,
                           "fontWeight": "normal"
                         }
                       ]
@@ -432376,7 +432505,7 @@
                                   "content": "Answer questions",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -432389,7 +432518,7 @@
                                   "content": "from teams that need your experience, on your schedule.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -432442,7 +432571,7 @@
                                   "content": "Hold paid calls",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -432455,7 +432584,7 @@
                                   "content": "at your own price.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -432508,7 +432637,7 @@
                                   "content": "Curate checkpoints:",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "600"
                                 },
                                 {
@@ -432521,7 +432650,7 @@
                                   "content": "guide a team for 28 days and give the verdict. Coming soon.",
                                   "lineHeight": 1.55,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -432559,7 +432688,7 @@
                               "content": "Register",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 17,
+                              "fontSize": 16,
                               "fontWeight": "600"
                             }
                           ]
@@ -432572,7 +432701,7 @@
                           "content": "and turn on Advisor space",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 17,
+                          "fontSize": 16,
                           "fontWeight": "normal"
                         }
                       ]
@@ -433839,61 +433968,17 @@
               "alignItems": "center",
               "children": [
                 {
-                  "type": "icon",
-                  "id": "h9GDY",
-                  "name": "Star",
-                  "width": 19,
-                  "height": 19,
-                  "icon": "sparkle",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                },
-                {
                   "type": "text",
                   "id": "faxi1",
                   "name": "Text",
                   "fill": "#FFFFFFD9",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Create your video game — find the people it is missing, or join a project that needs your craft.",
+                  "content": "If you want to make your own games, you're in the right place.",
                   "lineHeight": 1.7,
+                  "textAlign": "center",
                   "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "rljTH",
-              "x": 24,
-              "y": 441,
-              "name": "Bullet",
-              "width": 342,
-              "gap": 16,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "IxOVs",
-                  "name": "Star",
-                  "width": 19,
-                  "height": 19,
-                  "icon": "sparkle",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                },
-                {
-                  "type": "text",
-                  "id": "EqKZ7",
-                  "name": "Text",
-                  "fill": "#FFFFFFD9",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Share what you know and help others — the experts here are members like you, answering from their own practice.",
-                  "lineHeight": 1.7,
-                  "fontFamily": "$font",
-                  "fontSize": 14,
+                  "fontSize": 15,
                   "fontWeight": "normal"
                 }
               ]
@@ -434052,7 +434137,7 @@
                   "content": "Make games, share what you know or find the next hit to back — everyone finds something worth doing here.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 15,
                   "fontWeight": "normal"
                 }
               ]
@@ -434109,7 +434194,7 @@
                               "content": "Hub",
                               "lineHeight": 1.3,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "600"
                             },
                             {
@@ -434122,7 +434207,7 @@
                               "content": "Game industry talents who love making games come together here.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 16,
                               "fontWeight": "normal"
                             }
                           ]
@@ -434166,7 +434251,7 @@
                               "content": "Project Space",
                               "lineHeight": 1.3,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "600"
                             },
                             {
@@ -434179,7 +434264,7 @@
                               "content": "Where unique, author-driven games get made.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 16,
                               "fontWeight": "normal"
                             }
                           ]
@@ -434232,7 +434317,7 @@
                               "content": "Advisor Space",
                               "lineHeight": 1.3,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "600"
                             },
                             {
@@ -434245,7 +434330,7 @@
                               "content": "Experts help other teams with feedback or curate a project to keep it moving.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 16,
                               "fontWeight": "normal"
                             }
                           ]
@@ -434289,7 +434374,7 @@
                               "content": "Scout Space",
                               "lineHeight": 1.3,
                               "fontFamily": "$font",
-                              "fontSize": 18,
+                              "fontSize": 20,
                               "fontWeight": "600"
                             },
                             {
@@ -434302,7 +434387,7 @@
                               "content": "Publishers and anyone who invests in games find and follow the projects that interest them.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 16,
                               "fontWeight": "normal"
                             }
                           ]
@@ -434401,7 +434486,7 @@
                   "content": "20 specialists open to collaborate this week",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 13,
+                  "fontSize": 14,
                   "fontWeight": "normal"
                 }
               ]
@@ -434489,19 +434574,6 @@
                   "fontSize": 32,
                   "fontWeight": "700",
                   "letterSpacing": -0.6
-                },
-                {
-                  "type": "text",
-                  "id": "c4dsL",
-                  "name": "Lead",
-                  "fill": "$inv-text",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "A 28-day run towards one goal for your game, with an AI or an expert curator who reviews the team's work every sprint.",
-                  "lineHeight": 1.5,
-                  "fontFamily": "$font",
-                  "fontSize": 18,
-                  "fontWeight": "normal"
                 }
               ]
             },
@@ -434577,7 +434649,7 @@
                           "content": "Goal",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -434591,7 +434663,7 @@
                           "content": "One goal for 28 days",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -434663,7 +434735,7 @@
                           "content": "Sprint review",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -434677,7 +434749,7 @@
                           "content": "The curator checks the work",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -434749,7 +434821,7 @@
                           "content": "Goal correction",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -434763,7 +434835,7 @@
                           "content": "Adjust the plan in time",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -434829,7 +434901,7 @@
                           "content": "Verdict",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -434843,7 +434915,7 @@
                           "content": "Reached or not, and why",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -434901,7 +434973,7 @@
                           "content": "Next checkpoint",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 18,
+                          "fontSize": 20,
                           "fontWeight": "700"
                         },
                         {
@@ -434915,7 +434987,7 @@
                           "content": "Keep the game moving",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 14,
                           "fontWeight": "normal"
                         }
                       ]
@@ -434975,7 +435047,7 @@
                       "width": "fill_container",
                       "content": "Just enough structure",
                       "fontFamily": "$font",
-                      "fontSize": 18,
+                      "fontSize": 20,
                       "fontWeight": "700"
                     },
                     {
@@ -434989,7 +435061,7 @@
                       "content": "A goal, a deadline and a review every sprint: the bit of organisation indie teams so often lack.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
-                      "fontSize": 15,
+                      "fontSize": 14,
                       "fontWeight": "normal"
                     }
                   ]
@@ -435037,7 +435109,7 @@
                       "width": "fill_container",
                       "content": "An outside eye every sprint",
                       "fontFamily": "$font",
-                      "fontSize": 18,
+                      "fontSize": 20,
                       "fontWeight": "700"
                     },
                     {
@@ -435051,7 +435123,7 @@
                       "content": "A curator sees problems before they cost you a month.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
-                      "fontSize": 15,
+                      "fontSize": 14,
                       "fontWeight": "normal"
                     }
                   ]
@@ -435099,7 +435171,7 @@
                       "width": "fill_container",
                       "content": "Progress you can show",
                       "fontFamily": "$font",
-                      "fontSize": 18,
+                      "fontSize": 20,
                       "fontWeight": "700"
                     },
                     {
@@ -435113,7 +435185,7 @@
                       "content": "Each verdict stays on the project — proof for players, publishers and investors.",
                       "lineHeight": 1.45,
                       "fontFamily": "$font",
-                      "fontSize": 15,
+                      "fontSize": 14,
                       "fontWeight": "normal"
                     }
                   ]
@@ -435245,7 +435317,7 @@
                   "content": "Tools let everyone create. Your own experience plus advice from game industry experts turns an idea into a game players haven't seen before.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 15,
                   "fontWeight": "normal"
                 }
               ]
@@ -435474,7 +435546,7 @@
                   "content": "Games authors are building",
                   "lineHeight": 1.3,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 20,
                   "fontWeight": "600"
                 },
                 {
@@ -435552,7 +435624,7 @@
                               "content": "Fantasy strategy by Anna Volkova",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -435626,7 +435698,7 @@
                               "content": "Cozy fishing sim by Mark Iversen",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -435700,7 +435772,7 @@
                               "content": "Sci-fi puzzle platformer by Lena Ortiz",
                               "lineHeight": 1.4,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -435751,7 +435823,7 @@
                   "content": "and create your first project",
                   "lineHeight": 1.4,
                   "fontFamily": "$font",
-                  "fontSize": 17,
+                  "fontSize": 16,
                   "fontWeight": "normal"
                 }
               ]
@@ -435828,7 +435900,7 @@
                   "content": "Game designers, developers, artists and sound designers join projects being built right now.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 15,
                   "fontWeight": "normal"
                 }
               ]
@@ -436056,7 +436128,7 @@
                   "fill": "$inv-text",
                   "content": "Who teams are looking for right now",
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 20,
                   "fontWeight": "700"
                 },
                 {
@@ -436286,7 +436358,7 @@
                   "content": "Talents who just joined",
                   "lineHeight": 1.3,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 20,
                   "fontWeight": "600"
                 },
                 {
@@ -436314,11 +436386,25 @@
                         {
                           "type": "frame",
                           "id": "B1f74",
-                          "name": "Avatar (react-nice-avatar)",
-                          "width": 48,
-                          "height": 48,
+                          "name": "Direction tile",
+                          "width": 56,
+                          "height": 56,
                           "fill": "$dir-game-design",
-                          "cornerRadius": "$radius-pill"
+                          "cornerRadius": "$radius-xl",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "tbpoa",
+                              "name": "Icon",
+                              "width": 26,
+                              "height": 26,
+                              "icon": "gamepad-2",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
                         },
                         {
                           "type": "frame",
@@ -436329,17 +436415,49 @@
                           "gap": 2,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "f5oLw",
-                              "name": "Name",
-                              "fill": "$inv-text",
-                              "textGrowth": "fixed-width",
+                              "type": "frame",
+                              "id": "Duluj",
+                              "name": "Speciality and level",
                               "width": "fill_container",
-                              "content": "Maya Chen",
-                              "lineHeight": 1.4,
-                              "fontFamily": "$font",
-                              "fontSize": 16,
-                              "fontWeight": "600"
+                              "gap": "$space-2",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "f5oLw",
+                                  "name": "Name",
+                                  "fill": "$inv-text",
+                                  "content": "Game designer",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "q88g2q",
+                                  "name": "Level chip",
+                                  "fill": "$inv-fill-base",
+                                  "cornerRadius": "$radius-sm",
+                                  "padding": [
+                                    "$space-1",
+                                    "$space-2"
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "j9ZSTh",
+                                      "name": "Level",
+                                      "fill": "$inv-text",
+                                      "content": "Experienced",
+                                      "lineHeight": 1.4,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
                             },
                             {
                               "type": "text",
@@ -436348,10 +436466,10 @@
                               "fill": "$inv-text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "2D artist, joined today",
+                              "content": "Ready to invest about 8 hours a week",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -436375,11 +436493,25 @@
                         {
                           "type": "frame",
                           "id": "FyWD5",
-                          "name": "Avatar (react-nice-avatar)",
-                          "width": 48,
-                          "height": 48,
+                          "name": "Direction tile",
+                          "width": 56,
+                          "height": 56,
                           "fill": "$dir-2d-art",
-                          "cornerRadius": "$radius-pill"
+                          "cornerRadius": "$radius-xl",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "QdT13",
+                              "name": "Icon",
+                              "width": 26,
+                              "height": 26,
+                              "icon": "palette",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
                         },
                         {
                           "type": "frame",
@@ -436390,17 +436522,49 @@
                           "gap": 2,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "U3OkL",
-                              "name": "Name",
-                              "fill": "$inv-text",
-                              "textGrowth": "fixed-width",
+                              "type": "frame",
+                              "id": "w9wr3F",
+                              "name": "Speciality and level",
                               "width": "fill_container",
-                              "content": "Leo Martins",
-                              "lineHeight": 1.4,
-                              "fontFamily": "$font",
-                              "fontSize": 16,
-                              "fontWeight": "600"
+                              "gap": "$space-2",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "U3OkL",
+                                  "name": "Name",
+                                  "fill": "$inv-text",
+                                  "content": "2D artist",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "EPLZY",
+                                  "name": "Level chip",
+                                  "fill": "$inv-fill-base",
+                                  "cornerRadius": "$radius-sm",
+                                  "padding": [
+                                    "$space-1",
+                                    "$space-2"
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "F0nsO",
+                                      "name": "Level",
+                                      "fill": "$inv-text",
+                                      "content": "Skillful",
+                                      "lineHeight": 1.4,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
                             },
                             {
                               "type": "text",
@@ -436409,10 +436573,10 @@
                               "fill": "$inv-text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Gameplay programmer, joined yesterday",
+                              "content": "Ready to invest about 12 hours a week",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -436436,11 +436600,25 @@
                         {
                           "type": "frame",
                           "id": "qLd04",
-                          "name": "Avatar (react-nice-avatar)",
-                          "width": 48,
-                          "height": 48,
+                          "name": "Direction tile",
+                          "width": 56,
+                          "height": 56,
                           "fill": "$dir-marketing",
-                          "cornerRadius": "$radius-pill"
+                          "cornerRadius": "$radius-xl",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "nbyq6",
+                              "name": "Icon",
+                              "width": 26,
+                              "height": 26,
+                              "icon": "music",
+                              "library": "lucide",
+                              "fill": "$ink"
+                            }
+                          ]
                         },
                         {
                           "type": "frame",
@@ -436451,17 +436629,49 @@
                           "gap": 2,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "XVA6x",
-                              "name": "Name",
-                              "fill": "$inv-text",
-                              "textGrowth": "fixed-width",
+                              "type": "frame",
+                              "id": "xYkZB",
+                              "name": "Speciality and level",
                               "width": "fill_container",
-                              "content": "Sara Novak",
-                              "lineHeight": 1.4,
-                              "fontFamily": "$font",
-                              "fontSize": 16,
-                              "fontWeight": "600"
+                              "gap": "$space-2",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "XVA6x",
+                                  "name": "Name",
+                                  "fill": "$inv-text",
+                                  "content": "Sound designer",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "KzCTT",
+                                  "name": "Level chip",
+                                  "fill": "$inv-fill-base",
+                                  "cornerRadius": "$radius-sm",
+                                  "padding": [
+                                    "$space-1",
+                                    "$space-2"
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "sTi9P",
+                                      "name": "Level",
+                                      "fill": "$inv-text",
+                                      "content": "Middle",
+                                      "lineHeight": 1.4,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
                             },
                             {
                               "type": "text",
@@ -436470,10 +436680,10 @@
                               "fill": "$inv-text-secondary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Sound designer, joined 2 days ago",
+                              "content": "Ready to invest about 6 hours a week",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -436524,7 +436734,7 @@
                   "content": "and apply to open positions in projects",
                   "lineHeight": 1.4,
                   "fontFamily": "$font",
-                  "fontSize": 17,
+                  "fontSize": 16,
                   "fontWeight": "normal"
                 }
               ]
@@ -436632,7 +436842,7 @@
                   "content": "Not a pitch from strangers: each project shows its life on GDHub and what game industry experts say about it.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 15,
                   "fontWeight": "normal"
                 }
               ]
@@ -436861,7 +437071,7 @@
                   "content": "Games already on Steam",
                   "lineHeight": 1.3,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 20,
                   "fontWeight": "600"
                 },
                 {
@@ -437296,7 +437506,7 @@
                   "content": "Game industry professionals answer questions, hold paid calls and, soon, curate checkpoints.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 15,
                   "fontWeight": "normal"
                 }
               ]
@@ -437525,7 +437735,7 @@
                   "content": "Top experts",
                   "lineHeight": 1.3,
                   "fontFamily": "$font",
-                  "fontSize": 18,
+                  "fontSize": 20,
                   "fontWeight": "600"
                 },
                 {
@@ -437600,7 +437810,7 @@
                                   "content": "Game Designer",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 14,
                                   "fontWeight": "normal"
                                 },
                                 {
@@ -437639,7 +437849,7 @@
                               "content": "Systems and level design for mid-core games. Turns broad ideas into a reviewable scope.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -437710,7 +437920,7 @@
                                   "content": "Technical Director",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 14,
                                   "fontWeight": "normal"
                                 },
                                 {
@@ -437749,7 +437959,7 @@
                               "content": "Unity and Unreal pipelines. Reads a build the way a publisher's tech team would.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -437820,7 +438030,7 @@
                                   "content": "Art Director",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 14,
                                   "fontWeight": "normal"
                                 },
                                 {
@@ -437859,7 +438069,7 @@
                               "content": "Visual direction for small teams. Makes a look hold together across four weeks.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -437930,7 +438140,7 @@
                                   "content": "Producer",
                                   "lineHeight": 1.4,
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 14,
                                   "fontWeight": "normal"
                                 },
                                 {
@@ -437969,7 +438179,7 @@
                               "content": "Scope, milestones and the awkward call. Keeps a 28-day plan honest.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
                             }
                           ]
@@ -438021,7 +438231,7 @@
                   "content": "and turn on Advisor space",
                   "lineHeight": 1.4,
                   "fontFamily": "$font",
-                  "fontSize": 13,
+                  "fontSize": 14,
                   "fontWeight": "normal"
                 }
               ]

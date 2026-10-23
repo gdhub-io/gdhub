@@ -87,9 +87,10 @@ and positions unchanged).
 - Radius: buttons `--gd-radius-control` (14), cards `--gd-radius-card` (16), covers,
   portraits and chips `--gd-radius-chip` (8), avatars pill.
 - Spacing: `--gd-space-1 … --gd-space-16` only; gutter = marketing `--gd-page-gutter` (64).
-- Type (Onest): desktop H2 48/700, line height 1.1, tracking -0.02em; lead 20; body 17 at
-  1.55; names 20/600; small 14. Mobile H2 32, lead 18, body 16, names 18, small 13.
-  Use the `--gd-font-size-marketing-*` clamps where they match (h2, lead).
+- Type (Onest), tokens only: H2 `--gd-font-size-marketing-h2` (42 desktop / 32 phone),
+  lead `--gd-font-size-marketing-lead` (18 / 15), lines `--gd-font-size` (16), names and
+  strip titles `--gd-font-size-h3` (20), expert names `--gd-font-size-h2` (24), small
+  `--gd-font-size-body` (14).
 
 ## 6. States
 

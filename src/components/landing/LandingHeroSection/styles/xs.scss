@@ -43,19 +43,10 @@
       font-weight: 800;
       line-height: 1.25;
     }
+  }
 
-    :global(ul) {
-      >li {
-        margin-bottom: 16px;
-
-        svg {
-          margin: 8px;
-        }
-
-        span {
-          font-size: 14px;
-        }
-      }
-    }
+  .lead {
+    margin-inline: auto;
+    text-align: center;
   }
 }

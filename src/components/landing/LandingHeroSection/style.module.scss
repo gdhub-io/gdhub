@@ -95,29 +95,13 @@
     line-height: 72px;
     margin-bottom: 0;
   }
+}
 
-  :global(ul) {
-    list-style: none;
-    padding-left: 0;
-    margin-bottom: 0;
-
-    >li {
-      margin-bottom: 32px;
-      max-width: 516px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      svg {
-        margin: 14px;
-      }
-
-      span {
-        font-size: 16px;
-      }
-    }
-  }
+.lead {
+  display: block;
+  max-width: 516px;
+  font-size: var(--gd-font-size-marketing-lead);
+  line-height: var(--gd-line-height-body);
 }
 
 @include meta.load-css('styles/xs.scss'); // screen < 576px

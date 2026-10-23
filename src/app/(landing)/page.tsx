@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import HeroBgImage from "@/assets/images/landing/hero-bg.png";
+import {
+	EMPTY_LANDING_DATA,
+	getLandingData,
+} from "@/repositories/landing.repository";
 import { prisma } from "@/services/prisma";
 import { HomeClient, type HomeStats } from "./HomeClient";
 
@@ -55,8 +59,10 @@ export default async function HomePage() {
 	};
 
 	if (!isHealthy) {
-		return <HomeClient stats={stats} />;
+		return <HomeClient stats={stats} data={EMPTY_LANDING_DATA} />;
 	}
+
+	const data = getLandingData();
 
 	try {
 		const [
@@ -94,5 +100,5 @@ export default async function HomePage() {
 		console.error(error);
 	}
 
-	return <HomeClient stats={stats} />;
+	return <HomeClient stats={stats} data={await data} />;
 }

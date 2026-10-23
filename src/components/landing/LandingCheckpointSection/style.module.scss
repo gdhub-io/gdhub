@@ -1,0 +1,171 @@
+@use "../landing" as landing;
+
+.section {
+	@include landing.section;
+	background: linear-gradient(
+		135deg,
+		var(--gd-brand-500) 0%,
+		var(--gd-brand-600) 55%,
+		var(--gd-brand-700) 100%
+	);
+}
+
+.inner {
+	display: flex;
+	flex-direction: column-reverse;
+	gap: var(--gd-space-8);
+
+	@media (min-width: landing.$wide) {
+		flex-direction: row;
+		align-items: center;
+		gap: var(--gd-space-16);
+	}
+}
+
+.copy {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-8);
+	min-width: 0;
+
+	@media (min-width: landing.$wide) {
+		gap: var(--gd-space-12);
+	}
+}
+
+.heading {
+	@include landing.heading;
+}
+
+.title {
+	@include landing.title;
+}
+
+// Vertical on a phone (rail on the left), a row of stops from a desktop up.
+.timeline {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	@media (min-width: landing.$wide) {
+		flex-direction: row;
+		gap: 0;
+	}
+}
+
+.stop {
+	position: relative;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding-left: var(--gd-space-8);
+
+	@media (min-width: landing.$wide) {
+		padding: var(--gd-space-8) var(--gd-space-4) 0 0;
+	}
+}
+
+// Optical, not on the grid: the 12px dot centres on the stop name's first line.
+.rail {
+	position: absolute;
+	top: 6px;
+	left: 0;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-text);
+
+	@media (min-width: landing.$wide) {
+		top: 0;
+	}
+}
+
+// The line to the next stop: down on a phone, across from a desktop up.
+.stop:not(:last-child)::after {
+	position: absolute;
+	top: 22px;
+	bottom: calc(-1 * var(--gd-space-4) + 4px);
+	left: 5px;
+	width: 2px;
+	background: var(--gd-color-border-strong);
+	content: "";
+
+	@media (min-width: landing.$wide) {
+		top: 5px;
+		right: var(--gd-space-2);
+		bottom: auto;
+		left: 20px;
+		width: auto;
+		height: 2px;
+	}
+}
+
+.stopName {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 700 !important;
+}
+
+.stopLine,
+.reasonLine {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+	// The inverse secondary grey turns pink on coral; a translucent white stays legible.
+	color: color-mix(in srgb, var(--gd-neutral-0) 82%, transparent) !important;
+}
+
+.reasons {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--gd-space-4);
+
+	@media (min-width: 576px) {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.reason {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-6);
+	border-radius: var(--gd-radius-card);
+	background: color-mix(in srgb, var(--gd-neutral-950) 18%, transparent);
+}
+
+.reasonName {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 700 !important;
+	line-height: var(--gd-line-height-heading);
+}
+
+.ctaLink {
+	align-self: stretch;
+
+	@media (min-width: 576px) {
+		align-self: flex-start;
+	}
+}
+
+.art {
+	flex: none;
+	width: 100%;
+	max-width: 480px;
+	align-self: center;
+}
+
+.image {
+	width: 100%;
+	height: auto;
+	max-height: 320px;
+	object-fit: contain;
+
+	@media (min-width: landing.$wide) {
+		max-height: 480px;
+	}
+}

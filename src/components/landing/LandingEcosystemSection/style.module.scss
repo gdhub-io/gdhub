@@ -1,0 +1,73 @@
+@use "../landing" as landing;
+
+.section {
+	@include landing.section;
+	background: var(--gd-color-surface);
+}
+
+.inner {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-8);
+
+	@media (min-width: landing.$wide) {
+		gap: var(--gd-space-12);
+	}
+}
+
+.heading {
+	@include landing.heading;
+}
+
+.title {
+	@include landing.title;
+}
+
+.lead {
+	@include landing.lead;
+}
+
+.board {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--gd-space-8) var(--gd-space-4);
+
+	@media (min-width: landing.$wide) {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--gd-space-8);
+	}
+}
+
+.district {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+}
+
+.island {
+	width: 100%;
+	height: auto;
+}
+
+.label {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.name {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600 !important;
+}
+
+.line {
+	font-size: var(--gd-font-size);
+	line-height: var(--gd-line-height-body);
+}
+
+.liveLine {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--gd-space-4);
+	align-items: center;
+}

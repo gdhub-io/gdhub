@@ -4,44 +4,25 @@ import { useTolgee } from "@tolgee/react";
 import { ConfigProvider } from "antd";
 import enLocale from "antd/locale/en_US";
 import ruLocale from "antd/locale/ru_RU";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { LazyHeroGame } from "@/components/landing/HeroGame/LazyHeroGame";
-import { LandingContactsSection } from "@/components/landing/LandingContactsSection";
-import { LandingFeedbackSection } from "@/components/landing/LandingFeedbackSection";
+import {
+	LandingAuthorsSection,
+	LandingExpertsSection,
+	LandingScoutsSection,
+	LandingTalentsSection,
+} from "@/components/landing/LandingAudienceSections";
+import { LandingCheckpointSection } from "@/components/landing/LandingCheckpointSection";
+import { LandingEcosystemSection } from "@/components/landing/LandingEcosystemSection";
 import { LandingHeroSection } from "@/components/landing/LandingHeroSection";
-import { LandingWhoWeAreSection } from "@/components/landing/LandingWhoWeAreSection";
 import { LandingLayout } from "@/components/layouts/LandingLayout";
 import { publicTheme } from "@/config/design";
+import { useCheckpointPurchaseOpen } from "@/contexts/CheckpointPurchaseContext";
 import { useTelegram } from "@/helpers/useTelegram";
+import type { LandingData } from "@/repositories/landing.repository";
 import styles from "./home.module.scss";
-
-// The shell and the hero are the first screen, so they are imported normally:
-// deferring them to a client-only chunk left the document empty until the
-// bundle had run, and the hero illustration is what LCP measures.
-const LandingForAuthorsSection = dynamic(
-	() =>
-		import("@/components/landing/LandingForAuthorsSection").then(
-			(m) => m.LandingForAuthorsSection,
-		),
-	{ ssr: false },
-);
-const LandingForSpecialistsSection = dynamic(
-	() =>
-		import("@/components/landing/LandingForSpecialistsSection").then(
-			(m) => m.LandingForSpecialistsSection,
-		),
-	{ ssr: false },
-);
-const LandingRecentDevlogsSection = dynamic(
-	() =>
-		import("@/components/landing/LandingRecentDevlogsSection").then(
-			(m) => m.LandingRecentDevlogsSection,
-		),
-	{ ssr: false },
-);
 
 export interface HomeStats {
 	usersCount: number | null;
@@ -51,11 +32,18 @@ export interface HomeStats {
 	investmentAmount: number;
 }
 
-export function HomeClient({ stats }: { stats: HomeStats }) {
+export function HomeClient({
+	stats,
+	data,
+}: {
+	stats: HomeStats;
+	data: LandingData;
+}) {
 	const { getLanguage } = useTolgee();
 	const router = useRouter();
 	const [isOpenedInTelegram, telegramUser, telegramApp] = useTelegram();
 	const [, setSignInProcessing] = useState(false);
+	const checkpointOpen = useCheckpointPurchaseOpen();
 
 	const handleSignInTelegram = useCallback(async () => {
 		if (!isOpenedInTelegram) return;
@@ -97,12 +85,15 @@ export function HomeClient({ stats }: { stats: HomeStats }) {
 			<LandingLayout className={styles.container}>
 				<div className={styles.main} data-gd-landing>
 					<LandingHeroSection stats={stats} art={<LazyHeroGame />} />
-					<LandingWhoWeAreSection />
-					<LandingForAuthorsSection />
-					<LandingForSpecialistsSection />
-					<LandingRecentDevlogsSection />
-					<LandingFeedbackSection />
-					<LandingContactsSection />
+					<LandingEcosystemSection liveLine={data.liveLine} />
+					{checkpointOpen && <LandingCheckpointSection />}
+					<LandingAuthorsSection projects={data.projects} />
+					<LandingTalentsSection
+						vacancies={data.vacancies}
+						talents={data.talents}
+					/>
+					<LandingScoutsSection storeProjects={data.storeProjects} />
+					<LandingExpertsSection experts={data.experts} />
 				</div>
 			</LandingLayout>
 		</ConfigProvider>

@@ -1,0 +1,107 @@
+@mixin outlined {
+	display: flex;
+	gap: var(--gd-space-4);
+	min-width: 0;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	color: inherit;
+}
+
+.projectCard {
+	@include outlined;
+	align-items: center;
+	padding: var(--gd-space-4);
+	transition: border-color 0.2s;
+
+	&:hover {
+		border-color: var(--gd-color-border-strong);
+	}
+}
+
+.projectCover {
+	position: relative;
+	display: grid;
+	place-items: center;
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+	width: 96px;
+	height: 64px;
+	overflow: hidden;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-fill-base);
+}
+
+.talentCard {
+	@include outlined;
+	align-items: center;
+	padding: var(--gd-space-6);
+	background: var(--gd-fill-base);
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.name {
+	font-size: var(--gd-font-size);
+}
+
+.meta {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-body);
+}
+
+.expertCard {
+	@include outlined;
+	flex-direction: column;
+	padding: var(--gd-space-2);
+	background: var(--gd-color-surface);
+	transition: border-color 0.2s;
+
+	&:hover {
+		border-color: var(--gd-color-border-strong);
+	}
+}
+
+.portrait {
+	position: relative;
+	aspect-ratio: 288 / 266;
+	overflow: hidden;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-fill-base);
+}
+
+.portraitImage {
+	object-fit: cover;
+}
+
+.expertInfo {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-2) var(--gd-space-4) var(--gd-space-4);
+}
+
+.expertName {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 700 !important;
+}
+
+.role {
+	display: flex;
+	gap: var(--gd-space-2);
+	align-items: center;
+	min-width: 0;
+}
+
+.level {
+	margin: 0;
+}
+
+.bio {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-body);
+}

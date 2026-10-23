@@ -462,5 +462,6 @@ export type UserRole = UserRoleType;
 
 export const WaitlistFeature = {
 	ExpertCheckpoint: "ExpertCheckpoint",
+	ScoutSpace: "ScoutSpace",
 } as const satisfies Record<WaitlistFeatureType, WaitlistFeatureType>;
 export type WaitlistFeature = WaitlistFeatureType;
