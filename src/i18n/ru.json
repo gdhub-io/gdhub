@@ -477,6 +477,12 @@
 				"inputAndAnswer": "Ввод и полный ответ",
 				"looked": "Посмотрели на",
 				"lookedValue": "{links} ссылки · {unread} не прочитано",
+				"match": {
+					"cannotTell": "Не могу сказать",
+					"doesNotMatch": "Не соответствует",
+					"matches": "совпадения",
+					"partly": "Частично"
+				},
 				"media": "Медиа дневника разработки",
 				"noSprint": "Перед Спринтом",
 				"notRead": "Не прочитано",

@@ -477,6 +477,12 @@
 				"inputAndAnswer": "Input and full answer",
 				"looked": "Looked at",
 				"lookedValue": "{links} links · {unread} not read",
+				"match": {
+					"cannotTell": "Cannot tell",
+					"doesNotMatch": "Does not match",
+					"matches": "Matches",
+					"partly": "Partly"
+				},
 				"media": "Devlog media",
 				"noSprint": "Before a sprint",
 				"notRead": "Not read",
