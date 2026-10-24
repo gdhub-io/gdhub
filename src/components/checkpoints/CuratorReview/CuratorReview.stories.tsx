@@ -129,7 +129,7 @@ const proCall = (
 	state,
 	curatorJoinedAt: state === "open" ? `${DAYS[index - 1]}T11:58:00.000Z` : null,
 	role: "team",
-	brief: null,
+	briefs: [],
 	plan: {
 		goal: GOAL,
 		goalAgreedAt: "2026-10-01T12:45:00.000Z",

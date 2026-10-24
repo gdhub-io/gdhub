@@ -16,7 +16,6 @@ import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
-import { CallBrief } from "./CallBrief";
 import { CallGoal } from "./CallGoal";
 import { CallHeader } from "./CallHeader";
 import { CallPanel, type PanelTab } from "./CallPanel";
@@ -105,13 +104,6 @@ export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
 				/>
 			)}
 			<CallGoal call={call} />
-			{call.brief && (
-				<CallBrief
-					brief={call.brief}
-					tasks={call.plan.tasks}
-					sprint={call.index - 1}
-				/>
-			)}
 			<CallPanel call={call} picked={tab} onPick={setTab} />
 		</>
 	);

@@ -62,32 +62,37 @@ export const getJournal = (checkpointId: string) =>
 	});
 
 export type CallBrief = {
+	/** The call it is for. */
+	index: number;
 	notes: CallNotes;
 	/** What each task's evidence was seen to show when the brief was written. */
 	seen: { itemId: string; match: EvidenceMatch; note: string | null }[];
 	writtenAt: string;
 };
 
-/** The brief for a human curator's call, if one was written. Curator and admins only. */
-export const getCallBrief = async (
+/** Every brief written for a human curator's calls, by call. Curator and admins only. */
+export const getCallBriefs = async (
 	checkpointId: string,
-	sessionIndex: number,
-): Promise<CallBrief | null> => {
-	const entry = await prisma.checkpointJournalEntry.findFirst({
+): Promise<CallBrief[]> => {
+	const entries = await prisma.checkpointJournalEntry.findMany({
 		where: {
 			checkpointId,
 			kind: CheckpointJournalKind.Review,
-			sprint: sessionIndex - 1,
 			checkpoint: { curatorKind: CheckpointCuratorKind.Human },
 		},
-		orderBy: { createdAt: "desc" },
-		select: { output: true, createdAt: true },
+		orderBy: { createdAt: "asc" },
+		select: { sprint: true, output: true, createdAt: true },
 	});
-	if (!entry) return null;
-	const { notes, seen } = entry.output as Omit<CallBrief, "writtenAt">;
-	return {
-		notes,
-		seen,
-		writtenAt: entry.createdAt.toISOString(),
-	};
+	return entries.flatMap((entry) =>
+		entry.sprint
+			? [
+					{
+						...(entry.output as Pick<CallBrief, "notes" | "seen">),
+						// A brief reads the sprint before the call it is for.
+						index: entry.sprint + 1,
+						writtenAt: entry.createdAt.toISOString(),
+					},
+				]
+			: [],
+	);
 };

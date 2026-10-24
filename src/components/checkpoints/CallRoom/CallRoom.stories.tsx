@@ -96,7 +96,7 @@ const call: CheckpointCallDto = {
 	state: "open",
 	curatorJoinedAt: null,
 	role: "team",
-	brief: null,
+	briefs: [],
 	plan,
 	sessions: sessionsHeld(1),
 };
@@ -315,12 +315,14 @@ function PanelStory({
 	tab: initialTab,
 	panelPlan = plan,
 	notes,
+	briefs,
 }: {
 	current: number;
 	held: number;
 	tab: PanelTab;
 	panelPlan?: CheckpointCallDto["plan"];
 	notes?: CallNotesDto;
+	briefs?: CheckpointCallDto["briefs"];
 }) {
 	const [selected, setSelected] = useState(current);
 	const [tab, setTab] = useState(initialTab);
@@ -336,6 +338,7 @@ function PanelStory({
 			onChange={saved}
 			notes={notes}
 			notesLoading={false}
+			briefs={briefs}
 			now={new Date(sessionDates[current - 1])}
 		/>
 	);
@@ -420,4 +423,51 @@ export const PanelNotesPending: Story = {
 /** Curator's Review while it loads — pro and ai share it. */
 export const Loading: Story = {
 	render: () => <CuratorReviewSkeleton />,
+};
+
+/** Frame 08.10: the curator's Brief tab, written the night before call 2. */
+export const PanelBriefCurator: Story = {
+	render: () => (
+		<PanelStory
+			current={2}
+			held={1}
+			tab="brief"
+			briefs={[
+				{
+					index: 2,
+					notes: {
+						inShort:
+							"Two of three tasks have evidence, but the core-loop one-pager shows a photo of dice, not the loop.",
+						discussed: [
+							{
+								itemId: "t1",
+								text: "Drive image: colourful dice on a table, no text about the loop.",
+							},
+							{
+								itemId: "t2",
+								text: "Video, 90 s looked at: the island floods and drains on a timer.",
+							},
+						],
+						notDiscussed: ["t3"],
+						outsidePlan: [],
+						agreed: [],
+						questions: [
+							"Where is the one-page core loop?",
+							"When can a stranger open the greybox?",
+						],
+					},
+					seen: [
+						{ itemId: "t1", match: "DoesNotMatch", note: null },
+						{ itemId: "t2", match: "Matches", note: null },
+					],
+					writtenAt: "2026-10-08T01:00:00.000Z",
+				},
+			]}
+		/>
+	),
+};
+
+/** A call the AI wrote no brief for: plain text, nothing to click. */
+export const PanelBriefNone: Story = {
+	render: () => <PanelStory current={3} held={2} tab="brief" briefs={[]} />,
 };
