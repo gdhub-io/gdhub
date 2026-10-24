@@ -24,6 +24,7 @@ const artifact = (
 	checkNote: null,
 	createdByUser: { name: "Marta", image: null },
 	step,
+	evidence: [],
 });
 
 const concepting = { id: "s1", name: "Concepting", order: 1 };

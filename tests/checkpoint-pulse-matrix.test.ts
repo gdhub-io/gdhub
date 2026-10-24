@@ -71,7 +71,6 @@ const detailRow = (overrides: Row = {}): Row => ({
 	items: [],
 	reports: [],
 	pulses: [],
-	artifacts: [],
 	sessions: [],
 	project: { team: { members: [] } },
 	...overrides,
@@ -225,12 +224,11 @@ describe("pulse matrix", () => {
 });
 
 describe("evidence", () => {
-	it("unions the checkpoint's own artifacts with the ones its items point at", async () => {
+	it("lists the artifacts its items point at, one from an earlier stage included", async () => {
 		const older = artifact("a-old", "2026-07-01T10:00:00.000Z", "Last stage's build");
 		const made = artifact("a-new", "2026-09-10T10:00:00.000Z");
 
 		const { evidence } = await load({
-			artifacts: [made],
 			items: [
 				{ id: "i1", artifact: older },
 				{ id: "i2", artifact: made },
@@ -259,11 +257,10 @@ describe("evidence", () => {
 		});
 	});
 
-	it("lists an artifact twice over — offered and made here — only once", async () => {
+	it("lists an artifact that proves two items only once", async () => {
 		const made = artifact("a-new", "2026-09-10T10:00:00.000Z");
 
 		const { evidence } = await load({
-			artifacts: [made],
 			items: [
 				{ id: "i1", artifact: made },
 				{ id: "i2", artifact: made },

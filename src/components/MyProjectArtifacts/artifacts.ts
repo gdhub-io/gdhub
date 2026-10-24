@@ -59,6 +59,8 @@ export type ArtifactListItem = {
 	checkNote: string | null;
 	createdByUser: { name: string | null; image: string | null };
 	step: { id: string; name: string; order: number } | null;
+	/** The checkpoint tasks it was picked to prove; the checkpoints say so, not the artifact. */
+	evidence: { checkpointNumber: number; tasks: string[] }[];
 };
 
 /** Stage in workflow order, then date; artifacts with no stage go last. */

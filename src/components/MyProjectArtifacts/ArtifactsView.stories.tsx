@@ -22,6 +22,9 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: null,
 		createdByUser: marta,
 		step: concepting,
+		evidence: [
+			{ checkpointNumber: 1, tasks: ["Core loop described on one page"] },
+		],
 	},
 	{
 		id: "2",
@@ -33,6 +36,7 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: null,
 		createdByUser: marta,
 		step: concepting,
+		evidence: [],
 	},
 	{
 		id: "3",
@@ -44,6 +48,12 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: null,
 		createdByUser: marta,
 		step: prototyping,
+		evidence: [
+			{
+				checkpointNumber: 2,
+				tasks: ["Greybox: one island, tide in and out", "Five playtesters"],
+			},
+		],
 	},
 	{
 		id: "4",
@@ -55,6 +65,7 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: "needsLogin",
 		createdByUser: tom,
 		step: prototyping,
+		evidence: [],
 	},
 	{
 		id: "5",
@@ -66,6 +77,7 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: null,
 		createdByUser: tom,
 		step: prototyping,
+		evidence: [],
 	},
 	{
 		id: "6",
@@ -77,6 +89,7 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: null,
 		createdByUser: tom,
 		step: prototyping,
+		evidence: [],
 	},
 	{
 		id: "7",
@@ -88,6 +101,7 @@ const artifacts: ArtifactListItem[] = [
 		checkNote: null,
 		createdByUser: { name: "Owen Marsh", image: null },
 		step: null,
+		evidence: [],
 	},
 ];
 
