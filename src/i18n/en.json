@@ -1210,7 +1210,9 @@
 			"title": "Artifacts could not be loaded"
 		},
 		"evidence": {
-			"label": "{count, plural, other {Evidence · Checkpoint {number} · # tasks}}"
+			"checkpoint": "Evidence · Checkpoint {number}",
+			"label": "{count, plural, other {Evidence · Checkpoint {number} · # tasks}}",
+			"tasks": " · {count} tasks"
 		},
 		"filter": {
 			"all": "All"
