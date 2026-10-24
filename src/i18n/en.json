@@ -465,12 +465,15 @@
 				"title": "Assign a curator"
 			},
 			"journal": {
+				"aiRead": "The AI's read of the verdict",
 				"all": "All",
 				"artifact": "Artifact · {name}",
 				"artifactBody": "Task: “{task}”. Seen: {note}",
 				"artifacts": "Artifacts",
 				"basedOn": "What it was based on",
+				"brief": "Brief before call {call}",
 				"checkpoint": "Checkpoint {number}",
+				"curatorSent": "Verdict sent by the curator",
 				"devlog": "Devlog media · {devlog}",
 				"empty": "Nothing looked at yet. Entries appear as artifacts are attached and devlogs are posted.",
 				"error": "The journal could not be loaded. Close it and open it again.",
@@ -1093,6 +1096,14 @@
 			"title": "Advisor settings"
 		},
 		"verdict": {
+			"aiRead": {
+				"allProven": "Every outcome has an artifact that opens.",
+				"evidence": "What each artifact shows",
+				"proposes": "Would propose",
+				"subtitle": "A reference for you. The decision and the words are yours.",
+				"title": "The AI's read",
+				"unproven": "No artifact that opens: {outcomes}"
+			},
 			"alreadySent": "The verdict is sent.",
 			"artifact": "Artifact",
 			"build": "Build",
@@ -1517,6 +1528,12 @@
 			"aheadCurator": "The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
 			"aheadFirst": "Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
+			"brief": {
+				"raise": "Worth raising",
+				"subtitle": "Sprint {sprint} as the AI read it · only you see this",
+				"title": "Before the call",
+				"written": "Written {date}"
+			},
 			"calendarTitle": "Call {index} · {project}",
 			"camOff": "Turn off camera",
 			"camOn": "Turn on camera",
@@ -1728,6 +1745,12 @@
 			"failed": "The evidence could not be attached",
 			"landed": "Landed in this sprint",
 			"later": "Proof at the end",
+			"match": {
+				"cannotTell": "Cannot tell",
+				"doesNotMatch": "Does not match",
+				"matches": "Matches",
+				"partly": "Partly"
+			},
 			"multi": "One artifact can prove more than one outcome.",
 			"noArtifacts": "No artifacts yet",
 			"noArtifactsNote": "Evidence comes from the project's artifact store. Add the build, the video or the document and it appears here.",
