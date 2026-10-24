@@ -480,12 +480,6 @@
 				"inputAndAnswer": "Input and full answer",
 				"looked": "Looked at",
 				"lookedValue": "{links} links · {unread} not read",
-				"match": {
-					"cannotTell": "Cannot tell",
-					"doesNotMatch": "Does not match",
-					"matches": "Matches",
-					"partly": "Partly"
-				},
 				"media": "Devlog media",
 				"noSprint": "Before a sprint",
 				"notRead": "Not read",
@@ -1533,7 +1527,6 @@
 				"raise": "Worth raising",
 				"subtitle": "Sprint {sprint} as the AI read it · only you see this",
 				"tab": "Brief",
-				"title": "Before the call",
 				"written": "Written {date}"
 			},
 			"calendarTitle": "Call {index} · {project}",

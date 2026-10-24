@@ -480,12 +480,6 @@
 				"inputAndAnswer": "Ввод и полный ответ",
 				"looked": "Посмотрели на",
 				"lookedValue": "{links} ссылки · {unread} не прочитано",
-				"match": {
-					"cannotTell": "Не могу сказать",
-					"doesNotMatch": "Не соответствует",
-					"matches": "совпадения",
-					"partly": "Частично"
-				},
 				"media": "Медиа дневника разработки",
 				"noSprint": "Перед Спринтом",
 				"notRead": "Не прочитано",
@@ -1533,7 +1527,6 @@
 				"raise": "Стоит поднять",
 				"subtitle": "Спринт {sprint} как его прочитало ИИ · это видите только вы",
 				"tab": "Кратко",
-				"title": "Перед звонком",
 				"written": "Написано {date}"
 			},
 			"calendarTitle": "Вызов {index} · {project}",
