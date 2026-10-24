@@ -1529,8 +1529,10 @@
 			"aheadFirst": "Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"brief": {
+				"none": "No brief for this call. The AI writes one the night before calls 2–5.",
 				"raise": "Worth raising",
 				"subtitle": "Sprint {sprint} as the AI read it · only you see this",
+				"tab": "Brief",
 				"title": "Before the call",
 				"written": "Written {date}"
 			},
