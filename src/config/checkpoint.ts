@@ -202,4 +202,6 @@ export const AI_MODEL_PRICES: Record<
 > = {
 	"gpt-5.6-luna": { input: 0.2, output: 1.2 },
 	"gpt-6-sol": { input: 2, output: 10 },
+	"gpt-6.1-sol": { input: 2, output: 10 },
+	"gpt-6-luna": { input: 0.1, output: 0.5 },
 };

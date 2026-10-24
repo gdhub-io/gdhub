@@ -51,3 +51,31 @@ Playwright will reuse an already-running dev server on port 3000 (see
 Name it `something.authed.spec.ts`. The `authenticated` project will pick it
 up and apply the saved storage state automatically. Inside the spec you
 already have a logged-in browser context — just `page.goto(...)`.
+
+## The checkpoint suite (GDHUB-79)
+
+`tests/e2e/checkpoints/` walks the AI checkpoint end to end: a project's path,
+the purchase through Paddle's sandbox, the whole 28 days with the real model, the
+verdict, refunds and who sees what. It never touches the dev server on :3000.
+
+```bash
+bun run test-env up          # the throwaway database on 55432
+bun run dev:test             # :3100 against it, with .env.test (Paddle sandbox)
+bun run ngrok                # Paddle's webhook → :3100
+bun run test:e2e:checkpoints # one worker: the nightly cron is shared
+```
+
+- `.env.test` holds the Paddle **sandbox** keys and its webhook secret; the
+  sandbox's notification destination is the ngrok URL + `/api/paddle/webhooks`.
+- Time is moved by `makeToday(checkpointId, day)`, which shifts the checkpoint
+  and everything written on the project together, then `runCron(page)` runs
+  the night.
+- Every flow writes `test-results/checkpoints/<flow>.md`: its steps, what the
+  AI was shown and wrote (from the curator journal), the reviews, and the cost
+  — the Paddle amount and the summed `CheckpointAiUsage`. A whole checkpoint
+  costs about $0.09 of model calls.
+- Users are made per run on `example.com` addresses and removed afterwards;
+  rows an interrupted run left are removed by the next one after an hour.
+- Not covered: the email sign-in link (the stand signs in through the test
+  provider) and Novu letters (`E2E_TEST_AUTH=1` sends none — the cron's counts
+  stand in for them).

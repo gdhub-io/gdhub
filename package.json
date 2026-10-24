@@ -10,6 +10,7 @@
 	"scripts": {
 		"dev": "next dev --turbopack",
 		"dev:webpack": "next dev",
+		"ngrok": "ngrok http 3100 --url=https://ddrynau.ngrok.app",
 		"stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhooks",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
@@ -30,6 +31,7 @@
 		"test:watch": "dotenv -- vitest",
 		"test:integration": "cross-env RUN_DOCKER_INTEGRATION_TESTS=1 dotenv -- vitest --run tests/docker-prisma.integration.test.ts",
 		"test:e2e": "dotenv -e .env.test -- playwright test",
+		"test:e2e:checkpoints": "dotenv -e .env.test -- cross-env E2E_TEST_AUTH=1 CRON_SECRET=e2e-cron PLAYWRIGHT_BASE_URL=http://localhost:3100 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test playwright test --project=checkpoints --workers=1",
 		"test:e2e:ui": "dotenv -e .env.test -- playwright test --ui",
 		"test:e2e:staging": "cross-env PLAYWRIGHT_BASE_URL=https://staging.example.com playwright test",
 		"test:announce": "dotenv -- node scripts/test-announce-channels.mjs",
@@ -43,7 +45,7 @@
 		"rbac:seed-matrix:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-seed-matrix.ts",
 		"rbac:backfill:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-backfill.ts",
 		"test-env": "bun run scripts/test-env.ts",
-		"dev:test": "cross-env E2E_TEST_AUTH=1 NEXT_DIST_DIR=.next-test DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test next dev --turbopack -p 3100"
+		"dev:test": "dotenv -e .env.test -- cross-env E2E_TEST_AUTH=1 CRON_SECRET=e2e-cron CHECKPOINTS_PURCHASE_OPEN=true NEXT_DIST_DIR=.next-test NEXTAUTH_URL=http://localhost:3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test next dev --turbopack -p 3100"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",
