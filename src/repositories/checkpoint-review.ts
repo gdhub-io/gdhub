@@ -1,5 +1,10 @@
 import { createHash } from "node:crypto";
-import { FINAL_SESSION, SCOPE_SESSION } from "@/config/checkpoint";
+import type { Prisma } from "@gdhub-io/gdhub-prisma";
+import {
+	CHECKPOINT_RUNNING_STATUSES,
+	FINAL_SESSION,
+	SCOPE_SESSION,
+} from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
@@ -14,6 +19,7 @@ import {
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
+import { MS_PER_DAY } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
 import { sprintRange } from "@/lib/checkpoint-sprints";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
@@ -48,6 +54,7 @@ import {
 } from "@/services/curator-review";
 import { prisma } from "@/services/prisma";
 import type {
+	CallNotes,
 	CheckpointArtifactRef,
 	CuratorReview,
 	PlanAdvice,
@@ -477,6 +484,78 @@ export const writeDueReviews = async (now = new Date()) => {
 	return written;
 };
 
+/** What a sprint review reads, for the AI curator's review and the human curator's brief alike. */
+const reviewSelect = {
+	id: true,
+	projectId: true,
+	goal: true,
+	stageName: true,
+	startedAt: true,
+	dueAt: true,
+	verdict: true,
+	verdictNote: true,
+	items: taskSelect,
+	sessions: { select: { index: true, content: true } },
+	pulses: { select: { week: true, confirmedAt: true } },
+} as const;
+
+type ReviewCheckpoint = Prisma.ProjectCheckpointGetPayload<{
+	select: typeof reviewSelect;
+}>;
+
+/**
+ * The sprint behind a session, as the model reads it: its devlogs and what
+ * their media show, its artifacts, the pulse, and the focus the last call or
+ * review agreed. The final review reads the whole run and the settled verdict.
+ */
+const sprintReviewInput = async (
+	checkpoint: ReviewCheckpoint,
+	startedAt: Date,
+	sessionIndex: number,
+	final: boolean,
+) => {
+	const sprint = sessionIndex - 1;
+	const [{ devlogs, posts, artifacts }, picture] = await Promise.all([
+		sprintEvidence(checkpoint.projectId, startedAt, sprint),
+		projectPicture(
+			checkpoint.id,
+			final
+				? runPeriod(startedAt, checkpoint.dueAt)
+				: sprintRange(startedAt, sprint),
+		),
+	]);
+	const devlogMedia = await devlogMediaLines(posts.map((post) => post.id));
+	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
+	// An AI review keeps its notes under `notes`; a human call's notes are the content.
+	const previous = checkpoint.sessions.find(
+		(row) => row.index === sessionIndex - 1,
+	)?.content as
+		| (Partial<CuratorReview> & Partial<CallNotes>)
+		| null
+		| undefined;
+	const agreed = (previous?.notes ?? previous)?.agreed ?? [];
+
+	return {
+		goal: checkpoint.goal,
+		stage: checkpoint.stageName,
+		sprint,
+		tasks: checkpoint.items.map(toCuratorTask),
+		devlogs,
+		devlogMedia,
+		artifacts,
+		pulse: {
+			worked: pulses.filter((pulse) => pulse.confirmedAt).length,
+			missing: pulses.filter((pulse) => !pulse.confirmedAt).length,
+		},
+		focusLastReview: agreed.map((line) => line.text),
+		verdict:
+			final && checkpoint.verdict
+				? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
+				: null,
+		picture,
+	};
+};
+
 /** One session's review, now. The daily run claims it first; a dev script calls it directly. */
 export const writeReviewFor = async (sessionId: string, now: Date) => {
 	const session = await prisma.checkpointSession.findUniqueOrThrow({
@@ -492,18 +571,8 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
 		where: { id: session.checkpointId },
 		select: {
-			id: true,
-			projectId: true,
+			...reviewSelect,
 			createdAt: true,
-			goal: true,
-			stageName: true,
-			startedAt: true,
-			dueAt: true,
-			verdict: true,
-			verdictNote: true,
-			items: taskSelect,
-			sessions: { select: { index: true, content: true } },
-			pulses: { select: { week: true, confirmedAt: true } },
 			project: {
 				select: {
 					name: true,
@@ -521,42 +590,16 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 			},
 		},
 	});
-	if (!checkpoint.startedAt || (final && !checkpoint.verdict)) return false;
+	const { startedAt } = checkpoint;
+	if (!startedAt || (final && !checkpoint.verdict)) return false;
 
 	const sprint = session.index - 1;
-	const [{ devlogs, posts, artifacts }, picture] = await Promise.all([
-		sprintEvidence(checkpoint.projectId, checkpoint.startedAt, sprint),
-		projectPicture(
-			session.checkpointId,
-			final
-				? runPeriod(checkpoint.startedAt, checkpoint.dueAt)
-				: sprintRange(checkpoint.startedAt, sprint),
-		),
-	]);
-	const devlogMedia = await devlogMediaLines(posts.map((post) => post.id));
-	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
-	const previous = checkpoint.sessions.find(
-		(row) => row.index === session.index - 1,
-	)?.content as CuratorReview | null | undefined;
-
-	const input = {
-		goal: checkpoint.goal,
-		stage: checkpoint.stageName,
-		sprint,
-		tasks: checkpoint.items.map(toCuratorTask),
-		devlogs,
-		devlogMedia,
-		artifacts,
-		pulse: {
-			worked: pulses.filter((pulse) => pulse.confirmedAt).length,
-			missing: pulses.filter((pulse) => !pulse.confirmedAt).length,
-		},
-		focusLastReview: previous?.notes?.agreed.map((line) => line.text) ?? [],
-		verdict: checkpoint.verdict
-			? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
-			: null,
-		picture,
-	};
+	const input = await sprintReviewInput(
+		checkpoint,
+		startedAt,
+		session.index,
+		final,
+	);
 	const review = await writeSprintReview(input, {
 		checkpointId: session.checkpointId,
 		purpose: "sprintReview",
@@ -568,7 +611,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 	const midway =
 		session.index === SCOPE_SESSION
 			? await adviceFor(
-					adviceInput(checkpoint, "midway", notes.inShort, picture),
+					adviceInput(checkpoint, "midway", notes.inShort, input.picture),
 					checkpoint.items,
 					session.checkpointId,
 				).catch(() => null)
@@ -618,5 +661,89 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 			}),
 		),
 	);
+	return true;
+};
+
+/** A human curator's call starting within this window gets its brief on tonight's run. */
+const BRIEF_AHEAD_MS = MS_PER_DAY;
+
+/**
+ * The night before a human curator's calls 2–5 (GDHUB-114): the sprint behind
+ * the call as the AI read it, for the curator only. The daily run at 01:00 UTC
+ * writes one for every call starting within the next 24 hours.
+ */
+export const writeDueBriefs = async (now = new Date()) => {
+	const due = await prisma.checkpointSession.findMany({
+		where: {
+			index: { gt: 1 },
+			endedAt: null,
+			scheduledAt: { gt: now, lte: new Date(now.getTime() + BRIEF_AHEAD_MS) },
+			checkpoint: {
+				curatorKind: CheckpointCuratorKind.Human,
+				status: { in: CHECKPOINT_RUNNING_STATUSES },
+			},
+		},
+		select: { id: true },
+	});
+
+	let written = 0;
+	for (const { id } of due) {
+		const ok = await writeBriefFor(id).catch((error) => {
+			console.error("[curator-brief] failed for session", id, error);
+			return false;
+		});
+		if (ok) written += 1;
+	}
+	return written;
+};
+
+/** One call's brief, once: a brief already in the journal is never written again. */
+export const writeBriefFor = async (sessionId: string) => {
+	const session = await prisma.checkpointSession.findUniqueOrThrow({
+		where: { id: sessionId },
+		select: { index: true, checkpointId: true },
+	});
+	const { checkpointId } = session;
+	const sprint = session.index - 1;
+	const written = await prisma.checkpointJournalEntry.findFirst({
+		where: { checkpointId, kind: CheckpointJournalKind.Review, sprint },
+		select: { id: true },
+	});
+	if (written) return false;
+
+	await seeCheckpointEvidence(checkpointId);
+	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
+		where: { id: checkpointId },
+		select: reviewSelect,
+	});
+	const { startedAt } = checkpoint;
+	if (!startedAt) return false;
+
+	const input = await sprintReviewInput(
+		checkpoint,
+		startedAt,
+		session.index,
+		false,
+	);
+	const review = await writeSprintReview(input, {
+		checkpointId,
+		purpose: "callBrief",
+	});
+	if (!review) return false;
+
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Review,
+		sprint,
+		input,
+		output: {
+			audience: "curator",
+			notes: knownOnly(review.notes, checkpoint.items),
+			// What the curator's card shows beside each task, so it never reads the input.
+			seen: input.tasks.flatMap((task) =>
+				task.seen ? [{ itemId: task.id, ...task.seen }] : [],
+			),
+		},
+	});
 	return true;
 };

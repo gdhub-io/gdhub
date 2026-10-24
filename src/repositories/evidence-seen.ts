@@ -1,10 +1,8 @@
 import { CHECKPOINT_RUNNING_STATUSES } from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
-	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointJournalKind,
-	type CheckpointStatus,
 	EvidenceMatch,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
@@ -48,14 +46,6 @@ export type JournalRead = ReturnType<typeof whatWasRead> & {
 const readable = (content: EvidenceContent) =>
 	!!content.text || content.images.length > 0;
 
-/** Only an AI curator looks, and only while the 28 days or their review run. */
-const aiRunning = (checkpoint: {
-	curatorKind: CheckpointCuratorKind;
-	status: CheckpointStatus;
-}) =>
-	checkpoint.curatorKind === CheckpointCuratorKind.AI &&
-	isRunning(checkpoint.status);
-
 /**
  * Look at the evidence on a checkpoint's tasks that has not been looked at yet,
  * and judge each against its task. Runs when an artifact arrives and again
@@ -65,9 +55,9 @@ const aiRunning = (checkpoint: {
 export async function seeCheckpointEvidence(checkpointId: string) {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
-		select: { startedAt: true, curatorKind: true, status: true },
+		select: { startedAt: true, status: true },
 	});
-	if (!checkpoint?.startedAt || !aiRunning(checkpoint)) return;
+	if (!checkpoint?.startedAt || !isRunning(checkpoint.status)) return;
 	const sprint = currentSprint(checkpoint.startedAt);
 
 	const items = await prisma.checkpointItem.findMany({
@@ -146,7 +136,7 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 
 /**
  * An artifact arrived or its link changed: check that it opens, then look at it
- * on every running AI checkpoint that uses it.
+ * on every running checkpoint that uses it, whoever its curator is.
  */
 export async function checkAndLook(
 	artifactId: string,
@@ -156,10 +146,7 @@ export async function checkAndLook(
 	const uses = await prisma.checkpointItem.findMany({
 		where: {
 			artifactId,
-			checkpoint: {
-				curatorKind: CheckpointCuratorKind.AI,
-				status: { in: CHECKPOINT_RUNNING_STATUSES },
-			},
+			checkpoint: { status: { in: CHECKPOINT_RUNNING_STATUSES } },
 		},
 		distinct: ["checkpointId"],
 		select: { checkpointId: true },
@@ -205,7 +192,7 @@ export const devlogMediaLinks = (post: {
 };
 
 /**
- * Look at the images and videos of a devlog posted on a running AI checkpoint,
+ * Look at the images and videos of a devlog posted on a running checkpoint,
  * each link once, and journal what they show. Runs when the devlog is posted or
  * edited, and again before a review for anything missed.
  */
@@ -218,12 +205,12 @@ export async function seeDevlogMedia(devlogId: string) {
 			contentEditor: true,
 			publishedAt: true,
 			checkpoint: {
-				select: { id: true, startedAt: true, curatorKind: true, status: true },
+				select: { id: true, startedAt: true, status: true },
 			},
 		},
 	});
 	const checkpoint = post?.checkpoint;
-	if (!post || !checkpoint?.startedAt || !aiRunning(checkpoint)) return;
+	if (!post || !checkpoint?.startedAt || !isRunning(checkpoint.status)) return;
 	const checkpointId = checkpoint.id;
 	const sprint =
 		sprintOfDate(checkpoint.startedAt, post.publishedAt) ??

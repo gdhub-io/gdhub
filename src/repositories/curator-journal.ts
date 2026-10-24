@@ -1,6 +1,11 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
-import { CheckpointJournalKind } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointJournalKind,
+	type EvidenceMatch,
+} from "@/config/prisma-enums";
 import { prisma } from "@/services/prisma";
+import type { CallNotes } from "@/types/checkpoints";
 
 /**
  * One line of the AI curator's journal (GDHUB-110): what it looked at, wrote or
@@ -55,3 +60,39 @@ export const getJournal = (checkpointId: string) =>
 			createdAt: true,
 		},
 	});
+
+export type CallBrief = {
+	/** The call it is for. */
+	index: number;
+	notes: CallNotes;
+	/** What each task's evidence was seen to show when the brief was written. */
+	seen: { itemId: string; match: EvidenceMatch; note: string | null }[];
+	writtenAt: string;
+};
+
+/** Every brief written for a human curator's calls, by call. Curator and admins only. */
+export const getCallBriefs = async (
+	checkpointId: string,
+): Promise<CallBrief[]> => {
+	const entries = await prisma.checkpointJournalEntry.findMany({
+		where: {
+			checkpointId,
+			kind: CheckpointJournalKind.Review,
+			checkpoint: { curatorKind: CheckpointCuratorKind.Human },
+		},
+		orderBy: { createdAt: "asc" },
+		select: { sprint: true, output: true, createdAt: true },
+	});
+	return entries.flatMap((entry) =>
+		entry.sprint
+			? [
+					{
+						...(entry.output as Pick<CallBrief, "notes" | "seen">),
+						// A brief reads the sprint before the call it is for.
+						index: entry.sprint + 1,
+						writtenAt: entry.createdAt.toISOString(),
+					},
+				]
+			: [],
+	);
+};

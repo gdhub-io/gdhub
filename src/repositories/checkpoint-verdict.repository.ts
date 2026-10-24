@@ -11,6 +11,10 @@ import {
 	type VerdictStage,
 	verdictStage,
 } from "@/lib/checkpoint-verdict-window";
+import {
+	getVerdictRead,
+	journalCuratorVerdict,
+} from "@/repositories/checkpoint-curator.repository";
 import { recordCheckpointFee } from "@/repositories/checkpoint-fee";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
@@ -133,7 +137,10 @@ export async function writeCuratorVerdict(
 		},
 	);
 
-	if (result.ok) await afterVerdictSent(checkpointId);
+	if (result.ok) {
+		await journalCuratorVerdict(checkpointId, verdict, note);
+		await afterVerdictSent(checkpointId);
+	}
 
 	return result;
 }
@@ -207,7 +214,7 @@ export async function getVerdictContext(
 
 	if (!row) return null;
 
-	const [next, build] = await Promise.all([
+	const [next, build, aiRead] = await Promise.all([
 		row.step
 			? prisma.projectWorkflowStep.findFirst({
 					where: {
@@ -229,6 +236,7 @@ export async function getVerdictContext(
 					select: { name: true, link: true, createdAt: true },
 				})
 			: null,
+		getVerdictRead(checkpointId),
 	]);
 
 	const stageKey = (order: number) =>
@@ -250,6 +258,7 @@ export async function getVerdictContext(
 			key: row.step ? stageKey(row.step.order) : null,
 		},
 		nextStage: next ? { name: next.name, key: stageKey(next.order) } : null,
+		aiRead,
 		lastBuild: build
 			? {
 					name: build.name,

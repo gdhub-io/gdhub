@@ -1,6 +1,8 @@
 /**
  * Dev only: write an AI checkpoint's sprint review now instead of waiting for
- * its day (GDHUB-110). The checkpoint is moved back in time so that today is the
+ * its day (GDHUB-110) — or, on a human curator's checkpoint, the brief for the
+ * call that opens the next sprint, and on sprint 4 the AI's read of the
+ * verdict too (GDHUB-114). The checkpoint is moved back in time so that today is the
  * chosen sprint's last day — the devlogs and artifacts of the last seven days
  * fall into it — and the review is written by the same code the
  * nightly cron runs, real model calls included (a few cents a run).
@@ -11,7 +13,11 @@
  * checkpoint. Refuses any database that is not on this machine.
  */
 import { CheckpointSessionContentStatus } from "@gdhub-io/gdhub-prisma";
-import { writeReviewFor } from "@/repositories/checkpoint-review";
+import { writeVerdictRead } from "@/repositories/checkpoint-curator.repository";
+import {
+	writeBriefFor,
+	writeReviewFor,
+} from "@/repositories/checkpoint-review";
 import { getJournal } from "@/repositories/curator-journal";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
@@ -42,10 +48,11 @@ const checkpoint = await prisma.projectCheckpoint.findUnique({
 		sessions: { select: { id: true, index: true, scheduledAt: true } },
 	},
 });
-if (!checkpoint?.startedAt || checkpoint.curatorKind !== "AI") {
-	console.error("Not a started AI checkpoint.");
+if (!checkpoint?.startedAt) {
+	console.error("Not a started checkpoint.");
 	process.exit(1);
 }
+const human = checkpoint.curatorKind === "Human";
 
 // Today becomes the sprint's last day, so what was posted or attached today is
 // part of it: the run started 7·sprint − 1 days ago.
@@ -74,22 +81,36 @@ if (!target) {
 	console.error(`The checkpoint has no session ${sprint + 1}.`);
 	process.exit(1);
 }
-await prisma.checkpointSession.update({
-	where: { id: target.id },
-	data: { contentStatus: CheckpointSessionContentStatus.Pending },
-});
-
-const ok = await writeReviewFor(target.id, now).catch((error) => {
-	console.error(error);
-	return false;
-});
-if (!ok) {
+if (human) {
+	// The brief is written once: an earlier one for this call is replaced.
+	await prisma.checkpointJournalEntry.deleteMany({
+		where: { checkpointId, kind: "Review", sprint },
+	});
+	console.info(`Brief written: ${await writeBriefFor(target.id)}`);
+	if (sprint === 4) {
+		await prisma.checkpointJournalEntry.deleteMany({
+			where: { checkpointId, kind: "Verdict" },
+		});
+		console.info(`Verdict read written: ${await writeVerdictRead(checkpointId)}`);
+	}
+} else {
 	await prisma.checkpointSession.update({
 		where: { id: target.id },
-		data: { contentStatus: null },
+		data: { contentStatus: CheckpointSessionContentStatus.Pending },
 	});
-	console.error("The review was not written (see above).");
-	process.exit(1);
+
+	const ok = await writeReviewFor(target.id, now).catch((error) => {
+		console.error(error);
+		return false;
+	});
+	if (!ok) {
+		await prisma.checkpointSession.update({
+			where: { id: target.id },
+			data: { contentStatus: null },
+		});
+		console.error("The review was not written (see above).");
+		process.exit(1);
+	}
 }
 
 const [session, entries] = await Promise.all([

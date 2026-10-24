@@ -2,7 +2,7 @@
 
 import { IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Segmented, Tabs, Tooltip } from "antd";
+import { Segmented, Tabs, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
@@ -12,7 +12,9 @@ import type {
 	CallNotesDto,
 	CheckpointCallDto,
 } from "@/repositories/checkpoint-call";
+import type { CallBrief as CallBriefData } from "@/repositories/curator-journal";
 import type { PlanAdvice } from "@/types/checkpoints";
+import { CallBrief } from "./CallBrief";
 import { NotesBody, NotesTranscript } from "./CallNotes";
 import {
 	adviceSlots,
@@ -23,7 +25,7 @@ import {
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
-export type PanelTab = "plan" | "notes" | "transcript";
+export type PanelTab = "plan" | "notes" | "brief" | "transcript";
 
 // The transcript tab is built but not shown yet.
 const SHOW_TRANSCRIPT = false;
@@ -47,6 +49,10 @@ export function CallPanel({
 	const held =
 		call.sessions.find((session) => session.index === selected)?.held ?? false;
 	const notes = useCallNotes(call.checkpointId, held ? selected : null);
+	// Before the call the curator opens on the AI's brief, when there is one.
+	const ownBrief =
+		call.role === "curator" &&
+		call.briefs.some((brief) => brief.index === call.index);
 	const ownReady =
 		call.sessions.find((session) => session.index === call.index)
 			?.contentStatus === CheckpointSessionContentStatus.Ready;
@@ -57,7 +63,7 @@ export function CallPanel({
 			current={call.index}
 			selected={selected}
 			onSelect={setSelected}
-			tab={picked ?? (ownReady ? "notes" : "plan")}
+			tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
 			onTab={onPick}
 			plan={call.plan}
 			onChange={onChange}
@@ -68,6 +74,7 @@ export function CallPanel({
 			}}
 			notes={notes.data}
 			notesLoading={held && notes.isPending}
+			briefs={call.role === "curator" ? call.briefs : undefined}
 		/>
 	);
 }
@@ -90,6 +97,8 @@ export type PanelBlockProps = {
 		loading: boolean;
 		onAdvise: () => void;
 	};
+	/** The curator's only: the AI's briefs, by call; undefined hides the tab. */
+	briefs?: CallBriefData[];
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -107,6 +116,7 @@ export function PanelBlock({
 	notes,
 	notesLoading,
 	advise,
+	briefs,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -195,6 +205,23 @@ export function PanelBlock({
 			),
 		},
 	];
+	if (briefs) {
+		const brief = briefs.find((row) => row.index === selected);
+		items.push({
+			key: "brief",
+			label: t("checkpoints.call.brief.tab", "Brief"),
+			children: brief ? (
+				<CallBrief brief={brief} tasks={plan.tasks} />
+			) : (
+				<Typography.Text type="secondary" className={styles.briefEmpty}>
+					{t(
+						"checkpoints.call.brief.none",
+						"No brief for this call. The AI writes one the night before calls 2–5.",
+					)}
+				</Typography.Text>
+			),
+		});
+	}
 	if (SHOW_TRANSCRIPT && held) {
 		items.push({
 			key: "transcript",

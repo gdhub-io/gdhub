@@ -54,6 +54,16 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
+vi.mock("@/repositories/curator-journal", () => ({
+	getCallBriefs: vi.fn(async () => [
+		{
+			index: 2,
+			notes: { inShort: "Sprint 1." },
+			seen: [],
+			writtenAt: "2026-10-08T01:00:00.000Z",
+		},
+	]),
+}));
 vi.mock("@/services/daily", async (importOriginal) => ({
 	...(await importOriginal<object>()),
 	callRoom: (...a: unknown[]) => callRoom(...(a as [])),
@@ -164,6 +174,12 @@ describe("who may see the call", () => {
 
 		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
 		expect((await getCall("abc", 2, "marta", during))?.role).toBe("team");
+	});
+
+	it("gives the AI's brief to the curator, never to the team", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect((await getCall("abc", 2, "curator", during))?.briefs).toHaveLength(1);
+		expect((await getCall("abc", 2, "marta", during))?.briefs).toEqual([]);
 	});
 
 	it("opens call 1's plan to the curator and the author, not the rest of the team", async () => {

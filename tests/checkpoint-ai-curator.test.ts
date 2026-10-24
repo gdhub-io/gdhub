@@ -19,6 +19,7 @@ const writePlanAdvice = vi.fn();
 const closeCheckpoint = vi.fn();
 const notify = vi.fn();
 const notifyVerdictSent = vi.fn();
+const journalFindFirst = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -35,6 +36,9 @@ vi.mock("@/services/prisma", () => ({
 			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
 			deleteMany: vi.fn(),
 			createMany: (...a: unknown[]) => sessionCreateMany(...a),
+		},
+		checkpointJournalEntry: {
+			findFirst: (...a: unknown[]) => journalFindFirst(...a),
 		},
 		projectReport: { findMany: vi.fn(async () => [{ content: "Devlog" }]) },
 		projectArtifact: { findMany: vi.fn(async () => []) },
@@ -72,9 +76,9 @@ vi.mock("@/repositories/checkpoint-number", () => ({
 vi.mock("@/services/stripe/server", () => ({}));
 
 const { startAiCheckpoint } = await import("@/repositories/checkpoint-payment");
-const { adviseOnPlan, writeDueReviews } = await import(
-	"@/repositories/checkpoint-review"
-);
+const { adviseOnPlan, writeBriefFor, writeDueBriefs, writeDueReviews } =
+	await import("@/repositories/checkpoint-review");
+const { journal } = await import("@/repositories/curator-journal");
 
 // Started Thursday 1 Oct: sprint 1 is 1–7 Oct, its review on day 8.
 const startedAt = new Date("2026-10-01T00:00:00Z");
@@ -396,5 +400,61 @@ describe("adviseOnPlan", () => {
 		expect(
 			await adviseOnPlan("cp", "author", new Date("2026-10-10T10:00:00Z")),
 		).toBe("planClosed");
+	});
+});
+
+describe("the human curator's brief", () => {
+	it("is written for human calls 2–5 starting within the next 24 hours", async () => {
+		sessionFindMany.mockResolvedValue([]);
+		const now = new Date("2026-10-08T01:00:00Z");
+		await writeDueBriefs(now);
+
+		const { where } = sessionFindMany.mock.calls[0][0];
+		expect(where).toMatchObject({
+			index: { gt: 1 },
+			endedAt: null,
+			scheduledAt: { gt: now, lte: new Date("2026-10-09T01:00:00Z") },
+			checkpoint: { curatorKind: CheckpointCuratorKind.Human },
+		});
+	});
+
+	it("reads the sprint and the last call's agreed focus, for the curator alone", async () => {
+		sessionFindUniqueOrThrow.mockResolvedValue({ index: 3, checkpointId: "cp" });
+		journalFindFirst.mockResolvedValue(null);
+		checkpointFindUniqueOrThrow.mockResolvedValue(
+			reviewed(3, {
+				sessions: [
+					{
+						index: 2,
+						content: {
+							inShort: "Call 2.",
+							agreed: [{ text: "Fix the tide timer", itemId: null, dueDay: null }],
+						},
+					},
+				],
+			}),
+		);
+		writeSprintReview.mockResolvedValue(review);
+
+		await expect(writeBriefFor("s3")).resolves.toBe(true);
+
+		const [input, meter] = writeSprintReview.mock.calls[0];
+		expect(input.sprint).toBe(2);
+		expect(input.focusLastReview).toEqual(["Fix the tide timer"]);
+		expect(meter).toEqual({ checkpointId: "cp", purpose: "callBrief" });
+		const entry = vi.mocked(journal).mock.calls[0][0];
+		expect(entry).toMatchObject({ kind: "Review", sprint: 2 });
+		expect(
+			(entry.output as { notes: typeof review.notes }).notes.discussed,
+		).toEqual([{ itemId: "t1", text: "Shown." }]);
+		expect(notify).not.toHaveBeenCalled();
+	});
+
+	it("is written once per call", async () => {
+		sessionFindUniqueOrThrow.mockResolvedValue({ index: 3, checkpointId: "cp" });
+		journalFindFirst.mockResolvedValue({ id: "e1" });
+
+		await expect(writeBriefFor("s3")).resolves.toBe(false);
+		expect(writeSprintReview).not.toHaveBeenCalled();
 	});
 });

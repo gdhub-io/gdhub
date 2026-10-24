@@ -453,7 +453,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			align: "right",
 			render: (_, row) => {
 				const journal =
-					row.curatorKind === CheckpointCuratorKind.AI
+					row.status !== CheckpointStatus.Draft
 						? [
 								{
 									key: "journal",

@@ -240,15 +240,21 @@ describe("looking at a checkpoint's evidence", () => {
 		).toEqual([50, 0]);
 	});
 
-	it("looks at nothing on a human curator's checkpoint", async () => {
+	it("looks for a human curator too, and at nothing once the checkpoint is closed", async () => {
+		vi.mocked(prisma.checkpointItem.findMany).mockResolvedValue([]);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
 			...aiCheckpoint,
 			curatorKind: "Human",
 		} as never);
-
 		await seeCheckpointEvidence("cp1");
+		expect(prisma.checkpointItem.findMany).toHaveBeenCalledTimes(1);
 
-		expect(prisma.checkpointItem.findMany).not.toHaveBeenCalled();
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
+			...aiCheckpoint,
+			status: "Closed",
+		} as never);
+		await seeCheckpointEvidence("cp1");
+		expect(prisma.checkpointItem.findMany).toHaveBeenCalledTimes(1);
 	});
 });
 

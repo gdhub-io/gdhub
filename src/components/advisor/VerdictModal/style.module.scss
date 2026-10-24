@@ -271,3 +271,13 @@
 .adminAlert {
 	margin: var(--gd-space-4) var(--gd-space-6) 0;
 }
+
+.aiRead {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface-sunken);
+}

@@ -642,3 +642,24 @@
 .goalInput.goalInput {
 	padding: 0;
 }
+
+.brief {
+	padding-top: var(--gd-space-4);
+	min-width: 0;
+}
+
+.briefTask {
+	padding-top: var(--gd-space-2);
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
+.briefRaise {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}
+
+.briefEmpty {
+	display: block;
+	padding-top: var(--gd-space-4);
+}
