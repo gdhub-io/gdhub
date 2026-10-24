@@ -4413,6 +4413,15 @@
 	"refresh_token_expired": "Your session has expired. Please sign in again.",
 	"relevant for": "relevant for",
 	"resources": "Recources",
+	"scout": {
+		"card": {
+			"workflow": {
+				"aiCurator": "AI curator",
+				"closedByCheckpoint": "{stage} closed after the Checkpoint {number} verdict · {curator}",
+				"closedByTasks": "{stage} closed by its own tasks"
+			}
+		}
+	},
 	"season-projects-section": {
 		"author": "Author",
 		"button": {
@@ -4792,6 +4801,15 @@
 			"total": "Total after transfer: {total}%"
 		},
 		"finish-step": "Next step",
+		"move": {
+			"cancel": "Stay on {stage}",
+			"description": "The project's stage changes from {from} to {to}.",
+			"equity": "These equity promises become allocations:",
+			"equityRow": "{name}: +{percentage}% · total {total}%",
+			"ok": "Move to {stage}",
+			"oneWay": "There is no way back: the path runs one way. Past stages and checkpoints stay in the history.",
+			"title": "Move to {stage}?"
+		},
 		"next-step": "Go to completion step",
 		"no-tasks": "No tasks for this step",
 		"offer": {
@@ -4923,6 +4941,7 @@
 			},
 			"stage": {
 				"current": "Current stage",
+				"held": "Opens after the Checkpoint {number} verdict · by {date}",
 				"label": "Stage",
 				"locked": "Finish the required tasks to move on",
 				"next": "Next stage",
