@@ -4,6 +4,7 @@ import {
 	CheckpointVerdict,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { journalCuratorVerdict } from "@/repositories/checkpoint-curator.repository";
 import {
 	moveFinishedToReview,
 	saveVerdictDraft,
@@ -29,6 +30,11 @@ vi.mock("@/services/prisma", () => ({
 vi.mock("@/services/chat/checkpoint-room", () => ({
 	closeCheckpointRoom: vi.fn(),
 	syncChat: (_label: string, run: () => Promise<unknown>) => run(),
+}));
+
+vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+	getVerdictRead: vi.fn(async () => null),
+	journalCuratorVerdict: vi.fn(),
 }));
 
 vi.mock("@/services/checkpoint-verdict-notifications", () => ({
@@ -141,6 +147,12 @@ describe("writeCuratorVerdict", () => {
 		});
 		expect(closeCheckpointRoom).toHaveBeenCalledWith("cp1");
 		expect(notifyVerdictSent).toHaveBeenCalledWith("cp1");
+		// Admins see it beside what the AI would have proposed.
+		expect(journalCuratorVerdict).toHaveBeenCalledWith(
+			"cp1",
+			CheckpointVerdict.GoalMissed,
+			"Two of three.",
+		);
 	});
 
 	it("does not care which verdict the evidence would suggest", async () => {

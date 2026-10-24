@@ -37,10 +37,15 @@ them that an attached "core loop one-pager" is a photo of dice.
   No server rule ties their verdict to the AI's.
 - **Curator and admins only.** The brief and the verdict read are never in an
   author's payload. Admins see them in the curator journal.
-- **Timing.** The brief is written by the daily checkpoints cron the day before
-  each call 2–5, covering the sprint that just ended and the previous call's
-  agreed focus. The verdict read is written when the checkpoint moves to Review
+- **Timing** (Dmitry, 2026-10-24). The brief is written in the night before the
+  call: the daily checkpoints run (01:00 UTC) writes one for every call 2–5
+  starting within the next 24 hours, so a call on the 5th gets its brief at
+  about 01:00 on the 5th, and a call before that run gets it the night before.
+  It covers the sprint that just ended and the previous call's agreed focus. The verdict read is written when the checkpoint moves to Review
   (day 29). Each one is written once, and a missed run is caught by the next.
+- **No new journal kinds** (Dmitry, 2026-10-24): the brief is a `Review` line
+  and the AI's read a `Verdict` line whose settled verdict stays empty — the
+  checkpoint's curator kind tells them apart.
 - **Cost** goes on the checkpoint's AI spend, as now.
 - Logic: [checkpoints-human-curator-brief-flow.d2](../checkpoints-human-curator-brief-flow.d2).
 
@@ -48,7 +53,7 @@ them that an attached "core loop one-pager" is a photo of dice.
 
 - [ ] On a human checkpoint, attaching an artifact or posting a devlog puts the
       same journal lines as on an AI one.
-- [ ] The day before calls 2–5, the curator's view of that call's page shows
+- [ ] By the night before calls 2–5, the curator's view of that call's page shows
       "Before the call": what the sprint delivered, what the evidence shows, and
       what to raise. The author's view of the same page does not.
 - [ ] From day 29 the verdict window shows the AI's read: the proposed verdict,
@@ -65,5 +70,5 @@ them that an attached "core loop one-pager" is a photo of dice.
 
 ## Open questions
 
-- **A brief when the call is moved:** assumed written once, on the first run
-  after the day before the original or the new date, whichever comes first.
+- **A brief when the call is moved:** assumed written once, by the first run
+  that finds the call within 24 hours, whichever date that is.

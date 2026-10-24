@@ -141,7 +141,7 @@ class CheckpointCuratorService {
 			REPORT_FUNCTION_NAME,
 			reportSchema(),
 			reportMessages(input, options.locale),
-			meter(options, "report"),
+			meter(options, options.purpose ?? "report"),
 		);
 	}
 

@@ -642,3 +642,25 @@
 .goalInput.goalInput {
 	padding: 0;
 }
+
+.brief {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+	min-width: 0;
+}
+
+.briefTask {
+	padding-top: var(--gd-space-2);
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
+.briefRaise {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}

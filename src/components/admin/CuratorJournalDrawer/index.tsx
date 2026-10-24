@@ -15,17 +15,18 @@ import {
 	Flex,
 	Segmented,
 	Skeleton,
-	Tag,
 	Typography,
 } from "antd";
 import dayjs from "dayjs";
 import { type ReactNode, useState } from "react";
+import { EvidenceMatchTag } from "@/components/checkpoints/EvidenceMatchTag";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { IconTile } from "@/components/ui";
 import { formatMoneyCents } from "@/config/checkpoint-pricing";
 import {
 	CheckpointJournalKind,
 	type CheckpointVerdict,
+	type EvidenceMatch,
 } from "@/config/prisma-enums";
 import { useCuratorJournal } from "@/hooks/admin-checkpoints";
 import type { JournalRead as Read } from "@/repositories/evidence-seen";
@@ -35,22 +36,19 @@ import type {
 } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
-type Judged = { match: string; note: string | null };
+type Judged = { match: EvidenceMatch; note: string | null };
 type Verdict = {
-	proposed: CheckpointVerdict;
-	settled: CheckpointVerdict;
-	overrode: CheckpointVerdict | null;
-	unproven: unknown[];
+	/** The AI's line (its verdict, or its read for a human curator) or the curator's own. */
+	by: "ai" | "curator";
+	proposed: CheckpointVerdict | null;
+	/** Null on the AI's read of a human checkpoint, until the curator sends theirs. */
+	settled: CheckpointVerdict | null;
+	overrode?: CheckpointVerdict | null;
+	unproven?: unknown[];
+	note?: string;
 };
 
 type Filter = "all" | CheckpointJournalKind;
-
-const MATCH_COLOR: Record<string, string> = {
-	Matches: "success",
-	Partly: "warning",
-	DoesNotMatch: "error",
-	CannotTell: "default",
-};
 
 const ICON: Record<CheckpointJournalKind, Icon> = {
 	[CheckpointJournalKind.Evidence]: IconFileCheck,
@@ -213,15 +211,6 @@ export function CuratorJournalDrawer({
 function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 	const { t } = useTranslate();
 	const read = entry.input as Read;
-	const matchLabel: Record<string, string> = {
-		Matches: t("admin.checkpoints.journal.match.matches", "Matches"),
-		Partly: t("admin.checkpoints.journal.match.partly", "Partly"),
-		DoesNotMatch: t(
-			"admin.checkpoints.journal.match.doesNotMatch",
-			"Does not match",
-		),
-		CannotTell: t("admin.checkpoints.journal.match.cannotTell", "Cannot tell"),
-	};
 
 	const whatWasRead = (
 		<Descriptions
@@ -288,11 +277,7 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 					title: t("admin.checkpoints.journal.artifact", "Artifact · {name}", {
 						name: read.artifactName ?? read.task,
 					}),
-					tag: (
-						<Tag color={MATCH_COLOR[judged.match]}>
-							{matchLabel[judged.match]}
-						</Tag>
-					),
+					tag: <EvidenceMatchTag match={judged.match} />,
 					body: t(
 						"admin.checkpoints.journal.artifactBody",
 						"Task: “{task}”. Seen: {note}",
@@ -318,16 +303,25 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 				};
 			}
 			case CheckpointJournalKind.Review: {
-				const output = entry.output as { message?: string; summary?: string };
+				const output = entry.output as {
+					audience?: "curator";
+					message?: string;
+					summary?: string;
+					notes?: { inShort: string };
+				};
 				return {
-					title: output.summary
-						? t("admin.checkpoints.journal.report", "Final report written")
-						: t(
-								"admin.checkpoints.journal.review",
-								"Sprint {sprint} review written",
-								{ sprint: entry.sprint },
-							),
-					body: output.summary ?? output.message,
+					title: output.audience
+						? t("admin.checkpoints.journal.brief", "Brief before call {call}", {
+								call: (entry.sprint ?? 0) + 1,
+							})
+						: output.summary
+							? t("admin.checkpoints.journal.report", "Final report written")
+							: t(
+									"admin.checkpoints.journal.review",
+									"Sprint {sprint} review written",
+									{ sprint: entry.sprint },
+								),
+					body: output.summary ?? output.message ?? output.notes?.inShort,
 					more: {
 						label: t(
 							"admin.checkpoints.journal.inputAndAnswer",
@@ -340,21 +334,41 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 			case CheckpointJournalKind.Verdict: {
 				const verdict = entry.output as Verdict;
 				return {
-					title: t("admin.checkpoints.journal.settled", "Verdict settled"),
+					title: !verdict.settled
+						? t(
+								"admin.checkpoints.journal.aiRead",
+								"The AI's read of the verdict",
+							)
+						: verdict.by === "curator"
+							? t(
+									"admin.checkpoints.journal.curatorSent",
+									"Verdict sent by the curator",
+								)
+							: t("admin.checkpoints.journal.settled", "Verdict settled"),
 					body: (
 						<Flex vertical gap={4}>
 							<Flex gap={8} align="center" wrap>
-								{t("admin.checkpoints.journal.proposed", "Proposed")}
-								<VerdictChip verdict={verdict.proposed} />→
-								{t("admin.checkpoints.journal.settledAs", "Settled")}
-								<VerdictChip verdict={verdict.settled} />
+								{verdict.proposed && (
+									<>
+										{t("admin.checkpoints.journal.proposed", "Proposed")}
+										<VerdictChip verdict={verdict.proposed} />
+									</>
+								)}
+								{verdict.proposed && verdict.settled && "→"}
+								{verdict.settled && (
+									<>
+										{t("admin.checkpoints.journal.settledAs", "Settled")}
+										<VerdictChip verdict={verdict.settled} />
+									</>
+								)}
 							</Flex>
 							{verdict.overrode &&
 								t(
 									"admin.checkpoints.journal.overrode",
 									"The rule overrode the model: {count} outcomes have no artifact that opens.",
-									{ count: verdict.unproven.length },
+									{ count: verdict.unproven?.length ?? 0 },
 								)}
+							{verdict.note}
 						</Flex>
 					),
 					more: {

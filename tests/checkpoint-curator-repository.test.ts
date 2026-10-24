@@ -13,6 +13,7 @@ import {
 	goalCheckHash,
 	runGoalCheck,
 	writeMidNote,
+	writeVerdictRead,
 } from "@/repositories/checkpoint-curator.repository";
 import { journal } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
@@ -27,6 +28,7 @@ vi.mock("@/services/prisma", () => ({
 			update: vi.fn(),
 		},
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
+		checkpointJournalEntry: { findFirst: vi.fn() },
 		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
 	},
 }));
@@ -654,5 +656,59 @@ describe("the goal check's stored read", () => {
 				picture: "",
 			}),
 		);
+	});
+});
+
+describe("writeVerdictRead", () => {
+	it("proposes from the evidence and the calls, and decides nothing", async () => {
+		vi.mocked(prisma.checkpointJournalEntry.findFirst).mockResolvedValue(null);
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running({
+				curatorKind: "Human",
+				status: CheckpointStatus.Review,
+				sessions: [
+					{
+						index: 1,
+						content: {
+							inShort: "Plan set.",
+							agreed: [{ text: "Lock the loop", itemId: null, dueDay: null }],
+						},
+					},
+				],
+			}) as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue({
+			summary: "All proven.",
+			verdict: CheckpointVerdict.StageClosed,
+			verdictNote: "The loop is locked.",
+		});
+
+		await expect(writeVerdictRead("cp1")).resolves.toBe(true);
+
+		const [input, options] = vi.mocked(checkpointCurator.writeReport).mock
+			.calls[0];
+		expect(input.calls).toEqual([
+			{ index: 1, inShort: "Plan set.", agreed: ["Lock the loop"] },
+		]);
+		expect(options).toMatchObject({ purpose: "verdictRead" });
+		expect(journal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				kind: "Verdict",
+				output: expect.objectContaining({
+					proposed: CheckpointVerdict.StageClosed,
+					settled: null,
+				}),
+			}),
+		);
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+	});
+
+	it("is written once", async () => {
+		vi.mocked(prisma.checkpointJournalEntry.findFirst).mockResolvedValue({
+			id: "e1",
+		} as never);
+
+		await expect(writeVerdictRead("cp1")).resolves.toBe(false);
+		expect(checkpointCurator.writeReport).not.toHaveBeenCalled();
 	});
 });

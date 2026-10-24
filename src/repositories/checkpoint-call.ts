@@ -18,6 +18,7 @@ import {
 	previousVerdict,
 } from "@/repositories/checkpoint-number";
 import { agreeGoal, canEditPlan } from "@/repositories/checkpoint-plan-edit";
+import { type CallBrief, getCallBrief } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
 	callRoom,
@@ -57,6 +58,8 @@ export type CheckpointCallDto = {
 	state: CallState;
 	curatorJoinedAt: string | null;
 	role: CallRole;
+	/** The curator's only: the AI's read of the sprint behind this call (GDHUB-114). */
+	brief: CallBrief | null;
 	plan: {
 		goal: string;
 		goalAgreedAt: string | null;
@@ -153,9 +156,10 @@ export const getCall = async (
 	if (!call) return null;
 	const { session, checkpoint, curator } = call;
 
-	const [number, previous, plan] = await Promise.all([
+	const [number, previous, brief, plan] = await Promise.all([
 		checkpointNumber(checkpoint),
 		previousVerdict(checkpoint, now),
+		call.role === "curator" ? getCallBrief(checkpointId, index) : null,
 		prisma.projectCheckpoint.findUniqueOrThrow({
 			where: { id: checkpointId },
 			select: {
@@ -221,6 +225,7 @@ export const getCall = async (
 		state: callState(session.scheduledAt, session.endedAt, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
 		role: call.role,
+		brief,
 		plan: {
 			goal: plan.goal,
 			goalAgreedAt: plan.goalAgreedAt?.toISOString() ?? null,

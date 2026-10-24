@@ -1,14 +1,22 @@
 import { createHash } from "node:crypto";
 import {
+	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointJournalKind,
 	CheckpointStatus,
+	type CheckpointVerdict,
+	type EvidenceMatch,
+	Prisma,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
-import { settleVerdict, unprovenOutcomes } from "@/lib/checkpoint-verdict";
+import {
+	settleVerdict,
+	type UnprovenOutcome,
+	unprovenOutcomes,
+} from "@/lib/checkpoint-verdict";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import {
@@ -28,10 +36,12 @@ import type {
 	CuratorOptions,
 	GoalCheckInput,
 	GoalCheckResult,
+	ReportInput,
 	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { prisma } from "@/services/prisma";
+import type { CallNotes, VerdictContextDto } from "@/types/checkpoints";
 
 /**
  * The AI curator's four moments, each gathering its own facts and writing back
@@ -338,28 +348,12 @@ export const writeMidNote = async (
 };
 
 /**
- * Day 28: the report, the verdict, and the end of the checkpoint.
- *
- * Fails closed. A model that errors or answers nothing usable leaves the
- * checkpoint in `Review` for the next run — closing one on a shrug would write a
- * verdict nobody wrote and move a project's stage on it.
+ * What the day-28 report reads: the card, the evidence as it opens today and
+ * what it shows, the devlogs, the pulse — and, on a human curator's checkpoint,
+ * what each call agreed. The AI curator's verdict and the human curator's AI
+ * read (GDHUB-114) are written from the same input.
  */
-export const closeCheckpoint = async (
-	checkpointId: string,
-	options: CuratorOptions = {},
-) => {
-	const open = await prisma.projectCheckpoint.findUnique({
-		where: { id: checkpointId },
-		select: { status: true, verdict: true },
-	});
-	if (!open || open.verdict) return null;
-	if (
-		open.status !== CheckpointStatus.Active &&
-		open.status !== CheckpointStatus.Review
-	) {
-		return null;
-	}
-
+const reportInputFor = async (checkpointId: string) => {
 	// The verdict counts only evidence that opens today, not on the day it was added,
 	// and the report says what that evidence shows.
 	await recheckCheckpointArtifacts(checkpointId);
@@ -375,7 +369,13 @@ export const closeCheckpoint = async (
 			revisedNote: true,
 			startedAt: true,
 			dueAt: true,
+			curatorKind: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
+			sessions: {
+				where: { content: { not: Prisma.AnyNull } },
+				orderBy: { index: "asc" },
+				select: { index: true, content: true },
+			},
 			reports: {
 				orderBy: { publishedAt: "asc" },
 				select: { publishedAt: true, content: true },
@@ -429,11 +429,52 @@ export const closeCheckpoint = async (
 		unproven,
 		devlogs: checkpoint.reports.map(toDevlog),
 		pulses: pulseMatrix(checkpoint.pulses),
+		calls:
+			checkpoint.curatorKind === CheckpointCuratorKind.Human
+				? checkpoint.sessions.map((session) => {
+						const notes = session.content as CallNotes;
+						return {
+							index: session.index,
+							inShort: notes.inShort,
+							agreed: notes.agreed.map((line) => line.text),
+						};
+					})
+				: [],
 		picture: await projectPicture(
 			checkpointId,
 			runPeriod(checkpoint.startedAt ?? new Date(), checkpoint.dueAt),
 		),
 	};
+	return { items, reportInput };
+};
+
+/**
+ * Day 28: the report, the verdict, and the end of the checkpoint.
+ *
+ * Fails closed. A model that errors or answers nothing usable leaves the
+ * checkpoint in `Review` for the next run — closing one on a shrug would write a
+ * verdict nobody wrote and move a project's stage on it.
+ */
+export const closeCheckpoint = async (
+	checkpointId: string,
+	options: CuratorOptions = {},
+) => {
+	const open = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: { status: true, verdict: true },
+	});
+	if (!open || open.verdict) return null;
+	if (
+		open.status !== CheckpointStatus.Active &&
+		open.status !== CheckpointStatus.Review
+	) {
+		return null;
+	}
+
+	const read = await reportInputFor(checkpointId);
+	if (!read) return null;
+	const { items, reportInput } = read;
+
 	const proposed = await checkpointCurator.writeReport(reportInput, {
 		...options,
 		checkpointId,
@@ -473,6 +514,7 @@ export const closeCheckpoint = async (
 		kind: CheckpointJournalKind.Verdict,
 		sprint: SPRINTS_PER_CHECKPOINT,
 		output: {
+			by: "ai",
 			proposed: proposed.verdict,
 			settled: settled.verdict,
 			overrode: settled.overrode,
@@ -509,4 +551,124 @@ const pulseMatrix = (pulses: PulseRow[]) => {
 	}
 
 	return [...byMember].map(([member, weeks]) => ({ member, weeks }));
+};
+
+/**
+ * Day 29 of a human curator's checkpoint (GDHUB-114): the verdict the AI would
+ * propose, why, and the outcomes no artifact proves — a reference beside the
+ * curator's own, empty fields. Nothing is decided or sent. Written once.
+ */
+export const writeVerdictRead = async (checkpointId: string) => {
+	const written = await prisma.checkpointJournalEntry.findFirst({
+		where: { checkpointId, kind: CheckpointJournalKind.Verdict },
+		select: { id: true },
+	});
+	if (written) return false;
+
+	const read = await reportInputFor(checkpointId);
+	if (!read) return false;
+	const proposed = await checkpointCurator.writeReport(read.reportInput, {
+		checkpointId,
+		purpose: "verdictRead",
+	});
+	if (!proposed) return false;
+
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Verdict,
+		sprint: SPRINTS_PER_CHECKPOINT,
+		input: read.reportInput,
+		output: {
+			by: "ai",
+			proposed: proposed.verdict,
+			settled: null,
+			note: proposed.verdictNote,
+			summary: proposed.summary,
+			unproven: read.reportInput.unproven,
+			// What the verdict window shows, so it never reads the input.
+			evidence: read.reportInput.artifacts.flatMap((artifact) =>
+				artifact.seen
+					? [
+							{
+								name: artifact.name ?? artifact.link,
+								match: artifact.seen.match,
+								note: artifact.seen.note,
+							},
+						]
+					: [],
+			),
+		},
+	});
+	return true;
+};
+
+/** Every human checkpoint waiting for its verdict that has no AI read yet. */
+export const writeDueVerdictReads = async () => {
+	const due = await prisma.projectCheckpoint.findMany({
+		where: {
+			curatorKind: CheckpointCuratorKind.Human,
+			status: CheckpointStatus.Review,
+			verdict: null,
+			journal: { none: { kind: CheckpointJournalKind.Verdict } },
+		},
+		select: { id: true },
+	});
+
+	let written = 0;
+	for (const { id } of due) {
+		const ok = await writeVerdictRead(id).catch((error) => {
+			console.error("[verdict-read] failed for checkpoint", id, error);
+			return false;
+		});
+		if (ok) written += 1;
+	}
+	return written;
+};
+
+export type VerdictRead = NonNullable<VerdictContextDto["aiRead"]>;
+
+/** The AI's read of a human checkpoint's verdict — its first Verdict line. Curator and admins only. */
+export const getVerdictRead = async (
+	checkpointId: string,
+): Promise<VerdictRead | null> => {
+	const entry = await prisma.checkpointJournalEntry.findFirst({
+		where: {
+			checkpointId,
+			kind: CheckpointJournalKind.Verdict,
+			checkpoint: { curatorKind: CheckpointCuratorKind.Human },
+		},
+		orderBy: { createdAt: "asc" },
+		select: { output: true, createdAt: true },
+	});
+	if (!entry) return null;
+	return {
+		...(entry.output as Omit<VerdictRead, "writtenAt">),
+		writtenAt: entry.createdAt.toISOString(),
+	};
+};
+
+/** The curator's sent verdict beside what the AI proposed, so admins see where they part. */
+export const journalCuratorVerdict = async (
+	checkpointId: string,
+	verdict: CheckpointVerdict,
+	note: string,
+) => {
+	const read = await prisma.checkpointJournalEntry.findFirst({
+		where: { checkpointId, kind: CheckpointJournalKind.Verdict },
+		orderBy: { createdAt: "asc" },
+		select: { output: true },
+	});
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Verdict,
+		sprint: SPRINTS_PER_CHECKPOINT,
+		output: {
+			proposed:
+				(read?.output as { proposed?: CheckpointVerdict } | undefined)
+					?.proposed ?? null,
+			by: "curator",
+			settled: verdict,
+			note,
+		},
+	});
 };

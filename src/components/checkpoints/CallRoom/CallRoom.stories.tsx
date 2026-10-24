@@ -96,6 +96,7 @@ const call: CheckpointCallDto = {
 	state: "open",
 	curatorJoinedAt: null,
 	role: "team",
+	brief: null,
 	plan,
 	sessions: sessionsHeld(1),
 };

@@ -1,5 +1,6 @@
 import type { CheckpointVerdict, EvidenceMatch } from "@/config/prisma-enums";
 import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
+import type { AiPurpose } from "@/services/ai-usage";
 
 /**
  * Inputs and results for the AI curator's four calls.
@@ -36,6 +37,8 @@ export type CuratorOptions = {
 	locale?: string;
 	/** The checkpoint the tokens are charged to. */
 	checkpointId?: string;
+	/** What the tokens are charged as, when a call serves more than one purpose. */
+	purpose?: AiPurpose;
 };
 
 export type CuratorHours = { from: number; to: number };
@@ -144,6 +147,8 @@ export type ReportInput = {
 	devlogs: { publishedAt: string; content: string }[];
 	/** Member by week: who confirmed they worked on it. */
 	pulses: { member: string; weeks: boolean[] }[];
+	/** A human curator's calls, from their notes; empty for the AI curator. */
+	calls: { index: number; inShort: string; agreed: string[] }[];
 	picture: string;
 };
 

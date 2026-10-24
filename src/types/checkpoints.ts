@@ -7,6 +7,7 @@ import type {
 	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	CheckpointVerdict,
+	EvidenceMatch,
 	ExpertInvoicing,
 	ProjectArtifactType,
 	SkillLevel,
@@ -18,6 +19,7 @@ import type {
 	RefundRowReason,
 	reasonRefused,
 } from "@/lib/checkpoint-refund";
+import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
 import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
 import type { CuratorStatus } from "@/lib/curator-status";
 
@@ -320,6 +322,16 @@ export type VerdictContextDto = {
 	currentStage: { name: string; key: string | null };
 	/** Null on the workflow's last stage, which hides "Ready for the next stage". */
 	nextStage: { name: string; key: string } | null;
+	/** The AI's read from day 29 (GDHUB-114): a reference, never the curator's answer. */
+	aiRead: {
+		proposed: CheckpointVerdict;
+		note: string;
+		summary: string;
+		unproven: UnprovenOutcome[];
+		/** What each attached artifact was seen to show. */
+		evidence: { name: string; match: EvidenceMatch; note: string | null }[];
+		writtenAt: string;
+	} | null;
 	lastBuild: {
 		name: string | null;
 		link: string;

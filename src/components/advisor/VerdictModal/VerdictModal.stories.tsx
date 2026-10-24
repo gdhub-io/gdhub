@@ -214,6 +214,7 @@ const context = (
 	draft: null,
 	finalCall: { scheduledAt: day(started + 28, 10), curatorJoinedAt: null },
 	currentStage: { name: "Prototyping", key: null },
+	aiRead: null,
 	nextStage: {
 		name: "Preparing a demo version",
 		key: "workflow.story.step4.name",
@@ -260,11 +261,33 @@ export default meta;
 
 type Story = StoryObj<typeof VerdictModal>;
 
-/** The final call has started: the verdict can be sent, once. */
+const AI_READ: VerdictContextDto["aiRead"] = {
+	proposed: CheckpointVerdict.StageClosed,
+	note: "Every outcome has evidence that opens, and the calls agree the loop is locked.",
+	summary:
+		"All five outcomes have evidence that opens. The greybox video shows the tide loop end to end, and the playtest notes record four of five strangers finishing within 5 minutes.",
+	unproven: [],
+	evidence: [
+		{
+			name: "Greybox walkthrough",
+			match: "Matches",
+			note: "A greybox island floods and drains on a timer; the player wades ashore.",
+		},
+		{
+			name: "Core loop one-pager",
+			match: "DoesNotMatch",
+			note: "A photo of dice on a table, no text about the loop.",
+		},
+	],
+	writtenAt: day(-1, 1),
+};
+
+/** Frame `vC7gn`: the final call has started, the verdict can be sent once, and the AI's read sits beside it. */
 export const Send: Story = {
 	decorators: [
 		withData(
 			context(-28, {
+				aiRead: AI_READ,
 				draft: {
 					verdict: CheckpointVerdict.StageClosed,
 					note: "The outcome list is done bar the trailer, which you cut after call 3 with a reason I agree with.",

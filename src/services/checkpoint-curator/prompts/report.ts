@@ -117,6 +117,17 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					.join("\n") || "- (none)"
 			}
 
+			${
+				input.calls.length
+					? `The curator's calls, from their notes:\n${input.calls
+							.map(
+								(call) =>
+									`- call ${call.index}: ${call.inShort}${call.agreed.length ? `\n  agreed: ${call.agreed.join("; ")}` : ""}`,
+							)
+							.join("\n")}`
+					: ""
+			}
+
 			Weekly pulse, member by week:
 			${
 				input.pulses
