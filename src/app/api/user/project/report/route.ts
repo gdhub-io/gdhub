@@ -1,5 +1,6 @@
 import { CheckpointStatus, Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
+import { after } from "next/server";
 import { z } from "zod";
 import {
 	apiError,
@@ -8,6 +9,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { seeDevlogMedia } from "@/repositories/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ReportQuerySchema = z.object({
@@ -90,7 +92,7 @@ export const POST = withAuth({ mode: "user" })(
 			select: { id: true },
 		});
 
-		await prisma.projectReport.createNumbered({
+		const post = await prisma.projectReport.createNumbered({
 			data: {
 				content,
 				contentEditor: contentEditor || Prisma.JsonNull,
@@ -102,6 +104,7 @@ export const POST = withAuth({ mode: "user" })(
 				checkpointId: checkpoint?.id,
 			},
 		});
+		after(() => seeDevlogMedia(post.id));
 
 		return json(null);
 	}),
@@ -121,6 +124,7 @@ export const PUT = withAuth({ mode: "user" })(
 				video,
 			},
 		});
+		after(() => seeDevlogMedia(id));
 
 		return json(null);
 	}),

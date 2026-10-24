@@ -1,0 +1,69 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-110 — the AI curator looks at what the evidence shows" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+sources: "What there is to look at" {
+  artifacts: "Artifacts on the checkpoint's tasks"
+  devlogs: "Images and videos linked from the sprint's devlogs"
+}
+
+gate: "Does it open? (GDHUB-56)" {
+  shape: diamond
+}
+
+sources.artifacts -> gate
+sources.devlogs -> gate
+
+cannot: "Cannot tell" {style.fill: "#FFF4E0"}
+gate -> cannot: "no / needs a login"
+
+kind: "What is it?" {
+  shape: diamond
+}
+gate -> kind: "yes"
+
+look: "Look at it" {
+  text: "Document / page\nread as text"
+  image: "Image\nlooked at"
+  video: "Video file\nup to 12 frames"
+  provider: "YouTube / Vimeo / Drive page\ntitle and thumbnail only"
+  build: "Build\nits page only, never run"
+}
+kind -> look.text
+kind -> look.image
+kind -> look.video
+kind -> look.provider
+kind -> look.build
+
+judge: "Against its task:\nmatches · partly · does not · cannot tell\n+ what was seen" {
+  style.fill: "#E8F0FE"
+}
+look -> judge
+
+stored: "Kept on the artifact\nnot looked at twice"
+judge -> stored
+
+reviews: "Sprint reviews and the final report\nspeak from what was seen\n/user/project/[slug]/workflow/[cp]/review/[index]"
+stored -> reviews
+
+verdict: "Verdict rule unchanged:\nan outcome counts when its artifact opens"
+reviews -> verdict: "a mismatch is named, not counted"
+
+critical: "Critical" {
+  shape: page
+  a: "Only links that open; never a login page"
+  b: "A build is never downloaded or run"
+  c: "At most 12 frames a video, 10 minutes a sprint"
+  d: "We say what is shown, never how the game plays"
+  e: "Cost logged per checkpoint"
+}

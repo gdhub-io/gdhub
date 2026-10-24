@@ -4,6 +4,7 @@ import {
 	IconAlertCircle,
 	IconDotsVertical,
 	IconMessage,
+	IconNotebook,
 	IconReceiptRefund,
 	IconRefresh,
 	IconSignature,
@@ -31,6 +32,7 @@ import { useMemo, useState } from "react";
 import { AdminVerdictModal } from "@/components/admin/AdminVerdictModal";
 import { AssignCuratorModal } from "@/components/admin/AssignCuratorModal";
 import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
+import { CuratorJournalDrawer } from "@/components/admin/CuratorJournalDrawer";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
 import {
 	EmptyState,
@@ -164,6 +166,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 	const [refunding, setRefunding] = useState<Row | null>(null);
 	const [deciding, setDeciding] = useState<Row | null>(null);
 	const [assigning, setAssigning] = useState<Row | null>(null);
+	const [reading, setReading] = useState<Row | null>(null);
 	const list = useAdminCheckpoints(filter);
 	const [typed, setTyped] = useState("");
 	const projectOptions = useCheckpointProjectOptions(typed);
@@ -449,46 +452,58 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			width: 56,
 			align: "right",
 			render: (_, row) => {
-				const curating = [
-					row.overdue && {
-						key: "verdict",
-						icon: <IconSignature size={14} />,
-						label: t(
-							"admin.checkpoints.menu.writeVerdict",
-							"Write the verdict",
-						),
-						onClick: () => setDeciding(row),
-					},
-					row.canAssign && {
-						key: "assign",
-						icon: <IconUserPlus size={14} />,
-						label: t("admin.checkpoints.menu.assign", "Assign a curator"),
-						onClick: () => setAssigning(row),
-					},
-				].filter((item) => !!item);
-				const money = row.canRefund
-					? [
-							{
-								key: "refund",
-								icon: <IconReceiptRefund size={14} />,
+				const journal =
+					row.curatorKind === CheckpointCuratorKind.AI
+						? [
+								{
+									key: "journal",
+									icon: <IconNotebook size={14} />,
+									label: t("admin.checkpoints.menu.journal", "Curator journal"),
+									onClick: () => setReading(row),
+								},
+							]
+						: [];
+				const curating = !canManage
+					? []
+					: [
+							row.overdue && {
+								key: "verdict",
+								icon: <IconSignature size={14} />,
 								label: t(
-									"admin.checkpoints.list.refundPayment",
-									"Refund payment",
+									"admin.checkpoints.menu.writeVerdict",
+									"Write the verdict",
 								),
-								onClick: () => setRefunding(row),
+								onClick: () => setDeciding(row),
 							},
-						]
-					: [];
+							row.canAssign && {
+								key: "assign",
+								icon: <IconUserPlus size={14} />,
+								label: t("admin.checkpoints.menu.assign", "Assign a curator"),
+								onClick: () => setAssigning(row),
+							},
+						].filter((item) => !!item);
+				const money =
+					canManage && row.canRefund
+						? [
+								{
+									key: "refund",
+									icon: <IconReceiptRefund size={14} />,
+									label: t(
+										"admin.checkpoints.list.refundPayment",
+										"Refund payment",
+									),
+									onClick: () => setRefunding(row),
+								},
+							]
+						: [];
+				const top = [...curating, ...journal];
 				const items = [
-					...curating,
-					...(curating.length && money.length
-						? [{ type: "divider" as const }]
-						: []),
+					...top,
+					...(top.length && money.length ? [{ type: "divider" as const }] : []),
 					...money,
 				];
 
 				return (
-					canManage &&
 					items.length > 0 && (
 						<Dropdown
 							trigger={["click"]}
@@ -666,6 +681,12 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 				<AssignCuratorModal
 					checkpoint={assigning}
 					onClose={() => setAssigning(null)}
+				/>
+			)}
+			{reading && (
+				<CuratorJournalDrawer
+					checkpoint={reading}
+					onClose={() => setReading(null)}
 				/>
 			)}
 			<RefundCheckpointModal

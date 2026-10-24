@@ -1,4 +1,4 @@
-import type { CheckpointVerdict } from "@/config/prisma-enums";
+import type { CheckpointVerdict, EvidenceMatch } from "@/config/prisma-enums";
 import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
 
 /**
@@ -130,6 +130,8 @@ export type CuratorArtifact = {
 	description: string | null;
 	link: string;
 	readable: boolean;
+	/** What the AI curator saw in it, against the task (GDHUB-110). */
+	seen: { match: EvidenceMatch; note: string | null } | null;
 };
 
 /** Day 28: the report, and the verdict the guardrail then settles. */

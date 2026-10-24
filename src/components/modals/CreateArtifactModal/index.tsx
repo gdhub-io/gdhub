@@ -24,6 +24,7 @@ import {
 	KIND_ICON,
 	useArtifactKindLabel,
 	useArtifactTypeLabel,
+	useLinkHint,
 } from "@/components/MyProjectArtifacts/labels";
 import type { ProjectArtifactType } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -60,6 +61,7 @@ const CreateArtifactModal = ({
 }: CreateArtifactModalProps) => {
 	const { t } = useTranslate();
 	const kindLabel = useArtifactKindLabel();
+	const linkHint = useLinkHint();
 	const typeLabel = useArtifactTypeLabel();
 	const [form] = Form.useForm<ArtifactForm>();
 	const kind = Form.useWatch("kind", form) ?? INITIAL_KIND;
@@ -178,17 +180,11 @@ const CreateArtifactModal = ({
 					name="link"
 					label={t("artifacts.modal.link.label", "Link")}
 					rules={[{ required: true, type: "url" }]}
-					extra={
-						kind === "video" &&
-						t(
-							"artifacts.modal.link.videoHelp",
-							"YouTube, Vimeo or a direct link.",
-						)
-					}
+					extra={linkHint(kind)}
 				>
 					<Input
 						prefix={<IconLink size={16} stroke={2} />}
-						placeholder={kind === "video" ? "https://youtu.be/…" : "https://…"}
+						placeholder="https://…"
 					/>
 				</Form.Item>
 

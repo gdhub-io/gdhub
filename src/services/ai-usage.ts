@@ -9,7 +9,8 @@ export type AiPurpose =
 	| "report"
 	| "callNotes"
 	| "planAdvice"
-	| "sprintReview";
+	| "sprintReview"
+	| "evidence";
 
 /** Which checkpoint an AI call is charged to, and for what. */
 export type AiMeter = { checkpointId: string; purpose: AiPurpose };

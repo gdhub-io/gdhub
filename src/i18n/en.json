@@ -464,6 +464,48 @@
 				},
 				"title": "Assign a curator"
 			},
+			"journal": {
+				"all": "All",
+				"artifact": "Artifact · {name}",
+				"artifactBody": "Task: “{task}”. Seen: {note}",
+				"artifacts": "Artifacts",
+				"basedOn": "What it was based on",
+				"checkpoint": "Checkpoint {number}",
+				"devlog": "Devlog media · {devlog}",
+				"empty": "Nothing looked at yet. Entries appear as artifacts are attached and devlogs are posted.",
+				"error": "The journal could not be loaded. Close it and open it again.",
+				"inputAndAnswer": "Input and full answer",
+				"looked": "Looked at",
+				"lookedValue": "{links} links · {unread} not read",
+				"match": {
+					"cannotTell": "Cannot tell",
+					"doesNotMatch": "Does not match",
+					"matches": "Matches",
+					"partly": "Partly"
+				},
+				"media": "Devlog media",
+				"noSprint": "Before a sprint",
+				"notRead": "Not read",
+				"opened": "Opened",
+				"overrode": "The rule overrode the model: {count} outcomes have no artifact that opens.",
+				"proposed": "Proposed",
+				"report": "Final report written",
+				"review": "Sprint {sprint} review written",
+				"reviews": "Reviews",
+				"seconds": "{seconds} s",
+				"sent": "Sent to the AI",
+				"sentValue": "{chars} characters of text · {images} images · {seconds} s of video",
+				"settled": "Verdict settled",
+				"settledAs": "Settled",
+				"spend": "AI spend",
+				"sprint": "Sprint {sprint}",
+				"text": "Text",
+				"title": "Curator journal",
+				"unread": "Not read — {why}",
+				"verdict": "Verdict",
+				"video": "Video watched",
+				"whatWasRead": "What was read"
+			},
 			"kpi": {
 				"ai": "AI",
 				"aiRatedFew": "{count, plural, one {# AI verdict rated — too few to say} other {# AI verdicts rated — too few to say}}",
@@ -549,6 +591,7 @@
 			},
 			"menu": {
 				"assign": "Assign a curator",
+				"journal": "Curator journal",
 				"writeVerdict": "Write the verdict"
 			},
 			"promoCodes": {
@@ -1202,6 +1245,13 @@
 				"label": "Kind"
 			},
 			"link": {
+				"hint": {
+					"build": "A page on itch.io, Steam, GitHub Releases or a store. The AI curator reads the page and never downloads or runs the build.",
+					"document": "The AI curator reads Google Docs, Sheets and Slides, a PDF, a Notion page or a GitHub file, open to anyone. Figma and Miro show it only the title.",
+					"image": "The AI curator looks at an image file: a direct .png or .jpg link, or a Google Drive, Dropbox or Imgur file open to anyone. A page around the image shows it only the title.",
+					"other": "Any link open to anyone. The AI curator reads text, images and video files; other kinds are kept but not read.",
+					"video": "The AI curator watches a video file: a direct .mp4 link, or a Google Drive or Dropbox file open to anyone, up to 50 MB. From YouTube or Vimeo it sees only the title and the thumbnail."
+				},
 				"label": "Link",
 				"videoHelp": "YouTube, Vimeo or a direct link."
 			},

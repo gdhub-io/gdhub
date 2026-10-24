@@ -1,0 +1,30 @@
+.subtitle {
+	font-size: var(--gd-font-size-caption);
+	font-weight: normal;
+}
+
+.sprint {
+	padding-bottom: var(--gd-space-2);
+}
+
+.entry {
+	padding: var(--gd-space-3) 0;
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
+
+.content {
+	min-width: 0;
+}
+
+.when {
+	flex: none;
+	font-size: var(--gd-font-size-caption);
+}
+
+.pre {
+	max-height: 320px;
+	overflow: auto;
+	font-size: var(--gd-font-size-caption);
+	white-space: pre-wrap;
+}

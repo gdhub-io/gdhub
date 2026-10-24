@@ -33,14 +33,18 @@ export const sprintEvidence = async (
 		prisma.projectReport.findMany({
 			where: { projectId, isSystem: false, publishedAt: inSprint },
 			orderBy: { publishedAt: "asc" },
-			select: { content: true },
+			select: { id: true, content: true, video: true, contentEditor: true },
 		}),
 		prisma.projectArtifact.findMany({
 			where: { projectId, createdAt: inSprint },
 			select: { type: true, name: true },
 		}),
 	]);
-	return { devlogs: devlogs.map((post) => post.content), artifacts };
+	return {
+		devlogs: devlogs.map((post) => post.content),
+		posts: devlogs,
+		artifacts,
+	};
 };
 
 /** A task id the model made up points at nothing on the page: drop it. */

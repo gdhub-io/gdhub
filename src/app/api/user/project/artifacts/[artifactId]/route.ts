@@ -13,7 +13,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfArtifact } from "@/lib/space-ids";
-import { checkArtifact } from "@/repositories/artifact-check";
+import { checkAndLook } from "@/repositories/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const UpdateArtifactSchema = z.object({
@@ -81,7 +81,7 @@ export const PUT = pipe(
 				: {}),
 		},
 	});
-	if (relinked) after(() => checkArtifact(artifactId));
+	if (relinked) after(() => checkAndLook(artifactId));
 
 	return json(updatedArtifact);
 });

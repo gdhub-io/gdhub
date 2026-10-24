@@ -1,0 +1,293 @@
+import { CHECKPOINT_RUNNING_STATUSES } from "@/config/checkpoint";
+import {
+	ArtifactCheckStatus,
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+	CheckpointJournalKind,
+	type CheckpointStatus,
+	EvidenceMatch,
+	ProjectArtifactType,
+} from "@/config/prisma-enums";
+import { isRunning } from "@/lib/checkpoint-refund";
+import { currentSprint, sprintOfDate } from "@/lib/checkpoint-sprints";
+import { capped } from "@/lib/curator-text";
+import { checkArtifact } from "@/repositories/artifact-check";
+import {
+	journal,
+	sprintLooks,
+	videoSecondsOf,
+} from "@/repositories/curator-journal";
+import { describeMedia, judgeEvidence } from "@/services/evidence/judge";
+import { readableLink } from "@/services/evidence/links";
+import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
+import { prisma } from "@/services/prisma";
+
+/** Seconds of video looked at per sprint (Dmitry, 2026-10-24). */
+const SPRINT_VIDEO_SECONDS = 10 * 60;
+/** Devlog images and videos looked at per sprint. */
+const DEVLOG_MEDIA_PER_SPRINT = 6;
+/** What the journal keeps of a document's text. */
+const JOURNAL_TEXT_CHARS = 2000;
+
+/** What was read at a link, as the journal keeps it: text only, never the files. */
+const whatWasRead = (link: string, content: EvidenceContent) => ({
+	opened: readableLink(link).url,
+	text: content.text && capped(content.text, JOURNAL_TEXT_CHARS),
+	images: content.images.length,
+	videoSeconds: content.videoSeconds,
+	unread: content.unread,
+});
+
+/** A look's record in the journal, with what it was about; the admin journal reads it. */
+export type JournalRead = ReturnType<typeof whatWasRead> & {
+	task?: string;
+	artifactName?: string | null;
+	devlog?: string;
+};
+
+const readable = (content: EvidenceContent) =>
+	!!content.text || content.images.length > 0;
+
+/** Only an AI curator looks, and only while the 28 days or their review run. */
+const aiRunning = (checkpoint: {
+	curatorKind: CheckpointCuratorKind;
+	status: CheckpointStatus;
+}) =>
+	checkpoint.curatorKind === CheckpointCuratorKind.AI &&
+	isRunning(checkpoint.status);
+
+/**
+ * Look at the evidence on a checkpoint's tasks that has not been looked at yet,
+ * and judge each against its task. Runs when an artifact arrives and again
+ * before a review, for anything missed. A new link on an artifact is looked at
+ * again; the same link never is. Video comes out of the current sprint's budget.
+ */
+export async function seeCheckpointEvidence(checkpointId: string) {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: { startedAt: true, curatorKind: true, status: true },
+	});
+	if (!checkpoint?.startedAt || !aiRunning(checkpoint)) return;
+	const sprint = currentSprint(checkpoint.startedAt);
+
+	const items = await prisma.checkpointItem.findMany({
+		where: {
+			checkpointId,
+			kind: CheckpointItemKind.Outcome,
+			cut: false,
+			artifact: { checkStatus: ArtifactCheckStatus.Readable },
+		},
+		orderBy: { order: "asc" },
+		select: {
+			id: true,
+			text: true,
+			evidenceSeenLink: true,
+			artifact: {
+				select: { type: true, name: true, description: true, link: true },
+			},
+		},
+	});
+
+	let left =
+		SPRINT_VIDEO_SECONDS -
+		videoSecondsOf(await sprintLooks(checkpointId, sprint));
+	for (const item of items) {
+		const { artifact } = item;
+		if (!artifact || item.evidenceSeenLink === artifact.link) continue;
+
+		const content = await readEvidence(artifact.link, {
+			videoSecondsLeft: left,
+			// A build's page is read; the build itself never is.
+			pageOnly: artifact.type === ProjectArtifactType.ExecutableBuild,
+		}).catch((error) => {
+			console.error("[evidence] read failed", item.id, error);
+			return null;
+		});
+		if (!content) continue;
+		left -= content.videoSeconds;
+
+		const task = {
+			task: item.text,
+			artifactType: artifact.type,
+			artifactName: artifact.name,
+			description: artifact.description,
+		};
+		// Nothing readable: the answer is CannotTell, and it costs no model call.
+		const judged = !readable(content)
+			? { match: EvidenceMatch.CannotTell, note: content.unread }
+			: await judgeEvidence(task, content, {
+					checkpointId,
+					purpose: "evidence",
+				}).catch((error) => {
+					console.error("[evidence] judge failed", item.id, error);
+					return null;
+				});
+		if (!judged) continue;
+
+		await prisma.checkpointItem.update({
+			where: { id: item.id },
+			data: {
+				evidenceMatch: judged.match,
+				evidenceMatchNote: judged.note,
+				evidenceSeenLink: artifact.link,
+			},
+		});
+		await journal({
+			checkpointId,
+			kind: CheckpointJournalKind.Evidence,
+			sprint,
+			link: artifact.link,
+			itemId: item.id,
+			input: { ...task, ...whatWasRead(artifact.link, content) },
+			output: judged,
+		});
+	}
+}
+
+/**
+ * An artifact arrived or its link changed: check that it opens, then look at it
+ * on every running AI checkpoint that uses it.
+ */
+export async function checkAndLook(
+	artifactId: string,
+	{ checked = false } = {},
+) {
+	if (!checked) await checkArtifact(artifactId);
+	const uses = await prisma.checkpointItem.findMany({
+		where: {
+			artifactId,
+			checkpoint: {
+				curatorKind: CheckpointCuratorKind.AI,
+				status: { in: CHECKPOINT_RUNNING_STATUSES },
+			},
+		},
+		distinct: ["checkpointId"],
+		select: { checkpointId: true },
+	});
+	for (const { checkpointId } of uses) {
+		await seeCheckpointEvidence(checkpointId);
+	}
+}
+
+type EditorBlock = { type?: string; data?: Record<string, unknown> };
+
+const MEDIA_LINK =
+	/https?:\/\/[^\s)"'<>]+\.(?:png|jpe?g|gif|webp|mp4|webm|mov)(?:\?[^\s)"'<>]*)?|https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be|vimeo\.com|drive\.google\.com|dropbox\.com)\/[^\s)"'<>]+/gi;
+
+/** The images and videos a devlog carries: uploads, embeds, its video and media links in the text. */
+export const devlogMediaLinks = (post: {
+	content: string;
+	video: string | null;
+	contentEditor: unknown;
+}) => {
+	const blocks =
+		(post.contentEditor as { blocks?: EditorBlock[] } | null)?.blocks ?? [];
+	const fromBlocks = blocks.flatMap((block) => {
+		const data = block.data ?? {};
+		if (block.type === "image") {
+			const url = (data.file as { url?: string } | undefined)?.url;
+			return url ? [url] : [];
+		}
+		if (block.type === "embed" && typeof data.source === "string") {
+			return [data.source];
+		}
+		return [];
+	});
+	const fromText = post.content.match(MEDIA_LINK) ?? [];
+
+	return [
+		...new Set([
+			...(post.video ? [post.video] : []),
+			...fromBlocks,
+			...fromText,
+		]),
+	];
+};
+
+/**
+ * Look at the images and videos of a devlog posted on a running AI checkpoint,
+ * each link once, and journal what they show. Runs when the devlog is posted or
+ * edited, and again before a review for anything missed.
+ */
+export async function seeDevlogMedia(devlogId: string) {
+	const post = await prisma.projectReport.findUnique({
+		where: { id: devlogId },
+		select: {
+			content: true,
+			video: true,
+			contentEditor: true,
+			publishedAt: true,
+			checkpoint: {
+				select: { id: true, startedAt: true, curatorKind: true, status: true },
+			},
+		},
+	});
+	const checkpoint = post?.checkpoint;
+	if (!post || !checkpoint?.startedAt || !aiRunning(checkpoint)) return;
+	const checkpointId = checkpoint.id;
+	const sprint =
+		sprintOfDate(checkpoint.startedAt, post.publishedAt) ??
+		currentSprint(checkpoint.startedAt);
+
+	const looks = await sprintLooks(checkpointId, sprint);
+	const looked = looks.filter(
+		(look) => look.kind === CheckpointJournalKind.DevlogMedia,
+	);
+	const seen = new Set(
+		looked.filter((row) => row.devlogId === devlogId).map((row) => row.link),
+	);
+	const links = devlogMediaLinks(post)
+		.filter((link) => !seen.has(link))
+		.slice(0, Math.max(0, DEVLOG_MEDIA_PER_SPRINT - looked.length));
+
+	let left = SPRINT_VIDEO_SECONDS - videoSecondsOf(looks);
+	for (const link of links) {
+		const content = await readEvidence(link, { videoSecondsLeft: left }).catch(
+			() => null,
+		);
+		if (!content) continue;
+		left -= content.videoSeconds;
+
+		const shows = readable(content)
+			? await describeMedia(content, {
+					checkpointId,
+					purpose: "evidence",
+				}).catch(() => null)
+			: null;
+		await journal({
+			checkpointId,
+			kind: CheckpointJournalKind.DevlogMedia,
+			sprint,
+			link,
+			devlogId,
+			input: {
+				devlog: capped(post.content, 80),
+				...whatWasRead(link, content),
+			},
+			output: { shows },
+		});
+	}
+}
+
+/**
+ * What the images and videos in a sprint's devlogs show, one line each, for the
+ * sprint review: read from the journal, after looking at anything missed.
+ */
+export async function devlogMediaLines(devlogIds: string[]) {
+	for (const id of devlogIds) await seeDevlogMedia(id);
+
+	const looked = await prisma.checkpointJournalEntry.findMany({
+		where: {
+			devlogId: { in: devlogIds },
+			kind: CheckpointJournalKind.DevlogMedia,
+		},
+		orderBy: { createdAt: "asc" },
+		select: { link: true, input: true, output: true },
+	});
+	return looked.map(({ link, input, output }) => {
+		const { unread } = input as { unread: string | null };
+		const { shows } = output as { shows: string | null };
+		if (!shows) return `- ${link}: not read — ${unread ?? "nothing readable"}`;
+		return `- ${link}: ${shows}${unread ? ` (${unread})` : ""}`;
+	});
+}

@@ -3,6 +3,7 @@ import type {
 	CheckpointCuratorKind,
 	CheckpointFeeReason,
 	CheckpointItemKind,
+	CheckpointJournalKind,
 	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	CheckpointVerdict,
@@ -484,6 +485,7 @@ export type AdminCheckpointRowDto = {
 	number: number;
 	stageName: string;
 	status: CheckpointStatus;
+	curatorKind: CheckpointCuratorKind;
 	/** Null for the AI curator. */
 	curatorName: string | null;
 	projectName: string;
@@ -702,4 +704,15 @@ export type AdminCuratorRowDto = {
 	status: CuratorStatus;
 	requestedAt: string | null;
 	approvedAt: string | null;
+};
+
+/** One line of the AI curator's journal (frame 11.10). Input and output are as written. */
+export type CuratorJournalEntryDto = {
+	id: string;
+	kind: CheckpointJournalKind;
+	sprint: number | null;
+	link: string | null;
+	input: unknown;
+	output: unknown;
+	createdAt: string;
 };

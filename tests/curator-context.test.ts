@@ -109,7 +109,7 @@ describe("a devlog as the curator reads it", () => {
 		const long = "x".repeat(3000);
 
 		expect(devlogText("short")).toBe("short");
-		expect(devlogText(long)).toContain("[…shortened, 500 more characters]");
+		expect(devlogText(long)).toContain("[…500 more characters not read]");
 	});
 });
 

@@ -12,6 +12,7 @@ import type {
 	CheckpointCuratorKind as CheckpointCuratorKindType,
 	CheckpointFeeReason as CheckpointFeeReasonType,
 	CheckpointItemKind as CheckpointItemKindType,
+	CheckpointJournalKind as CheckpointJournalKindType,
 	CheckpointSessionContentStatus as CheckpointSessionContentStatusType,
 	CheckpointStatus as CheckpointStatusType,
 	CheckpointVerdict as CheckpointVerdictType,
@@ -27,6 +28,7 @@ import type {
 	EventMemberStatus as EventMemberStatusType,
 	EventStatus as EventStatusType,
 	EventType as EventTypeType,
+	EvidenceMatch as EvidenceMatchType,
 	ExpertInvoicing as ExpertInvoicingType,
 	InvitationStatus as InvitationStatusType,
 	Language as LanguageType,
@@ -144,6 +146,25 @@ export const ArtifactCheckStatus = {
 	Unsupported: "Unsupported",
 } as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
 export type ArtifactCheckStatus = ArtifactCheckStatusType;
+
+export const EvidenceMatch = {
+	Matches: "Matches",
+	Partly: "Partly",
+	DoesNotMatch: "DoesNotMatch",
+	CannotTell: "CannotTell",
+} as const satisfies Record<EvidenceMatchType, EvidenceMatchType>;
+export type EvidenceMatch = EvidenceMatchType;
+
+export const CheckpointJournalKind = {
+	Evidence: "Evidence",
+	DevlogMedia: "DevlogMedia",
+	Review: "Review",
+	Verdict: "Verdict",
+} as const satisfies Record<
+	CheckpointJournalKindType,
+	CheckpointJournalKindType
+>;
+export type CheckpointJournalKind = CheckpointJournalKindType;
 
 export const CheckpointCuratorKind = {
 	AI: "AI",

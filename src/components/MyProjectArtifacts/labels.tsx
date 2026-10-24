@@ -136,3 +136,38 @@ export const useCheckReason = () => {
 		}
 	};
 };
+
+/** Which links of this kind the AI curator can read (GDHUB-110); any other is kept. */
+export const useLinkHint = () => {
+	const { t } = useTranslate();
+
+	return (kind: ArtifactKind) => {
+		switch (kind) {
+			case "video":
+				return t(
+					"artifacts.modal.link.hint.video",
+					"The AI curator watches a video file: a direct .mp4 link, or a Google Drive or Dropbox file open to anyone, up to 50 MB. From YouTube or Vimeo it sees only the title and the thumbnail.",
+				);
+			case "image":
+				return t(
+					"artifacts.modal.link.hint.image",
+					"The AI curator looks at an image file: a direct .png or .jpg link, or a Google Drive, Dropbox or Imgur file open to anyone. A page around the image shows it only the title.",
+				);
+			case "document":
+				return t(
+					"artifacts.modal.link.hint.document",
+					"The AI curator reads Google Docs, Sheets and Slides, a PDF, a Notion page or a GitHub file, open to anyone. Figma and Miro show it only the title.",
+				);
+			case "build":
+				return t(
+					"artifacts.modal.link.hint.build",
+					"A page on itch.io, Steam, GitHub Releases or a store. The AI curator reads the page and never downloads or runs the build.",
+				);
+			default:
+				return t(
+					"artifacts.modal.link.hint.other",
+					"Any link open to anyone. The AI curator reads text, images and video files; other kinds are kept but not read.",
+				);
+		}
+	};
+};

@@ -73,6 +73,10 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			You read links, screenshots and descriptions. You did not run a build or
 			play anything, and the report may not imply that you did.
 
+			Where evidence was looked at, say what it shows. Name an outcome whose
+			evidence does not match, but it still counts as proven: what decides
+			the verdict is the unproven list, not what you saw.
+
 			${localeLine(locale)}
 		`,
 	},
@@ -94,7 +98,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 				input.artifacts
 					.map(
 						(artifact) =>
-							`- [${artifact.itemId}] ${artifact.type}: ${artifact.name ?? artifact.link}${artifact.readable ? "" : " — the platform could not open this"}${artifact.description ? `\n  author's description: ${artifact.description}` : ""}`,
+							`- [${artifact.itemId}] ${artifact.type}: ${artifact.name ?? artifact.link}${artifact.readable ? "" : " — the platform could not open this"}${artifact.description ? `\n  author's description: ${artifact.description}` : ""}${artifact.seen ? `\n  looked at: ${artifact.seen.match}${artifact.seen.note ? `, ${artifact.seen.note}` : ""}` : ""}`,
 					)
 					.join("\n") || "- (nothing attached)"
 			}

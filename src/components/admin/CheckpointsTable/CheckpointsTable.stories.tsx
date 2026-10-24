@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { CheckpointFeeReason, CheckpointStatus } from "@/config/prisma-enums";
+import {
+	CheckpointCuratorKind,
+	CheckpointFeeReason,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
 import { withQueries } from "@/mocks/queries";
 import type {
 	AdminCheckpointRowDto,
@@ -14,6 +18,7 @@ const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 	number: 2,
 	stageName: "Prototyping",
 	status: CheckpointStatus.Active,
+	curatorKind: CheckpointCuratorKind.Human,
 	curatorName: "Marta Ilves",
 	projectName: "Hollow Tide",
 	startedAt: "2026-10-12T00:00:00.000Z",
@@ -93,6 +98,7 @@ const PAGE: AdminCheckpointsPageDto = {
 			projectName: "Ember Road",
 			number: 1,
 			stageName: "Ideation",
+			curatorKind: CheckpointCuratorKind.AI,
 			curatorName: null,
 			status: CheckpointStatus.Review,
 			paid: 2000,
@@ -176,6 +182,7 @@ const PAGE: AdminCheckpointsPageDto = {
 			projectName: "Driftwood",
 			number: 1,
 			stageName: "Ideation",
+			curatorKind: CheckpointCuratorKind.AI,
 			curatorName: null,
 			status: CheckpointStatus.Closed,
 			paid: 2000,

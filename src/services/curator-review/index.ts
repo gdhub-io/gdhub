@@ -36,6 +36,8 @@ export type SprintReviewInput = {
 	tasks: CuratorTask[];
 	/** Every devlog posted in the sprint, oldest first. */
 	devlogs: string[];
+	/** What the images and videos in those devlogs show, one line each. */
+	devlogMedia: string[];
 	artifacts: { type: string; name: string | null }[];
 	/** Who on the team confirmed working in the sprint, and who did not. */
 	pulse: { worked: number; missing: number };
@@ -188,7 +190,8 @@ export const writeSprintReview = async (
 			of the sprint, the artifacts it added, who confirmed working, and what
 			happened on the project. Judge by what
 			anyone can open, not by intentions. A task is done only when an
-			artifact closes it.
+			artifact closes it. Where a task's evidence was looked at, say what it
+			shows; a mismatch is worth naming, but it does not undo the task.
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
 		`,
 		prompt: stripIndents`
@@ -205,6 +208,8 @@ export const writeSprintReview = async (
 					? `The sprint's devlogs (${input.devlogs.length}):\n${input.devlogs.map((post, index) => `--- devlog ${index + 1}\n${devlogText(post)}`).join("\n")}`
 					: "No devlog for the sprint."
 			}
+
+			${input.devlogMedia.length ? `What the devlogs' images and videos show:\n${input.devlogMedia.join("\n")}` : ""}
 
 			${artifactLines(input.artifacts) || "No artifacts added in the sprint."}
 

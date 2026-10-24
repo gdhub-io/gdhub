@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import {
 	CheckpointItemKind,
+	CheckpointJournalKind,
 	CheckpointStatus,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
@@ -16,6 +17,8 @@ import {
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
 import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import { journal } from "@/repositories/curator-journal";
+import { seeCheckpointEvidence } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
@@ -50,6 +53,8 @@ const curatorItemSelect = {
 	cut: true,
 	addedAt: true,
 	acceptedNote: true,
+	evidenceMatch: true,
+	evidenceMatchNote: true,
 	artifact: {
 		select: {
 			type: true,
@@ -355,8 +360,10 @@ export const closeCheckpoint = async (
 		return null;
 	}
 
-	// The verdict counts only evidence that opens today, not on the day it was added.
+	// The verdict counts only evidence that opens today, not on the day it was added,
+	// and the report says what that evidence shows.
 	await recheckCheckpointArtifacts(checkpointId);
+	await seeCheckpointEvidence(checkpointId);
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
@@ -387,43 +394,50 @@ export const closeCheckpoint = async (
 	const items = checkpoint.items;
 	const unproven = unprovenOutcomes(items);
 
-	const proposed = await checkpointCurator.writeReport(
-		{
-			card: toCard(checkpoint.goal, items),
-			stage: {
-				name: checkpoint.stageName,
-				requirements: await stageRequirements(checkpoint.stepId),
-			},
-			revision: checkpoint.revisedAt
-				? {
-						revisedAt: checkpoint.revisedAt.toISOString().slice(0, 10),
-						note: checkpoint.revisedNote,
-					}
-				: null,
-			artifacts: items.flatMap((item) =>
-				item.artifact
-					? [
-							{
-								itemId: item.id,
-								type: item.artifact.type,
-								name: item.artifact.name,
-								description: item.artifact.description,
-								link: item.artifact.link,
-								readable: item.artifact.checkStatus === "Readable",
-							},
-						]
-					: [],
-			),
-			unproven,
-			devlogs: checkpoint.reports.map(toDevlog),
-			pulses: pulseMatrix(checkpoint.pulses),
-			picture: await projectPicture(
-				checkpointId,
-				runPeriod(checkpoint.startedAt ?? new Date(), checkpoint.dueAt),
-			),
+	const reportInput = {
+		card: toCard(checkpoint.goal, items),
+		stage: {
+			name: checkpoint.stageName,
+			requirements: await stageRequirements(checkpoint.stepId),
 		},
-		{ ...options, checkpointId },
-	);
+		revision: checkpoint.revisedAt
+			? {
+					revisedAt: checkpoint.revisedAt.toISOString().slice(0, 10),
+					note: checkpoint.revisedNote,
+				}
+			: null,
+		artifacts: items.flatMap((item) =>
+			item.artifact
+				? [
+						{
+							itemId: item.id,
+							type: item.artifact.type,
+							name: item.artifact.name,
+							description: item.artifact.description,
+							link: item.artifact.link,
+							readable: item.artifact.checkStatus === "Readable",
+							seen: item.evidenceMatch
+								? {
+										match: item.evidenceMatch,
+										note: item.evidenceMatchNote,
+									}
+								: null,
+						},
+					]
+				: [],
+		),
+		unproven,
+		devlogs: checkpoint.reports.map(toDevlog),
+		pulses: pulseMatrix(checkpoint.pulses),
+		picture: await projectPicture(
+			checkpointId,
+			runPeriod(checkpoint.startedAt ?? new Date(), checkpoint.dueAt),
+		),
+	};
+	const proposed = await checkpointCurator.writeReport(reportInput, {
+		...options,
+		checkpointId,
+	});
 
 	if (!proposed) return null;
 
@@ -444,6 +458,25 @@ export const closeCheckpoint = async (
 			verdict: settled.verdict,
 			verdictNote: proposed.verdictNote,
 			decidedAt: new Date(),
+		},
+	});
+
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Review,
+		sprint: SPRINTS_PER_CHECKPOINT,
+		input: reportInput,
+		output: proposed,
+	});
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Verdict,
+		sprint: SPRINTS_PER_CHECKPOINT,
+		output: {
+			proposed: proposed.verdict,
+			settled: settled.verdict,
+			overrode: settled.overrode,
+			unproven: settled.unproven,
 		},
 	});
 
