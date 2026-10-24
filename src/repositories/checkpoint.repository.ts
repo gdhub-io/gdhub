@@ -211,7 +211,6 @@ const checkpointDetailSelect = {
 			source: true,
 		},
 	},
-	artifacts: { select: evidenceArtifactSelect },
 	sessions: sessionRowSelect,
 	project: {
 		select: {
@@ -239,7 +238,7 @@ type DetailRow = Prisma.ProjectCheckpointGetPayload<{
 	select: typeof checkpointDetailSelect;
 }>;
 
-type EvidenceArtifact = DetailRow["artifacts"][number];
+type EvidenceArtifact = NonNullable<DetailRow["items"][number]["artifact"]>;
 type PulseRow = DetailRow["pulses"][number];
 type TeamMemberRow = NonNullable<
 	DetailRow["project"]["team"]
@@ -376,14 +375,12 @@ const buildPulseRows = (
 };
 
 /**
- * Everything offered as evidence: the artifacts made for this checkpoint and
- * the ones its items point at. The two sets overlap, and the second can hold an
- * artifact from an earlier checkpoint — an author may prove an outcome with
- * something the project already had.
+ * The artifacts the checkpoint's items point at. One can come from an earlier
+ * checkpoint — an author may prove an outcome with something the project
+ * already had.
  */
 const buildEvidence = (
 	items: DetailRow["items"],
-	artifacts: EvidenceArtifact[],
 	startedAt: Date | null,
 ): CheckpointEvidenceDto[] => {
 	const itemIdsByArtifact = new Map<string, string[]>();
@@ -397,10 +394,9 @@ const buildEvidence = (
 
 	const byId = new Map<string, EvidenceArtifact>();
 
-	for (const artifact of [
-		...artifacts,
-		...items.flatMap((item) => (item.artifact ? [item.artifact] : [])),
-	]) {
+	for (const artifact of items.flatMap((item) =>
+		item.artifact ? [item.artifact] : [],
+	)) {
 		byId.set(artifact.id, artifact);
 	}
 
@@ -423,16 +419,8 @@ export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
 /** The row as the checkpoint page reads it; the artifact joins stay behind. */
 const toCheckpointDetail = (row: DetailRow) => {
-	const {
-		artifacts,
-		curator,
-		items,
-		project,
-		pulses,
-		reports,
-		sessions,
-		...checkpoint
-	} = withAcceptedTerms(row);
+	const { curator, items, project, pulses, reports, sessions, ...checkpoint } =
+		withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
 
 	return {
@@ -448,18 +436,16 @@ const toCheckpointDetail = (row: DetailRow) => {
 		})),
 		sprints: buildSprints(startedAt),
 		sessions: buildSessions(startedAt, sessions),
-		pulses: buildPulseRows(project.team?.members ?? [], pulses, startedAt, [
-			...reports.map((report) => ({
+		pulses: buildPulseRows(
+			project.team?.members ?? [],
+			pulses,
+			startedAt,
+			reports.map((report) => ({
 				userId: report.authorId,
 				at: report.publishedAt,
 			})),
-			...artifacts.flatMap((artifact) =>
-				artifact.createdByUser
-					? [{ userId: artifact.createdByUser.id, at: artifact.createdAt }]
-					: [],
-			),
-		]),
-		evidence: buildEvidence(items, artifacts, startedAt),
+		),
+		evidence: buildEvidence(items, startedAt),
 	};
 };
 
