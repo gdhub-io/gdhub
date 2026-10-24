@@ -1211,7 +1211,6 @@
 		},
 		"evidence": {
 			"checkpoint": "Evidence · Checkpoint {number}",
-			"label": "{count, plural, other {Evidence · Checkpoint {number} · # tasks}}",
 			"tasks": " · {count} tasks"
 		},
 		"filter": {
