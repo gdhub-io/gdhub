@@ -263,10 +263,16 @@ export function ArtifactsView({
 							<Tooltip key={checkpointNumber} title={tasks.join(" · ")}>
 								<Text className={styles.evidence}>
 									{t(
-										"artifacts.evidence.label",
-										"Evidence · Checkpoint {number}{count, plural, one {} other { · # tasks}}",
-										{ number: checkpointNumber, count: tasks.length },
+										"artifacts.evidence.checkpoint",
+										"Evidence · Checkpoint {number}",
+										{
+											number: checkpointNumber,
+										},
 									)}
+									{tasks.length > 1 &&
+										t("artifacts.evidence.tasks", " · {count} tasks", {
+											count: tasks.length,
+										})}
 								</Text>
 							</Tooltip>
 						))}
