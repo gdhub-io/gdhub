@@ -87,7 +87,7 @@ export function CuratorJournalDrawer({
 	return (
 		<Drawer
 			open
-			width={640}
+			size={640}
 			onClose={onClose}
 			title={
 				<Flex vertical gap={4}>
@@ -121,6 +121,7 @@ export function CuratorJournalDrawer({
 			) : (
 				<Flex vertical gap={24}>
 					<Descriptions
+						colon={false}
 						size="small"
 						column={3}
 						layout="vertical"
@@ -212,9 +213,19 @@ export function CuratorJournalDrawer({
 function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 	const { t } = useTranslate();
 	const read = entry.input as Read;
+	const matchLabel: Record<string, string> = {
+		Matches: t("admin.checkpoints.journal.match.matches", "Matches"),
+		Partly: t("admin.checkpoints.journal.match.partly", "Partly"),
+		DoesNotMatch: t(
+			"admin.checkpoints.journal.match.doesNotMatch",
+			"Does not match",
+		),
+		CannotTell: t("admin.checkpoints.journal.match.cannotTell", "Cannot tell"),
+	};
 
 	const whatWasRead = (
 		<Descriptions
+			colon={false}
 			size="small"
 			column={1}
 			items={[
@@ -277,7 +288,11 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 					title: t("admin.checkpoints.journal.artifact", "Artifact · {name}", {
 						name: read.artifactName ?? read.task,
 					}),
-					tag: <Tag color={MATCH_COLOR[judged.match]}>{judged.match}</Tag>,
+					tag: (
+						<Tag color={MATCH_COLOR[judged.match]}>
+							{matchLabel[judged.match]}
+						</Tag>
+					),
 					body: t(
 						"admin.checkpoints.journal.artifactBody",
 						"Task: “{task}”. Seen: {note}",
