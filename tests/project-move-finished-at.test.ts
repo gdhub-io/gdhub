@@ -5,7 +5,7 @@ const authMock = vi.fn();
 const projectFindFirst = vi.fn();
 const workflowUpdate = vi.fn();
 const stepUpdate = vi.fn();
-const stepFindFirst = vi.fn();
+const checkpointFindFirst = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 vi.mock("@/lib/space-guard", () => ({
@@ -14,14 +14,15 @@ vi.mock("@/lib/space-guard", () => ({
 vi.mock("@/services/workflow/recomputeStepTasks", () => ({
 	recomputeStepTasks: async (tasks: unknown[]) => tasks,
 }));
+vi.mock("@/repositories/checkpoint-guards", () => ({
+	runningCheckpointLock: (...a: unknown[]) => checkpointFindFirst(...a),
+}));
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		project: { findFirst: (...a: unknown[]) => projectFindFirst(...a) },
 		projectWorkflow: { update: (...a: unknown[]) => workflowUpdate(...a) },
-		projectWorkflowStep: {
-			update: (...a: unknown[]) => stepUpdate(...a),
-			findFirst: (...a: unknown[]) => stepFindFirst(...a),
-		},
+		projectWorkflowStep: { update: (...a: unknown[]) => stepUpdate(...a) },
+
 	},
 }));
 
@@ -63,6 +64,7 @@ beforeEach(() => {
 	});
 	workflowUpdate.mockResolvedValue({});
 	stepUpdate.mockResolvedValue({});
+	checkpointFindFirst.mockResolvedValue(null);
 });
 
 describe("moving the workflow dates the stage it leaves", () => {
@@ -75,20 +77,45 @@ describe("moving the workflow dates the stage it leaves", () => {
 		expect(write.data.finishedAt).toBeInstanceOf(Date);
 	});
 
-	it("reopens the stage returned to when moving back", async () => {
+	it("never goes back, and never jumps", async () => {
 		onStep(1);
-		await put({ direction: "previous" });
+		expect((await put({ direction: "previous" })).status).toBe(400);
+		await put({ direction: "next", targetStepId: "s0" });
 
-		expect(finishedWrites()).toEqual([
-			{ where: { id: "s0" }, data: { finishedAt: null } },
-		]);
+		expect(finishedWrites().map((write) => write.where.id)).toEqual(["s1"]);
+		expect(workflowUpdate.mock.calls[0][0].data.currentStepId).toBe("s2");
+	});
+});
+
+describe("a running checkpoint holds the stage (GDHUB-37)", () => {
+	it("refuses the move while a checkpoint is active or waiting for its verdict", async () => {
+		onStep(1);
+		checkpointFindFirst.mockResolvedValue({
+			number: 3,
+			stageName: "Concepting",
+			dueAt: "2026-11-01T00:00:00.000Z",
+		});
+
+		const response = await put({ direction: "next" });
+
+		expect(response.status).toBe(409);
+		expect(workflowUpdate).not.toHaveBeenCalled();
+		expect(checkpointFindFirst).toHaveBeenCalledWith("p1");
 	});
 
-	it("stamps the current stage when jumping forward to a target", async () => {
-		onStep(0);
-		stepFindFirst.mockResolvedValue(steps[2]);
-		await put({ direction: "next", targetStepId: "s2" });
+	it("still asks for the stage's required tasks once no checkpoint runs", async () => {
+		projectFindFirst.mockResolvedValue({
+			workflow: {
+				currentStep: {
+					...steps[1],
+					tasks: [{ required: true, done: false }],
+					equityPromises: [],
+				},
+				steps,
+			},
+		});
 
-		expect(finishedWrites().map((write) => write.where.id)).toContain("s0");
+		expect((await put({ direction: "next" })).status).toBe(400);
+		expect(workflowUpdate).not.toHaveBeenCalled();
 	});
 });

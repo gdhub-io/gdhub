@@ -9,6 +9,8 @@ const reportFindMany = vi.fn();
 const stepFindMany = vi.fn();
 const estimationFindMany = vi.fn();
 const memberFindMany = vi.fn();
+const checkpointFindMany = vi.fn();
+const checkpointNumbers = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
@@ -16,6 +18,9 @@ vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
 }));
 
+vi.mock("@/repositories/checkpoint-number", () => ({
+	checkpointNumbers: (...a: unknown[]) => checkpointNumbers(...a),
+}));
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		project: { findFirst: (...a: unknown[]) => projectFindFirst(...a) },
@@ -27,6 +32,9 @@ vi.mock("@/services/prisma", () => ({
 			findMany: (...a: unknown[]) => estimationFindMany(...a),
 		},
 		teamMember: { findMany: (...a: unknown[]) => memberFindMany(...a) },
+		projectCheckpoint: {
+			findMany: (...a: unknown[]) => checkpointFindMany(...a),
+		},
 		auditLog: { create: vi.fn() },
 	},
 }));
@@ -50,6 +58,7 @@ const call = async (
 };
 
 beforeEach(() => {
+	checkpointFindMany.mockResolvedValue([]);
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: scout });
 	projectFindFirst.mockResolvedValue({ id: "p1" });
@@ -425,5 +434,49 @@ describe("GET /api/scout/games/[id]/[section]", () => {
 		expect(orderBy[0]).toEqual({
 			finishedAt: { sort: "asc", nulls: "first" },
 		});
+	});
+});
+
+describe("how a stage was closed (GDHUB-37)", () => {
+	it("names the checkpoint verdict that let it close, or its own tasks", async () => {
+		const { getProjectCardWorkflow } = await import(
+			"@/repositories/scout.project-card"
+		);
+		const step = (id: string, order: number, finishedAt: Date | null) => ({
+			id,
+			name: id,
+			order,
+			done: false,
+			plannedAt: null,
+			finishedAt,
+		});
+		workflowFindFirst.mockResolvedValue({
+			currentStepId: "c",
+			steps: [
+				step("a", 0, new Date("2026-05-01")),
+				step("b", 1, new Date("2026-09-28")),
+				step("c", 2, null),
+			],
+		});
+		// Only "Ready for the next stage" verdicts are asked for; "a" had none.
+		checkpointFindMany.mockResolvedValue([
+			{
+				id: "cp2",
+				projectId: "p1",
+				createdAt: new Date("2026-09-01"),
+				stepId: "b",
+				curatorKind: "Human",
+				curator: { name: "Patrick Novak" },
+			},
+		]);
+		checkpointNumbers.mockResolvedValue(new Map([["cp2", 2]]));
+
+		const steps = await getProjectCardWorkflow("p1");
+
+		expect(steps.map((row) => row.closedBy)).toEqual([
+			"tasks",
+			{ number: 2, curator: "Patrick Novak" },
+			null,
+		]);
 	});
 });

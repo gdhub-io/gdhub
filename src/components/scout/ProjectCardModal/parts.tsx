@@ -267,6 +267,11 @@ function ActivityRow({
 				<Text ellipsis className={styles.feedLabel}>
 					{label}
 				</Text>
+				{item.note && (
+					<Text type="secondary" className={styles.caption}>
+						{item.note}
+					</Text>
+				)}
 				{detailed && item.author && (
 					<Text type="secondary" className={styles.caption}>
 						{t("scout.card.activity.by", "by {who}", { who: item.author })}

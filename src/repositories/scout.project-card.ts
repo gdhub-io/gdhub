@@ -1,4 +1,10 @@
+import {
+	CheckpointCuratorKind,
+	CheckpointStatus,
+	CheckpointVerdict,
+} from "@/config/prisma-enums";
 import { totalPerCurrency } from "@/helpers/investment";
+import { checkpointNumbers } from "@/repositories/checkpoint-number";
 import { estimateInvestment } from "@/services/investment/estimate";
 import { prisma } from "@/services/prisma";
 import {
@@ -410,27 +416,67 @@ export async function getProjectCardFiles(id: string, limit = SECTION_LIMIT) {
 }
 
 export async function getProjectCardWorkflow(id: string) {
-	const workflow = await prisma.projectWorkflow.findFirst({
-		where: { projectId: id },
-		select: {
-			currentStepId: true,
-			steps: {
-				orderBy: { order: "asc" },
-				select: {
-					id: true,
-					name: true,
-					order: true,
-					done: true,
-					plannedAt: true,
-					finishedAt: true,
+	const [workflow, checkpoints] = await Promise.all([
+		prisma.projectWorkflow.findFirst({
+			where: { projectId: id },
+			select: {
+				currentStepId: true,
+				steps: {
+					orderBy: { order: "asc" },
+					select: {
+						id: true,
+						name: true,
+						order: true,
+						done: true,
+						plannedAt: true,
+						finishedAt: true,
+					},
 				},
 			},
-		},
-	});
+		}),
+		prisma.projectCheckpoint.findMany({
+			where: {
+				projectId: id,
+				status: CheckpointStatus.Closed,
+				verdict: CheckpointVerdict.StageClosed,
+			},
+			select: {
+				id: true,
+				projectId: true,
+				createdAt: true,
+				stepId: true,
+				curatorKind: true,
+				curator: { select: { name: true } },
+			},
+		}),
+	]);
+
+	// A stage left after a "Ready for the next stage" verdict says whose; any
+	// other stage left was closed by its own tasks (GDHUB-37).
+	const numbers = await checkpointNumbers(checkpoints);
+	const closedAfter = new Map(
+		checkpoints.flatMap((checkpoint) =>
+			checkpoint.stepId
+				? [
+						[
+							checkpoint.stepId,
+							{
+								number: numbers.get(checkpoint.id) ?? 1,
+								curator:
+									checkpoint.curatorKind === CheckpointCuratorKind.AI
+										? null
+										: (checkpoint.curator?.name ?? null),
+							},
+						] as const,
+					]
+				: [],
+		),
+	);
 
 	return (workflow?.steps ?? []).map((step) => ({
 		...step,
 		isCurrent: step.id === workflow?.currentStepId,
+		closedBy: step.finishedAt ? (closedAfter.get(step.id) ?? "tasks") : null,
 	}));
 }
 

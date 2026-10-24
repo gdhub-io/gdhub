@@ -83,6 +83,8 @@ export type CardStep = {
 	plannedAt: string | null;
 	finishedAt: string | null;
 	isCurrent: boolean;
+	/** How a stage left behind was closed: after a checkpoint verdict, or by its own tasks. */
+	closedBy: { number: number; curator: string | null } | "tasks" | null;
 };
 
 export type CardActivityKind =
@@ -99,6 +101,7 @@ export type CardActivity = {
 	/** What the event happened to: a step, a file, a person. */
 	subject: string | null;
 	author: string | null;
+	note?: string;
 };
 
 export type CardReview = {

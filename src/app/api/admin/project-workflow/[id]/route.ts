@@ -160,7 +160,11 @@ export const PUT = pipe(
 	if (!existing) return apiError.notFound("Project workflow not found");
 
 	const plan = steps && planSteps(steps, existing.steps);
-	if (plan?.deleteIds.length) {
+	// A running checkpoint holds its stage (GDHUB-37): no deleting stages under
+	// it, and no moving the project off it, even by an admin.
+	const movesStage =
+		!!currentStepId && currentStepId !== existing.currentStepId;
+	if (plan?.deleteIds.length || movesStage) {
 		const lock = await runningCheckpointLock(existing.projectId);
 		if (lock) return apiError.conflict("checkpointRunning", lock);
 	}

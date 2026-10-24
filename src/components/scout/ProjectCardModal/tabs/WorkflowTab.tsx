@@ -40,6 +40,31 @@ export function WorkflowTab({
 	}
 
 	const currentStep = data.find((step) => step.isCurrent);
+	const byOrder = new Map(data.map((step) => [step.order, step]));
+	// How the stage before was left: after a checkpoint verdict, or by its tasks.
+	const closedNote = (left?: CardStep) => {
+		if (!left?.closedBy) return undefined;
+		if (left.closedBy === "tasks") {
+			return t(
+				"scout.card.workflow.closedByTasks",
+				"{stage} closed by its own tasks",
+				{
+					stage: left.name,
+				},
+			);
+		}
+		return t(
+			"scout.card.workflow.closedByCheckpoint",
+			"{stage} closed after the Checkpoint {number} verdict · {curator}",
+			{
+				stage: left.name,
+				number: String(left.closedBy.number),
+				curator:
+					left.closedBy.curator ??
+					t("scout.card.workflow.aiCurator", "AI curator"),
+			},
+		);
+	};
 
 	// Stages the project has actually entered, newest first, with its own start
 	// as the last line — a log that begins nowhere reads as truncated.
@@ -67,6 +92,7 @@ export function WorkflowTab({
 				subject: step.name,
 				author: null,
 				at: (step.finishedAt ?? step.plannedAt) as string,
+				note: closedNote(byOrder.get(step.order - 1)),
 			}),
 		)
 		.sort((a, b) => dayjs(b.at).valueOf() - dayjs(a.at).valueOf())
