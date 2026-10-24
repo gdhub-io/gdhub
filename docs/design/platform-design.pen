@@ -443828,7 +443828,7 @@
                                   "type": "text",
                                   "id": "SW65r",
                                   "fill": "$success-on-tint",
-                                  "content": "Goal reached",
+                                  "content": "Goal met",
                                   "fontFamily": "$font",
                                   "fontSize": 12,
                                   "fontWeight": "500"
@@ -445408,7 +445408,7 @@
       "id": "nLpkT",
       "x": 9118,
       "y": 74292,
-      "name": "08.10 · Curator's Review · Pro · the curator's view, call ahead, with the AI brief (/advisor/checkpoints/[id]/review/2)",
+      "name": "08.10 · Curator's Review · Pro · the curator's view, call ahead, Brief tab (/advisor/checkpoints/[id]/review/2)",
       "clip": true,
       "width": 1265,
       "fill": "$page-bg",
@@ -446815,405 +446815,6 @@
                     },
                     {
                       "type": "frame",
-                      "id": "TGx4j",
-                      "name": "AI brief (curator only)",
-                      "width": "fill_container",
-                      "fill": "$surface",
-                      "cornerRadius": "$radius-xl",
-                      "stroke": "$border",
-                      "strokeWidth": 1,
-                      "strokeAlignment": "inner",
-                      "layout": "vertical",
-                      "gap": 12,
-                      "padding": [
-                        16,
-                        24
-                      ],
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "XVHoU",
-                          "name": "Head",
-                          "width": "fill_container",
-                          "justifyContent": "space_between",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "Wo78H",
-                              "name": "L",
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "YNEHP",
-                                  "name": "Tile",
-                                  "width": 32,
-                                  "height": 32,
-                                  "fill": "$bg-muted",
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "AEyzg",
-                                      "name": "Ic",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "sparkles",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "N1iNR",
-                                  "name": "T",
-                                  "layout": "vertical",
-                                  "gap": 2,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "SKbFy",
-                                      "fill": "$text-primary",
-                                      "content": "Before the call",
-                                      "fontFamily": "$font",
-                                      "fontSize": 16,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "E6AqH",
-                                      "fill": "$text-secondary",
-                                      "content": "Sprint 1 as the AI read it · only you see this",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "jowyd",
-                              "fill": "$text-tertiary",
-                              "content": "Written 8 Oct",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "Ov4dl",
-                          "fill": "$text-primary",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Two of three tasks have evidence, but the core-loop one-pager shows a photo of dice, not the loop. The greybox is not shared yet; the team's devlog says the tide timing is still being tuned.",
-                          "lineHeight": 1.45,
-                          "fontFamily": "$font",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "fpcyW",
-                          "name": "Tasks",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "oPKNI",
-                              "name": "Task — Core loop on one page",
-                              "width": "fill_container",
-                              "stroke": "$border-subtle",
-                              "strokeWidth": {
-                                "top": 1
-                              },
-                              "strokeAlignment": "inner",
-                              "layout": "vertical",
-                              "gap": 4,
-                              "padding": [
-                                8,
-                                0,
-                                0,
-                                0
-                              ],
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "mIz6q",
-                                  "name": "Top",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "l8bNPO",
-                                      "fill": "$text-primary",
-                                      "content": "Core loop on one page",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "500"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "Jlb5Q",
-                                      "name": "Tag",
-                                      "fill": "$error-tint",
-                                      "cornerRadius": "$radius-sm",
-                                      "padding": [
-                                        2,
-                                        8
-                                      ],
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "TACqO",
-                                          "fill": "$error-on-tint",
-                                          "content": "Does not match",
-                                          "fontFamily": "$font",
-                                          "fontSize": 12,
-                                          "fontWeight": "500"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "kpkqx",
-                                  "fill": "$text-secondary",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "Drive image: colourful dice on a table, no text about the loop.",
-                                  "lineHeight": 1.45,
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "jCg1m",
-                              "name": "Task — Greybox: one island, tide in and out",
-                              "width": "fill_container",
-                              "stroke": "$border-subtle",
-                              "strokeWidth": {
-                                "top": 1
-                              },
-                              "strokeAlignment": "inner",
-                              "layout": "vertical",
-                              "gap": 4,
-                              "padding": [
-                                8,
-                                0,
-                                0,
-                                0
-                              ],
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "A88OWm",
-                                  "name": "Top",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "cNIfZ",
-                                      "fill": "$text-primary",
-                                      "content": "Greybox: one island, tide in and out",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "500"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "qR8vs",
-                                      "name": "Tag",
-                                      "fill": "$success-tint",
-                                      "cornerRadius": "$radius-sm",
-                                      "padding": [
-                                        2,
-                                        8
-                                      ],
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "TjJgL",
-                                          "fill": "$success-on-tint",
-                                          "content": "Matches",
-                                          "fontFamily": "$font",
-                                          "fontSize": 12,
-                                          "fontWeight": "500"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "gvlFe",
-                                  "fill": "$text-secondary",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "Video, 90 s looked at: the island floods and drains on a timer; the player wades to the shore.",
-                                  "lineHeight": 1.45,
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "uaojc",
-                              "name": "Task — Five playtesters",
-                              "width": "fill_container",
-                              "stroke": "$border-subtle",
-                              "strokeWidth": {
-                                "top": 1
-                              },
-                              "strokeAlignment": "inner",
-                              "layout": "vertical",
-                              "gap": 4,
-                              "padding": [
-                                8,
-                                0,
-                                0,
-                                0
-                              ],
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "rjmXQ",
-                                  "name": "Top",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "NOQfH",
-                                      "fill": "$text-primary",
-                                      "content": "Five playtesters",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "500"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "ciuoQ",
-                                      "name": "Tag",
-                                      "fill": "$bg-muted",
-                                      "cornerRadius": "$radius-sm",
-                                      "padding": [
-                                        2,
-                                        8
-                                      ],
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "I2XKD1",
-                                          "fill": "$text-secondary",
-                                          "content": "No evidence yet",
-                                          "fontFamily": "$font",
-                                          "fontSize": 12,
-                                          "fontWeight": "500"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "CrDzB",
-                                  "fill": "$text-secondary",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "Nothing attached. The devlog of 7 Oct plans the first test for next week.",
-                                  "lineHeight": 1.45,
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "R404Tf",
-                          "name": "Raise",
-                          "width": "fill_container",
-                          "fill": "$bg-subtle",
-                          "cornerRadius": "$radius-md",
-                          "layout": "vertical",
-                          "gap": 6,
-                          "padding": [
-                            12,
-                            16
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "T1a3bi",
-                              "fill": "$text-secondary",
-                              "content": "Worth raising",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "kPfGG",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "• Where is the one-page core loop? The dice image does not cover it.",
-                              "lineHeight": 1.45,
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "M3Q8h",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "• When can a stranger open the greybox?",
-                              "lineHeight": 1.45,
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "G7SQ8q",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "• The focus agreed on call 1 was the tide timing — is it settled?",
-                              "lineHeight": 1.45,
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
                       "id": "MWd55",
                       "name": "Call panel",
                       "width": "fill_container",
@@ -447243,16 +446844,13 @@
                               "type": "frame",
                               "id": "i9rl3",
                               "name": "Tabs",
-                              "gap": 24,
+                              "gap": 20,
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "P3b5g9",
                                   "name": "Tab Plan",
                                   "stroke": "$text-primary",
-                                  "strokeWidth": {
-                                    "bottom": 2
-                                  },
                                   "strokeAlignment": "inner",
                                   "padding": [
                                     0,
@@ -447265,11 +446863,11 @@
                                       "type": "text",
                                       "id": "MJhXj",
                                       "name": "L",
-                                      "fill": "$text-primary",
+                                      "fill": "$text-tertiary",
                                       "content": "Plan",
                                       "fontFamily": "$font",
                                       "fontSize": 15,
-                                      "fontWeight": "600"
+                                      "fontWeight": "500"
                                     }
                                   ]
                                 },
@@ -447301,10 +446899,12 @@
                                 {
                                   "type": "frame",
                                   "id": "n42Pw",
-                                  "x": 0,
-                                  "y": 0,
-                                  "name": "Tab Transcript",
-                                  "enabled": false,
+                                  "name": "Tab Brief (curator only)",
+                                  "stroke": "$text-primary",
+                                  "strokeWidth": {
+                                    "bottom": 2
+                                  },
+                                  "strokeAlignment": "inner",
                                   "padding": [
                                     0,
                                     0,
@@ -447316,11 +446916,11 @@
                                       "type": "text",
                                       "id": "ewW9N",
                                       "name": "L",
-                                      "fill": "$text-tertiary",
-                                      "content": "Transcript",
+                                      "fill": "$text-primary",
+                                      "content": "Brief",
                                       "fontFamily": "$font",
                                       "fontSize": 15,
-                                      "fontWeight": "500"
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -447363,8 +446963,8 @@
                                       },
                                       "gap": 8,
                                       "padding": [
-                                        8,
-                                        12
+                                        4,
+                                        8
                                       ],
                                       "alignItems": "center",
                                       "children": [
@@ -447375,7 +446975,7 @@
                                           "fill": "$text-primary",
                                           "content": "Call 1 · today",
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 12,
                                           "fontWeight": "600"
                                         }
                                       ]
@@ -447388,8 +446988,8 @@
                                       "cornerRadius": "$radius-sm",
                                       "gap": 8,
                                       "padding": [
-                                        8,
-                                        12
+                                        4,
+                                        8
                                       ],
                                       "alignItems": "center",
                                       "children": [
@@ -447410,7 +447010,7 @@
                                           "fill": "$text-disabled",
                                           "content": "Call 2 · 8 Oct",
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 12,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -447423,8 +447023,8 @@
                                       "cornerRadius": "$radius-sm",
                                       "gap": 8,
                                       "padding": [
-                                        8,
-                                        12
+                                        4,
+                                        8
                                       ],
                                       "alignItems": "center",
                                       "children": [
@@ -447445,7 +447045,7 @@
                                           "fill": "$text-disabled",
                                           "content": "Call 3 · 15 Oct",
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 12,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -447458,8 +447058,8 @@
                                       "cornerRadius": "$radius-sm",
                                       "gap": 8,
                                       "padding": [
-                                        8,
-                                        12
+                                        4,
+                                        8
                                       ],
                                       "alignItems": "center",
                                       "children": [
@@ -447480,7 +447080,7 @@
                                           "fill": "$text-disabled",
                                           "content": "Call 4 · 22 Oct",
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 12,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -447493,8 +447093,8 @@
                                       "cornerRadius": "$radius-sm",
                                       "gap": 8,
                                       "padding": [
-                                        8,
-                                        12
+                                        4,
+                                        8
                                       ],
                                       "alignItems": "center",
                                       "children": [
@@ -447515,7 +447115,7 @@
                                           "fill": "$text-disabled",
                                           "content": "Call 5 · 29 Oct",
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
+                                          "fontSize": 12,
                                           "fontWeight": "normal"
                                         }
                                       ]
@@ -447528,217 +447128,388 @@
                         },
                         {
                           "type": "frame",
-                          "id": "Jqgj2",
-                          "name": "Tasks",
+                          "id": "vTOVQ",
+                          "name": "Brief body",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "nKkOj",
-                              "name": "Label",
-                              "fill": "$text-secondary",
-                              "content": "Tasks",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "500"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "LNhNQ",
-                              "name": "Task input",
-                              "width": "fill_container",
-                              "fill": "$surface",
-                              "cornerRadius": "$radius-md",
-                              "stroke": "$border-strong",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "gap": 8,
-                              "padding": [
-                                8,
-                                12
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "fsX1T",
-                                  "name": "Value",
-                                  "fill": "$text-primary",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "Core loop one-pager",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "icon",
-                                  "id": "pfeG7",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "x",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "hbMV9",
-                              "name": "Task input",
-                              "width": "fill_container",
-                              "fill": "$surface",
-                              "cornerRadius": "$radius-md",
-                              "stroke": "$border-strong",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "gap": 8,
-                              "padding": [
-                                8,
-                                12
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "do4p2",
-                                  "name": "Value",
-                                  "fill": "$text-primary",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "Greybox build on itch.io",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "icon",
-                                  "id": "psmt1",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "x",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "RDvVR",
-                              "name": "Task input",
-                              "width": "fill_container",
-                              "fill": "$surface",
-                              "cornerRadius": "$radius-md",
-                              "stroke": "$border-strong",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "gap": 8,
-                              "padding": [
-                                8,
-                                12
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "i03RD9",
-                                  "name": "Value",
-                                  "fill": "$text-primary",
-                                  "textGrowth": "fixed-width",
-                                  "width": "fill_container",
-                                  "content": "5 playtest recordings",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "icon",
-                                  "id": "NDzm0",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "x",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "J4xtx0",
-                              "name": "Add task",
-                              "gap": 8,
-                              "padding": [
-                                4,
-                                0
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "Uxbxz",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "plus",
-                                  "library": "lucide",
-                                  "fill": "$text-secondary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Iktsa",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Add task",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "PkwXs",
-                          "name": "Footer",
-                          "width": "fill_container",
-                          "stroke": "$border-subtle",
-                          "strokeWidth": {
-                            "top": 1
-                          },
-                          "gap": 8,
+                          "gap": 12,
                           "padding": [
                             16,
                             0,
                             0,
                             0
                           ],
-                          "alignItems": "center",
                           "children": [
                             {
-                              "type": "icon",
-                              "id": "OiuH5",
-                              "name": "Ic",
-                              "width": 14,
-                              "height": 14,
-                              "icon": "check",
-                              "library": "lucide",
-                              "fill": "$success"
+                              "type": "frame",
+                              "id": "XVHoU",
+                              "name": "Head",
+                              "width": "fill_container",
+                              "justifyContent": "space_between",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Wo78H",
+                                  "name": "L",
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "YNEHP",
+                                      "name": "Tile",
+                                      "width": 32,
+                                      "height": 32,
+                                      "fill": "$bg-muted",
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "AEyzg",
+                                          "name": "Ic",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "sparkles",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "N1iNR",
+                                      "name": "T",
+                                      "layout": "vertical",
+                                      "gap": 2,
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "E6AqH",
+                                          "fill": "$text-secondary",
+                                          "content": "Sprint 1 as the AI read it · only you see this",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "jowyd",
+                                  "fill": "$text-tertiary",
+                                  "content": "Written 8 Oct",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             },
                             {
                               "type": "text",
-                              "id": "tUi7z",
-                              "name": "L",
-                              "fill": "$text-tertiary",
-                              "content": "Saved as you type · the team sees this plan on Workflow",
+                              "id": "Ov4dl",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Two of three tasks have evidence, but the core-loop one-pager shows a photo of dice, not the loop. The greybox is not shared yet; the team's devlog says the tide timing is still being tuned.",
+                              "lineHeight": 1.45,
                               "fontFamily": "$font",
-                              "fontSize": 13,
+                              "fontSize": 14,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "fpcyW",
+                              "name": "Tasks",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "oPKNI",
+                                  "name": "Task — Core loop on one page",
+                                  "width": "fill_container",
+                                  "stroke": "$border-subtle",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
+                                  "layout": "vertical",
+                                  "gap": 4,
+                                  "padding": [
+                                    8,
+                                    0,
+                                    0,
+                                    0
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "mIz6q",
+                                      "name": "Top",
+                                      "gap": 8,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "l8bNPO",
+                                          "fill": "$text-primary",
+                                          "content": "Core loop on one page",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "500"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "Jlb5Q",
+                                          "name": "Tag",
+                                          "fill": "$error-tint",
+                                          "cornerRadius": "$radius-sm",
+                                          "padding": [
+                                            2,
+                                            8
+                                          ],
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "TACqO",
+                                              "fill": "$error-on-tint",
+                                              "content": "Does not match",
+                                              "fontFamily": "$font",
+                                              "fontSize": 12,
+                                              "fontWeight": "500"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "kpkqx",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Drive image: colourful dice on a table, no text about the loop.",
+                                      "lineHeight": 1.45,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "jCg1m",
+                                  "name": "Task — Greybox: one island, tide in and out",
+                                  "width": "fill_container",
+                                  "stroke": "$border-subtle",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
+                                  "layout": "vertical",
+                                  "gap": 4,
+                                  "padding": [
+                                    8,
+                                    0,
+                                    0,
+                                    0
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "A88OWm",
+                                      "name": "Top",
+                                      "gap": 8,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "cNIfZ",
+                                          "fill": "$text-primary",
+                                          "content": "Greybox: one island, tide in and out",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "500"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "qR8vs",
+                                          "name": "Tag",
+                                          "fill": "$success-tint",
+                                          "cornerRadius": "$radius-sm",
+                                          "padding": [
+                                            2,
+                                            8
+                                          ],
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "TjJgL",
+                                              "fill": "$success-on-tint",
+                                              "content": "Matches",
+                                              "fontFamily": "$font",
+                                              "fontSize": 12,
+                                              "fontWeight": "500"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "gvlFe",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Video, 90 s looked at: the island floods and drains on a timer; the player wades to the shore.",
+                                      "lineHeight": 1.45,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "uaojc",
+                                  "name": "Task — Five playtesters",
+                                  "width": "fill_container",
+                                  "stroke": "$border-subtle",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
+                                  "layout": "vertical",
+                                  "gap": 4,
+                                  "padding": [
+                                    8,
+                                    0,
+                                    0,
+                                    0
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "rjmXQ",
+                                      "name": "Top",
+                                      "gap": 8,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "NOQfH",
+                                          "fill": "$text-primary",
+                                          "content": "Five playtesters",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "500"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "ciuoQ",
+                                          "name": "Tag",
+                                          "fill": "$bg-muted",
+                                          "cornerRadius": "$radius-sm",
+                                          "padding": [
+                                            2,
+                                            8
+                                          ],
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "I2XKD1",
+                                              "fill": "$text-secondary",
+                                              "content": "No evidence yet",
+                                              "fontFamily": "$font",
+                                              "fontSize": 12,
+                                              "fontWeight": "500"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "CrDzB",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Nothing attached. The devlog of 7 Oct plans the first test for next week.",
+                                      "lineHeight": 1.45,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "R404Tf",
+                              "name": "Raise",
+                              "width": "fill_container",
+                              "fill": "$bg-subtle",
+                              "cornerRadius": "$radius-md",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "padding": [
+                                12,
+                                16
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "T1a3bi",
+                                  "fill": "$text-secondary",
+                                  "content": "Worth raising",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "kPfGG",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "• Where is the one-page core loop? The dice image does not cover it.",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "M3Q8h",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "• When can a stranger open the greybox?",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "G7SQ8q",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "• The focus agreed on call 1 was the tide timing — is it settled?",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             }
                           ]
                         }
@@ -449216,6 +448987,1583 @@
                               "content": "Loading earlier activity…",
                               "fontFamily": "$font",
                               "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ENypL",
+      "x": 12500,
+      "y": 79700,
+      "name": "11.10e · Admin · Checkpoints — Drawer · Curator journal (human curator)",
+      "clip": true,
+      "width": 640,
+      "fill": "$surface",
+      "stroke": "$card-border",
+      "strokeWidth": {
+        "left": 1
+      },
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Ftt79",
+          "name": "Head",
+          "width": "fill_container",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "gap": 12,
+          "padding": [
+            20,
+            24
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "h7QxG",
+              "name": "T",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "FfG7i",
+                  "fill": "$text-primary",
+                  "content": "Curator journal",
+                  "fontFamily": "$font",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "uBtQc",
+                  "name": "M",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tKlGj",
+                      "fill": "$text-primary",
+                      "content": "Hollow Tide",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "P2b1zG",
+                      "fill": "$text-secondary",
+                      "content": "Checkpoint 2 · Patrick Novak · 1–28 Sep 2026",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "icon",
+              "id": "MpyQ7",
+              "name": "X",
+              "width": 20,
+              "height": 20,
+              "icon": "x",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "p4Txd",
+          "name": "Summary",
+          "width": "fill_container",
+          "fill": "$bg-subtle",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "gap": 32,
+          "padding": [
+            16,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "IAz17",
+              "name": "S1",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "b7AGa",
+                  "fill": "$text-secondary",
+                  "content": "Looked at",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "sdPwg",
+                  "fill": "$text-primary",
+                  "content": "9 links · 4 not read",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HqYDK",
+              "name": "S2",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "acYpr",
+                  "fill": "$text-secondary",
+                  "content": "Video watched",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "BNTaF",
+                  "fill": "$text-primary",
+                  "content": "6 min 40 s",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "a22Lk",
+              "name": "S3",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "aH1hM",
+                  "fill": "$text-secondary",
+                  "content": "AI spend",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "ap542",
+                  "fill": "$text-primary",
+                  "content": "$0.42",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "M8CBDB",
+          "name": "Filter (antd Segmented)",
+          "width": "fill_container",
+          "padding": [
+            16,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "CfaER",
+              "name": "Segmented",
+              "fill": "$bg-muted",
+              "cornerRadius": "$radius-md",
+              "gap": 2,
+              "padding": 2,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "trdq6",
+                  "name": "All",
+                  "fill": "$surface",
+                  "cornerRadius": "$radius-sm",
+                  "padding": [
+                    4,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "bXGuX",
+                      "fill": "$text-primary",
+                      "content": "All",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A0F7TA",
+                  "name": "Artifacts",
+                  "fill": "#00000000",
+                  "cornerRadius": "$radius-sm",
+                  "padding": [
+                    4,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BA2E1",
+                      "fill": "$text-secondary",
+                      "content": "Artifacts",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A13vQ",
+                  "name": "Devlog media",
+                  "fill": "#00000000",
+                  "cornerRadius": "$radius-sm",
+                  "padding": [
+                    4,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "U0V5f",
+                      "fill": "$text-secondary",
+                      "content": "Devlog media",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "aK295",
+                  "name": "Reviews",
+                  "fill": "#00000000",
+                  "cornerRadius": "$radius-sm",
+                  "padding": [
+                    4,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TT7Og",
+                      "fill": "$text-secondary",
+                      "content": "Reviews",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "wRgLr",
+                  "name": "Verdict",
+                  "fill": "#00000000",
+                  "cornerRadius": "$radius-sm",
+                  "padding": [
+                    4,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "G0pH1",
+                      "fill": "$text-secondary",
+                      "content": "Verdict",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PXcky",
+          "name": "Body",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "wmcsD",
+              "name": "Sprint — FINAL · 28 SEP",
+              "width": "fill_container",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "K5WZbu",
+                  "name": "Sprint head",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    0,
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JxPh6",
+                      "fill": "$text-tertiary",
+                      "content": "Sprint 4 · 22–29 Sep",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "W96ID",
+                  "name": "Entry — Verdict settled",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "rEocT",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "R7Ngm",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "gavel",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uPEUl",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "BsfwX",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "MWwqJ",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "p3sMa",
+                                  "fill": "$text-primary",
+                                  "content": "Verdict sent by the curator",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "l7lev",
+                              "fill": "$text-tertiary",
+                              "content": "30 Sep, 10:40",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Q1wGz",
+                          "name": "Verdicts",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "YQdOD",
+                              "fill": "$text-secondary",
+                              "content": "Proposed",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "lt22y",
+                              "name": "Tag",
+                              "fill": "$success-tint",
+                              "cornerRadius": "$radius-sm",
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "GPwbH",
+                                  "fill": "$success-on-tint",
+                                  "content": "Ready for the next stage",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "icon",
+                              "id": "fIEY8",
+                              "name": "A",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "arrow-right",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "QDtpf",
+                              "fill": "$text-secondary",
+                              "content": "Settled",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "EDucR",
+                              "name": "Tag",
+                              "fill": "$info-tint",
+                              "cornerRadius": "$radius-sm",
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "RPez1",
+                                  "fill": "$info-on-tint",
+                                  "content": "Goal met",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Xbk8I",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "The curator kept the team on this stage: the demo build still needs the save fix.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H1e7k",
+                          "name": "More (antd Collapse, closed)",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "k6tnu2",
+                              "name": "I",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Z0QnV",
+                              "fill": "$text-secondary",
+                              "content": "What it was based on",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "m76yK",
+                  "name": "Entry — Final report written",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "bVtkY",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "w7oboj",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "file-text",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wupVE",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "oi71d",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "DUBzS",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "W3J1w",
+                                  "fill": "$text-primary",
+                                  "content": "The AI's read of the verdict",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Jd7VW",
+                              "fill": "$text-tertiary",
+                              "content": "29 Sep, 01:04",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "VP22H",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Would propose: Ready for the next stage. Every outcome has an artifact that opens; calls 3 and 4 agreed the loop is locked.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "n58VcV",
+                          "name": "More (antd Collapse, closed)",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "h4Sbx",
+                              "name": "I",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "jo5za",
+                              "fill": "$text-secondary",
+                              "content": "What it was based on",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "It0YI",
+              "name": "Sprint — SPRINT 3 · 15–21 SEP",
+              "width": "fill_container",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "tKN1d",
+                  "name": "Sprint head",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    0,
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Tmjd4",
+                      "fill": "$text-tertiary",
+                      "content": "Sprint 3 · 15–21 Sep",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "pb27G",
+                  "name": "Entry — Artifact · Core loop one-pager",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "fomDZ",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "y4GYu",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "file-check",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sp5Jy",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "sOM8d",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "oNadT",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "mvMf7",
+                                  "fill": "$text-primary",
+                                  "content": "Artifact · Core loop one-pager",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "LQzW9",
+                                  "name": "Tag",
+                                  "fill": "$error-tint",
+                                  "cornerRadius": "$radius-sm",
+                                  "padding": [
+                                    2,
+                                    8
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "V2zmLb",
+                                      "fill": "$error-on-tint",
+                                      "content": "Does not match",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "iBtth",
+                              "fill": "$text-tertiary",
+                              "content": "19 Sep, 18:40",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "b7dcPN",
+                          "fill": "$info",
+                          "content": "drive.google.com/file/d/1xQ…/view",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "LnyDo",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Task: “Core loop described on one page”. Seen: a photo of dice on a table, no text about the loop.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mTeKX",
+                          "name": "More (antd Collapse, open)",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "Pu5OR",
+                              "name": "I",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-down",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "n2lkpU",
+                              "fill": "$text-secondary",
+                              "content": "What was read",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Hcdef",
+                          "name": "Read (open)",
+                          "width": "fill_container",
+                          "fill": "$surface-sunken",
+                          "cornerRadius": "$radius-md",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "tatTl",
+                              "name": "Row — Opened",
+                              "width": "fill_container",
+                              "gap": 12,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "W8eyw",
+                                  "fill": "$text-tertiary",
+                                  "textGrowth": "fixed-width",
+                                  "width": 96,
+                                  "content": "Opened",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "bmTiL",
+                                  "fill": "$text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "drive.google.com/uc?export=download&id=1xQ…",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "P9fMh",
+                              "name": "Row — Sent to the AI",
+                              "width": "fill_container",
+                              "gap": 12,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "RnmZO",
+                                  "fill": "$text-tertiary",
+                                  "textGrowth": "fixed-width",
+                                  "width": 96,
+                                  "content": "Sent to the AI",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "g2kVOi",
+                                  "fill": "$text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "0 characters of text · 1 images · 0 s of video",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ciNGW",
+                              "name": "Row — Not read",
+                              "width": "fill_container",
+                              "gap": 12,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "G2v0S",
+                                  "fill": "$text-tertiary",
+                                  "textGrowth": "fixed-width",
+                                  "width": 96,
+                                  "content": "Not read",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Qn29F",
+                                  "fill": "$text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "—",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YB81p",
+                  "name": "Entry — Devlog media · Week 3: the boss fight",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "W3DR4",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "fDpfl",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "photo",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "D1Oz8f",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "s48v2u",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "OUza6",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gDJME",
+                                  "fill": "$text-primary",
+                                  "content": "Devlog media · Week 3: the boss fight",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "X9kzQ",
+                              "fill": "$text-tertiary",
+                              "content": "18 Sep, 21:05",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "ykBmW",
+                          "fill": "$info",
+                          "content": "youtu.be/aB3…",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "qf8yS",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "A boss arena with a red-lit stone floor; the player mid-dodge. Title and thumbnail only, the video itself was not watched.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ylGhy",
+                  "name": "Entry — Artifact · Playtest notes",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "x0Dsy",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "SOsM2",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "file-check",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "VtSs9",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "UHpkl",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "ybtFF",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "KtX3O",
+                                  "fill": "$text-primary",
+                                  "content": "Artifact · Playtest notes",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "ACH4s",
+                                  "name": "Tag",
+                                  "fill": "$bg-muted",
+                                  "cornerRadius": "$radius-sm",
+                                  "padding": [
+                                    2,
+                                    8
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "rbaaC",
+                                      "fill": "$text-secondary",
+                                      "content": "Cannot tell",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Dv978",
+                              "fill": "$text-tertiary",
+                              "content": "16 Sep, 11:02",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "qLLGV",
+                          "fill": "$info",
+                          "content": "notion.so/hollowtide/playtest-2",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "uiehc",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Not read — the link asks for a login. No model call made.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "D7dgHv",
+                  "name": "Entry — Artifact · Greybox walkthrough",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "NldBM",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "n8S4Nv",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "video",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QnFd5",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gN727",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "o4V7R",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "E6YdVY",
+                                  "fill": "$text-primary",
+                                  "content": "Artifact · Greybox walkthrough",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "wvLr0",
+                                  "name": "Tag",
+                                  "fill": "$success-tint",
+                                  "cornerRadius": "$radius-sm",
+                                  "padding": [
+                                    2,
+                                    8
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "zfpUQ",
+                                      "fill": "$success-on-tint",
+                                      "content": "Matches",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "500"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "OkbUD",
+                              "fill": "$text-tertiary",
+                              "content": "15 Sep, 14:30",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "WyZ8m",
+                          "fill": "$info",
+                          "content": "cdn.hollowtide.dev/greybox.mp4",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "TYYq7",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "90 s looked at, 12 frames. A greybox level walked start to finish, matching the task.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "b4FTT",
+                          "name": "More (antd Collapse, closed)",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "JhJer",
+                              "name": "I",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "X8dfik",
+                              "fill": "$text-secondary",
+                              "content": "What was read",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fpu6N",
+              "name": "Sprint — SPRINT 2 · 8–14 SEP",
+              "width": "fill_container",
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "hwdlj",
+                  "name": "Sprint head",
+                  "width": "fill_container",
+                  "padding": [
+                    0,
+                    0,
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TDna6",
+                      "fill": "$text-tertiary",
+                      "content": "Sprint 2 · 8–14 Sep",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dHkBM",
+                  "name": "Entry — Sprint 2 review written",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "b4Dr1R",
+                      "name": "Ic",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$bg-muted",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "FZtba",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "message-square-text",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BFib7",
+                      "name": "C",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "FiFxH",
+                          "name": "Top",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "k1qXz",
+                              "name": "L",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "HXZ14",
+                                  "fill": "$text-primary",
+                                  "content": "Brief before call 3",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "g1xGX",
+                              "fill": "$text-tertiary",
+                              "content": "15 Sep, 01:02",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "dh7kD",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "“Two of three tasks moved; the core-loop one-pager shows dice, not the loop. Worth raising: when can a stranger open the greybox?”",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "a62hBY",
+                          "name": "More (antd Collapse, closed)",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "EWA9P",
+                              "name": "I",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "L7BZa",
+                              "fill": "$text-secondary",
+                              "content": "Input and full answer",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
