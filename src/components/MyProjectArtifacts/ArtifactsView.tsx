@@ -205,7 +205,10 @@ export function ArtifactsView({
 											"{count, plural, one {# artifact} other {# artifacts}}",
 											{ count: row.count },
 										)
-									: t("artifacts.unsortedHint", "No stage")}
+									: t(
+											"artifacts.unsortedBefore",
+											"Uploaded before stages were recorded",
+										)}
 							</Text>
 						</Flex>
 					);
@@ -247,14 +250,27 @@ export function ArtifactsView({
 		},
 		{
 			key: "stage",
-			title: t("artifacts.column.workflow", "Workflow"),
-			width: 192,
+			title: t("artifacts.column.stageEvidence", "Stage · Evidence"),
+			width: 200,
 			onCell: onlyOnArtifact,
 			render: (_, row) =>
 				row.row === "artifact" && (
-					<Text type="secondary" ellipsis>
-						{row.artifact.step?.name ?? "—"}
-					</Text>
+					<Flex vertical gap={2} className={styles.shrink}>
+						<Text type="secondary" ellipsis>
+							{row.artifact.step?.name ?? "—"}
+						</Text>
+						{row.artifact.evidence.map(({ checkpointNumber, tasks }) => (
+							<Tooltip key={checkpointNumber} title={tasks.join(" · ")}>
+								<Text className={styles.evidence}>
+									{t(
+										"artifacts.evidence.label",
+										"Evidence · Checkpoint {number}{count, plural, one {} other { · # tasks}}",
+										{ number: checkpointNumber, count: tasks.length },
+									)}
+								</Text>
+							</Tooltip>
+						))}
+					</Flex>
 				),
 		},
 		{

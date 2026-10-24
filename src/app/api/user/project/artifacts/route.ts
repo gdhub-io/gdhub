@@ -2,7 +2,7 @@ import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
 import { after } from "next/server";
 import { z } from "zod";
 import { ARTIFACT_DESCRIPTION_MAX } from "@/components/MyProjectArtifacts/artifacts";
-import { ArtifactCheckStatus } from "@/config/prisma-enums";
+import { ArtifactCheckStatus, CheckpointItemKind } from "@/config/prisma-enums";
 import {
 	apiError,
 	json,
@@ -12,6 +12,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { UNNUMBERED, withEvidence } from "@/repositories/checkpoint-number";
 import { checkAndLook } from "@/repositories/evidence-seen";
 import { prisma } from "@/services/prisma";
 
@@ -54,10 +55,23 @@ export const GET = pipe(
 				},
 			},
 			step: { select: { id: true, name: true, order: true } },
+			// Evidence is what a checkpoint picked for one of its outcomes.
+			checkpointItems: {
+				where: {
+					kind: CheckpointItemKind.Outcome,
+					checkpoint: { status: { notIn: UNNUMBERED } },
+				},
+				select: {
+					text: true,
+					checkpoint: {
+						select: { id: true, projectId: true, createdAt: true },
+					},
+				},
+			},
 		},
 	});
 
-	return json(artifacts);
+	return json(await withEvidence(artifacts));
 });
 
 export const POST = pipe(

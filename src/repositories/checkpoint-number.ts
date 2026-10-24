@@ -6,7 +6,7 @@ import { currentSprint } from "@/lib/checkpoint-sprints";
 import { prisma } from "@/services/prisma";
 import type { PreviousVerdict } from "@/types/checkpoints";
 
-const UNNUMBERED = [CheckpointStatus.Draft, CheckpointStatus.Cancelled];
+export const UNNUMBERED = [CheckpointStatus.Draft, CheckpointStatus.Cancelled];
 
 /**
  * The checkpoint's number through the whole project: the ones before it that
@@ -126,4 +126,42 @@ export const previousVerdict = async (
 		verdict: previous.verdict,
 		note: previous.verdictNote,
 	};
+};
+
+type EvidenceItem = {
+	text: string;
+	checkpoint: { id: string; projectId: string; createdAt: Date };
+};
+
+/**
+ * Which numbered checkpoints picked each artifact as evidence, and for which
+ * tasks (GDHUB-39). The checkpoints say so; the artifact itself does not know.
+ */
+export const withEvidence = async <
+	T extends { checkpointItems: EvidenceItem[] },
+>(
+	artifacts: T[],
+) => {
+	const numbers = await checkpointNumbers(
+		artifacts.flatMap((artifact) =>
+			artifact.checkpointItems.map((item) => item.checkpoint),
+		),
+	);
+
+	return artifacts.map(({ checkpointItems, ...artifact }) => {
+		const byCheckpoint = new Map<number, string[]>();
+		for (const item of checkpointItems) {
+			const number = numbers.get(item.checkpoint.id) as number;
+			const tasks = byCheckpoint.get(number);
+			if (tasks) tasks.push(item.text);
+			else byCheckpoint.set(number, [item.text]);
+		}
+		return {
+			...artifact,
+			evidence: [...byCheckpoint].map(([checkpointNumber, tasks]) => ({
+				checkpointNumber,
+				tasks,
+			})),
+		};
+	});
 };
