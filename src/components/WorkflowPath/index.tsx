@@ -6,13 +6,14 @@ import {
 } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Divider, Flex, Modal, Typography } from "antd";
+import { Alert, Button, Divider, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
 import { gtmEventTrigger, trackCheckpoint } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
+import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 
 import { AfterVerdict } from "./AfterVerdict";
 
@@ -50,8 +51,8 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	// How many stages behind the current one are open. Each "Show earlier"
 	// opens one more; null is the running-checkpoint default, nothing behind.
 	const [behind, setBehind] = useState<number | null>(null);
-	// Open while the equity promises are confirmed; holds which button asked for the move.
-	const [equityAsk, setEquityAsk] = useState<{ afterVerdict: boolean }>();
+	// Open while a move is confirmed; holds which button asked for it.
+	const [confirm, setConfirm] = useState<{ afterVerdict: boolean }>();
 	const [earlierOpen, setEarlierOpen] = useState(false);
 
 	const { data: workflow, refetch } = useProjectWorkflow(project.id);
@@ -132,23 +133,30 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		} catch {}
 	};
 
+	// A running checkpoint holds the stage until its verdict (GDHUB-37).
+	const heldBy =
+		running && detail?.dueAt
+			? {
+					number: String(detail.number ?? 1),
+					date: formatShort(verdictDueBy(detail.dueAt).toISOString()),
+				}
+			: null;
 	const requiredOpen = current.tasks.some(
 		(task) => task.required && !task.done,
 	);
 	const nextStep = steps[current.order + 1];
-	const goNext = (afterVerdict: boolean) => {
-		if (current.equityPromises?.length) {
-			setEquityAsk({ afterVerdict });
-			return;
-		}
-		move.mutate({ afterVerdict });
-		gtmEventTrigger("workflow_move", {
-			projectId: project.id,
-			direction: "next",
-			currentStep: current.name,
-			nextStep: nextStep?.name,
-		});
-	};
+	const lockedReason = heldBy
+		? t(
+				"workflow.path.stage.held",
+				"Opens after the Checkpoint {number} verdict · by {date}",
+				heldBy,
+			)
+		: requiredOpen
+			? t("workflow.path.stage.locked", "Finish the required tasks to move on")
+			: null;
+	const currentName = stepName(current.order);
+	const nextName = nextStep ? stepName(nextStep.order) : "";
+	const goNext = (afterVerdict: boolean) => setConfirm({ afterVerdict });
 
 	const hereLabel = (
 		<span className={styles.here}>
@@ -273,12 +281,7 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 						? {
 								onClick: () => goNext(false),
 								loading: move.isPending,
-								lockedReason: requiredOpen
-									? t(
-											"workflow.path.stage.locked",
-											"Finish the required tasks to move on",
-										)
-									: null,
+								lockedReason,
 							}
 						: undefined
 				}
@@ -397,15 +400,10 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 												canMove &&
 												nextStep
 													? {
-															stage: stepName(current.order + 1),
+															stage: nextName,
 															onClick: () => goNext(true),
 															loading: move.isPending,
-															lockedReason: requiredOpen
-																? t(
-																		"workflow.path.stage.locked",
-																		"Finish the required tasks to move on",
-																	)
-																: null,
+															lockedReason,
 														}
 													: undefined
 											}
@@ -443,46 +441,73 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 
 			<WorkflowAside projectId={project.id} checkpointId={running?.id} />
 
+			{/* Frames 02.5 and 02.5b: the path runs one way, so every move is confirmed. */}
 			<Modal
 				centered
-				title={t(
-					"workflow.equity-transfer.title",
-					"Equity Transfer Confirmation",
-				)}
-				open={!!equityAsk}
+				title={t("workflow.move.title", "Move to {stage}?", {
+					stage: nextName,
+				})}
+				open={!!confirm}
+				okText={t("workflow.move.ok", "Move to {stage}", { stage: nextName })}
+				cancelText={t("workflow.move.cancel", "Stay on {stage}", {
+					stage: currentName,
+				})}
 				onOk={async () => {
-					if (equityAsk) await move.mutateAsync(equityAsk);
-					setEquityAsk(undefined);
+					if (confirm) {
+						await move.mutateAsync(confirm);
+						gtmEventTrigger("workflow_move", {
+							projectId: project.id,
+							direction: "next",
+							currentStep: current.name,
+							nextStep: nextStep?.name,
+						});
+					}
+					setConfirm(undefined);
 				}}
-				onCancel={() => setEquityAsk(undefined)}
+				onCancel={() => setConfirm(undefined)}
 				confirmLoading={move.isPending}
 			>
-				<Flex vertical gap={8}>
+				<Flex vertical gap={12}>
 					<Text>
 						{t(
-							"workflow.equity-transfer.description",
-							"By proceeding to the next step, the following equity promises will be transferred to actual allocations:",
+							"workflow.move.description",
+							"The project's stage changes from {from} to {to}.",
+							{ from: currentName, to: nextName },
 						)}
 					</Text>
-					{current.equityPromises?.map((promise) => (
-						<Flex key={promise.id} gap={8}>
-							<Text>
-								<Text strong>{promise.allocation.owner.name}:</Text> +
-								{promise.percentage}%
-							</Text>
-							<Text type="secondary">
+					<Alert
+						type="info"
+						showIcon
+						message={t(
+							"workflow.move.oneWay",
+							"There is no way back: the path runs one way. Past stages and checkpoints stay in the history.",
+						)}
+					/>
+					{!!current.equityPromises?.length && (
+						<Flex vertical gap={6} className={styles.moveEquity}>
+							<Text type="secondary" strong>
 								{t(
-									"workflow.equity-transfer.total",
-									"Total after transfer: {total}%",
-									{
-										total: (
-											promise.allocation.percentage + promise.percentage
-										).toString(),
-									},
+									"workflow.move.equity",
+									"These equity promises become allocations:",
 								)}
 							</Text>
+							{current.equityPromises.map((promise) => (
+								<Text key={promise.id}>
+									{t(
+										"workflow.move.equityRow",
+										"{name}: +{percentage}% · total {total}%",
+										{
+											name: promise.allocation.owner.name ?? "",
+											percentage: String(promise.percentage),
+											total: String(
+												promise.allocation.percentage + promise.percentage,
+											),
+										},
+									)}
+								</Text>
+							))}
 						</Flex>
-					))}
+					)}
 				</Flex>
 			</Modal>
 		</div>
