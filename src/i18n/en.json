@@ -1197,9 +1197,9 @@
 			"description": "Description",
 			"name": "Title",
 			"stage": "Stage",
+			"stageEvidence": "Stage · Evidence",
 			"updatedAt": "Updated At",
-			"when": "When",
-			"workflow": "Workflow"
+			"when": "When"
 		},
 		"delete": "Delete artifact",
 		"deleteConfirm": "Delete this artifact?",
@@ -1208,6 +1208,9 @@
 		"error": {
 			"retry": "Try again",
 			"title": "Artifacts could not be loaded"
+		},
+		"evidence": {
+			"label": "{count, plural, other {Evidence · Checkpoint {number} · # tasks}}"
 		},
 		"filter": {
 			"all": "All"
@@ -1301,7 +1304,7 @@
 			"prototypeVideo": "Prototype video"
 		},
 		"unsorted": "Unsorted",
-		"unsortedHint": "No stage"
+		"unsortedBefore": "Uploaded before stages were recorded"
 	},
 	"auth": {
 		"logOut": "Log out"
@@ -4794,11 +4797,6 @@
 			"savedAt": "Saved at {step} · step {number} of 3",
 			"tryAgain": "Try again",
 			"waiting": "Waiting for the curator"
-		},
-		"equity-transfer": {
-			"description": "By proceeding to the next step, the following equity promises will be transferred to actual allocations:",
-			"title": "Equity Transfer Confirmation",
-			"total": "Total after transfer: {total}%"
 		},
 		"finish-step": "Next step",
 		"move": {
