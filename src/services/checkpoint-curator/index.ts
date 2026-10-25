@@ -17,6 +17,7 @@
  * author. The verdict it proposes is settled by `settleVerdict`, in code.
  */
 
+import { AI_MODELS } from "@/config/ai-models";
 import { isValidJSON } from "@/helpers/format";
 import {
 	type AiMeter,
@@ -64,11 +65,7 @@ const meter = (options: CuratorOptions, purpose: AiPurpose) =>
 
 class CheckpointCuratorService {
 	private get model() {
-		return (
-			process.env.CHECKPOINT_CURATOR_MODEL ||
-			process.env.OPENAI_API_MODEL ||
-			"gpt-5.6-luna"
-		);
+		return process.env.CHECKPOINT_CURATOR_MODEL || AI_MODELS.curatorAssist;
 	}
 
 	/**
@@ -90,6 +87,9 @@ class CheckpointCuratorService {
 				messages,
 				tools: [{ type: "function", function: { name, parameters } }],
 				tool_choice: { type: "function", function: { name } },
+				// The GPT-6 models refuse function tools on chat completions while
+				// reasoning is on.
+				reasoning_effort: "none",
 				temperature: 0,
 			});
 			await recordAiUsage(meter, this.model, {

@@ -212,7 +212,8 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 	const { t } = useTranslate();
 	const read = entry.input as Read;
 
-	const whatWasRead = (
+	// Only a look at a link has an input to show; reviews and verdicts bring their own.
+	const whatWasRead = () => (
 		<Descriptions
 			colon={false}
 			size="small"
@@ -388,7 +389,7 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 		body,
 		more = {
 			label: t("admin.checkpoints.journal.whatWasRead", "What was read"),
-			content: whatWasRead,
+			content: whatWasRead(),
 		},
 	} = view();
 

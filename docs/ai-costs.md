@@ -9,12 +9,14 @@ prompt with representative data and counting with `js-tiktoken`. Output tokens
 are estimates from the word limits each schema states — the model is told "under
 300 words", so the ceiling is known even when the answer comes back shorter.
 
-Rates checked **14 September 2026** against
+Rates checked **14 September 2026** (the GPT-6 rows on 24 October 2026) against
 [OpenAI's pricing page](https://developers.openai.com/api/docs/pricing). They are
 the only numbers here that go stale; everything else is arithmetic on them.
 
 | Model | Input / 1M | Cached read / 1M | Output / 1M |
 |---|---|---|---|
+| [`gpt-6.1-sol`](https://developers.openai.com/api/docs/models/gpt-6.1-sol) | $2.00 | $0.10 | $10.00 |
+| [`gpt-6-luna`](https://developers.openai.com/api/docs/models/gpt-6-luna) | $0.10 | $0.01 | $0.50 |
 | [`gpt-5.6-sol`](https://developers.openai.com/api/docs/models/gpt-5.6-sol) | $5.00 | $0.50 | $30.00 |
 | [`gpt-5.6-terra`](https://developers.openai.com/api/docs/models/gpt-5.6-terra) | $2.00 | $0.20 | $12.00 |
 | [`gpt-5.6-luna`](https://developers.openai.com/api/docs/models/gpt-5.6-luna) | $0.20 | $0.02 | $1.20 |
@@ -167,7 +169,8 @@ Three defaults are behind, and one of them is costing five times what it needs t
 
 | Where | Now | Should be | Why |
 |---|---|---|---|
-| `checkpoint-curator` | `gpt-5.6-luna` | — | current |
+| `checkpoint-curator` | `gpt-6-luna` | — | current (24 Oct 2026); no longer reads `OPENAI_API_MODEL` |
+| curator review, evidence, call notes | `gpt-6.1-sol` | — | current (24 Oct 2026): `gpt-6-sol`'s price, a newer model |
 | `ai-validation` relevance | `gpt-4.1-mini` | `gpt-5.6-luna` | two generations back, and dearer: $0.40/$1.60 against $0.20/$1.20 |
 | `openai.parseCV`, `matchingSpecAndProj` | `gpt-4o-mini` | `gpt-5.6-luna` | three generations back |
 | `openai.createEmbedding` | `text-embedding-ada-002` | `text-embedding-3-small` | **$0.10 against $0.02 — five times the price** for a worse embedding |

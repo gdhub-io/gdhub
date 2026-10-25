@@ -40,6 +40,19 @@ export default defineConfig({
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
+			// GDHUB-79, on the stand: `bun run test:e2e:checkpoints`. Paddle sandbox
+			// and real model calls, so one at a time and never in CI.
+			name: "checkpoints",
+			testMatch: ["**/checkpoints/**/*.spec.ts"],
+			fullyParallel: false,
+			timeout: 15 * 60_000,
+			use: {
+				...devices["Desktop Chrome"],
+				actionTimeout: 30_000,
+				navigationTimeout: 60_000,
+			},
+		},
+		{
 			name: "authenticated",
 			testMatch: ["**/*.authed.spec.ts"],
 			use: {
