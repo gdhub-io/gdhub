@@ -615,6 +615,11 @@
 	color: var(--gd-success-solid);
 }
 
+.taskIconFailed {
+	flex: none;
+	color: var(--gd-danger-solid);
+}
+
 .grow {
 	flex: 1;
 	min-width: 0;

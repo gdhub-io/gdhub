@@ -4,6 +4,7 @@ import {
 	IconChevronUp,
 	IconCircle,
 	IconCircleCheck,
+	IconCircleX,
 	IconSparkles,
 	IconVideo,
 } from "@tabler/icons-react";
@@ -17,13 +18,15 @@ import {
 	useVerdictCopy,
 	VerdictChip,
 } from "@/components/checkpoints/VerdictChip";
+import { StatusDot, type StatusDotProps } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import { sessionHeld } from "@/lib/checkpoint-call";
-import type { CheckpointDto } from "@/types/checkpoints";
+import { standingOf } from "@/lib/checkpoint-verdict";
+import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
 import { formatShort } from "./dates";
 import styles from "./style.module.scss";
@@ -161,6 +164,62 @@ function HeldSessions({
 	);
 }
 
+/**
+ * How each task's evidence counted. The AI curator's verdict is settled by
+ * `standingOf`, so its labels come from the same rule (GDHUB-81, frame
+ * 12.07.4); a human curator judges evidence himself and gets no labels.
+ */
+function useEvidenceStanding(checkpoint: CheckpointDto) {
+	const { t } = useTranslate();
+	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
+
+	return (
+		item: CheckpointItemDto,
+	): { failed: boolean; status?: StatusDotProps } => {
+		if (!isAI) return { failed: !item.artifact };
+
+		const standing = standingOf(item);
+		switch (standing.is) {
+			case "unproven":
+				if (standing.reason === "missing") return { failed: true };
+				return {
+					failed: true,
+					status: {
+						tone: "danger",
+						label:
+							standing.reason === "broken"
+								? t(
+										"workflow.path.checkpoint.evidence.broken",
+										"Link doesn't open",
+									)
+								: t(
+										"workflow.path.checkpoint.evidence.doesNotMatch",
+										"Not about the task",
+									),
+					},
+				};
+			case "trusted":
+				return {
+					failed: false,
+					status: {
+						tone: "warning",
+						label: t("workflow.path.checkpoint.evidence.trusted", "On trust"),
+					},
+				};
+			case "partly":
+				return {
+					failed: false,
+					status: {
+						tone: "warning",
+						label: t("workflow.path.checkpoint.evidence.partly", "Partly"),
+					},
+				};
+			default:
+				return { failed: false };
+		}
+	};
+}
+
 /** What a closed checkpoint came to: the goal, what was delivered, the verdict. */
 export function CheckpointResult({
 	checkpoint,
@@ -178,7 +237,9 @@ export function CheckpointResult({
 	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
 	);
-	const delivered = outcomes.filter((item) => item.artifact).length;
+	const evidence = useEvidenceStanding(checkpoint);
+	const rows = outcomes.map((item) => ({ item, ...evidence(item) }));
+	const delivered = rows.filter((row) => !row.failed).length;
 
 	return (
 		<>
@@ -202,27 +263,35 @@ export function CheckpointResult({
 							})}
 						</span>
 					</div>
-					{outcomes.map((item) => (
-						<div key={item.id} className={styles.outcome}>
-							{item.artifact ? (
-								<IconCircleCheck size={16} className={styles.taskIconDone} />
-							) : (
-								<IconCircle size={16} className={styles.taskIcon} />
-							)}
-							<span
-								className={`${styles.grow}${item.artifact ? "" : ` ${styles.secondary}`}`}
-							>
-								{item.text}
-							</span>
-							{item.artifact ? (
-								<ArtifactLink artifact={item.artifact} />
-							) : (
-								<span className={styles.tertiary}>
-									{t("workflow.path.checkpoint.not-delivered", "Not delivered")}
+					{rows.map(({ item, failed, status }) => {
+						return (
+							<div key={item.id} className={styles.outcome}>
+								{!item.artifact ? (
+									<IconCircle size={16} className={styles.taskIcon} />
+								) : failed ? (
+									<IconCircleX size={16} className={styles.taskIconFailed} />
+								) : (
+									<IconCircleCheck size={16} className={styles.taskIconDone} />
+								)}
+								<span
+									className={`${styles.grow}${item.artifact ? "" : ` ${styles.secondary}`}`}
+								>
+									{item.text}
 								</span>
-							)}
-						</div>
-					))}
+								{status && <StatusDot {...status} />}
+								{item.artifact ? (
+									<ArtifactLink artifact={item.artifact} />
+								) : (
+									<span className={styles.tertiary}>
+										{t(
+											"workflow.path.checkpoint.not-delivered",
+											"Not delivered",
+										)}
+									</span>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			)}
 

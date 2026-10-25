@@ -31,38 +31,49 @@ import {
 /**
  * GDHUB-79 C10–C15, E19, E20: a whole AI checkpoint with the real model, its
  * 28 days walked by shifting the dates and calling the nightly cron. The team
- * sets four tasks on day 1, proves three with artifacts, posts a devlog with
- * an image and a video every sprint, cuts the fourth task on day 15, and gets
- * a verdict on day 29. Then: the results, the rating, the certificate, the
+ * sets five tasks on day 1, proves three with evidence the AI reads and one
+ * behind a login it takes on trust, posts a devlog with an image and a video
+ * every sprint, cuts the fifth task on day 15, and gets a verdict on day 29. Then: the results, the rating, the certificate, the
  * next stage, Checkpoint 2's carried-over inputs, the admin's curator journal
  * and the scout's card.
  */
 
 const log = new RunLog("C whole AI checkpoint");
 
+// Evidence that really shows its task, so the verdict is the model's to give;
+// the fourth sits behind a login and is taken on trust (GDHUB-81).
 const TASKS = [
-	"A greybox build of two islands with the tide loop anyone can download",
-	"A two-minute gameplay video of co-op sailing between the islands",
-	"Playtest notes from five players on the tide loop",
+	"A public repository of the Godot demo projects the game builds on",
+	"An animated reference video for the art style",
+	"A reference article on what playtesting is, for the team to read",
+	"A private design board for the team",
 	"A storyboard for the trailer",
 ];
 const EVIDENCE = [
 	{
-		type: ProjectArtifactType.ExecutableBuild,
-		name: "Greybox build",
+		type: ProjectArtifactType.Other,
+		name: "Godot demo projects",
 		link: "https://github.com/godotengine/godot-demo-projects",
 	},
 	{
 		type: ProjectArtifactType.GameplayVideo,
-		name: "Co-op sailing, 2 min",
+		name: "Art style reference",
 		link: VIDEO,
 	},
 	{
 		type: ProjectArtifactType.Other,
-		name: "Playtest notes",
+		name: "How we playtest",
 		link: "https://en.wikipedia.org/wiki/Playtest",
 	},
+	{
+		type: ProjectArtifactType.Other,
+		name: "Design board",
+		link: "https://github.com/login",
+	},
 ];
+const TRUSTED = 3;
+const CUT = 4;
+
 let author: StandUser;
 let member: StandUser;
 let page: Page;
@@ -153,8 +164,8 @@ test.describe.serial("a whole AI checkpoint", () => {
 				async () => (await outcomes()).filter((task) => task.evidenceMatch).length,
 				{ timeout: 180_000 },
 			)
-			.toBe(3);
-		log.step("Four tasks set; three proven by artifacts the AI looked at");
+			.toBeGreaterThanOrEqual(3);
+		log.step("Five tasks set; four with evidence, three of them read by the AI");
 
 		await sprintDevlog("Sprint 1: the tide floods and drains one island; two players can crew the boat.");
 	});
@@ -180,12 +191,12 @@ test.describe.serial("a whole AI checkpoint", () => {
 		const day15 = await nightOf(15);
 		expect(day15.reviews).toBeGreaterThanOrEqual(1);
 
-		const storyboard = (await outcomes())[3];
+		const storyboard = (await outcomes())[CUT];
 		const cut = await page.request.patch(`/api/checkpoint/${checkpointId}/plan`, {
 			data: { op: "remove", itemId: storyboard.id },
 		});
 		expect(cut.ok(), await cut.text()).toBe(true);
-		expect((await outcomes())[3].cut).toBe(true);
+		expect((await outcomes())[CUT].cut).toBe(true);
 		log.step("Day 15: the storyboard task is cut, kept struck through");
 	});
 
@@ -204,14 +215,24 @@ test.describe.serial("a whole AI checkpoint", () => {
 			select: { status: true, verdict: true, verdictNote: true },
 		});
 		expect(closed.status).toBe(CheckpointStatus.Closed);
-		// Everything not cut is proven, so the rule never forces Goal missed.
+		// Every task not cut is delivered or taken on trust: never Goal missed.
 		expect(closed.verdict).not.toBe(CheckpointVerdict.GoalMissed);
+		const settled = await prisma.checkpointJournalEntry.findFirstOrThrow({
+			where: { checkpointId, kind: "Verdict" },
+			select: { output: true },
+		});
+		const { trusted } = settled.output as { trusted: { text: string }[] };
+		expect(trusted.map((task) => task.text)).toContain(TASKS[TRUSTED]);
 		log.step(`Day 29: ${closed.verdict} — ${closed.verdictNote}`);
 	});
 
 	test("after the verdict: results, rating, certificate, the next stage", async () => {
 		await page.goto(`/user/project/${project.slug}/workflow?results=${checkpointId}`);
-		await expect(page.getByRole("dialog", { name: "Checkpoint 1 results" })).toBeVisible();
+		const results = page.getByRole("dialog", { name: "Checkpoint 1 results" });
+		await expect(results).toBeVisible();
+		await expect(
+			results.locator("div").filter({ hasText: TASKS[TRUSTED] }).last(),
+		).toContainText("On trust");
 		await page.keyboard.press("Escape");
 
 		const rated = await page.request.post(`/api/checkpoint/${checkpointId}/feedback`, {
@@ -240,8 +261,8 @@ test.describe.serial("a whole AI checkpoint", () => {
 		await page.goto(`/checkpoint/new?project=${project.slug}`);
 		await page.getByRole("button", { name: "Fill in" }).click();
 		await expect(page.getByText("Carried over from Checkpoint 1")).toBeVisible();
-		// The proven outcomes come back as inputs with their artifacts.
-		for (const artifact of EVIDENCE) {
+		// The readable evidence comes back as inputs; the one behind a login does not.
+		for (const artifact of EVIDENCE.slice(0, TRUSTED)) {
 			await expect(page.getByText(artifact.name).first()).toBeVisible();
 		}
 		log.step("Checkpoint 2 starts from the three proven outcomes");

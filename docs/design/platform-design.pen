@@ -181889,7 +181889,7 @@
                           "id": "gibmp",
                           "name": "H STAGE · CHECKPOINT",
                           "fill": "$text-tertiary",
-                          "content": "STAGE · CHECKPOINT",
+                          "content": "STAGE · EVIDENCE",
                           "fontFamily": "$font",
                           "fontSize": 11,
                           "fontWeight": "600",
@@ -182154,17 +182154,29 @@
                       "id": "tZiP1",
                       "name": "Col WHERE",
                       "width": 190,
-                      "alignItems": "center",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "RLgGS",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Concepting · Checkpoint 1",
+                          "content": "Concepting",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "U66ibB",
+                          "name": "Evidence",
+                          "fill": "$success",
+                          "content": "Evidence · Checkpoint 1",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
                         }
                       ]
                     },
@@ -182345,7 +182357,7 @@
                           "id": "aAPjr",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Concepting · Checkpoint 1",
+                          "content": "Concepting",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
@@ -182631,17 +182643,29 @@
                       "id": "aRVva",
                       "name": "Col WHERE",
                       "width": 190,
-                      "alignItems": "center",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "lFcYm",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Prototyping · Checkpoint 1",
+                          "content": "Prototyping",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Ge155",
+                          "name": "Evidence",
+                          "fill": "$success",
+                          "content": "Evidence · Checkpoint 1",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
                         }
                       ]
                     },
@@ -182857,17 +182881,29 @@
                       "id": "PurGk",
                       "name": "Col WHERE",
                       "width": 190,
-                      "alignItems": "center",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "pBxp9",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Prototyping · Checkpoint 2",
+                          "content": "Prototyping",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "N7RTDQ",
+                          "name": "Evidence",
+                          "fill": "$success",
+                          "content": "Evidence · Checkpoint 2 · 2 tasks",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
                         }
                       ]
                     },
@@ -183041,17 +183077,29 @@
                       "id": "syC8J",
                       "name": "Col WHERE",
                       "width": 190,
-                      "alignItems": "center",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "dJHPz",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Prototyping · Checkpoint 2",
+                          "content": "Prototyping",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "F2D5Z",
+                          "name": "Evidence",
+                          "fill": "$success",
+                          "content": "Evidence · Checkpoint 2",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "500"
                         }
                       ]
                     },
@@ -183303,7 +183351,7 @@
                           "id": "rDH2F",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Prototyping · Checkpoint 2",
+                          "content": "Prototyping",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
@@ -183487,7 +183535,7 @@
                           "id": "n7o2b",
                           "name": "W",
                           "fill": "$text-secondary",
-                          "content": "Prototyping · Checkpoint 2",
+                          "content": "Prototyping",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
@@ -183612,7 +183660,7 @@
                       "id": "k6072",
                       "name": "R",
                       "fill": "$text-tertiary",
-                      "content": "No stage, no checkpoint",
+                      "content": "Uploaded before stages were recorded",
                       "fontFamily": "$font",
                       "fontSize": 12,
                       "fontWeight": "normal"
@@ -235383,7 +235431,7 @@
       "id": "dR8Bu",
       "x": 8370,
       "y": 68988,
-      "name": "12.07.4 · Modal — Checkpoint 2 results",
+      "name": "12.07.4 · Modal — Checkpoint 2 results · AI curator, evidence labels",
       "clip": true,
       "width": 640,
       "fill": "$surface",
@@ -235575,7 +235623,7 @@
                       "id": "LcqYa",
                       "name": "C",
                       "fill": "$text-secondary",
-                      "content": "2 of 3",
+                      "content": "3 of 5",
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "normal"
@@ -235686,6 +235734,22 @@
                       "height": 1
                     },
                     {
+                      "id": "g8VTrz",
+                      "type": "ref",
+                      "ref": "StXPy",
+                      "name": "Evidence status",
+                      "descendants": {
+                        "v3xypZ": {
+                          "fill": "$warning"
+                        },
+                        "xcwxi": {
+                          "content": "On trust",
+                          "fontWeight": "normal",
+                          "fill": "$text-secondary"
+                        }
+                      }
+                    },
+                    {
                       "type": "frame",
                       "id": "psOzo",
                       "name": "Link — artifact",
@@ -235718,6 +235782,89 @@
                 },
                 {
                   "type": "frame",
+                  "id": "KJKUf",
+                  "name": "Outcome",
+                  "width": "fill_container",
+                  "height": 32,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "cnm92",
+                      "name": "Icon circle-check",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "circle-check",
+                      "library": "lucide",
+                      "fill": "$success"
+                    },
+                    {
+                      "type": "text",
+                      "id": "d7fcS",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Character sheet",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fvxgb",
+                      "name": "Spacer",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "id": "S9C0l",
+                      "type": "ref",
+                      "ref": "StXPy",
+                      "name": "Evidence status",
+                      "descendants": {
+                        "v3xypZ": {
+                          "fill": "$warning"
+                        },
+                        "xcwxi": {
+                          "content": "Partly",
+                          "fontWeight": "normal",
+                          "fill": "$text-secondary"
+                        }
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "A350r",
+                      "name": "Link — artifact",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "yIOAn",
+                          "name": "L",
+                          "fill": "$link",
+                          "content": "Artifact",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "BYmyI",
+                          "name": "Icon arrow-up-right",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "arrow-up-right",
+                          "library": "lucide",
+                          "fill": "$link"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
                   "id": "yJlSG",
                   "name": "Outcome",
                   "width": "fill_container",
@@ -235731,15 +235878,15 @@
                       "name": "Icon circle",
                       "width": 16,
                       "height": 16,
-                      "icon": "circle",
+                      "icon": "circle-x",
                       "library": "lucide",
-                      "fill": "$text-tertiary"
+                      "fill": "$error"
                     },
                     {
                       "type": "text",
                       "id": "Pk5R6",
                       "name": "L",
-                      "fill": "$text-secondary",
+                      "fill": "$text-primary",
                       "content": "Pitch video",
                       "fontFamily": "$font",
                       "fontSize": 14,
@@ -235753,14 +235900,132 @@
                       "height": 1
                     },
                     {
+                      "id": "DFg1s",
+                      "type": "ref",
+                      "ref": "StXPy",
+                      "name": "Evidence status",
+                      "descendants": {
+                        "v3xypZ": {
+                          "fill": "$error"
+                        },
+                        "xcwxi": {
+                          "content": "Not about the task",
+                          "fontWeight": "normal",
+                          "fill": "$text-secondary"
+                        }
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "t5SKm",
+                      "name": "Link — artifact",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "g4tYb",
+                          "name": "L",
+                          "fill": "$link",
+                          "content": "Artifact",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "K377Xn",
+                          "name": "Icon arrow-up-right",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "arrow-up-right",
+                          "library": "lucide",
+                          "fill": "$link"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qwDRa",
+                  "name": "Outcome",
+                  "width": "fill_container",
+                  "height": 32,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "PRtzw",
+                      "name": "Icon circle",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "circle-x",
+                      "library": "lucide",
+                      "fill": "$error"
+                    },
+                    {
                       "type": "text",
-                      "id": "YAYOi",
-                      "name": "Meta",
-                      "fill": "$text-tertiary",
-                      "content": "Not delivered",
+                      "id": "hestN",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Trailer storyboard",
                       "fontFamily": "$font",
-                      "fontSize": 13,
+                      "fontSize": 14,
                       "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Fxfii",
+                      "name": "Spacer",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "id": "Glim0",
+                      "type": "ref",
+                      "ref": "StXPy",
+                      "name": "Evidence status",
+                      "descendants": {
+                        "v3xypZ": {
+                          "fill": "$error"
+                        },
+                        "xcwxi": {
+                          "content": "Link doesn't open",
+                          "fontWeight": "normal",
+                          "fill": "$text-secondary"
+                        }
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DdfWX",
+                      "name": "Link — artifact",
+                      "gap": 4,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "rT6JM",
+                          "name": "L",
+                          "fill": "$link",
+                          "content": "Artifact",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "XnrUg",
+                          "name": "Icon arrow-up-right",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "arrow-up-right",
+                          "library": "lucide",
+                          "fill": "$link"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -235848,7 +236113,7 @@
                   "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "The pitch is sharp and the mood board sets one clear direction. The video moves to Checkpoint 3.",
+                  "content": "The pitch one-pager shows the pitch in full. I accepted the mood board on trust: it is behind a login and I could not check it — I trust you. The character sheet shows two of the three heroes. The pitch video shows a different game and the trailer link does not open, so the goal is missed.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font",
                   "fontSize": 14,
@@ -235863,28 +236128,10 @@
                   "alignItems": "center",
                   "children": [
                     {
-                      "type": "frame",
-                      "id": "w5V6z1",
-                      "name": "Avatar",
-                      "width": 24,
-                      "height": 24,
-                      "fill": {
-                        "type": "image",
-                        "enabled": true,
-                        "url": "https://images.unsplash.com/photo-1731341711385-0421015b2dff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTEzNjgyNzR8&ixlib=rb-4.1.0&q=80&w=1080",
-                        "mode": "cover"
-                      },
-                      "cornerRadius": 999
-                    },
-                    {
-                      "type": "text",
-                      "id": "rGyVO",
-                      "name": "Name",
-                      "fill": "$text-secondary",
-                      "content": "Patrick Novak",
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
+                      "id": "cLWtD",
+                      "type": "ref",
+                      "ref": "BYVEs",
+                      "name": "Curator badge"
                     },
                     {
                       "type": "frame",
@@ -246981,7 +247228,7 @@
       "type": "frame",
       "id": "X9H3O",
       "x": 8370,
-      "y": 69630,
+      "y": 69826,
       "name": "12.07.5 · Pulse — states",
       "width": 560,
       "fill": "$page-bg",

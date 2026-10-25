@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import {
+	ArtifactCheckStatus,
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
 	CheckpointVerdict,
+	EvidenceMatch,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
 import type {
@@ -280,6 +282,77 @@ export const ClosedOne: StoryObj = {
 			<PathNode marker="cleared">
 				<ClosedCheckpoint
 					checkpoint={closed}
+					number={2}
+					projectSlug="hollow-tide"
+				/>
+			</PathNode>
+		</div>
+	),
+};
+
+const evidenceTask = (
+	id: string,
+	text: string,
+	checkStatus: ArtifactCheckStatus,
+	evidenceMatch: EvidenceMatch | null,
+	checkNote: string | null = null,
+) => ({
+	...running.items[0],
+	id,
+	text,
+	evidenceMatch,
+	artifact: { ...artifact, id: `a-${id}`, checkStatus, checkNote },
+});
+
+/** The AI curator's labels on each task's evidence — frame 12.07.4 (GDHUB-81). */
+export const ClosedAIEvidenceLabels: StoryObj = {
+	render: () => (
+		<div style={{ maxWidth: 800 }}>
+			<PathNode marker="cleared">
+				<ClosedCheckpoint
+					checkpoint={{
+						...closed,
+						curatorKind: CheckpointCuratorKind.AI,
+						curator: null,
+						verdict: CheckpointVerdict.GoalMissed,
+						verdictNote:
+							"I accepted the mood board on trust: it is behind a login and I could not check it. The pitch video shows a different game and the trailer link does not open, so the goal is missed.",
+						items: [
+							evidenceTask(
+								"o1",
+								"Pitch one-pager",
+								ArtifactCheckStatus.Readable,
+								EvidenceMatch.Matches,
+							),
+							evidenceTask(
+								"o2",
+								"Mood board",
+								ArtifactCheckStatus.Unreachable,
+								null,
+								"needsLogin",
+							),
+							evidenceTask(
+								"o3",
+								"Character sheet",
+								ArtifactCheckStatus.Readable,
+								EvidenceMatch.Partly,
+							),
+							evidenceTask(
+								"o4",
+								"Pitch video",
+								ArtifactCheckStatus.Readable,
+								EvidenceMatch.DoesNotMatch,
+							),
+							evidenceTask(
+								"o5",
+								"Trailer storyboard",
+								ArtifactCheckStatus.Unreachable,
+								null,
+								"notFound",
+							),
+							{ ...running.items[1], id: "o6", text: "Playtest notes" },
+						],
+					}}
 					number={2}
 					projectSlug="hollow-tide"
 				/>

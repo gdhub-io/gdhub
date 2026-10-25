@@ -20,9 +20,10 @@ import {
 } from "./support/stand";
 
 /**
- * GDHUB-79 C12: evidence that does not open misses the goal, whatever the
- * model proposes. The checkpoint is started without Paddle — the purchase is
- * B4's — and jumps straight to day 29.
+ * GDHUB-79 C12, under the cautious-optimist rule (GDHUB-81): evidence that
+ * shows something other than its task, and a link that leads nowhere, are not
+ * delivered, and the goal is missed whatever the model proposes. Started
+ * without Paddle — the purchase is B4's — and straight to day 29.
  */
 
 const log = new RunLog("C12 the verdict rule");
@@ -32,7 +33,7 @@ test.afterAll(async () => {
 	await removeRun();
 });
 
-test("an outcome whose evidence does not open misses the goal", async ({
+test("evidence of something else, or a dead link, misses the goal", async ({
 	browser,
 }) => {
 	const page = await signInAs(browser, await grantUser("author-c12"));
@@ -42,12 +43,13 @@ test("an outcome whose evidence does not open misses the goal", async ({
 	log.track(checkpointId);
 
 	const outcomes = await addTasks(page, checkpointId, [
+		"Playtest notes from five players on the tide loop",
 		"A greybox build of the second island",
-		"Playtest notes from five players",
 	]);
 	const links = [
-		"https://github.com/godotengine/godot-demo-projects",
-		"https://github.com/login",
+		// A general reference page: opens, but is not five players' notes.
+		"https://en.wikipedia.org/wiki/Godot_(game_engine)",
+		"https://github.com/gdhub-io/no-such-repository-e2e",
 	];
 	for (const [index, link] of links.entries()) {
 		await prove(page, project.id, checkpointId, outcomes[index].id, {
@@ -56,7 +58,7 @@ test("an outcome whose evidence does not open misses the goal", async ({
 			link,
 		});
 	}
-	log.step("Two tasks: one proven by a public build, one by a link behind a login");
+	log.step("Two tasks: one with evidence of something else, one with a dead link");
 
 	await makeToday(checkpointId, 29);
 	await runCron(page);
@@ -71,5 +73,8 @@ test("an outcome whose evidence does not open misses the goal", async ({
 		where: { checkpointId, kind: CheckpointJournalKind.Verdict },
 		select: { output: true },
 	});
-	log.step(`Day 29: Goal missed by the rule — ${JSON.stringify(verdict.output)}`);
+	const { unproven } = verdict.output as { unproven: { reason: string }[] };
+	// The dead link is the platform's fact; the mismatch is the model's reading.
+	expect(unproven.map((task) => task.reason)).toContain("broken");
+	log.step(`Day 29: Goal missed — ${JSON.stringify(verdict.output)}`);
 });
