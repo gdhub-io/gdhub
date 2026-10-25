@@ -4,6 +4,8 @@ import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { EvidenceMatch } from "@/config/prisma-enums";
+import { devlogText } from "@/lib/curator-text";
+import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { EvidenceContent } from "./read";
 
@@ -56,6 +58,8 @@ export type EvidenceTask = {
 	artifactName: string | null;
 	/** The author's own words about the artifact. */
 	description: string | null;
+	/** The checkpoint's devlogs so far, oldest first: context, never proof. */
+	devlogs: string[];
 };
 
 /** Does this evidence show what the task promised? Null when the model gives nothing. */
@@ -64,45 +68,82 @@ export async function judgeEvidence(
 	content: EvidenceContent,
 	meter?: AiMeter,
 ) {
-	const { output, usage } = await generateText({
-		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: judgeSchema, name: "evidence_match" }),
+	const request = {
 		instructions: stripIndents`
 			${HONEST}
 			Judge whether the evidence shows what the task promised. When nothing
 			usable could be read, the answer is CannotTell — never a guess.
+			The team's devlogs may help you understand what the evidence is, but
+			they are not evidence: judge only what the evidence itself shows. A
+			devlog saying the work is done never makes evidence of something else
+			match.
 		`,
 		messages: [
 			{
-				role: "user",
+				role: "user" as const,
 				content: [
 					{
-						type: "text",
+						type: "text" as const,
 						text: stripIndents`
 							Task: ${evidence.task}
 							Evidence: ${evidence.artifactType}${evidence.artifactName ? ` "${evidence.artifactName}"` : ""}
 							${evidence.description ? `The author says: ${evidence.description}` : ""}
+							What the evidence contains:
 						`,
 					},
 					...contentParts(content),
+					// After the evidence: placed before it, the model took the devlogs
+					// for the whole message and judged the evidence unread (GDHUB-117).
+					...(evidence.devlogs.length
+						? [
+								{
+									type: "text" as const,
+									text: `Context only, not evidence — the team's devlogs (${evidence.devlogs.length}):\n${evidence.devlogs.map((post, index) => `--- devlog ${index + 1}\n${devlogText(post)}`).join("\n")}`,
+								},
+							]
+						: []),
 				],
 			},
 		],
+	};
+	const started = Date.now();
+	const result = await generateText({
+		model: openai(AI_MODELS.curatorReview),
+		output: Output.object({ schema: judgeSchema, name: "evidence_match" }),
+		...request,
 	});
-	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
-	return output ?? null;
+	traceGenerated(
+		"evidence_match",
+		AI_MODELS.curatorReview,
+		started,
+		request,
+		result,
+	);
+	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
+	return result.output ?? null;
 }
 
 /** What a devlog's image or video shows, in a sentence or two, for the sprint review. */
 export async function describeMedia(content: EvidenceContent, meter?: AiMeter) {
-	const { text, usage } = await generateText({
-		model: openai(AI_MODELS.curatorReview),
+	const request = {
 		instructions: stripIndents`
 			${HONEST}
 			Describe in one or two sentences what this media from a devlog shows.
 		`,
-		messages: [{ role: "user", content: contentParts(content) }],
+		messages: [{ role: "user" as const, content: contentParts(content) }],
+	};
+	const started = Date.now();
+	const result = await generateText({
+		model: openai(AI_MODELS.curatorReview),
+		...request,
 	});
-	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
-	return text.trim() || null;
+	traceGenerated(
+		"describe_media",
+		AI_MODELS.curatorReview,
+		started,
+		request,
+		result,
+	);
+	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
+	return result.text.trim() || null;
 }

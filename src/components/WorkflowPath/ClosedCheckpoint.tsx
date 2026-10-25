@@ -14,6 +14,7 @@ import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { CheckpointRating } from "@/components/checkpoints/CheckpointRating";
+import { useStandingStatus } from "@/components/checkpoints/EvidenceStanding";
 import {
 	useVerdictCopy,
 	VerdictChip,
@@ -170,7 +171,7 @@ function HeldSessions({
  * 12.07.4); a human curator judges evidence himself and gets no labels.
  */
 function useEvidenceStanding(checkpoint: CheckpointDto) {
-	const { t } = useTranslate();
+	const statusOf = useStandingStatus();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 
 	return (
@@ -179,44 +180,7 @@ function useEvidenceStanding(checkpoint: CheckpointDto) {
 		if (!isAI) return { failed: !item.artifact };
 
 		const standing = standingOf(item);
-		switch (standing.is) {
-			case "unproven":
-				if (standing.reason === "missing") return { failed: true };
-				return {
-					failed: true,
-					status: {
-						tone: "danger",
-						label:
-							standing.reason === "broken"
-								? t(
-										"workflow.path.checkpoint.evidence.broken",
-										"Link doesn't open",
-									)
-								: t(
-										"workflow.path.checkpoint.evidence.doesNotMatch",
-										"Not about the task",
-									),
-					},
-				};
-			case "trusted":
-				return {
-					failed: false,
-					status: {
-						tone: "warning",
-						label: t("workflow.path.checkpoint.evidence.trusted", "On trust"),
-					},
-				};
-			case "partly":
-				return {
-					failed: false,
-					status: {
-						tone: "warning",
-						label: t("workflow.path.checkpoint.evidence.partly", "Partly"),
-					},
-				};
-			default:
-				return { failed: false };
-		}
+		return { failed: standing.is === "unproven", status: statusOf(standing) };
 	};
 }
 

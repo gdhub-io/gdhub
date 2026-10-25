@@ -15,13 +15,18 @@ import {
 	sprintLooks,
 	videoSecondsOf,
 } from "@/repositories/curator-journal";
-import { describeMedia, judgeEvidence } from "@/services/evidence/judge";
+import type { AiMeter } from "@/services/ai-usage";
+import {
+	describeMedia,
+	type EvidenceTask,
+	judgeEvidence,
+} from "@/services/evidence/judge";
 import { readableLink } from "@/services/evidence/links";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { prisma } from "@/services/prisma";
 
 /** Seconds of video looked at per sprint (Dmitry, 2026-10-24). */
-const SPRINT_VIDEO_SECONDS = 10 * 60;
+export const SPRINT_VIDEO_SECONDS = 10 * 60;
 /** Devlog images and videos looked at per sprint. */
 const DEVLOG_MEDIA_PER_SPRINT = 6;
 /** What the journal keeps of a document's text. */
@@ -46,6 +51,32 @@ export type JournalRead = ReturnType<typeof whatWasRead> & {
 const readable = (content: EvidenceContent) =>
 	!!content.text || content.images.length > 0;
 
+/** An artifact read as the curator reads it: a build's page, never the build. */
+export const readArtifact = (
+	artifact: { link: string; type: string },
+	videoSecondsLeft: number,
+) =>
+	readEvidence(artifact.link, {
+		videoSecondsLeft,
+		pageOnly: artifact.type === ProjectArtifactType.ExecutableBuild,
+	});
+
+/** What was read, judged against its task; nothing readable is CannotTell and costs no model call. */
+export const judgeRead = async (
+	task: EvidenceTask,
+	content: EvidenceContent,
+	meter?: AiMeter,
+) =>
+	readable(content)
+		? judgeEvidence(task, content, meter)
+		: { match: EvidenceMatch.CannotTell, note: content.unread };
+
+/** What a devlog's image or video shows; null when nothing could be read. */
+export const describeRead = async (
+	content: EvidenceContent,
+	meter?: AiMeter,
+) => (readable(content) ? describeMedia(content, meter) : null);
+
 /**
  * Look at the evidence on a checkpoint's tasks that has not been looked at yet,
  * and judge each against its task. Runs when an artifact arrives and again
@@ -55,10 +86,15 @@ const readable = (content: EvidenceContent) =>
 export async function seeCheckpointEvidence(checkpointId: string) {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
-		select: { startedAt: true, status: true },
+		select: {
+			startedAt: true,
+			status: true,
+		},
 	});
 	if (!checkpoint?.startedAt || !isRunning(checkpoint.status)) return;
 	const sprint = currentSprint(checkpoint.startedAt);
+	// Read once, and only when something is about to be judged.
+	let devlogs: string[] | undefined;
 
 	const items = await prisma.checkpointItem.findMany({
 		where: {
@@ -85,11 +121,7 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 		const { artifact } = item;
 		if (!artifact || item.evidenceSeenLink === artifact.link) continue;
 
-		const content = await readEvidence(artifact.link, {
-			videoSecondsLeft: left,
-			// A build's page is read; the build itself never is.
-			pageOnly: artifact.type === ProjectArtifactType.ExecutableBuild,
-		}).catch((error) => {
+		const content = await readArtifact(artifact, left).catch((error) => {
 			console.error("[evidence] read failed", item.id, error);
 			return null;
 		});
@@ -102,16 +134,20 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 			artifactName: artifact.name,
 			description: artifact.description,
 		};
-		// Nothing readable: the answer is CannotTell, and it costs no model call.
-		const judged = !readable(content)
-			? { match: EvidenceMatch.CannotTell, note: content.unread }
-			: await judgeEvidence(task, content, {
-					checkpointId,
-					purpose: "evidence",
-				}).catch((error) => {
-					console.error("[evidence] judge failed", item.id, error);
-					return null;
-				});
+		devlogs ??= (
+			await prisma.projectReport.findMany({
+				where: { checkpointId },
+				orderBy: { publishedAt: "asc" },
+				select: { content: true },
+			})
+		).map((post) => post.content);
+		const judged = await judgeRead({ ...task, devlogs }, content, {
+			checkpointId,
+			purpose: "evidence",
+		}).catch((error) => {
+			console.error("[evidence] judge failed", item.id, error);
+			return null;
+		});
 		if (!judged) continue;
 
 		await prisma.checkpointItem.update({
@@ -235,12 +271,10 @@ export async function seeDevlogMedia(devlogId: string) {
 		if (!content) continue;
 		left -= content.videoSeconds;
 
-		const shows = readable(content)
-			? await describeMedia(content, {
-					checkpointId,
-					purpose: "evidence",
-				}).catch(() => null)
-			: null;
+		const shows = await describeRead(content, {
+			checkpointId,
+			purpose: "evidence",
+		}).catch(() => null);
 		await journal({
 			checkpointId,
 			kind: CheckpointJournalKind.DevlogMedia,
@@ -271,10 +305,21 @@ export async function devlogMediaLines(devlogIds: string[]) {
 		orderBy: { createdAt: "asc" },
 		select: { link: true, input: true, output: true },
 	});
-	return looked.map(({ link, input, output }) => {
-		const { unread } = input as { unread: string | null };
-		const { shows } = output as { shows: string | null };
-		if (!shows) return `- ${link}: not read — ${unread ?? "nothing readable"}`;
-		return `- ${link}: ${shows}${unread ? ` (${unread})` : ""}`;
-	});
+	return looked.map(({ link, input, output }) =>
+		mediaLine(
+			link,
+			(output as { shows: string | null }).shows,
+			(input as { unread: string | null }).unread,
+		),
+	);
 }
+
+/** One devlog image or video as the sprint review reads it. */
+export const mediaLine = (
+	link: string | null,
+	shows: string | null,
+	unread: string | null,
+) =>
+	shows
+		? `- ${link}: ${shows}${unread ? ` (${unread})` : ""}`
+		: `- ${link}: not read — ${unread ?? "nothing readable"}`;

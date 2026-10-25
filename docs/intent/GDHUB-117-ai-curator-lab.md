@@ -36,9 +36,9 @@ alone why the model answered as it did.
   together. Describing a devlog's images and video is a step of that run, shown
   in its messages, not a call of its own in the list.
 - The models are shown once, at the top, as `src/config/ai-models.ts` sets them.
-- Evidence and media situations carry prepared content (text, and images where
-  the case needs them), not live links, so a case answers the same way next
-  month. One "real link" case reads a URL through the real reader.
+- Evidence situations carry prepared content (what a read would return), so a
+  case answers the same way next month; one reads a live link. A sprint
+  review's media are public, long-lived links read live, as a devlog's are.
 - Feedback is copied, never stored: a copy button on the input (Dmitry,
   2026-10-25).
 - Antd and Tabler, tokens only; the page is drawn in Pen first.
@@ -51,19 +51,24 @@ a match.
 
 ## Done when
 
-- [ ] Each of the six calls has at least one situation; the evidence check and
-      the report have one per standing: matches, partly, does not match, cannot
-      tell, behind a login, broken link, nothing attached, and a cut task.
-- [ ] Run shows input, messages, raw and parsed answer, settled result, model,
+- [x] Each of the six calls has at least one situation. The evidence check
+      has one per answer the model can give (matches, partly, does not match,
+      cannot tell) and a live link; the report has one per standing (all
+      delivered, behind a login, partly, not about the task, broken link,
+      nothing attached, a cut task) — login and broken links are settled by
+      the link check before any model sees them.
+- [x] Run shows input, messages, raw and parsed answer, settled result, model,
       tokens, cost and time; an edited input runs as edited.
-- [ ] The copy button on the input puts the input JSON, as it will run, on the
+- [x] The copy button on the input puts the input JSON, as it will run, on the
       clipboard.
-- [ ] A sprint review situation with images in its devlogs shows the media
+- [x] A sprint review situation with images in its devlogs shows the media
       descriptions in the review's messages.
-- [ ] The evidence check sees the checkpoint's devlogs; a case where a devlog
-      describes what a login-locked board shows is judged with that devlog in
-      the prompt, and a devlog with no artifact leaves the task not delivered.
-- [ ] `/dev/ai-curator` and its API return 404 when `NODE_ENV=production`.
+- [x] The evidence check sees the checkpoint's devlogs, after the evidence and
+      marked as context; a devlog saying the work is done does not turn a
+      recipe into playtest notes. A login-locked board with a devlog describing
+      it is taken on trust in the report, and a devlog with no artifact leaves
+      the task not delivered (the rule, in code).
+- [x] `/dev/ai-curator` and its API return 404 when `NODE_ENV=production`.
 
 ## Out of scope
 
@@ -75,8 +80,8 @@ a match.
 
 ## Open questions
 
-- **Where situations live:** assumed in code next to the page, one file per
-  call, typed by the call's own input type — so a changed input type breaks
-  the build rather than the lab.
-- **Who may open it:** assumed anyone signed in on a non-production build, as
-  `/dev/ai-validation` today.
+- **Where situations live:** settled — `src/services/ai-curator-lab/situations/`,
+  one file per call, checked against the call's own input type, so a changed
+  input type breaks the build rather than the lab.
+- **Who may open it:** settled — the dev space's own gate, `dev.tools.use`
+  (hub admins and above), and nothing in production.

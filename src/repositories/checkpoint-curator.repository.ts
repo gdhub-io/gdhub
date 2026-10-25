@@ -15,6 +15,7 @@ import { checkpointDay } from "@/lib/checkpoint-days";
 import {
 	settleVerdict,
 	type UnprovenOutcome,
+	type VerdictItem,
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
@@ -108,6 +109,47 @@ const toCard = (goal: string, items: CardItem[]): CuratorGoalCard => ({
 const toDevlog = (post: { publishedAt: Date; content: string }) => ({
 	publishedAt: post.publishedAt.toISOString().slice(0, 10),
 	content: post.content,
+});
+
+type ReportItem = CardItem &
+	VerdictItem & {
+		artifact:
+			| (NonNullable<VerdictItem["artifact"]> & {
+					type: string;
+					name: string | null;
+					description: string | null;
+					link: string;
+			  })
+			| null;
+	};
+
+/**
+ * The card and what its evidence came to, as the report reads them. Pure, so
+ * the AI curator lab builds the same input from a prepared situation.
+ */
+export const reportEvidence = (goal: string, items: ReportItem[]) => ({
+	card: toCard(goal, items),
+	artifacts: items.flatMap((item) =>
+		item.artifact
+			? [
+					{
+						itemId: item.id,
+						type: item.artifact.type,
+						name: item.artifact.name,
+						description: item.artifact.description,
+						link: item.artifact.link,
+						readable: item.artifact.checkStatus === "Readable",
+						seen: item.evidenceMatch
+							? {
+									match: item.evidenceMatch,
+									note: item.evidenceMatchNote ?? null,
+								}
+							: null,
+					},
+				]
+			: [],
+	),
+	...weighOutcomes(items),
 });
 
 /** What the stage's template says it requires — the required tasks, by name. */
@@ -393,10 +435,9 @@ const reportInputFor = async (checkpointId: string) => {
 	if (!checkpoint) return null;
 
 	const items = checkpoint.items;
-	const { unproven, trusted, partly } = weighOutcomes(items);
 
 	const reportInput = {
-		card: toCard(checkpoint.goal, items),
+		...reportEvidence(checkpoint.goal, items),
 		stage: {
 			name: checkpoint.stageName,
 			requirements: await stageRequirements(checkpoint.stepId),
@@ -407,29 +448,6 @@ const reportInputFor = async (checkpointId: string) => {
 					note: checkpoint.revisedNote,
 				}
 			: null,
-		artifacts: items.flatMap((item) =>
-			item.artifact
-				? [
-						{
-							itemId: item.id,
-							type: item.artifact.type,
-							name: item.artifact.name,
-							description: item.artifact.description,
-							link: item.artifact.link,
-							readable: item.artifact.checkStatus === "Readable",
-							seen: item.evidenceMatch
-								? {
-										match: item.evidenceMatch,
-										note: item.evidenceMatchNote,
-									}
-								: null,
-						},
-					]
-				: [],
-		),
-		unproven,
-		trusted,
-		partly,
 		devlogs: checkpoint.reports.map(toDevlog),
 		pulses: pulseMatrix(checkpoint.pulses),
 		calls:

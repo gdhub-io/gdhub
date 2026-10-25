@@ -5,6 +5,7 @@ import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { devlogText } from "@/lib/curator-text";
+import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
 	artifactLines,
@@ -100,9 +101,7 @@ export const writePlanAdvice = async (
 	input: PlanAdviceInput,
 	meter?: AiMeter,
 ) => {
-	const { output, usage } = await generateText({
-		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: adviceSchema, name: "plan_advice" }),
+	const request = {
 		instructions: stripIndents`
 			${VOICE}
 
@@ -127,9 +126,22 @@ export const writePlanAdvice = async (
 
 			${renderPicture(input.picture)}
 		`,
+	};
+	const started = Date.now();
+	const result = await generateText({
+		model: openai(AI_MODELS.curatorReview),
+		output: Output.object({ schema: adviceSchema, name: "plan_advice" }),
+		...request,
 	});
-	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
-	return output ?? null;
+	traceGenerated(
+		"plan_advice",
+		AI_MODELS.curatorReview,
+		started,
+		request,
+		result,
+	);
+	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
+	return result.output ?? null;
 };
 
 const reviewSchema = z.object({
@@ -180,9 +192,7 @@ export const writeSprintReview = async (
 	meter?: AiMeter,
 ) => {
 	const final = input.verdict !== null;
-	const { output, usage } = await generateText({
-		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: reviewSchema, name: "sprint_review" }),
+	const request = {
 		instructions: stripIndents`
 			${VOICE}
 
@@ -219,8 +229,22 @@ export const writeSprintReview = async (
 
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
+	};
+	const started = Date.now();
+	const result = await generateText({
+		model: openai(AI_MODELS.curatorReview),
+		output: Output.object({ schema: reviewSchema, name: "sprint_review" }),
+		...request,
 	});
-	await recordAiUsage(meter, AI_MODELS.curatorReview, usage);
+	traceGenerated(
+		"sprint_review",
+		AI_MODELS.curatorReview,
+		started,
+		request,
+		result,
+	);
+	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
+	const { output } = result;
 	if (!output) return null;
 	const { message, ...notes } = output;
 	return { message, notes: notes satisfies CallNotes };

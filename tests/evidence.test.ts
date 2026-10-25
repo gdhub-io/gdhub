@@ -26,7 +26,10 @@ vi.mock("@/services/evidence/judge", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		projectCheckpoint: { findUnique: vi.fn() },
-		projectReport: { findUnique: vi.fn() },
+		projectReport: {
+			findUnique: vi.fn(),
+			findMany: vi.fn(async () => [{ content: "Week 1: the greybox is up." }]),
+		},
 		checkpointItem: { findMany: vi.fn(), update: vi.fn() },
 		checkpointJournalEntry: {
 			findMany: vi.fn(async () => []),
@@ -188,6 +191,10 @@ describe("looking at a checkpoint's evidence", () => {
 		await seeCheckpointEvidence("cp1");
 
 		expect(judgeEvidence).toHaveBeenCalledTimes(1);
+		// The devlogs go to the model as context, never into the journal.
+		expect(vi.mocked(judgeEvidence).mock.calls[0][0].devlogs).toEqual([
+			"Week 1: the greybox is up.",
+		]);
 		expect(prisma.checkpointItem.update).toHaveBeenCalledWith({
 			where: { id: "b" },
 			data: {
@@ -206,6 +213,7 @@ describe("looking at a checkpoint's evidence", () => {
 				output: { match: "Matches", note: "A level." },
 			}),
 		]);
+		expect(journalled()[0].input).not.toHaveProperty("devlogs");
 	});
 
 	it("pays for no model call when nothing could be read, and journals why", async () => {
