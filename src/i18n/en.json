@@ -4855,6 +4855,12 @@
 			},
 			"checkpoint": {
 				"dayOne": "Checkpoint {number} · day 1 · {date}",
+				"evidence": {
+					"broken": "Link doesn't open",
+					"doesNotMatch": "Not about the task",
+					"partly": "Partly",
+					"trusted": "On trust"
+				},
 				"goal": "Goal",
 				"not-delivered": "Not delivered",
 				"sessions": "Sessions",
