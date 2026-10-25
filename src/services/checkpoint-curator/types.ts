@@ -1,5 +1,9 @@
 import type { CheckpointVerdict, EvidenceMatch } from "@/config/prisma-enums";
-import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
+import type {
+	PartlyOutcome,
+	TrustedOutcome,
+	UnprovenOutcome,
+} from "@/lib/checkpoint-verdict";
 import type { AiPurpose } from "@/services/ai-usage";
 
 /**
@@ -144,6 +148,10 @@ export type ReportInput = {
 	revision: { revisedAt: string; note: string | null } | null;
 	artifacts: CuratorArtifact[];
 	unproven: UnprovenOutcome[];
+	/** Outcomes the AI could not see into, counted on trust; the note says so. */
+	trusted: TrustedOutcome[];
+	/** Outcomes the evidence shows only in part; counted, with a caveat. */
+	partly: PartlyOutcome[];
 	devlogs: { publishedAt: string; content: string }[];
 	/** Member by week: who confirmed they worked on it. */
 	pulses: { member: string; weeks: boolean[] }[];

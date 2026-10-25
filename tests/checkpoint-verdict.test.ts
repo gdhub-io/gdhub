@@ -3,11 +3,13 @@ import {
 	ArtifactCheckStatus,
 	CheckpointItemKind,
 	CheckpointVerdict,
+	EvidenceMatch,
 } from "@/config/prisma-enums";
 import {
+	isProven,
 	settleVerdict,
-	unprovenOutcomes,
 	type VerdictItem,
+	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
 
 const outcome = (id: string, over: Partial<VerdictItem> = {}): VerdictItem => ({
@@ -19,80 +21,127 @@ const outcome = (id: string, over: Partial<VerdictItem> = {}): VerdictItem => ({
 });
 
 const readable = { checkStatus: ArtifactCheckStatus.Readable };
+const seen = (evidenceMatch: EvidenceMatch, note: string | null = null) => ({
+	artifact: readable,
+	evidenceMatch,
+	evidenceMatchNote: note,
+});
 
-describe("unprovenOutcomes", () => {
+describe("weighOutcomes — the AI curator, a cautious optimist (GDHUB-81)", () => {
 	it("ignores inputs — only the outcomes are owed evidence", () => {
 		expect(
-			unprovenOutcomes([
+			weighOutcomes([
 				{
 					id: "i1",
 					kind: CheckpointItemKind.Input,
 					text: "a concept document",
 					cut: false,
 				},
-				outcome("o1", { artifact: readable }),
+				outcome("o1", seen(EvidenceMatch.Matches)),
 			]),
-		).toEqual([]);
+		).toEqual({ unproven: [], trusted: [], partly: [] });
 	});
 
 	it("does not count a cut line as missing evidence", () => {
-		expect(unprovenOutcomes([outcome("o1", { cut: true })])).toEqual([]);
+		expect(weighOutcomes([outcome("o1", { cut: true })]).unproven).toEqual([]);
 	});
 
 	it("owes evidence for a line added on day 14 like any other", () => {
 		expect(
-			unprovenOutcomes([outcome("o1", { addedAt: new Date() } as never)]),
+			weighOutcomes([outcome("o1", { addedAt: new Date() } as never)]).unproven,
 		).toMatchObject([{ id: "o1", reason: "missing" }]);
 	});
 
-	it("tells an artifact nobody could open apart from none at all", () => {
+	it("does not deliver evidence that shows something else, however well it opens", () => {
 		expect(
-			unprovenOutcomes([
-				outcome("none"),
-				outcome("dead", {
-					artifact: { checkStatus: ArtifactCheckStatus.Unreachable },
-				}),
-				outcome("odd", {
-					artifact: { checkStatus: ArtifactCheckStatus.Unsupported },
-				}),
-				outcome("waiting", { artifact: { checkStatus: null } }),
-			]),
-		).toEqual([
-			{ id: "none", text: "outcome none", reason: "missing" },
-			{ id: "dead", text: "outcome dead", reason: "unreachable" },
-			{ id: "odd", text: "outcome odd", reason: "unsupported" },
-			{ id: "waiting", text: "outcome waiting", reason: "pending" },
+			weighOutcomes([outcome("o1", seen(EvidenceMatch.DoesNotMatch))]).unproven,
+		).toEqual([{ id: "o1", text: "outcome o1", reason: "doesNotMatch" }]);
+	});
+
+	it("does not deliver a link that leads nowhere", () => {
+		for (const checkNote of ["notFound", "unreachable", "timeout", null]) {
+			expect(
+				weighOutcomes([
+					outcome("o1", {
+						artifact: { checkStatus: ArtifactCheckStatus.Unreachable, checkNote },
+					}),
+				]).unproven,
+			).toMatchObject([{ id: "o1", reason: "broken" }]);
+		}
+	});
+
+	it("takes on trust what the AI could not see into", () => {
+		const weighed = weighOutcomes([
+			outcome("login", {
+				artifact: {
+					checkStatus: ArtifactCheckStatus.Unreachable,
+					checkNote: "needsLogin",
+				},
+			}),
+			outcome("format", {
+				artifact: { checkStatus: ArtifactCheckStatus.Unsupported },
+			}),
+			outcome("unclear", seen(EvidenceMatch.CannotTell)),
+			outcome("unjudged", { artifact: readable }),
+			outcome("waiting", { artifact: { checkStatus: null } }),
 		]);
+
+		expect(weighed.unproven).toEqual([]);
+		expect(weighed.trusted.map(({ id, reason }) => [id, reason])).toEqual([
+			["login", "needsLogin"],
+			["format", "unreadable"],
+			["unclear", "unreadable"],
+			["unjudged", "unreadable"],
+			["waiting", "notChecked"],
+		]);
+	});
+
+	it("counts evidence shown in part, with what was seen", () => {
+		expect(
+			weighOutcomes([outcome("o1", seen(EvidenceMatch.Partly, "one island only"))]),
+		).toEqual({
+			unproven: [],
+			trusted: [],
+			partly: [{ id: "o1", text: "outcome o1", note: "one island only" }],
+		});
 	});
 
 	it("counts an outcome a human curator accepted with no artifact", () => {
 		expect(
-			unprovenOutcomes([
-				outcome("o1", { acceptedNote: "Shown running on the call." }),
-			]),
-		).toEqual([]);
+			weighOutcomes([outcome("o1", { acceptedNote: "Shown running on the call." })]),
+		).toEqual({ unproven: [], trusted: [], partly: [] });
 	});
 
 	it("does not accept a blank acceptedNote as a reason", () => {
 		expect(
-			unprovenOutcomes([outcome("o1", { acceptedNote: "   " })]),
+			weighOutcomes([outcome("o1", { acceptedNote: "   " })]).unproven,
 		).toMatchObject([{ id: "o1", reason: "missing" }]);
 	});
+});
 
-	it("lets one artifact prove two outcomes", () => {
+describe("isProven — the human curator's plain rule", () => {
+	it("counts a readable artifact whatever the AI made of it", () => {
+		expect(isProven(outcome("o1", seen(EvidenceMatch.DoesNotMatch)))).toBe(true);
+	});
+
+	it("does not count an artifact behind a login", () => {
 		expect(
-			unprovenOutcomes([
-				outcome("o1", { artifact: readable }),
-				outcome("o2", { artifact: readable }),
-			]),
-		).toEqual([]);
+			isProven(
+				outcome("o1", {
+					artifact: {
+						checkStatus: ArtifactCheckStatus.Unreachable,
+						checkNote: "needsLogin",
+					},
+				}),
+			),
+		).toBe(false);
 	});
 });
 
 describe("settleVerdict", () => {
-	it("refuses StageClosed while an outcome is unproven", () => {
+	it("refuses StageClosed while an outcome is not delivered", () => {
 		const settled = settleVerdict(
-			[outcome("o1", { artifact: readable }), outcome("o2")],
+			[outcome("o1", seen(EvidenceMatch.Matches)), outcome("o2")],
 			CheckpointVerdict.StageClosed,
 		);
 
@@ -101,49 +150,59 @@ describe("settleVerdict", () => {
 		expect(settled.unproven).toMatchObject([{ id: "o2" }]);
 	});
 
-	it("refuses GoalMet on the same evidence", () => {
+	it("misses the goal on evidence of something else", () => {
 		expect(
-			settleVerdict([outcome("o1")], CheckpointVerdict.GoalMet).verdict,
+			settleVerdict(
+				[outcome("o1", seen(EvidenceMatch.DoesNotMatch))],
+				CheckpointVerdict.GoalMet,
+			).verdict,
 		).toBe(CheckpointVerdict.GoalMissed);
 	});
 
 	it("does not report an override when the curator already said GoalMissed", () => {
-		const settled = settleVerdict(
-			[outcome("o1")],
-			CheckpointVerdict.GoalMissed,
-		);
+		const settled = settleVerdict([outcome("o1")], CheckpointVerdict.GoalMissed);
 
 		expect(settled.verdict).toBe(CheckpointVerdict.GoalMissed);
 		expect(settled.overrode).toBeNull();
 	});
 
-	it("refuses GoalMissed when every remaining outcome is proven", () => {
+	it("refuses GoalMissed when everything is delivered, on trust or in part included", () => {
 		const settled = settleVerdict(
-			[outcome("o1", { artifact: readable }), outcome("o2", { cut: true })],
+			[
+				outcome("o1", seen(EvidenceMatch.CannotTell)),
+				outcome("o2", seen(EvidenceMatch.Partly)),
+				outcome("o3", { cut: true }),
+			],
 			CheckpointVerdict.GoalMissed,
 		);
 
 		expect(settled.verdict).toBe(CheckpointVerdict.GoalMet);
 		expect(settled.overrode).toBe(CheckpointVerdict.GoalMissed);
+		expect(settled.trusted).toMatchObject([{ id: "o1" }]);
+		expect(settled.partly).toMatchObject([{ id: "o2" }]);
 	});
 
-	it("leaves StageClosed alone once everything is proven", () => {
-		const settled = settleVerdict(
-			[outcome("o1", { artifact: readable })],
-			CheckpointVerdict.StageClosed,
-		);
-
-		expect(settled).toEqual({
+	it("leaves StageClosed alone once everything is delivered", () => {
+		expect(
+			settleVerdict(
+				[outcome("o1", seen(EvidenceMatch.Matches))],
+				CheckpointVerdict.StageClosed,
+			),
+		).toEqual({
 			verdict: CheckpointVerdict.StageClosed,
 			overrode: null,
 			unproven: [],
+			trusted: [],
+			partly: [],
 		});
 	});
 
 	it("never promotes GoalMet to StageClosed — the stage is a judgement", () => {
 		expect(
-			settleVerdict([outcome("o1", { artifact: readable })], CheckpointVerdict.GoalMet)
-				.verdict,
+			settleVerdict(
+				[outcome("o1", seen(EvidenceMatch.Matches))],
+				CheckpointVerdict.GoalMet,
+			).verdict,
 		).toBe(CheckpointVerdict.GoalMet);
 	});
 });

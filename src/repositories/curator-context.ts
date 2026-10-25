@@ -12,7 +12,8 @@ const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
 
 /**
  * What has to be done on the checkpoint's stage before the project can move to
- * the next one: the stage's own description and tasks, done or not.
+ * the next one — its required tasks, done or not — and, apart, the ones it
+ * only suggests.
  */
 async function stagePath(stepId: string | null, stageName: string) {
 	if (!stepId) return `Stage: ${stageName}.`;
@@ -45,20 +46,25 @@ async function stagePath(stepId: string | null, stageName: string) {
 		? null
 		: step.description?.trim();
 
-	const tasks = step.tasks.flatMap((task) =>
-		task.name
-			? [
-					`- [${task.done ? "x" : " "}] ${task.name}${task.required ? " (required)" : ""}`,
-				]
-			: [],
-	);
+	const line = (task: { name: string | null; done: boolean }) =>
+		task.name ? [`- [${task.done ? "x" : " "}] ${task.name}`] : [];
+	const required = step.tasks.filter((task) => task.required).flatMap(line);
+	// Optional tasks never hold the stage; listed with the required ones, the
+	// model read them as owed and would not close a stage that was done.
+	const optional = step.tasks.filter((task) => !task.required).flatMap(line);
 
 	return [
 		`Stage: ${stageName}.${about ? ` ${about}` : ""}`,
 		next
-			? `To move on to "${next.name}", this has to be done on this stage:`
-			: "This is the last stage of the path. What it asks for:",
-		tasks.length ? tasks.join("\n") : "- (the stage lists no tasks)",
+			? `To move on to "${next.name}", only this has to be done on this stage:`
+			: "This is the last stage of the path. What it requires:",
+		required.length ? required.join("\n") : "- (nothing is required)",
+		...(optional.length
+			? [
+					"Suggested on this stage, not required — they never hold it:",
+					optional.join("\n"),
+				]
+			: []),
 	].join("\n");
 }
 

@@ -556,7 +556,7 @@ describe("closeCheckpoint", () => {
 		expect(checkpointCurator.writeReport).not.toHaveBeenCalled();
 	});
 
-	it("sends only the artifacts that are attached, and says which could not be opened", async () => {
+	it("sends only the artifacts that are attached, and what is delivered, on trust or not", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			running({
 				items: [
@@ -581,9 +581,12 @@ describe("closeCheckpoint", () => {
 					expect.objectContaining({ itemId: "o2", readable: false }),
 				],
 				unproven: [
-					expect.objectContaining({ id: "o2", reason: "unreachable" }),
+					expect.objectContaining({ id: "o2", reason: "broken" }),
 					expect.objectContaining({ id: "o3", reason: "missing" }),
 				],
+				// Opened, but nothing judged what it shows: counted on trust.
+				trusted: [expect.objectContaining({ id: "o1", reason: "unreadable" })],
+				partly: [],
 			}),
 			{ checkpointId: "cp1" },
 		);

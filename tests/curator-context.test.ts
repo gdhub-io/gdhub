@@ -39,6 +39,7 @@ beforeEach(() => {
 		tasks: [
 			{ name: "Playable greybox", required: true, done: true },
 			{ name: "Playtest with five people", required: true, done: false },
+			{ name: "Collect 10 applause", required: false, done: false },
 		],
 	} as never);
 	vi.mocked(prisma.projectWorkflowStep.findFirst).mockResolvedValue({
@@ -77,9 +78,17 @@ describe("the project picture the AI curator reads", () => {
 	it("says what has to be done on the stage to move to the next one", async () => {
 		const picture = await projectPicture("cp1", period);
 
-		expect(picture).toContain('To move on to "Demo version"');
-		expect(picture).toContain("- [x] Playable greybox (required)");
-		expect(picture).toContain("- [ ] Playtest with five people (required)");
+		expect(picture).toContain(
+			'To move on to "Demo version", only this has to be done on this stage:\n- [x] Playable greybox\n- [ ] Playtest with five people',
+		);
+	});
+
+	it("keeps the tasks a stage only suggests apart: they never hold it", async () => {
+		const picture = await projectPicture("cp1", period);
+
+		expect(picture).toContain(
+			"Suggested on this stage, not required — they never hold it:\n- [ ] Collect 10 applause",
+		);
 	});
 
 	it("names each member's role, hours and the weeks they worked", async () => {
