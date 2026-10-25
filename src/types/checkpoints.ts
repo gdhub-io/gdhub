@@ -52,6 +52,8 @@ export type CheckpointItemDto = {
 	addedAt: string | null;
 	note: string | null;
 	acceptedNote: string | null;
+	/** What the AI curator saw in the evidence, against the task (GDHUB-110). */
+	evidenceMatch?: EvidenceMatch | null;
 	artifact: CheckpointArtifactRef | null;
 };
 

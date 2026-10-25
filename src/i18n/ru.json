@@ -4855,6 +4855,12 @@
 			},
 			"checkpoint": {
 				"dayOne": "Контрольная точка {number} · день 1 · {date}",
+				"evidence": {
+					"broken": "Ссылка не открывается",
+					"doesNotMatch": "Не о задании",
+					"partly": "Частично",
+					"trusted": "на доверии"
+				},
 				"goal": "Цель",
 				"not-delivered": "Не доставлено",
 				"sessions": "Сессии",

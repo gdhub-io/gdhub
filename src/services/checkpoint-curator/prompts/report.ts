@@ -1,5 +1,6 @@
 import { stripIndents } from "common-tags";
 import { CheckpointVerdict } from "@/config/prisma-enums";
+import type { TrustReason, UnprovenReason } from "@/lib/checkpoint-verdict";
 import { devlogText } from "@/lib/curator-text";
 import type { ReportInput } from "../types";
 import {
@@ -14,13 +15,26 @@ import {
  * Day 28: the report and the proposed verdict (§8, §9).
  *
  * The verdict that comes back is a proposal. `settleVerdict` decides what is
- * actually written — an outcome that was not cut and carries no readable
- * artifact cannot produce `StageClosed` or `GoalMet` whatever this returns, and
- * the model has no way to waive it. The prompt says so anyway, so the summary
- * and the verdict do not contradict each other on the page.
+ * actually written — an outcome that is not delivered (nothing attached, a
+ * dead link, evidence of something else) cannot produce `StageClosed` or
+ * `GoalMet` whatever this returns. The prompt says so anyway, so the summary
+ * and the verdict do not contradict each other on the page, and it hands over
+ * what was taken on trust so the note can say so (GDHUB-81).
  */
 
 export const REPORT_FUNCTION_NAME = "report_checkpoint";
+
+const UNPROVEN: Record<UnprovenReason, string> = {
+	missing: "nothing attached",
+	broken: "the link leads nowhere",
+	doesNotMatch: "the evidence shows something else",
+};
+
+const TRUSTED: Record<TrustReason, string> = {
+	needsLogin: "behind a login",
+	unreadable: "could not see what it holds",
+	notChecked: "could not be checked in time",
+};
 
 export const reportSchema = () => ({
 	type: "object",
@@ -40,7 +54,8 @@ export const reportSchema = () => ({
 		},
 		verdictNote: {
 			type: "string",
-			description: "One or two sentences: why this verdict and not the others.",
+			description:
+				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -56,26 +71,36 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			checkable against what is below.
 
 			The three verdicts:
-			- StageClosed: every outcome that was not cut is proven, AND what has to
+			- StageClosed: every outcome that was not cut is delivered, AND what has to
 			  be done on this stage to move on (listed under "What the project
-			  shows") is done. The project can leave this stage.
-			- GoalMet: every outcome that was not cut is proven, but the stage needs
-			  more. The next checkpoint runs on the same stage.
-			- GoalMissed: an outcome that was not cut has no readable evidence.
+			  shows") is done. The project can leave this stage. Tasks the
+			  stage only suggests never hold it.
+			- GoalMet: every outcome that was not cut is delivered, but the stage
+			  needs more. The next checkpoint runs on the same stage.
+			- GoalMissed: an outcome that was not cut is not delivered.
 
-			"Proven" is not yours to judge: the unproven list below is computed from
-			the artifacts and is final. If it is not empty the verdict is GoalMissed,
-			and the platform will overrule you if you say otherwise. If it is empty,
-			the verdict is StageClosed or GoalMet and never GoalMissed.
+			You are a cautious optimist. Whether an outcome is delivered is not yours
+			to judge — the platform has already decided it from the evidence, and the
+			three lists below are final:
+			- Not delivered: nothing attached, a link that leads nowhere, or
+			  evidence that shows something other than the task. If this list is not
+			  empty the verdict is GoalMissed, and the platform will overrule you if
+			  you say otherwise.
+			- Taken on trust: the link was given but you could not see what it holds
+			  (behind a login, a format you cannot read, a video you saw only the
+			  title of). It counts as delivered. The verdict note must say you
+			  accepted it without checking and that you trust the team.
+			- Shown in part: the evidence shows part of the task. It counts as
+			  delivered; the verdict note names what was missing.
+			If the first list is empty, the verdict is StageClosed or GoalMet and
+			never GoalMissed.
 
 			A cut outcome is not a failure and is never counted as missing.
 
 			You read links, screenshots and descriptions. You did not run a build or
 			play anything, and the report may not imply that you did.
 
-			Where evidence was looked at, say what it shows. Name an outcome whose
-			evidence does not match, but it still counts as proven: what decides
-			the verdict is the unproven list, not what you saw.
+			Where evidence was looked at, say what it shows.
 
 			${localeLine(locale)}
 		`,
@@ -103,12 +128,22 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					.join("\n") || "- (nothing attached)"
 			}
 
-			Outcomes with no readable evidence (final, computed by the platform):
+			Not delivered (final, decided by the platform):
 			${
 				input.unproven
-					.map((item) => `- ${item.text} (${item.reason})`)
+					.map((item) => `- ${item.text} (${UNPROVEN[item.reason]})`)
 					.join("\n") || "- (none)"
 			}
+
+			Taken on trust (final — say so in the verdict note):
+			${
+				input.trusted
+					.map((item) => `- ${item.text} (${TRUSTED[item.reason]})`)
+					.join("\n") || "- (none)"
+			}
+
+			Shown in part (final — name what was missing; what was seen is above):
+			${input.partly.map((item) => `- ${item.text}`).join("\n") || "- (none)"}
 
 			Devlogs:
 			${

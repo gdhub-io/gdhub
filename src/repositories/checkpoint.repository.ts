@@ -63,6 +63,7 @@ const checkpointItemSelect = {
 	addedAt: true,
 	note: true,
 	acceptedNote: true,
+	evidenceMatch: true,
 	artifact: {
 		select: {
 			id: true,

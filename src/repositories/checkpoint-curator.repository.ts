@@ -15,7 +15,7 @@ import { checkpointDay } from "@/lib/checkpoint-days";
 import {
 	settleVerdict,
 	type UnprovenOutcome,
-	unprovenOutcomes,
+	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
@@ -72,6 +72,7 @@ const curatorItemSelect = {
 			description: true,
 			link: true,
 			checkStatus: true,
+			checkNote: true,
 		},
 	},
 } as const;
@@ -326,7 +327,7 @@ export const writeMidNote = async (
 	const written = await checkpointCurator.writeMidNote(
 		{
 			card: toCard(checkpoint.goal, items),
-			unproven: unprovenOutcomes(items),
+			unproven: weighOutcomes(items).unproven,
 			day: checkpointDay(checkpoint.startedAt),
 			devlogs: checkpoint.reports.map(toDevlog),
 			picture: await projectPicture(checkpointId, {
@@ -392,7 +393,7 @@ const reportInputFor = async (checkpointId: string) => {
 	if (!checkpoint) return null;
 
 	const items = checkpoint.items;
-	const unproven = unprovenOutcomes(items);
+	const { unproven, trusted, partly } = weighOutcomes(items);
 
 	const reportInput = {
 		card: toCard(checkpoint.goal, items),
@@ -427,6 +428,8 @@ const reportInputFor = async (checkpointId: string) => {
 				: [],
 		),
 		unproven,
+		trusted,
+		partly,
 		devlogs: checkpoint.reports.map(toDevlog),
 		pulses: pulseMatrix(checkpoint.pulses),
 		calls:
@@ -519,6 +522,8 @@ export const closeCheckpoint = async (
 			settled: settled.verdict,
 			overrode: settled.overrode,
 			unproven: settled.unproven,
+			trusted: settled.trusted,
+			partly: settled.partly,
 		},
 	});
 
