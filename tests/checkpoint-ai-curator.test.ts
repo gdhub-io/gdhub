@@ -52,6 +52,12 @@ vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", async (actual) => ({
 	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
 		.memberRole,
+	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
+		currentStage,
+		nextStage: null,
+		description: null,
+		requiredTasks: [],
+	})),
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));

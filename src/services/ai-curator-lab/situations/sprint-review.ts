@@ -64,7 +64,7 @@ export const sprintReviewSituations = (
 	// Day 8: sprint 1 landed the greybox and its demo build.
 	const sprint1 = {
 		goal: project.goal,
-		stage: project.workflow.currentStage,
+		workflow: project.workflow("sprint1"),
 		sprint: 1,
 		tasks: [demoDone, open(board), open(playtest)],
 		devlogs: [devlogs.greybox],
@@ -115,6 +115,7 @@ export const sprintReviewSituations = (
 				artifacts: [],
 				pulse: pulseOf(2),
 				focusLastReview: t.focusAfter1,
+				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
 			},
 		},
@@ -139,6 +140,7 @@ export const sprintReviewSituations = (
 				pulse: pulseOf(4),
 				focusLastReview: t.focusAfter3,
 				verdict: { verdict: "StageClosed", note: t.verdict },
+				workflow: project.workflow("end"),
 				picture: project.picture("end"),
 			},
 		},

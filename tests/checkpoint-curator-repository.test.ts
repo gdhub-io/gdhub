@@ -46,6 +46,12 @@ vi.mock("@/repositories/evidence-seen", () => ({
 }));
 vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", () => ({
+	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
+		currentStage,
+		nextStage: null,
+		description: null,
+		requiredTasks: [],
+	})),
 	projectPicture: vi.fn().mockResolvedValue("The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
@@ -667,7 +673,7 @@ describe("goal check schema", () => {
 		);
 		const schema = goalCheckSchema({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", description: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
@@ -686,7 +692,7 @@ describe("goal check schema", () => {
 		);
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", description: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
@@ -709,7 +715,7 @@ describe("the goal check's stored read", () => {
 	it("is not paid for again because the project picture moved on", () => {
 		const input = {
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", description: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },

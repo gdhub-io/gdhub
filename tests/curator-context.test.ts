@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/curator-text";
-import { projectPicture } from "@/repositories/curator-context";
+import { projectPicture, stageWorkflow } from "@/repositories/curator-context";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
 import { prisma } from "@/services/prisma";
 
@@ -75,11 +76,18 @@ const period = {
 };
 
 describe("the project picture the AI curator reads", () => {
-	it("says what has to be done on the stage to move to the next one", async () => {
+	it("leaves the stage to the workflow block: the picture is the team and the activity", async () => {
 		const picture = await projectPicture("cp1", period);
 
+		expect(picture).not.toContain("Stage:");
+		expect(picture).toMatch(/^Team \(1\):/);
+	});
+
+	it("says the two weeks before the start are before it, on day 1", async () => {
+		const picture = await projectPicture("cp1");
+
 		expect(picture).toContain(
-			'To move on to "Demo version", only this has to be done on this stage:\n- [x] Playable greybox\n- [ ] Playtest with five people',
+			"What happened on the project in the two weeks before the checkpoint started, from 2026-09-17",
 		);
 	});
 
@@ -120,18 +128,42 @@ describe("a devlog as the curator reads it", () => {
 	});
 });
 
-describe("a stage whose description lives elsewhere", () => {
-	it("shows no pointer in place of text", async () => {
+describe("the stage as the curator reads it", () => {
+	it("names the next stage, the required tasks done or not, and the curator's own brief", async () => {
 		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
-			order: 1,
-			description: "notion::gamelab-pipeline.ideation",
+			order: 2,
 			projectWorkflowId: "wf",
-			tasks: [],
+			// The query asks for the required tasks only.
+			tasks: [
+				{ name: "Playable greybox", done: true },
+				{ name: "Playtest with five people", done: false },
+			],
 		} as never);
 
-		const picture = await projectPicture("cp1", period);
+		await expect(stageWorkflow("step-2", "Prototyping")).resolves.toEqual({
+			currentStage: "Prototyping",
+			nextStage: "Demo version",
+			description: CURATOR_STAGE_BRIEFS.Prototyping,
+			requiredTasks: [
+				{ name: "Playable greybox", done: true },
+				{ name: "Playtest with five people", done: false },
+			],
+		});
+		expect(prisma.projectWorkflowStep.findUnique).toHaveBeenCalledWith(
+			expect.objectContaining({
+				select: expect.objectContaining({
+					tasks: expect.objectContaining({ where: { required: true } }),
+				}),
+			}),
+		);
+	});
 
-		expect(picture).toContain("Stage: Prototyping.\n");
-		expect(picture).not.toContain("notion::");
+	it("never hands the model the author's Notion advice", async () => {
+		await expect(stageWorkflow(null, "A stage of our own")).resolves.toEqual({
+			currentStage: "A stage of our own",
+			nextStage: null,
+			description: null,
+			requiredTasks: [],
+		});
 	});
 });

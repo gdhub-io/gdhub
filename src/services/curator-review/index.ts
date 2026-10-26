@@ -16,14 +16,16 @@ import {
 	AUTHOR_VOICE,
 	localeLine,
 	renderPicture,
+	renderWorkflow,
 } from "@/services/checkpoint-curator/prompts/card";
+import type { CuratorWorkflow } from "@/services/checkpoint-curator/types";
 import { type CallNotes, TASK_ADVICE_KINDS } from "@/types/checkpoints";
 
 export type { CuratorTask };
 
 export type PlanAdviceInput = {
 	goal: string;
-	stage: string;
+	workflow: CuratorWorkflow;
 	tasks: CuratorTask[];
 	/** Day 1 sets the tasks; day 15 changes them for the last time. */
 	moment: "start" | "midway";
@@ -35,7 +37,7 @@ export type PlanAdviceInput = {
 
 export type SprintReviewInput = {
 	goal: string;
-	stage: string;
+	workflow: CuratorWorkflow;
 	/** The sprint looked back at, 1–4. */
 	sprint: number;
 	tasks: CuratorTask[];
@@ -130,7 +132,7 @@ export const writePlanAdvice = async (
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
-			Stage: ${input.stage}
+			${renderWorkflow(input.workflow)}
 			Goal: ${input.goal}
 
 			Tasks:
@@ -221,7 +223,7 @@ export const writeSprintReview = async (
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
-			Stage: ${input.stage}
+			${renderWorkflow(input.workflow)}
 			Goal: ${input.goal}
 
 			Tasks:

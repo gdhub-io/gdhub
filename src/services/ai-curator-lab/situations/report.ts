@@ -87,7 +87,7 @@ export const reportSituations = (
 
 	const base = {
 		goal: project.goal,
-		workflow: project.workflow,
+		workflow: project.workflow("end"),
 		revision: null,
 		items: [
 			{ id: "i1", kind: "Input" as const, text: project.input, artifact: null },

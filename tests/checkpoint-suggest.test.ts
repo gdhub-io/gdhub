@@ -30,8 +30,13 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: {
 			findUnique: (...args: unknown[]) => checkpointFindUnique(...args),
 		},
-		projectWorkflowTask: {
-			findMany: (...args: unknown[]) => taskFindMany(...args),
+		projectWorkflowStep: {
+			findUnique: async (...args: unknown[]) => ({
+				order: 2,
+				projectWorkflowId: "wf1",
+				tasks: await taskFindMany(...args),
+			}),
+			findFirst: async () => ({ name: "Demo" }),
 		},
 	},
 }));
@@ -77,7 +82,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: author });
 	checkpointFindUnique.mockResolvedValue(checkpoint());
-	taskFindMany.mockResolvedValue([{ name: "A vertical slice" }]);
+	taskFindMany.mockResolvedValue([{ name: "A vertical slice", done: false }]);
 	lastClosedOutcomes.mockResolvedValue([{ text: "a tide shader" }]);
 	suggestLines.mockResolvedValue({ lines: ["one", "two", "three"] });
 });
@@ -102,8 +107,9 @@ describe("POST /api/checkpoint/[id]/suggest", () => {
 				inputs: ["a grey-box level"],
 				workflow: {
 					currentStage: "Prototype",
+					nextStage: "Demo",
 					description: null,
-					requiredTasks: ["A vertical slice"],
+					requiredTasks: [{ name: "A vertical slice", done: false }],
 				},
 			},
 			{ locale: "ru", checkpointId: "cp1" },
@@ -121,8 +127,9 @@ describe("POST /api/checkpoint/[id]/suggest", () => {
 				project: { name: "Tidebound", description: "A game about tides" },
 				workflow: {
 					currentStage: "Prototype",
+					nextStage: "Demo",
 					description: null,
-					requiredTasks: ["A vertical slice"],
+					requiredTasks: [{ name: "A vertical slice", done: false }],
 				},
 				previousOutcomes: ["a tide shader"],
 			},

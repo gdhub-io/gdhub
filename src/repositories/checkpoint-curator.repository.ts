@@ -6,19 +6,14 @@ import {
 	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	type CheckpointVerdict,
-	type EvidenceMatch,
 	Prisma,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
-import {
-	CURATOR_STAGE_BRIEFS,
-	SPRINTS_PER_CHECKPOINT,
-} from "@/config/checkpoint";
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import {
 	settleVerdict,
-	type UnprovenOutcome,
 	type VerdictItem,
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
@@ -29,7 +24,11 @@ import {
 	briefMemberSelect,
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
-import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import {
+	projectPicture,
+	runPeriod,
+	stageWorkflow,
+} from "@/repositories/curator-context";
 import { journal } from "@/repositories/curator-journal";
 import { seeCheckpointEvidence } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
@@ -39,10 +38,8 @@ import type {
 	CuratorGoalCard,
 	CuratorLine,
 	CuratorOptions,
-	CuratorWorkflow,
 	GoalCheckInput,
 	GoalCheckResult,
-	ReportInput,
 	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
@@ -161,26 +158,6 @@ export const reportEvidence = (goal: string, items: ReportItem[]) => ({
 	),
 	...weighOutcomes(items),
 });
-
-/** The stage as the curator reads it: what it is for, and the tasks it requires. */
-const stageWorkflow = async (
-	stepId: string | null,
-	currentStage: string,
-): Promise<CuratorWorkflow> => {
-	const tasks = stepId
-		? await prisma.projectWorkflowTask.findMany({
-				where: { stepId, required: true },
-				orderBy: { order: "asc" },
-				select: { name: true },
-			})
-		: [];
-
-	return {
-		currentStage,
-		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
-		requiredTasks: tasks.flatMap((task) => (task.name ? [task.name] : [])),
-	};
-};
 
 /**
  * What a stored read answers: everything the model is given and nothing else.

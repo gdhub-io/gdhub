@@ -39,7 +39,7 @@ export const goalCheckSituations = (
 			inputs: [{ id: "i1", text: project.input }],
 			outcomes: Object.values(project.outcomes),
 		},
-		workflow: project.workflow,
+		workflow: project.workflow("start"),
 		project: { name: "Hollow Tide", pitch: project.pitch, genre: "Adventure" },
 		author: {
 			speciality: "Game designer",

@@ -38,8 +38,9 @@ const card = z.object({
 
 const workflow = z.object({
 	currentStage: z.string(),
+	nextStage: z.string().nullable(),
 	description: z.string().nullable(),
-	requiredTasks: z.array(z.string()),
+	requiredTasks: z.array(z.object({ name: z.string(), done: z.boolean() })),
 });
 
 const hours = z.object({ from: z.number(), to: z.number() }).nullable();
@@ -104,7 +105,7 @@ export const suggestLinesInput = z.discriminatedUnion("kind", [
 
 export const planAdviceInput = z.object({
 	goal: z.string(),
-	stage: z.string(),
+	workflow,
 	tasks: z.array(task),
 	moment: z.enum(["start", "midway"]),
 	review: z.string().nullable(),
@@ -114,7 +115,7 @@ export const planAdviceInput = z.object({
 /** A sprint review before its media is looked at: the links, not what they show. */
 export const sprintReviewInput = z.object({
 	goal: z.string(),
-	stage: z.string(),
+	workflow,
 	sprint: z.number().int().min(1).max(4),
 	tasks: z.array(task),
 	devlogs: z.array(z.string()),

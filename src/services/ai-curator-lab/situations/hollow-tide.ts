@@ -16,12 +16,21 @@ import type { LabLanguage } from "../schemas";
  * the stage, the picture's headings, roles — stays as production writes it.
  */
 
-/** The Prototyping stage of the Default workflow, as its template stands (2026-10-26). */
-const WORKFLOW = {
+/**
+ * The Prototyping stage of the Default workflow, as its template stands
+ * (2026-10-26). Its one required task is done by the greybox devlog of 5 Oct.
+ */
+const workflowAt = (moment: Moment) => ({
 	currentStage: "Prototyping",
+	nextStage: "Preparing a demo version",
 	description: CURATOR_STAGE_BRIEFS.Prototyping,
-	requiredTasks: ["Publish a devlog about the prototype"],
-};
+	requiredTasks: [
+		{
+			name: "Publish a devlog about the prototype",
+			done: MOMENTS[moment].to >= "2026-10-05",
+		},
+	],
+});
 
 const TEXT = {
 	en: {
@@ -120,8 +129,8 @@ const MOMENTS = {
 export type Moment = keyof typeof MOMENTS;
 
 /**
- * The project as `projectPicture` writes it at a moment: the stage path, the
- * team with the weeks already behind, and what happened in the period.
+ * The project as `projectPicture` writes it at a moment: the team with the
+ * weeks already behind, and what happened in the period.
  * `without` drops artifacts a situation never had.
  */
 const pictureAt = (
@@ -130,8 +139,6 @@ const pictureAt = (
 	without: (keyof Artifacts)[] = [],
 ) => {
 	const { from, to, weeks } = MOMENTS[moment];
-	// The greybox devlog of 5 Oct ticks the stage's one required task.
-	const devlogDone = to >= "2026-10-05";
 	const team = MEMBERS.map(({ name, role, line }) => {
 		const worked = PULSE[name]
 			.slice(0, weeks)
@@ -144,17 +151,19 @@ const pictureAt = (
 		.filter((event) => !dropped.some((name) => event.line.includes(name)))
 		.map((event) => `- ${event.on} · ${event.line}`);
 
+	// Day 1 reads the lead-in, and says so.
+	const period =
+		moment === "start"
+			? `in the two weeks before the checkpoint started, from ${from} to ${to}`
+			: `from ${from} to ${to}`;
+
 	return [
-		"Stage: Prototyping.",
-		'To move on to "Preparing a demo version", only this has to be done on this stage:',
-		`- [${devlogDone ? "x" : " "}] Publish a devlog about the prototype`,
-		"",
 		`Team (${MEMBERS.length}):`,
 		...team,
 		"",
 		happened.length
-			? `What happened on the project from ${from} to ${to}:\n${happened.join("\n")}`
-			: `Nothing else happened on the project from ${from} to ${to}.`,
+			? `What happened on the project ${period}:\n${happened.join("\n")}`
+			: `Nothing else happened on the project ${period}.`,
 	].join("\n");
 };
 
@@ -178,7 +187,7 @@ export const hollowTide = (language: LabLanguage) => {
 	const text = TEXT[language];
 	return {
 		...text,
-		workflow: WORKFLOW,
+		workflow: workflowAt,
 		picture: (moment: Moment, without?: (keyof Artifacts)[]) =>
 			pictureAt(text.artifacts, moment, without),
 	};

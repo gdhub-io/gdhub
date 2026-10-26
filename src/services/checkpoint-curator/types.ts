@@ -33,10 +33,12 @@ export type CuratorGoalCard = {
 /** Where the project stands on its workflow, as the template says it. */
 export type CuratorWorkflow = {
 	currentStage: string;
+	/** Where moving on leads; null on the path's last stage. */
+	nextStage: string | null;
 	/** What the stage is for, written for the curator; null for a stage with none. */
 	description: string | null;
-	/** The tasks the template requires on this stage; the optional ones are the author's call and never reach the model. */
-	requiredTasks: string[];
+	/** The tasks the template requires on this stage, done or not; the optional ones never reach the model. */
+	requiredTasks: { name: string; done: boolean }[];
 };
 
 export type CuratorOptions = {

@@ -37,6 +37,7 @@ import {
 	memberRole,
 	projectPicture,
 	runPeriod,
+	stageWorkflow,
 } from "@/repositories/curator-context";
 import { journal } from "@/repositories/curator-journal";
 import {
@@ -45,6 +46,7 @@ import {
 } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
+import type { CuratorWorkflow } from "@/services/checkpoint-curator/types";
 import {
 	notify,
 	recipient,
@@ -329,6 +331,7 @@ export const adviseOnPlan = async (
 			goal: true,
 			goalAgreedAt: true,
 			stageName: true,
+			stepId: true,
 			startedAt: true,
 			project: { select: { authorId: true } },
 			sessions: {
@@ -356,6 +359,7 @@ export const adviseOnPlan = async (
 	const content = session.content as CuratorReview | null;
 	const input = adviceInput(
 		checkpoint,
+		await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 		index === 1 ? "start" : "midway",
 		content?.notes?.inShort ?? null,
 		// Halfway reads the first two sprints, a period that does not move day by day.
@@ -400,15 +404,15 @@ export const adviseOnPlan = async (
 const adviceInput = (
 	checkpoint: {
 		goal: string;
-		stageName: string;
 		items: Parameters<typeof toCuratorTask>[0][];
 	},
+	workflow: CuratorWorkflow,
 	moment: PlanAdviceInput["moment"],
 	review: string | null,
 	picture: string,
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
-	stage: checkpoint.stageName,
+	workflow,
 	tasks: checkpoint.items.map(toCuratorTask),
 	moment,
 	review,
@@ -497,6 +501,7 @@ const reviewSelect = {
 	projectId: true,
 	goal: true,
 	stageName: true,
+	stepId: true,
 	startedAt: true,
 	dueAt: true,
 	verdict: true,
@@ -530,7 +535,7 @@ const sprintReviewInput = async (
 	final: boolean,
 ) => {
 	const sprint = sessionIndex - 1;
-	const [{ devlogs, posts, artifacts }, picture] = await Promise.all([
+	const [{ devlogs, posts, artifacts }, picture, workflow] = await Promise.all([
 		sprintEvidence(checkpoint.projectId, startedAt, sprint),
 		projectPicture(
 			checkpoint.id,
@@ -538,6 +543,7 @@ const sprintReviewInput = async (
 				? runPeriod(startedAt, checkpoint.dueAt)
 				: sprintRange(startedAt, sprint),
 		),
+		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 	]);
 	const devlogMedia = await devlogMediaLines(posts.map((post) => post.id));
 	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
@@ -552,7 +558,7 @@ const sprintReviewInput = async (
 
 	return {
 		goal: checkpoint.goal,
-		stage: checkpoint.stageName,
+		workflow,
 		sprint,
 		tasks: checkpoint.items.map(toCuratorTask),
 		devlogs,
@@ -630,7 +636,13 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 	const midway =
 		session.index === SCOPE_SESSION
 			? await adviceFor(
-					adviceInput(checkpoint, "midway", notes.inShort, input.picture),
+					adviceInput(
+						checkpoint,
+						input.workflow,
+						"midway",
+						notes.inShort,
+						input.picture,
+					),
 					checkpoint.items,
 					session.checkpointId,
 				).catch(() => null)

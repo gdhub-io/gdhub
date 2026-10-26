@@ -19,7 +19,7 @@ export const suggestLinesSituations = (
 				kind: "Outcome",
 				goal: project.goal,
 				inputs: [project.input],
-				workflow: project.workflow,
+				workflow: project.workflow("start"),
 			},
 		},
 		{
@@ -33,7 +33,7 @@ export const suggestLinesSituations = (
 				kind: "Outcome",
 				goal: "",
 				inputs: [],
-				workflow: project.workflow,
+				workflow: project.workflow("start"),
 			},
 		},
 		{
@@ -47,7 +47,7 @@ export const suggestLinesSituations = (
 			input: {
 				kind: "Input",
 				project: { name: "Hollow Tide", description: project.pitch },
-				workflow: project.workflow,
+				workflow: project.workflow("end"),
 				previousOutcomes: Object.values(project.outcomes).map(
 					(outcome) => outcome.text,
 				),

@@ -44,7 +44,7 @@ export const planAdviceSituations = (
 			),
 			input: {
 				goal: project.goal,
-				stage: project.workflow.currentStage,
+				workflow: project.workflow("start"),
 				tasks: [demo, board, playtest].map(open),
 				moment: "start",
 				review: null,
@@ -60,7 +60,7 @@ export const planAdviceSituations = (
 			),
 			input: {
 				goal: project.goal,
-				stage: project.workflow.currentStage,
+				workflow: project.workflow("midway"),
 				tasks: [
 					{
 						...open(demo),

@@ -63,8 +63,8 @@ export const renderTeam = (team: CuratorTeam) => {
 export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
 	Workflow stage: ${workflow.currentStage}
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
-	What the stage template requires:
-	${workflow.requiredTasks.map((task) => `- ${task}`).join("\n") || "- (nothing recorded)"}
+	${workflow.nextStage ? `To move on to "${workflow.nextStage}", the stage requires:` : "This is the last stage of the path. It requires:"}
+	${workflow.requiredTasks.map((task) => `- [${task.done ? "x" : " "}] ${task.name}`).join("\n") || "- (nothing is required)"}
 	The stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.
 `;
 
