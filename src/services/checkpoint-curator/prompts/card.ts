@@ -2,8 +2,8 @@ import { stripIndents } from "common-tags";
 import type {
 	CuratorGoalCard,
 	CuratorLine,
-	CuratorStage,
 	CuratorTeam,
+	CuratorWorkflow,
 } from "../types";
 
 /**
@@ -60,10 +60,11 @@ export const renderTeam = (team: CuratorTeam) => {
 		.join(" ");
 };
 
-export const renderStage = (stage: CuratorStage) => stripIndents`
-	Workflow stage: ${stage.name}
+export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
+	Workflow stage: ${workflow.currentStage}
+	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
 	What the stage template requires:
-	${stage.requirements.map((task) => `- ${task}`).join("\n") || "- (nothing recorded)"}
+	${workflow.requiredTasks.map((task) => `- ${task}`).join("\n") || "- (nothing recorded)"}
 `;
 
 /**

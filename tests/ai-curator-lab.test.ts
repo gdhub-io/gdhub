@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import * as schemas from "@/services/ai-curator-lab/schemas";
 import { evidenceSituations } from "@/services/ai-curator-lab/situations/evidence";
 import { goalCheckSituations } from "@/services/ai-curator-lab/situations/goal-check";
@@ -27,11 +27,20 @@ describe("the AI curator lab (GDHUB-117)", () => {
 		["sprintReview", schemas.sprintReviewInput, sprintReviewSituations],
 		["evidence", schemas.evidenceInput, evidenceSituations],
 		["report", schemas.reportInput, reportSituations],
-	] as const)("every %s situation is an input that call takes", (_, schema, situations) => {
-		for (const situation of situations) {
-			expect(schema.safeParse(situation.input).error, situation.id).toBeUndefined();
+	] as const)("every %s situation is an input that call takes, in both languages", (_, schema, situations) => {
+		const en = situations("en");
+		const ru = situations("ru");
+		for (const situation of [...en, ...ru]) {
+			expect(
+				(schema as { safeParse: (value: unknown) => { error?: unknown } }).safeParse(
+					situation.input,
+				).error,
+				situation.id,
+			).toBeUndefined();
 		}
-		expect(new Set(situations.map((each) => each.id)).size).toBe(situations.length);
+		// The same situations, one for one, so switching language keeps the pick.
+		expect(ru.map((each) => each.id)).toEqual(en.map((each) => each.id));
+		expect(new Set(en.map((each) => each.id)).size).toBe(en.length);
 	});
 
 	it("collects the calls made inside a run, and only those", async () => {
@@ -44,37 +53,5 @@ describe("the AI curator lab (GDHUB-117)", () => {
 
 		expect(result).toBe(42);
 		expect(traces.map((each) => each.name)).toEqual(["inside"]);
-	});
-});
-
-vi.mock("ai", async (actual) => ({
-	...(await actual<typeof import("ai")>()),
-	generateText: vi.fn(async ({ prompt }: { prompt: string }) => ({
-		output: {
-			translations: (JSON.parse(prompt) as string[]).map((text) => `RU ${text}`),
-		},
-	})),
-}));
-vi.mock("@ai-sdk/openai", () => ({ openai: () => ({}) }));
-
-describe("reading the lab's data in Russian", () => {
-	it("translates prose and leaves ids, enums and links as they are", async () => {
-		const { inRussian } = await import("@/services/ai-curator-lab/translate");
-
-		expect(
-			await inRussian({
-				id: "o1",
-				kind: "Outcome",
-				text: "Playtest with 5 players",
-				link: "https://example.com/a b",
-				notes: ["Two got stuck", "Matches"],
-			}),
-		).toEqual({
-			id: "o1",
-			kind: "Outcome",
-			text: "RU Playtest with 5 players",
-			link: "https://example.com/a b",
-			notes: ["RU Two got stuck", "Matches"],
-		});
 	});
 });

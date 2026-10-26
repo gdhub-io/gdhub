@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import type { SuggestLinesInput } from "../types";
-import { CURATOR_STANCE, localeLine, renderStage } from "./card";
+import { CURATOR_STANCE, localeLine, renderWorkflow } from "./card";
 
 /**
  * The fifth ask, and the only one the author presses: lines for one side of the
@@ -43,13 +43,13 @@ const renderAsk = (input: SuggestLinesInput) =>
 			What the project has today:
 			${input.inputs.map((text) => `- ${text}`).join("\n") || "- (nothing listed)"}
 
-			${renderStage(input.stage)}
+			${renderWorkflow(input.workflow)}
 		`
 		: stripIndents`
 			Project: ${input.project.name}
 			${input.project.description || "(no description)"}
 
-			${renderStage(input.stage)}
+			${renderWorkflow(input.workflow)}
 
 			What the previous checkpoint owed by its day 28:
 			${input.previousOutcomes.map((text) => `- ${text}`).join("\n") || "- (there was no previous checkpoint)"}

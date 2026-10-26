@@ -25,6 +25,7 @@ import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import {
 	evidenceInput,
 	goalCheckInput,
+	type LabLanguage,
 	planAdviceInput,
 	reportInput,
 	type Situation,
@@ -63,8 +64,6 @@ export type LabSettled =
 /** What the call answered, and what the platform made of the answer. */
 type Ran = { answer: unknown; settled?: LabSettled };
 
-const options = { locale: "en" };
-
 /** One call; its input is checked against the call's own shape before it runs. */
 const call = <S extends z.ZodType>({
 	schema,
@@ -72,18 +71,22 @@ const call = <S extends z.ZodType>({
 	...shown
 }: {
 	id: string;
-	label: string;
-	when: string;
+	/** Names on the page, in the chosen language. */
+	label: Record<LabLanguage, string>;
+	when: Record<LabLanguage, string>;
 	model: string;
 	schema: S;
-	situations: Situation<S>[];
-	run: (input: z.output<S>) => Promise<Ran>;
+	situations: (language: LabLanguage) => Situation<S>[];
+	run: (input: z.output<S>, locale: LabLanguage) => Promise<Ran>;
 }) => ({
 	...shown,
-	run: (input: unknown): Promise<Ran> | { error: string } => {
+	run: (
+		input: unknown,
+		locale: LabLanguage,
+	): Promise<Ran> | { error: string } => {
 		const parsed = schema.safeParse(input);
 		return parsed.success
-			? run(parsed.data)
+			? run(parsed.data, locale)
 			: {
 					error: parsed.error.issues
 						.map(
@@ -97,43 +100,48 @@ const call = <S extends z.ZodType>({
 const CALLS = [
 	call({
 		id: "goalCheck",
-		label: "Goal check",
-		when: "Day 1",
+		label: { en: "Goal check", ru: "Проверка цели" },
+		when: { en: "Day 1", ru: "День 1" },
 		model: checkpointCurator.model,
 		schema: goalCheckInput,
 		situations: goalCheckSituations,
-		run: async (input) => ({
-			answer: await checkpointCurator.checkGoal(input, options),
+		run: async (input, locale) => ({
+			answer: await checkpointCurator.checkGoal(input, { locale }),
 		}),
 	}),
 	call({
 		id: "suggestLines",
-		label: "Suggested lines",
-		when: "While the card is a draft",
+		label: { en: "Suggested lines", ru: "Предложенные строки" },
+		when: { en: "While the card is a draft", ru: "Пока карточка — черновик" },
 		model: checkpointCurator.model,
 		schema: suggestLinesInput,
 		situations: suggestLinesSituations,
-		run: async (input) => ({
-			answer: await checkpointCurator.suggestLines(input, options),
+		run: async (input, locale) => ({
+			answer: await checkpointCurator.suggestLines(input, { locale }),
 		}),
 	}),
 	call({
 		id: "planAdvice",
-		label: "Plan advice",
-		when: "Day 1 and day 15",
+		label: { en: "Plan advice", ru: "Советы по плану" },
+		when: { en: "Day 1 and day 15", ru: "День 1 и день 15" },
 		model: AI_MODELS.curatorReview,
 		schema: planAdviceInput,
 		situations: planAdviceSituations,
-		run: async (input) => ({ answer: await writePlanAdvice(input) }),
+		run: async (input, locale) => ({
+			answer: await writePlanAdvice(input, undefined, locale),
+		}),
 	}),
 	call({
 		id: "sprintReview",
-		label: "Sprint review",
-		when: "Days 8, 15, 22, 29 · devlogs with their media",
+		label: { en: "Sprint review", ru: "Разбор спринта" },
+		when: {
+			en: "Days 8, 15, 22, 29 · devlogs with their media",
+			ru: "Дни 8, 15, 22, 29 · девлоги с медиа",
+		},
 		model: AI_MODELS.curatorReview,
 		schema: sprintReviewInput,
 		situations: sprintReviewSituations,
-		run: async ({ media, ...input }) => {
+		run: async ({ media, ...input }, locale) => {
 			// Read in turn, as they share the video budget; described at once.
 			let left = SPRINT_VIDEO_SECONDS;
 			const reads: EvidenceContent[] = [];
@@ -144,23 +152,31 @@ const CALLS = [
 			}
 			const devlogMedia = await Promise.all(
 				reads.map(async (content, index) =>
-					mediaLine(media[index], await describeRead(content), content.unread),
+					mediaLine(
+						media[index],
+						await describeRead(content, undefined, locale),
+						content.unread,
+					),
 				),
 			);
 			return {
-				answer: await writeSprintReview({ ...input, devlogMedia }),
+				answer: await writeSprintReview(
+					{ ...input, devlogMedia },
+					undefined,
+					locale,
+				),
 				settled: { kind: "media", devlogMedia },
 			};
 		},
 	}),
 	call({
 		id: "evidence",
-		label: "Evidence check",
-		when: "Each sprint",
+		label: { en: "Evidence check", ru: "Проверка доказательства" },
+		when: { en: "Each sprint", ru: "Каждый спринт" },
 		model: AI_MODELS.curatorReview,
 		schema: evidenceInput,
 		situations: evidenceSituations,
-		run: async ({ evidence, ...task }) => {
+		run: async ({ evidence, ...task }, locale) => {
 			const content: EvidenceContent =
 				"link" in evidence
 					? await readArtifact(
@@ -168,7 +184,7 @@ const CALLS = [
 							SPRINT_VIDEO_SECONDS,
 						)
 					: { ...evidence, images: [], videoSeconds: 0 };
-			const judged = await judgeRead(task, content);
+			const judged = await judgeRead(task, content, undefined, locale);
 			return {
 				answer: judged,
 				settled: judged && {
@@ -193,19 +209,19 @@ const CALLS = [
 	}),
 	call({
 		id: "report",
-		label: "Final report and verdict",
-		when: "Day 29",
+		label: { en: "Final report and verdict", ru: "Итоговый отчёт и вердикт" },
+		when: { en: "Day 29", ru: "День 29" },
 		model: checkpointCurator.model,
 		schema: reportInput,
 		situations: reportSituations,
-		run: async ({ goal, items: rows, ...rest }) => {
+		run: async ({ goal, items: rows, ...rest }, locale) => {
 			const items = rows.map((row) => ({
 				...row,
 				addedAt: row.addedAt ? new Date(row.addedAt) : null,
 			}));
 			const proposed = await checkpointCurator.writeReport(
 				{ ...reportEvidence(goal, items), ...rest, calls: [] },
-				options,
+				{ locale },
 			);
 			if (!proposed) return { answer: null };
 			const settled = settleVerdict(items, proposed.verdict);
@@ -234,16 +250,25 @@ const CALLS = [
 
 /** The calls and their situations, for the page to list. */
 export const labCatalogue = () => ({
-	calls: CALLS.map(({ run, ...shown }) => shown),
+	calls: CALLS.map(({ run, situations, ...shown }) => ({
+		...shown,
+		situations: { en: situations("en"), ru: situations("ru") },
+	})),
 });
 
 /** Runs one call on an input; a wrong input is refused before any model call. */
-export const runLab = async (id: string, input: unknown) => {
+export const runLab = async (
+	id: string,
+	input: unknown,
+	language: LabLanguage,
+) => {
 	const found = CALLS.find((each) => each.id === id);
 	if (!found) return { error: `No call "${id}"` };
 
 	const started = Date.now();
-	const { result, traces } = await traced(async () => found.run(input));
+	const { result, traces } = await traced(async () =>
+		found.run(input, language),
+	);
 	if ("error" in result) return result;
 
 	const sum = (count: (trace: AiTrace) => number) =>

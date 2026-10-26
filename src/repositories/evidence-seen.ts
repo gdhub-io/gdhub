@@ -66,16 +66,18 @@ export const judgeRead = async (
 	task: EvidenceTask,
 	content: EvidenceContent,
 	meter?: AiMeter,
+	locale?: string,
 ) =>
 	readable(content)
-		? judgeEvidence(task, content, meter)
+		? judgeEvidence(task, content, meter, locale)
 		: { match: EvidenceMatch.CannotTell, note: content.unread };
 
 /** What a devlog's image or video shows; null when nothing could be read. */
 export const describeRead = async (
 	content: EvidenceContent,
 	meter?: AiMeter,
-) => (readable(content) ? describeMedia(content, meter) : null);
+	locale?: string,
+) => (readable(content) ? describeMedia(content, meter, locale) : null);
 
 /**
  * Look at the evidence on a checkpoint's tasks that has not been looked at yet,

@@ -13,7 +13,11 @@ export const dynamic = "force-dynamic";
 /** A sprint review reads its media and describes it before the review itself. */
 export const maxDuration = 120;
 
-const RunSchema = z.object({ call: z.string(), input: z.unknown() });
+const RunSchema = z.object({
+	call: z.string(),
+	input: z.unknown(),
+	language: z.enum(["en", "ru"]).default("en"),
+});
 
 const guard = [
 	withDevOnly(),
@@ -29,7 +33,7 @@ export const POST = pipe(
 	...guard,
 	withValidation(RunSchema),
 )(async (_req, _ctx, { body }) => {
-	const { call, input } = body as z.infer<typeof RunSchema>;
-	const ran = await runLab(call, input);
+	const { call, input, language } = body as z.infer<typeof RunSchema>;
+	const ran = await runLab(call, input, language);
 	return "error" in ran ? json(ran, { status: 400 }) : json(ran);
 });

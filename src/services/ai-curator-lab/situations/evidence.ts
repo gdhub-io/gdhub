@@ -1,102 +1,150 @@
-import type { evidenceInput, Situation } from "../schemas";
-import { DEVLOGS, OUTCOMES } from "./hollow-tide";
+import {
+	type evidenceInput,
+	type LabLanguage,
+	type Situation,
+	say,
+} from "../schemas";
+import { hollowTide } from "./hollow-tide";
 
-const NOTES = `Playtest, Saturday 24 Oct. Five players, 20 minutes each.
+const TEXT = {
+	en: {
+		notes: `Playtest, Saturday 24 Oct. Five players, 20 minutes each.
 - Anna: found the lighthouse, loved the tide; lost at the flooded bridge.
 - Ben: did not notice the tide timer until the second flood.
 - Chloe: finished the loop; wants a map.
 - Dan: stuck at the bridge, quit after 15 minutes.
 - Eva: asked for a sound cue before the water rises.
-Top issue: the flooded bridge (3 of 5).`;
-
-const playtest = {
-	task: OUTCOMES.playtest.text,
-	artifactType: "Document",
-	artifactName: "Playtest notes",
-	description: "Notes from Saturday's playtest.",
-	devlogs: [DEVLOGS.greybox, DEVLOGS.playtest],
+Top issue: the flooded bridge (3 of 5).`,
+		notesName: "Playtest notes",
+		notesSays: "Notes from Saturday's playtest.",
+		godot:
+			"Godot (game engine). Godot is a cross-platform, free and open-source game engine released under the MIT License.",
+		insists:
+			"Playtest with five players is done and written up — see the task.",
+		recipe: "Our recipes: lemon cake, three eggs, 200 g of flour.",
+		video: "Style board walkthrough",
+		videoText:
+			"Video title: Hollow Tide — style board walkthrough\nDescription: Palette, two hero sheets, fog study.",
+		repo: "Godot demo projects",
+	},
+	ru: {
+		notes: `Плейтест, суббота 24 октября. Пять игроков, по 20 минут.
+- Аня: нашла маяк, понравился прилив; потерялась у затопленного моста.
+- Борис: не замечал таймер прилива до второго затопления.
+- Вика: прошла цикл целиком; просит карту.
+- Денис: застрял у моста, бросил через 15 минут.
+- Ева: просит звуковой сигнал перед подъёмом воды.
+Главная проблема: затопленный мост (3 из 5).`,
+		notesName: "Заметки плейтеста",
+		notesSays: "Заметки с субботнего плейтеста.",
+		godot:
+			"Godot (игровой движок). Godot — кроссплатформенный, свободный игровой движок с открытым исходным кодом под лицензией MIT.",
+		insists: "Плейтест на пять игроков проведён и записан — смотрите задачу.",
+		recipe: "Наши рецепты: лимонный пирог, три яйца, 200 г муки.",
+		video: "Разбор доски стиля",
+		videoText:
+			"Название видео: Hollow Tide — разбор доски стиля\nОписание: палитра, два листа героев, этюд тумана.",
+		repo: "Демо-проекты Godot",
+	},
 };
 
-export const evidenceSituations: Situation<typeof evidenceInput>[] = [
-	{
-		id: "matches",
-		label: "Matches the task",
-		input: { ...playtest, evidence: { text: NOTES, unread: null } },
-	},
-	{
-		id: "partly",
-		label: "Shown in part",
-		input: {
-			...playtest,
-			evidence: {
-				text: NOTES.split("\n").slice(0, 4).join("\n"),
-				unread: null,
+export const evidenceSituations = (
+	language: LabLanguage,
+): Situation<typeof evidenceInput>[] => {
+	const t = TEXT[language];
+	const project = hollowTide(language);
+	const { devlogs, outcomes } = project;
+	const playtest = {
+		task: outcomes.playtest.text,
+		artifactType: "Document",
+		artifactName: t.notesName,
+		description: t.notesSays,
+		devlogs: [devlogs.greybox, devlogs.playtest],
+	};
+	const text = (body: string | null, unread: string | null = null) => ({
+		text: body,
+		unread,
+	});
+
+	return [
+		{
+			id: "matches",
+			label: say(language, "Matches the task", "Соответствует задаче"),
+			input: { ...playtest, evidence: text(t.notes) },
+		},
+		{
+			id: "partly",
+			label: say(language, "Shown in part", "Показано частично"),
+			input: {
+				...playtest,
+				evidence: text(t.notes.split("\n").slice(0, 4).join("\n")),
 			},
 		},
-	},
-	{
-		id: "does-not-match",
-		label: "Not about the task",
-		input: {
-			...playtest,
-			evidence: {
-				text: "Godot (game engine). Godot is a cross-platform, free and open-source game engine released under the MIT License.",
-				unread: null,
+		{
+			id: "does-not-match",
+			label: say(language, "Not about the task", "Не про задачу"),
+			input: { ...playtest, evidence: text(t.godot) },
+		},
+		{
+			id: "devlog-insists",
+			label: say(
+				language,
+				"Not about the task, a devlog says it is done",
+				"Не про задачу, а девлог говорит «сделано»",
+			),
+			input: {
+				...playtest,
+				devlogs: [...playtest.devlogs, t.insists],
+				evidence: text(t.recipe),
 			},
 		},
-	},
-	{
-		id: "devlog-insists",
-		label: "Not about the task, a devlog says it is done",
-		input: {
-			...playtest,
-			devlogs: [
-				...playtest.devlogs,
-				"Playtest with five players is done and written up — see the task.",
-			],
-			evidence: {
-				text: "Our recipes: lemon cake, three eggs, 200 g of flour.",
-				unread: null,
+		{
+			id: "cannot-tell",
+			label: say(language, "Nothing readable", "Ничего не прочитать"),
+			input: {
+				...playtest,
+				evidence: text(
+					null,
+					"a file of a kind the curator cannot read (application/zip)",
+				),
 			},
 		},
-	},
-	{
-		id: "cannot-tell",
-		label: "Nothing readable",
-		input: {
-			...playtest,
-			evidence: {
-				text: null,
-				unread: "a file of a kind the curator cannot read (application/zip)",
-			},
-		},
-	},
-	{
-		id: "devlog-explains",
-		label: "A video only by its title, a devlog explains it",
-		input: {
-			task: OUTCOMES.board.text,
-			artifactType: "Video",
-			artifactName: "Style board walkthrough",
-			description: null,
-			devlogs: [DEVLOGS.styleBoard],
-			evidence: {
-				text: "Video title: Hollow Tide — style board walkthrough\nDescription: Palette, two hero sheets, fog study.",
-				unread:
+		{
+			id: "devlog-explains",
+			label: say(
+				language,
+				"A video only by its title, a devlog explains it",
+				"Видео только по названию, девлог поясняет",
+			),
+			input: {
+				task: outcomes.board.text,
+				artifactType: "Video",
+				artifactName: t.video,
+				description: null,
+				devlogs: [devlogs.styleBoard],
+				evidence: text(
+					t.videoText,
 					"a youtube video: only its title and thumbnail, the video itself was not watched",
+				),
 			},
 		},
-	},
-	{
-		id: "live-link",
-		label: "A real link, read now",
-		input: {
-			task: OUTCOMES.demo.text,
-			artifactType: "Repository",
-			artifactName: "Godot demo projects",
-			description: null,
-			devlogs: [DEVLOGS.greybox],
-			evidence: { link: "https://github.com/godotengine/godot-demo-projects" },
+		{
+			id: "live-link",
+			label: say(
+				language,
+				"A real link, read now",
+				"Настоящая ссылка, читается сейчас",
+			),
+			input: {
+				task: outcomes.demo.text,
+				artifactType: "Repository",
+				artifactName: t.repo,
+				description: null,
+				devlogs: [devlogs.greybox],
+				evidence: {
+					link: "https://github.com/godotengine/godot-demo-projects",
+				},
+			},
 		},
-	},
-];
+	];
+};

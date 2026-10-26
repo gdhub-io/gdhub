@@ -29,7 +29,7 @@ vi.mock("@/services/prisma", () => ({
 		},
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		checkpointJournalEntry: { findFirst: vi.fn() },
-		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
+		projectWorkflowStep: { findUnique: vi.fn().mockResolvedValue(null) },
 	},
 }));
 
@@ -57,7 +57,7 @@ vi.mock("@/services/checkpoint-curator", () => ({
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+	vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
 });
 
 const outcome = (id: string, artifact: unknown = null) => ({
@@ -218,7 +218,7 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
 		const hash = (args as Record<string, any>).data.goalCheckHash;
 		vi.clearAllMocks();
-		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft(
 				[member([10, 20])],
@@ -351,7 +351,7 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
 		const hash = (args as Record<string, any>).data.goalCheckHash;
 		vi.clearAllMocks();
-		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([10, 20])], {
 				goalCheck: checked,
@@ -376,7 +376,7 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
 		const hash = (args as Record<string, any>).data.goalCheckHash;
 		vi.clearAllMocks();
-		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([30, 40])], {
 				goalCheck: checked,
@@ -600,7 +600,7 @@ describe("goal check schema", () => {
 		);
 		const schema = goalCheckSchema({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			stage: { name: "Ideation", requirements: [] },
+			workflow: { currentStage: "Ideation", description: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
@@ -619,7 +619,7 @@ describe("goal check schema", () => {
 		);
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			stage: { name: "Ideation", requirements: [] },
+			workflow: { currentStage: "Ideation", description: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
@@ -642,7 +642,7 @@ describe("the goal check's stored read", () => {
 	it("is not paid for again because the project picture moved on", () => {
 		const input = {
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			stage: { name: "Ideation", requirements: [] },
+			workflow: { currentStage: "Ideation", description: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },

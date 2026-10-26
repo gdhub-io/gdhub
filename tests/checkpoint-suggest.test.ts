@@ -30,8 +30,11 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: {
 			findUnique: (...args: unknown[]) => checkpointFindUnique(...args),
 		},
-		projectWorkflowTask: {
-			findMany: (...args: unknown[]) => taskFindMany(...args),
+		projectWorkflowStep: {
+			findUnique: async (...args: unknown[]) => ({
+				description: "notion::gamelab-pipeline.prototyping",
+				tasks: await taskFindMany(...args),
+			}),
 		},
 	},
 }));
@@ -100,7 +103,11 @@ describe("POST /api/checkpoint/[id]/suggest", () => {
 				kind: "Outcome",
 				goal: "A playable tide prototype",
 				inputs: ["a grey-box level"],
-				stage: { name: "Prototype", requirements: ["A vertical slice"] },
+				workflow: {
+					currentStage: "Prototype",
+					description: null,
+					requiredTasks: ["A vertical slice"],
+				},
 			},
 			{ locale: "ru", checkpointId: "cp1" },
 		);
@@ -115,7 +122,11 @@ describe("POST /api/checkpoint/[id]/suggest", () => {
 			{
 				kind: "Input",
 				project: { name: "Tidebound", description: "A game about tides" },
-				stage: { name: "Prototype", requirements: ["A vertical slice"] },
+				workflow: {
+					currentStage: "Prototype",
+					description: null,
+					requiredTasks: ["A vertical slice"],
+				},
 				previousOutcomes: ["a tide shader"],
 			},
 			{ locale: "ru", checkpointId: "cp1" },

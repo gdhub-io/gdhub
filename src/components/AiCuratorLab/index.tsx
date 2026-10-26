@@ -39,6 +39,7 @@ import type {
 	labCatalogue,
 	runLab,
 } from "@/services/ai-curator-lab";
+import type { LabLanguage } from "@/services/ai-curator-lab/schemas";
 import type { AiTrace } from "@/services/ai-trace";
 import styles from "./style.module.scss";
 
@@ -48,25 +49,6 @@ type Catalogue = ReturnType<typeof labCatalogue>;
 type Ran = Exclude<Awaited<ReturnType<typeof runLab>>, { error: string }>;
 
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
-
-type Language = "en" | "ru";
-
-/** The value as read in `language`: Russian is a translation for reading, fetched once per value. */
-function useReadIn<T>(value: T | undefined, language: Language) {
-	const { data, isFetching } = useQuery({
-		queryKey: ["dev", "ai-curator", "translate", value],
-		queryFn: () =>
-			axios
-				.post<{ value: T }>("/api/dev/ai-curator/translate", { value })
-				.then(({ data }) => data.value),
-		enabled: language === "ru" && value !== undefined,
-		staleTime: Number.POSITIVE_INFINITY,
-	});
-	return {
-		value: language === "ru" ? (data ?? value) : value,
-		translating: language === "ru" && isFetching,
-	};
-}
 
 const Code = ({ children }: { children: string }) => (
 	<Paragraph className={styles.code}>{children}</Paragraph>
@@ -189,23 +171,13 @@ function Result({
 	pending,
 	failure,
 	model,
-	language,
 }: {
 	ran: Ran | undefined;
 	pending: boolean;
 	failure: string | null;
 	model: string | undefined;
-	language: Language;
 }) {
 	const [tab, setTab] = useState<Tab>("settled");
-	const read = useReadIn(
-		ran && {
-			answer: ran.answer,
-			settled: ran.settled,
-			traces: ran.traces.map(({ system, messages }) => ({ system, messages })),
-		},
-		language,
-	);
 
 	if (pending) {
 		return (
@@ -266,12 +238,6 @@ function Result({
 					description="The model answered nothing the platform can use. In production the step waits for the next cron run. The Raw tab shows what came back."
 				/>
 			)}
-			{read.translating && (
-				<Flex gap={8} align="center">
-					<Spin size="small" />
-					<Text type="secondary">Translating…</Text>
-				</Flex>
-			)}
 			<Segmented<Tab>
 				value={tab}
 				onChange={setTab}
@@ -282,16 +248,9 @@ function Result({
 					{ value: "raw", label: "Raw" },
 				]}
 			/>
-			{tab === "settled" && <Settled settled={read.value?.settled} />}
-			{tab === "answer" && <Code>{pretty(read.value?.answer)}</Code>}
-			{tab === "messages" && (
-				<Messages
-					traces={ran.traces.map((trace, index) => ({
-						...trace,
-						...read.value?.traces[index],
-					}))}
-				/>
-			)}
+			{tab === "settled" && <Settled settled={ran.settled} />}
+			{tab === "answer" && <Code>{pretty(ran.answer)}</Code>}
+			{tab === "messages" && <Messages traces={ran.traces} />}
 			{tab === "raw" &&
 				ran.traces.map((trace, index) => (
 					<Code key={`${trace.name}-${index}`}>
@@ -317,25 +276,16 @@ export function AiCuratorLab() {
 	const [callId, setCallId] = useState<string>();
 	const [situationId, setSituationId] = useState<string>();
 	const [text, setText] = useState<string>();
-	const [language, setLanguage] = useState<Language>("en");
+	const [language, setLanguage] = useState<LabLanguage>("en");
 
 	const calls = catalogue?.calls ?? [];
 	const current = calls.find((each) => each.id === callId) ?? calls.at(-1);
 	const situation =
-		current?.situations.find((each) => each.id === situationId) ??
-		current?.situations[0];
+		current?.situations[language].find((each) => each.id === situationId) ??
+		current?.situations[language][0];
 	const original = situation ? pretty(situation.input) : "";
 	const shown = text ?? original;
 	const edited = shown !== original;
-	const parsedInput = (() => {
-		try {
-			return JSON.parse(shown) as unknown;
-		} catch {
-			return undefined;
-		}
-	})();
-	const readInput = useReadIn(parsedInput, language);
-	const reading = language === "ru";
 
 	const run = useMutation({
 		mutationFn: (source: string) => {
@@ -346,7 +296,11 @@ export function AiCuratorLab() {
 				throw new Error(`The input is not JSON: ${(error as Error).message}`);
 			}
 			return axios
-				.post<Ran>("/api/dev/ai-curator", { call: current?.id, input })
+				.post<Ran>("/api/dev/ai-curator", {
+					call: current?.id,
+					input,
+					language,
+				})
 				.then(({ data }) => data);
 		},
 	});
@@ -367,7 +321,7 @@ export function AiCuratorLab() {
 		Object.groupBy(calls, (each) => each.model),
 	).map(([model, used]) => ({
 		model,
-		for: (used ?? []).map((each) => each.label).join(", "),
+		for: (used ?? []).map((each) => each.label[language]).join(", "),
 	}));
 
 	return (
@@ -379,10 +333,14 @@ export function AiCuratorLab() {
 					</Title>
 					<Tag color="warning">Dev only</Tag>
 					<Flex gap={8} align="center" className={styles.readIn}>
-						<Text type="secondary">Read data in</Text>
-						<Segmented<Language>
+						<Text type="secondary">Situations and answers in</Text>
+						<Segmented<LabLanguage>
 							value={language}
-							onChange={setLanguage}
+							onChange={(next) => {
+								setLanguage(next);
+								setText(undefined);
+								run.reset();
+							}}
 							options={[
 								{ value: "en", label: "English" },
 								{ value: "ru", label: "Русский" },
@@ -420,9 +378,9 @@ export function AiCuratorLab() {
 								key: each.id,
 								label: (
 									<Flex vertical>
-										<Text>{each.label}</Text>
+										<Text>{each.label[language]}</Text>
 										<Text type="secondary" className={styles.small}>
-											{each.when}
+											{each.when[language]}
 										</Text>
 									</Flex>
 								),
@@ -437,7 +395,7 @@ export function AiCuratorLab() {
 							className={styles.menu}
 							selectedKeys={situation ? [situation.id] : []}
 							onClick={({ key }) => pick({ situation: key })}
-							items={current?.situations.map((each) => ({
+							items={current?.situations[language].map((each) => ({
 								key: each.id,
 								label: each.label,
 							}))}
@@ -450,16 +408,10 @@ export function AiCuratorLab() {
 					title={
 						<Flex vertical>
 							<Text strong>Input</Text>
-							{reading ? (
-								<Text type="secondary" className={styles.small}>
-									Translated for reading · runs in English, as production
+							{edited && (
+								<Text type="warning" className={styles.small}>
+									Edited · runs as shown
 								</Text>
-							) : (
-								edited && (
-									<Text type="warning" className={styles.small}>
-										Edited · runs as shown
-									</Text>
-								)
 							)}
 						</Flex>
 					}
@@ -478,8 +430,7 @@ export function AiCuratorLab() {
 						<Flex vertical className={styles.editor}>
 							<Input.TextArea
 								className={styles.mono}
-								value={reading ? pretty(readInput.value) : shown}
-								readOnly={reading}
+								value={shown}
 								onChange={(event) => setText(event.target.value)}
 								autoSize={{ minRows: 12, maxRows: 40 }}
 								spellCheck={false}
@@ -514,7 +465,6 @@ export function AiCuratorLab() {
 						pending={run.isPending}
 						failure={failure}
 						model={current?.model}
-						language={language}
 					/>
 				</Card>
 			</Flex>

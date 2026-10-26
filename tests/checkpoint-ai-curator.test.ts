@@ -49,7 +49,9 @@ vi.mock("@/repositories/evidence-seen", () => ({
 	devlogMediaLines: vi.fn(async () => []),
 }));
 vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
-vi.mock("@/repositories/curator-context", () => ({
+vi.mock("@/repositories/curator-context", async (actual) => ({
+	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
+		.memberRole,
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
@@ -148,8 +150,16 @@ const reviewed = (index: number, overrides: Record<string, unknown> = {}) => ({
 	items,
 	sessions: [{ index: index - 1, content: null }],
 	pulses: [
-		{ week: index - 1, confirmedAt: new Date() },
-		{ week: index - 1, confirmedAt: null },
+		{
+			week: index - 1,
+			confirmedAt: new Date(),
+			teamMember: { position: null, speciality: { name: "Game designer" } },
+		},
+		{
+			week: index - 1,
+			confirmedAt: null,
+			teamMember: { position: "Lead artist", speciality: { name: "Artist" } },
+		},
 	],
 	project: {
 		name: "Hollow Tide",
@@ -222,7 +232,11 @@ describe("writeDueReviews", () => {
 
 		const input = writeSprintReview.mock.calls[0][0];
 		expect(input.sprint).toBe(1);
-		expect(input.pulse).toEqual({ worked: 1, missing: 1 });
+		// By role, never by name: the project's own title wins over the speciality.
+		expect(input.pulse).toEqual({
+			worked: ["Game designer"],
+			missing: ["Lead artist"],
+		});
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 		expect(closeCheckpoint).not.toHaveBeenCalled();
 

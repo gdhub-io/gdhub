@@ -5,8 +5,8 @@ import {
 	localeLine,
 	renderCard,
 	renderPicture,
-	renderStage,
 	renderTeam,
+	renderWorkflow,
 } from "./card";
 
 /**
@@ -122,7 +122,7 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 
 			${renderCard(input.card)}
 
-			${renderStage(input.stage)}
+			${renderWorkflow(input.workflow)}
 
 			${renderTeam(input.team)}
 

@@ -35,6 +35,7 @@ import type {
 	CuratorGoalCard,
 	CuratorLine,
 	CuratorOptions,
+	CuratorWorkflow,
 	GoalCheckInput,
 	GoalCheckResult,
 	ReportInput,
@@ -152,17 +153,36 @@ export const reportEvidence = (goal: string, items: ReportItem[]) => ({
 	...weighOutcomes(items),
 });
 
-/** What the stage's template says it requires — the required tasks, by name. */
-const stageRequirements = async (stepId: string | null) => {
-	if (!stepId) return [];
+/** The stage as the template says it: what it is for, and the tasks it requires. */
+const stageWorkflow = async (
+	stepId: string | null,
+	currentStage: string,
+): Promise<CuratorWorkflow> => {
+	const step = stepId
+		? await prisma.projectWorkflowStep.findUnique({
+				where: { id: stepId },
+				select: {
+					description: true,
+					tasks: {
+						where: { required: true },
+						orderBy: { order: "asc" },
+						select: { name: true },
+					},
+				},
+			})
+		: null;
+	// A `notion::…` description points at content kept elsewhere (GDHUB-97), not text.
+	const description = step?.description?.includes("::")
+		? null
+		: step?.description?.trim() || null;
 
-	const tasks = await prisma.projectWorkflowTask.findMany({
-		where: { stepId, required: true },
-		orderBy: { order: "asc" },
-		select: { name: true },
-	});
-
-	return tasks.flatMap((task) => (task.name ? [task.name] : []));
+	return {
+		currentStage,
+		description,
+		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
+			task.name ? [task.name] : [],
+		),
+	};
 };
 
 /**
@@ -224,9 +244,9 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
-	const [previous, requirements] = await Promise.all([
+	const [previous, workflow] = await Promise.all([
 		lastVerdict(checkpoint.projectId, checkpointId),
-		stageRequirements(checkpoint.stepId),
+		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 	]);
 
 	const founder = members.find(
@@ -235,10 +255,7 @@ export const runGoalCheck = async (
 
 	const input: GoalCheckInput = {
 		card: toCard(checkpoint.goal, checkpoint.items),
-		stage: {
-			name: checkpoint.stageName,
-			requirements,
-		},
+		workflow,
 		project: {
 			name: checkpoint.project.name,
 			pitch: checkpoint.project.description?.trim() || null,
@@ -301,10 +318,7 @@ export const suggestCardLines = async (
 
 	if (!checkpoint) return null;
 
-	const stage = {
-		name: checkpoint.stageName,
-		requirements: await stageRequirements(checkpoint.stepId),
-	};
+	const workflow = await stageWorkflow(checkpoint.stepId, checkpoint.stageName);
 
 	if (kind === CheckpointItemKind.Outcome) {
 		const card = toCard(checkpoint.goal, checkpoint.items);
@@ -314,7 +328,7 @@ export const suggestCardLines = async (
 				kind: CheckpointItemKind.Outcome,
 				goal: card.goal,
 				inputs: card.inputs.map((item) => item.text),
-				stage,
+				workflow,
 			},
 			{ ...options, checkpointId },
 		);
@@ -326,7 +340,7 @@ export const suggestCardLines = async (
 		{
 			kind: CheckpointItemKind.Input,
 			project: checkpoint.project,
-			stage,
+			workflow,
 			previousOutcomes: previous.map((item) => item.text),
 		},
 		{ ...options, checkpointId },
@@ -438,10 +452,7 @@ const reportInputFor = async (checkpointId: string) => {
 
 	const reportInput = {
 		...reportEvidence(checkpoint.goal, items),
-		stage: {
-			name: checkpoint.stageName,
-			requirements: await stageRequirements(checkpoint.stepId),
-		},
+		workflow: await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 		revision: checkpoint.revisedAt
 			? {
 					revisedAt: checkpoint.revisedAt.toISOString().slice(0, 10),

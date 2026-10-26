@@ -30,10 +30,13 @@ export type CuratorGoalCard = {
 	outcomes: CuratorLine[];
 };
 
-export type CuratorStage = {
-	name: string;
-	/** What the workflow template says this stage requires, task by task. */
-	requirements: string[];
+/** Where the project stands on its workflow, as the template says it. */
+export type CuratorWorkflow = {
+	currentStage: string;
+	/** What the stage is for, in a line; null while its text lives in Notion. */
+	description: string | null;
+	/** The tasks the template requires on this stage; suggested ones never hold it. */
+	requiredTasks: string[];
 };
 
 export type CuratorOptions = {
@@ -82,7 +85,7 @@ export type CuratorAuthor = {
 export type GoalCheckInput = {
 	card: CuratorGoalCard;
 	/** The checkpoint's stage, which is the project's stage while it is a draft. */
-	stage: CuratorStage;
+	workflow: CuratorWorkflow;
 	project: CuratorProject;
 	author: CuratorAuthor | null;
 	/** What the promise is weighed against: the time the team actually has. */
@@ -144,7 +147,7 @@ export type CuratorArtifact = {
 /** Day 28: the report, and the verdict the guardrail then settles. */
 export type ReportInput = {
 	card: CuratorGoalCard;
-	stage: CuratorStage;
+	workflow: CuratorWorkflow;
 	revision: { revisedAt: string; note: string | null } | null;
 	artifacts: CuratorArtifact[];
 	unproven: UnprovenOutcome[];
@@ -180,12 +183,12 @@ export type SuggestLinesInput =
 			goal: string;
 			/** The Input side as written so far: what the project has today. */
 			inputs: string[];
-			stage: CuratorStage;
+			workflow: CuratorWorkflow;
 	  }
 	| {
 			kind: "Input";
 			project: { name: string; description: string | null };
-			stage: CuratorStage;
+			workflow: CuratorWorkflow;
 			/** What the last closed checkpoint owed, which is what exists now. */
 			previousOutcomes: string[];
 	  };

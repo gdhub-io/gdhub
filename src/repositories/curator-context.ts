@@ -69,6 +69,12 @@ async function stagePath(stepId: string | null, stageName: string) {
 }
 
 /** The team as it stands: role, stated hours, and the weeks each confirmed working. */
+/** A member's role on the project, as the AI curator names them: no name. */
+export const memberRole = (member: {
+	position: string | null;
+	speciality: { name: string } | null;
+}) => member.position || member.speciality?.name || "no role set";
+
 async function teamLines(checkpointId: string, projectId: string) {
 	const [members, pulses] = await Promise.all([
 		prisma.teamMember.findMany({
@@ -90,7 +96,7 @@ async function teamLines(checkpointId: string, projectId: string) {
 	if (!members.length) return "Team: nobody has joined yet.";
 
 	const lines = members.map((member) => {
-		const role = member.position || member.speciality?.name || "no role set";
+		const role = memberRole(member);
 		const level = member.speciality?.level
 			? `, ${member.speciality.level}`
 			: "";

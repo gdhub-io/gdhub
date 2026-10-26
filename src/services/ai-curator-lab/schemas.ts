@@ -36,7 +36,11 @@ const card = z.object({
 	outcomes: z.array(line),
 });
 
-const stage = z.object({ name: z.string(), requirements: z.array(z.string()) });
+const workflow = z.object({
+	currentStage: z.string(),
+	description: z.string().nullable(),
+	requiredTasks: z.array(z.string()),
+});
 
 const hours = z.object({ from: z.number(), to: z.number() }).nullable();
 
@@ -55,7 +59,7 @@ const task = z.object({
 
 export const goalCheckInput = z.object({
 	card,
-	stage,
+	workflow,
 	project: z.object({
 		name: z.string(),
 		pitch: z.string().nullable(),
@@ -88,12 +92,12 @@ export const suggestLinesInput = z.discriminatedUnion("kind", [
 		kind: z.literal("Outcome"),
 		goal: z.string(),
 		inputs: z.array(z.string()),
-		stage,
+		workflow,
 	}),
 	z.object({
 		kind: z.literal("Input"),
 		project: z.object({ name: z.string(), description: z.string().nullable() }),
-		stage,
+		workflow,
 		previousOutcomes: z.array(z.string()),
 	}),
 ]) satisfies z.ZodType<SuggestLinesInput>;
@@ -119,7 +123,10 @@ export const sprintReviewInput = z.object({
 	artifacts: z.array(
 		z.object({ type: z.string(), name: z.string().nullable() }),
 	),
-	pulse: z.object({ worked: z.number().int(), missing: z.number().int() }),
+	pulse: z.object({
+		worked: z.array(z.string()),
+		missing: z.array(z.string()),
+	}),
 	focusLastReview: z.array(z.string()),
 	verdict: z
 		.object({ verdict: z.nativeEnum(CheckpointVerdict), note: z.string() })
@@ -165,7 +172,7 @@ const item = z.object({
 /** Day 29 as the checkpoint's rows hold it, before the evidence is weighed. */
 export const reportInput = z.object({
 	goal: z.string(),
-	stage,
+	workflow,
 	revision: z
 		.object({ revisedAt: z.string(), note: z.string().nullable() })
 		.nullable(),
@@ -183,3 +190,10 @@ export type Situation<S extends z.ZodType> = {
 	label: string;
 	input: z.input<S>;
 };
+
+/** The language of a situation's data and of the answers asked for. */
+export type LabLanguage = "en" | "ru";
+
+/** A lab label in the chosen language. */
+export const say = (language: LabLanguage, en: string, ru: string) =>
+	language === "ru" ? ru : en;

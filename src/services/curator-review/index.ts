@@ -12,7 +12,10 @@ import {
 	type CuratorTask,
 	taskLine,
 } from "@/services/call-notes";
-import { renderPicture } from "@/services/checkpoint-curator/prompts/card";
+import {
+	localeLine,
+	renderPicture,
+} from "@/services/checkpoint-curator/prompts/card";
 import { type CallNotes, TASK_ADVICE_KINDS } from "@/types/checkpoints";
 
 export type { CuratorTask };
@@ -40,13 +43,19 @@ export type SprintReviewInput = {
 	/** What the images and videos in those devlogs show, one line each. */
 	devlogMedia: string[];
 	artifacts: { type: string; name: string | null }[];
-	/** Who on the team confirmed working in the sprint, and who did not. */
-	pulse: { worked: number; missing: number };
+	/** The roles on the team that confirmed working in the sprint, and that did not. */
+	pulse: { worked: string[]; missing: string[] };
 	focusLastReview: string[];
 	/** Day 29: the verdict already settled, for the letter to agree with it. */
 	verdict: { verdict: CheckpointVerdict; note: string } | null;
 	picture: string;
 };
+
+const roles = (list: string[]) => (list.length ? ` (${list.join(", ")})` : "");
+
+/** Who confirmed working, by role: a missing artist explains a missing board. */
+const pulseLine = (pulse: SprintReviewInput["pulse"]) =>
+	`${pulse.worked.length} confirmed working${roles(pulse.worked)}, ${pulse.missing.length} did not${roles(pulse.missing)}.`;
 
 const VOICE = stripIndents`
 	You are the AI curator of a game team on GDHub, through a 28-day checkpoint:
@@ -100,6 +109,7 @@ const adviceSchema = z.object({
 export const writePlanAdvice = async (
 	input: PlanAdviceInput,
 	meter?: AiMeter,
+	locale?: string,
 ) => {
 	const request = {
 		instructions: stripIndents`
@@ -114,6 +124,7 @@ export const writePlanAdvice = async (
 					? "This is the start: four weeks lie ahead. Your letter is the team's first word from you: open it with a short greeting — you are their AI curator for the next 28 days — then go on to the tasks."
 					: "This is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding."
 			}
+			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
 			Stage: ${input.stage}
@@ -190,6 +201,7 @@ const reviewSchema = z.object({
 export const writeSprintReview = async (
 	input: SprintReviewInput,
 	meter?: AiMeter,
+	locale?: string,
 ) => {
 	const final = input.verdict !== null;
 	const request = {
@@ -203,6 +215,7 @@ export const writeSprintReview = async (
 			artifact closes it. Where a task's evidence was looked at, say what it
 			shows; a mismatch is worth naming, but it does not undo the task.
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
+			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
 			Stage: ${input.stage}
@@ -223,7 +236,7 @@ export const writeSprintReview = async (
 
 			${artifactLines(input.artifacts) || "No artifacts added in the sprint."}
 
-			Pulse: ${input.pulse.worked} confirmed working, ${input.pulse.missing} did not.
+			Pulse: ${pulseLine(input.pulse)}
 
 			${renderPicture(input.picture)}
 

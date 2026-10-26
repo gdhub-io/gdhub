@@ -8,7 +8,7 @@ import {
 	localeLine,
 	renderCard,
 	renderPicture,
-	renderStage,
+	renderWorkflow,
 } from "./card";
 
 /**
@@ -110,7 +110,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 		content: stripIndents`
 			${renderCard(input.card)}
 
-			${renderStage(input.stage)}
+			${renderWorkflow(input.workflow)}
 
 			${
 				input.revision

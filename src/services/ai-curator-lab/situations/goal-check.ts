@@ -1,71 +1,106 @@
-import type { goalCheckInput, Situation } from "../schemas";
-import { GOAL, OUTCOMES, PICTURE, STAGE } from "./hollow-tide";
+import {
+	type goalCheckInput,
+	type LabLanguage,
+	type Situation,
+	say,
+} from "../schemas";
+import { hollowTide } from "./hollow-tide";
 
-const base = {
-	card: {
-		goal: GOAL,
-		inputs: [
-			{ id: "i1", text: "Concept document and a paper map of the island" },
-		],
-		outcomes: Object.values(OUTCOMES),
-	},
-	stage: STAGE,
-	project: {
-		name: "Hollow Tide",
-		pitch: "A tide-driven exploration game on a drowning island.",
-		genre: "Adventure",
-	},
-	author: {
-		speciality: "Game designer",
-		level: "Middle",
+const TEXT = {
+	en: {
+		input: "Concept document and a paper map of the island",
 		experience: "Two jam games, one shipped mobile puzzle.",
+		tooMuch: [
+			"All five islands playable",
+			"Steam page live with a trailer",
+			"Online co-op for two players",
+		],
+		vague: ["Make the game more fun", "Work on the art"],
 	},
-	team: {
-		members: 3,
-		stated: 2,
-		hoursPerWeek: { from: 30, to: 40 },
-		hoursPerRun: { from: 120, to: 160 },
+	ru: {
+		input: "Концепт-документ и бумажная карта острова",
+		experience: "Две игры с джемов, одна вышедшая мобильная головоломка.",
+		tooMuch: [
+			"Все пять островов играбельны",
+			"Страница в Steam с трейлером",
+			"Онлайн-кооператив на двоих",
+		],
+		vague: ["Сделать игру интереснее", "Поработать над артом"],
 	},
-	previous: null,
-	picture: PICTURE,
 };
 
-export const goalCheckSituations: Situation<typeof goalCheckInput>[] = [
-	{ id: "fits", label: "Fits the time the team has", input: base },
-	{
-		id: "too-much",
-		label: "Promises more than four weeks hold",
-		input: {
-			...base,
-			card: {
-				...base.card,
-				outcomes: [
-					...base.card.outcomes,
-					{ id: "o4", text: "All five islands playable" },
-					{ id: "o5", text: "Steam page live with a trailer" },
-					{ id: "o6", text: "Online co-op for two players" },
-				],
-			},
-			team: {
-				members: 1,
-				stated: 1,
-				hoursPerWeek: { from: 5, to: 8 },
-				hoursPerRun: { from: 20, to: 32 },
+export const goalCheckSituations = (
+	language: LabLanguage,
+): Situation<typeof goalCheckInput>[] => {
+	const t = TEXT[language];
+	const project = hollowTide(language);
+	const base = {
+		card: {
+			goal: project.goal,
+			inputs: [{ id: "i1", text: t.input }],
+			outcomes: Object.values(project.outcomes),
+		},
+		workflow: project.workflow,
+		project: { name: "Hollow Tide", pitch: project.pitch, genre: "Adventure" },
+		author: {
+			speciality: "Game designer",
+			level: "Middle",
+			experience: t.experience,
+		},
+		team: {
+			members: 3,
+			stated: 2,
+			hoursPerWeek: { from: 30, to: 40 },
+			hoursPerRun: { from: 120, to: 160 },
+		},
+		previous: null,
+		picture: project.picture,
+	};
+	const outcomes = (texts: string[], from: number) =>
+		texts.map((text, index) => ({ id: `o${from + index}`, text }));
+
+	return [
+		{
+			id: "fits",
+			label: say(
+				language,
+				"Fits the time the team has",
+				"Укладывается во время команды",
+			),
+			input: base,
+		},
+		{
+			id: "too-much",
+			label: say(
+				language,
+				"Promises more than four weeks hold",
+				"Обещает больше, чем влезет в четыре недели",
+			),
+			input: {
+				...base,
+				card: {
+					...base.card,
+					outcomes: [...base.card.outcomes, ...outcomes(t.tooMuch, 4)],
+				},
+				team: {
+					members: 1,
+					stated: 1,
+					hoursPerWeek: { from: 5, to: 8 },
+					hoursPerRun: { from: 20, to: 32 },
+				},
 			},
 		},
-	},
-	{
-		id: "vague",
-		label: "Tasks nobody could check",
-		input: {
-			...base,
-			card: {
-				...base.card,
-				outcomes: [
-					{ id: "o1", text: "Make the game more fun" },
-					{ id: "o2", text: "Work on the art" },
-				],
+		{
+			id: "vague",
+			label: say(
+				language,
+				"Tasks nobody could check",
+				"Задачи, которые никто не проверит",
+			),
+			input: {
+				...base,
+				card: { ...base.card, outcomes: outcomes(t.vague, 1) },
 			},
 		},
-	},
-];
+	];
+};

@@ -33,7 +33,11 @@ import {
 	previousVerdict,
 } from "@/repositories/checkpoint-number";
 import { canEditPlan } from "@/repositories/checkpoint-plan-edit";
-import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import {
+	memberRole,
+	projectPicture,
+	runPeriod,
+} from "@/repositories/curator-context";
 import { journal } from "@/repositories/curator-journal";
 import {
 	devlogMediaLines,
@@ -496,7 +500,15 @@ const reviewSelect = {
 	verdictNote: true,
 	items: taskSelect,
 	sessions: { select: { index: true, content: true } },
-	pulses: { select: { week: true, confirmedAt: true } },
+	pulses: {
+		select: {
+			week: true,
+			confirmedAt: true,
+			teamMember: {
+				select: { position: true, speciality: { select: { name: true } } },
+			},
+		},
+	},
 } as const;
 
 type ReviewCheckpoint = Prisma.ProjectCheckpointGetPayload<{
@@ -544,8 +556,12 @@ const sprintReviewInput = async (
 		devlogMedia,
 		artifacts,
 		pulse: {
-			worked: pulses.filter((pulse) => pulse.confirmedAt).length,
-			missing: pulses.filter((pulse) => !pulse.confirmedAt).length,
+			worked: pulses
+				.filter((pulse) => pulse.confirmedAt)
+				.map((pulse) => memberRole(pulse.teamMember)),
+			missing: pulses
+				.filter((pulse) => !pulse.confirmedAt)
+				.map((pulse) => memberRole(pulse.teamMember)),
 		},
 		focusLastReview: agreed.map((line) => line.text),
 		verdict:

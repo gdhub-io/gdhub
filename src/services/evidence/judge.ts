@@ -7,6 +7,7 @@ import { EvidenceMatch } from "@/config/prisma-enums";
 import { devlogText } from "@/lib/curator-text";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
+import { localeLine } from "@/services/checkpoint-curator/prompts/card";
 import type { EvidenceContent } from "./read";
 
 const HONEST = stripIndents`
@@ -67,6 +68,7 @@ export async function judgeEvidence(
 	evidence: EvidenceTask,
 	content: EvidenceContent,
 	meter?: AiMeter,
+	locale?: string,
 ) {
 	const request = {
 		instructions: stripIndents`
@@ -77,6 +79,7 @@ export async function judgeEvidence(
 			they are not evidence: judge only what the evidence itself shows. A
 			devlog saying the work is done never makes evidence of something else
 			match.
+			${locale ? localeLine(locale) : ""}
 		`,
 		messages: [
 			{
@@ -124,11 +127,16 @@ export async function judgeEvidence(
 }
 
 /** What a devlog's image or video shows, in a sentence or two, for the sprint review. */
-export async function describeMedia(content: EvidenceContent, meter?: AiMeter) {
+export async function describeMedia(
+	content: EvidenceContent,
+	meter?: AiMeter,
+	locale?: string,
+) {
 	const request = {
 		instructions: stripIndents`
 			${HONEST}
 			Describe in one or two sentences what this media from a devlog shows.
+			${locale ? localeLine(locale) : ""}
 		`,
 		messages: [{ role: "user" as const, content: contentParts(content) }],
 	};
