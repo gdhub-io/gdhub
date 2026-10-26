@@ -13,7 +13,12 @@ const sheetSchema = z.object({
 		.string()
 		.max(40)
 		.describe("A short invented name with a title, as in the base role"),
-	nameRu: z.string().max(40).describe("The same name in Russian"),
+	nameRu: z
+		.string()
+		.max(40)
+		.describe(
+			"The same name in Russian: the title translated, the name itself transliterated, never translated word by word",
+		),
 	who: z
 		.string()
 		.max(200)
