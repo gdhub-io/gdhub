@@ -4955,6 +4955,7 @@
 				"locked": "Finish the required tasks to move on",
 				"next": "Next stage",
 				"next-button": "Next",
+				"notApproved": "Opens when a checkpoint on this stage ends with Ready for the next stage",
 				"previous": "Previous stage",
 				"required": "Required",
 				"since": "since {date}",
