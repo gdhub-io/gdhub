@@ -74,6 +74,8 @@ const call = <S extends z.ZodType>({
 	/** Names on the page, in the chosen language. */
 	label: Record<LabLanguage, string>;
 	when: Record<LabLanguage, string>;
+	/** What the call is for, to judge its answer against. */
+	purpose: Record<LabLanguage, string>;
 	model: string;
 	schema: S;
 	situations: (language: LabLanguage) => Situation<S>[];
@@ -100,6 +102,10 @@ const call = <S extends z.ZodType>({
 const CALLS = [
 	call({
 		id: "goalCheck",
+		purpose: {
+			en: "Before the checkpoint starts: does the promised list fit 28 days and the team's hours? Names what is too big, what nothing builds towards, what could not be proven — and the one change to make on the card.",
+			ru: "До старта чекпоинта: влезает ли обещанное в 28 дней и в часы команды? Называет, что слишком большое, к чему ничего не ведёт, что нельзя будет доказать, — и одно изменение в карточке.",
+		},
 		label: { en: "Goal check", ru: "Проверка цели" },
 		when: { en: "Day 1", ru: "День 1" },
 		model: checkpointCurator.model,
@@ -111,6 +117,10 @@ const CALLS = [
 	}),
 	call({
 		id: "suggestLines",
+		purpose: {
+			en: "For an author staring at an empty list: a few lines for one side of the card, each ending in something anyone can open. Nothing is saved; the author edits or drops them.",
+			ru: "Для автора перед пустым списком: несколько строк для одной стороны карточки, каждая заканчивается тем, что можно открыть. Ничего не сохраняется — автор правит или выбрасывает.",
+		},
 		label: { en: "Suggested lines", ru: "Предложенные строки" },
 		when: { en: "While the card is a draft", ru: "Пока карточка — черновик" },
 		model: checkpointCurator.model,
@@ -122,6 +132,10 @@ const CALLS = [
 	}),
 	call({
 		id: "planAdvice",
+		purpose: {
+			en: "On day 1 and after the sprint 2 review: per task, keep, shorten, reword or cut, so the plan fits the time left — and a short letter on what to do now.",
+			ru: "В день 1 и после разбора спринта 2: по каждой задаче — оставить, сократить, переформулировать или убрать, чтобы план влез в оставшееся время, — и короткое письмо, что делать сейчас.",
+		},
 		label: { en: "Plan advice", ru: "Советы по плану" },
 		when: { en: "Day 1 and day 15", ru: "День 1 и день 15" },
 		model: AI_MODELS.curatorReview,
@@ -133,6 +147,10 @@ const CALLS = [
 	}),
 	call({
 		id: "sprintReview",
+		purpose: {
+			en: "After each sprint, instead of a curator's call: what the devlogs, artifacts and pulse showed, what is at risk, and the focus for the next sprint.",
+			ru: "После каждого спринта, вместо созвона с куратором: что показали девлоги, артефакты и пульс, что под риском, и фокус на следующий спринт.",
+		},
 		label: { en: "Sprint review", ru: "Разбор спринта" },
 		when: {
 			en: "Days 8, 15, 22, 29 · devlogs with their media",
@@ -171,6 +189,10 @@ const CALLS = [
 	}),
 	call({
 		id: "evidence",
+		purpose: {
+			en: "For each task's artifact: does it show what the task promised? The answer feeds the verdict — delivered, partly, on trust or not delivered. The author sees it as a label; the note is for the report.",
+			ru: "Для артефакта каждой задачи: показывает ли он обещанное? Ответ идёт в вердикт — сдано, частично, на доверии или не сдано. Автор видит метку; заметка — для отчёта.",
+		},
 		label: { en: "Evidence check", ru: "Проверка доказательства" },
 		when: { en: "Each sprint", ru: "Каждый спринт" },
 		model: AI_MODELS.curatorReview,
@@ -209,6 +231,10 @@ const CALLS = [
 	}),
 	call({
 		id: "report",
+		purpose: {
+			en: "Day 29: what was delivered against the goal, and a proposed verdict that the rule then settles. The note tells the author why, what was taken on trust, and what to do next.",
+			ru: "День 29: что сдано против цели и предложенный вердикт, который затем решает правило. Заметка объясняет автору почему, что принято на доверии и что делать дальше.",
+		},
 		label: { en: "Final report and verdict", ru: "Итоговый отчёт и вердикт" },
 		when: { en: "Day 29", ru: "День 29" },
 		model: checkpointCurator.model,

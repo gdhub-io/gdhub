@@ -23,7 +23,7 @@ export const suggestLinesSchema = (input: SuggestLinesInput) => ({
 			maxItems: 6,
 			description:
 				input.kind === "Outcome"
-					? "Lines for what will exist by day 28, each one a single thing someone else could check."
+					? "Lines for what will exist by day 28, each one a single thing someone else could check, ending in what they would open: a build, a video, a document, a page."
 					: "Lines for what the project already has today, each one a single thing that exists now.",
 			items: {
 				type: "string",

@@ -42,7 +42,7 @@ export const reportSchema = () => ({
 		summary: {
 			type: "string",
 			description:
-				"The report the author reads. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 300 words.",
+				"The report the author reads. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 150 words.",
 		},
 		verdict: {
 			type: "string",
@@ -55,7 +55,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing.",
+				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -101,6 +101,10 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			play anything, and the report may not imply that you did.
 
 			Where evidence was looked at, say what it shows.
+
+			In the summary and the note, name the verdict the way the author sees it
+			— the goal was met, the goal was missed, or the project is ready for the
+			next stage — never by its code (GoalMet, GoalMissed, StageClosed).
 
 			${localeLine(locale)}
 		`,

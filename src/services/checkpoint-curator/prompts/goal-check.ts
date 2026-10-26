@@ -75,7 +75,7 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 		note: {
 			type: "string",
 			description:
-				"One short paragraph the author reads. Say what stands out; do not repeat the list back. Where the list outruns the hours the team has, say so and name those hours.",
+				"Two to four sentences the author reads. Say what stands out; where the list outruns the hours the team has, say so and name those hours. End with the one change to make on the card before the checkpoint starts.",
 		},
 	},
 	required: ["reachable", "notes", "missing", "note"],

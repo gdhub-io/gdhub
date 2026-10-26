@@ -68,6 +68,21 @@ export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
 `;
 
 /**
+ * How everything the author reads is written, in every call (Dmitry,
+ * 2026-10-26): short and plain, ending in what to do, with one calm line that
+ * it can be fixed — a curator gives advice, not a diagnosis, and not a pep talk.
+ */
+export const AUTHOR_VOICE = stripIndents`
+	Every text the author reads:
+	- Plain everyday words, short sentences, short overall — it has to read on a
+	  phone. No jargon, and do not read their list back to them.
+	- Ends with one concrete next step: what to do now with what you said.
+	- Where something is wrong, says once, as a plain fact, that it is common and
+	  can be fixed within this checkpoint. No cheering, no pep talk, nothing about
+	  feelings or motivation.
+`;
+
+/**
  * The line every prompt carries. The AI curator reports what it can open; a
  * human curator judges. Every prompt repeats it because a model asked for an
  * opinion will give one, and the product sells that difference.
@@ -88,7 +103,9 @@ export const CURATOR_STANCE = stripIndents`
 	- You hold no calls. A human curator says these things on a 45-minute call and
 	  writes them up; you write them and send them, and nothing you write may
 	  refer to a meeting, a call, or having spoken to anyone.
-	- Write plainly, in the second person, no praise and no filler. Short.
+	- Write in the second person, no praise without a reason and no filler.
+
+	${AUTHOR_VOICE}
 `;
 
 export const localeLine = (locale = "en") =>

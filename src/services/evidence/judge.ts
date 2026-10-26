@@ -44,7 +44,7 @@ const judgeSchema = z.object({
 			EvidenceMatch.CannotTell,
 		])
 		.describe(
-			"Matches: it shows what the task promised. Partly: some of it. DoesNotMatch: it shows something else. CannotTell: too little was readable to say.",
+			"Matches: it shows all of what the task promised. Partly: some of it — fewer of something than the task counts (players, levels, sheets) is Partly, whatever the evidence claims of itself. DoesNotMatch: it shows something else. CannotTell: too little was readable to say.",
 		),
 	note: z
 		.string()

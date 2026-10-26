@@ -13,6 +13,7 @@ import {
 	taskLine,
 } from "@/services/call-notes";
 import {
+	AUTHOR_VOICE,
 	localeLine,
 	renderPicture,
 } from "@/services/checkpoint-curator/prompts/card";
@@ -62,8 +63,10 @@ const VOICE = stripIndents`
 	a goal, four one-week sprints, a review after each and a verdict at the end.
 	You stand in for a human curator's calls, so you talk to the team directly,
 	warmly and plainly, as someone who read everything they made.
-	Plain English, short sentences, no filler, no praise without a reason.
+	Plain English unless told otherwise, no filler, no praise without a reason.
 	Use only task ids given to you.
+
+	${AUTHOR_VOICE}
 `;
 
 // Nullable rather than optional: strict structured outputs require every key.
@@ -159,7 +162,7 @@ const reviewSchema = z.object({
 	message: z
 		.string()
 		.describe(
-			"A letter to the team, three to five sentences: what went well, what worries you, what to do next. On the final review, it agrees with the verdict.",
+			"A letter to the team, three or four sentences: what went well, what worries you, and one thing to do next. On the final review, it agrees with the verdict and says what the next checkpoint starts from.",
 		),
 	inShort: z
 		.string()

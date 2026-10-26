@@ -427,6 +427,14 @@ export function AiCuratorLab() {
 					}
 				>
 					<Flex vertical gap={12}>
+						{current && (
+							<Flex vertical gap={2}>
+								<Text type="secondary" className={styles.small}>
+									What this call is for
+								</Text>
+								<Text>{current.purpose[language]}</Text>
+							</Flex>
+						)}
 						<Flex vertical className={styles.editor}>
 							<Input.TextArea
 								className={styles.mono}
