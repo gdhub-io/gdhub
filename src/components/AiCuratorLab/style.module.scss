@@ -29,10 +29,6 @@
 	}
 }
 
-.pick {
-	width: 260px;
-	flex-shrink: 0;
-}
 
 .menu {
 	border-inline-end: none !important;
@@ -45,25 +41,13 @@
 	}
 }
 
-.input {
-	width: 440px;
-	flex-shrink: 0;
-}
 
 .result {
 	flex: 1;
 	min-width: 0;
 }
 
-.editor {
-	position: relative;
-}
 
-.copy {
-	position: absolute;
-	top: var(--gd-space-2);
-	right: var(--gd-space-2);
-}
 
 .code {
 	margin: 0 !important;
@@ -77,18 +61,29 @@
 	border-radius: var(--gd-radius-control);
 }
 
-.note {
-	background: var(--gd-color-surface-sunken);
-}
 
-.noteText {
-	margin: var(--gd-space-2) 0 0 !important;
-}
 
-.run {
-	align-self: flex-start;
-}
 
 .readIn {
 	margin-left: auto;
+}
+
+.calls {
+	width: 220px;
+	flex-shrink: 0;
+}
+
+.situations {
+	width: 240px;
+	flex-shrink: 0;
+}
+
+.resultTitle {
+	padding-block: var(--gd-space-3);
+	white-space: normal;
+}
+
+.purpose {
+	font-size: var(--gd-font-size-caption);
+	font-weight: normal;
 }
