@@ -80,9 +80,10 @@ export const AUTHOR_VOICE = stripIndents`
 	- Where the language has a polite and a familiar "you" (Russian «вы» and
 	  «ты»), use the polite one, always.
 	- Ends with one concrete next step: what to do now with what you said.
-	- A letter to the team closes with when you are back and that until then
-	  you follow their devlogs and activity. One short line, after the next
-	  step; the field that asks for it says when.
+	- A letter to the team closes with one short, warm line after the next
+	  step, in the first person: see you at the start of the next sprint (on
+	  the last day: at the next checkpoint), and until then you look forward
+	  to their new devlog posts, artifacts and other activity — ending with ;)
 	- Where something is wrong, says once, as a plain fact, that it is common and
 	  can be fixed — within this checkpoint, or in the next one once this one
 	  is over. No cheering, no pep talk, nothing about

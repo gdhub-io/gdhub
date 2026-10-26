@@ -75,7 +75,7 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 		note: {
 			type: "string",
 			description:
-				"Two to four sentences the author reads. Say what stands out; where the list outruns the hours the team has, say so and name those hours. Where the plan holds up, say so in one line — it looks good, go ahead — and invent nothing to fix. Otherwise end with the one change to make before the goal and tasks lock. Last sentence, in the first person: I am back at the sprint 1 review and follow your devlogs until then.",
+				"Two to four sentences the author reads. Say what stands out; where the list outruns the hours the team has, say so and name those hours. Where the plan holds up, say so in one line — it looks good, go ahead — and invent nothing to fix. Otherwise end with the one change to make before the goal and tasks lock. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;)",
 		},
 	},
 	required: ["reachable", "notes", "missing", "note"],

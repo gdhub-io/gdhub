@@ -74,7 +74,7 @@ const adviceSchema = z.object({
 	message: z
 		.string()
 		.describe(
-			"A short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Last sentence, in the first person: I am back at the next sprint review and follow your devlogs until then.",
+			"A short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;)",
 		),
 	tasks: z.array(
 		z.object({
@@ -162,7 +162,7 @@ const reviewSchema = z.object({
 	message: z
 		.string()
 		.describe(
-			"A letter to the team, three or four sentences: what went well, what worries you, and one thing to do next. Last sentence, in the first person: I am back at the next sprint review and follow your devlogs until then. On the final review, it agrees with the verdict, says what the next checkpoint starts from, and that you will see them there.",
+			"A letter to the team, three or four sentences: what went well, what worries you, and one thing to do next. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;) On the final review, it agrees with the verdict, says what the next checkpoint starts from, and that you will see them there.",
 		),
 	inShort: z
 		.string()
