@@ -10,6 +10,7 @@ import {
 } from "@/config/prisma-enums";
 import { planEdit } from "@/lib/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
+import { notifyPlanApproved } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 
 export type PlanRefusal =
@@ -243,7 +244,7 @@ export const approvePlan = async (
  * AI_APPROVE_HOURS after the check, as it stands — never an empty one.
  */
 export const approveCheckedPlans = async (now = new Date()) => {
-	const { count } = await prisma.projectCheckpoint.updateMany({
+	const due = await prisma.projectCheckpoint.findMany({
 		where: {
 			curatorKind: CheckpointCuratorKind.AI,
 			status: CheckpointStatus.Active,
@@ -259,7 +260,14 @@ export const approveCheckedPlans = async (now = new Date()) => {
 				},
 			},
 		},
-		data: { goalAgreedAt: now },
+		select: { id: true },
 	});
-	return count;
+	for (const { id } of due) {
+		const { count } = await prisma.projectCheckpoint.updateMany({
+			where: { id, goalAgreedAt: null },
+			data: { goalAgreedAt: now },
+		});
+		if (count) await notifyPlanApproved(id);
+	}
+	return due.length;
 };

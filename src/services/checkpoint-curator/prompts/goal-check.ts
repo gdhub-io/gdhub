@@ -74,7 +74,7 @@ export const goalCheckSchema = () => ({
 		note: {
 			type: "string",
 			description:
-				"The first letter, two or three sentences. Greet them: you are their AI curator for the next 28 days. Ask them to write one to five tasks that will show the goal is reached — their own or from your suggestions below — and send them to you for a check. Do not repeat the goal advice or the suggestions; they are shown next to the letter.",
+				'The first letter, four or five short sentences, written the way a person talks: greet them and say you are their AI curator for the next 28 days and will help them reach the goal. Then, as a person would ("by the way, about the goal"), say in one sentence what you think of it — it fits, better make it smaller, or they could do more in this time; the details are shown under the goal, so do not repeat them or point at them. Say you suggested a few tasks below to look at, or they can write their own. End with what to do: when the tasks are ready, press "Save and send to the curator" and you will check them. No closing line about the next sprint in this letter.',
 		},
 	},
 	required: ["goal", "suggestions", "note"],

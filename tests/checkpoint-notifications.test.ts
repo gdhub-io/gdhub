@@ -32,7 +32,9 @@ const {
 	notifyAuthorOfAnswer,
 	remindCallsSoon,
 	remindDevlogsDue,
+	remindEvidenceDue,
 	remindPlansUnsent,
+	remindScopeClosing,
 	remindVerdictsDue,
 } = await import("@/services/checkpoint-notifications");
 
@@ -216,8 +218,8 @@ describe("remindVerdictsDue", () => {
 });
 
 describe("remindPlansUnsent", () => {
-	const firstSession = (content: unknown) => ({
-		checkpointId: "cp",
+	const firstSession = (content: unknown, checkpointId = "cp") => ({
+		checkpointId,
 		content,
 		checkpoint: {
 			projectId: "p",
@@ -226,7 +228,7 @@ describe("remindPlansUnsent", () => {
 		},
 	});
 
-	it("looks at checkpoints paid 24 to 25 hours ago, still unapproved", async () => {
+	it("looks at checkpoints paid 24 and 72 hours ago, still unapproved", async () => {
 		sessionFindMany.mockResolvedValue([]);
 		await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"));
 		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
@@ -237,16 +239,82 @@ describe("remindPlansUnsent", () => {
 			},
 			checkpoint: { goalAgreedAt: null, status: CheckpointStatus.Active },
 		});
+		expect(sessionFindMany.mock.calls[1][0].where.createdAt).toEqual({
+			gte: new Date("2026-10-03T09:00:00Z"),
+			lt: new Date("2026-10-03T10:00:00Z"),
+		});
 	});
 
-	it("reminds once, and never a plan already sent for the check", async () => {
-		sessionFindMany.mockResolvedValue([
-			firstSession({ step: "suggested" }),
-			firstSession(null),
-			{ ...firstSession({ step: "checked" }), checkpointId: "sent" },
-		]);
+	it("reminds once at each mark, and never a plan already sent for the check", async () => {
+		sessionFindMany
+			.mockResolvedValueOnce([
+				firstSession({ step: "suggested" }),
+				firstSession({ step: "checked" }, "sent"),
+			])
+			.mockResolvedValueOnce([firstSession(null, "late")]);
 		expect(await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"))).toBe(2);
-		expect(send).toHaveBeenCalledTimes(2);
-		expect(send.mock.calls[0][0].transactionId).toBe("cp-plan-remind-cp");
+		expect(send.mock.calls.map(([call]) => call.transactionId)).toEqual([
+			"cp-plan-remind-cp-24",
+			"cp-plan-remind-late-72",
+		]);
+	});
+});
+
+describe("remindScopeClosing", () => {
+	const scope = (content: unknown) => ({
+		id: "s3",
+		content,
+		checkpoint: {
+			projectId: "p",
+			createdAt: new Date(),
+			project: { slug: "hollow-tide", author: person("author") },
+		},
+	});
+
+	it("reminds four hours before the day-15 change closes, unless confirmed", async () => {
+		sessionFindMany.mockResolvedValue([
+			scope({ message: "Sprint 2." }),
+			{ ...scope({ approved: true }), id: "done" },
+		]);
+		expect(await remindScopeClosing(new Date("2026-10-20T08:30:00Z"))).toBe(1);
+		// The change closes 24 hours after the review: reviews that ended 20 to 21 hours ago.
+		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
+			index: 3,
+			endedAt: {
+				gte: new Date("2026-10-19T11:00:00Z"),
+				lt: new Date("2026-10-19T12:00:00Z"),
+			},
+		});
+		expect(send.mock.calls[0][0].transactionId).toBe("cp-scope-closing-s3");
+	});
+});
+
+describe("remindEvidenceDue", () => {
+	const startedAt = new Date("2026-10-01T00:00:00Z");
+	const running = (items: { text: string }[]) => ({
+		id: "cp",
+		projectId: "p",
+		createdAt: new Date(),
+		startedAt,
+		project: { slug: "hollow-tide", author: person("author") },
+		items,
+	});
+
+	it("names the tasks without evidence on day 26 only", async () => {
+		checkpointFindMany.mockResolvedValue([
+			running([{ text: "Island demo" }, { text: "Playtest" }]),
+		]);
+		expect(await remindEvidenceDue(new Date("2026-10-25T09:00:00Z"))).toBe(0);
+		expect(await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"))).toBe(1);
+		expect(send).toHaveBeenCalledTimes(1);
+		expect(send.mock.calls[0][0].payload.message).toContain(
+			'"Island demo", "Playtest"',
+		);
+	});
+
+	it("stays quiet when every task has evidence", async () => {
+		checkpointFindMany.mockResolvedValue([running([])]);
+		expect(await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"))).toBe(0);
+		expect(send).not.toHaveBeenCalled();
 	});
 });

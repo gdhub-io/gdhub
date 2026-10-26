@@ -1,4 +1,4 @@
-import { CheckpointStatus } from "@/config/prisma-enums";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { dayNumberOn } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { pulseIdOf, pulseToken } from "@/lib/checkpoint-pulse-token";
@@ -28,6 +28,7 @@ export const requestPulses = async (now = new Date()) => {
 			startedAt: true,
 			projectId: true,
 			curatorId: true,
+			curatorKind: true,
 			project: {
 				select: {
 					name: true,
@@ -103,8 +104,7 @@ export const requestPulses = async (now = new Date()) => {
 			});
 			await notify(member.user, `cp-pulse-${pulse.id}`, {
 				title: `Were you working on ${checkpoint.project.name} this sprint?`,
-				message:
-					"Answer in one click — your curator reads the team's pulse at the next call. If you weren't working on it this sprint, ignore this email.",
+				message: `Answer in one click — your curator reads the team's pulse ${checkpoint.curatorKind === CheckpointCuratorKind.AI ? "for the sprint review" : "at the next call"}. If you weren't working on it this sprint, ignore this email.`,
 				redirectUrl: `${appUrl()}/pulse/${pulseToken(pulse.id)}`,
 			});
 			asked += 1;

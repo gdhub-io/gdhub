@@ -6,6 +6,7 @@ import {
 	seeDevlogMedia,
 } from "@/repositories/evidence-seen";
 import { fetchBody } from "@/services/artifact-check/safe-fetch";
+import { notifyEvidenceMismatch } from "@/services/checkpoint-notifications";
 import { describeMedia, judgeEvidence } from "@/services/evidence/judge";
 import { readableLink } from "@/services/evidence/links";
 import { readEvidence } from "@/services/evidence/read";
@@ -19,6 +20,9 @@ vi.mock("@/services/evidence/frames", () => ({
 	})),
 }));
 vi.mock("@/repositories/artifact-check", () => ({ checkArtifact: vi.fn() }));
+vi.mock("@/services/checkpoint-notifications", () => ({
+	notifyEvidenceMismatch: vi.fn(),
+}));
 vi.mock("@/services/evidence/judge", () => ({
 	judgeEvidence: vi.fn(async () => ({ match: "Matches", note: "A level." })),
 	describeMedia: vi.fn(async () => "A level."),
@@ -179,6 +183,27 @@ describe("looking at a checkpoint's evidence", () => {
 		text: `Task ${id}`,
 		evidenceSeenLink: seen,
 		artifact: { type: "GameplayVideo", name: null, description: null, link },
+	});
+
+	it("tells the author when the evidence does not show the task, and only then", async () => {
+		vi.mocked(prisma.checkpointItem.findMany).mockResolvedValue([
+			item("a", "https://example.com/a.png"),
+			item("b", "https://example.com/b.png"),
+		] as never);
+		vi.mocked(fetchBody).mockResolvedValue(body("image/png"));
+		vi.mocked(judgeEvidence)
+			.mockResolvedValueOnce({ match: "Matches", note: "A level." } as never)
+			.mockResolvedValueOnce({ match: "DoesNotMatch", note: "A menu." } as never);
+
+		await seeCheckpointEvidence("cp1");
+
+		expect(notifyEvidenceMismatch).toHaveBeenCalledTimes(1);
+		expect(notifyEvidenceMismatch).toHaveBeenCalledWith(
+			"cp1",
+			expect.objectContaining({ id: "b", text: "Task b" }),
+			"A menu.",
+			"https://example.com/b.png",
+		);
 	});
 
 	it("looks at a link once, again only when it changes, and journals what it read", async () => {

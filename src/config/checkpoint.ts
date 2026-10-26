@@ -64,8 +64,12 @@ export const SCOPE_ANSWER_HOURS = 24;
  * it, and approves itself this many hours after the check.
  */
 export const AI_APPROVE_HOURS = 12;
-/** With no tasks sent this many hours after the start, the author is reminded once; the plan stays open. */
-export const AI_REMIND_HOURS = 24;
+/** Hours after payment at which an author who has not sent the tasks is reminded; the plan stays open. */
+export const AI_REMIND_HOURS = [24, 72] as const;
+/** Day 15 with the AI curator: hours before the change closes that an author who has not confirmed is reminded. */
+export const SCOPE_REMIND_BEFORE_HOURS = 4;
+/** The day an author whose tasks still lack evidence is told, three days before the verdict. */
+export const EVIDENCE_REMIND_DAY = 26;
 /** With a pro curator: from the start of call 1's day, its 24 hours and 12 more, so a late call leaves time after it. */
 export const PRO_PLAN_HOURS = 36;
 

@@ -9,12 +9,15 @@ const itemCreate = vi.fn();
 const itemUpdate = vi.fn();
 const itemDelete = vi.fn();
 const sessionUpdate = vi.fn();
+const checkpointFindMany = vi.fn();
+const notifyPlanApproved = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		$transaction: vi.fn(async (ops: unknown[]) => ops),
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
+			findMany: (...a: unknown[]) => checkpointFindMany(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
 			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
 		},
@@ -27,6 +30,10 @@ vi.mock("@/services/prisma", () => ({
 			delete: (...a: unknown[]) => itemDelete(...a),
 		},
 	},
+}));
+
+vi.mock("@/services/checkpoint-notifications", () => ({
+	notifyPlanApproved: (...a: unknown[]) => notifyPlanApproved(...a),
 }));
 
 const { agreeGoal, approveCheckedPlans, approvePlan, changePlan } = await import(
@@ -315,12 +322,15 @@ describe("approvePlan, with the AI curator", () => {
 		expect(await approvePlan("cp", "author", between)).toBe("planClosed");
 	});
 
-	it("approves checked plans 12 hours old, never an empty one", async () => {
-		checkpointUpdateMany.mockResolvedValue({ count: 2 });
+	it("approves checked plans 12 hours old, never an empty one, and says so", async () => {
+		checkpointFindMany.mockResolvedValue([{ id: "cp1" }, { id: "cp2" }]);
+		// cp2 was approved by its author in between.
+		checkpointUpdateMany
+			.mockResolvedValueOnce({ count: 1 })
+			.mockResolvedValueOnce({ count: 0 });
 		const now = new Date("2026-10-06T10:00:00Z");
 		expect(await approveCheckedPlans(now)).toBe(2);
-		const { where, data } = checkpointUpdateMany.mock.calls[0][0];
-		expect(where).toMatchObject({
+		expect(checkpointFindMany.mock.calls[0][0].where).toMatchObject({
 			curatorKind: ai,
 			goalAgreedAt: null,
 			items: { some: { cut: false } },
@@ -332,6 +342,12 @@ describe("approvePlan, with the AI curator", () => {
 				},
 			},
 		});
-		expect(data).toEqual({ goalAgreedAt: now });
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "cp1", goalAgreedAt: null },
+			data: { goalAgreedAt: now },
+		});
+		expect(notifyPlanApproved).toHaveBeenCalledTimes(1);
+		expect(notifyPlanApproved).toHaveBeenCalledWith("cp1");
 	});
+
 });

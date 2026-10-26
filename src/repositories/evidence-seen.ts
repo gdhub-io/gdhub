@@ -16,6 +16,7 @@ import {
 	videoSecondsOf,
 } from "@/repositories/curator-journal";
 import type { AiMeter } from "@/services/ai-usage";
+import { notifyEvidenceMismatch } from "@/services/checkpoint-notifications";
 import {
 	describeMedia,
 	type EvidenceTask,
@@ -160,6 +161,17 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 				evidenceSeenLink: artifact.link,
 			},
 		});
+		if (
+			judged.match === EvidenceMatch.DoesNotMatch ||
+			judged.match === EvidenceMatch.Partly
+		) {
+			await notifyEvidenceMismatch(
+				checkpointId,
+				item,
+				judged.note,
+				artifact.link,
+			);
+		}
 		await journal({
 			checkpointId,
 			kind: CheckpointJournalKind.Evidence,
