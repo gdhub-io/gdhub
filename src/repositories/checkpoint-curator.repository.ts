@@ -9,7 +9,10 @@ import {
 	Prisma,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import {
+	CURATOR_STAGE_BRIEFS,
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import {
@@ -153,35 +156,23 @@ export const reportEvidence = (goal: string, items: ReportItem[]) => ({
 	...weighOutcomes(items),
 });
 
-/** The stage as the template says it: what it is for, and the tasks it requires. */
+/** The stage as the curator reads it: what it is for, and the tasks it requires. */
 const stageWorkflow = async (
 	stepId: string | null,
 	currentStage: string,
 ): Promise<CuratorWorkflow> => {
-	const step = stepId
-		? await prisma.projectWorkflowStep.findUnique({
-				where: { id: stepId },
-				select: {
-					description: true,
-					tasks: {
-						where: { required: true },
-						orderBy: { order: "asc" },
-						select: { name: true },
-					},
-				},
+	const tasks = stepId
+		? await prisma.projectWorkflowTask.findMany({
+				where: { stepId, required: true },
+				orderBy: { order: "asc" },
+				select: { name: true },
 			})
-		: null;
-	// A `notion::…` description points at content kept elsewhere (GDHUB-97), not text.
-	const description = step?.description?.includes("::")
-		? null
-		: step?.description?.trim() || null;
+		: [];
 
 	return {
 		currentStage,
-		description,
-		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
-			task.name ? [task.name] : [],
-		),
+		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
+		requiredTasks: tasks.flatMap((task) => (task.name ? [task.name] : [])),
 	};
 };
 

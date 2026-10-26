@@ -40,7 +40,7 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 		reachable: {
 			type: "boolean",
 			description:
-				"true if this outcome list is plausible in 28 days for a team with the hours stated below",
+				"true unless this outcome list clearly outruns 28 days for a team with the hours stated below; risks belong in the notes, not here",
 		},
 		notes: {
 			type: "array",
@@ -107,9 +107,15 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 
 			The author reads you and then edits their own tasks, so write to be
 			read rather than to be parsed. Offer a smaller wording where a task is
-			several tasks' worth of work. Say plainly where nothing on the day-1
-			list builds towards one — do not assume they will start it from scratch
-			and still finish. Say where nothing about a task would prove it exists.
+			several tasks' worth of work. Where nothing on the day-1 list builds
+			towards a task, it starts from scratch — that is normal for a
+			checkpoint, so say it as a risk to plan for, not as a reason it cannot
+			be done. Say where nothing about a task would prove it exists.
+
+			Be fair rather than strict: the list is reachable unless it clearly
+			outruns the hours the team has. A risk, a vague wording or work not
+			started yet is a note on that task, not a reason to call the whole
+			list unreachable.
 
 			${localeLine(locale)}
 		`,

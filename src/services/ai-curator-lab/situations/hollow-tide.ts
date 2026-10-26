@@ -1,3 +1,4 @@
+import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
 import type { LabLanguage } from "../schemas";
 
 /**
@@ -8,16 +9,12 @@ import type { LabLanguage } from "../schemas";
  * the stage, the picture's headings, roles — stays as production writes it.
  */
 
-/**
- * The Prototyping stage of the Default workflow, as its template stands
- * (2026-10-26); the description is the first line of its Notion page, which
- * the curator does not get yet.
- */
-const workflow = (description: string) => ({
+/** The Prototyping stage of the Default workflow, as its template stands (2026-10-26). */
+const WORKFLOW = {
 	currentStage: "Prototyping",
-	description,
+	description: CURATOR_STAGE_BRIEFS.Prototyping,
 	requiredTasks: ["Publish a devlog about the prototype"],
-});
+};
 
 /**
  * As `projectPicture` writes it: the stage's path, the team with its pulse, the
@@ -42,9 +39,7 @@ What happened on the project from 2026-10-01 to 2026-10-28:
 const TEXT = {
 	en: {
 		goal: "A playable vertical slice of the first island",
-		workflow: workflow(
-			"Creating a functional prototype to test key mechanics.",
-		),
+		workflow: WORKFLOW,
 		pitch: "A tide-driven exploration game on a drowning island.",
 		picture: picture("Greybox build", false),
 		pictureAtEnd: picture("Greybox build", true),
@@ -64,9 +59,7 @@ const TEXT = {
 	},
 	ru: {
 		goal: "Играбельный вертикальный срез первого острова",
-		workflow: workflow(
-			"Создание работающего прототипа для проверки ключевых механик.",
-		),
+		workflow: WORKFLOW,
 		pitch: "Исследование тонущего острова, где всё решает прилив.",
 		picture: picture("Серый блокаут", false),
 		pictureAtEnd: picture("Серый блокаут", true),

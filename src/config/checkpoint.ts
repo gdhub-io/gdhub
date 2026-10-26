@@ -205,3 +205,28 @@ export const AI_MODEL_PRICES: Record<
 	"gpt-6.1-sol": { input: 2, output: 10 },
 	"gpt-6-luna": { input: 0.1, output: 0.5 },
 };
+
+/**
+ * What each stage of the Default workflow is for, as the AI curator reads it
+ * (Dmitry, 2026-10-26). Written for the model, not the author: the stage's
+ * Notion page is advice to the author, and handed to the model it reads as
+ * owed. Whether a stage is passed is never in here — that is its required
+ * tasks, all done. A stage not listed reaches the curator with no description.
+ */
+export const CURATOR_STAGE_BRIEFS: Record<string, string> = {
+	Introduction: "Getting to know the platform. Nothing is built yet.",
+	Ideation:
+		"Deciding what the game is: genre, setting, audience and look, written down. No build is expected.",
+	Concepting:
+		"Turning the idea into a concept the team can work from: a concept document, first sketches, the first open positions. No playable build is expected.",
+	Prototyping:
+		"Proving in a rough build that the core mechanic works and is fun. Art, content and polish are not expected.",
+	"Preparing a demo version":
+		"Making a short, finished-looking slice that people outside the team can play, published where anyone can open it.",
+	"Taking and analyzing metrics":
+		"Putting the demo in front of players and reading what they do: numbers or feedback collected, and what the team concluded.",
+	"Preparing a release version":
+		"Finishing the game for release: content, polish, bugs and the store page.",
+	Support: "The game is out: fixing, updating and answering players.",
+	"Project Completion": "The project is finished or closed.",
+};

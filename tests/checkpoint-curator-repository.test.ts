@@ -29,7 +29,7 @@ vi.mock("@/services/prisma", () => ({
 		},
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		checkpointJournalEntry: { findFirst: vi.fn() },
-		projectWorkflowStep: { findUnique: vi.fn().mockResolvedValue(null) },
+		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
 	},
 }));
 
@@ -57,7 +57,7 @@ vi.mock("@/services/checkpoint-curator", () => ({
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
+	vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
 });
 
 const outcome = (id: string, artifact: unknown = null) => ({
@@ -218,7 +218,7 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
 		const hash = (args as Record<string, any>).data.goalCheckHash;
 		vi.clearAllMocks();
-		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft(
 				[member([10, 20])],
@@ -351,7 +351,7 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
 		const hash = (args as Record<string, any>).data.goalCheckHash;
 		vi.clearAllMocks();
-		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([10, 20])], {
 				goalCheck: checked,
@@ -376,7 +376,7 @@ describe("runGoalCheck", () => {
 		const [args] = vi.mocked(prisma.projectCheckpoint.update).mock.calls[0];
 		const hash = (args as Record<string, any>).data.goalCheckHash;
 		vi.clearAllMocks();
-		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue(null);
+		vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([30, 40])], {
 				goalCheck: checked,

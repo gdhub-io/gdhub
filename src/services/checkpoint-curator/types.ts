@@ -33,7 +33,7 @@ export type CuratorGoalCard = {
 /** Where the project stands on its workflow, as the template says it. */
 export type CuratorWorkflow = {
 	currentStage: string;
-	/** What the stage is for, in a line; null while its text lives in Notion. */
+	/** What the stage is for, written for the curator; null for a stage with none. */
 	description: string | null;
 	/** The tasks the template requires on this stage; suggested ones never hold it. */
 	requiredTasks: string[];

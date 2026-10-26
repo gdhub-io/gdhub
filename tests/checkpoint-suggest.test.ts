@@ -30,11 +30,8 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: {
 			findUnique: (...args: unknown[]) => checkpointFindUnique(...args),
 		},
-		projectWorkflowStep: {
-			findUnique: async (...args: unknown[]) => ({
-				description: "notion::gamelab-pipeline.prototyping",
-				tasks: await taskFindMany(...args),
-			}),
+		projectWorkflowTask: {
+			findMany: (...args: unknown[]) => taskFindMany(...args),
 		},
 	},
 }));

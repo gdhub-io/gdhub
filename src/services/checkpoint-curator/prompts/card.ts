@@ -65,6 +65,7 @@ export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
 	What the stage template requires:
 	${workflow.requiredTasks.map((task) => `- ${task}`).join("\n") || "- (nothing recorded)"}
+	The stage is passed when every one of these required tasks is done; nothing else holds it.
 `;
 
 /**
@@ -76,6 +77,8 @@ export const AUTHOR_VOICE = stripIndents`
 	Every text the author reads:
 	- Plain everyday words, short sentences, short overall — it has to read on a
 	  phone. No jargon, and do not read their list back to them.
+	- Where the language has a polite and a familiar "you" (Russian «вы» and
+	  «ты»), use the polite one, always.
 	- Ends with one concrete next step: what to do now with what you said.
 	- Where something is wrong, says once, as a plain fact, that it is common and
 	  can be fixed within this checkpoint. No cheering, no pep talk, nothing about
