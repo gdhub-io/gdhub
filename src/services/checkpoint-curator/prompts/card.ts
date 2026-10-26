@@ -119,6 +119,9 @@ export const AUTHOR_VOICE = stripIndents`
 	  - One thought per sentence; most sentences under fifteen words. A long
 	    one is two sentences — a full stop, not a semicolon or a dash chain.
 	  - The point first, then why, then what to do.
+	  - Show how you got there: before a judgement, say in a few words what
+	    you looked at — "I've looked at the goal and the hours your team
+	    has: …". Each sentence follows from the one before it; no leaps.
 	  - Who does what: active voice and verbs, not nouns made of them
 	    ("decide", not "make a decision"; «решите», не «примите решение»).
 	  - Concrete over abstract: the task's own words, the hours, the day —
