@@ -1,4 +1,5 @@
 import { CHECKPOINT_RUNNING_STATUSES } from "@/config/checkpoint";
+import { CheckpointVerdict } from "@/config/prisma-enums";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { prisma } from "@/services/prisma";
 
@@ -18,4 +19,20 @@ export const runningCheckpointLock = async (projectId: string) => {
 		stageName: running.stageName,
 		dueAt: running.dueAt?.toISOString() ?? null,
 	};
+};
+
+/**
+ * Leaving a stage (Dmitry, 2026-10-26): its required tasks done, and — once a
+ * checkpoint has run on it — a verdict that approved the move. A stage worked
+ * without checkpoints moves on its tasks alone.
+ */
+export const stageMoveApproved = async (projectId: string, stepId: string) => {
+	const verdicts = await prisma.projectCheckpoint.findMany({
+		where: { projectId, stepId, verdict: { not: null } },
+		select: { verdict: true },
+	});
+	return (
+		!verdicts.length ||
+		verdicts.some((row) => row.verdict === CheckpointVerdict.StageClosed)
+	);
 };
