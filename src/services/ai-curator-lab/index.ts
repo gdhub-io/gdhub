@@ -30,7 +30,9 @@ import {
 	type LabLanguage,
 	planAdviceInput,
 	reportInput,
+	roadInput,
 	type Situation,
+	say,
 	sprintReviewInput,
 } from "./schemas";
 import { evidenceSituations } from "./situations/evidence";
@@ -67,6 +69,21 @@ export type LabSettled =
 /** What the call answered, and what the platform made of the answer. */
 type Ran = { answer: unknown; settled?: LabSettled };
 
+type LabCall = {
+	id: string;
+	label: Record<LabLanguage, string>;
+	when: Record<LabLanguage, string>;
+	purpose: Record<LabLanguage, string>;
+	model: string;
+	situations: (
+		language: LabLanguage,
+	) => { id: string; label: string; input: unknown }[];
+	run: (
+		input: unknown,
+		locale: LabLanguage,
+	) => Promise<Ran> | { error: string };
+};
+
 /** One call; its input is checked against the call's own shape before it runs. */
 const call = <S extends z.ZodType>({
 	schema,
@@ -83,7 +100,7 @@ const call = <S extends z.ZodType>({
 	schema: S;
 	situations: (language: LabLanguage) => Situation<S>[];
 	run: (input: z.output<S>, locale: LabLanguage) => Promise<Ran>;
-}) => ({
+}): LabCall => ({
 	...shown,
 	run: (
 		input: unknown,
@@ -102,7 +119,7 @@ const call = <S extends z.ZodType>({
 	},
 });
 
-const CALLS = [
+const CALLS: LabCall[] = [
 	call({
 		id: "goalCheck",
 		purpose: {
@@ -282,6 +299,127 @@ const CALLS = [
 		},
 	}),
 ];
+
+type Letter = { day: number; label: string; text: string };
+
+/** The whole road on Hollow Tide, in order: which call, on which situation, and the letter it leaves. */
+const ROAD: {
+	call: string;
+	situation: string;
+	day: number;
+	label: Record<LabLanguage, string>;
+	letter: (answer: Record<string, unknown>) => string | null;
+}[] = [
+	{
+		call: "goalCheck",
+		situation: "fits",
+		day: 1,
+		label: { en: "The first letter", ru: "Первое письмо" },
+		letter: (answer) => answer.note as string,
+	},
+	{
+		call: "tasksCheck",
+		situation: "fits",
+		day: 1,
+		label: { en: "The tasks checked", ru: "Задачи проверены" },
+		letter: (answer) => answer.message as string,
+	},
+	{
+		call: "sprintReview",
+		situation: "good-week",
+		day: 8,
+		label: { en: "Sprint 1 review", ru: "Разбор спринта 1" },
+		letter: (answer) => answer.message as string,
+	},
+	{
+		call: "sprintReview",
+		situation: "quiet",
+		day: 15,
+		label: { en: "Sprint 2 review", ru: "Разбор спринта 2" },
+		letter: (answer) => answer.message as string,
+	},
+	{
+		call: "planAdvice",
+		situation: "midway",
+		day: 15,
+		label: { en: "Advice under the tasks", ru: "Советы под задачами" },
+		// Not a letter: notes under the tasks, read beside the review.
+		letter: (answer) =>
+			(answer.tasks as { note: string }[]).map((row) => row.note).join(" · "),
+	},
+	{
+		call: "sprintReview",
+		situation: "on-course",
+		day: 22,
+		label: { en: "Sprint 3 review", ru: "Разбор спринта 3" },
+		letter: (answer) => answer.message as string,
+	},
+	{
+		call: "sprintReview",
+		situation: "final",
+		day: 29,
+		label: { en: "The final review", ru: "Итоговый разбор" },
+		letter: (answer) => answer.message as string,
+	},
+	{
+		call: "report",
+		situation: "all-delivered",
+		day: 29,
+		label: { en: "The verdict", ru: "Вердикт" },
+		letter: (answer) => answer.verdictNote as string,
+	},
+];
+
+/**
+ * Every letter of one checkpoint in order, each reading the ones before it as
+ * production passes them: to judge the road as one story, told by one character.
+ */
+CALLS.push(
+	call({
+		id: "road",
+		purpose: {
+			en: "The whole checkpoint as the author lives it: every letter from day 1 to the verdict, in order, one character, each continuing the ones before it. Read it as one story — the road from where the team started to the goal.",
+			ru: "Весь чекпоинт, как его проживает автор: все письма от дня 1 до вердикта по порядку, один персонаж, каждое продолжает предыдущие. Читать как одну историю — путь команды от старта к цели.",
+		},
+		label: { en: "The whole road", ru: "Весь путь" },
+		when: { en: "Days 1–29", ru: "Дни 1–29" },
+		model: AI_MODELS.curatorReview,
+		schema: roadInput,
+		situations: (language) => [
+			{
+				id: "hollow-tide",
+				label: say(
+					language,
+					"Hollow Tide: a quiet sprint 2, everything delivered",
+					"Hollow Tide: тихий спринт 2, всё сдано",
+				),
+				input: {},
+			},
+		],
+		run: async ({ character }, locale) => {
+			const letters: Letter[] = [];
+			const journal: { day: number; text: string }[] = [];
+			for (const step of ROAD) {
+				const found = CALLS.find((each) => each.id === step.call);
+				const situation = found
+					?.situations(locale)
+					.find((each) => each.id === step.situation);
+				if (!found || !situation) continue;
+				const ran = await found.run(
+					{ ...(situation.input as object), character, journal: [...journal] },
+					locale,
+				);
+				if ("error" in ran || !ran.answer) continue;
+				const text = step.letter(ran.answer as Record<string, unknown>);
+				if (!text) continue;
+				letters.push({ day: step.day, label: step.label[locale], text });
+				// The advice is notes under the tasks; only letters carry the story on.
+				if (step.call !== "planAdvice") journal.push({ day: step.day, text });
+			}
+			return { answer: { letters } };
+		},
+	}),
+);
 
 /** The calls and their situations, for the page to list. */
 export const labCatalogue = () => ({

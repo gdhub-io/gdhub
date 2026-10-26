@@ -130,6 +130,7 @@ const MOMENTS = {
 	start: { from: "2026-09-17", to: "2026-10-01", weeks: 0 },
 	sprint1: { from: "2026-10-01", to: "2026-10-07", weeks: 1 },
 	sprint2: { from: "2026-10-08", to: "2026-10-14", weeks: 2 },
+	sprint3: { from: "2026-10-15", to: "2026-10-21", weeks: 3 },
 	/** Day 15's advice reads the run so far. */
 	midway: { from: "2026-10-01", to: "2026-10-14", weeks: 2 },
 	/** Day 29, the final review and the report: the whole run. */

@@ -14,10 +14,12 @@ import {
 } from "@/services/call-notes";
 import {
 	AUTHOR_VOICE,
+	type JournalEntry,
 	legOfSprint,
 	localeLine,
 	type RoadLeg,
 	renderCharacter,
+	renderJournal,
 	renderPicture,
 	renderPulse,
 	renderTeam,
@@ -39,6 +41,8 @@ export type PlanAdviceInput = {
 	goal: string;
 	/** The character the AI curator plays on this checkpoint, if any. */
 	character?: string | null;
+	/** The curator's letters the team has read so far on this checkpoint. */
+	journal?: JournalEntry[];
 	workflow: CuratorWorkflow;
 	/** Who is on the team, their hours and the weeks behind. */
 	team: CuratorTeam;
@@ -54,6 +58,7 @@ export type PlanAdviceInput = {
 export type SprintReviewInput = {
 	goal: string;
 	character?: string | null;
+	journal?: JournalEntry[];
 	workflow: CuratorWorkflow;
 	/** The sprint looked back at, 1–4. */
 	sprint: number;
@@ -92,8 +97,9 @@ const voice = (
 const adviceSchema = z.object({
 	message: z
 		.string()
+		.nullable()
 		.describe(
-			"A short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;)",
+			"Day 1: a short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Null halfway: that day's sprint review is the letter.",
 		),
 	tasks: z.array(
 		z.object({
@@ -162,6 +168,8 @@ export const writePlanAdvice = async (
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
+			${renderJournal(input.journal)}
+
 			${renderWorkflow(input.workflow)}
 
 			${renderTeam(input.team)}
@@ -196,7 +204,7 @@ const reviewSchema = z.object({
 	message: z
 		.string()
 		.describe(
-			"A letter to the team, three or four sentences: what went well, what worries you, and one thing to do next. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;) On the final review, it agrees with the verdict, says what the next checkpoint starts from, and that you will see them there.",
+			"A letter to the team, three or four sentences: what went well, what worries you, and one thing to do next. On the final review, the whole road instead — four to six sentences that agree with the verdict and say what the next checkpoint starts from.",
 		),
 	inShort: z
 		.string()
@@ -255,6 +263,8 @@ export const writeSprintReview = async (
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
+			${renderJournal(input.journal)}
+
 			${renderWorkflow(input.workflow)}
 			Goal: ${input.goal}
 

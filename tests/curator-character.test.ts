@@ -51,7 +51,7 @@ describe("the road the sprints make", () => {
 			"corrected",
 		]);
 		expect(legOfSprint(4, true)).toBe("arrival");
-		expect(renderCharacter("pirate", "rethink")).toContain("look at the map again");
+		expect(renderCharacter("pirate", "rethink")).toContain("Look at the map with them");
 		expect(renderCharacter("pirate")).toContain("Never call yourself an AI curator");
 	});
 });

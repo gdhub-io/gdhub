@@ -21,7 +21,9 @@ import {
 } from "@/lib/checkpoint-call";
 import { MS_PER_DAY } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
+import { sessionDay } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
+import { lettersSoFar } from "@/lib/curator-letters";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import {
 	knownOnly,
@@ -49,6 +51,7 @@ import {
 } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
+import type { JournalEntry } from "@/services/checkpoint-curator/prompts/card";
 import type {
 	CuratorTeam,
 	CuratorWorkflow,
@@ -415,6 +418,7 @@ export const adviseOnPlan = async (
 				: undefined,
 		),
 		checkpoint.curatorCharacter,
+		lettersSoFar(checkpoint.sessions, session.index + 1),
 	);
 	if (content?.advice?.hash === hashOf(input)) return null;
 
@@ -432,11 +436,16 @@ export const adviseOnPlan = async (
 			// The start's letter is the advice itself; a review keeps its own.
 			content: {
 				...content,
-				message: content?.notes ? content.message : written.message,
+				message: content?.notes
+					? content.message
+					: (written.message ?? content?.message ?? ""),
 				notes: content?.notes ?? null,
 				advice: written.advice,
 				goal: written.goal ?? content?.goal,
-				...(start && { step: "checked" as const }),
+				...(start && {
+					step: "checked" as const,
+					firstLetter: content?.firstLetter ?? content?.message,
+				}),
 			} satisfies CuratorReview,
 			// With a pro curator the session stays unwritten: call 1's notes
 			// claim it by a null status, and they replace this draft advice.
@@ -462,9 +471,11 @@ const adviceInput = (
 	review: string | null,
 	picture: string,
 	character: string | null,
+	journal: JournalEntry[],
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
 	character,
+	journal,
 	workflow,
 	team,
 	tasks: checkpoint.items.map(toCuratorTask),
@@ -606,6 +617,7 @@ const sprintReviewInput = async (
 	return {
 		goal: checkpoint.goal,
 		character: checkpoint.curatorCharacter,
+		journal: lettersSoFar(checkpoint.sessions, sessionIndex),
 		workflow,
 		sprint,
 		tasks: checkpoint.items.map(toCuratorTask),
@@ -685,6 +697,10 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 						notes.inShort,
 						input.picture,
 						input.character ?? null,
+						[
+							...(input.journal ?? []),
+							{ day: sessionDay(session.index), text: review.message },
+						],
 					),
 					checkpoint.items,
 					session.checkpointId,

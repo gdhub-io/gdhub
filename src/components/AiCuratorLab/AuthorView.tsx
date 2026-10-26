@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Typography } from "antd";
+import { Flex, Timeline, Typography } from "antd";
 import { AiReviewView } from "@/components/checkpoints/CuratorReview/AiReview";
 import { StatusDot } from "@/components/ui";
 import type {
@@ -233,6 +233,29 @@ export function AuthorView({
 	const statusOf = useStandingStatus();
 	if (!answer || typeof answer !== "object") return null;
 	const fields = answer as Record<string, unknown>;
+
+	if (call === "road") {
+		const letters =
+			(fields.letters as {
+				day: number;
+				label: string;
+				text: string;
+			}[]) ?? [];
+		return (
+			<Timeline
+				items={letters.map((letter) => ({
+					children: (
+						<Flex vertical gap={4}>
+							<Text type="secondary">
+								Day {letter.day} · {letter.label}
+							</Text>
+							<Text>{letter.text}</Text>
+						</Flex>
+					),
+				}))}
+			/>
+		);
+	}
 
 	const page = reviewOf(call, input as Input, fields, settled);
 	if (page) {

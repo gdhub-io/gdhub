@@ -161,6 +161,8 @@ export type CuratorArtifact = {
 export type ReportInput = {
 	card: CuratorGoalCard;
 	character?: string | null;
+	/** The curator's letters the team has read on this checkpoint, the final review last. */
+	journal?: { day: number; text: string }[];
 	workflow: CuratorWorkflow;
 	revision: { revisedAt: string; note: string | null } | null;
 	artifacts: CuratorArtifact[];

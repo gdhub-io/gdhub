@@ -15,6 +15,7 @@ import {
 	type VerdictItem,
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
+import { lettersSoFar } from "@/lib/curator-letters";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import {
 	briefAuthor,
@@ -386,6 +387,7 @@ const reportInputFor = async (checkpointId: string) => {
 		devlogs: checkpoint.reports.map(toDevlog),
 		team: await curatorTeam(checkpointId, checkpoint.projectId),
 		character: checkpoint.curatorCharacter,
+		journal: lettersSoFar(checkpoint.sessions),
 		calls:
 			checkpoint.curatorKind === CheckpointCuratorKind.Human
 				? checkpoint.sessions.map((session) => {

@@ -8,6 +8,7 @@ import {
 	localeLine,
 	renderCard,
 	renderCharacter,
+	renderJournal,
 	renderPicture,
 	renderTeam,
 	renderWorkflow,
@@ -44,7 +45,7 @@ export const reportSchema = () => ({
 		summary: {
 			type: "string",
 			description:
-				"The report the author reads. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 150 words.",
+				"The report, plain and to the point. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 150 words.",
 		},
 		verdict: {
 			type: "string",
@@ -57,7 +58,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next, in the next checkpoint. Last sentence, in the first person: see you at the next checkpoint.",
+				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -123,6 +124,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 	{
 		role: "user" as const,
 		content: stripIndents`
+			${renderJournal(input.journal)}
+
 			${renderCard(input.card)}
 
 			${renderWorkflow(input.workflow)}

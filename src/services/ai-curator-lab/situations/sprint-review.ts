@@ -20,6 +20,10 @@ const TEXT = {
 		boardSeen: "A board with a palette and two character sheets.",
 		notesSeen: "Notes from five players, each with what they hit.",
 		focusAfter1: ["Start the art style board", "Book the playtest"],
+		focusAfter2: [
+			"Keep the style board to one page",
+			"Book the playtest with five players",
+		],
 		focusAfter3: ["Run the playtest with five players and write the notes up"],
 		verdict:
 			"All three tasks are delivered and the stage's devlog is out: ready for Preparing a demo version.",
@@ -29,6 +33,10 @@ const TEXT = {
 		boardSeen: "Доска с палитрой и двумя листами персонажей.",
 		notesSeen: "Заметки по пяти игрокам, у каждого — на чём застрял.",
 		focusAfter1: ["Начать доску стиля", "Назначить плейтест"],
+		focusAfter2: [
+			"Свести доску стиля к одной странице",
+			"Назначить плейтест на пять игроков",
+		],
 		focusAfter3: ["Провести плейтест на пять игроков и записать заметки"],
 		verdict:
 			"Все три задачи сданы, девлог стадии опубликован: можно переходить к Preparing a demo version.",
@@ -117,6 +125,26 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
+			},
+		},
+		{
+			// Day 22: back on course after the quiet sprint 2 — the style board is in.
+			id: "on-course",
+			label: say(language, "Day 22, back on course", "День 22, снова на курсе"),
+			input: {
+				...sprint1,
+				sprint: 3,
+				tasks: [
+					demoDone,
+					done(board, "Image", artifacts.board, t.boardSeen),
+					open(playtest),
+				],
+				devlogs: [devlogs.styleBoard],
+				artifacts: [{ type: "Image", name: artifacts.board }],
+				team: project.team("sprint3"),
+				focusLastReview: t.focusAfter2,
+				workflow: project.workflow("sprint3"),
+				picture: project.picture("sprint3"),
 			},
 		},
 		{

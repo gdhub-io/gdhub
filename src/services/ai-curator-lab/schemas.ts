@@ -22,6 +22,11 @@ import type {
 /** The character the AI curator plays, kept on the checkpoint; the lab sets it from its profile picker. */
 const character = z.string().nullish();
 
+/** The curator's letters the team has read so far, for this one to continue. */
+const journal = z
+	.array(z.object({ day: z.number(), text: z.string() }))
+	.optional();
+
 const line = z.object({
 	id: z.string(),
 	text: z.string(),
@@ -102,6 +107,7 @@ export const goalCheckInput = z.object({
 
 export const planAdviceInput = z.object({
 	character,
+	journal,
 	goal: z.string(),
 	workflow,
 	team,
@@ -114,6 +120,7 @@ export const planAdviceInput = z.object({
 /** A sprint review before its media is looked at: the links, not what they show. */
 export const sprintReviewInput = z.object({
 	character,
+	journal,
 	goal: z.string(),
 	workflow,
 	sprint: z.number().int().min(1).max(4),
@@ -170,6 +177,7 @@ const item = z.object({
 /** Day 29 as the checkpoint's rows hold it, before the evidence is weighed. */
 export const reportInput = z.object({
 	character,
+	journal,
 	goal: z.string(),
 	workflow,
 	revision: z
@@ -194,3 +202,6 @@ export type LabLanguage = "en" | "ru";
 /** A lab label in the chosen language. */
 export const say = (language: LabLanguage, en: string, ru: string) =>
 	language === "ru" ? ru : en;
+
+/** The whole road: the character is all it takes; the situations are the lab's own. */
+export const roadInput = z.object({ character });

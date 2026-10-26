@@ -120,6 +120,7 @@ const running = (over: Record<string, unknown> = {}) => ({
 	startedAt: new Date("2026-09-01T00:00:00.000Z"),
 	items: [outcome("o1", readable)],
 	reports: [],
+	sessions: [],
 	pulses: [],
 	...over,
 });

@@ -416,6 +416,8 @@ export type CuratorReview = {
 	 * author approves. The session's `updatedAt` is when that last happened.
 	 */
 	step?: "suggested" | "checked";
+	/** Day 1: the first letter, kept once the check's letter takes its place. */
+	firstLetter?: string;
 	/** Day 15 with the AI curator: the author confirmed the tasks, and they lock before the day is out. */
 	approved?: boolean;
 };
