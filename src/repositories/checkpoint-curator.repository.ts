@@ -195,6 +195,7 @@ export const runGoalCheck = async (
 			stepId: true,
 			goalCheck: true,
 			goalCheckHash: true,
+			curatorCharacter: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			project: {
 				select: {
@@ -237,6 +238,7 @@ export const runGoalCheck = async (
 		},
 		author: founder ? briefAuthor(founder) : null,
 		team: await curatorTeam(checkpointId, checkpoint.projectId),
+		character: checkpoint.curatorCharacter,
 		previous,
 		picture: await projectPicture(checkpointId),
 	};
@@ -446,6 +448,7 @@ const reportInputFor = async (checkpointId: string) => {
 			startedAt: true,
 			dueAt: true,
 			curatorKind: true,
+			curatorCharacter: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			sessions: {
 				where: { content: { not: Prisma.AnyNull } },
@@ -473,6 +476,7 @@ const reportInputFor = async (checkpointId: string) => {
 			: null,
 		devlogs: checkpoint.reports.map(toDevlog),
 		team: await curatorTeam(checkpointId, checkpoint.projectId),
+		character: checkpoint.curatorCharacter,
 		calls:
 			checkpoint.curatorKind === CheckpointCuratorKind.Human
 				? checkpoint.sessions.map((session) => {

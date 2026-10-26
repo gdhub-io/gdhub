@@ -18,6 +18,7 @@ import {
 	Input,
 	Menu,
 	Segmented,
+	Select,
 	Skeleton,
 	Spin,
 	Tag,
@@ -131,14 +132,17 @@ export function AiCuratorLab() {
 	const [language, setLanguage] = useState<LabLanguage>(
 		query.get("lang") === "ru" ? "ru" : "en",
 	);
+	const [personaId, setPersonaId] = useState(query.get("persona") ?? undefined);
 	const remember = (next: {
 		lang: LabLanguage;
 		call?: string;
 		situation?: string;
+		persona?: string;
 	}) => {
 		const params = new URLSearchParams({ lang: next.lang });
 		if (next.call) params.set("call", next.call);
 		if (next.situation) params.set("situation", next.situation);
+		if (next.persona) params.set("persona", next.persona);
 		router.replace(`${pathname}?${params}`, { scroll: false });
 	};
 	const [tab, setTab] = useState<Tab>("input");
@@ -168,6 +172,7 @@ export function AiCuratorLab() {
 					call: current?.id,
 					input,
 					language,
+					persona: personaId,
 				})
 				.then(({ data }) => data);
 		},
@@ -186,6 +191,7 @@ export function AiCuratorLab() {
 			lang: language,
 			call: next.call ?? current?.id,
 			situation: next.situation,
+			persona: personaId,
 		});
 		setText(undefined);
 		setTab("input");
@@ -319,6 +325,27 @@ export function AiCuratorLab() {
 					</Title>
 					<Tag color="warning">Dev only</Tag>
 					<Flex gap={8} align="center" className={styles.readIn}>
+						<Text type="secondary">Author's profile</Text>
+						<Select<string>
+							allowClear
+							placeholder="Nothing picked"
+							className={styles.persona}
+							value={personaId}
+							onChange={(next) => {
+								setPersonaId(next);
+								remember({
+									lang: language,
+									call: current?.id,
+									situation: situation?.id,
+									persona: next,
+								});
+								run.reset();
+							}}
+							options={(catalogue?.personas ?? []).map((each) => ({
+								value: each.id,
+								label: each.label[language],
+							}))}
+						/>
 						<Text type="secondary">Situations and answers in</Text>
 						<Segmented<LabLanguage>
 							value={language}
@@ -328,6 +355,7 @@ export function AiCuratorLab() {
 									lang: next,
 									call: current?.id,
 									situation: situation?.id,
+									persona: personaId,
 								});
 								setText(undefined);
 								setTab("input");

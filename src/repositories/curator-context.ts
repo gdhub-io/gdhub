@@ -4,6 +4,7 @@ import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoint-days";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import type {
+	CuratorPersona,
 	CuratorTeam,
 	CuratorWorkflow,
 } from "@/services/checkpoint-curator/types";
@@ -188,3 +189,24 @@ export const runPeriod = (startedAt: Date, dueAt: Date | null) => ({
 	from: startedAt,
 	to: dueAt ?? dueDateFrom(startedAt),
 });
+
+/** The project author's favourite genres, settings and kinds of game, as their profile states them. */
+export const curatorPersona = async (
+	projectId: string,
+): Promise<CuratorPersona> => {
+	const profile = await prisma.profile.findFirst({
+		where: { user: { projects: { some: { id: projectId } } } },
+		select: {
+			preferredGenres: { select: { name: true } },
+			preferredSettings: { select: { name: true } },
+			preferredLevels: { select: { name: true } },
+		},
+	});
+	const names = (rows?: { name: string }[]) =>
+		(rows ?? []).map((row) => row.name);
+	return {
+		genres: names(profile?.preferredGenres),
+		settings: names(profile?.preferredSettings),
+		levels: names(profile?.preferredLevels),
+	};
+};

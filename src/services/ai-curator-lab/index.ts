@@ -20,8 +20,10 @@ import {
 } from "@/repositories/evidence-seen";
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoint-curator";
+import { characterFor } from "@/services/checkpoint-curator/prompts/card";
 import { writePlanAdvice, writeSprintReview } from "@/services/curator-review";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
+import { LAB_PERSONAS } from "./personas";
 import {
 	evidenceInput,
 	goalCheckInput,
@@ -300,6 +302,7 @@ const CALLS = [
 
 /** The calls and their situations, for the page to list. */
 export const labCatalogue = () => ({
+	personas: LAB_PERSONAS.map(({ id, label }) => ({ id, label })),
 	calls: CALLS.map(({ run, situations, ...shown }) => ({
 		...shown,
 		situations: { en: situations("en"), ru: situations("ru") },
@@ -311,9 +314,15 @@ export const runLab = async (
 	id: string,
 	input: unknown,
 	language: LabLanguage,
+	personaId?: string,
 ) => {
 	const found = CALLS.find((each) => each.id === id);
 	if (!found) return { error: `No call "${id}"` };
+	const persona = LAB_PERSONAS.find((each) => each.id === personaId)?.persona;
+	// The character the picked profile gives, as a checkpoint keeps it from its start.
+	if (persona && input && typeof input === "object") {
+		input = { ...input, character: characterFor(persona) };
+	}
 
 	const started = Date.now();
 	const { result, traces } = await traced(async () =>

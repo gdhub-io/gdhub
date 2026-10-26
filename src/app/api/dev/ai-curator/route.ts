@@ -17,6 +17,7 @@ const RunSchema = z.object({
 	call: z.string(),
 	input: z.unknown(),
 	language: z.enum(["en", "ru"]).default("en"),
+	persona: z.string().optional(),
 });
 
 const guard = [
@@ -33,7 +34,7 @@ export const POST = pipe(
 	...guard,
 	withValidation(RunSchema),
 )(async (_req, _ctx, { body }) => {
-	const { call, input, language } = body as z.infer<typeof RunSchema>;
-	const ran = await runLab(call, input, language);
+	const { call, input, language, persona } = body as z.infer<typeof RunSchema>;
+	const ran = await runLab(call, input, language, persona);
 	return "error" in ran ? json(ran, { status: 400 }) : json(ran);
 });

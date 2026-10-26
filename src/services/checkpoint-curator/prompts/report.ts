@@ -7,6 +7,7 @@ import {
 	CURATOR_STANCE,
 	localeLine,
 	renderCard,
+	renderCharacter,
 	renderPicture,
 	renderTeam,
 	renderWorkflow,
@@ -66,6 +67,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 	{
 		role: "system" as const,
 		content: stripIndents`
+			${renderCharacter(input.character)}
+
 			${CURATOR_STANCE}
 
 			This is the day-28 report. Facts only — everything you write must be

@@ -15,6 +15,7 @@ import {
 import {
 	AUTHOR_VOICE,
 	localeLine,
+	renderCharacter,
 	renderPicture,
 	renderPulse,
 	renderTeam,
@@ -34,6 +35,8 @@ export type { CuratorTask };
 
 export type PlanAdviceInput = {
 	goal: string;
+	/** The character the AI curator plays on this checkpoint, if any. */
+	character?: string | null;
 	workflow: CuratorWorkflow;
 	/** Who is on the team, their hours and the weeks behind. */
 	team: CuratorTeam;
@@ -48,6 +51,7 @@ export type PlanAdviceInput = {
 
 export type SprintReviewInput = {
 	goal: string;
+	character?: string | null;
 	workflow: CuratorWorkflow;
 	/** The sprint looked back at, 1–4. */
 	sprint: number;
@@ -65,12 +69,14 @@ export type SprintReviewInput = {
 	picture: string;
 };
 
-const VOICE = stripIndents`
+const voice = (character?: string | null) => stripIndents`
+	${renderCharacter(character)}
+
 	You are the AI curator of a game team on GDHub, through a 28-day checkpoint:
 	a goal, four one-week sprints, a review after each and a verdict at the end.
-	You stand in for a human curator's calls, so you talk to the team directly,
-	warmly and plainly, as someone who read everything they made.
-	Plain English unless told otherwise, no filler, no praise without a reason.
+	You stand in for a human curator's calls, so you talk to the team directly
+	and clearly, as someone who read everything they made. No filler, no
+	praise without a reason.
 	Use only task ids given to you, and only in the id fields: in text the
 	author reads, name a task by its own words, never by its id.
 
@@ -137,7 +143,7 @@ export const writePlanAdvice = async (
 ) => {
 	const request = {
 		instructions: stripIndents`
-			${VOICE}
+			${voice(input.character)}
 
 			Read the team's tasks against the goal and the time left. A good task
 			ends in something anyone can open — a build, a document, a video —
@@ -232,7 +238,7 @@ export const writeSprintReview = async (
 	const final = input.verdict !== null;
 	const request = {
 		instructions: stripIndents`
-			${VOICE}
+			${voice(input.character)}
 
 			Review sprint ${input.sprint} from what the team showed: every devlog
 			of the sprint, the artifacts it added, who confirmed working, and what

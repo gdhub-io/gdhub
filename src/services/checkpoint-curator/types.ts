@@ -103,8 +103,18 @@ export type CuratorAuthor = {
 };
 
 /** Day 1: is this reachable in 28 days, and what is missing from the list. */
+/** What the author's profile says they like: the AI curator's character takes its colour from it. */
+export type CuratorPersona = {
+	genres: string[];
+	settings: string[];
+	/** Casual, mid-core, hardcore. */
+	levels: string[];
+};
+
 export type GoalCheckInput = {
 	card: CuratorGoalCard;
+	/** The character the AI curator plays on this checkpoint, if any. */
+	character?: string | null;
 	/** The checkpoint's stage, which is the project's stage while it is a draft. */
 	workflow: CuratorWorkflow;
 	project: CuratorProject;
@@ -164,6 +174,7 @@ export type CuratorArtifact = {
 /** Day 28: the report, and the verdict the guardrail then settles. */
 export type ReportInput = {
 	card: CuratorGoalCard;
+	character?: string | null;
 	workflow: CuratorWorkflow;
 	revision: { revisedAt: string; note: string | null } | null;
 	artifacts: CuratorArtifact[];

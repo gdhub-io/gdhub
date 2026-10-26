@@ -58,6 +58,7 @@ vi.mock("@/repositories/evidence-seen", () => ({
 vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", () => ({
 	curatorTeam: vi.fn(async () => TEAM),
+	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
 	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
 		currentStage,
 		nextStage: null,

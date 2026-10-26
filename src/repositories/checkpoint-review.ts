@@ -358,6 +358,7 @@ export const adviseOnPlan = async (
 			curatorId: true,
 			curatorKind: true,
 			goal: true,
+			curatorCharacter: true,
 			goalAgreedAt: true,
 			projectId: true,
 			stageName: true,
@@ -413,6 +414,7 @@ export const adviseOnPlan = async (
 					}
 				: undefined,
 		),
+		checkpoint.curatorCharacter,
 	);
 	if (content?.advice?.hash === hashOf(input)) return null;
 
@@ -459,8 +461,10 @@ const adviceInput = (
 	moment: PlanAdviceInput["moment"],
 	review: string | null,
 	picture: string,
+	character: string | null,
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
+	character,
 	workflow,
 	team,
 	tasks: checkpoint.items.map(toCuratorTask),
@@ -556,6 +560,7 @@ const reviewSelect = {
 	dueAt: true,
 	verdict: true,
 	verdictNote: true,
+	curatorCharacter: true,
 	items: taskSelect,
 	sessions: { select: { index: true, content: true } },
 } as const;
@@ -600,6 +605,7 @@ const sprintReviewInput = async (
 
 	return {
 		goal: checkpoint.goal,
+		character: checkpoint.curatorCharacter,
 		workflow,
 		sprint,
 		tasks: checkpoint.items.map(toCuratorTask),
@@ -678,6 +684,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 						"midway",
 						notes.inShort,
 						input.picture,
+						input.character ?? null,
 					),
 					checkpoint.items,
 					session.checkpointId,

@@ -22,6 +22,9 @@ import type {
  * the evidence — which the lab then does the way production does.
  */
 
+/** The character the AI curator plays, kept on the checkpoint; the lab sets it from its profile picker. */
+const character = z.string().nullish();
+
 const line = z.object({
 	id: z.string(),
 	text: z.string(),
@@ -75,6 +78,7 @@ const task = z.object({
 });
 
 export const goalCheckInput = z.object({
+	character,
 	card,
 	workflow,
 	project: z.object({
@@ -115,6 +119,7 @@ export const suggestLinesInput = z.discriminatedUnion("kind", [
 ]) satisfies z.ZodType<SuggestLinesInput>;
 
 export const planAdviceInput = z.object({
+	character,
 	goal: z.string(),
 	workflow,
 	team,
@@ -126,6 +131,7 @@ export const planAdviceInput = z.object({
 
 /** A sprint review before its media is looked at: the links, not what they show. */
 export const sprintReviewInput = z.object({
+	character,
 	goal: z.string(),
 	workflow,
 	sprint: z.number().int().min(1).max(4),
@@ -181,6 +187,7 @@ const item = z.object({
 
 /** Day 29 as the checkpoint's rows hold it, before the evidence is weighed. */
 export const reportInput = z.object({
+	character,
 	goal: z.string(),
 	workflow,
 	revision: z

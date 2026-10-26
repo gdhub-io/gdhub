@@ -54,6 +54,7 @@ vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", async (actual) => ({
 	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
 		.memberRole,
+	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
 	curatorTeam: vi.fn(async () => ({
 		members: 2,
 		stated: 0,
