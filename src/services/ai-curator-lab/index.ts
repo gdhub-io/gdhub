@@ -20,7 +20,7 @@ import {
 } from "@/repositories/evidence-seen";
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoint-curator";
-import { characterFor } from "@/services/checkpoint-curator/prompts/card";
+import { createCharacter } from "@/services/checkpoint-curator/character";
 import { writePlanAdvice, writeSprintReview } from "@/services/curator-review";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { LAB_PERSONAS } from "./personas";
@@ -319,15 +319,16 @@ export const runLab = async (
 	const found = CALLS.find((each) => each.id === id);
 	if (!found) return { error: `No call "${id}"` };
 	const persona = LAB_PERSONAS.find((each) => each.id === personaId)?.persona;
-	// The character the picked profile gives, as a checkpoint keeps it from its start.
-	if (persona && input && typeof input === "object") {
-		input = { ...input, character: characterFor(persona) };
-	}
-
 	const started = Date.now();
-	const { result, traces } = await traced(async () =>
-		found.run(input, language),
-	);
+	const { result, traces } = await traced(async () => {
+		// The character the picked profile gives, made as a checkpoint makes it at its start.
+		const shown =
+			persona && input && typeof input === "object"
+				? { ...input, character: await createCharacter(persona) }
+				: input;
+		return found.run(shown, language);
+	});
+
 	if ("error" in result) return result;
 
 	const sum = (count: (trace: AiTrace) => number) =>

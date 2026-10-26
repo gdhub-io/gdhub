@@ -24,6 +24,7 @@ import {
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
 import {
+	curatorPersona,
 	curatorTeam,
 	projectPicture,
 	runPeriod,
@@ -43,6 +44,7 @@ import type {
 	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
+import { createCharacter } from "@/services/checkpoint-curator/character";
 import { notifyDayOne } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import type {
@@ -267,6 +269,28 @@ export const runGoalCheck = async (
 };
 
 /**
+ * The character the AI curator plays on this checkpoint, picked once from the
+ * author's profile and kept for the 28 days, whatever the profile says later.
+ */
+export const keepCharacter = async (checkpointId: string) => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: { projectId: true, curatorCharacter: true },
+	});
+	if (!checkpoint || checkpoint.curatorCharacter) return;
+
+	const character = await createCharacter(
+		await curatorPersona(checkpoint.projectId),
+		{ checkpointId, purpose: "character" },
+	);
+	if (!character) return;
+	await prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, curatorCharacter: null },
+		data: { curatorCharacter: character },
+	});
+};
+
+/**
  * Day 1 with the AI curator (GDHUB-117): once the checkpoint is paid, the
  * curator reads the goal and writes the first letter — a word on the goal, the
  * tasks to start from, and a request for the author's own. Written once: a
@@ -282,6 +306,7 @@ export const writeFirstLetter = async (
 		select: { id: true, content: true },
 	});
 	if (!session || session.content) return true;
+	await keepCharacter(checkpointId);
 
 	const read = await runGoalCheck(checkpointId).catch((error) => {
 		console.error(

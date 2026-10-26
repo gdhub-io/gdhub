@@ -328,16 +328,37 @@ export const legOfSprint = (sprint: number, final: boolean): RoadLeg => {
 	return sprint === 2 ? "rethink" : "corrected";
 };
 
+type CharacterSheet = {
+	name: string;
+	nameRu: string;
+	who: string;
+	world: string;
+	road: string;
+};
+
+/** A checkpoint's kept character: a role's key, or the role made the author's own as JSON. */
+const sheetOf = (stored?: string | null): CharacterSheet | null => {
+	if (!stored) return null;
+	if (stored in CURATOR_CHARACTERS) {
+		return CURATOR_CHARACTERS[stored as CuratorCharacter];
+	}
+	try {
+		const sheet = JSON.parse(stored) as Partial<CharacterSheet>;
+		return sheet.name && sheet.who && sheet.world && sheet.road
+			? ({ nameRu: sheet.name, ...sheet } as CharacterSheet)
+			: null;
+	} catch {
+		return null;
+	}
+};
+
 export const renderCharacter = (
 	key?: string | null,
 	leg?: RoadLeg,
 	/** The first letter of the checkpoint, the only one that introduces the character. */
 	first = false,
 ) => {
-	const character =
-		key && key in CURATOR_CHARACTERS
-			? CURATOR_CHARACTERS[key as CuratorCharacter]
-			: null;
+	const character = sheetOf(key);
 	if (!character) {
 		return stripIndents`
 			You are the team's AI curator: a curator who has shipped a few small

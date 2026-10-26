@@ -15,11 +15,6 @@ import { captureCheckout, releaseCheckout } from "@/services/stripe/server";
 
 const sdk = vi.hoisted(() => ({ transactions: { get: vi.fn() } }));
 
-// The profile behind the curator's character is not what these test.
-vi.mock("@/repositories/curator-context", async (actual) => ({
-	...(await actual<typeof import("@/repositories/curator-context")>()),
-	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
-}));
 vi.mock("@paddle/paddle-node-sdk", async (importOriginal) => ({
 	...(await importOriginal<typeof import("@paddle/paddle-node-sdk")>()),
 	Paddle: class {

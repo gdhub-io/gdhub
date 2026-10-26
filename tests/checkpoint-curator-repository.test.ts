@@ -29,6 +29,7 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: vi.fn(),
 			findFirst: vi.fn().mockResolvedValue(null),
 			update: vi.fn(),
+			updateMany: vi.fn(),
 		},
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		checkpointJournalEntry: { findFirst: vi.fn() },
@@ -71,6 +72,10 @@ vi.mock("@/repositories/curator-context", () => ({
 
 vi.mock("@/repositories/artifact-check", () => ({
 	recheckCheckpointArtifacts: vi.fn(),
+}));
+
+vi.mock("@/services/checkpoint-curator/character", () => ({
+	createCharacter: vi.fn(async () => '{"name":"Captain Irma"}'),
 }));
 
 vi.mock("@/services/checkpoint-curator", () => ({
@@ -390,6 +395,31 @@ describe("runGoalCheck", () => {
 
 		await expect(runGoalCheck("cp1")).resolves.toBeNull();
 		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+	});
+
+	describe("keepCharacter — the curator's character for the checkpoint", () => {
+		it("makes it once from the author's profile and keeps it", async () => {
+			const { keepCharacter } = await import(
+				"@/repositories/checkpoint-curator.repository"
+			);
+			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
+				projectId: "p1",
+				curatorCharacter: null,
+			} as never);
+			await keepCharacter("cp1");
+			expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith({
+				where: { id: "cp1", curatorCharacter: null },
+				data: { curatorCharacter: '{"name":"Captain Irma"}' },
+			});
+
+			vi.clearAllMocks();
+			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
+				projectId: "p1",
+				curatorCharacter: "pirate",
+			} as never);
+			await keepCharacter("cp1");
+			expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
+		});
 	});
 
 	describe("writeFirstLetter — day 1 after payment (GDHUB-117)", () => {

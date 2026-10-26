@@ -55,3 +55,21 @@ describe("the road the sprints make", () => {
 		expect(renderCharacter("pirate")).toContain("Never call yourself an AI curator");
 	});
 });
+
+describe("a character made the author's own", () => {
+	it("is read back from the checkpoint; a broken one is the plain curator", async () => {
+		const { renderCharacter } = await import(
+			"@/services/checkpoint-curator/prompts/card"
+		);
+		const sheet = JSON.stringify({
+			name: "Captain Irma",
+			nameRu: "капитан Ирма",
+			who: "a pirate captain who has also sailed to the stars",
+			world: "the ship, the stars",
+			road: "a voyage to the treasure planet",
+		});
+		expect(renderCharacter(sheet, "walk")).toContain("Captain Irma");
+		expect(renderCharacter(sheet, "walk")).toContain("treasure planet");
+		expect(renderCharacter("{not json", "walk")).not.toContain("undefined");
+	});
+});

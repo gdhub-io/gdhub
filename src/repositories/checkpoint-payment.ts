@@ -28,10 +28,8 @@ import {
 } from "@/repositories/advisor-availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import { refundedTotal } from "@/repositories/checkpoint-refund";
-import { curatorPersona } from "@/repositories/curator-context";
 import { recordProviderRefund } from "@/repositories/payment-records";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
-import { characterFor } from "@/services/checkpoint-curator/prompts/card";
 import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
 import { type CheckoutPaid, gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
@@ -415,9 +413,9 @@ export const settleCheckpointCheckout = async (
 /**
  * The AI curator starts on payment. The day picked may have passed while the
  * draft waited to be paid, so it starts today at the earliest; the plan waits
- * for the author's tasks and approval; the curator's character is picked from
- * the author's profile; and its five review days are written like a person's
- * calls. Then the curator reads the goal.
+ * for the author's tasks and approval; and its five review days are written
+ * like a person's calls. Then the curator takes its character and reads the
+ * goal.
  */
 export const startAiCheckpoint = async (
 	checkpointId: string,
@@ -427,7 +425,7 @@ export const startAiCheckpoint = async (
 ) => {
 	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
 		where: { id: checkpointId },
-		select: { startedAt: true, projectId: true },
+		select: { startedAt: true },
 	});
 	const today = utcStartOfDay(now);
 	const picked = checkpoint.startedAt && utcStartOfDay(checkpoint.startedAt);
@@ -443,10 +441,6 @@ export const startAiCheckpoint = async (
 				dueAt: dueDateFrom(startedAt),
 				goalAgreedAt: null,
 				goalAgreedById: null,
-				// Kept for the 28 days, whatever the profile says later.
-				curatorCharacter: characterFor(
-					await curatorPersona(checkpoint.projectId),
-				),
 			},
 		}),
 		prisma.checkpointSession.deleteMany({ where: { checkpointId } }),

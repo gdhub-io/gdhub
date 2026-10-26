@@ -19,14 +19,6 @@ import {
 	stripeEvent,
 } from "@/services/stripe/server";
 
-vi.mock("@/repositories/curator-context", async (actual) => ({
-	...(await actual<typeof import("@/repositories/curator-context")>()),
-	curatorPersona: vi.fn(async () => ({
-		genres: ["adventure"],
-		settings: [],
-		levels: [],
-	})),
-}));
 vi.mock("@/repositories/advisor-availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
@@ -224,11 +216,7 @@ describe("the Stripe webhook", () => {
 
 		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
 			expect.objectContaining({
-				data: expect.objectContaining({
-					status: CheckpointStatus.Active,
-					// Picked from the author's profile once, and kept.
-					curatorCharacter: "pirate",
-				}),
+				data: expect.objectContaining({ status: CheckpointStatus.Active }),
 			}),
 		);
 	});

@@ -12,7 +12,8 @@ export type AiPurpose =
 	| "sprintReview"
 	| "evidence"
 	| "callBrief"
-	| "verdictRead";
+	| "verdictRead"
+	| "character";
 
 /** Which checkpoint an AI call is charged to, and for what. */
 export type AiMeter = { checkpointId: string; purpose: AiPurpose };
