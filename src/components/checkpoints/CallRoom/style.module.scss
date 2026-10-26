@@ -378,16 +378,6 @@
 	}
 }
 
-.switcher {
-	max-width: 100%;
-	overflow-x: auto;
-}
-
-.lockedOption {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gd-space-1);
-}
 
 .tabBody {
 	display: flex;
@@ -619,6 +609,15 @@
 }
 
 // The AI's colour: the game-design direction's ink, the purple the AI tag wears.
+.goalAdvice {
+	margin-top: var(--gd-space-2);
+}
+
+.why {
+	padding-inline: var(--gd-space-3);
+	font-size: var(--gd-font-size-caption);
+}
+
 .advice {
 	display: flex;
 	align-items: flex-start;
@@ -662,4 +661,24 @@
 .briefEmpty {
 	display: block;
 	padding-top: var(--gd-space-4);
+}
+
+// Frame u2H4n: the session shown between its two arrows.
+.sessionSwitcher {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: 2px;
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}
+
+.sessionCurrent {
+	display: inline-flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-1) var(--gd-space-3);
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-color-surface);
+	white-space: nowrap;
 }

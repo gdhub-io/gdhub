@@ -5,7 +5,11 @@ import type {
 	UnprovenOutcome,
 } from "@/lib/checkpoint-verdict";
 import type { AiPurpose } from "@/services/ai-usage";
-import type { TaskAdvice } from "@/types/checkpoints";
+import type {
+	GoalAdvice,
+	TaskAdvice,
+	TaskSuggestion,
+} from "@/types/checkpoints";
 
 /**
  * Inputs and results for the AI curator's four calls.
@@ -120,13 +124,16 @@ export type GoalCheckInput = {
  */
 export type ItemNote = TaskAdvice;
 
+/**
+ * Day 1, right after payment (GDHUB-117): the goal is read before any task is
+ * written. The letter asks for the tasks; the goal gets its word; and the
+ * tasks the curator would start from are suggested, each with why.
+ */
 export type GoalCheckResult = {
-	reachable: boolean;
-	notes: ItemNote[];
-	/** Outcomes the stage requires that the card does not promise. */
-	missing: string[];
-	/** One paragraph the author reads, in their own language. */
+	/** The first letter the author reads, in their own language. */
 	note: string;
+	goal: GoalAdvice;
+	suggestions: TaskSuggestion[];
 };
 
 /** Day 15: the outcomes nothing has been claimed against, and how much is gone. */

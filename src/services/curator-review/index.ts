@@ -24,7 +24,11 @@ import type {
 	CuratorTeam,
 	CuratorWorkflow,
 } from "@/services/checkpoint-curator/types";
-import { type CallNotes, TASK_ADVICE_KINDS } from "@/types/checkpoints";
+import {
+	type CallNotes,
+	GOAL_FITS,
+	TASK_ADVICE_KINDS,
+} from "@/types/checkpoints";
 
 export type { CuratorTask };
 
@@ -67,7 +71,8 @@ const VOICE = stripIndents`
 	You stand in for a human curator's calls, so you talk to the team directly,
 	warmly and plainly, as someone who read everything they made.
 	Plain English unless told otherwise, no filler, no praise without a reason.
-	Use only task ids given to you.
+	Use only task ids given to you, and only in the id fields: in text the
+	author reads, name a task by its own words, never by its id.
 
 	${AUTHOR_VOICE}
 `;
@@ -105,6 +110,19 @@ const adviceSchema = z.object({
 		.describe(
 			"Up to three tasks worth adding, each ending in something anyone can open. Empty when nothing is missing.",
 		),
+	goal: z
+		.object({
+			fit: z.enum(GOAL_FITS),
+			note: z
+				.string()
+				.describe(
+					"One or two sentences: why, and for widen or narrow the goal reworded, ready to use.",
+				),
+		})
+		.nullable()
+		.describe(
+			"Day 1 only, null halfway: does the goal as it stands now fit these tasks and 28 days of this team's hours — fits, widen (asks too little), narrow (outruns them).",
+		),
 });
 
 /**
@@ -127,7 +145,7 @@ export const writePlanAdvice = async (
 			not cut).
 			${
 				input.moment === "start"
-					? "This is the start: four weeks lie ahead. Your letter is the team's first word from you: open it with a short greeting — you are their AI curator for the next 28 days — then go on to the tasks."
+					? "This is day 1: four weeks lie ahead. The author wrote these tasks after your first letter and sent them to you; this is your one check of them, and next they approve the plan. Do not greet again. Say whether the goal and the tasks hold together, and what to change before approving."
 					: "This is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding."
 			}
 			${locale ? localeLine(locale) : ""}

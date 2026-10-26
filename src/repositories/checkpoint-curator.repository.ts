@@ -244,9 +244,7 @@ export const runGoalCheck = async (
 	const hash = goalCheckHash(input);
 
 	if (checkpoint.goalCheck && checkpoint.goalCheckHash === hash) {
-		// The package's JSON type predates the notes' advice shape; a read kept
-		// before it was asked of an older input, so its hash never matches here.
-		return checkpoint.goalCheck as GoalCheckResult;
+		return checkpoint.goalCheck;
 	}
 
 	const result = await checkpointCurator.checkGoal(input, {
@@ -257,7 +255,10 @@ export const runGoalCheck = async (
 
 	await prisma.projectCheckpoint.update({
 		where: { id: checkpointId },
-		data: { goalCheck: result, goalCheckHash: hash },
+		data: {
+			goalCheck: result,
+			goalCheckHash: hash,
+		},
 	});
 
 	return result;
@@ -265,17 +266,20 @@ export const runGoalCheck = async (
 
 /**
  * Day 1 with the AI curator (GDHUB-117): once the checkpoint is paid, the
- * curator reads the goal and writes the first letter — the plan looks good, or
- * what to change — and the author hears they have until the goal and tasks
- * lock. Written once: a second webhook finds the letter there. A read that
- * fails leaves the letter to the review page, which greets on first open.
+ * curator reads the goal and writes the first letter — a word on the goal, the
+ * tasks to start from, and a request for the author's own. Written once: a
+ * second webhook finds the letter there. A read that fails leaves the letter
+ * to the review page, which asks for it on first open.
  */
-export const writeFirstLetter = async (checkpointId: string) => {
+export const writeFirstLetter = async (
+	checkpointId: string,
+	{ notify = true } = {},
+) => {
 	const session = await prisma.checkpointSession.findFirst({
 		where: { checkpointId, index: 1 },
 		select: { id: true, content: true },
 	});
-	if (!session || session.content) return;
+	if (!session || session.content) return true;
 
 	const read = await runGoalCheck(checkpointId).catch((error) => {
 		console.error(
@@ -292,16 +296,17 @@ export const writeFirstLetter = async (checkpointId: string) => {
 				content: {
 					message: read.note,
 					notes: null,
-					// The read's notes under each task, as the plan advice shows them.
-					advice: read.notes.length
-						? { tasks: read.notes, add: read.missing, hash: "first-letter" }
-						: null,
+					advice: null,
+					goal: read.goal,
+					suggestions: read.suggestions,
+					step: "suggested",
 				} satisfies CuratorReview,
 				contentStatus: CheckpointSessionContentStatus.Ready,
 			},
 		});
 	}
-	await notifyDayOne(checkpointId, !!read);
+	if (notify) await notifyDayOne(checkpointId, !!read);
+	return !!read;
 };
 
 /**

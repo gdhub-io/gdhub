@@ -32,6 +32,7 @@ const {
 	notifyAuthorOfAnswer,
 	remindCallsSoon,
 	remindDevlogsDue,
+	remindPlansUnsent,
 	remindVerdictsDue,
 } = await import("@/services/checkpoint-notifications");
 
@@ -211,5 +212,41 @@ describe("remindVerdictsDue", () => {
 			}),
 		);
 		expect(userFindMany).not.toHaveBeenCalled();
+	});
+});
+
+describe("remindPlansUnsent", () => {
+	const firstSession = (content: unknown) => ({
+		checkpointId: "cp",
+		content,
+		checkpoint: {
+			projectId: "p",
+			createdAt: new Date(),
+			project: { slug: "hollow-tide", author: person("author") },
+		},
+	});
+
+	it("looks at checkpoints paid 24 to 25 hours ago, still unapproved", async () => {
+		sessionFindMany.mockResolvedValue([]);
+		await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"));
+		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
+			index: 1,
+			createdAt: {
+				gte: new Date("2026-10-05T09:00:00Z"),
+				lt: new Date("2026-10-05T10:00:00Z"),
+			},
+			checkpoint: { goalAgreedAt: null, status: CheckpointStatus.Active },
+		});
+	});
+
+	it("reminds once, and never a plan already sent for the check", async () => {
+		sessionFindMany.mockResolvedValue([
+			firstSession({ step: "suggested" }),
+			firstSession(null),
+			{ ...firstSession({ step: "checked" }), checkpointId: "sent" },
+		]);
+		expect(await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"))).toBe(2);
+		expect(send).toHaveBeenCalledTimes(2);
+		expect(send.mock.calls[0][0].transactionId).toBe("cp-plan-remind-cp");
 	});
 });

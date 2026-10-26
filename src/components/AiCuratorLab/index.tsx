@@ -13,6 +13,7 @@ import {
 	Button,
 	Card,
 	Descriptions,
+	Divider,
 	Flex,
 	Input,
 	Menu,
@@ -23,6 +24,7 @@ import {
 	Typography,
 } from "antd";
 import axios from "axios";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import {
 	useVerdictCopy,
@@ -116,10 +118,29 @@ export function AiCuratorLab() {
 		queryFn: () =>
 			axios.get<Catalogue>("/api/dev/ai-curator").then(({ data }) => data),
 	});
-	const [callId, setCallId] = useState<string>();
-	const [situationId, setSituationId] = useState<string>();
+	// The case lives in the address — ?lang=ru&call=report&situation=partly —
+	// so a link opens it straight away.
+	const query = useSearchParams();
+	const router = useRouter();
+	const pathname = usePathname();
+	const [callId, setCallId] = useState(query.get("call") ?? undefined);
+	const [situationId, setSituationId] = useState(
+		query.get("situation") ?? undefined,
+	);
 	const [text, setText] = useState<string>();
-	const [language, setLanguage] = useState<LabLanguage>("en");
+	const [language, setLanguage] = useState<LabLanguage>(
+		query.get("lang") === "ru" ? "ru" : "en",
+	);
+	const remember = (next: {
+		lang: LabLanguage;
+		call?: string;
+		situation?: string;
+	}) => {
+		const params = new URLSearchParams({ lang: next.lang });
+		if (next.call) params.set("call", next.call);
+		if (next.situation) params.set("situation", next.situation);
+		router.replace(`${pathname}?${params}`, { scroll: false });
+	};
 	const [tab, setTab] = useState<Tab>("input");
 	// The input the shown answer came from, as it ran.
 	const [ranInput, setRanInput] = useState<unknown>();
@@ -161,17 +182,15 @@ export function AiCuratorLab() {
 	const pick = (next: { call?: string; situation?: string }) => {
 		if (next.call) setCallId(next.call);
 		setSituationId(next.situation);
+		remember({
+			lang: language,
+			call: next.call ?? current?.id,
+			situation: next.situation,
+		});
 		setText(undefined);
 		setTab("input");
 		run.reset();
 	};
-
-	const byModel = Object.entries(
-		Object.groupBy(calls, (each) => each.model),
-	).map(([model, used]) => ({
-		model,
-		for: (used ?? []).map((each) => each.label[language]).join(", "),
-	}));
 
 	const ran = run.data;
 	// The call the answer comes from is the last; any before it are steps on the way.
@@ -305,6 +324,11 @@ export function AiCuratorLab() {
 							value={language}
 							onChange={(next) => {
 								setLanguage(next);
+								remember({
+									lang: next,
+									call: current?.id,
+									situation: situation?.id,
+								});
 								setText(undefined);
 								setTab("input");
 								run.reset();
@@ -320,16 +344,6 @@ export function AiCuratorLab() {
 					Runs the production prompt and model on a prepared situation. Real
 					model calls, nothing is saved.
 				</Text>
-				<Flex gap={16} wrap>
-					{byModel.map((each) => (
-						<Text key={each.model} type="secondary" className={styles.small}>
-							{each.for} <Text className={styles.mono}>{each.model}</Text>
-						</Text>
-					))}
-					<Text type="secondary" className={styles.small}>
-						from src/config/ai-models.ts
-					</Text>
-				</Flex>
 			</Flex>
 
 			<Flex gap={24} align="flex-start" className={styles.body}>
@@ -354,6 +368,7 @@ export function AiCuratorLab() {
 						}))}
 					/>
 				</Flex>
+				<Divider orientation="vertical" className={styles.divider} />
 				<Flex vertical gap={6} className={styles.situations}>
 					<Text strong type="secondary" className={styles.small}>
 						Situation
@@ -379,18 +394,17 @@ export function AiCuratorLab() {
 									{current.purpose[language]}
 								</Text>
 							)}
+							<Button
+								type="primary"
+								icon={<IconPlayerPlay size={16} />}
+								loading={run.isPending}
+								disabled={!current}
+								onClick={() => run.mutate(shown)}
+								className={styles.run}
+							>
+								Run
+							</Button>
 						</Flex>
-					}
-					extra={
-						<Button
-							type="primary"
-							icon={<IconPlayerPlay size={16} />}
-							loading={run.isPending}
-							disabled={!current}
-							onClick={() => run.mutate(shown)}
-						>
-							Run
-						</Button>
 					}
 				>
 					<Flex vertical gap={16}>

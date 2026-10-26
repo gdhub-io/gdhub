@@ -34,7 +34,10 @@ import {
 } from "./schemas";
 import { evidenceSituations } from "./situations/evidence";
 import { goalCheckSituations } from "./situations/goal-check";
-import { planAdviceSituations } from "./situations/plan-advice";
+import {
+	planAdviceSituations,
+	tasksCheckSituations,
+} from "./situations/plan-advice";
 import { reportSituations } from "./situations/report";
 import { sprintReviewSituations } from "./situations/sprint-review";
 import { suggestLinesSituations } from "./situations/suggest-lines";
@@ -103,10 +106,13 @@ const CALLS = [
 	call({
 		id: "goalCheck",
 		purpose: {
-			en: "Right after payment, the first letter: does the goal fit 28 days and the team's hours? Either the plan looks good — go ahead — or what is too big, what nothing builds towards, what could not be proven, and the one change to make before day 1 closes.",
-			ru: "Сразу после оплаты, первое письмо: влезает ли цель в 28 дней и часы команды? Либо «план выглядит хорошо — вперёд», либо что слишком большое, к чему ничего не ведёт, что нельзя будет доказать, и одно изменение до конца дня 1.",
+			en: "Right after payment, the first letter: does the goal fit 28 days and the team's hours — fits, widen or narrow it — and three to five tasks to start from, each with why. The author then writes one to five tasks of their own.",
+			ru: "Сразу после оплаты, первое письмо: влезает ли цель в 28 дней и часы команды — подходит, расширить или сузить, — и 3–5 задач, с которых можно начать, у каждой «зачем». Дальше автор пишет 1–5 своих задач.",
 		},
-		label: { en: "Goal check", ru: "Проверка цели" },
+		label: {
+			en: "Goal check and suggested tasks",
+			ru: "Проверка цели и предложения задач",
+		},
 		when: { en: "After payment", ru: "После оплаты" },
 		model: checkpointCurator.model,
 		schema: goalCheckInput,
@@ -116,28 +122,31 @@ const CALLS = [
 		}),
 	}),
 	call({
-		id: "suggestLines",
+		id: "tasksCheck",
 		purpose: {
-			en: "For an author staring at an empty list: a few lines for one side of the card, each ending in something anyone can open. Nothing is saved; the author edits or drops them.",
-			ru: "Для автора перед пустым списком: несколько строк для одной стороны карточки, каждая заканчивается тем, что можно открыть. Ничего не сохраняется — автор правит или выбрасывает.",
+			en: "Day 1, once the author sends their tasks: the one check — a word on the goal as it stands now, and per task keep, shorten, reword or cut, and why. Then the author edits and approves the plan.",
+			ru: "День 1, когда автор отправил свои задачи: единственная проверка — слово о цели в её нынешнем виде и по каждой задаче оставить, сократить, переформулировать или убрать, и почему. Потом автор правит и утверждает план.",
 		},
-		label: { en: "Suggested lines", ru: "Предложенные строки" },
-		when: { en: "While the card is a draft", ru: "Пока карточка — черновик" },
-		model: checkpointCurator.model,
-		schema: suggestLinesInput,
-		situations: suggestLinesSituations,
+		label: {
+			en: "Tasks check and advice",
+			ru: "Проверка задач и советы по правкам",
+		},
+		when: { en: "Day 1, after sending", ru: "День 1, после отправки" },
+		model: AI_MODELS.curatorReview,
+		schema: planAdviceInput,
+		situations: tasksCheckSituations,
 		run: async (input, locale) => ({
-			answer: await checkpointCurator.suggestLines(input, { locale }),
+			answer: await writePlanAdvice(input, undefined, locale),
 		}),
 	}),
 	call({
 		id: "planAdvice",
 		purpose: {
-			en: "On day 1 and after the sprint 2 review: per task, keep, shorten, reword or cut, so the plan fits the time left — and a short letter on what to do now.",
-			ru: "В день 1 и после разбора спринта 2: по каждой задаче — оставить, сократить, переформулировать или убрать, чтобы план влез в оставшееся время, — и короткое письмо, что делать сейчас.",
+			en: "After the sprint 2 review, the last change to the tasks: per task keep, shorten, reword or cut, so the plan fits the two weeks left — and a short letter on what to do now.",
+			ru: "После разбора спринта 2, последняя правка задач: по каждой — оставить, сократить, переформулировать или убрать, чтобы план влез в оставшиеся две недели, — и короткое письмо, что делать сейчас.",
 		},
 		label: { en: "Plan advice", ru: "Советы по плану" },
-		when: { en: "Day 1 and day 15", ru: "День 1 и день 15" },
+		when: { en: "Day 15", ru: "День 15" },
 		model: AI_MODELS.curatorReview,
 		schema: planAdviceInput,
 		situations: planAdviceSituations,
@@ -271,6 +280,21 @@ const CALLS = [
 				},
 			};
 		},
+	}),
+	call({
+		id: "suggestLines",
+		purpose: {
+			en: "For an author staring at an empty list: a few lines for one side of the card, each ending in something anyone can open. Nothing is saved; the author edits or drops them.",
+			ru: "Для автора перед пустым списком: несколько строк для одной стороны карточки, каждая заканчивается тем, что можно открыть. Ничего не сохраняется — автор правит или выбрасывает.",
+		},
+		label: { en: "Suggested lines", ru: "Предложенные строки" },
+		when: { en: "While the card is a draft", ru: "Пока карточка — черновик" },
+		model: checkpointCurator.model,
+		schema: suggestLinesInput,
+		situations: suggestLinesSituations,
+		run: async (input, locale) => ({
+			answer: await checkpointCurator.suggestLines(input, { locale }),
+		}),
 	}),
 ];
 

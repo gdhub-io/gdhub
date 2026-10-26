@@ -127,11 +127,11 @@ class CheckpointCuratorService {
 		}
 	}
 
-	/** Day 1: is this reachable in 28 days, and what is missing from the list. */
+	/** Day 1: does the goal fit 28 days, and which tasks to start from. */
 	checkGoal(input: GoalCheckInput, options: CuratorOptions = {}) {
 		return this.call<GoalCheckResult>(
 			GOAL_CHECK_FUNCTION_NAME,
-			goalCheckSchema(input),
+			goalCheckSchema(),
 			goalCheckMessages(input, options.locale),
 			meter(options, "goalCheck"),
 		);

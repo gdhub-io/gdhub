@@ -27,7 +27,10 @@ import {
 	knownOnly,
 	sprintEvidence,
 } from "@/repositories/checkpoint-call-notes";
-import { closeCheckpoint } from "@/repositories/checkpoint-curator.repository";
+import {
+	closeCheckpoint,
+	writeFirstLetter,
+} from "@/repositories/checkpoint-curator.repository";
 import {
 	checkpointNumber,
 	previousVerdict,
@@ -52,6 +55,7 @@ import type {
 } from "@/services/checkpoint-curator/types";
 import {
 	notify,
+	notifyPlanChecked,
 	recipient,
 	reviewUrl,
 } from "@/services/checkpoint-notifications";
@@ -93,6 +97,8 @@ export type CheckpointReviewDto = {
 		edit: PlanEdit;
 		/** Until when `edit` holds. */
 		editUntil: string | null;
+		/** The goal and tasks agreed: approved on the AI curator's day 1, on call 1 with a pro one. */
+		approved: boolean;
 		tasks: {
 			id: string;
 			text: string;
@@ -212,6 +218,7 @@ export const getReview = async (
 					endedAt: true,
 					contentStatus: true,
 					content: true,
+					updatedAt: true,
 				},
 			},
 			items: taskSelect,
@@ -272,7 +279,9 @@ export const getReview = async (
 				editUntil(edit, {
 					...checkpoint,
 					startedAt: checkpoint.startedAt,
+					checkedAt: checkedAt(checkpoint.sessions),
 				})?.toISOString() ?? null,
+			approved: !!checkpoint.goalAgreedAt,
 			tasks: checkpoint.items.map((item) => ({
 				id: item.id,
 				text: item.text,
@@ -299,6 +308,16 @@ export const getReview = async (
 	};
 };
 
+/** When the AI curator's one check of day 1 was written, if it has been. */
+const checkedAt = (
+	sessions: { index: number; content: unknown; updatedAt: Date }[],
+) => {
+	const first = sessions.find((session) => session.index === 1);
+	return (first?.content as CuratorReview | null)?.step === "checked"
+		? first?.updatedAt
+		: null;
+};
+
 const editUntil = (
 	edit: PlanEdit,
 	checkpoint: Parameters<typeof planCloses>[0] & {
@@ -313,13 +332,20 @@ const editUntil = (
 	return null;
 };
 
-export type AdviceRefusal = "notFound" | "forbidden" | "planClosed" | "failed";
+export type AdviceRefusal =
+	| "notFound"
+	| "forbidden"
+	| "planClosed"
+	| "alreadyChecked"
+	| "noTasks"
+	| "failed";
 
 /**
  * The AI's read of the tasks as saved, written on the session the plan is open
  * on — the AI curator's start and day 15, or a pro checkpoint's draft before
  * call 1. The same plan is not read twice: the answer is kept with the
- * hash of what it answered.
+ * hash of what it answered. The AI curator's start is checked once, on the
+ * tasks the author sends; before its first letter, this writes that instead.
  */
 export const adviseOnPlan = async (
 	checkpointId: string,
@@ -361,6 +387,16 @@ export const adviseOnPlan = async (
 	if (!session) return "planClosed";
 
 	const content = session.content as CuratorReview | null;
+	const start = ai && index === 1;
+	if (start && !content) {
+		// The read after payment failed: the page asks for the letter on first open.
+		return (await writeFirstLetter(checkpointId, { notify: false }))
+			? null
+			: "failed";
+	}
+	if (start && content?.step === "checked") return "alreadyChecked";
+	if (start && !checkpoint.items.some((item) => !item.cut)) return "noTasks";
+
 	const input = adviceInput(
 		checkpoint,
 		await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
@@ -393,15 +429,22 @@ export const adviseOnPlan = async (
 		data: {
 			// The start's letter is the advice itself; a review keeps its own.
 			content: {
+				...content,
 				message: content?.notes ? content.message : written.message,
 				notes: content?.notes ?? null,
 				advice: written.advice,
+				goal: written.goal ?? content?.goal,
+				...(start && { step: "checked" as const }),
 			} satisfies CuratorReview,
 			// With a pro curator the session stays unwritten: call 1's notes
 			// claim it by a null status, and they replace this draft advice.
 			...(ai && { contentStatus: CheckpointSessionContentStatus.Ready }),
 		},
 	});
+	if (start) {
+		const closes = planCloses({ ...checkpoint, checkedAt: now });
+		if (closes) await notifyPlanChecked(checkpointId, closes);
+	}
 	return null;
 };
 
@@ -445,7 +488,7 @@ const adviceFor = async (
 		add: written.add,
 		hash: hashOf(input),
 	};
-	return { message: written.message, advice };
+	return { message: written.message, advice, goal: written.goal };
 };
 
 /**

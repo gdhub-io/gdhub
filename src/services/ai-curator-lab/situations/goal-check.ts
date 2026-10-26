@@ -6,25 +6,19 @@ import {
 } from "../schemas";
 import { hollowTide } from "./hollow-tide";
 
-/** Day 1, right after payment: the card as paid for, nothing built yet. */
+/** Day 1, right after payment: the goal as paid for, no tasks yet. */
 const TEXT = {
 	en: {
 		experience: "Two jam games, one shipped mobile puzzle.",
-		tooMuch: [
-			"All five islands playable",
-			"Steam page live with a trailer",
-			"Online co-op for two players",
-		],
-		vague: ["Make the game more fun", "Work on the art"],
+		tooBig:
+			"Release Hollow Tide on Steam: all five islands, online co-op and a trailer",
+		tooSmall: "Pick a colour palette for the first island",
 	},
 	ru: {
 		experience: "Две игры с джемов, одна вышедшая мобильная головоломка.",
-		tooMuch: [
-			"Все пять островов играбельны",
-			"Страница в Steam с трейлером",
-			"Онлайн-кооператив на двоих",
-		],
-		vague: ["Сделать игру интереснее", "Поработать над артом"],
+		tooBig:
+			"Выпустить Hollow Tide в Steam: все пять островов, онлайн-кооператив и трейлер",
+		tooSmall: "Подобрать палитру для первого острова",
 	},
 };
 
@@ -37,7 +31,7 @@ export const goalCheckSituations = (
 		card: {
 			goal: project.goal,
 			inputs: [{ id: "i1", text: project.input }],
-			outcomes: Object.values(project.outcomes),
+			outcomes: [],
 		},
 		workflow: project.workflow("start"),
 		project: { name: "Hollow Tide", pitch: project.pitch, genre: "Adventure" },
@@ -50,45 +44,38 @@ export const goalCheckSituations = (
 		previous: null,
 		picture: project.picture("start"),
 	};
-	const outcomes = (texts: string[], from: number) =>
-		texts.map((text, index) => ({ id: `o${from + index}`, text }));
+	const withGoal = (goal: string) => ({
+		...base,
+		card: { ...base.card, goal },
+	});
 
 	return [
 		{
 			id: "fits",
 			label: say(
 				language,
-				"Fits the time the team has",
-				"Укладывается во время команды",
+				"A goal that fits four weeks",
+				"Цель, которая влезает в четыре недели",
 			),
 			input: base,
 		},
 		{
-			id: "too-much",
+			id: "too-big",
 			label: say(
 				language,
-				"Promises more than four weeks hold",
-				"Обещает больше, чем влезет в четыре недели",
+				"A goal far bigger than four weeks",
+				"Цель намного больше четырёх недель",
 			),
-			input: {
-				...base,
-				card: {
-					...base.card,
-					outcomes: [...base.card.outcomes, ...outcomes(t.tooMuch, 4)],
-				},
-			},
+			input: withGoal(t.tooBig),
 		},
 		{
-			id: "vague",
+			id: "too-small",
 			label: say(
 				language,
-				"Tasks nobody could check",
-				"Задачи, которые никто не проверит",
+				"A goal that asks too little",
+				"Цель, которая просит слишком мало",
 			),
-			input: {
-				...base,
-				card: { ...base.card, outcomes: outcomes(t.vague, 1) },
-			},
+			input: withGoal(t.tooSmall),
 		},
 	];
 };

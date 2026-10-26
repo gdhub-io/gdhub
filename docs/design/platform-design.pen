@@ -259118,7 +259118,7 @@
       "id": "YPY1q",
       "x": 2510,
       "y": 65371,
-      "name": "12.03.2 · Checkpoint purchase · Now · second checkpoint, AI check after Next",
+      "name": "12.03.2 · Checkpoint purchase · Now · second checkpoint (no AI check before payment)",
       "clip": true,
       "width": 1265,
       "fill": "$page-bg",
@@ -259907,8 +259907,11 @@
                     {
                       "type": "frame",
                       "id": "B8C5E",
+                      "x": 0,
+                      "y": 672,
                       "name": "AI suggestion — at risk",
-                      "width": "fill_container",
+                      "enabled": false,
+                      "width": "fill_container(800)",
                       "fill": "$warning-tint",
                       "cornerRadius": "$radius-xl",
                       "gap": 16,
@@ -259950,8 +259953,11 @@
                             {
                               "type": "frame",
                               "id": "nNZcQ",
+                              "x": 52,
+                              "y": 0,
                               "name": "Text",
-                              "width": "fill_container",
+                              "enabled": false,
+                              "width": "fill_container(716)",
                               "layout": "vertical",
                               "gap": 4,
                               "children": [
@@ -260066,7 +260072,7 @@
                               "id": "EkEHt",
                               "name": "Label",
                               "fill": "#FFFFFF",
-                              "content": "Continue anyway",
+                              "content": "Continue",
                               "fontFamily": "Onest",
                               "fontSize": 14,
                               "fontWeight": "500"
@@ -344896,7 +344902,7 @@
       "type": "frame",
       "id": "RdQ1R",
       "x": 14750,
-      "y": 66882,
+      "y": 66922,
       "name": "12.09.1b · Pulse · variant · joined mid-checkpoint",
       "width": 456,
       "fill": "#FAFAFA",
@@ -347949,7 +347955,7 @@
       "type": "frame",
       "id": "X2LDi",
       "x": 14230,
-      "y": 66882,
+      "y": 66922,
       "name": "12.09.1a · Pulse · variant · a sprint missed",
       "width": 456,
       "fill": "#FAFAFA",
@@ -350834,7 +350840,7 @@
       "id": "a1c66",
       "x": 4950,
       "y": 76421,
-      "name": "12.10.1 · Curator's Review · AI · Start, set the tasks (/workflow/cp3/review/1)",
+      "name": "12.10.1 · Curator's Review · AI · Start: the goal read and suggested tasks, right after payment (/workflow/cp3/review/1)",
       "width": 801,
       "layout": "vertical",
       "gap": 20,
@@ -350919,7 +350925,7 @@
                   "fill": "$inv-text",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Hi, I'm your curator for the next four weeks. Before we start, let's set the tasks that get you to the goal. Take my suggestions or write your own — when you save, I'll tell you which ones are clear, which are risky for four weeks, and which are too vague to check.",
+                  "content": "Hi, I'm your curator for the next four weeks, and I'll help you get to the goal you set. For that, write 1 to 5 tasks that will show the goal is reached. I've prepared a few suggestions below — take them or write your own.",
                   "lineHeight": 1.55,
                   "fontFamily": "$font",
                   "fontSize": 17,
@@ -350966,7 +350972,7 @@
                           "id": "RDJit",
                           "name": "L",
                           "fill": "$ink",
-                          "content": "Review the tasks",
+                          "content": "Set the tasks",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "500"
@@ -351168,6 +351174,40 @@
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ClS8u",
+                          "name": "Btn text · Edit goal",
+                          "height": 28,
+                          "gap": 6,
+                          "padding": [
+                            0,
+                            8
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "gHAA2",
+                              "name": "I",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "pencil",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "legIz",
+                              "name": "L",
+                              "fill": "$text-secondary",
+                              "content": "Edit",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -351183,6 +351223,45 @@
                       "fontFamily": "$font",
                       "fontSize": 16,
                       "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SWg9T",
+                      "name": "Goal advice",
+                      "width": "fill_container",
+                      "fill": "$warning-tint",
+                      "cornerRadius": "$radius-md",
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "unOF5",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "sparkles",
+                          "library": "lucide",
+                          "fill": "$warning-on-tint"
+                        },
+                        {
+                          "type": "text",
+                          "id": "OW8Qx",
+                          "name": "T",
+                          "fill": "$warning-on-tint",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Narrow it: with 120–160 hours and the programmer's time unknown, one part of the island is a slice you can finish — not the whole island.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -351318,7 +351397,10 @@
                     {
                       "type": "frame",
                       "id": "n5dy2",
+                      "x": 0,
+                      "y": 0,
                       "name": "Review switcher (Segmented)",
+                      "enabled": false,
                       "fill": "$bg-muted",
                       "cornerRadius": "$radius-md",
                       "gap": 4,
@@ -351502,6 +351584,107 @@
                           ]
                         }
                       ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "u2H4n",
+                      "name": "Review switcher (compact)",
+                      "fill": "$bg-muted",
+                      "cornerRadius": "$radius-md",
+                      "gap": 4,
+                      "padding": 2,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "w4AzM",
+                          "name": "Btn · previous",
+                          "width": 32,
+                          "height": 32,
+                          "cornerRadius": "$radius-sm",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "wT0Gf",
+                              "name": "I",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "chevron-left",
+                              "library": "lucide",
+                              "fill": "$text-disabled"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "N0JJD",
+                          "name": "Current",
+                          "fill": "$surface",
+                          "cornerRadius": "$radius-sm",
+                          "effect": {
+                            "type": "shadow",
+                            "shadowType": "outer",
+                            "color": "#0F0F0E1A",
+                            "offset": {
+                              "x": 0,
+                              "y": 1
+                            },
+                            "blur": 3
+                          },
+                          "gap": 8,
+                          "padding": [
+                            6,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JZ6aV",
+                              "name": "L",
+                              "fill": "$text-primary",
+                              "content": "Start · 1 Oct",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "wcdEQ",
+                              "name": "Of",
+                              "fill": "$text-tertiary",
+                              "content": "1 of 5",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "cRU9D",
+                          "name": "Btn · next (Sprint 1 · 8 Oct, locked)",
+                          "width": 32,
+                          "height": 32,
+                          "cornerRadius": "$radius-sm",
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "wUO9F",
+                              "name": "I",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-disabled"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -351514,7 +351697,7 @@
               "fill": "$text-secondary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+              "content": "Write 1 to 5 tasks that will show the goal is reached. Each one should end in something anyone can open: a build, a document, a video. Add the curator's suggestions or write your own.",
               "fontFamily": "$font",
               "fontSize": 14,
               "fontWeight": "normal"
@@ -351536,129 +351719,6 @@
                   "fontFamily": "$font",
                   "fontSize": 12,
                   "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "lRQGB",
-                  "name": "Task input",
-                  "width": "fill_container",
-                  "fill": "$surface",
-                  "cornerRadius": "$radius-md",
-                  "stroke": "$border-strong",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "Dqfmm",
-                      "name": "Value",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Core loop one-pager",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "hje73",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "iRbze",
-                  "name": "Task input",
-                  "width": "fill_container",
-                  "fill": "$surface",
-                  "cornerRadius": "$radius-md",
-                  "stroke": "$border-strong",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "PAI4c",
-                      "name": "Value",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Greybox build on itch.io, playable in the browser",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "pzCqm",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "AaTVM",
-                  "name": "Task input",
-                  "width": "fill_container",
-                  "fill": "$surface",
-                  "cornerRadius": "$radius-md",
-                  "stroke": "$border-strong",
-                  "strokeWidth": 1,
-                  "strokeAlignment": "inner",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "rLWMg",
-                      "name": "Value",
-                      "fill": "$text-primary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Make the game feel better",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "xkmXb",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
                 },
                 {
                   "type": "frame",
@@ -351691,7 +351751,7 @@
                       "fill": "$text-secondary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "3 playtest recordings with strangers",
+                      "content": "A playable demo of one island area on itch.io",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -351717,6 +351777,18 @@
                       "fill": "$text-tertiary"
                     }
                   ]
+                },
+                {
+                  "type": "text",
+                  "id": "T3A3CF",
+                  "name": "Why",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Why: It ends in a build anyone can open, and fits the hours you have.",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -351749,7 +351821,7 @@
                       "fill": "$text-secondary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "A 1-minute clip of the tide mechanic",
+                      "content": "A style board: palette and one hero sheet",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -351767,6 +351839,129 @@
                     {
                       "type": "icon",
                       "id": "M7VttF",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "i01g1",
+                  "name": "Why",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Why: Art direction is what Prototyping asks for, at the size one artist can do.",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "J9oEbW",
+                  "name": "Suggested task",
+                  "width": "fill_container",
+                  "fill": "$neutral-100",
+                  "cornerRadius": "$radius-md",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "HouZk",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OeA72",
+                      "name": "Value",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Playtest with 5 players, notes in a doc",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DAzGj",
+                      "name": "Add",
+                      "fill": "$text-primary",
+                      "content": "Add",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "oAnIt",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Y69gp",
+                  "name": "Why",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Why: Five strangers show whether the tide reads without you there.",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "kezVq",
+                  "name": "Task input · empty",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "iJTeh",
+                      "name": "Value",
+                      "fill": "$text-tertiary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Write a task of your own…",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "sAMNu",
                       "name": "Ic",
                       "width": 14,
                       "height": 14,
@@ -351819,7 +352014,10 @@
                     {
                       "type": "frame",
                       "id": "oCE7l",
+                      "x": 96,
+                      "y": 0,
                       "name": "Suggest tasks",
+                      "enabled": false,
                       "gap": 8,
                       "padding": [
                         4,
@@ -351866,7 +352064,7 @@
                   "id": "vcllj",
                   "name": "L",
                   "fill": "$text-tertiary",
-                  "content": "Open until the checkpoint starts · Thu 1 Oct",
+                  "content": "Open until you send the tasks, at least until 2 Oct, 14:20",
                   "fontFamily": "$font",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -351887,7 +352085,7 @@
                       "id": "rNghw",
                       "name": "L",
                       "fill": "$text-invert",
-                      "content": "Save changes",
+                      "content": "Save and send to the curator",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -351905,7 +352103,7 @@
       "id": "EcXmU",
       "x": 9986,
       "y": 76421,
-      "name": "12.10.1b · Curator's Review · AI · Start, feedback on the tasks",
+      "name": "12.10.1b · Curator's Review · AI · Start, the curator's check: advice on the goal and tasks, Approve",
       "width": 801,
       "layout": "vertical",
       "gap": 20,
@@ -351990,7 +352188,7 @@
                   "fill": "$inv-text",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "Two tasks are solid. \"Make the game feel better\" can't be checked — I suggested a wording you can show. The public build is heavy for the first two weeks; consider moving it to sprint 3. Fix them now or keep them: it's your call.",
+                  "content": "I've read your goal and tasks. Two tasks are solid; one is too vague to check — I suggested a wording you can show. Adjust what you agree with, then approve the plan.",
                   "lineHeight": 1.55,
                   "fontFamily": "$font",
                   "fontSize": 17,
@@ -352134,6 +352332,45 @@
                       "fontFamily": "$font",
                       "fontSize": 16,
                       "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "JOCHF",
+                      "name": "Goal advice",
+                      "width": "fill_container",
+                      "fill": "$success-tint",
+                      "cornerRadius": "$radius-md",
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "MHjZq",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "sparkles",
+                          "library": "lucide",
+                          "fill": "$success-on-tint"
+                        },
+                        {
+                          "type": "text",
+                          "id": "uK8NS",
+                          "name": "T",
+                          "fill": "$success-on-tint",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "The goal fits now: one island area, the tide and five players is a slice the team can finish in 28 days.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -352640,7 +352877,10 @@
                     {
                       "type": "frame",
                       "id": "v9rJf",
+                      "x": 96,
+                      "y": 0,
                       "name": "Suggest tasks",
+                      "enabled": false,
                       "gap": 8,
                       "padding": [
                         4,
@@ -352687,7 +352927,7 @@
                   "id": "NNr9X",
                   "name": "L",
                   "fill": "$text-tertiary",
-                  "content": "Saved · open until the checkpoint starts · Thu 1 Oct",
+                  "content": "The curator checked your plan · adjust it if needed and approve · approves itself on 2 Oct, 22:10",
                   "fontFamily": "$font",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -352708,7 +352948,7 @@
                       "id": "UtUkb",
                       "name": "L",
                       "fill": "$text-invert",
-                      "content": "Save changes",
+                      "content": "Approve the plan",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -376329,9 +376569,10 @@
       "id": "hl76Z",
       "x": 15158,
       "y": 80861,
-      "name": "12.12.6 · Checkpoint wizard · Paid — AI curator, on your way",
+      "name": "12.12.6 · Checkpoint wizard · Paid — AI curator, on your way, the goal to check within 24 hours",
       "clip": true,
       "width": 1265,
+      "height": 640,
       "fill": "$surface",
       "layout": "vertical",
       "children": [
@@ -376578,6 +376819,20 @@
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "eCN6b",
+                              "name": "Day 1 note",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 420,
+                              "content": "Your AI curator has read your goal. Check it and set the tasks within 24 hours — by 2 Oct, 14:20.",
+                              "lineHeight": 1.5,
+                              "textAlign": "center",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -376669,7 +376924,7 @@
                               "id": "z1KTr",
                               "name": "Label",
                               "fill": "$text-invert",
-                              "content": "Go to the workflow",
+                              "content": "Read the curator's letter",
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "500"
@@ -451207,7 +451462,7 @@
       "id": "b237f",
       "x": 17289,
       "y": 63731,
-      "name": "12.18.1 · Dev · AI curator lab (/dev/ai-curator) · a run",
+      "name": "12.18.1 · Dev · AI curator lab (/dev/ai-curator) · a run, as the author sees it",
       "clip": true,
       "width": 1440,
       "fill": "$page-bg",
@@ -451651,6 +451906,7 @@
                   "type": "frame",
                   "id": "Mzebr",
                   "name": "Title row",
+                  "width": "fill_container",
                   "gap": 12,
                   "alignItems": "center",
                   "children": [
@@ -451686,6 +451942,89 @@
                           "fontFamily": "$font",
                           "fontSize": 12,
                           "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "clgn5",
+                      "name": "Spacer",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QtGQe",
+                      "name": "Read in",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ogAvd",
+                          "name": "L",
+                          "fill": "$text-secondary",
+                          "content": "Situations and answers in",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "O4fatz",
+                          "name": "Segmented",
+                          "fill": "$bg-muted",
+                          "cornerRadius": "$radius-md",
+                          "gap": 2,
+                          "padding": 2,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "DIgWp",
+                              "name": "English",
+                              "fill": "#00000000",
+                              "cornerRadius": "$radius-sm",
+                              "padding": [
+                                4,
+                                12
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "S0kaMd",
+                                  "name": "T",
+                                  "fill": "$text-secondary",
+                                  "content": "English",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "yDaFV",
+                              "name": "Русский",
+                              "fill": "$surface",
+                              "cornerRadius": "$radius-sm",
+                              "padding": [
+                                4,
+                                12
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "UhPd6",
+                                  "name": "T",
+                                  "fill": "$text-primary",
+                                  "content": "Русский",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
@@ -452032,7 +452371,17 @@
                           ]
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OOSDO",
+                  "name": "Situations",
+                  "width": 240,
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
                     {
                       "type": "frame",
                       "id": "Y428Aw",
@@ -452241,439 +452590,6 @@
                 },
                 {
                   "type": "frame",
-                  "id": "W9OjSi",
-                  "name": "Input",
-                  "width": 440,
-                  "fill": "$surface",
-                  "cornerRadius": "$radius-lg",
-                  "stroke": "$card-border",
-                  "strokeWidth": 1,
-                  "layout": "vertical",
-                  "gap": 12,
-                  "padding": 16,
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "f2VXe",
-                      "name": "Head",
-                      "width": "fill_container",
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "RSKP9",
-                          "name": "L",
-                          "layout": "vertical",
-                          "gap": 2,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "WpE2V",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "content": "Input",
-                              "fontFamily": "$font",
-                              "fontSize": 16,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "MYHGM",
-                              "name": "S",
-                              "fill": "$warning-on-tint",
-                              "content": "Edited · runs as shown",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "IYwJm",
-                          "name": "Btn text · Reset",
-                          "height": 32,
-                          "gap": 6,
-                          "padding": [
-                            0,
-                            8
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "o5xCTm",
-                              "name": "I",
-                              "width": 16,
-                              "height": 16,
-                              "icon": "rotate-ccw",
-                              "library": "lucide",
-                              "fill": "$text-secondary"
-                            },
-                            {
-                              "type": "text",
-                              "id": "yFNDT",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Reset to the situation",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "BZbEe",
-                      "name": "JSON editor",
-                      "width": "fill_container",
-                      "height": 385,
-                      "fill": "$surface-sunken",
-                      "cornerRadius": "$radius-md",
-                      "stroke": "$border",
-                      "strokeWidth": 1,
-                      "layout": "none",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "EWjL4",
-                          "x": 12,
-                          "y": 12,
-                          "name": "Line 1",
-                          "fill": "$text-primary",
-                          "content": "{",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "P6hDR",
-                          "x": 12,
-                          "y": 31.2,
-                          "name": "Line 2",
-                          "fill": "$text-primary",
-                          "content": "  \"goal\": \"A vertical slice of the first island\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "K2wyA",
-                          "x": 12,
-                          "y": 50.4,
-                          "name": "Line 3",
-                          "fill": "$text-primary",
-                          "content": "  \"stage\": \"Prototype\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "taJIH",
-                          "x": 12,
-                          "y": 69.6,
-                          "name": "Line 4",
-                          "fill": "$text-primary",
-                          "content": "  \"outcomes\": [",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "aQq5Y",
-                          "x": 12,
-                          "y": 88.8,
-                          "name": "Line 5",
-                          "fill": "$text-primary",
-                          "content": "    { \"id\": \"o1\", \"text\": \"Playable island demo\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "V8EfF",
-                          "x": 12,
-                          "y": 108,
-                          "name": "Line 6",
-                          "fill": "$text-primary",
-                          "content": "      \"evidence\": \"Matches\" },",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "S1ya1j",
-                          "x": 12,
-                          "y": 127.19999999999999,
-                          "name": "Line 7",
-                          "fill": "$text-primary",
-                          "content": "    { \"id\": \"o2\", \"text\": \"Art style board\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "L3XDmi",
-                          "x": 12,
-                          "y": 146.4,
-                          "name": "Line 8",
-                          "fill": "$text-primary",
-                          "content": "      \"artifact\": { \"checkStatus\": \"Unreachable\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "AynyK",
-                          "x": 12,
-                          "y": 165.6,
-                          "name": "Line 9",
-                          "fill": "$text-primary",
-                          "content": "                    \"checkNote\": \"needsLogin\" } },",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "ANGLl",
-                          "x": 12,
-                          "y": 184.79999999999998,
-                          "name": "Line 10",
-                          "fill": "$text-primary",
-                          "content": "    { \"id\": \"o3\", \"text\": \"Playtest with 5 players\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "NdYbs",
-                          "x": 12,
-                          "y": 204,
-                          "name": "Line 11",
-                          "fill": "$text-primary",
-                          "content": "      \"evidence\": \"Partly\",",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "TzzYT",
-                          "x": 12,
-                          "y": 223.2,
-                          "name": "Line 12",
-                          "fill": "$text-primary",
-                          "content": "      \"note\": \"notes from 3 players\" }",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "I85r0z",
-                          "x": 12,
-                          "y": 242.39999999999998,
-                          "name": "Line 13",
-                          "fill": "$text-primary",
-                          "content": "  ],",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "yEvqL",
-                          "x": 12,
-                          "y": 261.6,
-                          "name": "Line 14",
-                          "fill": "$text-primary",
-                          "content": "  \"devlogs\": [",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "nkeJq",
-                          "x": 12,
-                          "y": 280.8,
-                          "name": "Line 15",
-                          "fill": "$text-primary",
-                          "content": "    \"Week 3: the style board is in Figma —",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "Q1mwUd",
-                          "x": 12,
-                          "y": 300,
-                          "name": "Line 16",
-                          "fill": "$text-primary",
-                          "content": "     palette, two hero sheets, fog study.\"",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "p8s5Y6",
-                          "x": 12,
-                          "y": 319.2,
-                          "name": "Line 17",
-                          "fill": "$text-primary",
-                          "content": "  ],",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "eX4S8",
-                          "x": 12,
-                          "y": 338.4,
-                          "name": "Line 18",
-                          "fill": "$text-primary",
-                          "content": "  \"proposed\": null",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "text",
-                          "id": "WuW6N",
-                          "x": 12,
-                          "y": 357.59999999999997,
-                          "name": "Line 19",
-                          "fill": "$text-primary",
-                          "content": "}",
-                          "lineHeight": 1.6,
-                          "fontFamily": "JetBrains Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        },
-                        {
-                          "type": "frame",
-                          "id": "t52Xc",
-                          "layoutPosition": "absolute",
-                          "x": 368,
-                          "y": 8,
-                          "name": "Btn icon · Copy input",
-                          "width": 32,
-                          "height": 32,
-                          "fill": "$surface",
-                          "cornerRadius": 8,
-                          "stroke": "$border",
-                          "strokeWidth": 1,
-                          "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "Gkhnn",
-                              "name": "I",
-                              "width": 16,
-                              "height": 16,
-                              "icon": "copy",
-                              "library": "lucide",
-                              "fill": "$text-secondary"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "LYAWU",
-                      "name": "Actions",
-                      "width": "fill_container",
-                      "gap": 8,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "C7rOt",
-                          "name": "Btn primary · Run",
-                          "height": 40,
-                          "fill": "$btn-black",
-                          "cornerRadius": 10,
-                          "gap": 8,
-                          "padding": [
-                            0,
-                            16
-                          ],
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "GaXjY",
-                              "name": "I",
-                              "width": 16,
-                              "height": 16,
-                              "icon": "play",
-                              "library": "lucide",
-                              "fill": "$text-invert"
-                            },
-                            {
-                              "type": "text",
-                              "id": "XOgKr",
-                              "name": "L",
-                              "fill": "$text-invert",
-                              "content": "Run",
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "ymach",
-                          "name": "Cost hint",
-                          "fill": "$text-tertiary",
-                          "content": "One call · about $0.003",
-                          "fontFamily": "$font",
-                          "fontSize": 12,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
                   "id": "cX5lS",
                   "name": "Result column",
                   "width": "fill_container",
@@ -452694,14 +452610,60 @@
                       "padding": 16,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "OxBW0",
-                          "name": "T",
-                          "fill": "$text-primary",
-                          "content": "Result",
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "600"
+                          "type": "frame",
+                          "id": "z5TzqC",
+                          "name": "Head",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "OxBW0",
+                              "name": "T",
+                              "fill": "$text-primary",
+                              "content": "Result",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "DqoKE",
+                              "name": "Btn primary · Run",
+                              "height": 40,
+                              "fill": "$btn-black",
+                              "cornerRadius": 10,
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                16
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "YspNj",
+                                  "name": "I",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "play",
+                                  "library": "lucide",
+                                  "fill": "$text-invert"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "XK0M8",
+                                  "name": "L",
+                                  "fill": "$text-invert",
+                                  "content": "Run",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "frame",
@@ -452876,7 +452838,7 @@
                                   "id": "f3htCh",
                                   "name": "T",
                                   "fill": "$text-primary",
-                                  "content": "Settled",
+                                  "content": "Author's view",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "500"
@@ -452899,7 +452861,7 @@
                                   "id": "p807d",
                                   "name": "T",
                                   "fill": "$text-secondary",
-                                  "content": "Answer",
+                                  "content": "Input",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -452922,7 +452884,7 @@
                                   "id": "CMU0A",
                                   "name": "T",
                                   "fill": "$text-secondary",
-                                  "content": "Messages · 2",
+                                  "content": "Sent",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -452945,7 +452907,29 @@
                                   "id": "Pji5k",
                                   "name": "T",
                                   "fill": "$text-secondary",
-                                  "content": "Raw",
+                                  "content": "Received",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Mnfkn",
+                              "name": "Steps",
+                              "cornerRadius": "$radius-sm",
+                              "padding": [
+                                4,
+                                12
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Snhdi",
+                                  "name": "T",
+                                  "fill": "$text-secondary",
+                                  "content": "Steps · 1",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -452956,91 +452940,141 @@
                         },
                         {
                           "type": "frame",
-                          "id": "oiMvz",
-                          "name": "Verdict",
+                          "id": "qZkW9",
+                          "name": "Curator message, as on Curator's Review",
                           "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 8,
+                          "fill": "$inv-bg",
+                          "cornerRadius": "$radius-xl",
+                          "stroke": "$inv-border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "gap": 16,
+                          "padding": 24,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "Jh5AH",
-                              "name": "Row",
-                              "gap": 12,
+                              "id": "G2ZHN",
+                              "name": "AI avatar",
+                              "width": 48,
+                              "height": 48,
+                              "fill": "$inv-surface",
+                              "cornerRadius": 999,
+                              "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "y0kkZZ",
-                                  "name": "T",
-                                  "fill": "$text-secondary",
-                                  "content": "Proposed",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "id": "w8VhmD",
-                                  "type": "ref",
-                                  "ref": "StXPy",
-                                  "name": "Status · Goal missed",
-                                  "descendants": {
-                                    "v3xypZ": {
-                                      "fill": "$warning"
-                                    },
-                                    "xcwxi": {
-                                      "content": "Goal missed"
-                                    }
-                                  }
-                                },
-                                {
                                   "type": "icon",
-                                  "id": "QaHVy",
-                                  "name": "Arrow",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "arrow-right",
+                                  "id": "C3jbl",
+                                  "name": "Ic",
+                                  "width": 24,
+                                  "height": 24,
+                                  "icon": "sparkles",
                                   "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "NE6Hu",
-                                  "name": "T",
-                                  "fill": "$text-secondary",
-                                  "content": "Written",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "id": "IwHSj",
-                                  "type": "ref",
-                                  "ref": "StXPy",
-                                  "name": "Status · Goal met",
-                                  "descendants": {
-                                    "v3xypZ": {
-                                      "fill": "$success"
-                                    },
-                                    "xcwxi": {
-                                      "content": "Goal met"
-                                    }
-                                  }
+                                  "fill": "$inv-text"
                                 }
                               ]
                             },
                             {
-                              "type": "text",
-                              "id": "C6X43D",
-                              "name": "T",
-                              "fill": "$text-secondary",
-                              "textGrowth": "fixed-width",
+                              "type": "frame",
+                              "id": "gFDRh",
+                              "name": "Body",
                               "width": "fill_container",
-                              "content": "The rule overruled the model: every task is delivered, one on trust and one in part.",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Z8aXTY",
+                                  "name": "Head",
+                                  "gap": 8,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Q3IYV",
+                                      "name": "Name",
+                                      "fill": "$inv-text",
+                                      "content": "AI curator",
+                                      "fontFamily": "$font",
+                                      "fontSize": 15,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "AfsYu",
+                                      "name": "When",
+                                      "fill": "$inv-text-tertiary",
+                                      "content": "1 Oct",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "pPu8Q",
+                                  "name": "Message",
+                                  "fill": "$inv-text",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hi, I'm your curator for the next four weeks. Your goal fits the 120–160 hours you stated, but the demo, the style board and the playtest leave little slack. Today, narrow the demo to the tide mechanic on one part of the island. See you at the start of the next sprint — until then I look forward to your new devlogs, artifacts and other activity ;)",
+                                  "lineHeight": 1.55,
+                                  "fontFamily": "$font",
+                                  "fontSize": 17,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "xPZtt",
+                                  "name": "Actions",
+                                  "gap": 8,
+                                  "padding": [
+                                    8,
+                                    0,
+                                    0,
+                                    0
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "e2PWbO",
+                                      "name": "Btn Review the tasks",
+                                      "fill": "$inv-text",
+                                      "cornerRadius": "$radius-md",
+                                      "gap": 8,
+                                      "padding": [
+                                        8,
+                                        16
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "rcKjZ",
+                                          "name": "Ic",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "arrow-down",
+                                          "library": "lucide",
+                                          "fill": "$ink"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "H2VrS2",
+                                          "name": "L",
+                                          "fill": "$ink",
+                                          "content": "Review the tasks",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "500"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
                             }
                           ]
                         },
@@ -453244,45 +453278,6 @@
                                   }
                                 }
                               ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "IkOfC",
-                          "name": "Verdict note",
-                          "width": "fill_container",
-                          "fill": "$bg-subtle",
-                          "cornerRadius": "$radius-md",
-                          "layout": "vertical",
-                          "gap": 6,
-                          "padding": [
-                            12,
-                            14
-                          ],
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "c8RkNY",
-                              "name": "T",
-                              "fill": "$text-secondary",
-                              "content": "Verdict note, as the author will read it",
-                              "fontFamily": "$font",
-                              "fontSize": 12,
-                              "fontWeight": "normal"
-                            },
-                            {
-                              "type": "text",
-                              "id": "biL0y",
-                              "name": "T",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "The island demo runs and shows the slice you promised. The playtest notes cover three players, not five. I could not open the style board — it needs a login — so I took it on trust from your week 3 devlog.",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -453952,6 +453947,262 @@
                   "fontFamily": "$font",
                   "fontSize": 13,
                   "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cSbct",
+      "x": 4950,
+      "y": 77547,
+      "name": "12.10.1a · Curator's Review · AI · Start, the window closed: the closing letter",
+      "width": 801,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "mWWSR",
+          "name": "Curator message",
+          "width": "fill_container",
+          "fill": "$inv-bg",
+          "cornerRadius": "$radius-xl",
+          "stroke": "$inv-border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "gap": 16,
+          "padding": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "qMlfJ",
+              "name": "AI avatar",
+              "width": 48,
+              "height": 48,
+              "fill": "$inv-surface",
+              "cornerRadius": 999,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "FgPTu",
+                  "name": "Ic",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "sparkles",
+                  "library": "lucide",
+                  "fill": "$inv-text"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bNvFP",
+              "name": "Body",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "o2C3z",
+                  "name": "Head",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "s8RV9z",
+                      "name": "Name",
+                      "fill": "$inv-text",
+                      "content": "AI curator",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "fmulm",
+                      "name": "When",
+                      "fill": "$inv-text-tertiary",
+                      "content": "1 Oct",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "z7NDI",
+                  "name": "Message",
+                  "fill": "$inv-text",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Well done with the tasks — now you know what to do. I look forward to your new devlog posts, artifacts and other activity, to see how the team is getting on with them ;)",
+                  "lineHeight": 1.55,
+                  "fontFamily": "$font",
+                  "fontSize": 17,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "I5t8S",
+                  "name": "Actions",
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    0,
+                    0,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kr8ev",
+                      "name": "Btn Review the tasks",
+                      "fill": "$inv-text",
+                      "cornerRadius": "$radius-md",
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "r03v4",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "arrow-down",
+                          "library": "lucide",
+                          "fill": "$ink"
+                        },
+                        {
+                          "type": "text",
+                          "id": "r6bpbC",
+                          "name": "L",
+                          "fill": "$ink",
+                          "content": "See the plan",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "j9wP6p",
+      "x": 5831,
+      "y": 77487,
+      "name": "12.10.1c · Curator's Review · AI · Confirm — send the tasks to the curator",
+      "width": 416,
+      "fill": "$surface",
+      "cornerRadius": 16,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "UmMPI",
+          "name": "Title",
+          "fill": "$text-primary",
+          "content": "Send the tasks to the curator?",
+          "fontFamily": "$font",
+          "fontSize": 16,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "CgDOD",
+          "name": "Body",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "The curator reads the goal and the tasks and writes what to keep, shorten or reword. You then have 12 more hours to adjust them.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "aV2sy",
+          "name": "Actions",
+          "width": "fill_container",
+          "gap": 8,
+          "justifyContent": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "HNvj0",
+              "name": "Btn default · Cancel",
+              "height": 36,
+              "fill": "$surface",
+              "cornerRadius": 10,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bPNHF",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Keep editing",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xErkC",
+              "name": "Btn primary · Send",
+              "height": 36,
+              "fill": "$btn-black",
+              "cornerRadius": 10,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ArFPF",
+                  "name": "L",
+                  "fill": "$text-invert",
+                  "content": "Save and send",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
                 }
               ]
             }

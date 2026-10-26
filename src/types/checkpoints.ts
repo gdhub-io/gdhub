@@ -406,7 +406,30 @@ export type CuratorReview = {
 	message: string;
 	notes: CallNotes | null;
 	advice: PlanAdvice | null;
+	/** Day 1 (GDHUB-117): the curator's word on the goal, shown under it. */
+	goal?: GoalAdvice | null;
+	/** Day 1: tasks the curator suggests before any are written, each with why. */
+	suggestions?: TaskSuggestion[];
+	/**
+	 * Day 1 with the AI curator: `suggested` once the goal is read after payment,
+	 * `checked` once the tasks the author sent are read — one check, then the
+	 * author approves. The session's `updatedAt` is when that last happened.
+	 */
+	step?: "suggested" | "checked";
+	/** Day 15 with the AI curator: the author confirmed the tasks, and they lock before the day is out. */
+	approved?: boolean;
 };
+
+export const GOAL_FITS = ["fits", "widen", "narrow"] as const;
+
+/** Whether the goal fits the team and the 28 days, and if not, which way to move it. */
+export type GoalAdvice = {
+	fit: (typeof GOAL_FITS)[number];
+	note: string;
+};
+
+/** A task the curator suggests, and the one sentence on why this one. */
+export type TaskSuggestion = { text: string; why: string };
 
 /** A Stripe promotion code as the admin's Promo codes tab lists it. */
 export type PromoCodeDto = {

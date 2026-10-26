@@ -8,7 +8,6 @@ import type { ReactNode } from "react";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
 import { StatusDot, type StatusTone } from "@/components/ui";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import styles from "./style.module.scss";
 
 export type CuratorHeaderProps = {
 	backHref: string;

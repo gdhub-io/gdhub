@@ -73,8 +73,9 @@ const review = ({
 		goal,
 		edit,
 		editUntil: edit
-			? new Date(Date.now() + 24 * 3600 * 1000).toISOString()
+			? new Date(Date.now() + 12 * 3600 * 1000).toISOString()
 			: null,
+		approved: false,
 		tasks,
 	},
 	sessions: DAYS.map((scheduledAt, offset) => ({
@@ -120,29 +121,26 @@ const reviewOf = (
 		);
 
 	if (call === "goalCheck") {
-		const card = input.card as { outcomes: { id: string; text: string }[] };
-		const current = 1;
 		return {
-			index: current,
+			index: 1,
 			review: review({
-				current,
+				current: 1,
 				goal,
 				workflow,
-				tasks: card.outcomes.map((row) => task(row.id, row.text)),
+				tasks: [],
 				content: {
 					message: answer.note as string,
 					notes: null,
-					advice: {
-						tasks: answer.notes as never,
-						add: (answer.missing as string[]) ?? [],
-						hash: "lab",
-					},
+					advice: null,
+					goal: answer.goal as CuratorReview["goal"],
+					suggestions: answer.suggestions as CuratorReview["suggestions"],
+					step: "suggested",
 				},
 				edit: "goalAndTasks",
 			}),
 		};
 	}
-	if (call === "planAdvice") {
+	if (call === "tasksCheck" || call === "planAdvice") {
 		const current = input.moment === "start" ? 1 : 3;
 		return {
 			index: current,
@@ -159,6 +157,8 @@ const reviewOf = (
 						add: answer.add as string[],
 						hash: "lab",
 					},
+					goal: answer.goal as CuratorReview["goal"],
+					step: current === 1 ? "checked" : undefined,
 				},
 				edit: current === 1 ? "goalAndTasks" : "tasks",
 			}),
@@ -244,6 +244,8 @@ export function AuthorView({
 				onChange={saved}
 				onAdvise={noop}
 				advising={false}
+				onApprove={noop}
+				approving={false}
 			/>
 		);
 	}

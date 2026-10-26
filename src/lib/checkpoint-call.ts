@@ -1,5 +1,5 @@
 import {
-	AI_PLAN_HOURS,
+	AI_APPROVE_HOURS,
 	CALL_CLOSES_MINUTES,
 	CALL_OPENS_MINUTES,
 	PRO_PLAN_HOURS,
@@ -68,26 +68,30 @@ export type PlanEdit = "goalAndTasks" | "plan" | "tasks" | null;
 type PlanTimes = {
 	curatorKind: CheckpointCuratorKind;
 	startedAt: Date | string | null;
-	/** The AI curator's is set when the checkpoint is paid, a pro one's on call 1. */
+	/** Set when the plan is approved: by the author or by itself with the AI curator, on call 1 with a pro one. */
 	goalAgreedAt: Date | string | null;
+	/** The AI curator's one check of the tasks, once it is written. */
+	checkedAt?: Date | string | null;
 };
 
 const HOUR_MS = 60 * 60 * 1000;
 
 /**
- * When day 1's goal and tasks close: with the AI curator, 24 hours from
- * payment or from the later start day picked; with a pro curator, 36 hours
- * from the start of call 1's day. Null before the checkpoint starts.
+ * When day 1's goal and tasks close: with the AI curator, when the plan
+ * approves itself after the check — null before the check, as it waits for
+ * the tasks however long that takes; with a pro curator, 36 hours from the
+ * start of call 1's day. Null before the checkpoint starts.
  */
 export const planCloses = (checkpoint: PlanTimes) => {
 	if (!checkpoint.startedAt) return null;
-	const start = new Date(checkpoint.startedAt).getTime();
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
-		const paid = checkpoint.goalAgreedAt
-			? new Date(checkpoint.goalAgreedAt).getTime()
-			: start;
-		return new Date(Math.max(start, paid) + AI_PLAN_HOURS * HOUR_MS);
+		return checkpoint.checkedAt
+			? new Date(
+					new Date(checkpoint.checkedAt).getTime() + AI_APPROVE_HOURS * HOUR_MS,
+				)
+			: null;
 	}
+	const start = new Date(checkpoint.startedAt).getTime();
 	return new Date(start + PRO_PLAN_HOURS * HOUR_MS);
 };
 
@@ -97,13 +101,18 @@ export const planEdit = (
 			index: number;
 			scheduledAt: Date | string;
 			endedAt: Date | string | null;
+			/** The AI curator's day-15 review, confirmed once the author is done with the tasks. */
+			content?: unknown;
 		}[];
 	},
 	now = new Date(),
 ): PlanEdit => {
 	const closes = planCloses(checkpoint);
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
-		if (closes && now < closes) return "goalAndTasks";
+		// Open until approved; the hourly run approves it once the check is old enough.
+		if (checkpoint.startedAt && !checkpoint.goalAgreedAt) {
+			return "goalAndTasks";
+		}
 	} else {
 		const first = checkpoint.sessions.find((session) => session.index === 1);
 		const firstCall =
@@ -120,8 +129,12 @@ export const planEdit = (
 			return "goalAndTasks";
 		}
 	}
+	const scope = checkpoint.sessions.find(
+		(session) => session.index === SCOPE_SESSION,
+	);
 	if (
 		checkpoint.startedAt &&
+		!(scope?.content as { approved?: boolean } | null)?.approved &&
 		scopeState(checkpoint.startedAt, checkpoint.sessions, now) === "open"
 	) {
 		return "tasks";

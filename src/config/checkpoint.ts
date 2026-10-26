@@ -59,11 +59,13 @@ export const SCOPE_ANSWER_HOURS = 24;
 // The AI curator
 
 /**
- * Day 1 (Dmitry, 2026-10-26): after payment the author checks the goal and sets
- * the tasks. With the AI curator they stay open this many hours from payment,
- * or from the later start day the author picked.
+ * Day 1 (Dmitry, 2026-10-26): after payment the author writes the tasks and
+ * sends them for the AI's one check; the plan stays open until they approve
+ * it, and approves itself this many hours after the check.
  */
-export const AI_PLAN_HOURS = 24;
+export const AI_APPROVE_HOURS = 12;
+/** With no tasks sent this many hours after the start, the author is reminded once; the plan stays open. */
+export const AI_REMIND_HOURS = 24;
 /** With a pro curator: from the start of call 1's day, its 24 hours and 12 more, so a late call leaves time after it. */
 export const PRO_PLAN_HOURS = 36;
 

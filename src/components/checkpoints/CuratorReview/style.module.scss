@@ -60,17 +60,6 @@
 	padding-top: var(--gd-space-2);
 }
 
-// The review switcher, in the panel's tab bar like the call switcher.
-.switcher {
-	max-width: 100%;
-	overflow-x: auto;
-}
-
-.lockedOption {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gd-space-1);
-}
 
 
 // The skeleton keeps the page's shape: a title, the line under it, the sidebar.

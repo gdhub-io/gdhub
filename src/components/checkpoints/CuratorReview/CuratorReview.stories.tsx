@@ -269,7 +269,7 @@ const aiReview = (
 	startedAt: "2026-10-01T00:00:00.000Z",
 	dueAt: "2026-10-28T00:00:00.000Z",
 	project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
-	plan: { goal: GOAL, ...plan, tasks },
+	plan: { goal: GOAL, approved: plan.edit !== "goalAndTasks", ...plan, tasks },
 	sessions: DAYS.map((day, offset) => ({
 		index: offset + 1,
 		scheduledAt: `${day}T00:00:00.000Z`,
@@ -388,6 +388,8 @@ function AiPage({
 			onChange={saved}
 			onAdvise={noop}
 			advising={advising}
+			onApprove={noop}
+			approving={false}
 		/>
 	);
 }
@@ -513,10 +515,36 @@ export const ProDay29: Story = {
 	),
 };
 
+const firstLetter: CuratorReview = {
+	message:
+		"Hello! I'm your AI curator for the next 28 days. Write one to five tasks that will show the goal is reached — your own, or take some from my suggestions — and send them to me for a check.",
+	notes: null,
+	advice: null,
+	goal: {
+		fit: "narrow",
+		note: "Narrow it: with 120–160 hours and the programmer's time unknown, one part of the island is a slice you can finish — not the whole island.",
+	},
+	suggestions: [
+		{
+			text: "A playable demo of one island area on itch.io",
+			why: "It ends in a build anyone can open, and fits the hours you have.",
+		},
+		{
+			text: "A style board: palette and one hero sheet",
+			why: "Art direction is what the stage asks for, at the size one artist can do.",
+		},
+		{
+			text: "Playtest with 5 players, notes in a doc",
+			why: "Five strangers show whether the tide reads without you there.",
+		},
+	],
+	step: "suggested",
+};
+
 /**
- * Day 1, the page opened for the first time: only the goal was bought, so
- * there are no tasks yet — the curator greets the team, and "Suggest tasks"
- * asks it for a first list.
+ * Day 1, the page opened for the first time (frame 12.10.1): only the goal
+ * was bought — the first letter, the curator's word under the goal, and the
+ * tasks it suggests, each with why.
  */
 export const AiDay1: Story = {
 	name: "AI · day 1, first open",
@@ -526,8 +554,8 @@ export const AiDay1: Story = {
 			review={aiReview(
 				1,
 				[],
-				{ edit: "plan", editUntil: "2026-10-03T00:00:00.000Z" },
-				[],
+				{ edit: "goalAndTasks", editUntil: null },
+				[firstLetter],
 				{ previous },
 			)}
 		/>

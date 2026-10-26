@@ -38,6 +38,14 @@
 		height: auto;
 		line-height: var(--gd-line-height-ui);
 		padding-block: var(--gd-space-2);
+		white-space: normal;
+	}
+
+	// Long names wrap instead of being cut off.
+	:global(.ant-menu-title-content) {
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
 	}
 }
 
@@ -81,6 +89,21 @@
 .resultTitle {
 	padding-block: var(--gd-space-3);
 	white-space: normal;
+}
+
+.run {
+	align-self: flex-start;
+	margin-top: var(--gd-space-2);
+}
+
+.divider {
+	align-self: stretch;
+	height: auto;
+	margin: 0;
+
+	@media (max-width: 1100px) {
+		display: none;
+	}
 }
 
 .purpose {

@@ -1,8 +1,7 @@
 "use client";
 
-import { IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Segmented, Tabs, Tooltip, Typography } from "antd";
+import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
@@ -22,6 +21,7 @@ import {
 	type PlanBodyProps,
 	usePlanChange,
 } from "./CallPlan";
+import { SessionSwitcher } from "./SessionSwitcher";
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
@@ -125,43 +125,26 @@ export function PanelBlock({
 		sessions.find((session) => session.index === selected)?.held ?? false;
 
 	const switcher = (
-		<div className={styles.switcher}>
-			<Segmented<number>
-				value={selected}
-				onChange={onSelect}
-				options={sessions.map((session) => {
-					const date = dayjs(session.scheduledAt);
-					const label = date.isSame(today, "day")
+		<SessionSwitcher
+			value={selected}
+			onChange={onSelect}
+			aheadLabel={t("checkpoints.call.panel.ahead", "This call is still ahead")}
+			options={sessions.map((session) => {
+				const date = dayjs(session.scheduledAt);
+				return {
+					value: session.index,
+					ahead: session.index > current,
+					label: date.isSame(today, "day")
 						? t("checkpoints.call.panel.today", "Call {index} · today", {
 								index: session.index,
 							})
 						: t("checkpoints.call.notes.option", "Call {index} · {date}", {
 								index: session.index,
 								date: date.format("D MMM"),
-							});
-					const ahead = session.index > current;
-					return {
-						value: session.index,
-						disabled: ahead,
-						label: ahead ? (
-							<Tooltip
-								title={t(
-									"checkpoints.call.panel.ahead",
-									"This call is still ahead",
-								)}
-							>
-								<span className={styles.lockedOption}>
-									<IconLock size={14} />
-									{label}
-								</span>
-							</Tooltip>
-						) : (
-							label
-						),
-					};
-				})}
-			/>
-		</div>
+							}),
+				};
+			})}
+		/>
 	);
 
 	const items = [

@@ -1,12 +1,13 @@
 "use client";
 
-import { IconTarget } from "@tabler/icons-react";
+import { IconSparkles, IconTarget } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Input, Typography } from "antd";
+import { Alert, Input, Typography } from "antd";
 import { type ReactNode, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { GoalAdvice } from "@/types/checkpoints";
 import { usePlanChange } from "./CallPlan";
 import styles from "./style.module.scss";
 
@@ -29,10 +30,12 @@ export type GoalCardProps = {
 	editable: boolean;
 	/** Needed only while `editable`. */
 	onSave?: (goal: string) => Promise<void>;
+	/** The AI curator's word on the goal, on day 1 (frame SWg9T). */
+	advice?: GoalAdvice | null;
 };
 
 /** Frame CUPxr: read the same on every call and every AI review; on call 1 the text itself is editable. */
-export function GoalCard({ goal, editable, onSave }: GoalCardProps) {
+export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 	const { t } = useTranslate();
 
 	let value: ReactNode;
@@ -58,6 +61,15 @@ export function GoalCard({ goal, editable, onSave }: GoalCardProps) {
 					{t("checkpoints.call.goal.label", "Checkpoint goal")}
 				</Typography.Text>
 				{value}
+				{advice && (
+					<Alert
+						type={advice.fit === "fits" ? "success" : "warning"}
+						showIcon
+						icon={<IconSparkles size={14} />}
+						title={advice.note}
+						className={styles.goalAdvice}
+					/>
+				)}
 			</div>
 		</section>
 	);

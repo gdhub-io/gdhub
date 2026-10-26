@@ -1,13 +1,16 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { CURATOR_ANSWER_DAYS, VERDICT_DUE_DAYS } from "@/config/checkpoint";
+import {
+	AI_REMIND_HOURS,
+	CURATOR_ANSWER_DAYS,
+	VERDICT_DUE_DAYS,
+} from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 	SpaceRole,
 } from "@/config/prisma-enums";
-import { planCloses } from "@/lib/checkpoint-call";
 import { dayNumberOn, MS_PER_DAY, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
@@ -79,34 +82,96 @@ export const notifyCuratorAsked = async (checkpointId: string) => {
 	});
 };
 
-/**
- * Day 1 with the AI curator: the letter is written, and the goal and tasks are
- * open until they lock. Sent once, whether or not the read came back.
- */
-export const notifyDayOne = async (checkpointId: string, read: boolean) => {
-	const row = await prisma.projectCheckpoint.findUnique({
+const dayOneRow = (checkpointId: string) =>
+	prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
 			projectId: true,
 			createdAt: true,
-			curatorKind: true,
-			startedAt: true,
-			goalAgreedAt: true,
 			project: { select: { slug: true, author: recipient } },
 		},
 	});
-	const closes = row && planCloses(row);
-	if (!row || !closes) return;
+
+/**
+ * Day 1 with the AI curator: the first letter is written and waits for the
+ * tasks. Sent once, whether or not the read came back.
+ */
+export const notifyDayOne = async (checkpointId: string, read: boolean) => {
+	const row = await dayOneRow(checkpointId);
+	if (!row) return;
 
 	const number = await checkpointNumber(row);
-	const by = dayjs.utc(closes).format("D MMM, HH:mm [UTC]");
 	await notify(row.project.author, `cp-day-one-${checkpointId}`, {
 		title: read
 			? `Your AI curator has read the goal of Checkpoint ${number}`
 			: `Checkpoint ${number} has started`,
-		message: `Check the goal and set the tasks by ${by}; after that they lock.`,
+		message:
+			"Write one to five tasks that will show the goal is reached — your own or the curator's suggestions — and send them for a check.",
 		redirectUrl: reviewUrl(row.project.slug, number, 1),
 	});
+};
+
+/** Day 1: the one check of the tasks is written; the author approves the plan next. */
+export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
+	const row = await dayOneRow(checkpointId);
+	if (!row) return;
+
+	const number = await checkpointNumber(row);
+	await notify(row.project.author, `cp-plan-checked-${checkpointId}`, {
+		title: `Your AI curator has checked the plan of Checkpoint ${number}`,
+		message: `Read the advice, change what you want and approve the plan. If you don't, it approves itself as it stands on ${dayjs.utc(closes).format("D MMM, HH:mm [UTC]")}.`,
+		redirectUrl: reviewUrl(row.project.slug, number, 1),
+	});
+};
+
+/**
+ * The hourly run: an AI checkpoint whose tasks were not sent within
+ * AI_REMIND_HOURS of payment is reminded, once — it goes out in the one hour
+ * that mark falls in, and the transaction id covers a second run.
+ */
+export const remindPlansUnsent = async (now = new Date()) => {
+	const hour = Math.floor(now.getTime() / HOUR) * HOUR;
+	const sessions = await prisma.checkpointSession.findMany({
+		where: {
+			index: 1,
+			// Written at payment, with the rest of the checkpoint's sessions.
+			createdAt: {
+				gte: new Date(hour - (AI_REMIND_HOURS + 1) * HOUR),
+				lt: new Date(hour - AI_REMIND_HOURS * HOUR),
+			},
+			checkpoint: {
+				curatorKind: CheckpointCuratorKind.AI,
+				status: CheckpointStatus.Active,
+				goalAgreedAt: null,
+			},
+		},
+		select: {
+			checkpointId: true,
+			content: true,
+			checkpoint: {
+				select: {
+					projectId: true,
+					createdAt: true,
+					project: { select: { slug: true, author: recipient } },
+				},
+			},
+		},
+	});
+	const waiting = sessions.filter(
+		(session) =>
+			(session.content as { step?: string } | null)?.step !== "checked",
+	);
+
+	for (const { checkpointId, checkpoint } of waiting) {
+		const number = await checkpointNumber(checkpoint);
+		await notify(checkpoint.project.author, `cp-plan-remind-${checkpointId}`, {
+			title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
+			message:
+				"Write one to five tasks and send them for a check. The plan stays open until you approve it.",
+			redirectUrl: reviewUrl(checkpoint.project.slug, number, 1),
+		});
+	}
+	return waiting.length;
 };
 
 type CuratorAnswer = "accepted" | "declined" | "silent";

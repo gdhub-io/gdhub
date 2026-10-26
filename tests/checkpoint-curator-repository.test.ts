@@ -156,7 +156,11 @@ describe("runGoalCheck", () => {
 		...kept,
 	});
 
-	const checked = { reachable: true, notes: [], missing: [], note: "n" };
+	const checked = {
+		goal: { fit: "fits" as const, note: "Fits four weeks." },
+		suggestions: [],
+		note: "n",
+	};
 
 	it("hands the model the team as curatorTeam builds it", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
@@ -398,7 +402,7 @@ describe("runGoalCheck", () => {
 			);
 			vi.mocked(checkpointCurator.checkGoal).mockResolvedValue({
 				...checked,
-				note: "Your plan looks good — go ahead!",
+				note: "Hello! Write one to five tasks.",
 			});
 
 			await writeFirstLetter("cp1");
@@ -408,9 +412,12 @@ describe("runGoalCheck", () => {
 					where: expect.objectContaining({ id: "s1" }),
 					data: expect.objectContaining({
 						content: {
-							message: "Your plan looks good — go ahead!",
+							message: "Hello! Write one to five tasks.",
 							notes: null,
 							advice: null,
+							goal: checked.goal,
+							suggestions: [],
+							step: "suggested",
 						},
 					}),
 				}),
@@ -418,7 +425,7 @@ describe("runGoalCheck", () => {
 			expect(notifyDayOne).toHaveBeenCalledWith("cp1", true);
 		});
 
-		it("keeps the read's notes under each task, as the plan advice shows them", async () => {
+		it("keeps the suggested tasks with their why", async () => {
 			vi.mocked(prisma.checkpointSession.findFirst).mockResolvedValue({
 				id: "s1",
 				content: null,
@@ -426,16 +433,14 @@ describe("runGoalCheck", () => {
 			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 				draft([member([10, 20])]) as never,
 			);
-			const note = {
-				itemId: "o1",
-				kind: "shorten" as const,
-				note: "Shorten it: one island, not three.",
-				suggestion: "One island, playable end to end",
+			const suggestion = {
+				text: "One island, playable end to end",
+				why: "It shows the core loop works.",
 			};
 			vi.mocked(checkpointCurator.checkGoal).mockResolvedValue({
 				...checked,
-				notes: [note],
-				missing: ["A playtest"],
+				goal: { fit: "narrow", note: "Narrow it to one island." },
+				suggestions: [suggestion],
 			});
 
 			await writeFirstLetter("cp1");
@@ -444,7 +449,8 @@ describe("runGoalCheck", () => {
 				expect.objectContaining({
 					data: expect.objectContaining({
 						content: expect.objectContaining({
-							advice: { tasks: [note], add: ["A playtest"], hash: "first-letter" },
+							goal: { fit: "narrow", note: "Narrow it to one island." },
+							suggestions: [suggestion],
 						}),
 					}),
 				}),
@@ -668,23 +674,18 @@ describe("closeCheckpoint", () => {
 });
 
 describe("goal check schema", () => {
-	it("stays a valid schema before any task is written", async () => {
+	it("asks for advice on the goal and suggested tasks, never notes on tasks", async () => {
 		const { goalCheckSchema } = await import(
 			"@/services/checkpoint-curator/prompts/goal-check"
 		);
-		const schema = goalCheckSchema({
-			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
-			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [] },
-			previous: null,
-			project: { name: "Lantern Keeper", pitch: null, genre: null },
-			author: null,
-			picture: "",
-		});
+		const schema = goalCheckSchema();
 
-		expect(
-			schema.properties.notes.items.properties.itemId,
-		).not.toHaveProperty("enum");
+		expect(schema.required).toEqual(["goal", "suggestions", "note"]);
+		expect(schema.properties.goal.properties.fit.enum).toEqual([
+			"fits",
+			"widen",
+			"narrow",
+		]);
 	});
 
 	it("puts the game and its author in front of the model", async () => {

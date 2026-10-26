@@ -6,11 +6,10 @@ import {
 	IconCalendarEvent,
 	IconCalendarPlus,
 	IconHourglass,
-	IconLock,
 	IconSparkles,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Segmented, Tabs, Tooltip } from "antd";
+import { App, Button, Tabs, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
@@ -18,21 +17,29 @@ import { GoalCard } from "@/components/checkpoints/CallRoom/CallGoal";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { CallLayout } from "@/components/checkpoints/CallRoom/CallParts";
 import {
-	adviceSlots,
 	PlanBody,
 	usePlanChange,
 } from "@/components/checkpoints/CallRoom/CallPlan";
+import { SessionSwitcher } from "@/components/checkpoints/CallRoom/SessionSwitcher";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState } from "@/components/ui";
-import { FINAL_SESSION, SCOPE_SESSION } from "@/config/checkpoint";
+import {
+	AI_APPROVE_HOURS,
+	FINAL_SESSION,
+	SCOPE_SESSION,
+} from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
-import { useAdvisePlan, useCheckpointReview } from "@/hooks/checkpoint-review";
+import {
+	useAdvisePlan,
+	useApprovePlan,
+	useCheckpointReview,
+} from "@/hooks/checkpoint-review";
 import { type PlanEdit, planSession } from "@/lib/checkpoint-call";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { PlanChange } from "@/schemas/checkpoint";
@@ -41,7 +48,6 @@ import { CuratorHeader } from "./CuratorHeader";
 import { type CuratorAction, CuratorMessage } from "./CuratorMessage";
 import { CuratorReviewSkeleton } from "./CuratorReviewSkeleton";
 import { PreviousVerdict } from "./PreviousVerdict";
-import styles from "./style.module.scss";
 
 /** Where "Review the tasks" takes the author. */
 const PLAN_ANCHOR = "curator-plan";
@@ -67,6 +73,7 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 	const { data: review, isPending } = useCheckpointReview(checkpointId);
 	const onChange = usePlanChange(checkpointId);
 	const advise = useAdvisePlan(checkpointId);
+	const approve = useApprovePlan(checkpointId);
 
 	const askAdvice = () =>
 		advise.mutate(undefined, {
@@ -75,6 +82,17 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 					t(
 						"checkpoints.review.plan.adviceFailed",
 						"The curator could not read the tasks. Try again in a minute.",
+					),
+				),
+		});
+
+	const approvePlan = () =>
+		approve.mutate(undefined, {
+			onError: () =>
+				message.error(
+					t(
+						"checkpoints.review.plan.approveFailed",
+						"The plan was not approved. Try again in a minute.",
 					),
 				),
 		});
@@ -122,6 +140,8 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 			onChange={onChange}
 			onAdvise={askAdvice}
 			advising={advise.isPending}
+			onApprove={approvePlan}
+			approving={approve.isPending}
 			aside={
 				<CuratorAside
 					projectId={review.project.id}
@@ -138,8 +158,12 @@ export type AiReviewViewProps = {
 	index: number;
 	backHref: string;
 	onChange: (change: PlanChange) => Promise<void>;
+	/** Day 1: sends the tasks for the curator's one check. */
 	onAdvise: () => void;
 	advising: boolean;
+	/** Day 1 after the check, and day 15: the author is done with the plan. */
+	onApprove: () => void;
+	approving: boolean;
 	/** The Workflow sidebar; the stories leave it out. */
 	aside?: ReactNode;
 };
@@ -152,6 +176,8 @@ export function AiReviewView({
 	onChange,
 	onAdvise,
 	advising,
+	onApprove,
+	approving,
 	aside,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
@@ -159,6 +185,7 @@ export function AiReviewView({
 	const [pickedTab, setTab] = useState<AiTab | null>(null);
 	const { plan, current } = review;
 	const editing = planSession(plan.edit);
+	const open = editing ? sessionOf(review, editing)?.content : null;
 	// The open plan first; a session still ahead never, whatever the link asked for.
 	const selected = picked ?? editing ?? Math.min(index, current);
 	// Review by default; the start and sprint 2's review are where the plan is changed.
@@ -195,12 +222,7 @@ export function AiReviewView({
 					)}
 				/>
 			}
-			stage={
-				<Message
-					review={review}
-					onReviewTasks={plan.edit ? reviewTasks : null}
-				/>
-			}
+			stage={<Message review={review} onShowPlan={reviewTasks} />}
 			aside={aside}
 			below={
 				<>
@@ -214,6 +236,7 @@ export function AiReviewView({
 						goal={plan.goal}
 						editable={plan.edit === "goalAndTasks"}
 						onSave={(goal) => onChange({ op: "goal", goal })}
+						advice={open?.goal}
 					/>
 					<section id={PLAN_ANCHOR} className={callStyles.panel}>
 						<Tabs
@@ -241,18 +264,20 @@ export function AiReviewView({
 												selected === editing ? plan : { ...plan, edit: null }
 											}
 											onChange={onChange}
-											advice={
-												editing
-													? sessionOf(review, editing)?.content?.advice
-													: null
-											}
+											advice={open?.advice}
+											suggestions={open?.suggestions}
 											hint={planHint(t, plan.edit)}
-											{...adviceSlots({
-												until: plan.editUntil,
-												loading: advising,
-												onAdvise,
-												sessionIndex: selected,
-											})}
+											blank={plan.edit === "goalAndTasks"}
+											footer={
+												<PlanFooter
+													plan={plan}
+													checked={open?.step === "checked"}
+													advising={advising}
+													onSend={onAdvise}
+													approving={approving}
+													onApprove={onApprove}
+												/>
+											}
 										/>
 									),
 								},
@@ -270,14 +295,130 @@ export function AiReviewView({
 	);
 }
 
-/** Day 15's ask; the start's is the plan editor's own. */
-const planHint = (t: ReturnType<typeof useTranslate>["t"], edit: PlanEdit) =>
-	edit === "tasks"
-		? t(
-				"checkpoints.review.plan.midHint",
-				"Change the tasks yourself or take the curator's suggestions. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
-			)
-		: undefined;
+const planHint = (t: ReturnType<typeof useTranslate>["t"], edit: PlanEdit) => {
+	if (edit === "goalAndTasks") {
+		return t(
+			"checkpoints.review.plan.dayOneHint",
+			"Write 1 to 5 tasks that will show the goal is reached. Each one should end in something anyone can open: a build, a document, a video. Add the curator's suggestions or write your own.",
+		);
+	}
+	if (edit === "tasks") {
+		return t(
+			"checkpoints.review.plan.midHint",
+			"Change the tasks yourself or take the curator's suggestions, then confirm them. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
+		);
+	}
+	return undefined;
+};
+
+/**
+ * Under the open plan: on day 1, "Save and send to the curator" (frame
+ * 12.10.1, its confirm 12.10.1c) and, once checked, "Approve the plan"
+ * (12.10.1b); on day 15, confirming the tasks.
+ */
+function PlanFooter({
+	plan,
+	checked,
+	advising,
+	onSend,
+	approving,
+	onApprove,
+}: {
+	plan: CheckpointReviewDto["plan"];
+	checked: boolean;
+	advising: boolean;
+	onSend: () => void;
+	approving: boolean;
+	onApprove: () => void;
+}) {
+	const { t } = useTranslate();
+	const { modal } = App.useApp();
+	const until = plan.editUntil && dayjs(plan.editUntil).format("D MMM, HH:mm");
+	const empty = !plan.tasks.some((task) => !task.cut);
+
+	let note: string;
+	let button: ReactNode;
+	if (plan.edit === "goalAndTasks" && !checked) {
+		note = t(
+			"checkpoints.review.plan.openUntilSent",
+			"Open until you send the tasks",
+		);
+		const send = (
+			<Button
+				type="primary"
+				loading={advising}
+				disabled={empty}
+				onClick={() =>
+					modal.confirm({
+						title: t(
+							"checkpoints.review.plan.sendTitle",
+							"Send the tasks to the curator?",
+						),
+						content: t(
+							"checkpoints.review.plan.sendBody",
+							"The curator reads the goal and the tasks and writes what to keep, shorten or reword. You then have {hours} more hours to adjust them.",
+							{ hours: AI_APPROVE_HOURS },
+						),
+						okText: t("checkpoints.review.plan.sendOk", "Save and send"),
+						cancelText: t(
+							"checkpoints.review.plan.keepEditing",
+							"Keep editing",
+						),
+						onOk: () => {
+							trackCheckpoint("checkpoint_plan_saved", { session_index: 1 });
+							onSend();
+						},
+					})
+				}
+			>
+				{t("checkpoints.review.plan.send", "Save and send to the curator")}
+			</Button>
+		);
+		button = empty ? (
+			<Tooltip
+				title={t("checkpoints.review.plan.addOne", "Add at least one task")}
+			>
+				{send}
+			</Tooltip>
+		) : (
+			send
+		);
+	} else {
+		const dayOne = plan.edit === "goalAndTasks";
+		note = dayOne
+			? t(
+					"checkpoints.review.plan.checkedNote",
+					"The curator checked your plan · adjust it if needed and approve · approves itself on {date}",
+					{ date: until },
+				)
+			: t(
+					"checkpoints.review.plan.confirmNote",
+					"Open until {date} · then the tasks stay as they are",
+					{ date: until },
+				);
+		button = (
+			<Button
+				type="primary"
+				loading={approving}
+				disabled={dayOne && empty}
+				onClick={onApprove}
+			>
+				{dayOne
+					? t("checkpoints.review.plan.approve", "Approve the plan")
+					: t("checkpoints.review.plan.confirm", "Confirm the tasks")}
+			</Button>
+		);
+	}
+
+	return (
+		<div className={callStyles.planFooter}>
+			<Typography.Text type="secondary" className={callStyles.grow}>
+				{note}
+			</Typography.Text>
+			{button}
+		</div>
+	);
+}
 
 const sessionOf = (review: CheckpointReviewDto, index: number) =>
 	review.sessions.find((session) => session.index === index);
@@ -295,51 +436,37 @@ function ReviewSwitcher({
 	const { t } = useTranslate();
 
 	return (
-		<div className={styles.switcher}>
-			<Segmented<number>
-				value={selected}
-				onChange={onSelect}
-				options={review.sessions.map((session) => {
-					const date = dayjs(session.scheduledAt).format("D MMM");
-					let label: string;
-					if (session.index === 1) {
-						label = t("checkpoints.review.option.start", "Start · {date}", {
-							date,
-						});
-					} else if (session.index === FINAL_SESSION) {
-						label = t("checkpoints.review.option.verdict", "Verdict · {date}", {
-							date,
-						});
-					} else {
-						label = t(
-							"checkpoints.review.option.sprint",
-							"Sprint {n} · {date}",
-							{ n: session.index - 1, date },
-						);
-					}
-					const ahead = session.index > review.current;
-					return {
-						value: session.index,
-						disabled: ahead,
-						label: ahead ? (
-							<Tooltip
-								title={t(
-									"checkpoints.review.option.ahead",
-									"This review is still ahead",
-								)}
-							>
-								<span className={styles.lockedOption}>
-									<IconLock size={14} />
-									{label}
-								</span>
-							</Tooltip>
-						) : (
-							label
-						),
-					};
-				})}
-			/>
-		</div>
+		<SessionSwitcher
+			value={selected}
+			onChange={onSelect}
+			aheadLabel={t(
+				"checkpoints.review.option.ahead",
+				"This review is still ahead",
+			)}
+			options={review.sessions.map((session) => {
+				const date = dayjs(session.scheduledAt).format("D MMM");
+				let label: string;
+				if (session.index === 1) {
+					label = t("checkpoints.review.option.start", "Start · {date}", {
+						date,
+					});
+				} else if (session.index === FINAL_SESSION) {
+					label = t("checkpoints.review.option.verdict", "Verdict · {date}", {
+						date,
+					});
+				} else {
+					label = t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
+						n: session.index - 1,
+						date,
+					});
+				}
+				return {
+					value: session.index,
+					label,
+					ahead: session.index > review.current,
+				};
+			})}
+		/>
 	);
 }
 
@@ -403,10 +530,10 @@ function ReviewBody({
 /** The curator's latest letter, and the buttons for what it asks now. */
 function Message({
 	review,
-	onReviewTasks,
+	onShowPlan,
 }: {
 	review: CheckpointReviewDto;
-	onReviewTasks: (() => void) | null;
+	onShowPlan: () => void;
 }) {
 	const { t } = useTranslate();
 	const router = useRouter();
@@ -414,15 +541,25 @@ function Message({
 	const session = sessionOf(review, review.current);
 	const final = review.current === FINAL_SESSION;
 
+	// Sprint 1, the plan approved: the fixed closing letter of day 1 (frame 12.10.1a).
+	const closing = review.current === 1 && review.plan.approved;
+
 	const actions: CuratorAction[] = [];
 	// The curator points at the tasks; the author decides on them there.
-	if (onReviewTasks) {
+	if (review.plan.edit) {
 		actions.push({
 			key: "tasks",
 			label: t("checkpoints.review.action.reviewTasks", "Review the tasks"),
 			icon: <IconArrowDown size={16} />,
 			primary: true,
-			onClick: onReviewTasks,
+			onClick: onShowPlan,
+		});
+	} else if (closing) {
+		actions.push({
+			key: "plan",
+			label: t("checkpoints.review.action.seePlan", "See the plan"),
+			icon: <IconArrowDown size={16} />,
+			onClick: onShowPlan,
 		});
 	}
 	if (final && review.verdict) {
@@ -452,7 +589,14 @@ function Message({
 	return (
 		<CuratorMessage
 			date={dayjs(session?.scheduledAt).format("D MMM")}
-			message={session?.content?.message ?? fallbackMessage(t, review)}
+			message={
+				closing
+					? t(
+							"checkpoints.review.message.closing",
+							"Well done with the tasks — now you know what to do. I look forward to your new devlog posts, artifacts and other activity, to see how the team is getting on with them ;)",
+						)
+					: (session?.content?.message ?? fallbackMessage(t, review))
+			}
 			verdict={final ? review.verdict?.verdict : null}
 			actions={actions}
 		/>
@@ -466,13 +610,13 @@ const fallbackMessage = (
 ) => {
 	if (review.current === 1) {
 		return t(
-			"checkpoints.review.message.greeting",
-			"Hi, team! I'm the AI curator of {project} for the next 28 days. Let's start with the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check.",
+			"checkpoints.review.message.reading",
+			"Hello! I'm the AI curator of {project} for the next 28 days. I'm reading your goal now and will suggest tasks to start from — it takes a minute.",
 			{ project: review.project.name },
 		);
 	}
 	return t(
-		"checkpoints.review.message.reading",
+		"checkpoints.review.message.sprintReading",
 		"The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
 	);
 };

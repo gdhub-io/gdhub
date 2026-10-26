@@ -23,7 +23,7 @@ import {
 import { EmptyState, IconTile } from "@/components/ui";
 import { purchaseParams } from "@/config/analytics-events";
 import {
-	AI_PLAN_HOURS,
+	AI_APPROVE_HOURS,
 	CHECKPOINT_DAYS,
 	CHECKPOINT_LARGE_TEAM_EMAIL,
 	CHECKPOINT_MAX_TEAM,
@@ -252,8 +252,8 @@ export function PaymentStep() {
 			text: isAI
 				? t(
 						"checkpoints.pay.termDayOneAi",
-						"After payment the AI curator reads your goal. You then have {hours} hours to adjust it and set the tasks. Results are not guaranteed.",
-						{ hours: AI_PLAN_HOURS },
+						"After payment the AI curator reads your goal and suggests tasks. You write one to five tasks, the curator checks them once, and you approve the plan — or it approves itself {hours} hours after the check. Results are not guaranteed.",
+						{ hours: AI_APPROVE_HOURS },
 					)
 				: t(
 						"checkpoints.pay.termDayOnePro",

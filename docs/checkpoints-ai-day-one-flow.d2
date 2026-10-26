@@ -6,7 +6,7 @@ vars: {
 
 direction: down
 
-title: "GDHUB-117 — day 1: the goal is read after payment, 24 hours to adjust" {
+title: "GDHUB-117 — day 1: the goal is read after payment, the tasks are set and checked" {
   shape: text
   near: top-center
   style.font-size: 22
@@ -22,55 +22,58 @@ kind: "Curator?" {
 }
 paid -> kind
 
-pro: "Pro: the checkpoint starts on the day of call 1;\nthe goal and tasks open for that day's 24 hours"
+pro: "Pro: the checkpoint starts on the day of call 1;\nthe goal and tasks open for that day and 12 hours more"
 kind -> pro: "pro, once the curator accepts"
 
-call: "Call 1 inside the 24 hours:\nthe author adjusts the goal and tasks on the call or after it"
+call: "Call 1 inside the window:\nthe author adjusts the goal and tasks on the call or after it"
 pro -> call
 call -> closes
 
-start: "The checkpoint starts;\nthe goal and tasks open for 24 hours"
+start: "The checkpoint starts; the goal and tasks open"
 kind -> start: "AI"
 
-read: "The curator reads the goal once:\ndoes it fit 28 days and the team's hours?"
+read: "Call 1 — the goal read: does the goal fit 28 days and the team?\nand 3–5 suggested tasks, each with why"
 start -> read
 
-fits: "Does the plan hold up?" {
-  shape: diamond
-}
-read -> fits: "answered"
+letter: "The first letter: hello, write 1–5 tasks that will show the goal is reached;\nunder the goal: it fits, or widen / narrow it;\nthe suggestions with Add"
+read -> letter
 
-good: "First letter: \"Your plan looks good — go ahead!\"\nand until when it can still be adjusted"
-fits -> good: "yes"
+edit: "/workflow/cp{N}/review/1\nthe author adds suggestions or writes tasks, may change the goal"
+letter -> edit
 
-doubts: "First letter: the doubts, task by task,\nand what to change by <time>"
-fits -> doubts: "no"
+remind: "24 hours and no tasks yet:\na reminder; the window stays open"
+edit -> remind: "nothing sent"
+remind -> edit
 
-plain: "The first letter without the read;\nthe read is tried again when the author opens day 1"
-read -> plain: "the model failed"
+send: "Save and send to the curator? (confirm)"
+edit -> send
 
-notify: "The author is told: the curator wrote, 24 hours to adjust"
-good -> notify
-doubts -> notify
-plain -> notify
+check: "Call 2 — the check: advice under the goal and under each task\n(keep / shorten / reword / cut, and why)"
+send -> check
 
-edit: "/workflow/cp{N}/review/1\nthe author edits the goal and the tasks"
-notify -> edit
+notify: "The author is told: the curator checked your plan"
+check -> notify
 
-advice: "On save: advice on the tasks, as today"
-edit -> advice
-advice -> edit
+review: "The author re-reads, adjusts the goal and tasks if needed\n(no second check)"
+notify -> review
 
-closes: "24 hours pass"
-edit -> closes
+approve: "Approve the plan"
+review -> approve
 
-locked: "The goal and tasks lock;\nthe tasks open again after the sprint 2 review, as today"
-closes -> locked
+auto: "12 hours after the check, not approved:\nthe plan approves itself as it stands"
+review -> auto: "nothing pressed"
+
+closes: "The plan is approved: the goal and tasks lock\n(tasks open again after the sprint 2 review, as today)"
+approve -> closes
+auto -> closes
+
+closing: "AI: the closing letter (fixed text):\nwell done with the tasks — now you know what to do; looking forward to your devlogs"
+closes -> closing
 
 critical: "Critical" {
   shape: page
   a: "No model call before payment: nobody who does not buy costs anything"
-  b: "The read is written once per checkpoint, however many times the payment webhook fires"
-  c: "AI: 24 hours from payment, or from the start day the author picked if later. Pro: the 24 hours of call 1's day — a call late in the day leaves little time after it"
-  d: "The purchase terms say the opposite today (\"the AI checks your draft before you pay\", \"2 days\"): they need a new version"
+  b: "No tasks, no close: the checkpoint never runs on an empty plan"
+  c: "One check per checkpoint start: edits after it are the author's, approved as they stand"
+  d: "The first letter is written once, however many times the payment webhook fires"
 }

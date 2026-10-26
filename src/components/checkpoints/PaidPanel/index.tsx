@@ -15,15 +15,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { purchaseParams } from "@/config/analytics-events";
-import {
-	AI_PLAN_HOURS,
-	CHECKPOINT_DAYS,
-	CURATOR_ANSWER_DAYS,
-} from "@/config/checkpoint";
+import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
-import { planCloses } from "@/lib/checkpoint-call";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { MoneyNotice } from "../MoneyNotice";
@@ -231,8 +226,6 @@ export function PaidPanel({
 	);
 
 	const number = checkpoint.number ?? checkpoint.order;
-	// Frame 12.12.6: day 1's 24 hours, counted from payment (GDHUB-117).
-	const dayOneCloses = planCloses(checkpoint);
 	// A day 1 chosen for later is not today, and "Day 1 of 28" would say it is.
 	const firstDayAhead =
 		!!checkpoint.startedAt &&
@@ -309,15 +302,12 @@ export function PaidPanel({
 								{ day: checkpoint.day ?? 1, days: CHECKPOINT_DAYS, number },
 							),
 				)}
-				{dayOneCloses && dayOneCloses > new Date() && (
+				{/* Frame 12.12.6: day 1 waits for the tasks (GDHUB-117). */}
+				{!checkpoint.goalAgreedAt && (
 					<Typography.Text type="secondary" className={styles.sub}>
 						{t(
 							"checkpoints.paid.dayOne",
-							"Your AI curator has read your goal. Check it and set the tasks within {hours} hours — by {time}.",
-							{
-								hours: AI_PLAN_HOURS,
-								time: dayjs(dayOneCloses).format("D MMM, HH:mm"),
-							},
+							"Your AI curator is reading your goal and will suggest tasks. Write one to five tasks and send them for a check.",
 						)}
 					</Typography.Text>
 				)}

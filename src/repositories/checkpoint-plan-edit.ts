@@ -1,5 +1,13 @@
-import { CHECKPOINT_MAX_ITEMS_PER_KIND } from "@/config/checkpoint";
-import { CheckpointItemKind } from "@/config/prisma-enums";
+import {
+	AI_APPROVE_HOURS,
+	CHECKPOINT_MAX_ITEMS_PER_KIND,
+	SCOPE_SESSION,
+} from "@/config/checkpoint";
+import {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
 import { planEdit } from "@/lib/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
@@ -21,7 +29,14 @@ const loadPlan = (checkpointId: string) =>
 			startedAt: true,
 			goalAgreedAt: true,
 			project: { select: { authorId: true } },
-			sessions: { select: { index: true, scheduledAt: true, endedAt: true } },
+			sessions: {
+				select: {
+					index: true,
+					scheduledAt: true,
+					endedAt: true,
+					content: true,
+				},
+			},
 			items: {
 				where: { kind: CheckpointItemKind.Outcome },
 				select: {
@@ -143,4 +158,108 @@ export const agreeGoal = async (checkpointId: string, now = new Date()) => {
 		where: { id: checkpointId, goalAgreedAt: null },
 		data: { goalAgreedAt: now, goalAgreedById: checkpoint.curatorId },
 	});
+};
+
+export type ApproveRefusal =
+	| "notFound"
+	| "forbidden"
+	| "planClosed"
+	| "notChecked"
+	| "noTasks";
+
+/** A plan the checkpoint can run on: at least one task left in it. */
+const HAS_TASKS = {
+	items: { some: { kind: CheckpointItemKind.Outcome, cut: false } },
+} as const;
+
+/** Session 1 once the AI curator has checked the tasks. */
+const CHECKED = { path: ["step"], equals: "checked" };
+
+/**
+ * The author is done with the plan, with the AI curator: on day 1 after the
+ * one check, which locks the goal and tasks until day 15; on day 15 after
+ * the sprint 2 review's advice, which locks the tasks for the rest of it.
+ */
+export const approvePlan = async (
+	checkpointId: string,
+	userId: string,
+	now = new Date(),
+): Promise<ApproveRefusal | null> => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			curatorId: true,
+			curatorKind: true,
+			startedAt: true,
+			goalAgreedAt: true,
+			project: { select: { authorId: true } },
+			sessions: {
+				select: {
+					id: true,
+					index: true,
+					scheduledAt: true,
+					endedAt: true,
+					content: true,
+				},
+			},
+			items: {
+				where: HAS_TASKS.items.some,
+				select: { id: true },
+			},
+		},
+	});
+	if (!checkpoint) return "notFound";
+	if (!canEditPlan(checkpoint, userId)) return "forbidden";
+	if (checkpoint.curatorKind !== CheckpointCuratorKind.AI) return "planClosed";
+	const edit = planEdit(checkpoint, now);
+	const sessionOf = (index: number) =>
+		checkpoint.sessions.find((session) => session.index === index);
+
+	if (edit === "tasks") {
+		const scope = sessionOf(SCOPE_SESSION);
+		if (!scope) return "planClosed";
+		await prisma.checkpointSession.update({
+			where: { id: scope.id },
+			data: {
+				content: { ...(scope.content as object | null), approved: true },
+			},
+		});
+		return null;
+	}
+	if (edit !== "goalAndTasks") return "planClosed";
+	const content = sessionOf(1)?.content as { step?: string } | null;
+	if (content?.step !== "checked") return "notChecked";
+	if (!checkpoint.items.length) return "noTasks";
+
+	await prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, goalAgreedAt: null },
+		data: { goalAgreedAt: now, goalAgreedById: userId },
+	});
+	return null;
+};
+
+/**
+ * The hourly run: a checked plan nobody approved approves itself
+ * AI_APPROVE_HOURS after the check, as it stands — never an empty one.
+ */
+export const approveCheckedPlans = async (now = new Date()) => {
+	const { count } = await prisma.projectCheckpoint.updateMany({
+		where: {
+			curatorKind: CheckpointCuratorKind.AI,
+			status: CheckpointStatus.Active,
+			goalAgreedAt: null,
+			...HAS_TASKS,
+			sessions: {
+				some: {
+					index: 1,
+					content: CHECKED,
+					updatedAt: {
+						lte: new Date(now.getTime() - AI_APPROVE_HOURS * 60 * 60 * 1000),
+					},
+				},
+			},
+		},
+		data: { goalAgreedAt: now },
+	});
+	return count;
 };
