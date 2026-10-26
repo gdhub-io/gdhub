@@ -16,9 +16,14 @@ import {
 	AUTHOR_VOICE,
 	localeLine,
 	renderPicture,
+	renderPulse,
+	renderTeam,
 	renderWorkflow,
 } from "@/services/checkpoint-curator/prompts/card";
-import type { CuratorWorkflow } from "@/services/checkpoint-curator/types";
+import type {
+	CuratorTeam,
+	CuratorWorkflow,
+} from "@/services/checkpoint-curator/types";
 import { type CallNotes, TASK_ADVICE_KINDS } from "@/types/checkpoints";
 
 export type { CuratorTask };
@@ -26,6 +31,8 @@ export type { CuratorTask };
 export type PlanAdviceInput = {
 	goal: string;
 	workflow: CuratorWorkflow;
+	/** Who is on the team, their hours and the weeks behind. */
+	team: CuratorTeam;
 	tasks: CuratorTask[];
 	/** Day 1 sets the tasks; day 15 changes them for the last time. */
 	moment: "start" | "midway";
@@ -46,19 +53,13 @@ export type SprintReviewInput = {
 	/** What the images and videos in those devlogs show, one line each. */
 	devlogMedia: string[];
 	artifacts: { type: string; name: string | null }[];
-	/** The roles on the team that confirmed working in the sprint, and that did not. */
-	pulse: { worked: string[]; missing: string[] };
+	/** The team, with each member's weeks: the sprint's pulse is its last one. */
+	team: CuratorTeam;
 	focusLastReview: string[];
 	/** Day 29: the verdict already settled, for the letter to agree with it. */
 	verdict: { verdict: CheckpointVerdict; note: string } | null;
 	picture: string;
 };
-
-const roles = (list: string[]) => (list.length ? ` (${list.join(", ")})` : "");
-
-/** Who confirmed working, by role: a missing artist explains a missing board. */
-const pulseLine = (pulse: SprintReviewInput["pulse"]) =>
-	`${pulse.worked.length} confirmed working${roles(pulse.worked)}, ${pulse.missing.length} did not${roles(pulse.missing)}.`;
 
 const VOICE = stripIndents`
 	You are the AI curator of a game team on GDHub, through a 28-day checkpoint:
@@ -133,6 +134,8 @@ export const writePlanAdvice = async (
 		`,
 		prompt: stripIndents`
 			${renderWorkflow(input.workflow)}
+
+			${renderTeam(input.team)}
 			Goal: ${input.goal}
 
 			Tasks:
@@ -241,7 +244,8 @@ export const writeSprintReview = async (
 
 			${artifactLines(input.artifacts) || "No artifacts added in the sprint."}
 
-			Pulse: ${pulseLine(input.pulse)}
+			${renderTeam(input.team)}
+			${renderPulse(input.team, input.sprint)}
 
 			${renderPicture(input.picture)}
 

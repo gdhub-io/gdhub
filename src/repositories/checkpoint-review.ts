@@ -34,7 +34,7 @@ import {
 } from "@/repositories/checkpoint-number";
 import { canEditPlan } from "@/repositories/checkpoint-plan-edit";
 import {
-	memberRole,
+	curatorTeam,
 	projectPicture,
 	runPeriod,
 	stageWorkflow,
@@ -46,7 +46,10 @@ import {
 } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
-import type { CuratorWorkflow } from "@/services/checkpoint-curator/types";
+import type {
+	CuratorTeam,
+	CuratorWorkflow,
+} from "@/services/checkpoint-curator/types";
 import {
 	notify,
 	recipient,
@@ -330,6 +333,7 @@ export const adviseOnPlan = async (
 			curatorKind: true,
 			goal: true,
 			goalAgreedAt: true,
+			projectId: true,
 			stageName: true,
 			stepId: true,
 			startedAt: true,
@@ -360,6 +364,7 @@ export const adviseOnPlan = async (
 	const input = adviceInput(
 		checkpoint,
 		await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		await curatorTeam(checkpointId, checkpoint.projectId),
 		index === 1 ? "start" : "midway",
 		content?.notes?.inShort ?? null,
 		// Halfway reads the first two sprints, a period that does not move day by day.
@@ -407,12 +412,14 @@ const adviceInput = (
 		items: Parameters<typeof toCuratorTask>[0][];
 	},
 	workflow: CuratorWorkflow,
+	team: CuratorTeam,
 	moment: PlanAdviceInput["moment"],
 	review: string | null,
 	picture: string,
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
 	workflow,
+	team,
 	tasks: checkpoint.items.map(toCuratorTask),
 	moment,
 	review,
@@ -508,15 +515,6 @@ const reviewSelect = {
 	verdictNote: true,
 	items: taskSelect,
 	sessions: { select: { index: true, content: true } },
-	pulses: {
-		select: {
-			week: true,
-			confirmedAt: true,
-			teamMember: {
-				select: { position: true, speciality: { select: { name: true } } },
-			},
-		},
-	},
 } as const;
 
 type ReviewCheckpoint = Prisma.ProjectCheckpointGetPayload<{
@@ -535,18 +533,19 @@ const sprintReviewInput = async (
 	final: boolean,
 ) => {
 	const sprint = sessionIndex - 1;
-	const [{ devlogs, posts, artifacts }, picture, workflow] = await Promise.all([
-		sprintEvidence(checkpoint.projectId, startedAt, sprint),
-		projectPicture(
-			checkpoint.id,
-			final
-				? runPeriod(startedAt, checkpoint.dueAt)
-				: sprintRange(startedAt, sprint),
-		),
-		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
-	]);
+	const [{ devlogs, posts, artifacts }, picture, workflow, team] =
+		await Promise.all([
+			sprintEvidence(checkpoint.projectId, startedAt, sprint),
+			projectPicture(
+				checkpoint.id,
+				final
+					? runPeriod(startedAt, checkpoint.dueAt)
+					: sprintRange(startedAt, sprint),
+			),
+			stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+			curatorTeam(checkpoint.id, checkpoint.projectId),
+		]);
 	const devlogMedia = await devlogMediaLines(posts.map((post) => post.id));
-	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
 	// An AI review keeps its notes under `notes`; a human call's notes are the content.
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === sessionIndex - 1,
@@ -564,14 +563,7 @@ const sprintReviewInput = async (
 		devlogs,
 		devlogMedia,
 		artifacts,
-		pulse: {
-			worked: pulses
-				.filter((pulse) => pulse.confirmedAt)
-				.map((pulse) => memberRole(pulse.teamMember)),
-			missing: pulses
-				.filter((pulse) => !pulse.confirmedAt)
-				.map((pulse) => memberRole(pulse.teamMember)),
-		},
+		team,
 		focusLastReview: agreed.map((line) => line.text),
 		verdict:
 			final && checkpoint.verdict
@@ -639,6 +631,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 					adviceInput(
 						checkpoint,
 						input.workflow,
+						input.team,
 						"midway",
 						notes.inShort,
 						input.picture,

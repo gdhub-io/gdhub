@@ -1,9 +1,12 @@
 import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
-import { hoursSpan, weeklyRange } from "@/lib/checkpoint-capacity";
+import { teamCapacity, weeklyRange } from "@/lib/checkpoint-capacity";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoint-days";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
-import type { CuratorWorkflow } from "@/services/checkpoint-curator/types";
+import type {
+	CuratorTeam,
+	CuratorWorkflow,
+} from "@/services/checkpoint-curator/types";
 import { prisma } from "@/services/prisma";
 
 /** Days before a checkpoint starts whose activity the goal check and the plan read. */
@@ -63,8 +66,14 @@ export const memberRole = (member: {
 	speciality: { name: string } | null;
 }) => member.position || member.speciality?.name || "no role set";
 
-/** The team as it stands: role, stated hours, and the weeks each confirmed working. */
-async function teamLines(checkpointId: string, projectId: string) {
+/**
+ * The team as it stands, for every call in one place: each member's role,
+ * level, stated hours and the weeks they confirmed, and the hours summed.
+ */
+export async function curatorTeam(
+	checkpointId: string,
+	projectId: string,
+): Promise<CuratorTeam> {
 	const [members, pulses] = await Promise.all([
 		prisma.teamMember.findMany({
 			where: { team: { projectId }, ...CONFIRMED_MEMBERS },
@@ -82,31 +91,24 @@ async function teamLines(checkpointId: string, projectId: string) {
 			select: { teamMemberId: true, week: true, confirmedAt: true },
 		}),
 	]);
-	if (!members.length) return "Team: nobody has joined yet.";
 
-	const lines = members.map((member) => {
-		const role = memberRole(member);
-		const level = member.speciality?.level
-			? `, ${member.speciality.level}`
-			: "";
-		const hours = weeklyRange(member.user.profile?.timeForWork);
-		const stated = hours
-			? `, ${hoursSpan(hours)} h/week stated`
-			: ", hours not stated";
-		const weeks = pulses
-			.filter((pulse) => pulse.teamMemberId === member.id)
-			.sort((a, b) => a.week - b.week)
-			.map(
-				(pulse) =>
-					`week ${pulse.week} ${pulse.confirmedAt ? "worked" : "not confirmed"}`,
-			);
-
-		return `- ${member.user.name ?? "A member"}: ${role}${level}${stated}${
-			weeks.length ? `; ${weeks.join(", ")}` : ""
-		}`;
-	});
-
-	return `Team (${members.length}):\n${lines.join("\n")}`;
+	return {
+		...teamCapacity(
+			members.map((member) => ({
+				timeForWork: member.user.profile?.timeForWork,
+			})),
+		),
+		people: members.map((member) => ({
+			name: member.user.name ?? "A member",
+			role: memberRole(member),
+			level: member.speciality?.level ?? null,
+			hoursPerWeek: weeklyRange(member.user.profile?.timeForWork),
+			weeks: pulses
+				.filter((pulse) => pulse.teamMemberId === member.id)
+				.sort((a, b) => a.week - b.week)
+				.map((pulse) => !!pulse.confirmedAt),
+		})),
+	};
 }
 
 const ACTIVITY_LINE = {
@@ -157,9 +159,8 @@ async function activityLines(
 }
 
 /**
- * The project as a curator who opened its page would see it, for one moment of
- * the checkpoint: who is on the team and how the weeks went, and what happened
- * in the period. Only what the author can see; the stage is `stageWorkflow`.
+ * What happened on the project in one period of the checkpoint, as its
+ * activity feed shows it. The stage is `stageWorkflow`, the team `curatorTeam`.
  *
  * Without a period it is the two weeks leading in, said as such: the curator
  * reads it on day 1 and must not take it for work done in the checkpoint.
@@ -179,12 +180,7 @@ export async function projectPicture(
 			(checkpoint.startedAt ?? to).getTime() - LEAD_IN_DAYS * MS_PER_DAY,
 		);
 
-	const [team, activity] = await Promise.all([
-		teamLines(checkpointId, checkpoint.projectId),
-		activityLines(checkpoint.projectId, from, to, !period),
-	]);
-
-	return [team, activity].join("\n\n");
+	return activityLines(checkpoint.projectId, from, to, !period);
 }
 
 /** The period of the whole run, for the final review. */

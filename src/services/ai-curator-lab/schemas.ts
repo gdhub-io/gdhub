@@ -45,6 +45,22 @@ const workflow = z.object({
 
 const hours = z.object({ from: z.number(), to: z.number() }).nullable();
 
+const team = z.object({
+	members: z.number().int(),
+	stated: z.number().int(),
+	hoursPerWeek: hours,
+	hoursPerRun: hours,
+	people: z.array(
+		z.object({
+			name: z.string(),
+			role: z.string(),
+			level: z.string().nullable(),
+			hoursPerWeek: hours,
+			weeks: z.array(z.boolean()),
+		}),
+	),
+});
+
 const seen = z
 	.object({ match: z.nativeEnum(EvidenceMatch), note: z.string().nullable() })
 	.nullable();
@@ -73,12 +89,7 @@ export const goalCheckInput = z.object({
 			experience: z.string().nullable(),
 		})
 		.nullable(),
-	team: z.object({
-		members: z.number().int(),
-		stated: z.number().int(),
-		hoursPerWeek: hours,
-		hoursPerRun: hours,
-	}),
+	team,
 	previous: z
 		.object({
 			verdict: z.nativeEnum(CheckpointVerdict),
@@ -106,6 +117,7 @@ export const suggestLinesInput = z.discriminatedUnion("kind", [
 export const planAdviceInput = z.object({
 	goal: z.string(),
 	workflow,
+	team,
 	tasks: z.array(task),
 	moment: z.enum(["start", "midway"]),
 	review: z.string().nullable(),
@@ -124,10 +136,7 @@ export const sprintReviewInput = z.object({
 	artifacts: z.array(
 		z.object({ type: z.string(), name: z.string().nullable() }),
 	),
-	pulse: z.object({
-		worked: z.array(z.string()),
-		missing: z.array(z.string()),
-	}),
+	team,
 	focusLastReview: z.array(z.string()),
 	verdict: z
 		.object({ verdict: z.nativeEnum(CheckpointVerdict), note: z.string() })
@@ -179,9 +188,7 @@ export const reportInput = z.object({
 		.nullable(),
 	items: z.array(item),
 	devlogs: z.array(z.object({ publishedAt: z.string(), content: z.string() })),
-	pulses: z.array(
-		z.object({ member: z.string(), weeks: z.array(z.boolean()) }),
-	),
+	team,
 	picture: z.string(),
 });
 

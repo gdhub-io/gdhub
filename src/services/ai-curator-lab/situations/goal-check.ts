@@ -46,12 +46,7 @@ export const goalCheckSituations = (
 			level: "Middle",
 			experience: t.experience,
 		},
-		team: {
-			members: 3,
-			stated: 2,
-			hoursPerWeek: { from: 30, to: 40 },
-			hoursPerRun: { from: 120, to: 160 },
-		},
+		team: project.team("start"),
 		previous: null,
 		picture: project.picture("start"),
 	};

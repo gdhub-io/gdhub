@@ -59,7 +59,7 @@ export type CuratorHours = { from: number; to: number };
  * is not the same claim as five members and five. Both ranges are null when
  * nobody stated anything — unknown time, never zero.
  */
-export type CuratorTeam = {
+export type TeamCapacity = {
 	members: number;
 	/** How many of them stated any hours at all. */
 	stated: number;
@@ -67,6 +67,20 @@ export type CuratorTeam = {
 	/** The same sum over the four sprints of the run. */
 	hoursPerRun: CuratorHours | null;
 };
+
+/** One person on the team as the curator reads them: the role first, no contact. */
+export type CuratorMember = {
+	name: string;
+	role: string;
+	level: string | null;
+	/** What they stated a week; null when they stated nothing. */
+	hoursPerWeek: CuratorHours | null;
+	/** The weeks already behind, in order: confirmed working or not. */
+	weeks: boolean[];
+};
+
+/** The team, in one place for every call: who is on it, their hours and pulse, and the sums. */
+export type CuratorTeam = TeamCapacity & { people: CuratorMember[] };
 
 /** What the game is, as its page says. */
 export type CuratorProject = {
@@ -158,8 +172,8 @@ export type ReportInput = {
 	/** Outcomes the evidence shows only in part; counted, with a caveat. */
 	partly: PartlyOutcome[];
 	devlogs: { publishedAt: string; content: string }[];
-	/** Member by week: who confirmed they worked on it. */
-	pulses: { member: string; weeks: boolean[] }[];
+	/** The team, with each member's weeks: who confirmed they worked on it. */
+	team: CuratorTeam;
 	/** A human curator's calls, from their notes; empty for the AI curator. */
 	calls: { index: number; inShort: string; agreed: string[] }[];
 	picture: string;

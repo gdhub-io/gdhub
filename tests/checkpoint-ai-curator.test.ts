@@ -52,6 +52,16 @@ vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", async (actual) => ({
 	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
 		.memberRole,
+	curatorTeam: vi.fn(async () => ({
+		members: 2,
+		stated: 0,
+		hoursPerWeek: null,
+		hoursPerRun: null,
+		people: [
+			{ name: "A", role: "Game designer", level: null, hoursPerWeek: null, weeks: [true] },
+			{ name: "B", role: "Lead artist", level: null, hoursPerWeek: null, weeks: [false] },
+		],
+	})),
 	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
 		currentStage,
 		nextStage: null,
@@ -238,11 +248,11 @@ describe("writeDueReviews", () => {
 
 		const input = writeSprintReview.mock.calls[0][0];
 		expect(input.sprint).toBe(1);
-		// By role, never by name: the project's own title wins over the speciality.
-		expect(input.pulse).toEqual({
-			worked: ["Game designer"],
-			missing: ["Lead artist"],
-		});
+		// The team in one block, with each member's weeks: the sprint's pulse is read from it.
+		expect(input.team.people.map((person: { role: string }) => person.role)).toEqual([
+			"Game designer",
+			"Lead artist",
+		]);
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 		expect(closeCheckpoint).not.toHaveBeenCalled();
 

@@ -4,7 +4,7 @@ import {
 	say,
 	type sprintReviewInput,
 } from "../schemas";
-import { hollowTide, pulseOf } from "./hollow-tide";
+import { hollowTide } from "./hollow-tide";
 
 /**
  * Public, long-lived media, read live on Run like a devlog's own links. Hollow
@@ -70,7 +70,7 @@ export const sprintReviewSituations = (
 		devlogs: [devlogs.greybox],
 		media: [],
 		artifacts: [{ type: "ExecutableBuild", name: artifacts.demo }],
-		pulse: pulseOf(1),
+		team: project.team("sprint1"),
 		focusLastReview: [],
 		verdict: null,
 		picture: project.picture("sprint1"),
@@ -113,7 +113,7 @@ export const sprintReviewSituations = (
 				sprint: 2,
 				devlogs: [],
 				artifacts: [],
-				pulse: pulseOf(2),
+				team: project.team("sprint2"),
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
@@ -137,7 +137,7 @@ export const sprintReviewSituations = (
 				],
 				devlogs: [devlogs.playtest],
 				artifacts: [{ type: "Document", name: artifacts.notes }],
-				pulse: pulseOf(4),
+				team: project.team("end"),
 				focusLastReview: t.focusAfter3,
 				verdict: { verdict: "StageClosed", note: t.verdict },
 				workflow: project.workflow("end"),

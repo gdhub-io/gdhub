@@ -16,6 +16,7 @@ import {
 	writeMidNote,
 	writeVerdictRead,
 } from "@/repositories/checkpoint-curator.repository";
+import { curatorTeam } from "@/repositories/curator-context";
 import { journal } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { checkpointCurator } from "@/services/checkpoint-curator";
@@ -40,12 +41,23 @@ vi.mock("@/services/checkpoint-notifications", () => ({
 	notifyDayOne: vi.fn(),
 }));
 
+const { TEAM } = vi.hoisted(() => ({
+	TEAM: {
+		members: 2,
+		stated: 1,
+		hoursPerWeek: { from: 10, to: 20 },
+		hoursPerRun: { from: 40, to: 80 },
+		people: [],
+	},
+}));
+
 vi.mock("@/repositories/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 }));
 vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", () => ({
+	curatorTeam: vi.fn(async () => TEAM),
 	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
 		currentStage,
 		nextStage: null,
@@ -127,6 +139,7 @@ describe("runGoalCheck", () => {
 		kept: { goalCheck?: unknown; goalCheckHash?: string | null } = {},
 		project: { description?: string | null; genre?: string | null } = {},
 	) => ({
+		projectId: "p1",
 		goal: "A playable vertical slice",
 		stageName: "Prototyping",
 		stepId: "step-1",
@@ -145,7 +158,7 @@ describe("runGoalCheck", () => {
 
 	const checked = { reachable: true, notes: [], missing: [], note: "n" };
 
-	it("hands the model the team's hours, weekly and over the whole run", async () => {
+	it("hands the model the team as curatorTeam builds it", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([10, 20]), member([5, 8])]) as never,
 		);
@@ -153,18 +166,9 @@ describe("runGoalCheck", () => {
 
 		await runGoalCheck("cp1");
 
+		expect(curatorTeam).toHaveBeenCalledWith("cp1", "p1");
 		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
-			expect.objectContaining({
-				team: {
-					members: 2,
-					stated: 2,
-					hoursPerWeek: { from: 15, to: 28 },
-					hoursPerRun: {
-						from: 15 * SPRINTS_PER_CHECKPOINT,
-						to: 28 * SPRINTS_PER_CHECKPOINT,
-					},
-				},
-			}),
+			expect.objectContaining({ team: TEAM }),
 			{ checkpointId: "cp1" },
 		);
 	});
@@ -273,46 +277,6 @@ describe("runGoalCheck", () => {
 		);
 	});
 
-	it("does not read a member who stated nothing as a member with no hours", async () => {
-		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
-			draft([member([10, 20]), member([]), member(null)]) as never,
-		);
-		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
-
-		await runGoalCheck("cp1");
-
-		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
-			expect.objectContaining({
-				team: expect.objectContaining({
-					members: 3,
-					stated: 1,
-					hoursPerWeek: { from: 10, to: 20 },
-				}),
-			}),
-			{ checkpointId: "cp1" },
-		);
-	});
-
-	it("leaves the hours unknown when the whole team stated nothing", async () => {
-		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
-			draft([member([]), member(null)]) as never,
-		);
-		vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(checked);
-
-		await runGoalCheck("cp1");
-
-		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
-			expect.objectContaining({
-				team: expect.objectContaining({
-					members: 2,
-					hoursPerWeek: null,
-					hoursPerRun: null,
-				}),
-			}),
-			{ checkpointId: "cp1" },
-		);
-	});
-
 	it("counts the team as it stands — the curator's card count, without those who left", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			draft([member([10, 20])]) as never,
@@ -396,6 +360,10 @@ describe("runGoalCheck", () => {
 				goalCheckHash: hash,
 			}) as never,
 		);
+		vi.mocked(curatorTeam).mockResolvedValueOnce({
+			...TEAM,
+			hoursPerWeek: { from: 30, to: 40 },
+		});
 
 		await runGoalCheck("cp1");
 
@@ -674,7 +642,7 @@ describe("goal check schema", () => {
 		const schema = goalCheckSchema({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
 			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
-			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
 			author: null,
@@ -693,7 +661,7 @@ describe("goal check schema", () => {
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
 			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
-			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
 			author: {
@@ -716,7 +684,7 @@ describe("the goal check's stored read", () => {
 		const input = {
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
 			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
-			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
 			author: null,

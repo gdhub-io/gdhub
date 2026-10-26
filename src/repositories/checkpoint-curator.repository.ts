@@ -10,7 +10,6 @@ import {
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { teamCapacity } from "@/lib/checkpoint-capacity";
 import { checkpointDay } from "@/lib/checkpoint-days";
 import {
 	settleVerdict,
@@ -25,6 +24,7 @@ import {
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
 import {
+	curatorTeam,
 	projectPicture,
 	runPeriod,
 	stageWorkflow,
@@ -236,11 +236,7 @@ export const runGoalCheck = async (
 			genre: checkpoint.project.genre?.trim() || null,
 		},
 		author: founder ? briefAuthor(founder) : null,
-		team: teamCapacity(
-			members.map((member) => ({
-				timeForWork: member.user.profile?.timeForWork,
-			})),
-		),
+		team: await curatorTeam(checkpointId, checkpoint.projectId),
 		previous,
 		picture: await projectPicture(checkpointId),
 	};
@@ -431,6 +427,7 @@ const reportInputFor = async (checkpointId: string) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
+			projectId: true,
 			goal: true,
 			stageName: true,
 			stepId: true,
@@ -449,13 +446,6 @@ const reportInputFor = async (checkpointId: string) => {
 				orderBy: { publishedAt: "asc" },
 				select: { publishedAt: true, content: true },
 			},
-			pulses: {
-				select: {
-					week: true,
-					confirmedAt: true,
-					teamMember: { select: { user: { select: { name: true } } } },
-				},
-			},
 		},
 	});
 	if (!checkpoint) return null;
@@ -472,7 +462,7 @@ const reportInputFor = async (checkpointId: string) => {
 				}
 			: null,
 		devlogs: checkpoint.reports.map(toDevlog),
-		pulses: pulseMatrix(checkpoint.pulses),
+		team: await curatorTeam(checkpointId, checkpoint.projectId),
 		calls:
 			checkpoint.curatorKind === CheckpointCuratorKind.Human
 				? checkpoint.sessions.map((session) => {
@@ -576,27 +566,6 @@ export const closeCheckpoint = async (
 	]);
 
 	return settled;
-};
-
-type PulseRow = {
-	week: number;
-	confirmedAt: Date | null;
-	teamMember: { user: { name: string | null } };
-};
-
-/** Member by week, in the shape the report reads: four booleans per person. */
-const pulseMatrix = (pulses: PulseRow[]) => {
-	const weeks = SPRINTS_PER_CHECKPOINT;
-	const byMember = new Map<string, boolean[]>();
-
-	for (const pulse of pulses) {
-		const member = pulse.teamMember.user.name ?? "Unnamed";
-		const row = byMember.get(member) ?? Array<boolean>(weeks).fill(false);
-		row[pulse.week - 1] = !!pulse.confirmedAt;
-		byMember.set(member, row);
-	}
-
-	return [...byMember].map(([member, weeks]) => ({ member, weeks }));
 };
 
 /**

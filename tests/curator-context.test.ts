@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/curator-text";
-import { projectPicture, stageWorkflow } from "@/repositories/curator-context";
+import {
+	curatorTeam,
+	projectPicture,
+	stageWorkflow,
+} from "@/repositories/curator-context";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
 import { prisma } from "@/services/prisma";
 
@@ -76,11 +80,12 @@ const period = {
 };
 
 describe("the project picture the AI curator reads", () => {
-	it("leaves the stage to the workflow block: the picture is the team and the activity", async () => {
+	it("is the activity alone: the stage and the team have blocks of their own", async () => {
 		const picture = await projectPicture("cp1", period);
 
 		expect(picture).not.toContain("Stage:");
-		expect(picture).toMatch(/^Team \(1\):/);
+		expect(picture).not.toContain("Team");
+		expect(picture).toMatch(/^What happened on the project from 2026-10-01/);
 	});
 
 	it("says the two weeks before the start are before it, on day 1", async () => {
@@ -97,12 +102,43 @@ describe("the project picture the AI curator reads", () => {
 		expect(picture).not.toContain("Collect 10 applause");
 	});
 
-	it("names each member's role, hours and the weeks they worked", async () => {
-		const picture = await projectPicture("cp1", period);
+	it("builds the team once: role, level, hours, the weeks they worked, and the sums", async () => {
+		await expect(curatorTeam("cp1", "p1")).resolves.toEqual({
+			members: 1,
+			stated: 1,
+			hoursPerWeek: { from: 5, to: 10 },
+			hoursPerRun: { from: 20, to: 40 },
+			people: [
+				{
+					name: "Marta",
+					// The project's own title wins over the speciality.
+					role: "Programmer",
+					level: "Middle",
+					hoursPerWeek: { from: 5, to: 10 },
+					weeks: [true, false],
+				},
+			],
+		});
+	});
 
-		expect(picture).toContain(
-			"- Marta: Programmer, Middle, 5–10 h/week stated; week 1 worked, week 2 not confirmed",
-		);
+	it("never reads a member who stated nothing as a member with no hours", async () => {
+		vi.mocked(prisma.teamMember.findMany).mockResolvedValue([
+			{
+				id: "m1",
+				position: null,
+				speciality: { name: "Artist", level: null },
+				user: { name: "Tom", profile: { timeForWork: [] } },
+			},
+		] as never);
+		vi.mocked(prisma.checkpointPulse.findMany).mockResolvedValue([]);
+
+		await expect(curatorTeam("cp1", "p1")).resolves.toMatchObject({
+			members: 1,
+			stated: 0,
+			hoursPerWeek: null,
+			hoursPerRun: null,
+			people: [{ role: "Artist", hoursPerWeek: null, weeks: [] }],
+		});
 	});
 
 	it("lists what happened in the period, oldest first, without stage moves or devlogs", async () => {

@@ -8,6 +8,7 @@ import {
 	localeLine,
 	renderCard,
 	renderPicture,
+	renderTeam,
 	renderWorkflow,
 } from "./card";
 
@@ -174,15 +175,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					: ""
 			}
 
-			Weekly pulse, member by week:
-			${
-				input.pulses
-					.map(
-						(row) =>
-							`- ${row.member}: ${row.weeks.map((week) => (week ? "yes" : "—")).join(" ")}`,
-					)
-					.join("\n") || "- (no pulse recorded)"
-			}
+			${renderTeam(input.team)}
 
 			${renderPicture(input.picture)}
 

@@ -125,7 +125,7 @@ export function AiCuratorLab() {
 	const [ranInput, setRanInput] = useState<unknown>();
 
 	const calls = catalogue?.calls ?? [];
-	const current = calls.find((each) => each.id === callId) ?? calls.at(-1);
+	const current = calls.find((each) => each.id === callId) ?? calls[0];
 	const situation =
 		current?.situations[language].find((each) => each.id === situationId) ??
 		current?.situations[language][0];

@@ -4,7 +4,7 @@ import {
 	type Situation,
 	say,
 } from "../schemas";
-import { hollowTide, PULSE_ROWS } from "./hollow-tide";
+import { hollowTide } from "./hollow-tide";
 
 type Item = Situation<typeof reportInput>["input"]["items"][number];
 
@@ -96,7 +96,7 @@ export const reportSituations = (
 			playtest,
 		],
 		devlogs: [devlog.greybox, devlog.board, devlog.playtest],
-		pulses: PULSE_ROWS,
+		team: project.team("end"),
 		picture: project.picture("end"),
 	};
 	const replacing = (id: string, item: Item) => ({

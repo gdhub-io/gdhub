@@ -100,9 +100,19 @@ const PULSE = {
 };
 
 const MEMBERS = [
-	{ name: "Marta", role: "Game designer", line: "Middle, 20–25 h/week stated" },
-	{ name: "Tom", role: "Artist", line: "Junior, 10–15 h/week stated" },
-	{ name: "Ivo", role: "Programmer", line: "Middle, hours not stated" },
+	{
+		name: "Marta",
+		role: "Game designer",
+		level: "Middle",
+		hoursPerWeek: { from: 20, to: 25 },
+	},
+	{
+		name: "Tom",
+		role: "Artist",
+		level: "Junior",
+		hoursPerWeek: { from: 10, to: 15 },
+	},
+	{ name: "Ivo", role: "Programmer", level: "Middle", hoursPerWeek: null },
 ] as const;
 
 /** What happened, oldest first, as the activity feed words it. */
@@ -128,66 +138,46 @@ const MOMENTS = {
 
 export type Moment = keyof typeof MOMENTS;
 
-/**
- * The project as `projectPicture` writes it at a moment: the team with the
- * weeks already behind, and what happened in the period.
- * `without` drops artifacts a situation never had.
- */
+/** What happened in the moment's period, as `projectPicture` writes it. */
 const pictureAt = (
 	a: Artifacts,
 	moment: Moment,
 	without: (keyof Artifacts)[] = [],
 ) => {
-	const { from, to, weeks } = MOMENTS[moment];
-	const team = MEMBERS.map(({ name, role, line }) => {
-		const worked = PULSE[name]
-			.slice(0, weeks)
-			.map((ok, week) => `week ${week + 1} ${ok ? "worked" : "not confirmed"}`);
-		return `- ${name}: ${role}, ${line}${worked.length ? `; ${worked.join(", ")}` : ""}`;
-	});
+	const { from, to } = MOMENTS[moment];
 	const dropped = without.map((key) => `"${a[key]}"`);
 	const happened = events(a)
 		.filter((event) => event.on >= from && event.on <= to)
 		.filter((event) => !dropped.some((name) => event.line.includes(name)))
 		.map((event) => `- ${event.on} · ${event.line}`);
-
 	// Day 1 reads the lead-in, and says so.
 	const period =
 		moment === "start"
 			? `in the two weeks before the checkpoint started, from ${from} to ${to}`
 			: `from ${from} to ${to}`;
-
-	return [
-		`Team (${MEMBERS.length}):`,
-		...team,
-		"",
-		happened.length
-			? `What happened on the project ${period}:\n${happened.join("\n")}`
-			: `Nothing else happened on the project ${period}.`,
-	].join("\n");
+	return happened.length
+		? `What happened on the project ${period}:\n${happened.join("\n")}`
+		: `Nothing else happened on the project ${period}.`;
 };
 
-/** The roles that confirmed working in a week, and the roles that did not. */
-export const pulseOf = (week: number) => ({
-	worked: MEMBERS.filter(({ name }) => PULSE[name][week - 1]).map(
-		({ role }) => role,
-	),
-	missing: MEMBERS.filter(({ name }) => !PULSE[name][week - 1]).map(
-		({ role }) => role,
-	),
+/** The team as `curatorTeam` builds it at a moment: the weeks already behind only. */
+const teamAt = (moment: Moment) => ({
+	members: MEMBERS.length,
+	stated: 2,
+	hoursPerWeek: { from: 30, to: 40 },
+	hoursPerRun: { from: 120, to: 160 },
+	people: MEMBERS.map((member) => ({
+		...member,
+		weeks: PULSE[member.name].slice(0, MOMENTS[moment].weeks),
+	})),
 });
-
-/** The pulse matrix as the report reads it: member by week. */
-export const PULSE_ROWS = MEMBERS.map(({ name }) => ({
-	member: name,
-	weeks: PULSE[name],
-}));
 
 export const hollowTide = (language: LabLanguage) => {
 	const text = TEXT[language];
 	return {
 		...text,
 		workflow: workflowAt,
+		team: teamAt,
 		picture: (moment: Moment, without?: (keyof Artifacts)[]) =>
 			pictureAt(text.artifacts, moment, without),
 	};

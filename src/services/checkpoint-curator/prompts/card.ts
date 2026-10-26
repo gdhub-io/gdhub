@@ -40,24 +40,47 @@ export const renderCard = (card: CuratorGoalCard) => stripIndents`
  * The team's stated time. Silence is rendered as silence: a team that stated
  * nothing must read as unknown hours, not as a team with none.
  */
+const span = (hours: { from: number; to: number }) =>
+	hours.from === hours.to ? `${hours.from}` : `${hours.from}–${hours.to}`;
+
+/** The team in one block: the sums, then each person with their hours and the weeks behind. */
 export const renderTeam = (team: CuratorTeam) => {
 	const people = `${team.members} ${team.members === 1 ? "person" : "people"}`;
-
-	if (!team.hoursPerWeek || !team.hoursPerRun) {
-		return `The team: ${people}. Nobody stated their hours, so the time available is unknown — which is not the same as none.`;
-	}
-
 	const silent = team.members - team.stated;
+	const sums =
+		!team.hoursPerWeek || !team.hoursPerRun
+			? `The team: ${people}. Nobody stated their hours, so the time available is unknown — which is not the same as none.`
+			: [
+					`The team: ${people}, ${team.stated} of whom stated their hours.`,
+					`Stated time: ${span(team.hoursPerWeek)} hours a week between them, so ${span(team.hoursPerRun)} hours over the 28 days.`,
+					silent
+						? `The other ${silent} stated nothing and are not in that total.`
+						: "",
+				]
+					.filter(Boolean)
+					.join(" ");
+	const lines = team.people.map((person) => {
+		const hours = person.hoursPerWeek
+			? `${span(person.hoursPerWeek)} h/week stated`
+			: "hours not stated";
+		const weeks = person.weeks.map(
+			(worked, index) =>
+				`week ${index + 1} ${worked ? "worked" : "not confirmed"}`,
+		);
+		return `- ${person.name}: ${person.role}${person.level ? `, ${person.level}` : ""}, ${hours}${weeks.length ? `; ${weeks.join(", ")}` : ""}`;
+	});
+	return [sums, ...lines].join("\n");
+};
 
-	return [
-		`The team: ${people}, ${team.stated} of whom stated their hours.`,
-		`Stated time: ${team.hoursPerWeek.from}–${team.hoursPerWeek.to} hours a week between them, so ${team.hoursPerRun.from}–${team.hoursPerRun.to} hours over the 28 days.`,
-		silent
-			? `The other ${silent} stated nothing and are not in that total.`
-			: "",
-	]
-		.filter(Boolean)
-		.join(" ");
+/** Who confirmed working in one week, by role: a missing artist explains a missing board. */
+export const renderPulse = (team: CuratorTeam, week: number) => {
+	const worked = team.people.filter((person) => person.weeks[week - 1]);
+	const missing = team.people.filter(
+		(person) => person.weeks[week - 1] === false,
+	);
+	const roles = (list: typeof worked) =>
+		list.length ? ` (${list.map((person) => person.role).join(", ")})` : "";
+	return `Pulse: ${worked.length} confirmed working${roles(worked)}, ${missing.length} did not${roles(missing)}.`;
 };
 
 export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
