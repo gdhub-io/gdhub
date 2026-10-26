@@ -70,13 +70,15 @@ describe("planEdit", () => {
 		expect(planEdit(checkpoint, duringCall3)).toBe("tasks");
 	});
 
-	it("closes call 1 once the goal is agreed, even inside its window", () => {
-		expect(
-			planEdit(
-				{ curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions },
-				duringCall1,
-			),
-		).toBeNull();
+	it("keeps the goal and tasks open after call 1 until noon the next day (GDHUB-117)", () => {
+		const agreed = { curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions };
+		expect(planEdit(agreed, new Date("2026-10-05T23:30:00Z"))).toBe(
+			"goalAndTasks",
+		);
+		expect(planEdit(agreed, new Date("2026-10-06T11:59:00Z"))).toBe(
+			"goalAndTasks",
+		);
+		expect(planEdit(agreed, new Date("2026-10-06T12:00:00Z"))).toBeNull();
 	});
 
 	describe("with the AI curator", () => {
@@ -96,10 +98,23 @@ describe("planEdit", () => {
 			sessions: aiSessions,
 		};
 
-		it("opens the tasks freely through day 2, never the goal", () => {
-			expect(planEdit(ai, new Date("2026-10-05T09:00:00Z"))).toBe("plan");
-			expect(planEdit(ai, new Date("2026-10-06T23:59:00Z"))).toBe("plan");
-			expect(planEdit(ai, new Date("2026-10-07T00:00:00Z"))).toBeNull();
+		it("opens the goal and tasks for 24 hours from payment (GDHUB-117)", () => {
+			const paid = { ...ai, goalAgreedAt: new Date("2026-10-05T15:00:00Z") };
+			expect(planEdit(paid, new Date("2026-10-05T16:00:00Z"))).toBe(
+				"goalAndTasks",
+			);
+			expect(planEdit(paid, new Date("2026-10-06T14:59:00Z"))).toBe(
+				"goalAndTasks",
+			);
+			expect(planEdit(paid, new Date("2026-10-06T15:00:00Z"))).toBeNull();
+		});
+
+		it("counts the 24 hours from a later start day the author picked", () => {
+			const later = { ...ai, goalAgreedAt: new Date("2026-10-02T15:00:00Z") };
+			expect(planEdit(later, new Date("2026-10-05T23:00:00Z"))).toBe(
+				"goalAndTasks",
+			);
+			expect(planEdit(later, new Date("2026-10-06T00:00:00Z"))).toBeNull();
 		});
 
 		it("opens them on the record for a day after the sprint 2 review", () => {
@@ -108,14 +123,14 @@ describe("planEdit", () => {
 			expect(planEdit(ai, new Date("2026-10-20T01:00:00Z"))).toBeNull();
 		});
 
-		it("writes the start freely but keeps the goal paid for", async () => {
+		it("lets the author change the goal on day 1, and write the start freely", async () => {
 			const start = new Date("2026-10-05T09:00:00Z");
 			checkpointFindUnique.mockResolvedValue(
 				plan({ ...ai, curatorId: null }),
 			);
 			expect(
 				await changePlan("cp", "author", { op: "goal", goal: "Other" }, start),
-			).toBe("goalLocked");
+			).toBeNull();
 			await changePlan("cp", "author", { op: "remove", itemId: "open" }, start);
 			expect(itemDelete).toHaveBeenCalledWith({ where: { id: "open" } });
 		});

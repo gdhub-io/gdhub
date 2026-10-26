@@ -1,7 +1,8 @@
 import {
-	AI_PLAN_DAYS,
+	AI_PLAN_HOURS,
 	CALL_CLOSES_MINUTES,
 	CALL_OPENS_MINUTES,
+	PRO_PLAN_HOURS,
 	SCOPE_SESSION,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
@@ -57,18 +58,41 @@ export const parseCallRoomName = (name: string) => {
 };
 
 /**
- * What the plan lets its editors change now: the tasks freely, goal locked
- * (`plan`) — before call 1, or in the AI curator's first days; the goal and
- * the tasks on call 1 until it ends; the tasks alone, on the record, in the
- * call-3 window; nothing otherwise.
+ * What the plan lets its editors change now: on day 1 the goal and the tasks
+ * (`goalAndTasks`); with a pro curator, the tasks alone before call 1
+ * (`plan`); the tasks alone, on the record, in the call-3 window; nothing
+ * otherwise.
  */
 export type PlanEdit = "goalAndTasks" | "plan" | "tasks" | null;
 
+type PlanTimes = {
+	curatorKind: CheckpointCuratorKind;
+	startedAt: Date | string | null;
+	/** The AI curator's is set when the checkpoint is paid, a pro one's on call 1. */
+	goalAgreedAt: Date | string | null;
+};
+
+const HOUR_MS = 60 * 60 * 1000;
+
+/**
+ * When day 1's goal and tasks close: with the AI curator, 24 hours from
+ * payment or from the later start day picked; with a pro curator, 36 hours
+ * from the start of call 1's day. Null before the checkpoint starts.
+ */
+export const planCloses = (checkpoint: PlanTimes) => {
+	if (!checkpoint.startedAt) return null;
+	const start = new Date(checkpoint.startedAt).getTime();
+	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
+		const paid = checkpoint.goalAgreedAt
+			? new Date(checkpoint.goalAgreedAt).getTime()
+			: start;
+		return new Date(Math.max(start, paid) + AI_PLAN_HOURS * HOUR_MS);
+	}
+	return new Date(start + PRO_PLAN_HOURS * HOUR_MS);
+};
+
 export const planEdit = (
-	checkpoint: {
-		curatorKind: CheckpointCuratorKind;
-		startedAt: Date | string | null;
-		goalAgreedAt: Date | string | null;
+	checkpoint: PlanTimes & {
 		sessions: {
 			index: number;
 			scheduledAt: Date | string;
@@ -77,25 +101,25 @@ export const planEdit = (
 	},
 	now = new Date(),
 ): PlanEdit => {
-	if (
-		checkpoint.curatorKind === CheckpointCuratorKind.AI &&
-		checkpoint.startedAt &&
-		now < aiPlanCloses(checkpoint.startedAt)
-	) {
-		return "plan";
+	const closes = planCloses(checkpoint);
+	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
+		if (closes && now < closes) return "goalAndTasks";
+	} else {
+		const first = checkpoint.sessions.find((session) => session.index === 1);
+		const firstCall =
+			first &&
+			!checkpoint.goalAgreedAt &&
+			callState(
+				new Date(first.scheduledAt),
+				first.endedAt ? new Date(first.endedAt) : null,
+				now,
+			);
+		// Before call 1 the author drafts the tasks; the call and the hours after it open the goal too.
+		if (firstCall === "early") return "plan";
+		if (firstCall === "open" || (closes && now < closes)) {
+			return "goalAndTasks";
+		}
 	}
-	const first = checkpoint.sessions.find((session) => session.index === 1);
-	const firstCall =
-		first &&
-		!checkpoint.goalAgreedAt &&
-		callState(
-			new Date(first.scheduledAt),
-			first.endedAt ? new Date(first.endedAt) : null,
-			now,
-		);
-	if (firstCall === "open") return "goalAndTasks";
-	// Before call 1 the author drafts the tasks; the call agrees them, and the goal.
-	if (firstCall === "early") return "plan";
 	if (
 		checkpoint.startedAt &&
 		scopeState(checkpoint.startedAt, checkpoint.sessions, now) === "open"
@@ -104,10 +128,6 @@ export const planEdit = (
 	}
 	return null;
 };
-
-/** When the AI's opening window shuts: midnight after its last plan day. */
-export const aiPlanCloses = (startedAt: Date | string) =>
-	dateOfDay(startedAt, AI_PLAN_DAYS + 1);
 
 /** The session the plan is open on: the start, or the one that revisits it. */
 export const planSession = (edit: PlanEdit) => {

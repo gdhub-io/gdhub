@@ -12,12 +12,14 @@ import {
 	closeCheckpoint,
 	goalCheckHash,
 	runGoalCheck,
+	writeFirstLetter,
 	writeMidNote,
 	writeVerdictRead,
 } from "@/repositories/checkpoint-curator.repository";
 import { journal } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { checkpointCurator } from "@/services/checkpoint-curator";
+import { notifyDayOne } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -30,7 +32,12 @@ vi.mock("@/services/prisma", () => ({
 		projectReport: { findUnique: vi.fn(), update: vi.fn() },
 		checkpointJournalEntry: { findFirst: vi.fn() },
 		projectWorkflowTask: { findMany: vi.fn().mockResolvedValue([]) },
+		checkpointSession: { findFirst: vi.fn(), updateMany: vi.fn() },
 	},
+}));
+
+vi.mock("@/services/checkpoint-notifications", () => ({
+	notifyDayOne: vi.fn(),
 }));
 
 vi.mock("@/repositories/evidence-seen", () => ({
@@ -404,6 +411,66 @@ describe("runGoalCheck", () => {
 
 		await expect(runGoalCheck("cp1")).resolves.toBeNull();
 		expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+	});
+
+	describe("writeFirstLetter — day 1 after payment (GDHUB-117)", () => {
+		it("writes the read as the first letter once, and tells the author", async () => {
+			vi.mocked(prisma.checkpointSession.findFirst).mockResolvedValue({
+				id: "s1",
+				content: null,
+			} as never);
+			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+				draft([member([10, 20])]) as never,
+			);
+			vi.mocked(checkpointCurator.checkGoal).mockResolvedValue({
+				...checked,
+				note: "Your plan looks good — go ahead!",
+			});
+
+			await writeFirstLetter("cp1");
+
+			expect(prisma.checkpointSession.updateMany).toHaveBeenCalledWith(
+				expect.objectContaining({
+					where: expect.objectContaining({ id: "s1" }),
+					data: expect.objectContaining({
+						content: {
+							message: "Your plan looks good — go ahead!",
+							notes: null,
+							advice: null,
+						},
+					}),
+				}),
+			);
+			expect(notifyDayOne).toHaveBeenCalledWith("cp1", true);
+		});
+
+		it("does nothing on a second webhook: the letter is there", async () => {
+			vi.mocked(prisma.checkpointSession.findFirst).mockResolvedValue({
+				id: "s1",
+				content: { message: "written" },
+			} as never);
+
+			await writeFirstLetter("cp1");
+
+			expect(checkpointCurator.checkGoal).not.toHaveBeenCalled();
+			expect(notifyDayOne).not.toHaveBeenCalled();
+		});
+
+		it("still tells the author when the model fails, and leaves the letter to the page", async () => {
+			vi.mocked(prisma.checkpointSession.findFirst).mockResolvedValue({
+				id: "s1",
+				content: null,
+			} as never);
+			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+				draft([member([10, 20])]) as never,
+			);
+			vi.mocked(checkpointCurator.checkGoal).mockResolvedValue(null);
+
+			await writeFirstLetter("cp1");
+
+			expect(prisma.checkpointSession.updateMany).not.toHaveBeenCalled();
+			expect(notifyDayOne).toHaveBeenCalledWith("cp1", false);
+		});
 	});
 });
 

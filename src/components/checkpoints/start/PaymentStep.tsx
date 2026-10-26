@@ -23,7 +23,7 @@ import {
 import { EmptyState, IconTile } from "@/components/ui";
 import { purchaseParams } from "@/config/analytics-events";
 import {
-	AI_PLAN_DAYS,
+	AI_PLAN_HOURS,
 	CHECKPOINT_DAYS,
 	CHECKPOINT_LARGE_TEAM_EMAIL,
 	CHECKPOINT_MAX_TEAM,
@@ -248,16 +248,16 @@ export function PaymentStep() {
 		{
 			Icon: IconMinus,
 			tone: "note",
-			// The AI curator holds no calls: its tasks come from the review page.
+			// Day 1 (GDHUB-117): the goal is read after payment, never before it.
 			text: isAI
 				? t(
-						"checkpoints.pay.termTasksAi",
-						"Tasks are set in the first {days} days, with the AI's advice. Results are not guaranteed.",
-						{ days: AI_PLAN_DAYS },
+						"checkpoints.pay.termDayOneAi",
+						"After payment the AI curator reads your goal. You then have {hours} hours to adjust it and set the tasks. Results are not guaranteed.",
+						{ hours: AI_PLAN_HOURS },
 					)
 				: t(
-						"checkpoints.pay.termTasks",
-						"Tasks are set together on the first call. Results are not guaranteed.",
+						"checkpoints.pay.termDayOnePro",
+						"On day 1 you agree the goal and the tasks with the curator on the first call, and can adjust them until noon the next day. Results are not guaranteed.",
 					),
 		},
 	];

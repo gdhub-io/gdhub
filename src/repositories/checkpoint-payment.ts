@@ -7,6 +7,7 @@ import {
 	type PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
@@ -411,8 +412,9 @@ export const settleCheckpointCheckout = async (
 
 /**
  * The AI curator starts on payment. The day picked may have passed while the
- * draft waited to be paid, so it starts today at the earliest; the goal is the
- * one paid for; and its five review days are written like a person's calls.
+ * draft waited to be paid, so it starts today at the earliest; `goalAgreedAt`
+ * marks the payment, which day 1's 24 hours count from; and its five review
+ * days are written like a person's calls. Then the curator reads the goal.
  */
 export const startAiCheckpoint = async (
 	checkpointId: string,
@@ -449,6 +451,26 @@ export const startAiCheckpoint = async (
 			})),
 		}),
 	]);
+	// After the payment is answered: the read is a model call, the webhook must not wait on it.
+	afterResponse(async () => {
+		const { writeFirstLetter } = await import(
+			"@/repositories/checkpoint-curator.repository"
+		);
+		await writeFirstLetter(checkpointId);
+	});
+};
+
+/** Runs `work` once the response is sent; outside a request (a script), right away. */
+const afterResponse = (work: () => Promise<void>) => {
+	const run = () =>
+		work().catch((error) =>
+			console.error("[checkpoint] after the response", error),
+		);
+	try {
+		after(run);
+	} catch {
+		void run();
+	}
 };
 
 type PendingCheckout = {

@@ -87,7 +87,8 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 		content: stripIndents`
 			${CURATOR_STANCE}
 
-			This is day 1. The card is still a draft and the author can change it.
+			This is day 1, right after payment: your first letter to the author.
+			For the next hours they can still change the goal and the tasks.
 			Judge only whether it fits 28 days of work for this team, with the
 			hours it has, and whether the stage's own requirements are covered.
 			The card may hold only the goal: tasks are set with the curator on the

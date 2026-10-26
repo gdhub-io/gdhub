@@ -3,6 +3,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointJournalKind,
+	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	type CheckpointVerdict,
 	type EvidenceMatch,
@@ -45,8 +46,13 @@ import type {
 	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
+import { notifyDayOne } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
-import type { CallNotes, VerdictContextDto } from "@/types/checkpoints";
+import type {
+	CallNotes,
+	CuratorReview,
+	VerdictContextDto,
+} from "@/types/checkpoints";
 
 /**
  * The AI curator's four moments, each gathering its own facts and writing back
@@ -280,6 +286,44 @@ export const runGoalCheck = async (
 	});
 
 	return result;
+};
+
+/**
+ * Day 1 with the AI curator (GDHUB-117): once the checkpoint is paid, the
+ * curator reads the goal and writes the first letter — the plan looks good, or
+ * what to change — and the author hears they have until the goal and tasks
+ * lock. Written once: a second webhook finds the letter there. A read that
+ * fails leaves the letter to the review page, which greets on first open.
+ */
+export const writeFirstLetter = async (checkpointId: string) => {
+	const session = await prisma.checkpointSession.findFirst({
+		where: { checkpointId, index: 1 },
+		select: { id: true, content: true },
+	});
+	if (!session || session.content) return;
+
+	const read = await runGoalCheck(checkpointId).catch((error) => {
+		console.error(
+			"[checkpoint-curator] first letter failed",
+			checkpointId,
+			error,
+		);
+		return null;
+	});
+	if (read) {
+		await prisma.checkpointSession.updateMany({
+			where: { id: session.id, content: { equals: Prisma.AnyNull } },
+			data: {
+				content: {
+					message: read.note,
+					notes: null,
+					advice: null,
+				} satisfies CuratorReview,
+				contentStatus: CheckpointSessionContentStatus.Ready,
+			},
+		});
+	}
+	await notifyDayOne(checkpointId, !!read);
 };
 
 /**

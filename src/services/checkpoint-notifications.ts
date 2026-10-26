@@ -7,6 +7,7 @@ import {
 	CheckpointStatus,
 	SpaceRole,
 } from "@/config/prisma-enums";
+import { planCloses } from "@/lib/checkpoint-call";
 import { dayNumberOn, MS_PER_DAY, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
@@ -75,6 +76,36 @@ export const notifyCuratorAsked = async (checkpointId: string) => {
 		title: `A new checkpoint for ${row.project.name} waits for your answer`,
 		message: `The team has paid and booked your hours. Accept or decline by ${answerBy}; the money is only held until you do.`,
 		redirectUrl: `${appUrl()}/advisor/requests`,
+	});
+};
+
+/**
+ * Day 1 with the AI curator: the letter is written, and the goal and tasks are
+ * open until they lock. Sent once, whether or not the read came back.
+ */
+export const notifyDayOne = async (checkpointId: string, read: boolean) => {
+	const row = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			projectId: true,
+			createdAt: true,
+			curatorKind: true,
+			startedAt: true,
+			goalAgreedAt: true,
+			project: { select: { slug: true, author: recipient } },
+		},
+	});
+	const closes = row && planCloses(row);
+	if (!row || !closes) return;
+
+	const number = await checkpointNumber(row);
+	const by = dayjs.utc(closes).format("D MMM, HH:mm [UTC]");
+	await notify(row.project.author, `cp-day-one-${checkpointId}`, {
+		title: read
+			? `Your AI curator has read the goal of Checkpoint ${number}`
+			: `Checkpoint ${number} has started`,
+		message: `Check the goal and set the tasks by ${by}; after that they lock.`,
+		redirectUrl: reviewUrl(row.project.slug, number, 1),
 	});
 };
 

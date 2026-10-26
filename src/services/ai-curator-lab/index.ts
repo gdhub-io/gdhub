@@ -103,11 +103,11 @@ const CALLS = [
 	call({
 		id: "goalCheck",
 		purpose: {
-			en: "Before the checkpoint starts: does the promised list fit 28 days and the team's hours? Names what is too big, what nothing builds towards, what could not be proven — and the one change to make on the card.",
-			ru: "До старта чекпоинта: влезает ли обещанное в 28 дней и в часы команды? Называет, что слишком большое, к чему ничего не ведёт, что нельзя будет доказать, — и одно изменение в карточке.",
+			en: "Right after payment, the first letter: does the goal fit 28 days and the team's hours? Either the plan looks good — go ahead — or what is too big, what nothing builds towards, what could not be proven, and the one change to make before day 1 closes.",
+			ru: "Сразу после оплаты, первое письмо: влезает ли цель в 28 дней и часы команды? Либо «план выглядит хорошо — вперёд», либо что слишком большое, к чему ничего не ведёт, что нельзя будет доказать, и одно изменение до конца дня 1.",
 		},
 		label: { en: "Goal check", ru: "Проверка цели" },
-		when: { en: "Day 1", ru: "День 1" },
+		when: { en: "After payment", ru: "После оплаты" },
 		model: checkpointCurator.model,
 		schema: goalCheckInput,
 		situations: goalCheckSituations,

@@ -102,6 +102,12 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			Where evidence was looked at, say what it shows.
 
+			The project may move to the next stage only when both hold: every
+			outcome of this checkpoint is delivered, and every required task of the
+			stage is done. With the goal missed, never say the project can move on,
+			even where the stage's own tasks are done — say what still stands
+			between it and the next stage.
+
 			In the summary and the note, name the verdict the way the author sees it
 			— the goal was met, the goal was missed, or the project is ready for the
 			next stage — never by its code (GoalMet, GoalMissed, StageClosed).

@@ -14,8 +14,8 @@ import {
 	type CheckpointVerdict,
 } from "@/config/prisma-enums";
 import {
-	aiPlanCloses,
 	type PlanEdit,
+	planCloses,
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
@@ -264,11 +264,10 @@ export const getReview = async (
 			goal: checkpoint.goal,
 			edit,
 			editUntil:
-				editUntil(
-					edit,
-					checkpoint.startedAt,
-					checkpoint.sessions,
-				)?.toISOString() ?? null,
+				editUntil(edit, {
+					...checkpoint,
+					startedAt: checkpoint.startedAt,
+				})?.toISOString() ?? null,
 			tasks: checkpoint.items.map((item) => ({
 				id: item.id,
 				text: item.text,
@@ -297,11 +296,15 @@ export const getReview = async (
 
 const editUntil = (
 	edit: PlanEdit,
-	startedAt: Date,
-	sessions: { index: number; scheduledAt: Date; endedAt: Date | null }[],
+	checkpoint: Parameters<typeof planCloses>[0] & {
+		startedAt: Date;
+		sessions: { index: number; scheduledAt: Date; endedAt: Date | null }[];
+	},
 ) => {
-	if (edit === "plan") return aiPlanCloses(startedAt);
-	if (edit === "tasks") return scopeWindow(startedAt, sessions).closes;
+	if (edit === "goalAndTasks") return planCloses(checkpoint);
+	if (edit === "tasks") {
+		return scopeWindow(checkpoint.startedAt, checkpoint.sessions).closes;
+	}
 	return null;
 };
 

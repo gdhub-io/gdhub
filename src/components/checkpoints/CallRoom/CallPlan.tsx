@@ -95,7 +95,7 @@ export function PlanBody({
 	const { t } = useTranslate();
 	const { edit } = plan;
 	let lead = hint;
-	if (lead === undefined && edit === "plan") {
+	if (lead === undefined && (edit === "plan" || edit === "goalAndTasks")) {
 		// The first sprint reads the same with either curator.
 		lead = t(
 			"checkpoints.review.plan.startHint",

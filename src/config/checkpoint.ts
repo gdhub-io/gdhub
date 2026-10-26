@@ -58,8 +58,14 @@ export const SCOPE_ANSWER_HOURS = 24;
 
 // The AI curator
 
-/** With the AI curator the tasks are set on the review page, open this many days from the start. */
-export const AI_PLAN_DAYS = 2;
+/**
+ * Day 1 (Dmitry, 2026-10-26): after payment the author checks the goal and sets
+ * the tasks. With the AI curator they stay open this many hours from payment,
+ * or from the later start day the author picked.
+ */
+export const AI_PLAN_HOURS = 24;
+/** With a pro curator: from the start of call 1's day, its 24 hours and 12 more, so a late call leaves time after it. */
+export const PRO_PLAN_HOURS = 36;
 
 // The verdict
 

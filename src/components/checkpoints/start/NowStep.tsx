@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	IconAlertTriangle,
-	IconFlag,
-	IconInfoCircle,
-	IconSparkles,
-	IconUsers,
-} from "@tabler/icons-react";
+import { IconFlag, IconInfoCircle, IconUsers } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -17,7 +11,6 @@ import {
 	InputNumber,
 	Popover,
 	Skeleton,
-	Tag,
 	Typography,
 } from "antd";
 import axios from "axios";
@@ -31,10 +24,8 @@ import {
 	CHECKPOINT_MAX_TEAM,
 } from "@/config/checkpoint";
 import { trackCheckpoint } from "@/helpers/gtm";
-import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
-import { useCheckGoal, useUpdateCheckpoint } from "@/hooks/checkpoints";
+import { useUpdateCheckpoint } from "@/hooks/checkpoints";
 import { teamCapacity } from "@/lib/checkpoint-capacity";
-import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import styles from "./NowStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { PurchaseLayout } from "./PurchaseLayout";
@@ -49,10 +40,10 @@ const middle = (hours: { from: number; to: number }) =>
 /**
  * Frames 12.3 (`mfAfN`) and 03.2: the hours the team has and what the 28 days
  * are for. The project is chosen in the hub, before the wizard opens. No tasks
- * here — they are agreed with the curator on the first call.
+ * here — they are set on day 1, after payment.
  *
- * Next asks the curator whether the goal fits the hours. A warning does not
- * stop anyone: the button turns into "Continue anyway" until the goal changes.
+ * Nothing here calls the model: the curator reads the goal once it is paid for
+ * (GDHUB-117), so a visitor who does not buy costs nothing.
  */
 export function NowStep() {
 	const { t } = useTranslate();
@@ -63,16 +54,9 @@ export function NowStep() {
 	const queryClient = useQueryClient();
 	const team = useTeamHours(project?.team?.id);
 	const update = useUpdateCheckpoint(draft?.id);
-	const check = useCheckGoal(draft?.id);
-	const rateLimited = useRateLimitWarning();
 
 	const [goal, setGoal] = useState<string>();
 	const [mine, setMine] = useState<[number, number]>();
-	// The goal the curator warned about: unchanged, Next goes on regardless.
-	const [warned, setWarned] = useState<{
-		goal: string;
-		remark: GoalCheckResult;
-	} | null>(null);
 
 	const saveHours = useMutation({
 		mutationFn: (timeForWork: number[]) =>
@@ -121,13 +105,7 @@ export function NowStep() {
 		team.members.map((row) => ({ timeForWork: hoursOf(row) })),
 	);
 
-	const remark = warned?.goal === text.trim() ? warned.remark : null;
 	const tooLarge = team.members.length > CHECKPOINT_MAX_TEAM;
-
-	const proceed = (afterWarning: boolean) => {
-		trackCheckpoint("checkpoint_goal_set", { warned: afterWarning });
-		go("curator");
-	};
 
 	const next = async () => {
 		try {
@@ -137,21 +115,9 @@ export function NowStep() {
 			return;
 		}
 
-		if (remark) return proceed(true);
-
-		// Advice, never a gate: a check that does not come back lets them through —
-		// except a 429, which asks them to wait rather than skip it.
-		let limited = false;
-		const result = await check.mutateAsync().catch((error) => {
-			limited = rateLimited(error);
-			return null;
-		});
-		if (limited) return;
-		if (result && !result.reachable) {
-			setWarned({ goal: text.trim(), remark: result });
-			return;
-		}
-		proceed(false);
+		// No warning since GDHUB-117: the goal is read after payment.
+		trackCheckpoint("checkpoint_goal_set", { warned: false });
+		go("curator");
 	};
 
 	const stat = (label: string, value: string) => (
@@ -180,13 +146,11 @@ export function NowStep() {
 			forward={
 				<Button
 					type="primary"
-					loading={update.isPending || check.isPending}
+					loading={update.isPending}
 					disabled={!text.trim() || myHours[1] <= 0 || tooLarge}
 					onClick={next}
 				>
-					{remark
-						? t("checkpoints.now.continueAnyway", "Continue anyway")
-						: t("checkpoints.now.next", "Next — curator")}
+					{t("checkpoints.now.next", "Next — curator")}
 				</Button>
 			}
 		>
@@ -336,23 +300,6 @@ export function NowStep() {
 					<Typography.Link href={`mailto:${CHECKPOINT_LARGE_TEAM_EMAIL}`}>
 						{t("checkpoints.now.teamTooLargeAction", "Ask for an offer")}
 					</Typography.Link>
-				</Warning>
-			)}
-
-			{remark && (
-				<Warning icon={IconAlertTriangle}>
-					<Flex gap={8} align="center" wrap>
-						<Typography.Text strong>
-							{t(
-								"checkpoints.now.riskTitle",
-								"This goal may not fit the time you have",
-							)}
-						</Typography.Text>
-						<Tag icon={<IconSparkles size={14} />}>
-							{t("checkpoints.pay.aiSuggestion", "AI suggestion")}
-						</Tag>
-					</Flex>
-					<Typography.Text type="secondary">{remark.note}</Typography.Text>
 				</Warning>
 			)}
 		</PurchaseLayout>

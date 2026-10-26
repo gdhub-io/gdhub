@@ -89,9 +89,12 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 		);
 	}, [loaded, checkpointId, index]);
 
-	// The start greets the team with suggestions before anything is saved.
+	// Day 1 without a letter (the read after payment failed) greets on first open.
 	const greeted = useRef(false);
-	const greet = review?.plan.edit === "plan" && !sessionOf(review, 1)?.content;
+	const greet =
+		!!review &&
+		planSession(review.plan.edit) === 1 &&
+		!sessionOf(review, 1)?.content;
 	useEffect(() => {
 		if (!greet || greeted.current) return;
 		greeted.current = true;
@@ -207,7 +210,11 @@ export function AiReviewView({
 							resultsHref={`/user/project/${review.project.slug}/workflow?results=${review.previous.checkpointId}`}
 						/>
 					)}
-					<GoalCard goal={plan.goal} editable={false} />
+					<GoalCard
+						goal={plan.goal}
+						editable={plan.edit === "goalAndTasks"}
+						onSave={(goal) => onChange({ op: "goal", goal })}
+					/>
 					<section id={PLAN_ANCHOR} className={callStyles.panel}>
 						<Tabs
 							activeKey={tab}
