@@ -35,7 +35,7 @@ export type CuratorWorkflow = {
 	currentStage: string;
 	/** What the stage is for, written for the curator; null for a stage with none. */
 	description: string | null;
-	/** The tasks the template requires on this stage; suggested ones never hold it. */
+	/** The tasks the template requires on this stage; the optional ones are the author's call and never reach the model. */
 	requiredTasks: string[];
 };
 

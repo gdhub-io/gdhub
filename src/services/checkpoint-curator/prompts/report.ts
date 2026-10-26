@@ -73,10 +73,11 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			The three verdicts:
 			- StageClosed: every outcome that was not cut is delivered, AND what has to
 			  be done on this stage to move on (listed under "What the project
-			  shows") is done. The project can leave this stage. Tasks the
-			  stage only suggests never hold it.
+			  shows") is done. The project can leave this stage.
 			- GoalMet: every outcome that was not cut is delivered, but the stage
-			  needs more. The next checkpoint runs on the same stage.
+			  needs more. The next checkpoint runs on the same stage — a normal
+			  outcome, since a stage often takes several checkpoints; never frame
+			  it as falling short.
 			- GoalMissed: an outcome that was not cut is not delivered.
 
 			You are a cautious optimist. Whether an outcome is delivered is not yours

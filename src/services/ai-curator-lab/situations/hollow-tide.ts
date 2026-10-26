@@ -23,9 +23,6 @@ const WORKFLOW = {
 const picture = (artifact: string, devlogDone: boolean) => `Stage: Prototyping.
 To move on to "Preparing a demo version", only this has to be done on this stage:
 - [${devlogDone ? "x" : " "}] Publish a devlog about the prototype
-Suggested on this stage, not required — they never hold it:
-- [ ] Request expert advice
-- [ ] Collect 10 applause from other users
 
 Team (3):
 - Marta: Game designer, Middle, 20–25 h/week stated; week 1 worked, week 2 worked, week 3 worked

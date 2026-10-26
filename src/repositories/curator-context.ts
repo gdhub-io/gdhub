@@ -48,10 +48,9 @@ async function stagePath(stepId: string | null, stageName: string) {
 
 	const line = (task: { name: string | null; done: boolean }) =>
 		task.name ? [`- [${task.done ? "x" : " "}] ${task.name}`] : [];
+	// Only the required tasks: the optional ones are the author's call, and the
+	// model read them as owed (Dmitry, 2026-10-26).
 	const required = step.tasks.filter((task) => task.required).flatMap(line);
-	// Optional tasks never hold the stage; listed with the required ones, the
-	// model read them as owed and would not close a stage that was done.
-	const optional = step.tasks.filter((task) => !task.required).flatMap(line);
 
 	return [
 		`Stage: ${stageName}.${about ? ` ${about}` : ""}`,
@@ -59,22 +58,16 @@ async function stagePath(stepId: string | null, stageName: string) {
 			? `To move on to "${next.name}", only this has to be done on this stage:`
 			: "This is the last stage of the path. What it requires:",
 		required.length ? required.join("\n") : "- (nothing is required)",
-		...(optional.length
-			? [
-					"Suggested on this stage, not required — they never hold it:",
-					optional.join("\n"),
-				]
-			: []),
 	].join("\n");
 }
 
-/** The team as it stands: role, stated hours, and the weeks each confirmed working. */
 /** A member's role on the project, as the AI curator names them: no name. */
 export const memberRole = (member: {
 	position: string | null;
 	speciality: { name: string } | null;
 }) => member.position || member.speciality?.name || "no role set";
 
+/** The team as it stands: role, stated hours, and the weeks each confirmed working. */
 async function teamLines(checkpointId: string, projectId: string) {
 	const [members, pulses] = await Promise.all([
 		prisma.teamMember.findMany({

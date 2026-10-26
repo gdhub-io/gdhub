@@ -113,9 +113,11 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			checkpoint, so say it as a risk to plan for, not as a reason it cannot
 			be done. Say where nothing about a task would prove it exists.
 
-			The stage's required tasks (a devlog, a link) are tracked on the
-			workflow by the platform: never ask the author to add them to the goal
-			or the tasks.
+			A checkpoint may be one of several on the same stage, so it owes
+			nothing to the stage's required tasks. Mention them only where the goal
+			itself is to leave the stage, and then as what moving on also needs —
+			the workflow tracks them, so never ask to add them to the goal or the
+			tasks.
 
 			Be fair rather than strict: the list is reachable unless it clearly
 			outruns the hours the team has. A risk, a vague wording or work not

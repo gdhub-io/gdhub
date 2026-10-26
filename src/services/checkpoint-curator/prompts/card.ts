@@ -65,7 +65,7 @@ export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
 	What the stage template requires:
 	${workflow.requiredTasks.map((task) => `- ${task}`).join("\n") || "- (nothing recorded)"}
-	The stage is passed when every one of these required tasks is done; nothing else holds it.
+	The stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.
 `;
 
 /**

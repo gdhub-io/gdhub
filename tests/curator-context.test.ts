@@ -83,12 +83,10 @@ describe("the project picture the AI curator reads", () => {
 		);
 	});
 
-	it("keeps the tasks a stage only suggests apart: they never hold it", async () => {
+	it("leaves out the tasks a stage only suggests: they are the author's call", async () => {
 		const picture = await projectPicture("cp1", period);
 
-		expect(picture).toContain(
-			"Suggested on this stage, not required — they never hold it:\n- [ ] Collect 10 applause",
-		);
+		expect(picture).not.toContain("Collect 10 applause");
 	});
 
 	it("names each member's role, hours and the weeks they worked", async () => {
