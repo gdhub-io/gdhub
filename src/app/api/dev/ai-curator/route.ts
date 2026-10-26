@@ -1,10 +1,9 @@
 import { z } from "zod";
 import {
-	apiError,
-	type Handler,
 	json,
 	pipe,
 	withAuth,
+	withDevOnly,
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
@@ -16,16 +15,8 @@ export const maxDuration = 120;
 
 const RunSchema = z.object({ call: z.string(), input: z.unknown() });
 
-/** The space does not exist in production, and neither does its API. */
-const devOnly =
-	(handler: Handler): Handler =>
-	(req, ctx, locals) =>
-		process.env.NODE_ENV === "production"
-			? apiError.notFound()
-			: handler(req, ctx, locals);
-
 const guard = [
-	devOnly,
+	withDevOnly(),
 	withAuth({ mode: "user" }),
 	withSpaceGuard({ permission: "dev.tools.use" }),
 ] as const;

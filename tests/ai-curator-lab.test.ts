@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import * as schemas from "@/services/ai-curator-lab/schemas";
 import { evidenceSituations } from "@/services/ai-curator-lab/situations/evidence";
 import { goalCheckSituations } from "@/services/ai-curator-lab/situations/goal-check";
@@ -44,5 +44,37 @@ describe("the AI curator lab (GDHUB-117)", () => {
 
 		expect(result).toBe(42);
 		expect(traces.map((each) => each.name)).toEqual(["inside"]);
+	});
+});
+
+vi.mock("ai", async (actual) => ({
+	...(await actual<typeof import("ai")>()),
+	generateText: vi.fn(async ({ prompt }: { prompt: string }) => ({
+		output: {
+			translations: (JSON.parse(prompt) as string[]).map((text) => `RU ${text}`),
+		},
+	})),
+}));
+vi.mock("@ai-sdk/openai", () => ({ openai: () => ({}) }));
+
+describe("reading the lab's data in Russian", () => {
+	it("translates prose and leaves ids, enums and links as they are", async () => {
+		const { inRussian } = await import("@/services/ai-curator-lab/translate");
+
+		expect(
+			await inRussian({
+				id: "o1",
+				kind: "Outcome",
+				text: "Playtest with 5 players",
+				link: "https://example.com/a b",
+				notes: ["Two got stuck", "Matches"],
+			}),
+		).toEqual({
+			id: "o1",
+			kind: "Outcome",
+			text: "RU Playtest with 5 players",
+			link: "https://example.com/a b",
+			notes: ["RU Two got stuck", "Matches"],
+		});
 	});
 });

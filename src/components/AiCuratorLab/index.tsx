@@ -49,6 +49,25 @@ type Ran = Exclude<Awaited<ReturnType<typeof runLab>>, { error: string }>;
 
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 
+type Language = "en" | "ru";
+
+/** The value as read in `language`: Russian is a translation for reading, fetched once per value. */
+function useReadIn<T>(value: T | undefined, language: Language) {
+	const { data, isFetching } = useQuery({
+		queryKey: ["dev", "ai-curator", "translate", value],
+		queryFn: () =>
+			axios
+				.post<{ value: T }>("/api/dev/ai-curator/translate", { value })
+				.then(({ data }) => data.value),
+		enabled: language === "ru" && value !== undefined,
+		staleTime: Number.POSITIVE_INFINITY,
+	});
+	return {
+		value: language === "ru" ? (data ?? value) : value,
+		translating: language === "ru" && isFetching,
+	};
+}
+
 const Code = ({ children }: { children: string }) => (
 	<Paragraph className={styles.code}>{children}</Paragraph>
 );
@@ -170,13 +189,23 @@ function Result({
 	pending,
 	failure,
 	model,
+	language,
 }: {
 	ran: Ran | undefined;
 	pending: boolean;
 	failure: string | null;
 	model: string | undefined;
+	language: Language;
 }) {
 	const [tab, setTab] = useState<Tab>("settled");
+	const read = useReadIn(
+		ran && {
+			answer: ran.answer,
+			settled: ran.settled,
+			traces: ran.traces.map(({ system, messages }) => ({ system, messages })),
+		},
+		language,
+	);
 
 	if (pending) {
 		return (
@@ -237,6 +266,12 @@ function Result({
 					description="The model answered nothing the platform can use. In production the step waits for the next cron run. The Raw tab shows what came back."
 				/>
 			)}
+			{read.translating && (
+				<Flex gap={8} align="center">
+					<Spin size="small" />
+					<Text type="secondary">Translating…</Text>
+				</Flex>
+			)}
 			<Segmented<Tab>
 				value={tab}
 				onChange={setTab}
@@ -247,9 +282,16 @@ function Result({
 					{ value: "raw", label: "Raw" },
 				]}
 			/>
-			{tab === "settled" && <Settled settled={ran.settled} />}
-			{tab === "answer" && <Code>{pretty(ran.answer)}</Code>}
-			{tab === "messages" && <Messages traces={ran.traces} />}
+			{tab === "settled" && <Settled settled={read.value?.settled} />}
+			{tab === "answer" && <Code>{pretty(read.value?.answer)}</Code>}
+			{tab === "messages" && (
+				<Messages
+					traces={ran.traces.map((trace, index) => ({
+						...trace,
+						...read.value?.traces[index],
+					}))}
+				/>
+			)}
 			{tab === "raw" &&
 				ran.traces.map((trace, index) => (
 					<Code key={`${trace.name}-${index}`}>
@@ -275,6 +317,7 @@ export function AiCuratorLab() {
 	const [callId, setCallId] = useState<string>();
 	const [situationId, setSituationId] = useState<string>();
 	const [text, setText] = useState<string>();
+	const [language, setLanguage] = useState<Language>("en");
 
 	const calls = catalogue?.calls ?? [];
 	const current = calls.find((each) => each.id === callId) ?? calls.at(-1);
@@ -284,6 +327,15 @@ export function AiCuratorLab() {
 	const original = situation ? pretty(situation.input) : "";
 	const shown = text ?? original;
 	const edited = shown !== original;
+	const parsedInput = (() => {
+		try {
+			return JSON.parse(shown) as unknown;
+		} catch {
+			return undefined;
+		}
+	})();
+	const readInput = useReadIn(parsedInput, language);
+	const reading = language === "ru";
 
 	const run = useMutation({
 		mutationFn: (source: string) => {
@@ -326,6 +378,17 @@ export function AiCuratorLab() {
 						AI curator lab
 					</Title>
 					<Tag color="warning">Dev only</Tag>
+					<Flex gap={8} align="center" className={styles.readIn}>
+						<Text type="secondary">Read data in</Text>
+						<Segmented<Language>
+							value={language}
+							onChange={setLanguage}
+							options={[
+								{ value: "en", label: "English" },
+								{ value: "ru", label: "Русский" },
+							]}
+						/>
+					</Flex>
 				</Flex>
 				<Text type="secondary">
 					Runs the production prompt and model on a prepared situation. Real
@@ -387,10 +450,16 @@ export function AiCuratorLab() {
 					title={
 						<Flex vertical>
 							<Text strong>Input</Text>
-							{edited && (
-								<Text type="warning" className={styles.small}>
-									Edited · runs as shown
+							{reading ? (
+								<Text type="secondary" className={styles.small}>
+									Translated for reading · runs in English, as production
 								</Text>
+							) : (
+								edited && (
+									<Text type="warning" className={styles.small}>
+										Edited · runs as shown
+									</Text>
+								)
 							)}
 						</Flex>
 					}
@@ -409,7 +478,8 @@ export function AiCuratorLab() {
 						<Flex vertical className={styles.editor}>
 							<Input.TextArea
 								className={styles.mono}
-								value={shown}
+								value={reading ? pretty(readInput.value) : shown}
+								readOnly={reading}
 								onChange={(event) => setText(event.target.value)}
 								autoSize={{ minRows: 12, maxRows: 40 }}
 								spellCheck={false}
@@ -444,6 +514,7 @@ export function AiCuratorLab() {
 						pending={run.isPending}
 						failure={failure}
 						model={current?.model}
+						language={language}
 					/>
 				</Card>
 			</Flex>
