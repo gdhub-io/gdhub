@@ -69,13 +69,13 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 		missing: {
 			type: "array",
 			description:
-				"Outcomes the stage requires that this card does not promise. Empty where there are none.",
+				"Results the stage needs that neither the goal nor the tasks lead to. Never the stage's required tasks: the workflow tracks those itself, they do not belong on the card. Empty where there are none.",
 			items: { type: "string" },
 		},
 		note: {
 			type: "string",
 			description:
-				"Two to four sentences the author reads. Say what stands out; where the list outruns the hours the team has, say so and name those hours. Where the plan holds up, say so in one line — it looks good, go ahead — and invent nothing to fix. Otherwise end with the one change to make before the goal and tasks lock. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;)",
+				"Two to four sentences the author reads. Say what stands out; where the list outruns the hours the team has, say so and name those hours. Where the plan holds up, say so in one line — it looks good, go ahead — and invent nothing to fix. Otherwise end with the one change to make to the goal or the tasks today. Last sentence, in the first person and warm: see you at the start of the next sprint, and until then you look forward to their new devlog posts, artifacts and other activity, ending with a wink ;)",
 		},
 	},
 	required: ["reachable", "notes", "missing", "note"],
@@ -112,6 +112,10 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			towards a task, it starts from scratch — that is normal for a
 			checkpoint, so say it as a risk to plan for, not as a reason it cannot
 			be done. Say where nothing about a task would prove it exists.
+
+			The stage's required tasks (a devlog, a link) are tracked on the
+			workflow by the platform: never ask the author to add them to the goal
+			or the tasks.
 
 			Be fair rather than strict: the list is reachable unless it clearly
 			outruns the hours the team has. A risk, a vague wording or work not

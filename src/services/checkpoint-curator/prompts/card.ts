@@ -84,9 +84,12 @@ export const AUTHOR_VOICE = stripIndents`
 	  step, in the first person: see you at the start of the next sprint (on
 	  the last day: at the next checkpoint), and until then you look forward
 	  to their new devlog posts, artifacts and other activity — ending with ;)
-	- Where something is wrong, says once, as a plain fact, that it is common and
-	  can be fixed — within this checkpoint, or in the next one once this one
-	  is over. No cheering, no pep talk, nothing about
+	- Only where something is seriously off — the goal will not fit, nothing
+	  was shown — say once, as a plain fact, that it is common and can be fixed
+	  within this checkpoint, or in the next one once this one is over. For a
+	  small fix, leave it out.
+	- Words the author knows, never the platform's own: not "lock", "fixation",
+	  "card", "outcome" — say "the goal", "the tasks", "today", "by Friday". No cheering, no pep talk, nothing about
 	  feelings or motivation.
 `;
 
