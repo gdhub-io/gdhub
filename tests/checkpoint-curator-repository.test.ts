@@ -13,7 +13,6 @@ import {
 	goalCheckHash,
 	runGoalCheck,
 	writeFirstLetter,
-	writeMidNote,
 	writeVerdictRead,
 } from "@/repositories/checkpoint-curator.repository";
 import { curatorTeam } from "@/repositories/curator-context";
@@ -81,7 +80,6 @@ vi.mock("@/services/checkpoint-curator/character", () => ({
 vi.mock("@/services/checkpoint-curator", () => ({
 	checkpointCurator: {
 		checkGoal: vi.fn(),
-		writeMidNote: vi.fn(),
 		writeReport: vi.fn(),
 	},
 }));
@@ -515,47 +513,6 @@ describe("runGoalCheck", () => {
 			expect(prisma.checkpointSession.updateMany).not.toHaveBeenCalled();
 			expect(notifyDayOne).toHaveBeenCalledWith("cp1", false);
 		});
-	});
-});
-
-describe("writeMidNote", () => {
-	it("hands the model the unclaimed outcomes rather than asking for them", async () => {
-		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
-			running({ items: [outcome("o1", readable), outcome("o2")] }) as never,
-		);
-		vi.mocked(checkpointCurator.writeMidNote).mockResolvedValue({
-			note: "One outcome has nothing against it.",
-		});
-
-		await writeMidNote("cp1");
-
-		expect(checkpointCurator.writeMidNote).toHaveBeenCalledWith(
-			expect.objectContaining({
-				unproven: [
-					{ id: "o2", text: "outcome o2", reason: "missing" },
-				],
-			}),
-			{ checkpointId: "cp1" },
-		);
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalled();
-	});
-
-	it("does not write a second note", async () => {
-		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
-			running({ midNote: "already written" }) as never,
-		);
-
-		await expect(writeMidNote("cp1")).resolves.toBeNull();
-		expect(checkpointCurator.writeMidNote).not.toHaveBeenCalled();
-	});
-
-	it("leaves a checkpoint that is not running alone", async () => {
-		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
-			running({ status: CheckpointStatus.Draft }) as never,
-		);
-
-		await expect(writeMidNote("cp1")).resolves.toBeNull();
-		expect(checkpointCurator.writeMidNote).not.toHaveBeenCalled();
 	});
 });
 

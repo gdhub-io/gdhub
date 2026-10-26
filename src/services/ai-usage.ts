@@ -4,7 +4,6 @@ import { prisma } from "@/services/prisma";
 /** Every AI task run for a checkpoint, as its usage row names it. */
 export type AiPurpose =
 	| "goalCheck"
-	| "midNote"
 	| "report"
 	| "callNotes"
 	| "planAdvice"

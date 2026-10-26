@@ -146,20 +146,6 @@ export type GoalCheckResult = {
 	suggestions: TaskSuggestion[];
 };
 
-/** Day 15: the outcomes nothing has been claimed against, and how much is gone. */
-export type MidNoteInput = {
-	card: CuratorGoalCard;
-	/** Computed in code, never by the model — it is a fact, not a judgement. */
-	unproven: UnprovenOutcome[];
-	day: number;
-	devlogs: { publishedAt: string; content: string }[];
-	picture: string;
-};
-
-export type MidNoteResult = {
-	note: string;
-};
-
 export type CuratorArtifact = {
 	itemId: string;
 	type: string;

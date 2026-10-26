@@ -31,11 +31,6 @@ import {
 	goalCheckSchema,
 } from "./prompts/goal-check";
 import {
-	MID_NOTE_FUNCTION_NAME,
-	midNoteMessages,
-	midNoteSchema,
-} from "./prompts/mid-note";
-import {
 	REPORT_FUNCTION_NAME,
 	reportMessages,
 	reportSchema,
@@ -44,8 +39,6 @@ import type {
 	CuratorOptions,
 	GoalCheckInput,
 	GoalCheckResult,
-	MidNoteInput,
-	MidNoteResult,
 	ReportInput,
 	ReportResult,
 } from "./types";
@@ -127,16 +120,6 @@ class CheckpointCuratorService {
 			goalCheckSchema(),
 			goalCheckMessages(input, options.locale),
 			meter(options, "goalCheck"),
-		);
-	}
-
-	/** Day 15: the unclaimed outcomes and the question. Never the cut. */
-	writeMidNote(input: MidNoteInput, options: CuratorOptions = {}) {
-		return this.call<MidNoteResult>(
-			MID_NOTE_FUNCTION_NAME,
-			midNoteSchema(),
-			midNoteMessages(input, options.locale),
-			meter(options, "midNote"),
 		);
 	}
 

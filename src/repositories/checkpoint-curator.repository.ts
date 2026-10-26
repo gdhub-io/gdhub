@@ -10,7 +10,6 @@ import {
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { checkpointDay } from "@/lib/checkpoint-days";
 import {
 	settleVerdict,
 	type VerdictItem,
@@ -332,63 +331,6 @@ export const writeFirstLetter = async (
 	}
 	if (notify) await notifyDayOne(checkpointId, !!read);
 	return !!read;
-};
-
-/**
- * Day 15: name the outcomes nothing has been claimed against and ask the author
- * to decide. Which outcomes those are is computed here, not asked of the model.
- */
-export const writeMidNote = async (
-	checkpointId: string,
-	options: CuratorOptions = {},
-) => {
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id: checkpointId },
-		select: {
-			goal: true,
-			midNote: true,
-			startedAt: true,
-			status: true,
-			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
-			reports: {
-				orderBy: { publishedAt: "asc" },
-				select: { publishedAt: true, content: true },
-			},
-		},
-	});
-
-	if (
-		!checkpoint ||
-		checkpoint.midNote ||
-		checkpoint.status !== CheckpointStatus.Active ||
-		!checkpoint.startedAt
-	) {
-		return null;
-	}
-
-	const items = checkpoint.items;
-	const written = await checkpointCurator.writeMidNote(
-		{
-			card: toCard(checkpoint.goal, items),
-			unproven: weighOutcomes(items).unproven,
-			day: checkpointDay(checkpoint.startedAt),
-			devlogs: checkpoint.reports.map(toDevlog),
-			picture: await projectPicture(checkpointId, {
-				from: checkpoint.startedAt,
-				to: new Date(),
-			}),
-		},
-		{ ...options, checkpointId },
-	);
-
-	if (!written) return null;
-
-	await prisma.projectCheckpoint.update({
-		where: { id: checkpointId },
-		data: { midNote: written.note },
-	});
-
-	return written;
 };
 
 /**
