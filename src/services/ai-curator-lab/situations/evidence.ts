@@ -14,8 +14,7 @@ const TEXT = {
 - Chloe: finished the loop; wants a map.
 - Dan: stuck at the bridge, quit after 15 minutes.
 - Eva: asked for a sound cue before the water rises.
-Top issue: the flooded bridge (3 of 5).`,
-		notesName: "Playtest notes",
+Top issue: the flooded bridge (2 of 5).`,
 		notesSays: "Notes from Saturday's playtest.",
 		godot:
 			"Godot (game engine). Godot is a cross-platform, free and open-source game engine released under the MIT License.",
@@ -34,8 +33,7 @@ Top issue: the flooded bridge (3 of 5).`,
 - Вика: прошла цикл целиком; просит карту.
 - Денис: застрял у моста, бросил через 15 минут.
 - Ева: просит звуковой сигнал перед подъёмом воды.
-Главная проблема: затопленный мост (3 из 5).`,
-		notesName: "Заметки плейтеста",
+Главная проблема: затопленный мост (2 из 5).`,
 		notesSays: "Заметки с субботнего плейтеста.",
 		godot:
 			"Godot (игровой движок). Godot — кроссплатформенный, свободный игровой движок с открытым исходным кодом под лицензией MIT.",
@@ -53,13 +51,14 @@ export const evidenceSituations = (
 ): Situation<typeof evidenceInput>[] => {
 	const t = TEXT[language];
 	const project = hollowTide(language);
-	const { devlogs, outcomes } = project;
+	const { devlogs, outcomes, artifacts } = project;
+	// Day 26: the playtest notes arrive; the judge reads every devlog so far.
 	const playtest = {
 		task: outcomes.playtest.text,
 		artifactType: "Document",
-		artifactName: t.notesName,
+		artifactName: artifacts.notes,
 		description: t.notesSays,
-		devlogs: [devlogs.greybox, devlogs.playtest],
+		devlogs: [devlogs.greybox, devlogs.styleBoard, devlogs.playtest],
 	};
 	const text = (body: string | null, unread: string | null = null) => ({
 		text: body,
@@ -110,6 +109,7 @@ export const evidenceSituations = (
 			},
 		},
 		{
+			// Day 19: the board arrives as a video the curator only sees by its title.
 			id: "devlog-explains",
 			label: say(
 				language,
@@ -121,7 +121,7 @@ export const evidenceSituations = (
 				artifactType: "Video",
 				artifactName: t.video,
 				description: null,
-				devlogs: [devlogs.styleBoard],
+				devlogs: [devlogs.greybox, devlogs.styleBoard],
 				evidence: text(
 					t.videoText,
 					"a youtube video: only its title and thumbnail, the video itself was not watched",
@@ -129,11 +129,12 @@ export const evidenceSituations = (
 			},
 		},
 		{
+			// Day 5: a link read live — another team's repository, so not the task.
 			id: "live-link",
 			label: say(
 				language,
-				"A real link, read now",
-				"Настоящая ссылка, читается сейчас",
+				"A real link, read now (another game's repo)",
+				"Настоящая ссылка, читается сейчас (репозиторий чужой игры)",
 			),
 			input: {
 				task: outcomes.demo.text,

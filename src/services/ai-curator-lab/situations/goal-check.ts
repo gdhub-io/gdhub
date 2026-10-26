@@ -6,9 +6,9 @@ import {
 } from "../schemas";
 import { hollowTide } from "./hollow-tide";
 
+/** Day 1, right after payment: the card as paid for, nothing built yet. */
 const TEXT = {
 	en: {
-		input: "Concept document and a paper map of the island",
 		experience: "Two jam games, one shipped mobile puzzle.",
 		tooMuch: [
 			"All five islands playable",
@@ -18,7 +18,6 @@ const TEXT = {
 		vague: ["Make the game more fun", "Work on the art"],
 	},
 	ru: {
-		input: "Концепт-документ и бумажная карта острова",
 		experience: "Две игры с джемов, одна вышедшая мобильная головоломка.",
 		tooMuch: [
 			"Все пять островов играбельны",
@@ -37,7 +36,7 @@ export const goalCheckSituations = (
 	const base = {
 		card: {
 			goal: project.goal,
-			inputs: [{ id: "i1", text: t.input }],
+			inputs: [{ id: "i1", text: project.input }],
 			outcomes: Object.values(project.outcomes),
 		},
 		workflow: project.workflow,
@@ -54,7 +53,7 @@ export const goalCheckSituations = (
 			hoursPerRun: { from: 120, to: 160 },
 		},
 		previous: null,
-		picture: project.picture,
+		picture: project.picture("start"),
 	};
 	const outcomes = (texts: string[], from: number) =>
 		texts.map((text, index) => ({ id: `o${from + index}`, text }));
@@ -81,12 +80,6 @@ export const goalCheckSituations = (
 				card: {
 					...base.card,
 					outcomes: [...base.card.outcomes, ...outcomes(t.tooMuch, 4)],
-				},
-				team: {
-					members: 1,
-					stated: 1,
-					hoursPerWeek: { from: 5, to: 8 },
-					hoursPerRun: { from: 20, to: 32 },
 				},
 			},
 		},

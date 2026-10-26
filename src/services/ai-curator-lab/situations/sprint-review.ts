@@ -4,73 +4,83 @@ import {
 	say,
 	type sprintReviewInput,
 } from "../schemas";
-import { hollowTide } from "./hollow-tide";
+import { hollowTide, pulseOf } from "./hollow-tide";
 
-/** Public, long-lived media, read live on Run like a devlog's own links. */
-const SCREENSHOT =
-	"https://raw.githubusercontent.com/godotengine/godot-demo-projects/master/2d/platformer/screenshots/platformer.webp";
+/**
+ * Public, long-lived media, read live on Run like a devlog's own links. Hollow
+ * Tide has no real screenshots, so both are media that are not the game.
+ */
 const LANDSCAPE =
 	"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Fronalpstock_big.jpg/960px-Fronalpstock_big.jpg";
 const VIDEO = "https://www.youtube.com/watch?v=aqz-KE-bpKQ";
 
 const TEXT = {
 	en: {
-		demo: "Island demo 0.1",
-		notes: "Playtest notes",
-		focus: ["Start the art style board", "Book the playtest"],
+		demoSeen: "An itch.io page with a playable web build of the island.",
+		boardSeen: "A board with a palette and two character sheets.",
+		notesSeen: "Notes from five players, each with what they hit.",
+		focusAfter1: ["Start the art style board", "Book the playtest"],
+		focusAfter3: ["Run the playtest with five players and write the notes up"],
 		verdict:
-			"The demo and the playtest notes are there; the style board was taken on trust.",
+			"All three tasks are delivered and the stage's devlog is out: ready for Preparing a demo version.",
 	},
 	ru: {
-		demo: "Демо острова 0.1",
-		notes: "Заметки плейтеста",
-		focus: ["Начать доску стиля", "Назначить плейтест"],
-		verdict: "Демо и заметки плейтеста есть; доска стиля засчитана на доверии.",
+		demoSeen: "Страница на itch.io с играбельной веб-сборкой острова.",
+		boardSeen: "Доска с палитрой и двумя листами персонажей.",
+		notesSeen: "Заметки по пяти игрокам, у каждого — на чём застрял.",
+		focusAfter1: ["Начать доску стиля", "Назначить плейтест"],
+		focusAfter3: ["Провести плейтест на пять игроков и записать заметки"],
+		verdict:
+			"Все три задачи сданы, девлог стадии опубликован: можно переходить к Preparing a demo version.",
 	},
 };
-
-const TEAM = ["Game designer", "Artist", "Programmer"];
 
 export const sprintReviewSituations = (
 	language: LabLanguage,
 ): Situation<typeof sprintReviewInput>[] => {
 	const t = TEXT[language];
 	const project = hollowTide(language);
+	const { artifacts, devlogs } = project;
 	const { demo, board, playtest } = project.outcomes;
-	const task = (each: { id: string; text: string }) => ({
+	const open = (each: { id: string; text: string }) => ({
 		...each,
 		done: null,
 		cut: false,
 		firstWording: null,
 		seen: null,
 	});
-	const base = {
+	const done = (
+		each: { id: string; text: string },
+		type: string,
+		name: string,
+		note: string,
+	) => ({
+		...open(each),
+		done: { type, name },
+		seen: { match: "Matches" as const, note },
+	});
+	const demoDone = done(demo, "ExecutableBuild", artifacts.demo, t.demoSeen);
+
+	// Day 8: sprint 1 landed the greybox and its demo build.
+	const sprint1 = {
 		goal: project.goal,
 		stage: project.workflow.currentStage,
 		sprint: 1,
-		tasks: [
-			{ ...task(demo), done: { type: "ExecutableBuild", name: t.demo } },
-			task(board),
-			task(playtest),
-		],
-		devlogs: [project.devlogs.greybox],
-		media: [SCREENSHOT],
-		artifacts: [{ type: "ExecutableBuild", name: t.demo }],
-		pulse: { worked: TEAM, missing: [] },
+		tasks: [demoDone, open(board), open(playtest)],
+		devlogs: [devlogs.greybox],
+		media: [],
+		artifacts: [{ type: "ExecutableBuild", name: artifacts.demo }],
+		pulse: pulseOf(1),
 		focusLastReview: [],
 		verdict: null,
-		picture: project.picture,
+		picture: project.picture("sprint1"),
 	};
 
 	return [
 		{
 			id: "good-week",
-			label: say(
-				language,
-				"A good first sprint, a screenshot",
-				"Хороший первый спринт, скриншот",
-			),
-			input: base,
+			label: say(language, "A good first sprint", "Хороший первый спринт"),
+			input: sprint1,
 		},
 		{
 			id: "media-off-topic",
@@ -79,14 +89,19 @@ export const sprintReviewSituations = (
 				"The devlog's picture is not the game",
 				"Картинка в девлоге — не игра",
 			),
-			input: { ...base, media: [LANDSCAPE] },
+			input: { ...sprint1, media: [LANDSCAPE] },
 		},
 		{
 			id: "video",
-			label: say(language, "A devlog with a video", "Девлог с видео"),
-			input: { ...base, media: [SCREENSHOT, VIDEO] },
+			label: say(
+				language,
+				"The devlog's video is not the game",
+				"Видео в девлоге — не игра",
+			),
+			input: { ...sprint1, media: [VIDEO] },
 		},
 		{
+			// Day 15: sprint 2 showed nothing, and the artist did not confirm it.
 			id: "quiet",
 			label: say(
 				language,
@@ -94,16 +109,17 @@ export const sprintReviewSituations = (
 				"Нет девлога, художник выпал",
 			),
 			input: {
-				...base,
+				...sprint1,
 				sprint: 2,
 				devlogs: [],
-				media: [],
 				artifacts: [],
-				pulse: { worked: ["Game designer", "Programmer"], missing: ["Artist"] },
-				focusLastReview: t.focus,
+				pulse: pulseOf(2),
+				focusLastReview: t.focusAfter1,
+				picture: project.picture("sprint2"),
 			},
 		},
 		{
+			// Day 29: sprint 4 brought the playtest; the verdict is settled.
 			id: "final",
 			label: say(
 				language,
@@ -111,13 +127,19 @@ export const sprintReviewSituations = (
 				"Итоговый разбор, вердикт уже вынесен",
 			),
 			input: {
-				...base,
+				...sprint1,
 				sprint: 4,
-				devlogs: [project.devlogs.styleBoard, project.devlogs.playtest],
-				media: [],
-				artifacts: [{ type: "Document", name: t.notes }],
-				verdict: { verdict: "GoalMet", note: t.verdict },
-				picture: project.pictureAtEnd,
+				tasks: [
+					demoDone,
+					done(board, "Image", artifacts.board, t.boardSeen),
+					done(playtest, "Document", artifacts.notes, t.notesSeen),
+				],
+				devlogs: [devlogs.playtest],
+				artifacts: [{ type: "Document", name: artifacts.notes }],
+				pulse: pulseOf(4),
+				focusLastReview: t.focusAfter3,
+				verdict: { verdict: "StageClosed", note: t.verdict },
+				picture: project.picture("end"),
 			},
 		},
 	];

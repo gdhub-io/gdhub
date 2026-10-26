@@ -6,21 +6,9 @@ import {
 } from "../schemas";
 import { hollowTide } from "./hollow-tide";
 
-const TEXT = {
-	en: {
-		inputs: ["Concept document", "Paper map of the island"],
-		previous: ["Concept document", "Greybox of the first island"],
-	},
-	ru: {
-		inputs: ["Концепт-документ", "Бумажная карта острова"],
-		previous: ["Концепт-документ", "Серый блокаут первого острова"],
-	},
-};
-
 export const suggestLinesSituations = (
 	language: LabLanguage,
 ): Situation<typeof suggestLinesInput>[] => {
-	const t = TEXT[language];
 	const project = hollowTide(language);
 
 	return [
@@ -30,7 +18,7 @@ export const suggestLinesSituations = (
 			input: {
 				kind: "Outcome",
 				goal: project.goal,
-				inputs: t.inputs,
+				inputs: [project.input],
 				workflow: project.workflow,
 			},
 		},
@@ -49,17 +37,20 @@ export const suggestLinesSituations = (
 			},
 		},
 		{
+			// The next checkpoint's draft: this one's outcomes are what exists now.
 			id: "inputs",
 			label: say(
 				language,
-				"Inputs after a closed checkpoint",
-				"Входные данные после закрытого чекпоинта",
+				"Inputs after this checkpoint closed",
+				"Входные данные после этого чекпоинта",
 			),
 			input: {
 				kind: "Input",
 				project: { name: "Hollow Tide", description: project.pitch },
 				workflow: project.workflow,
-				previousOutcomes: t.previous,
+				previousOutcomes: Object.values(project.outcomes).map(
+					(outcome) => outcome.text,
+				),
 			},
 		},
 	];

@@ -8,18 +8,14 @@ import { hollowTide } from "./hollow-tide";
 
 const TEXT = {
 	en: {
-		polish: "Polish",
-		demo: "Island demo 0.2",
 		seen: "An itch.io page with a playable web build of the island.",
 		review:
-			"Sprint 1 landed the greybox. Sprint 2 went to bug fixing; nothing was shown for the art or the playtest.",
+			"Sprint 1 landed the island demo. Sprint 2 showed nothing: no devlog, no artifact, and the artist did not confirm the week.",
 	},
 	ru: {
-		polish: "Полировка",
-		demo: "Демо острова 0.2",
 		seen: "Страница на itch.io с играбельной веб-сборкой острова.",
 		review:
-			"Спринт 1 дал серый блокаут. Спринт 2 ушёл на исправление багов; по арту и плейтесту ничего не показано.",
+			"Спринт 1 дал демо острова. Спринт 2 ничего не показал: ни девлога, ни артефакта, а художник не подтвердил неделю.",
 	},
 };
 
@@ -37,11 +33,6 @@ export const planAdviceSituations = (
 	const t = TEXT[language];
 	const project = hollowTide(language);
 	const { demo, board, playtest } = project.outcomes;
-	const base = {
-		goal: project.goal,
-		stage: project.workflow.currentStage,
-		picture: project.picture,
-	};
 
 	return [
 		{
@@ -52,25 +43,28 @@ export const planAdviceSituations = (
 				"День 1, план как купили",
 			),
 			input: {
-				...base,
-				tasks: [demo, board, playtest, { id: "o4", text: t.polish }].map(open),
+				goal: project.goal,
+				stage: project.workflow.currentStage,
+				tasks: [demo, board, playtest].map(open),
 				moment: "start",
 				review: null,
+				picture: project.picture("start"),
 			},
 		},
 		{
 			id: "midway",
 			label: say(
 				language,
-				"Day 15, behind on the playtest",
-				"День 15, отстают с плейтестом",
+				"Day 15, nothing shown in sprint 2",
+				"День 15, спринт 2 ничего не показал",
 			),
 			input: {
-				...base,
+				goal: project.goal,
+				stage: project.workflow.currentStage,
 				tasks: [
 					{
 						...open(demo),
-						done: { type: "ExecutableBuild", name: t.demo },
+						done: { type: "ExecutableBuild", name: project.artifacts.demo },
 						seen: { match: "Matches", note: t.seen },
 					},
 					open(board),
@@ -78,6 +72,7 @@ export const planAdviceSituations = (
 				],
 				moment: "midway",
 				review: t.review,
+				picture: project.picture("midway"),
 			},
 		},
 	];
