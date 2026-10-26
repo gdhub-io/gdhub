@@ -116,10 +116,20 @@ const ApplauseCondition = z.object({
 	type: z.nativeEnum(ApplauseActivityType).optional(),
 });
 
-/** Done when the project has at least `min` links (Project.links array). */
+/** Link platforms that are a store page: what "a store page" counts. */
+export const STORE_LINK_PLATFORMS = [
+	"steam",
+	"itch-io",
+	"google-play",
+	"app-store",
+	"epic-store",
+] as const;
+
+/** Done when the project has at least `min` links (Project.links array), or store pages. */
 const LinksCondition = z.object({
 	source: z.literal("links"),
 	min: minCount,
+	kind: z.enum(["store"]).optional(),
 });
 
 export const WorkflowTaskConditionSchema = z.discriminatedUnion("source", [
@@ -258,7 +268,18 @@ export const CONDITION_SOURCE_META: ConditionSourceMeta[] = [
 		label: "Project links",
 		hasMin: true,
 		noun: ["project link", "project links"],
-		filters: [],
+		filters: [
+			{
+				key: "kind",
+				label: "Kind",
+				options: [
+					{
+						value: "store",
+						label: "A store page: Steam, itch.io, Google Play, App Store, Epic",
+					},
+				],
+			},
+		],
 	},
 	{
 		source: "equity_allocations",
