@@ -55,7 +55,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next.",
+				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next, in the next checkpoint. Last sentence, in the first person: see you at the next checkpoint.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],

@@ -1,0 +1,76 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-117 — day 1: the goal is read after payment, 24 hours to adjust" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+buy: "Purchase: the author writes only the goal,\npicks the curator, pays\n(no AI call before payment — pro or AI)"
+
+paid: "Payment confirmed"
+buy -> paid
+
+kind: "Curator?" {
+  shape: diamond
+}
+paid -> kind
+
+pro: "Pro: the checkpoint starts on the day of call 1;\nthe goal and tasks open for that day's 24 hours"
+kind -> pro: "pro, once the curator accepts"
+
+call: "Call 1 inside the 24 hours:\nthe author adjusts the goal and tasks on the call or after it"
+pro -> call
+call -> closes
+
+start: "The checkpoint starts;\nthe goal and tasks open for 24 hours"
+kind -> start: "AI"
+
+read: "The curator reads the goal once:\ndoes it fit 28 days and the team's hours?"
+start -> read
+
+fits: "Does the plan hold up?" {
+  shape: diamond
+}
+read -> fits: "answered"
+
+good: "First letter: \"Your plan looks good — go ahead!\"\nand until when it can still be adjusted"
+fits -> good: "yes"
+
+doubts: "First letter: the doubts, task by task,\nand what to change by <time>"
+fits -> doubts: "no"
+
+plain: "The first letter without the read;\nthe read is tried again when the author opens day 1"
+read -> plain: "the model failed"
+
+notify: "The author is told: the curator wrote, 24 hours to adjust"
+good -> notify
+doubts -> notify
+plain -> notify
+
+edit: "/workflow/cp{N}/review/1\nthe author edits the goal and the tasks"
+notify -> edit
+
+advice: "On save: advice on the tasks, as today"
+edit -> advice
+advice -> edit
+
+closes: "24 hours pass"
+edit -> closes
+
+locked: "The goal and tasks lock;\nthe tasks open again after the sprint 2 review, as today"
+closes -> locked
+
+critical: "Critical" {
+  shape: page
+  a: "No model call before payment: nobody who does not buy costs anything"
+  b: "The read is written once per checkpoint, however many times the payment webhook fires"
+  c: "AI: 24 hours from payment, or from the start day the author picked if later. Pro: the 24 hours of call 1's day — a call late in the day leaves little time after it"
+  d: "The purchase terms say the opposite today (\"the AI checks your draft before you pay\", \"2 days\"): they need a new version"
+}

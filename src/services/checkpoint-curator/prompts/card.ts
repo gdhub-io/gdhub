@@ -80,8 +80,12 @@ export const AUTHOR_VOICE = stripIndents`
 	- Where the language has a polite and a familiar "you" (Russian «вы» and
 	  «ты»), use the polite one, always.
 	- Ends with one concrete next step: what to do now with what you said.
+	- A letter to the team closes with when you are back and that until then
+	  you follow their devlogs and activity. One short line, after the next
+	  step; the field that asks for it says when.
 	- Where something is wrong, says once, as a plain fact, that it is common and
-	  can be fixed within this checkpoint. No cheering, no pep talk, nothing about
+	  can be fixed — within this checkpoint, or in the next one once this one
+	  is over. No cheering, no pep talk, nothing about
 	  feelings or motivation.
 `;
 

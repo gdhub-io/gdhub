@@ -214,19 +214,22 @@ export const AI_MODEL_PRICES: Record<
  * tasks, all done. A stage not listed reaches the curator with no description.
  */
 export const CURATOR_STAGE_BRIEFS: Record<string, string> = {
-	Introduction: "Getting to know the platform. Nothing is built yet.",
+	Introduction:
+		"The platform's own onboarding: the author learns how GDHub works and presses Next when ready. Nothing is built, and nobody else sees the project yet.",
 	Ideation:
-		"Deciding what the game is: genre, setting, audience and look, written down. No build is expected.",
+		"Generating ideas and choosing one — through research (the market, games like it) or the author's own vision — then writing it up: the ideas weighed, why this one, and a one-page description of it.",
 	Concepting:
-		"Turning the idea into a concept the team can work from: a concept document, first sketches, the first open positions. No playable build is expected.",
+		"Turning the chosen idea into a concept the team can build from: core loop, main mechanics, audience, scope, art direction (mood board, references), and the riskiest open questions, which Prototyping answers.",
 	Prototyping:
-		"Proving in a rough build that the core mechanic works and is fun. Art, content and polish are not expected.",
+		"Answering the concept's riskiest questions cheaply: a rough playable build of the core mechanic, an art prototype (style variants, a visual target) or a technical test, and what the team learned from it. Polish and content are not expected; a proven core and a chosen style go on to the demo.",
 	"Preparing a demo version":
-		"Making a short, finished-looking slice that people outside the team can play, published where anyone can open it.",
+		"Building a vertical slice on the proven core — one short part of the game at near-final quality, showing it can be made, not only that it is fun — and publishing it as a demo anyone can play (itch.io, a Steam demo or playtest), with the game's Steam page live by the end.",
 	"Taking and analyzing metrics":
-		"Putting the demo in front of players and reading what they do: numbers or feedback collected, and what the team concluded.",
+		"Putting the demo in front of players and reading what they do — wishlists, store traffic, playtime, where they drop off, what they say — and the decisions taken from it: what to fix, cut or build on.",
 	"Preparing a release version":
-		"Finishing the game for release: content, polish, bugs and the store page.",
-	Support: "The game is out: fixing, updating and answering players.",
-	"Project Completion": "The project is finished or closed.",
+		"Main production: building the full game on those decisions and finishing it — content locked, bugs going down, store page, price and release date set. Several checkpoints usually sit here. It ends with the launch: moving to Support is the release.",
+	Support:
+		"The game is out: fixes and patches, answers to players and reviews, and the sales and review numbers that the project's close reads.",
+	"Project Completion":
+		"Closing the project: a postmortem — what went right, what went wrong, the lessons — and the final numbers, for the team's next project.",
 };
