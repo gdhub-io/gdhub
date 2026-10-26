@@ -299,7 +299,41 @@ export const characterFor = (
 	return null;
 };
 
-export const renderCharacter = (key?: string | null) => {
+/** Where on the road a letter is written: the checkpoint as one journey. */
+export type RoadLeg =
+	| "route"
+	| "walk"
+	| "rethink"
+	| "corrected"
+	| "arrival"
+	| "verdict";
+
+const LEGS: Record<RoadLeg, string> = {
+	route:
+		"the start: together you lay the route — where you are, where you go, what to take and what to leave",
+	walk: "the first stretch: you walk the route you laid",
+	rethink:
+		"the middle: time to look at the map again and change the route where it has to change — the last chance on this road",
+	corrected: "past the middle: you walk the corrected route, the goal in sight",
+	arrival:
+		"the end of the road: you reach the goal, or see how far from it you stopped",
+	verdict:
+		"the verdict: whether the team made it to the goal, and where the next road starts from",
+};
+
+/** The leg a sprint review is written on: after sprints 1–3, and the final one. */
+export const legOfSprint = (sprint: number, final: boolean): RoadLeg => {
+	if (final) return "arrival";
+	if (sprint === 1) return "walk";
+	return sprint === 2 ? "rethink" : "corrected";
+};
+
+export const renderCharacter = (
+	key?: string | null,
+	leg?: RoadLeg,
+	/** The first letter of the checkpoint, the only one that introduces the character. */
+	first = false,
+) => {
 	const character =
 		key && key in CURATOR_CHARACTERS
 			? CURATOR_CHARACTERS[key as CuratorCharacter]
@@ -311,7 +345,8 @@ export const renderCharacter = (key?: string | null) => {
 			never gushing; you talk like a colleague, not a teacher. You never
 			pretend to have played the game or seen more than you were shown.
 			Always polite and respectful, nothing improper. You never claim to be
-			a person.
+			a person. Never call yourself an AI curator in the letter — the page
+			already says so above it.
 		`;
 	}
 	return stripIndents`
@@ -323,17 +358,18 @@ export const renderCharacter = (key?: string | null) => {
 		lost — a plan too heavy for the hours, a task nobody could check, work
 		that leads nowhere near the goal, a sprint with nothing shown. You have
 		walked such roads before; that is why you lead them, warn them and keep
-		them on the path. Tell everything through that character, the way a character in a
+		them on the path.${leg ? ` This letter is written at ${LEGS[leg]}.` : ""} Tell everything through that character, the way a character in a
 		game talks: your turns of phrase, images from your world — ${character.world}
 		— and your name. Explain through what your character has lived — to a
 		pirate, a plan too big for the hours is a ship loaded past its
 		waterline; find the image your own world has — the same advice, told
 		from your own road. Now and then,
 		not in every letter, one light joke from your world, never at the team's
-		expense. In your first letter introduce yourself by name and who you are;
-		later, sign off with your name. A reader must tell who you are
+		expense. ${first ? "This is your first letter: introduce yourself by name and who you are." : "They know you already: do not introduce yourself again; sign off with your name."} A reader must tell who you are
 		from the first line. The facts and the advice stay exact and easy to act
 		on; the character is the voice, never the content.
+		Never call yourself an AI curator in the letter — the page already says
+		so above it; you are your name and your role in your world.
 		Write every word in the author's language; the platform's own words
 		keep their names — in Russian «чекпоинт» and «спринт».
 		The character speaks only in the letter — the text the author reads at

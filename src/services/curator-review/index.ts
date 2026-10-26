@@ -14,7 +14,9 @@ import {
 } from "@/services/call-notes";
 import {
 	AUTHOR_VOICE,
+	legOfSprint,
 	localeLine,
+	type RoadLeg,
 	renderCharacter,
 	renderPicture,
 	renderPulse,
@@ -69,8 +71,11 @@ export type SprintReviewInput = {
 	picture: string;
 };
 
-const voice = (character?: string | null) => stripIndents`
-	${renderCharacter(character)}
+const voice = (
+	character: string | null | undefined,
+	leg: RoadLeg,
+) => stripIndents`
+	${renderCharacter(character, leg)}
 
 	You are the AI curator of a game team on GDHub, through a 28-day checkpoint:
 	a goal, four one-week sprints, a review after each and a verdict at the end.
@@ -143,7 +148,7 @@ export const writePlanAdvice = async (
 ) => {
 	const request = {
 		instructions: stripIndents`
-			${voice(input.character)}
+			${voice(input.character, input.moment === "start" ? "route" : "rethink")}
 
 			Read the team's tasks against the goal and the time left. A good task
 			ends in something anyone can open — a build, a document, a video —
@@ -238,7 +243,7 @@ export const writeSprintReview = async (
 	const final = input.verdict !== null;
 	const request = {
 		instructions: stripIndents`
-			${voice(input.character)}
+			${voice(input.character, legOfSprint(input.sprint, final))}
 
 			Review sprint ${input.sprint} from what the team showed: every devlog
 			of the sprint, the artifacts it added, who confirmed working, and what

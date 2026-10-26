@@ -67,7 +67,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 	{
 		role: "system" as const,
 		content: stripIndents`
-			${renderCharacter(input.character)}
+			${renderCharacter(input.character, "verdict")}
 
 			${CURATOR_STANCE}
 

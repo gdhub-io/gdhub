@@ -27,12 +27,31 @@ describe("the character's voice", () => {
 		const { renderCharacter } = await import(
 			"@/services/checkpoint-curator/prompts/card"
 		);
-		const pirate = renderCharacter("pirate");
+		const pirate = renderCharacter("pirate", "route", true);
 		expect(pirate).toContain("Captain Flint");
 		expect(pirate).toContain("introduce yourself by name");
+		expect(renderCharacter("pirate", "corrected")).toContain(
+			"do not introduce yourself again",
+		);
 		expect(pirate).toContain("no swearing");
 		// An unknown or missing key is the plain curator, never a broken prompt.
 		expect(renderCharacter("dragon")).not.toContain("undefined");
 		expect(renderCharacter(null)).toContain("AI curator");
+	});
+});
+
+describe("the road the sprints make", () => {
+	it("lays the route, walks it, rethinks it, walks the corrected one and arrives", async () => {
+		const { legOfSprint, renderCharacter } = await import(
+			"@/services/checkpoint-curator/prompts/card"
+		);
+		expect([1, 2, 3].map((sprint) => legOfSprint(sprint, false))).toEqual([
+			"walk",
+			"rethink",
+			"corrected",
+		]);
+		expect(legOfSprint(4, true)).toBe("arrival");
+		expect(renderCharacter("pirate", "rethink")).toContain("look at the map again");
+		expect(renderCharacter("pirate")).toContain("Never call yourself an AI curator");
 	});
 });

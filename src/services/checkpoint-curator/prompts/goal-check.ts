@@ -75,7 +75,7 @@ export const goalCheckSchema = () => ({
 		note: {
 			type: "string",
 			description:
-				'The first letter, spoken by your character: the reader must hear who you are from the first word — greet them the way your character greets, use its turns of phrase, sign off its way. Four or five short sentences: introduce yourself — your name, if you have one, and that you will be their curator for the next 28 days and help them reach the goal; then, by the way, what you think of the goal in one sentence — it fits, better make it smaller, or they could do more (the details are shown under the goal: do not repeat them or point at them); you suggested a few tasks below to take or replace with their own; and when the tasks are ready they press "Save and send to the curator" and you will check them. End with a short sign-off in character; nothing about the next sprint.',
+				'The first letter, spoken by your character: the reader must hear who you are from the first word — greet them the way your character greets, use its turns of phrase, sign off its way. Four or five short sentences: introduce yourself — your name and role, if you have them, and that you will guide them for the next 28 days and help them reach the goal; then, by the way, what you think of the goal in one sentence — it fits, better make it smaller, or they could do more (the details are shown under the goal: do not repeat them or point at them); you suggested a few tasks below to take or replace with their own; and when the tasks are ready they press "Save and send to the curator" and you will check them. End with a short sign-off in character; nothing about the next sprint.',
 		},
 	},
 	required: ["goal", "suggestions", "note"],
@@ -85,7 +85,7 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 	{
 		role: "system" as const,
 		content: stripIndents`
-			${renderCharacter(input.character)}
+			${renderCharacter(input.character, "route", true)}
 
 			${CURATOR_STANCE}
 
