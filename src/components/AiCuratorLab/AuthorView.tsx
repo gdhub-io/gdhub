@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, List, Typography } from "antd";
+import { Flex, Typography } from "antd";
 import { AiReviewView } from "@/components/checkpoints/CuratorReview/AiReview";
 import { StatusDot } from "@/components/ui";
 import type {
@@ -266,20 +266,5 @@ export function AuthorView({
 		);
 	}
 
-	if (call === "suggestLines") {
-		return (
-			<List
-				bordered
-				size="small"
-				header={
-					<Text type="secondary">
-						Suggested tasks, as the plan editor offers them
-					</Text>
-				}
-				dataSource={(fields.lines as string[]) ?? []}
-				renderItem={(line) => <List.Item>{line}</List.Item>}
-			/>
-		);
-	}
 	return null;
 }

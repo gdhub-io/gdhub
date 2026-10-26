@@ -5,7 +5,6 @@ import { goalCheckSituations } from "@/services/ai-curator-lab/situations/goal-c
 import { planAdviceSituations } from "@/services/ai-curator-lab/situations/plan-advice";
 import { reportSituations } from "@/services/ai-curator-lab/situations/report";
 import { sprintReviewSituations } from "@/services/ai-curator-lab/situations/sprint-review";
-import { suggestLinesSituations } from "@/services/ai-curator-lab/situations/suggest-lines";
 import { traceAiCall, traced } from "@/services/ai-trace";
 
 const trace = (name: string) => ({
@@ -22,7 +21,6 @@ const trace = (name: string) => ({
 describe("the AI curator lab (GDHUB-117)", () => {
 	it.each([
 		["goalCheck", schemas.goalCheckInput, goalCheckSituations],
-		["suggestLines", schemas.suggestLinesInput, suggestLinesSituations],
 		["planAdvice", schemas.planAdviceInput, planAdviceSituations],
 		["sprintReview", schemas.sprintReviewInput, sprintReviewSituations],
 		["evidence", schemas.evidenceInput, evidenceSituations],

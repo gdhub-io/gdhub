@@ -17,7 +17,6 @@ import {
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
-import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import {
 	briefAuthor,
 	briefMemberSelect,
@@ -41,7 +40,6 @@ import type {
 	CuratorOptions,
 	GoalCheckInput,
 	GoalCheckResult,
-	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { createCharacter } from "@/services/checkpoint-curator/character";
@@ -334,62 +332,6 @@ export const writeFirstLetter = async (
 	}
 	if (notify) await notifyDayOne(checkpointId, !!read);
 	return !!read;
-};
-
-/**
- * Lines for one side of the card, for an author who does not know what to write.
- *
- * It suggests and nothing more: nothing is written, and which side is asked for
- * decides what the model sees — outcomes are proposed against the goal and what
- * the project already has, inputs against the project itself and what the last
- * checkpoint left behind.
- */
-export const suggestCardLines = async (
-	checkpointId: string,
-	kind: CheckpointItemKind,
-	options: CuratorOptions = {},
-): Promise<SuggestLinesResult | null> => {
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id: checkpointId },
-		select: {
-			goal: true,
-			projectId: true,
-			stageName: true,
-			stepId: true,
-			project: { select: { name: true, description: true } },
-			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
-		},
-	});
-
-	if (!checkpoint) return null;
-
-	const workflow = await stageWorkflow(checkpoint.stepId, checkpoint.stageName);
-
-	if (kind === CheckpointItemKind.Outcome) {
-		const card = toCard(checkpoint.goal, checkpoint.items);
-
-		return checkpointCurator.suggestLines(
-			{
-				kind: CheckpointItemKind.Outcome,
-				goal: card.goal,
-				inputs: card.inputs.map((item) => item.text),
-				workflow,
-			},
-			{ ...options, checkpointId },
-		);
-	}
-
-	const previous = await lastClosedOutcomes(checkpoint.projectId);
-
-	return checkpointCurator.suggestLines(
-		{
-			kind: CheckpointItemKind.Input,
-			project: checkpoint.project,
-			workflow,
-			previousOutcomes: previous.map((item) => item.text),
-		},
-		{ ...options, checkpointId },
-	);
 };
 
 /**

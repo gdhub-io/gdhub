@@ -5,10 +5,7 @@ import {
 	CheckpointVerdict,
 	EvidenceMatch,
 } from "@/config/prisma-enums";
-import type {
-	GoalCheckInput,
-	SuggestLinesInput,
-} from "@/services/checkpoint-curator";
+import type { GoalCheckInput } from "@/services/checkpoint-curator";
 import type {
 	PlanAdviceInput,
 	SprintReviewInput,
@@ -102,21 +99,6 @@ export const goalCheckInput = z.object({
 		.nullable(),
 	picture: z.string(),
 }) satisfies z.ZodType<GoalCheckInput>;
-
-export const suggestLinesInput = z.discriminatedUnion("kind", [
-	z.object({
-		kind: z.literal("Outcome"),
-		goal: z.string(),
-		inputs: z.array(z.string()),
-		workflow,
-	}),
-	z.object({
-		kind: z.literal("Input"),
-		project: z.object({ name: z.string(), description: z.string().nullable() }),
-		workflow,
-		previousOutcomes: z.array(z.string()),
-	}),
-]) satisfies z.ZodType<SuggestLinesInput>;
 
 export const planAdviceInput = z.object({
 	character,

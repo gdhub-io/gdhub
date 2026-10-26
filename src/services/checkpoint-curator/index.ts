@@ -40,11 +40,6 @@ import {
 	reportMessages,
 	reportSchema,
 } from "./prompts/report";
-import {
-	SUGGEST_LINES_FUNCTION_NAME,
-	suggestLinesMessages,
-	suggestLinesSchema,
-} from "./prompts/suggest-lines";
 import type {
 	CuratorOptions,
 	GoalCheckInput,
@@ -53,8 +48,6 @@ import type {
 	MidNoteResult,
 	ReportInput,
 	ReportResult,
-	SuggestLinesInput,
-	SuggestLinesResult,
 } from "./types";
 
 type Message = { role: "system" | "user"; content: string };
@@ -154,16 +147,6 @@ class CheckpointCuratorService {
 			reportSchema(),
 			reportMessages(input, options.locale),
 			meter(options, options.purpose ?? "report"),
-		);
-	}
-
-	/** While the card is a draft: lines for one side of it, on demand. */
-	suggestLines(input: SuggestLinesInput, options: CuratorOptions = {}) {
-		return this.call<SuggestLinesResult>(
-			SUGGEST_LINES_FUNCTION_NAME,
-			suggestLinesSchema(input),
-			suggestLinesMessages(input, options.locale),
-			meter(options, "suggestLines"),
 		);
 	}
 }

@@ -32,7 +32,6 @@ import {
 	reportInput,
 	type Situation,
 	sprintReviewInput,
-	suggestLinesInput,
 } from "./schemas";
 import { evidenceSituations } from "./situations/evidence";
 import { goalCheckSituations } from "./situations/goal-check";
@@ -42,7 +41,6 @@ import {
 } from "./situations/plan-advice";
 import { reportSituations } from "./situations/report";
 import { sprintReviewSituations } from "./situations/sprint-review";
-import { suggestLinesSituations } from "./situations/suggest-lines";
 
 /**
  * The AI curator lab (GDHUB-117): each of the curator's calls run on a prepared
@@ -282,21 +280,6 @@ const CALLS = [
 				},
 			};
 		},
-	}),
-	call({
-		id: "suggestLines",
-		purpose: {
-			en: "For an author staring at an empty list: a few lines for one side of the card, each ending in something anyone can open. Nothing is saved; the author edits or drops them.",
-			ru: "Для автора перед пустым списком: несколько строк для одной стороны карточки, каждая заканчивается тем, что можно открыть. Ничего не сохраняется — автор правит или выбрасывает.",
-		},
-		label: { en: "Suggested lines", ru: "Предложенные строки" },
-		when: { en: "While the card is a draft", ru: "Пока карточка — черновик" },
-		model: checkpointCurator.model,
-		schema: suggestLinesInput,
-		situations: suggestLinesSituations,
-		run: async (input, locale) => ({
-			answer: await checkpointCurator.suggestLines(input, { locale }),
-		}),
 	}),
 ];
 
