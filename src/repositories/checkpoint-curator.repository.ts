@@ -244,7 +244,9 @@ export const runGoalCheck = async (
 	const hash = goalCheckHash(input);
 
 	if (checkpoint.goalCheck && checkpoint.goalCheckHash === hash) {
-		return checkpoint.goalCheck;
+		// The package's JSON type predates the notes' advice shape; a read kept
+		// before it was asked of an older input, so its hash never matches here.
+		return checkpoint.goalCheck as GoalCheckResult;
 	}
 
 	const result = await checkpointCurator.checkGoal(input, {
@@ -290,7 +292,10 @@ export const writeFirstLetter = async (checkpointId: string) => {
 				content: {
 					message: read.note,
 					notes: null,
-					advice: null,
+					// The read's notes under each task, as the plan advice shows them.
+					advice: read.notes.length
+						? { tasks: read.notes, add: read.missing, hash: "first-letter" }
+						: null,
 				} satisfies CuratorReview,
 				contentStatus: CheckpointSessionContentStatus.Ready,
 			},

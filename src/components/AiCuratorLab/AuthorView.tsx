@@ -129,7 +129,15 @@ const reviewOf = (
 				goal,
 				workflow,
 				tasks: card.outcomes.map((row) => task(row.id, row.text)),
-				content: { message: answer.note as string, notes: null, advice: null },
+				content: {
+					message: answer.note as string,
+					notes: null,
+					advice: {
+						tasks: answer.notes as never,
+						add: (answer.missing as string[]) ?? [],
+						hash: "lab",
+					},
+				},
 				edit: "goalAndTasks",
 			}),
 		};

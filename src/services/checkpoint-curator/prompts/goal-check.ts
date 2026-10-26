@@ -1,4 +1,5 @@
 import { stripIndents } from "common-tags";
+import { TASK_ADVICE_KINDS } from "@/types/checkpoints";
 import type { CuratorAuthor, CuratorProject, GoalCheckInput } from "../types";
 import {
 	CURATOR_STANCE,
@@ -57,13 +58,24 @@ export const goalCheckSchema = (input: GoalCheckInput) => ({
 								enum: input.card.outcomes.map((item) => item.id),
 							}
 						: { type: "string" },
+					kind: {
+						type: "string",
+						enum: [...TASK_ADVICE_KINDS],
+						description:
+							"clear: checkable and fits; risky: may not fit the time; vague: nobody could check it is done; shorten: keep it smaller; cut: drop it; onTrack: fine as it is.",
+					},
 					note: {
 						type: "string",
 						description:
-							"One or two sentences about this task. Where it is several tasks' worth of work, say so and offer a smaller wording. Where nothing on the day-1 list builds towards it, say that. Where nothing about it would prove it exists at the end, say that.",
+							'One sentence the author acts on: what to do with the task, then why — "Keep it: …", "Shorten it: …". Where it is several tasks\' worth of work, say so; where nothing about it would prove it exists at the end, say that.',
+					},
+					suggestion: {
+						type: ["string", "null"],
+						description:
+							"For vague and shorten: the task reworded, ready to use. Null otherwise.",
 					},
 				},
-				required: ["itemId", "note"],
+				required: ["itemId", "kind", "note", "suggestion"],
 			},
 		},
 		missing: {

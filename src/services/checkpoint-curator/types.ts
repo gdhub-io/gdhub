@@ -5,6 +5,7 @@ import type {
 	UnprovenOutcome,
 } from "@/lib/checkpoint-verdict";
 import type { AiPurpose } from "@/services/ai-usage";
+import type { TaskAdvice } from "@/types/checkpoints";
 
 /**
  * Inputs and results for the AI curator's four calls.
@@ -108,23 +109,16 @@ export type GoalCheckInput = {
 	team: CuratorTeam;
 	/** How the project's last checkpoint ended, with the same team behind it. */
 	previous: { verdict: CheckpointVerdict; note: string | null } | null;
-	/** The project as its page shows it: the stage's path, the team, recent activity. */
+	/** What happened on the project in the two weeks leading in. */
 	picture: string;
 };
 
 /**
- * What the curator has to say about one task.
- *
- * Prose, not a category. The author reads it and edits the task themselves —
- * there is no button that applies a suggestion, so a machine-readable stance
- * would be structure nothing consumes. Trimming, extending and rewording all
- * come out as the same thing: a sentence about that line.
+ * What the curator has to say about one task, in the plan advice's shape so
+ * the review page shows it under the task (GDHUB-117): what to do with it, why,
+ * and for a vague or oversized task a wording ready to use.
  */
-export type ItemNote = {
-	/** The task this is about, echoed back from the card. */
-	itemId: string;
-	note: string;
-};
+export type ItemNote = TaskAdvice;
 
 export type GoalCheckResult = {
 	reachable: boolean;

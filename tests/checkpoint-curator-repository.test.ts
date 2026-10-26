@@ -418,6 +418,39 @@ describe("runGoalCheck", () => {
 			expect(notifyDayOne).toHaveBeenCalledWith("cp1", true);
 		});
 
+		it("keeps the read's notes under each task, as the plan advice shows them", async () => {
+			vi.mocked(prisma.checkpointSession.findFirst).mockResolvedValue({
+				id: "s1",
+				content: null,
+			} as never);
+			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+				draft([member([10, 20])]) as never,
+			);
+			const note = {
+				itemId: "o1",
+				kind: "shorten" as const,
+				note: "Shorten it: one island, not three.",
+				suggestion: "One island, playable end to end",
+			};
+			vi.mocked(checkpointCurator.checkGoal).mockResolvedValue({
+				...checked,
+				notes: [note],
+				missing: ["A playtest"],
+			});
+
+			await writeFirstLetter("cp1");
+
+			expect(prisma.checkpointSession.updateMany).toHaveBeenCalledWith(
+				expect.objectContaining({
+					data: expect.objectContaining({
+						content: expect.objectContaining({
+							advice: { tasks: [note], add: ["A playtest"], hash: "first-letter" },
+						}),
+					}),
+				}),
+			);
+		});
+
 		it("does nothing on a second webhook: the letter is there", async () => {
 			vi.mocked(prisma.checkpointSession.findFirst).mockResolvedValue({
 				id: "s1",
