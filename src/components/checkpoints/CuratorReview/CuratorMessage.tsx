@@ -10,7 +10,7 @@ import {
 } from "@/components/checkpoints/VerdictChip";
 import { InverseBand, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
+import { AI_CURATOR_AVATAR, AI_CURATOR_NAME } from "@/config/checkpoint";
 import type { CheckpointVerdict } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
@@ -68,11 +68,9 @@ export function CuratorMessage({
 							? t("checkpoints.review.proCurator", "{name} · curator", {
 									name: curator.name,
 								})
-							: character
-								? t("checkpoints.review.aiCharacter", "{name} · AI curator", {
-										name: character.name,
-									})
-								: t("checkpoints.review.curator", "AI curator")}
+							: t("checkpoints.review.aiCharacter", "{name} · AI curator", {
+									name: character?.name ?? AI_CURATOR_NAME,
+								})}
 					</Typography.Text>
 					<Typography.Text type="secondary" className={styles.small}>
 						{date}
