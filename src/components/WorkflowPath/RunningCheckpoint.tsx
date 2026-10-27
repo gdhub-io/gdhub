@@ -28,7 +28,7 @@ import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
 import { SectionHeading, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { SESSION_MINUTES } from "@/config/checkpoint";
+import { AI_CURATOR_AVATAR, SESSION_MINUTES } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
@@ -569,9 +569,10 @@ export function RunningCheckpoint({
 			<div className={today ? styles.sessionToday : styles.session}>
 				<div className={styles.sessionWho}>
 					{isAI ? (
-						<span className={`${styles.chipIcon} ${styles.aiTile}`}>
-							<IconSparkles size={24} />
-						</span>
+						<AppAvatar
+							src={checkpoint.character?.avatar ?? AI_CURATOR_AVATAR}
+							size={56}
+						/>
 					) : (
 						<AppAvatar src={checkpoint.curator?.image} size={56}>
 							{curatorName[0]}

@@ -3,7 +3,6 @@
 import {
 	IconFileText,
 	IconMessageCircle,
-	IconSparkles,
 	IconVideo,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
@@ -13,6 +12,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { InverseBand } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
@@ -163,11 +163,7 @@ export function CuratorNote({
 		<InverseBand density="product" className={styles.curatorNote}>
 			<div className={styles.asideCurator}>
 				{isAI ? (
-					<AppAvatar
-						size={40}
-						src={character?.avatar ?? undefined}
-						icon={<IconSparkles size={20} />}
-					/>
+					<AppAvatar size={40} src={character?.avatar ?? AI_CURATOR_AVATAR} />
 				) : (
 					<AppAvatar src={curator?.image} size={40}>
 						{curator?.name?.[0]}

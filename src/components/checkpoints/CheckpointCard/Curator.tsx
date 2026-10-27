@@ -1,16 +1,13 @@
 "use client";
 
-import {
-	IconMessageCircle,
-	IconSparkles,
-	IconVideo,
-} from "@tabler/icons-react";
+import { IconMessageCircle, IconVideo } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Tooltip, Typography } from "antd";
 import Link from "next/link";
 import { useAccess } from "@/components/access/AccessProvider";
 import { useChat } from "@/components/Chat/useChat";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { opensRoom } from "@/lib/checkpoint-room";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -58,7 +55,7 @@ export function CheckpointCurator({
 					</Typography.Text>
 				</Flex>
 				{isAI ? (
-					<AppAvatar size={40} icon={<IconSparkles size={20} />} />
+					<AppAvatar size={40} src={AI_CURATOR_AVATAR} />
 				) : (
 					<AppAvatar size={40} src={curator?.image ?? undefined}>
 						{curator?.name?.[0]}

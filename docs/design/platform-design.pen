@@ -456104,7 +456104,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "generated-15.png",
+                    "url": "generated-17.png",
                     "mode": "cover"
                   },
                   "cornerRadius": 999
@@ -456252,7 +456252,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "generated-12.png",
+                    "url": "generated-16.png",
                     "mode": "cover"
                   },
                   "cornerRadius": 999

@@ -73,6 +73,9 @@ export const EVIDENCE_REMIND_DAY = 26;
 /** With a pro curator: from the start of call 1's day, its 24 hours and 12 more, so a late call leaves time after it. */
 export const PRO_PLAN_HOURS = 36;
 
+/** The AI curator's face when it plays no character: the platform's robot (frame 12.19). */
+export const AI_CURATOR_AVATAR = "/curators/robot.webp";
+
 // The verdict
 
 /** Due by the end of this many days after `dueAt`, the 28th day. */

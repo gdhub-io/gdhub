@@ -1,6 +1,5 @@
 "use client";
 
-import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Typography } from "antd";
 import type { ReactNode } from "react";
@@ -11,6 +10,7 @@ import {
 } from "@/components/checkpoints/VerdictChip";
 import { InverseBand, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import type { CheckpointVerdict } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
@@ -58,12 +58,8 @@ export function CuratorMessage({
 				<AppAvatar src={curator.image} size={48}>
 					{initials(curator.name)}
 				</AppAvatar>
-			) : character?.avatar ? (
-				<AppAvatar src={character.avatar} size={48} />
 			) : (
-				<span className={styles.avatar}>
-					<IconSparkles size={24} />
-				</span>
+				<AppAvatar src={character?.avatar ?? AI_CURATOR_AVATAR} size={48} />
 			)}
 			<div className={styles.body}>
 				<div className={styles.head}>
