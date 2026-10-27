@@ -10,7 +10,6 @@ import {
 } from "@/config/prisma-enums";
 import { planEdit } from "@/lib/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
-import { notifyPlanApproved } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 
 export type PlanRefusal =
@@ -267,7 +266,11 @@ export const approveCheckedPlans = async (now = new Date()) => {
 			where: { id, goalAgreedAt: null },
 			data: { goalAgreedAt: now },
 		});
-		if (count) await notifyPlanApproved(id);
+		if (!count) continue;
+		const { notifyPlanApproved } = await import(
+			"@/services/checkpoint-notifications"
+		);
+		await notifyPlanApproved(id);
 	}
 	return due.length;
 };

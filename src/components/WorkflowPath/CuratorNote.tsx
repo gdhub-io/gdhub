@@ -12,7 +12,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { InverseBand } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { AI_CURATOR_AVATAR, AI_CURATOR_NAME } from "@/config/checkpoint";
+import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
@@ -147,10 +147,15 @@ export function CuratorNote({
 
 	const character = isAI ? checkpoint.character : null;
 	const aiLabel = t("checkpoints.review.curator", "AI curator");
-	const name = isAI
-		? (character?.name ?? AI_CURATOR_NAME)
-		: (curator?.name ?? "");
-	const role = [isAI ? aiLabel : t("workflow.aside.curator", "Curator"), date]
+	const name = isAI ? (character?.name ?? aiLabel) : (curator?.name ?? "");
+	const role = [
+		isAI
+			? character
+				? aiLabel
+				: null
+			: t("workflow.aside.curator", "Curator"),
+		date,
+	]
 		.filter(Boolean)
 		.join(" · ");
 

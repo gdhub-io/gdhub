@@ -75,8 +75,6 @@ export const PRO_PLAN_HOURS = 36;
 
 /** The AI curator's face when it plays no character: the platform's robot (frame 12.19). */
 export const AI_CURATOR_AVATAR = "/curators/robot.webp";
-/** The robot's name, like the GDHub assistant's (Dmitry, 2026-10-27). */
-export const AI_CURATOR_NAME = "Tri";
 
 // The verdict
 
