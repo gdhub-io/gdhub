@@ -1327,13 +1327,12 @@ button.checklistItem {
 	background: var(--gd-color-surface-sunken);
 }
 
-// Frames xZ32D / BixZr / ErNgO: the curator's dark card on top of the widget.
+// Frames xZ32D / BixZr / ErNgO: the curator's dark band, the widget's top edge to edge.
 .curatorNote {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-4);
-	border-radius: var(--gd-radius-card);
 }
 
 .curatorName {

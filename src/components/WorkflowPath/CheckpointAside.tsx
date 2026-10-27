@@ -67,6 +67,16 @@ export function CheckpointAside({
 
 	return (
 		<section className={styles.asideCard}>
+			{(curator || isAI) && (
+				<CuratorNote
+					checkpoint={checkpoint}
+					reviewHref={(index) =>
+						`/user/project/${slug}/workflow/cp${checkpoint.number ?? 1}/review/${index}`
+					}
+					onChat={chat}
+					chatLoading={openChat.isPending}
+				/>
+			)}
 			<div className={styles.asideHead}>
 				<div className={styles.asideRow}>
 					<Text strong className={styles.asideTitle}>
@@ -86,16 +96,6 @@ export function CheckpointAside({
 			</div>
 
 			<div className={styles.asideBody}>
-				{(curator || isAI) && (
-					<CuratorNote
-						checkpoint={checkpoint}
-						reviewHref={(index) =>
-							`/user/project/${slug}/workflow/cp${checkpoint.number ?? 1}/review/${index}`
-						}
-						onChat={chat}
-						chatLoading={openChat.isPending}
-					/>
-				)}
 				<div className={styles.asideBlock}>
 					<Text type="secondary" strong className={styles.asideMeta}>
 						{t("workflow.aside.goal", "Goal")}

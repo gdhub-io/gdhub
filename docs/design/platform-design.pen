@@ -223075,32 +223075,6 @@
                                       "fill": "$text-primary"
                                     }
                                   ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "VUVx7",
-                                  "layoutPosition": "absolute",
-                                  "x": 560,
-                                  "y": -44,
-                                  "name": "Tooltip (antd)",
-                                  "fill": "$inv-bg",
-                                  "cornerRadius": "$radius-sm",
-                                  "padding": [
-                                    6,
-                                    10
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "ih1DV",
-                                      "name": "T",
-                                      "fill": "$inv-text",
-                                      "content": "Opens after the Checkpoint 3 verdict · by 1 Nov",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
                                 }
                               ]
                             }
@@ -455991,8 +455965,8 @@
     {
       "type": "frame",
       "id": "bZQwi",
-      "x": 29104,
-      "y": 0,
+      "x": 11998,
+      "y": 2454,
       "name": "12.19 · AI curator avatars",
       "clip": true,
       "fill": "#141414",
@@ -456104,7 +456078,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "generated-17.png",
+                    "url": "avatar-princess.png",
                     "mode": "cover"
                   },
                   "cornerRadius": 999
@@ -456252,7 +456226,7 @@
                   "fill": {
                     "type": "image",
                     "enabled": true,
-                    "url": "generated-16.png",
+                    "url": "avatar-starshipCaptain.png",
                     "mode": "cover"
                   },
                   "cornerRadius": 999
@@ -456551,6 +456525,49 @@
                   "name": "sensei caption",
                   "fill": "#BDBDBD",
                   "content": "sensei · Master Hoshi",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VOdev",
+          "name": "Row 4",
+          "gap": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ywWG7",
+              "name": "robot cell",
+              "layout": "vertical",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "RXtj2",
+                  "name": "robot",
+                  "clip": true,
+                  "width": 256,
+                  "height": 256,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-17.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 999
+                },
+                {
+                  "type": "text",
+                  "id": "HqT8S",
+                  "name": "robot caption",
+                  "fill": "#BDBDBD",
+                  "content": "robot · AI curator (no character)",
                   "fontFamily": "Inter",
                   "fontSize": 15,
                   "fontWeight": "normal"
