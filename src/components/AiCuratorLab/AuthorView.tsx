@@ -10,6 +10,7 @@ import type {
 import type { Standing } from "@/lib/checkpoint-verdict";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { LabSettled } from "@/services/ai-curator-lab";
+import { characterFace } from "@/services/checkpoint-curator/prompts/card";
 import type { CuratorReview } from "@/types/checkpoints";
 import { useStandingStatus } from "../checkpoints/EvidenceStanding";
 
@@ -53,7 +54,9 @@ const review = ({
 	content,
 	edit = null,
 	verdict = null,
+	character = null,
 }: {
+	character?: CheckpointReviewDto["character"];
 	current: number;
 	goal: string;
 	workflow: Workflow;
@@ -85,6 +88,7 @@ const review = ({
 		content: offset + 1 === current ? content : null,
 	})),
 	verdict,
+	character,
 	nextStage:
 		verdict?.verdict === "StageClosed" && workflow.nextStage
 			? { name: workflow.nextStage, key: "" }
@@ -112,8 +116,12 @@ const reviewOf = (
 	input: Input,
 	answer: Record<string, unknown>,
 	settled: LabSettled | undefined,
+	face: CheckpointReviewDto["character"],
 ): { review: CheckpointReviewDto; index: number } | null => {
 	const workflow = input.workflow as unknown as Workflow;
+	// The character the run played, as the page would show it.
+	const character =
+		face ?? characterFace(input.character as string | null | undefined);
 	const goal = (input.goal ?? (input.card as { goal: string })?.goal) as string;
 	const planTasks = () =>
 		(input.tasks as unknown as PlanTask[]).map((row) =>
@@ -124,6 +132,7 @@ const reviewOf = (
 		return {
 			index: 1,
 			review: review({
+				character,
 				current: 1,
 				goal,
 				workflow,
@@ -145,6 +154,7 @@ const reviewOf = (
 		return {
 			index: current,
 			review: review({
+				character,
 				current,
 				goal,
 				workflow,
@@ -173,6 +183,7 @@ const reviewOf = (
 		return {
 			index: current,
 			review: review({
+				character,
 				current,
 				goal,
 				workflow,
@@ -193,6 +204,7 @@ const reviewOf = (
 		return {
 			index: 5,
 			review: review({
+				character,
 				current: 5,
 				goal,
 				workflow,
@@ -224,11 +236,14 @@ export function AuthorView({
 	input,
 	answer,
 	settled,
+	character = null,
 }: {
 	call: string;
 	input: unknown;
 	answer: unknown;
 	settled: LabSettled | undefined;
+	/** Who the AI curator played on this run. */
+	character?: CheckpointReviewDto["character"];
 }) {
 	const statusOf = useStandingStatus();
 	if (!answer || typeof answer !== "object") return null;
@@ -257,7 +272,7 @@ export function AuthorView({
 		);
 	}
 
-	const page = reviewOf(call, input as Input, fields, settled);
+	const page = reviewOf(call, input as Input, fields, settled, character);
 	if (page) {
 		return (
 			<AiReviewView

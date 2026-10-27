@@ -52,6 +52,7 @@ import {
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
 import type { JournalEntry } from "@/services/checkpoint-curator/prompts/card";
+import { characterFace } from "@/services/checkpoint-curator/prompts/card";
 import type {
 	CuratorTeam,
 	CuratorWorkflow,
@@ -119,6 +120,8 @@ export type CheckpointReviewDto = {
 	verdict: { verdict: CheckpointVerdict; note: string | null } | null;
 	/** The stage a "Ready for the next stage" verdict opens, while the project is still on this one. */
 	nextStage: { name: string; key: string } | null;
+	/** Who the AI curator plays on this checkpoint — its name and avatar. */
+	character: { name: string; avatar: string | null } | null;
 };
 
 const taskSelect = {
@@ -187,6 +190,7 @@ export const getReview = async (
 			stepId: true,
 			goal: true,
 			goalAgreedAt: true,
+			curatorCharacter: true,
 			startedAt: true,
 			dueAt: true,
 			verdict: true,
@@ -302,6 +306,7 @@ export const getReview = async (
 		verdict: checkpoint.verdict
 			? { verdict: checkpoint.verdict, note: checkpoint.verdictNote }
 			: null,
+		character: characterFace(checkpoint.curatorCharacter),
 		nextStage: next
 			? {
 					name: next.name ?? "",

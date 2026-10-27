@@ -21,6 +21,7 @@ import {
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { createCharacter } from "@/services/checkpoint-curator/character";
+import { characterFace } from "@/services/checkpoint-curator/prompts/card";
 import { writePlanAdvice, writeSprintReview } from "@/services/curator-review";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { LAB_PERSONAS } from "./personas";
@@ -441,11 +442,13 @@ export const runLab = async (
 	if (!found) return { error: `No call "${id}"` };
 	const persona = LAB_PERSONAS.find((each) => each.id === personaId)?.persona;
 	const started = Date.now();
+	let character: string | null = null;
 	const { result, traces } = await traced(async () => {
 		// The character the picked profile gives, made as a checkpoint makes it at its start.
+		if (persona) character = await createCharacter(persona);
 		const shown =
-			persona && input && typeof input === "object"
-				? { ...input, character: await createCharacter(persona) }
+			character && input && typeof input === "object"
+				? { ...input, character }
 				: input;
 		return found.run(shown, language);
 	});
@@ -456,6 +459,8 @@ export const runLab = async (
 		traces.reduce((total, trace) => total + count(trace), 0);
 	return {
 		...result,
+		// Who spoke, for the page to draw them as the author would see them.
+		character: characterFace(character),
 		traces,
 		inputTokens: sum((trace) => trace.inputTokens),
 		outputTokens: sum((trace) => trace.outputTokens),

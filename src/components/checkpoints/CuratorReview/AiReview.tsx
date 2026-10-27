@@ -588,6 +588,7 @@ function Message({
 
 	return (
 		<CuratorMessage
+			character={review.character}
 			date={dayjs(session?.scheduledAt).format("D MMM")}
 			message={
 				closing

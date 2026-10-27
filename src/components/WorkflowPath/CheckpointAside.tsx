@@ -1,12 +1,12 @@
 "use client";
 
-import { IconMessageCircle, IconPaperclip } from "@tabler/icons-react";
+import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Tag, Tooltip, Typography } from "antd";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
-import { AppAvatar } from "@/components/ui/AppAvatar";
 import WorkflowTaskCard from "@/components/WorkflowContent/WorkflowTaskCard";
 import {
 	CheckpointCuratorKind,
@@ -15,6 +15,7 @@ import {
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import type { CheckpointArtifactRef, CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
+import { CuratorNote } from "./CuratorNote";
 import { formatDayRange } from "./dates";
 import styles from "./style.module.scss";
 
@@ -26,8 +27,9 @@ export type CheckpointAsideProps = {
 };
 
 /**
- * Frame 08 (`RV1gV`): the running checkpoint at a glance beside the path — its
- * goal, its tasks with what proves them, and the curator one click from a chat.
+ * Frame 08 (`RV1gV`): the running checkpoint at a glance beside the path — the
+ * curator's last word and what it asks, the goal, and the tasks with what
+ * proves them.
  */
 export function CheckpointAside({
 	checkpoint,
@@ -46,8 +48,8 @@ export function CheckpointAside({
 		checkpoint.items.find((item) => item.id === id)?.artifact ??
 		checkpoint.evidence?.find((row) => row.itemIds.includes(id))?.artifact ??
 		null;
-	const done = outcomes.filter((item) => proofOf(item.id)).length;
 	const curator = checkpoint.curator;
+	const { slug } = useParams<{ slug: string }>();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 
 	const chat = () =>
@@ -84,6 +86,16 @@ export function CheckpointAside({
 			</div>
 
 			<div className={styles.asideBody}>
+				{(curator || isAI) && (
+					<CuratorNote
+						checkpoint={checkpoint}
+						reviewHref={(index) =>
+							`/user/project/${slug}/workflow/cp${checkpoint.number ?? 1}/review/${index}`
+						}
+						onChat={chat}
+						chatLoading={openChat.isPending}
+					/>
+				)}
 				<div className={styles.asideBlock}>
 					<Text type="secondary" strong className={styles.asideMeta}>
 						{t("workflow.aside.goal", "Goal")}
@@ -94,17 +106,9 @@ export function CheckpointAside({
 				<div className={styles.asideBlock}>
 					{outcomes.length > 0 && (
 						<>
-							<div className={styles.asideRow}>
-								<Text type="secondary" strong className={styles.asideMeta}>
-									{t("workflow.aside.tasks", "Tasks")}
-								</Text>
-								<Text type="secondary" className={styles.asideMeta}>
-									{t("workflow.path.count", "{done} of {total}", {
-										done: String(done),
-										total: String(outcomes.length),
-									})}
-								</Text>
-							</div>
+							<Text type="secondary" strong className={styles.asideMeta}>
+								{t("workflow.aside.tasks", "Tasks")}
+							</Text>
 							<div className={styles.asideTasks}>
 								{outcomes.map((item) => {
 									const proof = proofOf(item.id);
@@ -144,29 +148,6 @@ export function CheckpointAside({
 						</>
 					)}
 				</div>
-
-				{curator && (
-					<div className={styles.asideCurator}>
-						<AppAvatar src={curator.image} size={40}>
-							{curator.name?.[0]}
-						</AppAvatar>
-						<div className={styles.grow}>
-							<Text strong>{curator.name}</Text>
-							<Text type="secondary" className={styles.asideMeta}>
-								{t("workflow.aside.curator", "Curator")}
-							</Text>
-						</div>
-						<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
-							<Button
-								size="large"
-								icon={<IconMessageCircle size={20} />}
-								loading={openChat.isPending}
-								onClick={chat}
-								aria-label={t("workflow.aside.chat", "Checkpoint chat")}
-							/>
-						</Tooltip>
-					</div>
-				)}
 			</div>
 
 			{canManage && (

@@ -36,6 +36,7 @@ import { checkpointLineage } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
+import { characterFace } from "@/services/checkpoint-curator/prompts/card";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,
@@ -43,6 +44,7 @@ import type {
 	CheckpointPulseCellDto,
 	CheckpointPulseRowDto,
 	CheckpointSprintDto,
+	CuratorReview,
 } from "@/types/checkpoints";
 
 /**
@@ -212,7 +214,9 @@ const checkpointDetailSelect = {
 			source: true,
 		},
 	},
-	sessions: sessionRowSelect,
+	// The detail reads the AI curator's last letter from its session too.
+	sessions: { select: { ...sessionRowSelect.select, content: true } },
+	curatorCharacter: true,
 	project: {
 		select: {
 			team: {
@@ -418,10 +422,36 @@ const buildEvidence = (
 
 export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
+/** The AI curator's latest letter the team can read, and the session it is on. */
+const lastLetter = (
+	sessions: { index: number; scheduledAt: Date; content: unknown }[],
+	now = new Date(),
+) => {
+	const latest = sessions
+		.filter((session) => session.scheduledAt <= now)
+		.sort((a, b) => b.index - a.index)
+		.find((session) => (session.content as CuratorReview | null)?.message);
+	return latest
+		? {
+				index: latest.index,
+				text: (latest.content as CuratorReview).message,
+				at: latest.scheduledAt.toISOString(),
+			}
+		: null;
+};
+
 /** The row as the checkpoint page reads it; the artifact joins stay behind. */
 const toCheckpointDetail = (row: DetailRow) => {
-	const { curator, items, project, pulses, reports, sessions, ...checkpoint } =
-		withAcceptedTerms(row);
+	const {
+		curator,
+		curatorCharacter,
+		items,
+		project,
+		pulses,
+		reports,
+		sessions,
+		...checkpoint
+	} = withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
 
 	return {
@@ -437,6 +467,8 @@ const toCheckpointDetail = (row: DetailRow) => {
 		})),
 		sprints: buildSprints(startedAt),
 		sessions: buildSessions(startedAt, sessions),
+		letter: lastLetter(sessions),
+		character: characterFace(curatorCharacter),
 		pulses: buildPulseRows(
 			project.team?.members ?? [],
 			pulses,

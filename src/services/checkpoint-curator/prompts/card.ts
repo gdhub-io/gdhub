@@ -361,6 +361,8 @@ export const legOfSprint = (sprint: number, final: boolean): RoadLeg => {
 };
 
 type CharacterSheet = {
+	/** The base role, which the avatar belongs to; absent on sheets kept before it was. */
+	role?: CuratorCharacter;
 	name: string;
 	nameRu: string;
 	who: string;
@@ -372,7 +374,10 @@ type CharacterSheet = {
 const sheetOf = (stored?: string | null): CharacterSheet | null => {
 	if (!stored) return null;
 	if (stored in CURATOR_CHARACTERS) {
-		return CURATOR_CHARACTERS[stored as CuratorCharacter];
+		return {
+			role: stored as CuratorCharacter,
+			...CURATOR_CHARACTERS[stored as CuratorCharacter],
+		};
 	}
 	try {
 		const sheet = JSON.parse(stored) as Partial<CharacterSheet>;
@@ -382,6 +387,19 @@ const sheetOf = (stored?: string | null): CharacterSheet | null => {
 	} catch {
 		return null;
 	}
+};
+
+/**
+ * The face of a checkpoint's character for the pages: its name and the role's
+ * avatar in `public/curators`, one per role whatever name the role was given.
+ */
+export const characterFace = (stored?: string | null) => {
+	const sheet = sheetOf(stored);
+	if (!sheet) return null;
+	return {
+		name: sheet.name,
+		avatar: sheet.role ? `/curators/${sheet.role}.webp` : null,
+	};
 };
 
 export const renderCharacter = (

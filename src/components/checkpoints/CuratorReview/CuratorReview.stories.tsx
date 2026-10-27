@@ -278,6 +278,7 @@ const aiReview = (
 	})),
 	verdict: null,
 	nextStage: null,
+	character: null,
 	...extra,
 });
 

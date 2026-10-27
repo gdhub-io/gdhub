@@ -189,6 +189,10 @@ export type CheckpointDto = {
 	sprints?: CheckpointSprintDto[];
 	/** Detail only, and empty until the checkpoint starts. */
 	sessions?: CheckpointSessionDto[];
+	/** Detail only: the AI curator's latest letter, null before the first one or with a pro curator. */
+	letter?: { index: number; text: string; at: string } | null;
+	/** Detail only: who the AI curator plays on this checkpoint — its name and avatar. */
+	character?: { name: string; avatar: string | null } | null;
 	/**
 	 * Builds the project uploaded during the 28 days, whether or not they were
 	 * offered as evidence: uploading one is what a sprint asks, proving with it

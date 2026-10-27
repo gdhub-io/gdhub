@@ -283,6 +283,7 @@ export function AiCuratorLab() {
 					input={ranInput}
 					answer={ran.answer}
 					settled={ran.settled}
+					character={ran.character}
 				/>
 			);
 	} else if (tab === "sent") {

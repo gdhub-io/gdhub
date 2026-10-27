@@ -73,3 +73,41 @@ describe("a character made the author's own", () => {
 		expect(renderCharacter("{not json", "walk")).not.toContain("undefined");
 	});
 });
+
+describe("the character's face on the pages", () => {
+	it("is its own name and its role's avatar", async () => {
+		const { characterFace } = await import(
+			"@/services/checkpoint-curator/prompts/card"
+		);
+		expect(
+			characterFace(
+				JSON.stringify({
+					role: "pirate",
+					name: "Captain Irma",
+					nameRu: "капитан Ирма",
+					who: "a pirate captain",
+					world: "the ship",
+					road: "a voyage",
+				}),
+			),
+		).toEqual({ name: "Captain Irma", avatar: "/curators/pirate.webp" });
+		expect(characterFace("wizard")).toEqual({
+			name: "Elder Aldric",
+			avatar: "/curators/wizard.webp",
+		});
+		expect(characterFace(null)).toBeNull();
+	});
+});
+
+describe("the avatars", () => {
+	it("are there for every role", async () => {
+		const { existsSync } = await import("node:fs");
+		const { CURATOR_CHARACTERS } = await import(
+			"@/services/checkpoint-curator/prompts/card"
+		);
+		const missing = Object.keys(CURATOR_CHARACTERS).filter(
+			(role) => !existsSync(`public/curators/${role}.webp`),
+		);
+		expect(missing).toEqual([]);
+	});
+});

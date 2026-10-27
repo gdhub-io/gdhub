@@ -87,7 +87,9 @@ export const createCharacter = async (
 			result,
 		);
 		await recordAiUsage(meter, AI_MODELS.curatorAssist, result.usage);
-		return result.output ? JSON.stringify(result.output) : key;
+		return result.output
+			? JSON.stringify({ role: key, ...result.output })
+			: key;
 	} catch (error) {
 		console.error("[checkpoint-curator] character failed", error);
 		return key;

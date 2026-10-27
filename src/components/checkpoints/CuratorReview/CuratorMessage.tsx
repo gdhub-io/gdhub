@@ -27,6 +27,8 @@ export type CuratorAction = {
 export type CuratorMessageProps = {
 	/** A pro curator; without one the AI curator speaks. */
 	curator?: { name: string; image: string | null };
+	/** Who the AI curator plays on this checkpoint, if anyone. */
+	character?: { name: string; avatar: string | null } | null;
 	/** Already formatted: "8 Oct". */
 	date: string;
 	message: string;
@@ -41,6 +43,7 @@ export type CuratorMessageProps = {
  */
 export function CuratorMessage({
 	curator,
+	character,
 	date,
 	message,
 	verdict,
@@ -55,6 +58,8 @@ export function CuratorMessage({
 				<AppAvatar src={curator.image} size={48}>
 					{initials(curator.name)}
 				</AppAvatar>
+			) : character?.avatar ? (
+				<AppAvatar src={character.avatar} size={48} />
 			) : (
 				<span className={styles.avatar}>
 					<IconSparkles size={24} />
@@ -67,7 +72,11 @@ export function CuratorMessage({
 							? t("checkpoints.review.proCurator", "{name} · curator", {
 									name: curator.name,
 								})
-							: t("checkpoints.review.curator", "AI curator")}
+							: character
+								? t("checkpoints.review.aiCharacter", "{name} · AI curator", {
+										name: character.name,
+									})
+								: t("checkpoints.review.curator", "AI curator")}
 					</Typography.Text>
 					<Typography.Text type="secondary" className={styles.small}>
 						{date}
