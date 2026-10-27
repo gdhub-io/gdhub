@@ -65,6 +65,50 @@ export function ClosedStage({
 	const scheduled = dayjs(call.scheduledAt);
 	const team = call.role === "team";
 
+	if (call.state === "over" && !call.curatorJoinedAt) {
+		const next = call.sessions.find(
+			(session) => !session.held && session.index > call.index,
+		);
+		const at = next && dayjs(next.scheduledAt);
+		const nextWhen = at && {
+			date: at.format("dddd D MMM"),
+			time: at.format("HH:mm"),
+		};
+		const name = firstName(call.curator.name);
+		return (
+			<CuratorMessage
+				curator={call.curator}
+				date={scheduled.format("D MMM")}
+				message={
+					team
+						? nextWhen
+							? t(
+									"checkpoints.call.missedTeamNext",
+									"{name} didn't join this call. The next one is on {date} at {time}.",
+									{ name, ...nextWhen },
+								)
+							: t(
+									"checkpoints.call.missedTeam",
+									"{name} didn't join this call.",
+									{
+										name,
+									},
+								)
+						: nextWhen
+							? t(
+									"checkpoints.call.missedCuratorNext",
+									"You didn't join this call. The next one is on {date} at {time}.",
+									nextWhen,
+								)
+							: t(
+									"checkpoints.call.missedCurator",
+									"You didn't join this call.",
+								)
+				}
+			/>
+		);
+	}
+
 	if (call.state !== "early") {
 		return (
 			<CuratorMessage

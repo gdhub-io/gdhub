@@ -30,6 +30,22 @@ export const callState = (
 	return now < closesAt ? "open" : "over";
 };
 
+/** Its window is past and the curator never came in. */
+export const callMissed = (
+	session: {
+		scheduledAt: Date | string;
+		curatorJoinedAt: Date | string | null;
+		endedAt: Date | string | null;
+	},
+	now = new Date(),
+) =>
+	!session.curatorJoinedAt &&
+	callState(
+		new Date(session.scheduledAt),
+		session.endedAt ? new Date(session.endedAt) : null,
+		now,
+	) === "over";
+
 /** A session behind the checkpoint: a call that is over, or a review the AI has written. */
 export const sessionHeld = (
 	session: {

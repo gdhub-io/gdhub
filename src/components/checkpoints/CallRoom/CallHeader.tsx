@@ -19,6 +19,7 @@ export type CallHeaderProps = {
 		| "curator"
 		| "scheduledAt"
 		| "state"
+		| "curatorJoinedAt"
 		| "role"
 		| "project"
 	>;
@@ -74,7 +75,12 @@ export function CallHeader({
 	}
 
 	let status: { tone: StatusTone; label: string };
-	if (call.state === "over") {
+	if (call.state === "over" && !call.curatorJoinedAt) {
+		status = {
+			tone: "danger",
+			label: t("checkpoints.call.status.missed", "Missed"),
+		};
+	} else if (call.state === "over") {
 		status = {
 			tone: "neutral",
 			label: t("checkpoints.call.status.over", "Ended"),
