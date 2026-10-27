@@ -179,14 +179,17 @@ export function CuratorNote({
 						</Text>
 					)}
 				</div>
-				<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
-					<Button
-						icon={<IconMessageCircle size={16} />}
-						loading={chatLoading}
-						onClick={onChat}
-						aria-label={t("workflow.aside.chat", "Checkpoint chat")}
-					/>
-				</Tooltip>
+				{/* The AI curator answers in its letters, not in a chat. */}
+				{!isAI && (
+					<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
+						<Button
+							icon={<IconMessageCircle size={16} />}
+							loading={chatLoading}
+							onClick={onChat}
+							aria-label={t("workflow.aside.chat", "Checkpoint chat")}
+						/>
+					</Tooltip>
+				)}
 			</div>
 			<Paragraph ellipsis={{ rows: 5 }} className={styles.curatorText}>
 				{message}
