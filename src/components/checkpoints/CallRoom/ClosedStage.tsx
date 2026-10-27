@@ -26,6 +26,28 @@ export type ClosedStageProps = {
 	now?: Date;
 };
 
+/** A call's join button before its room opens: when it will. */
+export const useLockedJoinLabel = () => {
+	const { t } = useTranslate();
+	return (scheduledAt: string | Date, now: Date) => {
+		const opensIn = dayjs(callWindow(new Date(scheduledAt)).opensAt).diff(
+			now,
+			"minute",
+		);
+		if (opensIn >= 24 * 60)
+			return t("checkpoints.call.joinOn", "Join on {date}", {
+				date: dayjs(scheduledAt).format("D MMM"),
+			});
+		if (opensIn >= 60)
+			return t("checkpoints.call.joinInHours", "Join in {n} h", {
+				n: Math.round(opensIn / 60),
+			});
+		return t("checkpoints.call.joinInMinutes", "Join in {n} min", {
+			n: Math.max(opensIn, 1),
+		});
+	};
+};
+
 /**
  * 08.9 and 08.8: the curator's panel stands where the video will be, and was —
  * the call ahead with a way into the calendar, or over with its review.
@@ -39,6 +61,7 @@ export function ClosedStage({
 	now = new Date(),
 }: ClosedStageProps) {
 	const { t } = useTranslate();
+	const lockedJoin = useLockedJoinLabel();
 	const scheduled = dayjs(call.scheduledAt);
 	const team = call.role === "team";
 
@@ -96,24 +119,7 @@ export function ClosedStage({
 	};
 
 	// Locked until the room opens; the page asks again while it waits.
-	const opensIn = dayjs(callWindow(scheduled.toDate()).opensAt).diff(
-		now,
-		"minute",
-	);
-	let joinLabel: string;
-	if (opensIn >= 24 * 60) {
-		joinLabel = t("checkpoints.call.joinOn", "Join on {date}", {
-			date: scheduled.format("D MMM"),
-		});
-	} else if (opensIn >= 60) {
-		joinLabel = t("checkpoints.call.joinInHours", "Join in {n} h", {
-			n: Math.round(opensIn / 60),
-		});
-	} else {
-		joinLabel = t("checkpoints.call.joinInMinutes", "Join in {n} min", {
-			n: Math.max(opensIn, 1),
-		});
-	}
+	const joinLabel = lockedJoin(call.scheduledAt, now);
 
 	return (
 		<CuratorMessage

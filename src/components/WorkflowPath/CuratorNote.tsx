@@ -2,6 +2,7 @@
 
 import {
 	IconFileText,
+	IconLock,
 	IconMessageCircle,
 	IconVideo,
 } from "@tabler/icons-react";
@@ -10,6 +11,7 @@ import { Button, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useLockedJoinLabel } from "@/components/checkpoints/CallRoom/ClosedStage";
 import { InverseBand } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
@@ -24,6 +26,7 @@ import styles from "./style.module.scss";
 const { Text, Paragraph } = Typography;
 
 type Action = { key: string; label: string; icon: ReactNode; href: string };
+type Join = Action & { primary: boolean; locked: boolean };
 
 /**
  * Frames 12.07, 12.08 and 12.10 (`xZ32D`, `BixZr`, `ErNgO`): the curator on
@@ -45,13 +48,14 @@ export function CuratorNote({
 	now?: Date;
 }) {
 	const { t } = useTranslate();
+	const lockedJoin = useLockedJoinLabel();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 	const { curator } = checkpoint;
 
 	let date: string | null = null;
 	let message: string;
 	let action: Action | null = null;
-	let join: (Action & { primary: boolean }) | null = null;
+	let join: Join | null = null;
 
 	if (isAI) {
 		const { letter } = checkpoint;
@@ -93,7 +97,6 @@ export function CuratorNote({
 					session.contentStatus === CheckpointSessionContentStatus.Ready,
 			)
 			.at(-1);
-		const call = live ?? next;
 		const notesReady = !!reviewed && reviewed.index === held?.index;
 
 		if (live) {
@@ -134,13 +137,24 @@ export function CuratorNote({
 				href: reviewHref(reviewed.index),
 			};
 		}
-		if (call) {
+		if (live) {
 			join = {
 				key: "join",
 				label: t("workflow.aside.join", "Join session"),
 				icon: <IconVideo size={16} />,
-				href: reviewHref(call.index),
-				primary: !!live || !action,
+				href: reviewHref(live.index),
+				primary: true,
+				locked: false,
+			};
+		} else if (next) {
+			// Until the room opens the button says when it will.
+			join = {
+				key: "join",
+				label: lockedJoin(next.scheduledAt, now),
+				icon: <IconLock size={16} />,
+				href: reviewHref(next.index),
+				primary: false,
+				locked: true,
 			};
 		}
 	}
@@ -203,17 +217,22 @@ export function CuratorNote({
 							</Button>
 						</Link>
 					)}
-					{join && (
-						<Link href={join.href}>
-							<Button
-								type={join.primary ? "primary" : "default"}
-								block
-								icon={join.icon}
-							>
+					{join &&
+						(join.locked ? (
+							<Button block disabled icon={join.icon}>
 								{join.label}
 							</Button>
-						</Link>
-					)}
+						) : (
+							<Link href={join.href}>
+								<Button
+									type={join.primary ? "primary" : "default"}
+									block
+									icon={join.icon}
+								>
+									{join.label}
+								</Button>
+							</Link>
+						))}
 				</div>
 			)}
 		</InverseBand>

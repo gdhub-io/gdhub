@@ -729,7 +729,12 @@ export function RunningCheckpoint({
 			{!sessionToday &&
 				nextSession &&
 				nextSession.index <= 4 &&
-				sessionCard(nextSession)}
+				// A call moved before its sprint and let pass is behind, not ahead.
+				(!isAI && held(nextSession) ? (
+					<PathNode marker="session">{sessionDone(nextSession)}</PathNode>
+				) : (
+					sessionCard(nextSession)
+				))}
 
 			{ahead.length > 0 && (
 				<PathNode marker="none">
