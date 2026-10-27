@@ -35,10 +35,13 @@ export function WorkflowAside({
 	projectId,
 	checkpointId,
 	children,
+	withCurator = true,
 }: {
 	projectId: string;
 	checkpointId?: string;
 	children?: ReactNode;
+	/** Off where the page already shows the curator large. */
+	withCurator?: boolean;
 }) {
 	const { can } = useAccess();
 	const { data: workflow } = useProjectWorkflow(projectId);
@@ -51,6 +54,7 @@ export function WorkflowAside({
 			{detail && (
 				<CheckpointAside
 					checkpoint={detail}
+					withCurator={withCurator}
 					canManage={can("project.checkpoints.manage")}
 				/>
 			)}

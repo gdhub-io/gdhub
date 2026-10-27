@@ -20,7 +20,11 @@ export function CuratorAside({
 	if (!projectId) return children ? <aside>{children}</aside> : null;
 
 	return (
-		<WorkflowAside projectId={projectId} checkpointId={checkpointId}>
+		<WorkflowAside
+			projectId={projectId}
+			checkpointId={checkpointId}
+			withCurator={false}
+		>
 			{children}
 		</WorkflowAside>
 	);
