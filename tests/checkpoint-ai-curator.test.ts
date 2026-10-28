@@ -16,6 +16,7 @@ const sessionUpdateMany = vi.fn();
 const sessionCreateMany = vi.fn();
 const writeSprintReview = vi.fn();
 const writePlanAdvice = vi.fn();
+const writeReviewLetter = vi.fn();
 const closeCheckpoint = vi.fn();
 const notify = vi.fn();
 const writeFirstLetter = vi.fn();
@@ -80,6 +81,23 @@ vi.mock("@/repositories/curator-context", async (actual) => ({
 vi.mock("@/services/curator-review", () => ({
 	writeSprintReview: (...a: unknown[]) => writeSprintReview(...a),
 	writePlanAdvice: (...a: unknown[]) => writePlanAdvice(...a),
+	// The chain as production runs it, over the mocked steps; its review text is the summary.
+	reviewSprint: async (
+		input: unknown,
+		advise: ((review: string) => Promise<unknown>) | null,
+		meter: unknown,
+	) => {
+		const assessment = await writeSprintReview(input, meter);
+		if (!assessment) return null;
+		const advice = advise ? await advise(assessment.inShort) : null;
+		const letter = await writeReviewLetter(input, assessment.inShort, advice);
+		if (!letter) return null;
+		return {
+			message: letter.message,
+			notes: { ...assessment, agreed: letter.agreed },
+			advice,
+		};
+	},
 }));
 vi.mock("@/repositories/checkpoint-curator.repository", () => ({
 	closeCheckpoint: (...a: unknown[]) => closeCheckpoint(...a),
@@ -194,26 +212,27 @@ const reviewed = (index: number, overrides: Record<string, unknown> = {}) => ({
 	...overrides,
 });
 
-const review = {
+const assessment = {
+	inShort: "Done.",
+	discussed: [
+		{ itemId: "t1", text: "Shown." },
+		{ itemId: "made-up", text: "?" },
+	],
+	notDiscussed: ["made-up"],
+	outsidePlan: [],
+	questions: [],
+};
+const letter = {
 	message: "Good start.",
-	notes: {
-		inShort: "Done.",
-		discussed: [
-			{ itemId: "t1", text: "Shown." },
-			{ itemId: "made-up", text: "?" },
-		],
-		notDiscussed: ["made-up"],
-		outsidePlan: [],
-		agreed: [{ text: "Test it", itemId: "made-up", dueDay: null }],
-		questions: [],
-	},
+	agreed: [{ text: "Test it", itemId: "made-up", dueDay: null }],
 };
 
 describe("writeDueReviews", () => {
 	beforeEach(() => {
 		sessionFindMany.mockResolvedValue([{ id: "s2" }]);
 		sessionUpdateMany.mockResolvedValue({ count: 1 });
-		writeSprintReview.mockResolvedValue(review);
+		writeSprintReview.mockResolvedValue(assessment);
+		writeReviewLetter.mockResolvedValue(letter);
 	});
 
 	it("takes the AI's review days that have come, sprints while running and the final once over", async () => {
@@ -514,7 +533,7 @@ describe("the human curator's brief", () => {
 				],
 			}),
 		);
-		writeSprintReview.mockResolvedValue(review);
+		writeSprintReview.mockResolvedValue(assessment);
 
 		await expect(writeBriefFor("s3")).resolves.toBe(true);
 
@@ -525,7 +544,7 @@ describe("the human curator's brief", () => {
 		const entry = vi.mocked(journal).mock.calls[0][0];
 		expect(entry).toMatchObject({ kind: "Review", sprint: 2 });
 		expect(
-			(entry.output as { notes: typeof review.notes }).notes.discussed,
+			(entry.output as { notes: typeof assessment }).notes.discussed,
 		).toEqual([{ itemId: "t1", text: "Shown." }]);
 		expect(notify).not.toHaveBeenCalled();
 	});

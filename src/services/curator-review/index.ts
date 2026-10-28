@@ -202,16 +202,11 @@ export const writePlanAdvice = async (
 	return result.output ?? null;
 };
 
-const reviewSchema = z.object({
-	message: z
-		.string()
-		.describe(
-			"A letter to the team, three or four sentences: what went well, what worries you, and one thing to do next. On the final review, the whole road instead — four to six sentences that agree with the verdict and say what the next checkpoint starts from.",
-		),
+const assessmentSchema = z.object({
 	inShort: z
 		.string()
 		.describe(
-			"Two or three sentences: how the sprint went — what landed, what did not, the main risk.",
+			"Two or three sentences. First where the team stands, in plain words: on course, at risk or behind. Then what landed, what did not, the main risk. When nothing was shown, say that it is unknown what got done, because nothing was shown.",
 		),
 	discussed: z
 		.array(z.object({ itemId: z.string(), text: z.string() }))
@@ -224,21 +219,12 @@ const reviewSchema = z.object({
 	outsidePlan: z
 		.array(z.string())
 		.describe("Work shown that belongs to no task."),
-	agreed: z
-		.array(
-			z.object({
-				text: z.string(),
-				itemId: z.string().nullable(),
-				dueDay: z.number().int().nullable(),
-			}),
-		)
-		.describe(
-			"The focus for the next sprint, two or three lines; dueDay stays null. Empty on the final review.",
-		),
 	questions: z
 		.array(z.string())
 		.describe("Questions the team should answer for itself."),
 });
+
+export type SprintAssessment = z.infer<typeof assessmentSchema>;
 
 /**
  * The review of one sprint, from what the team showed in it: every devlog of
@@ -253,20 +239,23 @@ export const writeSprintReview = async (
 	const final = input.verdict !== null;
 	const request = {
 		instructions: stripIndents`
-			${voice(input.character, legOfSprint(input.sprint, final))}
-
-			Review sprint ${input.sprint} from what the team showed: every devlog
-			of the sprint, the artifacts it added, who confirmed working, and what
-			happened on the project. Judge by what
+			You are the AI curator of a game team on GDHub, through a 28-day
+			checkpoint: a goal, four one-week sprints, a review after each and a
+			verdict at the end. Review sprint ${input.sprint} from what the team
+			showed: every devlog of the sprint, the artifacts it added, who
+			confirmed working, and what happened on the project. Judge by what
 			anyone can open, not by intentions. A task is done only when an
 			artifact closes it. Where a task's evidence was looked at, say what it
 			shows; a mismatch is worth naming, but it does not undo the task.
+			Use only task ids given to you, and only in the id fields: in text,
+			name a task by its own words. The team reads this review under your
+			letter; reassurance and the next step belong to the letter, not here.
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
+
+			${AUTHOR_VOICE}
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
-			${renderJournal(input.journal)}
-
 			${renderWorkflow(input.workflow)}
 			Goal: ${input.goal}
 
@@ -298,7 +287,7 @@ export const writeSprintReview = async (
 	const started = Date.now();
 	const result = await generateText({
 		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: reviewSchema, name: "sprint_review" }),
+		output: Output.object({ schema: assessmentSchema, name: "sprint_review" }),
 		...request,
 	});
 	traceGenerated(
@@ -309,8 +298,141 @@ export const writeSprintReview = async (
 		result,
 	);
 	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-	const { output } = result;
-	if (!output) return null;
-	const { message, ...notes } = output;
-	return { message, notes: notes satisfies CallNotes };
+	return result.output ?? null;
+};
+
+/** The review as the next calls read it: the advice halfway, then the letter. */
+export const renderAssessment = (
+	review: SprintAssessment,
+	tasks: CuratorTask[],
+) => {
+	const named = (id: string) =>
+		tasks.find((task) => task.id === id)?.text ?? id;
+	return [
+		`How the sprint stands: ${review.inShort}`,
+		...review.discussed.map((row) => `- ${named(row.itemId)}: ${row.text}`),
+		review.notDiscussed.length &&
+			`Nothing shown yet for: ${review.notDiscussed.map(named).join("; ")}`,
+		review.outsidePlan.length &&
+			`Work outside the plan: ${review.outsidePlan.join("; ")}`,
+		review.questions.length &&
+			`Questions for the team: ${review.questions.join(" ")}`,
+	]
+		.filter(Boolean)
+		.join("\n");
+};
+
+/** The halfway advice the letter must agree with: one note per task, and any to add. */
+export type MidwayAdvice = {
+	tasks: { itemId: string; note: string }[];
+	add: string[];
+};
+
+const letterSchema = z.object({
+	message: z
+		.string()
+		.describe(
+			"A letter to the team, three or four sentences, built from the review: where the team stands in plain words — on course, at risk or behind; what went well, or, when nothing was shown, that it is unknown what got done because nothing was shown; what worries you; and one thing to do next. On the final review, the whole road instead — four to six sentences that agree with the verdict and say what the next checkpoint starts from.",
+		),
+	agreed: z
+		.array(
+			z.object({
+				text: z.string(),
+				itemId: z.string().nullable(),
+				dueDay: z.number().int().nullable(),
+			}),
+		)
+		.describe(
+			"The focus for the next sprint, two or three lines that agree with the review and with any advice on the tasks; dueDay stays null. Empty on the final review.",
+		),
+});
+
+/**
+ * The letter and the next sprint's focus, from the review already written and,
+ * halfway, the advice on the tasks — so the three never disagree.
+ */
+export const writeReviewLetter = async (
+	input: SprintReviewInput,
+	review: string,
+	advice: MidwayAdvice | null,
+	meter?: AiMeter,
+	locale?: string,
+) => {
+	const final = input.verdict !== null;
+	const named = (id: string) =>
+		input.tasks.find((task) => task.id === id)?.text ?? id;
+	const request = {
+		instructions: stripIndents`
+			${voice(input.character, legOfSprint(input.sprint, final))}
+
+			Your review of sprint ${input.sprint} is written below. Turn it into
+			the letter the team reads and the focus for the next sprint. Add no
+			judgement the review does not hold.
+			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it — never ask for what it drops or shortens." : ""}
+			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
+			${locale ? localeLine(locale) : ""}
+		`,
+		prompt: stripIndents`
+			${renderJournal(input.journal)}
+
+			Goal: ${input.goal}
+
+			Tasks:
+			${input.tasks.map(taskLine).join("\n")}
+
+			Your review of the sprint:
+			${review}
+
+			${
+				advice
+					? `Your advice on the tasks:\n${[
+							...advice.tasks.map(
+								(row) => `- ${named(row.itemId)}: ${row.note}`,
+							),
+							...advice.add.map((line) => `- Add: ${line}`),
+						].join("\n")}`
+					: ""
+			}
+
+			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
+		`,
+	};
+	const started = Date.now();
+	const result = await generateText({
+		model: openai(AI_MODELS.curatorReview),
+		output: Output.object({ schema: letterSchema, name: "review_letter" }),
+		...request,
+	});
+	traceGenerated(
+		"review_letter",
+		AI_MODELS.curatorReview,
+		started,
+		request,
+		result,
+	);
+	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
+	return result.output ?? null;
+};
+
+/**
+ * A sprint review end to end: the review, halfway the advice that reads it,
+ * then the letter and the focus from both. Null when a step gives nothing usable.
+ */
+export const reviewSprint = async <Advice extends MidwayAdvice>(
+	input: SprintReviewInput,
+	advise: ((review: string) => Promise<Advice | null>) | null,
+	meter?: AiMeter,
+	locale?: string,
+) => {
+	const assessment = await writeSprintReview(input, meter, locale);
+	if (!assessment) return null;
+	const review = renderAssessment(assessment, input.tasks);
+	const advice = advise ? await advise(review).catch(() => null) : null;
+	const letter = await writeReviewLetter(input, review, advice, meter, locale);
+	if (!letter) return null;
+	return {
+		message: letter.message,
+		notes: { ...assessment, agreed: letter.agreed } satisfies CallNotes,
+		advice,
+	};
 };

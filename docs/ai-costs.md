@@ -42,9 +42,10 @@ What runs over the 28 days, in order (GDHUB-117):
 | Goal read — word on the goal, suggested tasks | day 1, at payment | Luna | 1 | ~2 790 | ~360 | $0.0005 |
 | Tasks check — the one check of the sent tasks | day 1 | Sol | 1 | ~1 950 | ~840 | $0.0123 |
 | Plan letter — the plan approved, read through sprint 1 | day 1, at approval | Luna | 1 | ~2 100 | ~680 | $0.0006 |
-| Sprint review | days 8, 15, 22, 29 | Sol | 4 | ~2 020 | ~710 | $0.0112 |
+| Sprint review — how the sprint stands, per task (GDHUB-119) | days 8, 15, 22, 29 | Sol | 4 | ~1 750 | ~620 | $0.0097 |
+| Review letter — the letter and the focus, from the review and the advice | days 8, 15, 22, 29 | Sol | 4 | ~1 650 | ~450 | $0.0078 |
 | Media in the sprint's devlogs, described | with each review | Sol | 0–6 a sprint | 360–610 | ~45 | $0.0014 |
-| Plan advice — the last change to the tasks | day 15 | Sol | 1 | ~2 000 | ~580 | $0.0098 |
+| Plan advice — the last change to the tasks, read from the review | day 15 | Sol | 1 | ~2 000 | ~580 | $0.0098 |
 | Evidence — does the artifact show the task | once per link | Sol | ~1 per task | ~500 | ~50 | $0.0015 |
 | Report and proposed verdict | day 29 | Luna | 1 | ~2 670 | ~175 | $0.0004 |
 
@@ -53,15 +54,18 @@ A typical run — four tasks, two images or videos in each sprint's devlogs:
 | | Calls | Cost |
 |---|---|---|
 | Luna: character, goal read, plan letter, report | 4 | $0.0017 |
-| Sol: tasks check, four reviews, plan advice | 6 | $0.0670 |
+| Sol: tasks check, four reviews, four letters, plan advice | 10 | $0.0921 |
 | Sol: eight media descriptions | 8 | $0.0112 |
 | Sol: four evidence checks | 4 | $0.0060 |
-| **One AI checkpoint** | **22** | **≈ $0.086** |
+| **One AI checkpoint** | **26** | **≈ $0.111** |
 
-**Under nine cents, and nine tenths of it is Sol.** The three Luna calls cost a
+**About eleven cents, and nine tenths of it is Sol.** The three Luna calls cost a
 tenth of a cent together. The letters the author reads every week — the sprint
 reviews, the tasks check, the day-15 advice — are where the money is, and they
-are where the quality shows, so this is the right place to spend it.
+are where the quality shows, so this is the right place to spend it. The review
+and its letter are two calls since GDHUB-119 (about 2.5 cents a checkpoint
+more): the letter is written from the review and the day-15 advice, so the
+focus it sets can no longer contradict the advice under the tasks.
 
 ### What moves it
 

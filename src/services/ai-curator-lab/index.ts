@@ -26,7 +26,7 @@ import {
 	characterFace,
 	type JournalEntry,
 } from "@/services/checkpoint-curator/prompts/card";
-import { writePlanAdvice, writeSprintReview } from "@/services/curator-review";
+import { reviewSprint, writePlanAdvice } from "@/services/curator-review";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { LAB_PERSONAS } from "./personas";
 import {
@@ -216,8 +216,8 @@ const CALLS: LabCall[] = [
 	call({
 		id: "sprintReview",
 		purpose: {
-			en: "After each sprint, instead of a curator's call: what the devlogs, artifacts and pulse showed, what is at risk, and the focus for the next sprint.",
-			ru: "После каждого спринта, вместо созвона с куратором: что показали девлоги, артефакты и пульс, что под риском, и фокус на следующий спринт.",
+			en: "After each sprint, instead of a curator's call: the review of what the devlogs, artifacts and pulse showed; on day 15 the advice on the tasks that reads it; then the letter and the next sprint's focus from both. The letter says whether the team is on course, at risk or behind, and never contradicts the advice.",
+			ru: "После каждого спринта, вместо созвона с куратором: разбор того, что показали девлоги, артефакты и пульс; на 15-й день — советы по задачам на основе разбора; затем письмо и фокус на следующий спринт из того и другого. Письмо говорит, идёт ли команда по курсу, под риском или отстаёт, и не спорит с советами.",
 		},
 		label: { en: "Sprint review", ru: "Разбор спринта" },
 		when: {
@@ -245,9 +245,30 @@ const CALLS: LabCall[] = [
 					),
 				),
 			);
+			// Halfway, as in production: the advice reads the review, the letter both.
+			const midway = input.sprint === 2 && !input.verdict;
+			const advise = midway
+				? (review: string) =>
+						writePlanAdvice(
+							{
+								goal: input.goal,
+								character: input.character,
+								journal: input.journal,
+								workflow: input.workflow,
+								team: input.team,
+								tasks: input.tasks,
+								moment: "midway",
+								review,
+								picture: input.picture,
+							},
+							undefined,
+							locale,
+						)
+				: null;
 			return {
-				answer: await writeSprintReview(
+				answer: await reviewSprint(
 					{ ...input, devlogMedia },
+					advise,
 					undefined,
 					locale,
 				),
@@ -388,15 +409,6 @@ const ROAD: {
 		letter: (answer) => answer.message as string,
 	},
 	{
-		call: "planAdvice",
-		situation: "midway",
-		day: 15,
-		label: { en: "Advice under the tasks", ru: "Советы под задачами" },
-		// Not a letter: notes under the tasks, read beside the review.
-		letter: (answer) =>
-			(answer.tasks as { note: string }[]).map((row) => row.note).join(" · "),
-	},
-	{
 		call: "sprintReview",
 		situation: "on-course",
 		day: 22,
@@ -462,8 +474,7 @@ CALLS.push(
 				const text = step.letter(ran.answer as Record<string, unknown>);
 				if (!text) continue;
 				letters.push({ day: step.day, label: step.label[locale], text });
-				// The advice is notes under the tasks; only letters carry the story on.
-				if (step.call !== "planAdvice") journal.push({ day: step.day, text });
+				journal.push({ day: step.day, text });
 			}
 			return { answer: { letters } };
 		},

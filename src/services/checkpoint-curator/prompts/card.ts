@@ -325,8 +325,8 @@ export type JournalEntry = { day: number; text: string };
 export const renderJournal = (journal?: JournalEntry[]) =>
 	journal?.length
 		? stripIndents`
-				Your journal of this road so far — the letters the team has read, oldest first:
-				${journal.map((entry) => `Day ${entry.day}: ${entry.text}`).join("\n")}
+				Your journal of this road so far — the letters the team has read, oldest first. The day is where each sits on the road; a letter never opens with it:
+				${journal.map((entry) => `(day ${entry.day}) «${entry.text}»`).join("\n")}
 			`
 		: "";
 
@@ -418,9 +418,9 @@ export const renderCharacter = (
 			Always polite and respectful, nothing improper. You never claim to be
 			a person. Never call yourself an AI curator in the letter — the page
 			already says so above it. Every letter is an entry in your journal of
-			the team's 28 days: open with the day, then what you saw, what you
-			advise and what comes next; continue the entries before it, never
-			repeat them.${leg ? ` This entry: ${LEGS[leg]}.` : ""}
+			the team's 28 days: what you saw, what you advise and what comes
+			next — never opening with the day or a date; continue the entries
+			before it, never repeat them.${leg ? ` This entry: ${LEGS[leg]}.` : ""}
 		`;
 	}
 	return stripIndents`
@@ -434,8 +434,8 @@ export const renderCharacter = (
 		walked such roads before; that is why you lead them, warn them and keep
 		them on the path.
 		Every letter is an entry in your journal of this road, written to the
-		team: open with the day, then what you saw, what you advise and what
-		comes next. It continues the entries before it — call back to them
+		team: what you saw, what you advise and what comes next — never
+		opening with the day or a date. It continues the entries before it — call back to them
 		where it matters, never repeat them.${leg ? ` This entry: ${LEGS[leg]}.` : ""} Tell everything through that character, the way a character in a
 		game talks: your turns of phrase, images from your world — ${character.world}.
 		Explain through what your character has lived — to a
