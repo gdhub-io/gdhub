@@ -152,7 +152,12 @@ export function RunningCheckpoint({
 				"Set sprint priorities with {name}",
 				{ name: curatorName },
 			),
-			build: t("workflow.path.check.build", "Upload the current build"),
+			build: isAI
+				? t(
+						"workflow.path.check.buildVideo",
+						"Upload a video of the current build",
+					)
+				: t("workflow.path.check.build", "Upload the current build"),
 			devlog: t("workflow.path.check.devlog", "Write the sprint devlog"),
 			artifacts: t("workflow.path.check.artifacts", "Attach artifacts"),
 		})[item.key];
@@ -847,6 +852,7 @@ export function RunningCheckpoint({
 			/>
 			<CreateArtifactModal
 				open={modal === "build"}
+				initialKind={isAI ? "video" : "build"}
 				projectId={project.id}
 				stageName={checkpoint.stageName}
 				onCreate={() => {

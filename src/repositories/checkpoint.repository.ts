@@ -10,6 +10,7 @@ import {
 import {
 	CHECKPOINT_DAYS,
 	CHECKPOINT_OPEN_STATUSES,
+	SPRINT_BUILD_TYPES,
 	SPRINTS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
@@ -492,6 +493,7 @@ const toCheckpointDetail = (row: DetailRow) => {
 const buildsDuring = async (row: {
 	projectId: string;
 	startedAt: Date | null;
+	curatorKind: CheckpointCuratorKind;
 }) => {
 	const { startedAt } = row;
 	if (!startedAt) return [];
@@ -499,7 +501,7 @@ const buildsDuring = async (row: {
 	const artifacts = await prisma.projectArtifact.findMany({
 		where: {
 			projectId: row.projectId,
-			type: ProjectArtifactType.ExecutableBuild,
+			type: { in: SPRINT_BUILD_TYPES[row.curatorKind] },
 			createdAt: {
 				gte: utcStartOfDay(startedAt),
 				lt: dateOfDay(startedAt, CHECKPOINT_DAYS + 1),

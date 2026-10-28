@@ -1,7 +1,9 @@
 import { hubLegalEntity } from "@/config/legal/entities";
 import {
+	CheckpointCuratorKind,
 	CheckpointStatus,
 	PaymentProvider,
+	ProjectArtifactType,
 	type SkillLevel,
 } from "@/config/prisma-enums";
 
@@ -66,6 +68,24 @@ export const SCOPE_ANSWER_HOURS = 24;
 export const AI_APPROVE_HOURS = 12;
 /** Hours after payment at which an author who has not sent the tasks is reminded; the plan stays open. */
 export const AI_REMIND_HOURS = [24, 72] as const;
+/**
+ * What counts as a sprint's build: the AI curator watches, it cannot run a
+ * game, so a video; a person can also open the build and play it.
+ */
+export const SPRINT_BUILD_TYPES: Record<
+	CheckpointCuratorKind,
+	ProjectArtifactType[]
+> = {
+	[CheckpointCuratorKind.AI]: [
+		ProjectArtifactType.GameplayVideo,
+		ProjectArtifactType.PrototypeVideo,
+	],
+	[CheckpointCuratorKind.Human]: [
+		ProjectArtifactType.ExecutableBuild,
+		ProjectArtifactType.GameplayVideo,
+		ProjectArtifactType.PrototypeVideo,
+	],
+};
 /** The author's local hour those reminders go out at: the first such morning after each mark. */
 export const AI_REMIND_LOCAL_HOUR = 10;
 /** Day 15 with the AI curator: hours before the change closes that an author who has not confirmed is reminded. */
