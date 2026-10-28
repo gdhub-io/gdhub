@@ -1,6 +1,6 @@
 import { SCOPE_ANSWER_HOURS, SCOPE_SESSION } from "@/config/checkpoint";
+import { sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 
 /**
  * The outcome list is revisited at the third session — the call (or the AI

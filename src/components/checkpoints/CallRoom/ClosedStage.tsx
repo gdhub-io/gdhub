@@ -65,7 +65,7 @@ export function ClosedStage({
 	const scheduled = dayjs(call.scheduledAt);
 	const team = call.role === "team";
 
-	if (call.state === "over" && !call.curatorJoinedAt) {
+	if (call.missed) {
 		const next = call.sessions.find(
 			(session) => !session.held && session.index > call.index,
 		);

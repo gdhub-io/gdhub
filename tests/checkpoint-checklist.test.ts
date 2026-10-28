@@ -83,6 +83,7 @@ describe("sprint checklist", () => {
 			curatorJoinedAt: "2026-10-08T14:01:00.000Z",
 			endedAt: null,
 			contentStatus: null,
+			missed: false,
 		};
 		const open = sprintChecklist(checkpoint({ sessions: [session] }), sprint2, false);
 		const ended = sprintChecklist(

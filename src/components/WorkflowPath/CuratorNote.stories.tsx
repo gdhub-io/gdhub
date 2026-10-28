@@ -22,6 +22,7 @@ const session = (
 	curatorJoinedAt: null,
 	endedAt: over ? scheduledAt : null,
 	contentStatus: over ? CheckpointSessionContentStatus.Ready : null,
+	missed: false,
 });
 
 const pro = {
@@ -73,6 +74,21 @@ export const ProBetweenCalls: Story = { args: { checkpoint: pro } };
 /** 12.08: the call is on now. */
 export const ProCallLive: Story = {
 	args: { checkpoint: pro, now: new Date("2026-10-08T14:05:00Z") },
+};
+
+/** The curator never joined call 2: said so, with the call after it. */
+export const ProCallMissed: Story = {
+	args: {
+		checkpoint: {
+			...pro,
+			sessions: [
+				session(1, "2026-10-01T14:00:00Z", true),
+				{ ...session(2, "2026-10-08T14:00:00Z"), missed: true },
+				session(3, "2026-10-15T14:00:00Z"),
+			],
+		},
+		now: new Date("2026-10-09T10:00:00Z"),
+	},
 };
 
 /** 12.10: the AI curator's last letter. */

@@ -466,7 +466,7 @@ const toCheckpointDetail = (row: DetailRow) => {
 			sprint: startedAt ? sprintOfDate(startedAt, report.publishedAt) : null,
 		})),
 		sprints: buildSprints(startedAt),
-		sessions: buildSessions(startedAt, sessions),
+		sessions: buildSessions(startedAt, sessions, checkpoint.curatorKind),
 		character: characterFace(curatorCharacter),
 		pulses: buildPulseRows(
 			project.team?.members ?? [],
@@ -721,7 +721,7 @@ export const listClosedCheckpoints = async (
 	return {
 		rows: rows.map(({ sessions, ...row }) => ({
 			...withAcceptedTerms(row),
-			sessions: buildSessions(row.startedAt, sessions),
+			sessions: buildSessions(row.startedAt, sessions, row.curatorKind),
 		})),
 		total,
 		page,

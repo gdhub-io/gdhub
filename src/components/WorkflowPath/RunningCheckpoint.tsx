@@ -35,7 +35,7 @@ import {
 } from "@/config/prisma-enums";
 import { useMarkVerdictRead } from "@/hooks/checkpoints";
 import { downloadIcs } from "@/lib/calendar";
-import { callMissed, sessionHeld } from "@/lib/checkpoint-call";
+import { sessionHeld } from "@/lib/checkpoint-call";
 import {
 	type ChecklistItem,
 	type ChecklistKey,
@@ -285,7 +285,7 @@ export function RunningCheckpoint({
 			<span className={`${styles.meta} ${styles.grow}`}>
 				{formatShort(session.scheduledAt)}
 			</span>
-			{!isAI && callMissed(session) ? (
+			{session.missed ? (
 				<Typography.Text type="danger">
 					{t("workflow.path.session.missed", "{name} didn't join", {
 						name: curatorName,

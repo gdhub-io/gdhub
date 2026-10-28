@@ -1,9 +1,11 @@
-import { SESSIONS_PER_CHECKPOINT, SPRINT_DAYS } from "@/config/checkpoint";
+import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { callMissed } from "@/lib/checkpoint-call";
+import { sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { CheckpointSessionDto } from "@/types/checkpoints";
 
-/** Session 1 is on day 1, session 5 on day 29. */
-export const sessionDay = (index: number) => (index - 1) * SPRINT_DAYS + 1;
+export { sessionDay } from "@/lib/checkpoint-days";
 
 type SessionRow = {
 	index: number;
@@ -22,6 +24,8 @@ type SessionRow = {
 export const buildSessions = (
 	startedAt: Date | null,
 	rows: SessionRow[],
+	curatorKind: CheckpointCuratorKind,
+	now = new Date(),
 ): CheckpointSessionDto[] => {
 	if (!startedAt) return [];
 
@@ -40,6 +44,11 @@ export const buildSessions = (
 			curatorJoinedAt: row?.curatorJoinedAt?.toISOString() ?? null,
 			endedAt: row?.endedAt?.toISOString() ?? null,
 			contentStatus: row?.contentStatus ?? null,
+			// The AI curator writes rather than joins, so only a call can be missed.
+			missed:
+				curatorKind !== CheckpointCuratorKind.AI &&
+				!!row &&
+				callMissed(row, now),
 		};
 	});
 };

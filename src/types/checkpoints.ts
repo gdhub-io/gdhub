@@ -101,6 +101,8 @@ export type CheckpointSessionDto = {
 	curatorJoinedAt: string | null;
 	endedAt: string | null;
 	contentStatus: CheckpointSessionContentStatus | null;
+	/** The call's window passed and the curator never came in. */
+	missed: boolean;
 };
 
 /**

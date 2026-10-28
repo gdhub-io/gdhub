@@ -20,7 +20,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
-import { callMissed, callState } from "@/lib/checkpoint-call";
+import { callState } from "@/lib/checkpoint-call";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { formatShort } from "./dates";
 import styles from "./style.module.scss";
@@ -107,7 +107,7 @@ export function CuratorNote({
 				"workflow.aside.callLive",
 				"Our call is on now — the room is open, come in.",
 			);
-		} else if (held && callMissed(held, now)) {
+		} else if (held?.missed) {
 			const name = firstName(curator?.name ?? "");
 			const missed = dayjs(held.scheduledAt).format("D MMM");
 			const at = next && dayjs(next.scheduledAt);

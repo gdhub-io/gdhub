@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { buildSessions, sessionDay } from "@/lib/checkpoint-sessions";
 
 const startedAt = new Date("2026-10-01T15:30:00Z");
@@ -9,11 +10,11 @@ describe("checkpoint sessions", () => {
 	});
 
 	it("has none before the checkpoint starts", () => {
-		expect(buildSessions(null, [])).toEqual([]);
+		expect(buildSessions(null, [], CheckpointCuratorKind.Human)).toEqual([]);
 	});
 
 	it("reads the calendar at UTC midnight when nothing is stored", () => {
-		const sessions = buildSessions(startedAt, []);
+		const sessions = buildSessions(startedAt, [], CheckpointCuratorKind.Human);
 
 		expect(sessions.map((session) => session.scheduledAt)).toEqual([
 			"2026-10-01T00:00:00.000Z",
@@ -36,7 +37,7 @@ describe("checkpoint sessions", () => {
 				endedAt: null,
 				contentStatus: null,
 			},
-		]);
+		], CheckpointCuratorKind.Human);
 
 		expect(sessions[1]).toMatchObject({
 			index: 2,
@@ -46,5 +47,47 @@ describe("checkpoint sessions", () => {
 			rescheduledAt: "2026-10-05T09:00:00.000Z",
 		});
 		expect(sessions[0].timeKnown).toBe(false);
+	});
+
+	describe("missed", () => {
+		const row = {
+			index: 2,
+			scheduledAt: new Date("2026-10-08T14:00:00Z"),
+			rescheduledAt: null,
+			curatorJoinedAt: null,
+			endedAt: null,
+			contentStatus: null,
+		};
+		const later = new Date("2026-10-09T00:00:00Z");
+
+		it("marks a call whose window passed with no curator in it", () => {
+			const [, second] = buildSessions(
+				startedAt,
+				[row],
+				CheckpointCuratorKind.Human,
+				later,
+			);
+			expect(second.missed).toBe(true);
+		});
+
+		it("never marks the AI curator's sessions, which nobody joins", () => {
+			const [, second] = buildSessions(
+				startedAt,
+				[row],
+				CheckpointCuratorKind.AI,
+				later,
+			);
+			expect(second.missed).toBe(false);
+		});
+
+		it("never marks a session with no stored row", () => {
+			const sessions = buildSessions(
+				startedAt,
+				[],
+				CheckpointCuratorKind.Human,
+				later,
+			);
+			expect(sessions.some((session) => session.missed)).toBe(false);
+		});
 	});
 });

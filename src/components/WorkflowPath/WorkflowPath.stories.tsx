@@ -47,6 +47,7 @@ const session = (index: number, endedAt?: boolean): CheckpointSessionDto => ({
 	curatorJoinedAt: null,
 	endedAt: endedAt ? day(start + (index - 1) * 7) : null,
 	contentStatus: null,
+	missed: false,
 });
 
 const pulses: CheckpointPulseRowDto[] = [

@@ -127,6 +127,7 @@ const proCall = (
 	curator: { id: "u-curator", name: "Patrick Novak", image: null },
 	scheduledAt: `${DAYS[index - 1]}T12:00:00.000Z`,
 	state,
+	missed: false,
 	curatorJoinedAt: state === "open" ? `${DAYS[index - 1]}T11:58:00.000Z` : null,
 	role: "team",
 	briefs: [],
@@ -141,6 +142,7 @@ const proCall = (
 		index: offset + 1,
 		scheduledAt: `${day}T12:00:00.000Z`,
 		held: offset < held,
+		missed: false,
 		contentStatus: offset < held ? "Ready" : null,
 	})),
 });
@@ -472,6 +474,19 @@ export const ProSprint1: Story = {
 			now="2026-10-03T10:00:00.000Z"
 			shown={1}
 			tab="notes"
+		/>
+	),
+};
+
+/** Day 9: the curator never joined call 2; the page says so and names call 3. */
+export const ProCallMissed: Story = {
+	name: "Pro · call missed (day 9)",
+	render: () => (
+		<ProPage
+			call={{ ...proCall(2, "over", 1, startTasks), missed: true }}
+			now="2026-10-09T10:00:00.000Z"
+			shown={2}
+			tab="plan"
 		/>
 	),
 };
