@@ -13,7 +13,7 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
-import { capped } from "@/lib/curator-text";
+import { capped, devlogWords } from "@/lib/curator-text";
 import { checkArtifact } from "@/repositories/artifact-check";
 import {
 	journal,
@@ -148,9 +148,9 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 			await prisma.projectReport.findMany({
 				where: { checkpointId },
 				orderBy: { publishedAt: "asc" },
-				select: { content: true },
+				select: { content: true, contentEditor: true },
 			})
-		).map((post) => post.content);
+		).map(devlogWords);
 		const judged = await judgeRead({ ...task, devlogs }, content, {
 			checkpointId,
 			purpose: "evidence",

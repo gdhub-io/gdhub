@@ -320,7 +320,7 @@ export function DevlogsTab({
 					</Flex>
 					<Typography.Paragraph
 						ellipsis={{ rows: 4, expandable: true }}
-						className={styles.flush}
+						className={`${styles.flush} ${styles.lines}`}
 					>
 						{row.text}
 					</Typography.Paragraph>

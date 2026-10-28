@@ -18,6 +18,7 @@ import {
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
 import { lettersSoFar } from "@/lib/curator-letters";
+import { devlogWords } from "@/lib/curator-text";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import {
 	briefAuthor,
@@ -116,9 +117,13 @@ const toCard = (goal: string, items: CardItem[]): CuratorGoalCard => ({
 		.map(toLine),
 });
 
-const toDevlog = (post: { publishedAt: Date; content: string }) => ({
+const toDevlog = (post: {
+	publishedAt: Date;
+	content: string;
+	contentEditor: unknown;
+}) => ({
 	publishedAt: post.publishedAt.toISOString().slice(0, 10),
-	content: post.content,
+	content: devlogWords(post),
 });
 
 type ReportItem = CardItem &
@@ -438,7 +443,7 @@ const reportInputFor = async (checkpointId: string) => {
 			},
 			reports: {
 				orderBy: { publishedAt: "asc" },
-				select: { publishedAt: true, content: true },
+				select: { publishedAt: true, content: true, contentEditor: true },
 			},
 		},
 	});

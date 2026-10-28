@@ -7,7 +7,7 @@ import {
 	type EvidenceMatch,
 } from "@/config/prisma-enums";
 import { sprintOfDate, sprintRange } from "@/lib/checkpoint-sprints";
-import { devlogText } from "@/lib/curator-text";
+import { devlogText, devlogWords } from "@/lib/curator-text";
 import type { JournalRead } from "@/repositories/evidence-seen";
 import { characterFace } from "@/services/checkpoint-curator/prompts/card";
 import { prisma } from "@/services/prisma";
@@ -333,6 +333,7 @@ export const getJournalView = async (
 						id: true,
 						number: true,
 						content: true,
+						contentEditor: true,
 						publishedAt: true,
 						authorId: true,
 					},
@@ -342,7 +343,7 @@ export const getJournalView = async (
 
 	const entries = checkpoint.journal;
 	const devlogTitle = new Map(
-		devlogs.map((row) => [row.id, firstLine(row.content)]),
+		devlogs.map((row) => [row.id, firstLine(devlogWords(row))]),
 	);
 	const recipients = entries.flatMap((entry) =>
 		entry.kind === CheckpointJournalKind.Platform
@@ -591,7 +592,7 @@ export const getJournalView = async (
 		messages.push({
 			...base(row.id, row.publishedAt, "team", "devlog"),
 			who: nameOf(row.authorId),
-			title: firstLine(row.content),
+			title: firstLine(devlogWords(row)),
 			variant: row.number ? String(row.number) : null,
 			source: { id: row.id, number: row.number, content: row.content },
 		});
@@ -714,7 +715,7 @@ export const getJournalView = async (
 			publishedAt: row.publishedAt.toISOString(),
 			author: nameOf(row.authorId),
 			sprint: sprintAt(row.publishedAt),
-			text: devlogText(row.content),
+			text: devlogText(devlogWords(row)),
 			media: entries
 				.filter(
 					(entry) =>
