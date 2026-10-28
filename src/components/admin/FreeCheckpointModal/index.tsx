@@ -44,7 +44,7 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 	const curatorId = Form.useWatch("userId", form);
 	const human = kind === CheckpointCuratorKind.Human;
 
-	const projects = useFreeCheckpointProjects(query, true);
+	const projects = useFreeCheckpointProjects(query);
 	const userSearch = useUserSearch(human);
 	const from = dayjs().add(1, "day").format("YYYY-MM-DD");
 	const to = dayjs().add(FIRST_CALL_DAYS, "day").format("YYYY-MM-DD");
@@ -58,8 +58,12 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 			"This project cannot take a checkpoint now.",
 		),
 		slotTaken: t(
-			"admin.checkpoints.assign.slotTaken",
-			"That curator is not free at the first call the author chose.",
+			"admin.checkpoints.free.slotTaken",
+			"That curator is no longer free at this first call. Pick another.",
+		),
+		curatorMissing: t(
+			"admin.checkpoints.free.curatorMissing",
+			"Pick the person who curates it.",
 		),
 		firstCallMissing: t(
 			"admin.checkpoints.free.firstCallMissing",
@@ -142,15 +146,7 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 						<Typography.Text strong>
 							{t("admin.checkpoints.free.goal", "Goal")}
 						</Typography.Text>
-						<Typography.Text>
-							{t(
-								"admin.checkpoints.free.goalValue",
-								"Do what the {stage} stage asks for",
-								{
-									stage: project.stage,
-								},
-							)}
-						</Typography.Text>
+						<Typography.Text>{project.goal}</Typography.Text>
 						<Typography.Text type="secondary">
 							{t(
 								"admin.checkpoints.free.goalHelp",
@@ -210,7 +206,10 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 								)}
 								options={(firstCalls.data?.starts ?? []).map((at) => ({
 									value: at,
-									label: dayjs(at).format("ddd D MMM, HH:mm"),
+									// In the curator's own hours, as they set them.
+									label: firstCalls.data?.timeZone
+										? `${dayjs(at).tz(firstCalls.data.timeZone).format("ddd D MMM, HH:mm")} (${firstCalls.data.timeZone})`
+										: dayjs(at).format("ddd D MMM, HH:mm"),
 								}))}
 							/>
 						</Form.Item>

@@ -8,7 +8,10 @@ import {
 	CheckpointStatus,
 	ProjectStatus,
 } from "@/config/prisma-enums";
-import { createDraftCheckpoint } from "@/repositories/checkpoint.repository";
+import {
+	createDraftCheckpoint,
+	getCreationBlocker,
+} from "@/repositories/checkpoint.repository";
 import {
 	type AssignCuratorInput,
 	assignCurator,
@@ -50,6 +53,8 @@ export type FreeCheckpointProjectDto = {
 	name: string;
 	stage: string;
 	author: string | null;
+	/** The goal it would start with. */
+	goal: string;
 };
 
 export const freeCheckpointProjects = async (
@@ -75,6 +80,7 @@ export const freeCheckpointProjects = async (
 		name: project.name,
 		stage: project.workflow?.currentStep?.name ?? "",
 		author: project.author?.name ?? null,
+		goal: stageGoal(project.workflow?.currentStep?.name ?? ""),
 	}));
 
 /** The goal a free checkpoint starts with: the stage's own; the author rewrites it on day 1. */
@@ -118,36 +124,56 @@ export const startFreeCheckpoint = async (
 	adminId: string,
 	{ projectId, firstCall, ...assign }: FreeCheckpointInput,
 ) => {
-	const project = await prisma.project.findFirst({
-		where: { id: projectId, ...eligible },
-		select: { id: true },
-	});
-	if (!project) return { ok: false as const, error: "notEligible" as const };
-
 	const human = assign.kind === CheckpointCuratorKind.Human;
 	if (human && !firstCall) {
 		return { ok: false as const, error: "firstCallMissing" as const };
 	}
+	const [project, blocker, curator] = await Promise.all([
+		prisma.project.findFirst({
+			where: { id: projectId, ...eligible },
+			select: { id: true },
+		}),
+		getCreationBlocker(projectId),
+		human && assign.userId
+			? prisma.user.findUnique({
+					where: { id: assign.userId },
+					select: { id: true },
+				})
+			: null,
+	]);
+	// The same rule a purchase meets; a free one is given even while sales are closed.
+	if (!project || (blocker && blocker.reason !== "purchaseClosed")) {
+		return { ok: false as const, error: "notEligible" as const };
+	}
+	if (human && !curator) {
+		return { ok: false as const, error: "curatorMissing" as const };
+	}
 
 	const draft = await createDraftCheckpoint(projectId);
-	await prisma.projectCheckpoint.update({
-		where: { id: draft.id, status: CheckpointStatus.Draft },
-		data: {
-			goal: stageGoal(draft.stageName),
-			...(human && { startedAt: firstCall }),
-			...(!draft.items.some(
-				(item) => item.kind === CheckpointItemKind.Input,
-			) && {
-				items: { create: await inputsFromProject(projectId) },
-			}),
-		},
-	});
-
-	const assigned = await assignCurator(draft.id, adminId, assign);
 	// A draft no curator could take is not left behind as the author's own.
-	if (!assigned.ok) {
-		await prisma.projectCheckpoint.delete({ where: { id: draft.id } });
-		return assigned;
+	const discard = () =>
+		prisma.projectCheckpoint.delete({ where: { id: draft.id } });
+	try {
+		await prisma.projectCheckpoint.update({
+			where: { id: draft.id },
+			data: {
+				goal: stageGoal(draft.stageName),
+				...(human && { startedAt: firstCall }),
+				...(!draft.items.some(
+					(item) => item.kind === CheckpointItemKind.Input,
+				) && {
+					items: { create: await inputsFromProject(projectId) },
+				}),
+			},
+		});
+		const assigned = await assignCurator(draft.id, adminId, assign);
+		if (!assigned.ok) {
+			await discard();
+			return assigned;
+		}
+	} catch (error) {
+		await discard();
+		throw error;
 	}
 	return { ok: true as const, checkpointId: draft.id };
 };

@@ -180,7 +180,7 @@ export const useAssignCurator = (checkpointId: string) => {
 };
 
 /** Frame 12.11.12: projects a free checkpoint can start on. */
-export const useFreeCheckpointProjects = (query: string, enabled: boolean) =>
+export const useFreeCheckpointProjects = (query: string) =>
 	useQuery({
 		queryKey: [...ROOT, "free-projects", query],
 		queryFn: async () =>
@@ -190,7 +190,6 @@ export const useFreeCheckpointProjects = (query: string, enabled: boolean) =>
 				})
 			).data,
 		placeholderData: keepPreviousData,
-		enabled,
 	});
 
 export const useStartFreeCheckpoint = () => {

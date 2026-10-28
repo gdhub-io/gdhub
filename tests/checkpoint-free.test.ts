@@ -7,6 +7,8 @@ const checkpointUpdate = vi.fn();
 const checkpointDelete = vi.fn();
 const createDraftCheckpoint = vi.fn();
 const assignCurator = vi.fn();
+const getCreationBlocker = vi.fn();
+const userFindUnique = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -15,6 +17,7 @@ vi.mock("@/services/prisma", () => ({
 			findMany: (...a: unknown[]) => projectFindMany(...a),
 		},
 		projectArtifact: { findMany: (...a: unknown[]) => artifactFindMany(...a) },
+		user: { findUnique: (...a: unknown[]) => userFindUnique(...a) },
 		projectCheckpoint: {
 			update: (...a: unknown[]) => checkpointUpdate(...a),
 			delete: (...a: unknown[]) => checkpointDelete(...a),
@@ -23,6 +26,7 @@ vi.mock("@/services/prisma", () => ({
 }));
 vi.mock("@/repositories/checkpoint.repository", () => ({
 	createDraftCheckpoint: (...a: unknown[]) => createDraftCheckpoint(...a),
+	getCreationBlocker: (...a: unknown[]) => getCreationBlocker(...a),
 }));
 vi.mock("@/repositories/checkpoint-admin", () => ({
 	assignCurator: (...a: unknown[]) => assignCurator(...a),
@@ -42,6 +46,8 @@ beforeEach(() => {
 	});
 	artifactFindMany.mockResolvedValue([]);
 	assignCurator.mockResolvedValue({ ok: true });
+	getCreationBlocker.mockResolvedValue(null);
+	userFindUnique.mockResolvedValue({ id: "u1" });
 });
 
 const ai = { projectId: "p1", kind: "AI" as const, reason: "Partner studio" };
@@ -70,6 +76,37 @@ describe("startFreeCheckpoint", () => {
 			error: "notEligible",
 		});
 		expect(createDraftCheckpoint).not.toHaveBeenCalled();
+	});
+
+	it("is given while sales are closed, but not beside a checkpoint under way", async () => {
+		getCreationBlocker.mockResolvedValue({ reason: "purchaseClosed" });
+		await expect(startFreeCheckpoint("admin", ai)).resolves.toMatchObject({
+			ok: true,
+		});
+		getCreationBlocker.mockResolvedValue({ reason: "checkpointOpen" });
+		await expect(startFreeCheckpoint("admin", ai)).resolves.toEqual({
+			ok: false,
+			error: "notEligible",
+		});
+	});
+
+	it("checks the person before making a draft", async () => {
+		userFindUnique.mockResolvedValue(null);
+		await expect(
+			startFreeCheckpoint("admin", {
+				...ai,
+				kind: "Human",
+				userId: "ghost",
+				firstCall: new Date(),
+			}),
+		).resolves.toEqual({ ok: false, error: "curatorMissing" });
+		expect(createDraftCheckpoint).not.toHaveBeenCalled();
+	});
+
+	it("removes the draft when starting it throws", async () => {
+		assignCurator.mockRejectedValue(new Error("model down"));
+		await expect(startFreeCheckpoint("admin", ai)).rejects.toThrow("model down");
+		expect(checkpointDelete).toHaveBeenCalledWith({ where: { id: "cp1" } });
 	});
 
 	it("needs a first call for a person", async () => {
