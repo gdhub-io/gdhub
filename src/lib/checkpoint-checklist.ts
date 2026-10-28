@@ -34,6 +34,10 @@ export type ChecklistItem = {
 	step?: PlanStep;
 	/** The call's line only, once it is behind: who came. */
 	call?: "team" | "noTeam" | "missed";
+	/** Asked for but not owed: left out of the sprint's count. */
+	optional?: boolean;
+	/** The artifacts' line only: how many the sprint added. */
+	added?: number;
 	/** The day it is due, as a UTC midnight. */
 	dueAt: string | null;
 };
@@ -100,18 +104,26 @@ export const sprintChecklist = (
 		dueAt: devlogDueAt,
 	});
 
-	// Evidence for a task, or anything else the sprint added beside its build.
-	const proved = checkpoint.evidence?.some(
-		(item) => item.sprint === sprint.number && item.itemIds.length > 0,
-	);
-	const shown = (checkpoint.sprintArtifacts ?? []).some(
-		(artifact) =>
-			artifact.sprint === sprint.number && artifact.id !== build?.id,
-	);
+	// Anything the sprint added beside its build, and evidence it offered for a task.
+	const added = new Set([
+		...(checkpoint.sprintArtifacts ?? [])
+			.filter(
+				(artifact) =>
+					artifact.sprint === sprint.number && artifact.id !== build?.id,
+			)
+			.map((artifact) => artifact.id),
+		...(checkpoint.evidence ?? [])
+			.filter(
+				(item) => item.sprint === sprint.number && item.itemIds.length > 0,
+			)
+			.map((item) => item.artifact.id),
+	]).size;
 	items.push({
 		key: "artifacts",
-		done: !!proved || shown,
-		dueAt: devlogDueAt,
+		done: added > 0,
+		optional: true,
+		added,
+		dueAt: null,
 	});
 
 	return items;

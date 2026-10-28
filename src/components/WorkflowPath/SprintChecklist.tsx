@@ -12,7 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Modal, Typography } from "antd";
+import { Button, Modal, Tag, Typography } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -105,6 +105,7 @@ export function SprintChecklist({
 		queryClient.invalidateQueries({ queryKey: ["checkpoint", checkpoint.id] });
 
 	const checklist = sprintChecklist(checkpoint, sprint, !!previous);
+	const owed = checklist.filter((item) => !item.optional);
 
 	// Day 1's plan and day 15's change, each saying what it waits for.
 	const planLabel = (item: ChecklistItem) => {
@@ -182,6 +183,18 @@ export function SprintChecklist({
 
 	/** The line's date on the right; today's is marked, a missed one is red. */
 	const itemDue = (item: ChecklistItem) => {
+		if (item.added !== undefined)
+			return (
+				<span className={styles.tertiary}>
+					{item.added
+						? t(
+								"workflow.path.check.artifactsAdded",
+								"{n, plural, one {# artifact added} other {# artifacts added}}",
+								{ n: item.added },
+							)
+						: t("workflow.path.check.artifactsNone", "None added yet")}
+				</span>
+			);
 		if (!item.dueAt) return null;
 		const days = daysUntil(item.dueAt);
 		const date = formatShort(item.dueAt);
@@ -248,6 +261,11 @@ export function SprintChecklist({
 				>
 					{itemLabel(item)}
 				</span>
+				{item.optional && (
+					<Tag className={styles.optionalTag}>
+						{t("workflow.tasks.optional", "Optional")}
+					</Tag>
+				)}
 				{due && <span className={styles.itemDue}>{due}</span>}
 				{item.key === "verdict" && (
 					<Button
@@ -288,8 +306,8 @@ export function SprintChecklist({
 				{head}
 				<span className={styles.meta}>
 					{t("workflow.path.count", "{done} of {total}", {
-						done: String(checklist.filter((item) => item.done).length),
-						total: String(checklist.length),
+						done: String(owed.filter((item) => item.done).length),
+						total: String(owed.length),
 					})}
 				</span>
 			</div>

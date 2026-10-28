@@ -138,7 +138,7 @@ describe("sprint checklist", () => {
 		expect(devlog?.dueAt).toBe("2026-10-14T00:00:00.000Z");
 	});
 
-	it("gives every line a date: the verdict and the priorities the call, the rest the sprint's last day", () => {
+	it("dates the owed lines: the verdict and the priorities the call, the rest the sprint's last day", () => {
 		const items = sprintChecklist(
 			checkpoint({
 				sessions: [
@@ -159,7 +159,8 @@ describe("sprint checklist", () => {
 			priorities: "2026-10-01T14:00:00.000Z",
 			build: "2026-10-07T00:00:00.000Z",
 			devlog: "2026-10-07T00:00:00.000Z",
-			artifacts: "2026-10-07T00:00:00.000Z",
+			// Optional: it tells what was added, not a deadline.
+			artifacts: null,
 		});
 	});
 
@@ -243,5 +244,27 @@ describe("sprint checklist", () => {
 		expect(callOf({ teamJoined: true })).toMatchObject({ done: true, call: "team" });
 		expect(callOf({ teamJoined: false })).toMatchObject({ done: false, call: "noTeam" });
 		expect(callOf({ missed: true })).toMatchObject({ done: false, call: "missed" });
+	});
+
+	it("counts what the sprint added for the optional artifacts line", () => {
+		const items = sprintChecklist(
+			checkpoint({
+				builds: [{ id: "b2", addedAt: "2026-10-09T09:00:00.000Z", sprint: 2 }],
+				sprintArtifacts: [
+					{ id: "b2", addedAt: "2026-10-09T09:00:00.000Z", sprint: 2 },
+					{ id: "doc", addedAt: "2026-10-10T09:00:00.000Z", sprint: 2 },
+					{ id: "old", addedAt: "2026-10-03T09:00:00.000Z", sprint: 1 },
+				],
+				evidence: [evidence(2, "Concept", ["o2"])],
+			}),
+			sprint2,
+			false,
+		);
+		// The doc and the evidence; the build is its own line, sprint 1 is behind.
+		expect(items.find((item) => item.key === "artifacts")).toMatchObject({
+			optional: true,
+			done: true,
+			added: 2,
+		});
 	});
 });
