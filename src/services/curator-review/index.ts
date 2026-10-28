@@ -259,6 +259,9 @@ export const writeSprintReview = async (
 			Use only task ids given to you, and only in the id fields: in text,
 			name a task by its own words. Reassurance and the next step are not
 			part of the review.
+			The focus set for this sprint was advice, not the measure: work the
+			team chose instead that still moves the goal or a task counts — say
+			what it moved. Name a gap only where nothing moves the goal.
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
 
 			${AUTHOR_VOICE}
@@ -312,6 +315,24 @@ const renderAssessment = (review: SprintAssessment, tasks: CuratorTask[]) => {
 		.filter(Boolean)
 		.join("\n");
 };
+
+/** What is new in the sprint, as the letter names it before judging it. */
+const shown = (input: SprintReviewInput) =>
+	[
+		...input.devlogs.map(
+			(post) =>
+				`- Devlog: ${
+					post
+						.split("\n")
+						.find((line) => line.trim())
+						?.slice(0, 160) ?? ""
+				}`,
+		),
+		...input.artifacts.map(
+			(artifact) =>
+				`- Artifact: ${artifact.type}${artifact.name ? ` "${artifact.name}"` : ""}`,
+		),
+	].join("\n") || "Nothing: no devlog and no artifact.";
 
 /** The halfway advice the letter must agree with. */
 type MidwayAdvice = Pick<PlanAdvice, "tasks" | "add">;
@@ -371,6 +392,13 @@ const writeReviewLetter = async (
 			Your review of sprint ${input.sprint} is written below. Turn it into
 			the letter the team reads and the focus for the next sprint. Add no
 			judgement the review does not hold.
+			Open with what you looked at that is new since your last letter —
+			the devlogs and artifacts below, by their own words, or that nothing
+			new was shown — and only then what it tells you and what to do next.
+			The reader must know what a judgement is about before reading it.
+			Your last focus was advice, not the measure: where the team went
+			another way and it still moves the goal or a task, say what it moved
+			and count it, without asking why they did not follow you.
 			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it." : ""}
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
 			${locale ? localeLine(locale) : ""}
@@ -382,6 +410,9 @@ const writeReviewLetter = async (
 
 			Tasks, by id for the focus:
 			${input.tasks.map((task) => `- [${task.id}] ${task.text}`).join("\n")}
+
+			What the team showed in the sprint:
+			${shown(input)}
 
 			Your review of the sprint:
 			${review}

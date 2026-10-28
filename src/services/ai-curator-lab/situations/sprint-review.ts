@@ -33,6 +33,9 @@ const TEXT = {
 			"Week 1: we cut a 30-second teaser from the concept art and posted it on X. The greybox is not started yet.",
 		boardDevlog:
 			"Week 2: the style board is on the task. The palette is settled; the hero sheets come next week.",
+		mobileDevlog:
+			"Week 2: instead of the playtest we made the island demo run on phones — most of our testers will play it there. Touch controls are in.",
+		mobileBuild: "Island demo 0.2 · mobile web",
 		verdict:
 			"All three tasks are delivered and the stage's devlog is out: ready for Preparing a demo version.",
 	},
@@ -54,6 +57,9 @@ const TEXT = {
 			"Неделя 1: смонтировали 30-секундный тизер из концепт-арта и выложили в X. Блокаут ещё не начат.",
 		boardDevlog:
 			"Неделя 2: доска стиля в задаче. Палитра готова, листы героев — на следующей неделе.",
+		mobileDevlog:
+			"Неделя 2: вместо плейтеста сделали так, чтобы демо острова шло на телефонах — большинство тестеров будут играть там. Сенсорное управление готово.",
+		mobileBuild: "Демо острова 0.2 · мобильный веб",
 		verdict:
 			"Все три задачи сданы, девлог стадии опубликован: можно переходить к Preparing a demo version.",
 	},
@@ -160,6 +166,27 @@ export const sprintReviewSituations = (
 				tasks: [open(demo), open(board), open(playtest)],
 				devlogs: [t.trailerDevlog],
 				artifacts: [{ type: "Video", name: t.trailer }],
+			},
+		},
+		{
+			// Day 15: the last focus asked for the playtest; the team made the demo
+			// run on phones instead — another route that still serves the goal.
+			id: "own-route",
+			label: say(
+				language,
+				"Day 15, the team went its own way toward the goal",
+				"День 15, команда пошла своим путём к цели",
+			),
+			input: {
+				...sprint1,
+				sprint: 2,
+				tasks: [demoDone, open(board), open(playtest)],
+				devlogs: [t.mobileDevlog],
+				artifacts: [{ type: "ExecutableBuild", name: t.mobileBuild }],
+				team: project.team("sprint2"),
+				focusLastReview: t.focusAfter1,
+				workflow: project.workflow("sprint2"),
+				picture: project.picture("sprint2"),
 			},
 		},
 		{

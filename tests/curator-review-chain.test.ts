@@ -84,6 +84,8 @@ describe("reviewSprint", () => {
 		const letterCall = generateText.mock.calls[1][0];
 		expect(letterCall.output.name).toBe("review_letter");
 		expect(letterCall.prompt).toContain("At risk: nothing was shown.");
+		// The letter names what it looked at before judging it.
+		expect(letterCall.prompt).toContain("Nothing: no devlog and no artifact.");
 		expect(letterCall.prompt).toContain(
 			"Playtest with 5 players (shorten): Start with one player.",
 		);
