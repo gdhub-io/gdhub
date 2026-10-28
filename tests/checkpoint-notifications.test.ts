@@ -7,9 +7,13 @@ const checkpointFindMany = vi.fn();
 const checkpointFindUnique = vi.fn();
 const reportCount = vi.fn();
 const userFindMany = vi.fn();
+const journal = vi.fn();
 
 vi.mock("@/services/novu", () => ({
 	NovuService: { send: (...a: unknown[]) => send(...a) },
+}));
+vi.mock("@/repositories/curator-journal", () => ({
+	journal: (...a: unknown[]) => journal(...a),
 }));
 vi.mock("@/repositories/checkpoint-number", () => ({
 	checkpointNumber: vi.fn(async () => 2),
@@ -151,6 +155,15 @@ describe("notifyAuthorOfAnswer", () => {
 		expect(args.to.subscriberId).toBe("author");
 		expect(args.payload.title).toBe("Patrick can't take Checkpoint 2");
 		expect(args.payload.redirectUrl).toMatch(/\/user\/project\/hollow-tide\/workflow$/);
+		// The letter goes into the checkpoint's journal as the platform's step.
+		expect(args.payload).not.toHaveProperty("checkpointId");
+		expect(journal).toHaveBeenCalledWith(
+			expect.objectContaining({
+				checkpointId: "cp",
+				kind: "Platform",
+				output: expect.objectContaining({ title: "Patrick can't take Checkpoint 2", sent: true }),
+			}),
+		);
 	});
 
 	it("never lets a Novu failure reach the caller", async () => {

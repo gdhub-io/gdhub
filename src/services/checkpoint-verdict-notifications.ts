@@ -33,6 +33,7 @@ export const notifyVerdictDue = async (checkpointIds: string[]) => {
 			const number = await checkpointNumber(row);
 
 			return notify(row.curator, `cp-verdict-due-${row.id}`, {
+				checkpointId: row.id,
 				title: `Your verdict on ${row.project.name} is due by ${due}`,
 				message: `Checkpoint ${number} has ended. Talk it through on the final call; you can send the verdict once the call starts, by ${due}.`,
 				redirectUrl: `${appUrl()}/advisor/checkpoints?verdict=${row.id}`,
@@ -78,6 +79,7 @@ export const notifyVerdictSent = async (checkpointId: string) => {
 			: (row.curator?.name ?? "The AI curator");
 
 	await notify(row.project.author, `cp-verdict-sent-${checkpointId}`, {
+		checkpointId,
 		title: `${by} sent the verdict on Checkpoint ${number}`,
 		message: `${VERDICT_LABEL[row.verdict]}. Read the curator's reasoning and choose how to go on.`,
 		redirectUrl: `${appUrl()}/user/project/${row.project.slug}/workflow?results=${row.id}`,

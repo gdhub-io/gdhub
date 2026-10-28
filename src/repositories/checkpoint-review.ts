@@ -472,6 +472,13 @@ export const adviseOnPlan = async (
 			...(ai && { contentStatus: CheckpointSessionContentStatus.Ready }),
 		},
 	});
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Letter,
+		sprint: start ? null : SCOPE_SESSION - 1,
+		input,
+		output: written,
+	});
 	if (start) {
 		await prisma.projectCheckpoint.update({
 			where: { id: checkpointId },
@@ -761,6 +768,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 	await Promise.all(
 		[...people.values()].map((person) =>
 			notify(person, `cp-review-${sessionId}-${person.id}`, {
+				checkpointId: checkpoint.id,
 				title: `The Sprint ${sprint} review of ${checkpoint.project.name} is ready`,
 				message:
 					session.index === SCOPE_SESSION

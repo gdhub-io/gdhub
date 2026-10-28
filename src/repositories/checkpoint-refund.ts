@@ -549,6 +549,7 @@ export const listAdminCheckpoints = async (
 					(payment?.refunds.at(0)?.reason as RefundRowReason | undefined) ??
 					null,
 				verdictDueBy: row.dueAt ? verdictDueBy(row.dueAt).toISOString() : null,
+				verdict: row.verdict,
 				fee: fee && {
 					amount: fee.amount,
 					reason: fee.reason,

@@ -18,6 +18,7 @@ import {
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
 import { lettersSoFar } from "@/lib/curator-letters";
+import { devlogWords } from "@/lib/curator-text";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import {
 	briefAuthor,
@@ -116,9 +117,13 @@ const toCard = (goal: string, items: CardItem[]): CuratorGoalCard => ({
 		.map(toLine),
 });
 
-const toDevlog = (post: { publishedAt: Date; content: string }) => ({
+const toDevlog = (post: {
+	publishedAt: Date;
+	content: string;
+	contentEditor: unknown;
+}) => ({
 	publishedAt: post.publishedAt.toISOString().slice(0, 10),
-	content: post.content,
+	content: devlogWords(post),
 });
 
 type ReportItem = CardItem &
@@ -331,6 +336,12 @@ export const writeFirstLetter = async (
 				contentStatus: CheckpointSessionContentStatus.Ready,
 			},
 		});
+		await journal({
+			checkpointId,
+			kind: CheckpointJournalKind.Letter,
+			input: { letter: "first" },
+			output: read,
+		});
 	}
 	if (notify) await notifyDayOne(checkpointId, !!read);
 	return !!read;
@@ -367,28 +378,35 @@ export const writePlanLetter = async (checkpointId: string) => {
 	const content = first?.content as CuratorReview | null;
 	if (!first || !content || content.planLetter) return;
 
-	const message = await composePlanLetter(
-		{
-			character: checkpoint.curatorCharacter,
-			goal: checkpoint.goal,
-			tasks: checkpoint.items.map((item) => item.text),
-			journal: lettersSoFar(checkpoint.sessions),
-			reviewOn: dateOfDay(
-				checkpoint.startedAt,
-				sessionDay(2),
-			).toLocaleDateString("en-GB", {
+	const input = {
+		character: checkpoint.curatorCharacter,
+		goal: checkpoint.goal,
+		tasks: checkpoint.items.map((item) => item.text),
+		journal: lettersSoFar(checkpoint.sessions),
+		reviewOn: dateOfDay(checkpoint.startedAt, sessionDay(2)).toLocaleDateString(
+			"en-GB",
+			{
 				weekday: "long",
 				day: "numeric",
 				month: "long",
 				timeZone: "UTC",
-			}),
-		},
-		{ checkpointId, purpose: "planLetter" },
-	);
+			},
+		),
+	};
+	const message = await composePlanLetter(input, {
+		checkpointId,
+		purpose: "planLetter",
+	});
 	if (!message) return;
 	await prisma.checkpointSession.update({
 		where: { id: first.id },
 		data: { content: { ...content, planLetter: message } },
+	});
+	await journal({
+		checkpointId,
+		kind: CheckpointJournalKind.Letter,
+		input: { letter: "plan", ...input },
+		output: { message },
 	});
 };
 
@@ -425,7 +443,7 @@ const reportInputFor = async (checkpointId: string) => {
 			},
 			reports: {
 				orderBy: { publishedAt: "asc" },
-				select: { publishedAt: true, content: true },
+				select: { publishedAt: true, content: true, contentEditor: true },
 			},
 		},
 	});

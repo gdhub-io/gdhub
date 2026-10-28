@@ -578,6 +578,18 @@ admin removing it from a template silently ungates every project on that
 template, so the template editor marks it and asks for a second confirmation
 before it goes.
 
+**The curator journal** (GDHUB-120, frames 12.11.10–10i) reads one checkpoint's
+28 days as a conversation: the curator and the platform on the left, the author
+and the team on the right, oldest at the top, opened at the newest. Beside it,
+the same checkpoint by subject — Inputs, Plan, Artifacts, Devlogs.
+`CheckpointJournalEntry` keeps what the AI looked at and wrote (`Evidence`,
+`DevlogMedia`, `Artifact`, `Review`, `Verdict`, `Letter` for the day-1 letters
+and the tasks checks) and every letter the platform sent about the checkpoint
+(`Platform`, written by `notify`). The team's side is read from its own rows:
+artifacts, devlogs, answered pulses and the plan's dates. Nothing older than
+the release is backfilled. `bun run checkpoint:simulate <projectSlug>` walks a
+fresh AI checkpoint through its 29 days on a local database to see a whole one.
+
 ## 12. Money
 
 `PayableType.CHECKPOINT`, `payableId` = checkpoint id, the existing Paddle flow. The

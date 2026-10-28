@@ -6,6 +6,7 @@ import {
 } from "@/config/prisma-enums";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { sprintRange } from "@/lib/checkpoint-sprints";
+import { devlogWords } from "@/lib/curator-text";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask, writeCallNotes } from "@/services/call-notes";
@@ -41,7 +42,7 @@ export const sprintEvidence = async (
 		}),
 	]);
 	return {
-		devlogs: devlogs.map((post) => post.content),
+		devlogs: devlogs.map(devlogWords),
 		posts: devlogs,
 		artifacts,
 	};
@@ -205,6 +206,7 @@ const writeNotesFor = async (sessionId: string) => {
 	const curatorUrl = `${appUrl()}/advisor/checkpoints/${checkpoint.id}/review/${session.index}`;
 	for (const person of people.values()) {
 		await notify(person, `cp-notes-${sessionId}-${person.id}`, {
+			checkpointId: checkpoint.id,
 			title: `Notes from call ${session.index} on ${checkpoint.project.name} are ready`,
 			message:
 				"What was discussed, what was agreed for the next call, and the open questions.",

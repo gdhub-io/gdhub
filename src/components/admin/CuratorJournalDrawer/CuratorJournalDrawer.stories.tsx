@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { withQueries } from "@/mocks/queries";
 import type {
-	AdminCheckpointRowDto,
-	CuratorJournalEntryDto,
-} from "@/types/checkpoints";
+	CuratorJournalViewDto,
+	JournalMessageDto,
+} from "@/repositories/curator-journal-view";
+import type { AdminCheckpointRowDto } from "@/types/checkpoints";
 import { CuratorJournalDrawer } from ".";
 
 const KEY = ["admin", "checkpoints", "journal", "cp1"];
@@ -16,87 +17,249 @@ const checkpoint = {
 	aiCost: 42,
 } as AdminCheckpointRowDto;
 
-const read = (over: object) => ({
-	opened: "https://example.com/x",
+const message = (
+	over: Partial<JournalMessageDto> &
+		Pick<JournalMessageDto, "id" | "at" | "side" | "kind">,
+): JournalMessageDto => ({
+	sprint: null,
+	variant: null,
+	who: null,
+	title: null,
 	text: null,
-	images: 1,
-	videoSeconds: 0,
+	match: null,
 	unread: null,
+	verdict: null,
+	details: [],
+	source: { input: {}, output: {} },
 	...over,
 });
 
-const ENTRIES: CuratorJournalEntryDto[] = [
-	{
-		id: "v",
-		kind: "Verdict",
-		sprint: 4,
-		link: null,
-		input: null,
-		output: {
-			proposed: "GoalMet",
-			settled: "GoalMissed",
-			overrode: "GoalMet",
-			unproven: [{ id: "o2" }, { id: "o3" }],
-		},
-		createdAt: "2026-09-28T09:12:00.000Z",
+const read = {
+	opened: "https://example.com/x",
+	text: "…",
+	images: 1,
+	videoSeconds: 40,
+	unread: null,
+};
+
+const VIEW: CuratorJournalViewDto = {
+	curator: { name: "Luna", avatar: null, ai: true },
+	startedAt: "2026-09-01T00:00:00.000Z",
+	looked: { links: 6, unread: 1, videoSeconds: 130 },
+	sprints: [1, 2, 3, 4].map((number) => ({
+		number,
+		from: `2026-09-${String(1 + (number - 1) * 7).padStart(2, "0")}T00:00:00.000Z`,
+		to: `2026-09-${String(number * 7).padStart(2, "0")}T00:00:00.000Z`,
+	})),
+	finishedAt: "2026-09-29T01:02:00.000Z",
+	verdict: {
+		verdict: "StageClosed",
+		note: "All three tasks are delivered and the stage's devlog is out.",
 	},
-	{
-		id: "r",
-		kind: "Review",
-		sprint: 4,
-		link: null,
-		input: { goal: "A playable greybox" },
-		output: {
-			summary:
-				"The core loop is playable end to end; the one-pager shows dice, not the loop.",
-		},
-		createdAt: "2026-09-28T09:11:00.000Z",
-	},
-	{
-		id: "e1",
-		kind: "Evidence",
-		sprint: 3,
-		link: "https://drive.google.com/file/d/1xQ/view",
-		input: read({
-			task: "Core loop described on one page",
-			artifactName: "Core loop one-pager",
+	messages: [
+		message({
+			id: "m1",
+			at: "2026-09-01T09:00:00.000Z",
+			sprint: 1,
+			side: "curator",
+			kind: "letter",
+			variant: "first",
+			text: "Ahoy. Your goal is a playable slice of the first island; tell me the tasks that get you there.",
 		}),
-		output: {
-			match: "DoesNotMatch",
-			note: "A photo of dice on a table, no text about the loop.",
-		},
-		createdAt: "2026-09-19T18:40:00.000Z",
-	},
-	{
-		id: "d1",
-		kind: "DevlogMedia",
-		sprint: 3,
-		link: "https://youtu.be/aB3",
-		input: read({
-			devlog: "Week 3: the boss fight",
-			unread:
-				"a youtube video: only its title and thumbnail, the video itself was not watched",
+		message({
+			id: "m2",
+			at: "2026-09-01T14:20:00.000Z",
+			sprint: 1,
+			side: "team",
+			kind: "tasksSent",
+			who: "Marta",
 		}),
-		output: {
-			shows: "A boss arena with a red-lit stone floor; the player mid-dodge.",
-		},
-		createdAt: "2026-09-18T21:05:00.000Z",
-	},
-	{
-		id: "e2",
-		kind: "Evidence",
-		sprint: 3,
-		link: "https://notion.so/hollowtide/playtest-2",
-		input: read({
-			task: "Playtest with three new players",
-			artifactName: "Playtest notes",
-			images: 0,
-			unread: "the link asks for a login",
+		message({
+			id: "m3",
+			at: "2026-09-01T14:21:00.000Z",
+			sprint: 1,
+			side: "curator",
+			kind: "letter",
+			variant: "tasksCheck",
+			text: "The demo and the playtest hold. Shorten the style board to one hero sheet.",
 		}),
-		output: { match: "CannotTell", note: "the link asks for a login" },
-		createdAt: "2026-09-16T11:02:00.000Z",
+		message({
+			id: "m4",
+			at: "2026-09-01T18:02:00.000Z",
+			sprint: 1,
+			side: "team",
+			kind: "planApproved",
+			who: "Marta",
+		}),
+		message({
+			id: "m5",
+			at: "2026-09-05T18:40:00.000Z",
+			sprint: 1,
+			side: "team",
+			kind: "artifact",
+			variant: "ExecutableBuild",
+			who: "Ivo",
+			title: "Island demo 0.1",
+			details: [
+				{ label: "task", value: "Playable island demo on itch.io" },
+				{ label: "link", value: "https://hollowtide.itch.io/demo" },
+			],
+		}),
+		message({
+			id: "m6",
+			at: "2026-09-05T18:41:00.000Z",
+			sprint: 1,
+			side: "curator",
+			kind: "looked",
+			variant: "evidence",
+			title: "Island demo 0.1",
+			text: "An itch.io page with a playable web build of the island.",
+			match: "Matches",
+			source: { input: read, output: {} },
+		}),
+		message({
+			id: "m7",
+			at: "2026-09-08T01:06:00.000Z",
+			sprint: 2,
+			side: "platform",
+			kind: "sent",
+			who: "Marta",
+			title: "The Sprint 1 review of Hollow Tide is ready",
+		}),
+		message({
+			id: "m8",
+			at: "2026-09-08T01:04:00.000Z",
+			sprint: 2,
+			side: "curator",
+			kind: "letter",
+			variant: "review",
+			title: "1",
+			text: "On course: the island opens and walks. Next, book the playtest.",
+		}),
+		message({
+			id: "m9",
+			at: "2026-09-27T09:12:00.000Z",
+			sprint: 4,
+			side: "team",
+			kind: "pulse",
+			who: "Tom",
+		}),
+		message({
+			id: "m10",
+			at: "2026-09-29T01:02:00.000Z",
+			sprint: null,
+			side: "platform",
+			kind: "verdict",
+			verdict: { proposed: "StageClosed", settled: "StageClosed", by: "ai" },
+			text: "All three tasks are delivered.",
+		}),
+	],
+	plan: {
+		goal: "A playable vertical slice of the first island",
+		sentAt: "2026-09-01T14:20:00.000Z",
+		approvedAt: "2026-09-01T18:02:00.000Z",
+		approvedBy: "Marta",
+		confirmedAt: "2026-09-16T00:40:00.000Z",
+		tasks: [
+			{
+				id: "o1",
+				text: "Playable island demo on itch.io",
+				firstWording: null,
+				cut: false,
+				addedAt: null,
+				artifact: {
+					name: "Island demo 0.1",
+					type: "ExecutableBuild",
+					link: "https://hollowtide.itch.io/demo",
+				},
+				doneIn: 1,
+				match: "Matches",
+				note: null,
+			},
+			{
+				id: "o2",
+				text: "Art style board: palette and one hero sheet",
+				firstWording: "Art style board: palette and two hero sheets",
+				cut: false,
+				addedAt: null,
+				artifact: null,
+				doneIn: null,
+				match: null,
+				note: null,
+			},
+			{
+				id: "o3",
+				text: "Fog shader pass",
+				firstWording: null,
+				cut: true,
+				addedAt: null,
+				artifact: null,
+				doneIn: null,
+				match: null,
+				note: null,
+			},
+		],
 	},
-];
+	inputs: {
+		items: [
+			{
+				id: "i1",
+				text: "Concept document and a paper map of the island",
+				artifact: {
+					name: "Concept document",
+					type: "Document",
+					link: "https://example.com/concept",
+				},
+				match: "Matches",
+				note: "A two-page concept with the tide mechanic.",
+			},
+		],
+		before: [
+			{
+				id: "b1",
+				name: "Concept document",
+				type: "Document",
+				link: "https://example.com/concept",
+				addedAt: "2026-08-20T10:00:00.000Z",
+			},
+		],
+	},
+	artifacts: [
+		{
+			id: "a1",
+			name: "Island demo 0.1",
+			type: "ExecutableBuild",
+			link: "https://hollowtide.itch.io/demo",
+			addedAt: "2026-09-05T18:40:00.000Z",
+			addedBy: "Ivo",
+			sprint: 1,
+			task: "Playable island demo on itch.io",
+			read: {
+				match: "Matches",
+				text: "An itch.io page with a playable web build of the island.",
+				source: {},
+			},
+		},
+	],
+	devlogs: [
+		{
+			id: "d1",
+			number: 1,
+			publishedAt: "2026-09-06T10:00:00.000Z",
+			author: "Marta",
+			sprint: 1,
+			text: "Week 1: greybox of the island is in. The tide rises every two minutes.",
+			media: [
+				{
+					link: "https://example.com/shot.png",
+					text: "The greybox island at high tide.",
+					unread: null,
+					source: {},
+				},
+			],
+		},
+	],
+};
 
 const meta: Meta<typeof CuratorJournalDrawer> = {
 	title: "Admin/CuratorJournalDrawer",
@@ -108,22 +271,31 @@ export default meta;
 
 type Story = StoryObj<typeof CuratorJournalDrawer>;
 
-/** Frame 11.10 (`ZDVkr`). */
+/** Frames 12.11.10–10h (`ZDVkr`, `Sjbqf`, `WQpub`, `DitFG`). */
 export const Journal: Story = {
-	decorators: [withQueries({ key: KEY, data: ENTRIES })],
+	decorators: [withQueries({ key: KEY, data: VIEW })],
 };
 
-/** Frame 11.10b (`PJult`). */
 export const Empty: Story = {
-	decorators: [withQueries({ key: KEY, data: [] })],
+	decorators: [
+		withQueries({
+			key: KEY,
+			data: {
+				...VIEW,
+				messages: [],
+				finishedAt: null,
+				artifacts: [],
+				devlogs: [],
+				inputs: { items: [], before: [] },
+			} satisfies CuratorJournalViewDto,
+		}),
+	],
 };
 
-/** Frame 11.10c (`T5SpI`). */
 export const Loading: Story = {
 	decorators: [withQueries({ key: KEY, state: "pending" })],
 };
 
-/** Frame 11.10d (`p8Yynl`). */
 export const LoadFailed: Story = {
 	decorators: [withQueries({ key: KEY, state: "error" })],
 };

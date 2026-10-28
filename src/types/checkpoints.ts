@@ -546,6 +546,8 @@ export type AdminCheckpointRowDto = {
 	refundReason: RefundRowReason | null;
 	/** The day the verdict is due by; null until the 28 days are set. */
 	verdictDueBy: string | null;
+	/** The verdict once settled; null before. */
+	verdict: CheckpointVerdict | null;
 	/** A person's verdict not sent after day 31 — an admin may write it. */
 	overdue: boolean;
 	canRefund: boolean;
@@ -752,15 +754,4 @@ export type AdminCuratorRowDto = {
 	status: CuratorStatus;
 	requestedAt: string | null;
 	approvedAt: string | null;
-};
-
-/** One line of the AI curator's journal (frame 11.10). Input and output are as written. */
-export type CuratorJournalEntryDto = {
-	id: string;
-	kind: CheckpointJournalKind;
-	sprint: number | null;
-	link: string | null;
-	input: unknown;
-	output: unknown;
-	createdAt: string;
 };
