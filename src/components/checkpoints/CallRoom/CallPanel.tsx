@@ -169,54 +169,8 @@ export function PanelBlock({
 		/>
 	);
 
-	const items = [
-		{
-			key: "plan",
-			label: t("checkpoints.call.panel.plan", "Plan"),
-			children: (
-				<PlanBody
-					// One plan for every call; only the page's own call may change it.
-					plan={selected === current ? plan : { ...plan, edit: null }}
-					onChange={onChange}
-					// Before call 1 the AI reads the author's draft.
-					{...(advise &&
-						selected === current &&
-						plan.edit === "plan" && {
-							advice: advise.advice,
-							...adviceSlots({
-								// The draft is free until call 1; on it, the plan is agreed.
-								until:
-									sessions.find((session) => session.index === current)
-										?.scheduledAt ?? null,
-								loading: advise.loading,
-								onAdvise: advise.onAdvise,
-								sessionIndex: current,
-							}),
-						})}
-				/>
-			),
-		},
-		{
-			key: "notes",
-			label: t("checkpoints.call.panel.review", "Review"),
-			children: (
-				<NotesBody
-					index={selected}
-					held={held}
-					plan={plan}
-					notes={notes}
-					loading={notesLoading}
-				/>
-			),
-		},
-	];
-	if (sprintTab) {
-		items.push({
-			key: "sprint",
-			label: t("checkpoints.call.panel.sprint", "Sprint"),
-			children: <>{sprintTab(selected)}</>,
-		});
-	}
+	// What happened (the brief, the call), what the sprint does, the whole plan.
+	const items: { key: PanelTab; label: string; children: ReactNode }[] = [];
 	if (briefs) {
 		const brief = briefs.find((row) => row.index === selected);
 		items.push({
@@ -234,6 +188,52 @@ export function PanelBlock({
 			),
 		});
 	}
+	items.push({
+		key: "notes",
+		label: t("checkpoints.call.panel.review", "Review"),
+		children: (
+			<NotesBody
+				index={selected}
+				held={held}
+				plan={plan}
+				notes={notes}
+				loading={notesLoading}
+			/>
+		),
+	});
+	if (sprintTab) {
+		items.push({
+			key: "sprint",
+			label: t("checkpoints.call.panel.sprint", "Sprint"),
+			children: <>{sprintTab(selected)}</>,
+		});
+	}
+	items.push({
+		key: "plan",
+		label: t("checkpoints.call.panel.plan", "Plan"),
+		children: (
+			<PlanBody
+				// One plan for every call; only the page's own call may change it.
+				plan={selected === current ? plan : { ...plan, edit: null }}
+				onChange={onChange}
+				// Before call 1 the AI reads the author's draft.
+				{...(advise &&
+					selected === current &&
+					plan.edit === "plan" && {
+						advice: advise.advice,
+						...adviceSlots({
+							// The draft is free until call 1; on it, the plan is agreed.
+							until:
+								sessions.find((session) => session.index === current)
+									?.scheduledAt ?? null,
+							loading: advise.loading,
+							onAdvise: advise.onAdvise,
+							sessionIndex: current,
+						}),
+					})}
+			/>
+		),
+	});
 	if (SHOW_TRANSCRIPT && held) {
 		items.push({
 			key: "transcript",

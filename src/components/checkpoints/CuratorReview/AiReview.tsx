@@ -206,11 +206,13 @@ export function AiReviewView({
 	// The open plan first; a session still ahead never, whatever the link asked for.
 	const selected = picked ?? editing ?? Math.min(index, current);
 	// Review by default; the start and sprint 2's review are where the plan is changed.
-	const tab =
+	const asked =
 		pickedTab ??
 		(current === 1 || selected === 1 || selected === SCOPE_SESSION
 			? "plan"
 			: "review");
+	// Sprint 1 has no Review tab: nothing is behind it yet.
+	const tab = asked === "review" && selected === 1 ? "plan" : asked;
 	const scrollToPanel = () =>
 		requestAnimationFrame(() =>
 			document
@@ -283,7 +285,29 @@ export function AiReviewView({
 							}}
 							size="large"
 							className={callStyles.panelTabs}
+							// What the last sprint was, what this one asks, the whole plan.
 							items={[
+								// The first sprint has nothing behind it to review.
+								...(selected > 1
+									? [
+											{
+												key: "review",
+												label: t("checkpoints.call.panel.review", "Review"),
+												children: (
+													<ReviewBody review={review} index={selected} />
+												),
+											},
+										]
+									: []),
+								...(sprintTab
+									? [
+											{
+												key: "sprint",
+												label: t("checkpoints.call.panel.sprint", "Sprint"),
+												children: sprintTab(selected),
+											},
+										]
+									: []),
 								{
 									key: "plan",
 									label: t("checkpoints.call.panel.plan", "Plan"),
@@ -311,20 +335,6 @@ export function AiReviewView({
 										/>
 									),
 								},
-								{
-									key: "review",
-									label: t("checkpoints.call.panel.review", "Review"),
-									children: <ReviewBody review={review} index={selected} />,
-								},
-								...(sprintTab
-									? [
-											{
-												key: "sprint",
-												label: t("checkpoints.call.panel.sprint", "Sprint"),
-												children: sprintTab(selected),
-											},
-										]
-									: []),
 							]}
 						/>
 					</section>
