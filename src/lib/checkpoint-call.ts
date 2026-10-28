@@ -88,7 +88,9 @@ type PlanTimes = {
 	/** Set when the plan is approved: by the author or by itself with the AI curator, on call 1 with a pro one. */
 	goalAgreedAt: Date | string | null;
 	/** The AI curator's one check of the tasks, once it is written. */
-	checkedAt?: Date | string | null;
+	planCheckedAt?: Date | string | null;
+	/** The AI curator's day 15: the author confirmed the tasks; the change is closed. */
+	scopeConfirmedAt?: Date | string | null;
 };
 
 /**
@@ -100,9 +102,9 @@ type PlanTimes = {
 export const planCloses = (checkpoint: PlanTimes) => {
 	if (!checkpoint.startedAt) return null;
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
-		return checkpoint.checkedAt
+		return checkpoint.planCheckedAt
 			? new Date(
-					new Date(checkpoint.checkedAt).getTime() +
+					new Date(checkpoint.planCheckedAt).getTime() +
 						AI_APPROVE_HOURS * MS_PER_HOUR,
 				)
 			: null;
@@ -117,8 +119,6 @@ export const planEdit = (
 			index: number;
 			scheduledAt: Date | string;
 			endedAt: Date | string | null;
-			/** The AI curator's day-15 review, confirmed once the author is done with the tasks. */
-			content?: unknown;
 		}[];
 	},
 	now = new Date(),
@@ -145,12 +145,9 @@ export const planEdit = (
 			return "goalAndTasks";
 		}
 	}
-	const scope = checkpoint.sessions.find(
-		(session) => session.index === SCOPE_SESSION,
-	);
 	if (
 		checkpoint.startedAt &&
-		!(scope?.content as { approved?: boolean } | null)?.approved &&
+		!checkpoint.scopeConfirmedAt &&
 		scopeState(checkpoint.startedAt, checkpoint.sessions, now) === "open"
 	) {
 		return "tasks";

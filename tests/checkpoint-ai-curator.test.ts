@@ -365,13 +365,17 @@ describe("adviseOnPlan", () => {
 		advice: null,
 		goal: { fit: "fits", note: "Fits." },
 		suggestions: [],
-		step: "suggested",
 	};
-	const plan = (content: unknown = firstLetter) => ({
+	const plan = (
+		content: unknown = firstLetter,
+		planCheckedAt: Date | null = null,
+	) => ({
 		curatorId: null,
 		curatorKind: CheckpointCuratorKind.AI,
 		goal: "A greybox",
 		goalAgreedAt: null as Date | null,
+		planCheckedAt,
+		scopeConfirmedAt: null,
 		stageName: "Concepting",
 		startedAt,
 		project: { authorId: "author" },
@@ -406,7 +410,10 @@ describe("adviseOnPlan", () => {
 			message: "Hi.",
 			notes: null,
 			goal: { fit: "narrow", note: "Narrow it." },
-			step: "checked",
+		});
+		expect(checkpointUpdate).toHaveBeenCalledWith({
+			where: { id: "cp" },
+			data: { planCheckedAt: onDay1 },
 		});
 		expect(data.content.advice.tasks).toHaveLength(1);
 		// The plan approves itself 12 hours after the check.
@@ -417,7 +424,7 @@ describe("adviseOnPlan", () => {
 	});
 
 	it("checks the tasks only once", async () => {
-		checkpointFindUnique.mockResolvedValue(plan({ ...firstLetter, step: "checked" }));
+		checkpointFindUnique.mockResolvedValue(plan(firstLetter, onDay1));
 		expect(await adviseOnPlan("cp", "author", onDay1)).toBe("alreadyChecked");
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 	});

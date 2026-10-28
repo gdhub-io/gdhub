@@ -324,7 +324,6 @@ export const writeFirstLetter = async (
 					advice: null,
 					goal: read.goal,
 					suggestions: read.suggestions,
-					step: "suggested",
 				} satisfies CuratorReview,
 				contentStatus: CheckpointSessionContentStatus.Ready,
 			},

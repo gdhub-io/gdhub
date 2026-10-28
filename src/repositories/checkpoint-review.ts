@@ -101,6 +101,8 @@ export type CheckpointReviewDto = {
 		edit: PlanEdit;
 		/** Until when `edit` holds. */
 		editUntil: string | null;
+		/** The AI curator has read the tasks the author sent: its one check of day 1. */
+		checked: boolean;
 		/** The goal and tasks agreed: approved on the AI curator's day 1, on call 1 with a pro one. */
 		approved: boolean;
 		tasks: {
@@ -190,6 +192,8 @@ export const getReview = async (
 			stepId: true,
 			goal: true,
 			goalAgreedAt: true,
+			planCheckedAt: true,
+			scopeConfirmedAt: true,
 			curatorCharacter: true,
 			startedAt: true,
 			dueAt: true,
@@ -225,7 +229,6 @@ export const getReview = async (
 					endedAt: true,
 					contentStatus: true,
 					content: true,
-					updatedAt: true,
 				},
 			},
 			items: taskSelect,
@@ -286,8 +289,8 @@ export const getReview = async (
 				editUntil(edit, {
 					...checkpoint,
 					startedAt: checkpoint.startedAt,
-					checkedAt: checkedAt(checkpoint.sessions),
 				})?.toISOString() ?? null,
+			checked: !!checkpoint.planCheckedAt,
 			approved: !!checkpoint.goalAgreedAt,
 			tasks: checkpoint.items.map((item) => ({
 				id: item.id,
@@ -314,16 +317,6 @@ export const getReview = async (
 				}
 			: null,
 	};
-};
-
-/** When the AI curator's one check of day 1 was written, if it has been. */
-const checkedAt = (
-	sessions: { index: number; content: unknown; updatedAt: Date }[],
-) => {
-	const first = sessions.find((session) => session.index === 1);
-	return (first?.content as CuratorReview | null)?.step === "checked"
-		? first?.updatedAt
-		: null;
 };
 
 const editUntil = (
@@ -370,6 +363,8 @@ export const adviseOnPlan = async (
 			goal: true,
 			curatorCharacter: true,
 			goalAgreedAt: true,
+			planCheckedAt: true,
+			scopeConfirmedAt: true,
 			projectId: true,
 			stageName: true,
 			stepId: true,
@@ -405,7 +400,7 @@ export const adviseOnPlan = async (
 			? null
 			: "failed";
 	}
-	if (start && content?.step === "checked") return "alreadyChecked";
+	if (start && checkpoint.planCheckedAt) return "alreadyChecked";
 	if (start && !checkpoint.items.some((item) => !item.cut)) return "noTasks";
 
 	const input = adviceInput(
@@ -450,7 +445,6 @@ export const adviseOnPlan = async (
 				advice: written.advice,
 				goal: written.goal ?? content?.goal,
 				...(start && {
-					step: "checked" as const,
 					firstLetter: content?.firstLetter ?? content?.message,
 				}),
 			} satisfies CuratorReview,
@@ -460,7 +454,11 @@ export const adviseOnPlan = async (
 		},
 	});
 	if (start) {
-		const closes = planCloses({ ...checkpoint, checkedAt: now });
+		await prisma.projectCheckpoint.update({
+			where: { id: checkpointId },
+			data: { planCheckedAt: now },
+		});
+		const closes = planCloses({ ...checkpoint, planCheckedAt: now });
 		if (closes) await later(() => notifyPlanChecked(checkpointId, closes));
 	}
 	return null;

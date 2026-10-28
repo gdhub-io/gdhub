@@ -253,14 +253,17 @@ describe("remindPlansUnsent", () => {
 					},
 				},
 			],
-			checkpoint: { goalAgreedAt: null, status: CheckpointStatus.Active },
+			checkpoint: {
+				goalAgreedAt: null,
+				planCheckedAt: null,
+				status: CheckpointStatus.Active,
+			},
 		});
 	});
 
-	it("reminds once at each mark, and never a plan already sent for the check", async () => {
+	it("reminds once at each mark", async () => {
 		sessionFindMany.mockResolvedValueOnce([
-			firstSession({ step: "suggested" }, "2026-10-05T09:30:00Z"),
-			firstSession({ step: "checked" }, "2026-10-05T09:40:00Z", "sent"),
+			firstSession(null, "2026-10-05T09:30:00Z"),
 			firstSession(null, "2026-10-03T09:10:00Z", "late"),
 		]);
 		expect(await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"))).toBe(2);
@@ -283,14 +286,12 @@ describe("remindScopeClosing", () => {
 	});
 
 	it("reminds four hours before the day-15 change closes, unless confirmed", async () => {
-		sessionFindMany.mockResolvedValue([
-			scope({ message: "Sprint 2." }),
-			{ ...scope({ approved: true }), id: "done" },
-		]);
+		sessionFindMany.mockResolvedValue([scope(null)]);
 		expect(await remindScopeClosing(new Date("2026-10-20T08:30:00Z"))).toBe(1);
 		// The change closes 24 hours after the review: reviews that ended 20 to 21 hours ago.
 		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
 			index: 3,
+			checkpoint: { scopeConfirmedAt: null },
 			endedAt: {
 				gte: new Date("2026-10-19T11:00:00Z"),
 				lt: new Date("2026-10-19T12:00:00Z"),

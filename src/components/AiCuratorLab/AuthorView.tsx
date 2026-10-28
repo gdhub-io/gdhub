@@ -57,7 +57,9 @@ const review = ({
 	edit = null,
 	verdict = null,
 	character = null,
+	checked = false,
 }: {
+	checked?: boolean;
 	character?: CheckpointReviewDto["character"];
 	current: number;
 	goal: string;
@@ -80,6 +82,7 @@ const review = ({
 		editUntil: edit
 			? new Date(Date.now() + AI_APPROVE_HOURS * MS_PER_HOUR).toISOString()
 			: null,
+		checked,
 		approved: false,
 		tasks,
 	},
@@ -145,7 +148,6 @@ const reviewOf = (
 					advice: null,
 					goal: answer.goal as CuratorReview["goal"],
 					suggestions: answer.suggestions as CuratorReview["suggestions"],
-					step: "suggested",
 				},
 				edit: "goalAndTasks",
 			}),
@@ -170,9 +172,9 @@ const reviewOf = (
 						hash: "lab",
 					},
 					goal: answer.goal as CuratorReview["goal"],
-					step: current === 1 ? "checked" : undefined,
 				},
 				edit: current === 1 ? "goalAndTasks" : "tasks",
+				checked: current === 1,
 			}),
 		};
 	}

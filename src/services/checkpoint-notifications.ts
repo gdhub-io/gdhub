@@ -161,21 +161,17 @@ export const remindPlansUnsent = async (now = new Date()) => {
 				curatorKind: CheckpointCuratorKind.AI,
 				status: CheckpointStatus.Active,
 				goalAgreedAt: null,
+				planCheckedAt: null,
 			},
 		},
 		select: {
 			checkpointId: true,
 			createdAt: true,
-			content: true,
 			checkpoint: { select: authorRowSelect },
 		},
 	});
-	const waiting = sessions.filter(
-		(session) =>
-			(session.content as { step?: string } | null)?.step !== "checked",
-	);
 
-	for (const { checkpointId, createdAt, checkpoint } of waiting) {
+	for (const { checkpointId, createdAt, checkpoint } of sessions) {
 		const after = windows.find(
 			({ gte, lt }) => createdAt >= gte && createdAt < lt,
 		)?.after;
@@ -191,7 +187,7 @@ export const remindPlansUnsent = async (now = new Date()) => {
 			},
 		);
 	}
-	return waiting.length;
+	return sessions.length;
 };
 
 /** Day 1: nobody approved the checked plan, so it approved itself as it stood. */
@@ -225,19 +221,16 @@ export const remindScopeClosing = async (now = new Date()) => {
 			checkpoint: {
 				curatorKind: CheckpointCuratorKind.AI,
 				status: CheckpointStatus.Active,
+				scopeConfirmedAt: null,
 			},
 		},
 		select: {
 			id: true,
-			content: true,
 			checkpoint: { select: authorRowSelect },
 		},
 	});
-	const open = sessions.filter(
-		(session) => !(session.content as CuratorReview | null)?.approved,
-	);
 
-	for (const { id, checkpoint } of open) {
+	for (const { id, checkpoint } of sessions) {
 		const number = await checkpointNumber(checkpoint);
 		await notify(checkpoint.project.author, `cp-scope-closing-${id}`, {
 			title: `The tasks of Checkpoint ${number} can change for ${SCOPE_REMIND_BEFORE_HOURS} more hours`,
@@ -246,7 +239,7 @@ export const remindScopeClosing = async (now = new Date()) => {
 			redirectUrl: reviewUrl(checkpoint.project.slug, number, SCOPE_SESSION),
 		});
 	}
-	return open.length;
+	return sessions.length;
 };
 
 /**

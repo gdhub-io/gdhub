@@ -271,7 +271,13 @@ const aiReview = (
 	startedAt: "2026-10-01T00:00:00.000Z",
 	dueAt: "2026-10-28T00:00:00.000Z",
 	project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
-	plan: { goal: GOAL, approved: plan.edit !== "goalAndTasks", ...plan, tasks },
+	plan: {
+		goal: GOAL,
+		checked: plan.edit !== "goalAndTasks",
+		approved: plan.edit !== "goalAndTasks",
+		...plan,
+		tasks,
+	},
 	sessions: DAYS.map((day, offset) => ({
 		index: offset + 1,
 		scheduledAt: `${day}T00:00:00.000Z`,
@@ -554,7 +560,6 @@ const firstLetter: CuratorReview = {
 			why: "Five strangers show whether the tide reads without you there.",
 		},
 	],
-	step: "suggested",
 };
 
 /**

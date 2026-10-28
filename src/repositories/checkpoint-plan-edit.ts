@@ -29,14 +29,11 @@ const loadPlan = (checkpointId: string) =>
 			curatorKind: true,
 			startedAt: true,
 			goalAgreedAt: true,
+			planCheckedAt: true,
+			scopeConfirmedAt: true,
 			project: { select: { authorId: true } },
 			sessions: {
-				select: {
-					index: true,
-					scheduledAt: true,
-					endedAt: true,
-					content: true,
-				},
+				select: { index: true, scheduledAt: true, endedAt: true },
 			},
 			items: {
 				where: { kind: CheckpointItemKind.Outcome },
@@ -173,9 +170,6 @@ const HAS_TASKS = {
 	items: { some: { kind: CheckpointItemKind.Outcome, cut: false } },
 } as const;
 
-/** Session 1 once the AI curator has checked the tasks. */
-const CHECKED = { path: ["step"], equals: "checked" };
-
 /**
  * The author is done with the plan, with the AI curator: on day 1 after the
  * one check, which locks the goal and tasks until day 15; on day 15 after
@@ -193,15 +187,11 @@ export const approvePlan = async (
 			curatorKind: true,
 			startedAt: true,
 			goalAgreedAt: true,
+			planCheckedAt: true,
+			scopeConfirmedAt: true,
 			project: { select: { authorId: true } },
 			sessions: {
-				select: {
-					id: true,
-					index: true,
-					scheduledAt: true,
-					endedAt: true,
-					content: true,
-				},
+				select: { index: true, scheduledAt: true, endedAt: true },
 			},
 			items: {
 				where: HAS_TASKS.items.some,
@@ -213,23 +203,16 @@ export const approvePlan = async (
 	if (!canEditPlan(checkpoint, userId)) return "forbidden";
 	if (checkpoint.curatorKind !== CheckpointCuratorKind.AI) return "planClosed";
 	const edit = planEdit(checkpoint, now);
-	const sessionOf = (index: number) =>
-		checkpoint.sessions.find((session) => session.index === index);
 
 	if (edit === "tasks") {
-		const scope = sessionOf(SCOPE_SESSION);
-		if (!scope) return "planClosed";
-		await prisma.checkpointSession.update({
-			where: { id: scope.id },
-			data: {
-				content: { ...(scope.content as object | null), approved: true },
-			},
+		await prisma.projectCheckpoint.updateMany({
+			where: { id: checkpointId, scopeConfirmedAt: null },
+			data: { scopeConfirmedAt: now },
 		});
 		return null;
 	}
 	if (edit !== "goalAndTasks") return "planClosed";
-	const content = sessionOf(1)?.content as { step?: string } | null;
-	if (content?.step !== "checked") return "notChecked";
+	if (!checkpoint.planCheckedAt) return "notChecked";
 	if (!checkpoint.items.length) return "noTasks";
 
 	await prisma.projectCheckpoint.updateMany({
@@ -250,14 +233,8 @@ export const approveCheckedPlans = async (now = new Date()) => {
 			status: CheckpointStatus.Active,
 			goalAgreedAt: null,
 			...HAS_TASKS,
-			sessions: {
-				some: {
-					index: 1,
-					content: CHECKED,
-					updatedAt: {
-						lte: new Date(now.getTime() - AI_APPROVE_HOURS * MS_PER_HOUR),
-					},
-				},
+			planCheckedAt: {
+				lte: new Date(now.getTime() - AI_APPROVE_HOURS * MS_PER_HOUR),
 			},
 		},
 		select: { id: true },

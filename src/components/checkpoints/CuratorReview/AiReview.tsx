@@ -271,7 +271,7 @@ export function AiReviewView({
 											footer={
 												<PlanFooter
 													plan={plan}
-													checked={open?.step === "checked"}
+													checked={plan.checked}
 													advising={advising}
 													onSend={onAdvise}
 													approving={approving}

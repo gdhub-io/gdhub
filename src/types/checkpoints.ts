@@ -416,16 +416,8 @@ export type CuratorReview = {
 	goal?: GoalAdvice | null;
 	/** Day 1: tasks the curator suggests before any are written, each with why. */
 	suggestions?: TaskSuggestion[];
-	/**
-	 * Day 1 with the AI curator: `suggested` once the goal is read after payment,
-	 * `checked` once the tasks the author sent are read — one check, then the
-	 * author approves. The session's `updatedAt` is when that last happened.
-	 */
-	step?: "suggested" | "checked";
 	/** Day 1: the first letter, kept once the check's letter takes its place. */
 	firstLetter?: string;
-	/** Day 15 with the AI curator: the author confirmed the tasks, and they lock before the day is out. */
-	approved?: boolean;
 };
 
 export const GOAL_FITS = ["fits", "widen", "narrow"] as const;

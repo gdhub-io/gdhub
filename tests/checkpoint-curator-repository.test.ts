@@ -447,7 +447,6 @@ describe("runGoalCheck", () => {
 							advice: null,
 							goal: checked.goal,
 							suggestions: [],
-							step: "suggested",
 						},
 					}),
 				}),

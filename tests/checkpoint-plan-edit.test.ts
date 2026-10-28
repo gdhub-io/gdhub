@@ -122,10 +122,10 @@ describe("planEdit", () => {
 			const checked = {
 				...ai,
 				goalAgreedAt: null,
-				checkedAt: new Date("2026-10-05T15:00:00Z"),
+				planCheckedAt: new Date("2026-10-05T15:00:00Z"),
 			};
 			expect(planCloses(checked)).toEqual(new Date("2026-10-06T03:00:00Z"));
-			expect(planCloses({ ...checked, checkedAt: null })).toBeNull();
+			expect(planCloses({ ...checked, planCheckedAt: null })).toBeNull();
 		});
 
 		it("opens them on the record for a day after the sprint 2 review", () => {
@@ -254,19 +254,19 @@ describe("agreeGoal", () => {
 
 describe("approvePlan, with the AI curator", () => {
 	const ai = CheckpointCuratorKind.AI;
-	const checked = { message: "Checked.", step: "checked" };
 	const aiPlan = (overrides: Record<string, unknown> = {}) =>
 		plan({
 			curatorId: null,
 			curatorKind: ai,
+			planCheckedAt: startedAt,
+			scopeConfirmedAt: null,
 			sessions: [
-				{ id: "s1", index: 1, scheduledAt: startedAt, endedAt: null, content: checked },
+				{ id: "s1", index: 1, scheduledAt: startedAt, endedAt: null },
 				{
 					id: "s3",
 					index: 3,
 					scheduledAt: new Date("2026-10-19T00:00:00Z"),
 					endedAt: new Date("2026-10-19T01:00:00Z"),
-					content: { message: "Sprint 2." },
 				},
 			],
 			items: [{ id: "open" }],
@@ -288,9 +288,7 @@ describe("approvePlan, with the AI curator", () => {
 
 	it("refuses before the check and with no tasks", async () => {
 		checkpointFindUnique.mockResolvedValue(
-			aiPlan({
-				sessions: [{ id: "s1", index: 1, scheduledAt: startedAt, endedAt: null, content: { step: "suggested" } }],
-			}),
+			aiPlan({ planCheckedAt: null }),
 		);
 		expect(await approvePlan("cp", "author", day1)).toBe("notChecked");
 		checkpointFindUnique.mockResolvedValue(aiPlan({ items: [] }));
@@ -303,16 +301,14 @@ describe("approvePlan, with the AI curator", () => {
 		const day15 = new Date("2026-10-19T12:00:00Z");
 		checkpointFindUnique.mockResolvedValue(approved);
 		expect(await approvePlan("cp", "author", day15)).toBeNull();
-		const { where, data } = sessionUpdate.mock.calls[0][0];
-		expect(where).toEqual({ id: "s3" });
-		expect(data.content).toEqual({ message: "Sprint 2.", approved: true });
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "cp", scopeConfirmedAt: null },
+			data: { scopeConfirmedAt: day15 },
+		});
 
 		const confirmed = {
 			...approved,
-			sessions: [
-				approved.sessions[0],
-				{ ...approved.sessions[1], content: data.content },
-			],
+			scopeConfirmedAt: day15,
 		} as Parameters<typeof planEdit>[0];
 		expect(planEdit(confirmed, day15)).toBeNull();
 	});
@@ -334,13 +330,7 @@ describe("approvePlan, with the AI curator", () => {
 			curatorKind: ai,
 			goalAgreedAt: null,
 			items: { some: { cut: false } },
-			sessions: {
-				some: {
-					index: 1,
-					content: { path: ["step"], equals: "checked" },
-					updatedAt: { lte: new Date("2026-10-05T22:00:00Z") },
-				},
-			},
+			planCheckedAt: { lte: new Date("2026-10-05T22:00:00Z") },
 		});
 		expect(checkpointUpdateMany).toHaveBeenCalledWith({
 			where: { id: "cp1", goalAgreedAt: null },
