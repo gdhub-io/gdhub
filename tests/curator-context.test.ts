@@ -14,7 +14,7 @@ vi.mock("@/repositories/project-activity.repository", () => ({
 }));
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { findUniqueOrThrow: vi.fn(), findUnique: vi.fn() },
+		projectCheckpoint: { findUniqueOrThrow: vi.fn() },
 		teamVacancy: { findMany: vi.fn() },
 		projectWorkflowStep: { findUnique: vi.fn(), findFirst: vi.fn() },
 		teamMember: { findMany: vi.fn() },
@@ -60,9 +60,6 @@ beforeEach(() => {
 			user: { name: "Marta", profile: { timeForWork: [5, 10] } },
 		},
 	] as never);
-	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
-		startedAt: new Date("2026-10-01T00:00:00Z"),
-	} as never);
 	vi.mocked(prisma.teamVacancy.findMany).mockResolvedValue([]);
 	vi.mocked(prisma.checkpointPulse.findMany).mockResolvedValue([
 		{ teamMemberId: "m1", week: 2, confirmedAt: null },
@@ -109,7 +106,7 @@ describe("the project picture the AI curator reads", () => {
 	});
 
 	it("builds the team once: role, level, hours, the weeks they worked, and the sums", async () => {
-		await expect(curatorTeam("cp1", "p1")).resolves.toEqual({
+		await expect(curatorTeam("cp1", "p1", new Date("2026-10-01T00:00:00Z"))).resolves.toEqual({
 			members: 1,
 			stated: 1,
 			hoursPerWeek: { from: 5, to: 10 },
@@ -149,13 +146,12 @@ describe("the project picture the AI curator reads", () => {
 			},
 		] as never);
 
-		await expect(curatorTeam("cp1", "p1")).resolves.toMatchObject({
+		await expect(curatorTeam("cp1", "p1", new Date("2026-10-01T00:00:00Z"))).resolves.toMatchObject({
 			people: [{ name: "Lena", joinedOn: "2026-10-10" }],
 			openings: [{ role: "Sound designer", postedOn: "2026-10-12", applied: 3 }],
 		});
 		expect(vi.mocked(prisma.teamVacancy.findMany).mock.calls[0][0]?.where).toMatchObject({
 			status: "Published",
-			closedAt: null,
 		});
 	});
 
@@ -171,7 +167,7 @@ describe("the project picture the AI curator reads", () => {
 		] as never);
 		vi.mocked(prisma.checkpointPulse.findMany).mockResolvedValue([]);
 
-		await expect(curatorTeam("cp1", "p1")).resolves.toMatchObject({
+		await expect(curatorTeam("cp1", "p1", new Date("2026-10-01T00:00:00Z"))).resolves.toMatchObject({
 			members: 1,
 			stated: 0,
 			hoursPerWeek: null,

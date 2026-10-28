@@ -176,7 +176,7 @@ describe("runGoalCheck", () => {
 
 		await runGoalCheck("cp1");
 
-		expect(curatorTeam).toHaveBeenCalledWith("cp1", "p1");
+		expect(curatorTeam).toHaveBeenCalledWith("cp1", "p1", null);
 		expect(checkpointCurator.checkGoal).toHaveBeenCalledWith(
 			expect.objectContaining({ team: TEAM }),
 			{ checkpointId: "cp1" },

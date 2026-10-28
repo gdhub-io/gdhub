@@ -425,7 +425,7 @@ export const adviseOnPlan = async (
 	const input = adviceInput(
 		checkpoint,
 		await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
-		await curatorTeam(checkpointId, checkpoint.projectId),
+		await curatorTeam(checkpointId, checkpoint.projectId, checkpoint.startedAt),
 		index === 1 ? "start" : "midway",
 		content?.notes?.inShort ?? null,
 		// Halfway reads the first two sprints, a period that does not move day by day.
@@ -633,7 +633,7 @@ const sprintReviewInput = async (
 					: sprintRange(startedAt, sprint),
 			),
 			stageWorkflow(checkpoint.stepId, checkpoint.stageName),
-			curatorTeam(checkpoint.id, checkpoint.projectId),
+			curatorTeam(checkpoint.id, checkpoint.projectId, startedAt),
 		]);
 	const [devlogMedia, artifactsSeen] = await Promise.all([
 		devlogMediaLines(posts.map((post) => post.id)),
