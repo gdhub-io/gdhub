@@ -15,14 +15,14 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { type ReactNode, useRef, useState } from "react";
 import type { EvidenceActions } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
-import { ArtifactLink } from "@/components/WorkflowPath/ArtifactLink";
+import { ArtifactLinks } from "@/components/WorkflowPath/ArtifactLink";
 import {
 	CHECKPOINT_ITEM_TEXT_MAX,
-	CHECKPOINT_MAX_EVIDENCE_PER_ITEM,
 	CHECKPOINT_MAX_ITEMS_PER_KIND,
 } from "@/config/checkpoint";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useChangePlan } from "@/hooks/checkpoint-call";
+import { canTakeEvidence } from "@/lib/checkpoint-verdict";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
 import type {
@@ -242,39 +242,6 @@ export function TaskIcon({ task }: { task: Task }) {
 	);
 }
 
-function Artifacts({
-	of,
-	onDetach,
-}: {
-	of: Task;
-	/** Lets one artifact go from the task; absent for whoever may not. */
-	onDetach?: (artifactId: string) => void;
-}) {
-	const { t } = useTranslate();
-	const label = t("checkpoints.evidence.detach", "Remove from this task");
-
-	return (
-		<Flex vertical align="end" gap={4}>
-			{of.artifacts.map((artifact) => (
-				<Flex key={artifact.id} align="center" gap={4}>
-					<ArtifactLink artifact={artifact} />
-					{onDetach && (
-						<Tooltip title={label}>
-							<Button
-								type="text"
-								size="small"
-								icon={<IconX size={14} />}
-								aria-label={label}
-								onClick={() => onDetach(artifact.id)}
-							/>
-						</Tooltip>
-					)}
-				</Flex>
-			))}
-		</Flex>
-	);
-}
-
 function Field({
 	label,
 	extra,
@@ -340,8 +307,8 @@ function PlanView({
 								{task.text}
 							</Typography.Text>
 							{task.artifacts.length > 0 && (
-								<Artifacts
-									of={task}
+								<ArtifactLinks
+									artifacts={task.artifacts}
 									onDetach={
 										evidence &&
 										((artifactId) => evidence.detach(artifactId, task.id))
@@ -350,7 +317,7 @@ function PlanView({
 							)}
 							{evidence &&
 								!task.cut &&
-								task.artifacts.length < CHECKPOINT_MAX_EVIDENCE_PER_ITEM && (
+								canTakeEvidence(task.artifacts.map(({ id }) => id)) && (
 									<Tooltip
 										title={t("workflow.aside.attach", "Attach an artifact")}
 									>
@@ -519,7 +486,10 @@ function TaskRow({
 
 	if (task.artifacts.length) {
 		return (
-			<LockedRow icon={<TaskIcon task={task} />} end={<Artifacts of={task} />}>
+			<LockedRow
+				icon={<TaskIcon task={task} />}
+				end={<ArtifactLinks artifacts={task.artifacts} />}
+			>
 				{task.text}
 			</LockedRow>
 		);

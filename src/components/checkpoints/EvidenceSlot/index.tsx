@@ -48,8 +48,9 @@ export type EvidenceSlotProps = {
 	plain?: boolean;
 };
 
-const artifactLabel = (artifact: CheckpointArtifactRef) =>
-	artifact.name?.trim() || artifact.link;
+export const artifactLabel = (
+	artifact: Pick<CheckpointArtifactRef, "name" | "link">,
+) => artifact.name?.trim() || artifact.link;
 
 /**
  * One line's proof (component `vFBkk`).
@@ -138,7 +139,7 @@ export function EvidenceSlot({
 	);
 }
 
-/** A line's every proof, read-only; one empty slot when there is none (GDHUB-115). */
+/** A line's every proof, read-only; one empty slot when there is none. */
 export function EvidenceSlots({
 	artifacts,
 }: {

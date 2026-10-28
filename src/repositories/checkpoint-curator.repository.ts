@@ -149,7 +149,6 @@ type ReportItem = CardItem &
  */
 export const reportEvidence = (goal: string, items: ReportItem[]) => ({
 	card: toCard(goal, items),
-	// Every artifact offered for a task, each with what was seen in it (GDHUB-115).
 	artifacts: items.flatMap((item) =>
 		item.evidence.map(({ artifact, match, matchNote }) => ({
 			itemId: item.id,

@@ -83,7 +83,6 @@ const task = z.object({
 	text: z.string(),
 	cut: z.boolean(),
 	firstWording: z.string().nullable(),
-	/** The artifacts offered for it; empty is not done (GDHUB-115). */
 	evidence: z.array(
 		z.object({ type: z.string(), name: z.string().nullable(), seen }),
 	),
@@ -170,7 +169,6 @@ const item = z.object({
 	cut: z.boolean().default(false),
 	addedAt: z.string().nullable().default(null),
 	acceptedNote: z.string().nullish(),
-	/** Every artifact offered for it, each with what was seen in it (GDHUB-115). */
 	evidence: z
 		.array(
 			z.object({

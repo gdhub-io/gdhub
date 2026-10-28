@@ -1,3 +1,4 @@
+import type { CuratorEvidence } from "@/services/call-notes";
 import {
 	type LabLanguage,
 	type Situation,
@@ -86,14 +87,7 @@ export const sprintReviewSituations = (
 		...each,
 		cut: false,
 		firstWording: null,
-		evidence: [] as {
-			type: string;
-			name: string | null;
-			seen: {
-				match: "Matches" | "Partly" | "DoesNotMatch";
-				note: string;
-			} | null;
-		}[],
+		evidence: [] as CuratorEvidence[],
 	});
 	const done = (
 		each: { id: string; text: string },

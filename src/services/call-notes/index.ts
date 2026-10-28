@@ -13,7 +13,6 @@ export type CuratorTask = {
 	text: string;
 	cut: boolean;
 	firstWording: string | null;
-	/** The artifacts offered for it (GDHUB-115): empty is not done. */
 	evidence: CuratorEvidence[];
 };
 

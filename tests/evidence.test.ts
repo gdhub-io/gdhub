@@ -37,8 +37,8 @@ vi.mock("@/services/prisma", () => ({
 		checkpointItemEvidence: {
 			findMany: vi.fn(),
 			update: vi.fn(),
-			count: vi.fn(async () => 0),
 		},
+		checkpointItem: { findMany: vi.fn(async () => []) },
 		checkpointJournalEntry: {
 			findMany: vi.fn(async () => []),
 			create: vi.fn(async () => ({})),
@@ -220,7 +220,19 @@ describe("looking at a checkpoint's evidence", () => {
 		vi.mocked(prisma.checkpointItemEvidence.findMany).mockResolvedValue([
 			piece("a", "https://example.com/video.mp4"),
 		] as never);
-		vi.mocked(prisma.checkpointItemEvidence.count).mockResolvedValueOnce(1);
+		vi.mocked(prisma.checkpointItem.findMany).mockResolvedValueOnce([
+			{
+				id: "a",
+				kind: "Outcome",
+				text: "Task a",
+				cut: false,
+				acceptedNote: null,
+				evidence: [
+					{ match: "DoesNotMatch", artifact: { checkStatus: "Readable" } },
+					{ match: "Matches", artifact: { checkStatus: "Readable" } },
+				],
+			},
+		] as never);
 		vi.mocked(fetchBody).mockResolvedValue(body("image/png"));
 		vi.mocked(judgeEvidence).mockResolvedValueOnce({
 			match: "DoesNotMatch",
@@ -229,9 +241,6 @@ describe("looking at a checkpoint's evidence", () => {
 
 		await seeCheckpointEvidence("cp1");
 
-		expect(prisma.checkpointItemEvidence.count).toHaveBeenCalledWith({
-			where: { itemId: "a", match: "Matches" },
-		});
 		expect(notifyEvidenceMismatch).not.toHaveBeenCalled();
 	});
 

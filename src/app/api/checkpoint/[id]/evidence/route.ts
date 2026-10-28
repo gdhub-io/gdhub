@@ -1,7 +1,6 @@
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { after } from "next/server";
 import type { z } from "zod";
-import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import {
 	apiError,
 	json,
@@ -10,6 +9,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { canTakeEvidence } from "@/lib/checkpoint-verdict";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
@@ -74,7 +74,7 @@ const guard = pipe(
 );
 
 /**
- * Adds an artifact to the outcomes it proves (GDHUB-115): each keeps the
+ * Adds an artifact to the outcomes it proves: each keeps the
  * artifacts it already has. Its own route rather than the goal card's `PUT`,
  * which recreates the rows and would take the day-15 record with it.
  */
@@ -94,8 +94,10 @@ export const POST = guard(
 			const full = checkpoint.items.some(
 				(item) =>
 					itemIds.includes(item.id) &&
-					!item.evidence.some((piece) => piece.artifactId === artifactId) &&
-					item.evidence.length >= CHECKPOINT_MAX_EVIDENCE_PER_ITEM,
+					!canTakeEvidence(
+						item.evidence.map((piece) => piece.artifactId),
+						artifactId,
+					),
 			);
 			if (full) return apiError.badRequest("evidenceFull");
 

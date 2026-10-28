@@ -120,7 +120,6 @@ export type CheckpointReviewDto = {
 			text: string;
 			cut: boolean;
 			addedAt: string | null;
-			/** Every artifact offered for it (GDHUB-115). */
 			artifacts: CheckpointArtifactRef[];
 		}[];
 	};

@@ -13,7 +13,10 @@ import {
 	CHECKPOINT_OPEN_STATUSES,
 } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
-import { toArtifactRef } from "@/repositories/checkpoint.repository";
+import {
+	createCheckpointItems,
+	toArtifactRef,
+} from "@/repositories/checkpoint.repository";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { prisma } from "@/services/prisma";
@@ -372,19 +375,7 @@ export const saveEntryProject = async ({
 		await tx.checkpointItem.deleteMany({
 			where: { checkpointId: draftId, kind: CheckpointItemKind.Input },
 		});
-		for (const [index, item] of items.entries()) {
-			await tx.checkpointItem.create({
-				data: {
-					checkpointId: draftId,
-					kind: CheckpointItemKind.Input,
-					order: index + 1,
-					text: item.text,
-					...(item.artifactId && {
-						evidence: { create: { artifactId: item.artifactId } },
-					}),
-				},
-			});
-		}
+		await createCheckpointItems(tx, draftId, CheckpointItemKind.Input, items);
 
 		return draftId;
 	});

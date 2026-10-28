@@ -53,7 +53,6 @@ export type CheckpointItemDto = {
 	addedAt: string | null;
 	note: string | null;
 	acceptedNote: string | null;
-	/** The artifacts offered for it (GDHUB-115), each with what the AI saw in it. */
 	evidence: CheckpointItemEvidenceDto[];
 };
 

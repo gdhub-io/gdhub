@@ -28,11 +28,7 @@ import {
 import { sessionHeld } from "@/lib/checkpoint-call";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { standingOf, standingOfPiece } from "@/lib/checkpoint-verdict";
-import type {
-	CheckpointArtifactRef,
-	CheckpointDto,
-	CheckpointItemDto,
-} from "@/types/checkpoints";
+import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
 import { formatShort } from "./dates";
 import styles from "./style.module.scss";
@@ -177,27 +173,14 @@ function useEvidenceStanding(checkpoint: CheckpointDto) {
 	const statusOf = useStandingStatus();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 
-	return (
-		item: CheckpointItemDto,
-	): {
-		failed: boolean;
-		pieces: { artifact: CheckpointArtifactRef; status?: StatusDotProps }[];
-	} => {
-		if (!isAI) {
-			return {
-				failed: !item.evidence.length,
-				pieces: item.evidence.map(({ artifact }) => ({ artifact })),
-			};
-		}
-		// The task counts by its best artifact; each one still says what it showed.
-		return {
-			failed: standingOf(item).is === "unproven",
-			pieces: item.evidence.map((piece) => ({
-				artifact: piece.artifact,
-				status: statusOf(standingOfPiece(piece)),
-			})),
-		};
-	};
+	// The task counts by its best artifact; each one still says what it showed.
+	return (item: CheckpointItemDto) => ({
+		failed: isAI ? standingOf(item).is === "unproven" : !item.evidence.length,
+		pieces: item.evidence.map((piece) => ({
+			artifact: piece.artifact,
+			status: isAI ? statusOf(standingOfPiece(piece)) : undefined,
+		})),
+	});
 }
 
 /** What a closed checkpoint came to: the goal, what was delivered, the verdict. */

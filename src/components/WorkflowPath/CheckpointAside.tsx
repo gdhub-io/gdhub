@@ -15,7 +15,7 @@ import {
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import type { CheckpointDto } from "@/types/checkpoints";
-import { ArtifactLink } from "./ArtifactLink";
+import { ArtifactLinks } from "./ArtifactLink";
 import { AsideHead } from "./AsideHead";
 import { CuratorNote } from "./CuratorNote";
 import { formatDayRange } from "./dates";
@@ -113,15 +113,12 @@ export function CheckpointAside({
 											completed={item.evidence.length > 0}
 											action={
 												item.evidence.length ? (
-													<Flex gap={4}>
-														{item.evidence.map(({ artifact }) => (
-															<ArtifactLink
-																key={artifact.id}
-																artifact={artifact}
-																compact
-															/>
-														))}
-													</Flex>
+													<ArtifactLinks
+														artifacts={item.evidence.map(
+															({ artifact }) => artifact,
+														)}
+														compact
+													/>
 												) : (
 													canManage && (
 														<Tooltip

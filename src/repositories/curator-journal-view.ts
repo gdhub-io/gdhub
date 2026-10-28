@@ -80,7 +80,6 @@ export type JournalTaskDto = {
 	firstWording: string | null;
 	cut: boolean;
 	addedAt: string | null;
-	/** Every artifact offered for it, with what the AI saw in each (GDHUB-115). */
 	evidence: JournalEvidenceDto[];
 	/** The sprint its first artifact was added in. */
 	doneIn: number | null;
@@ -391,7 +390,7 @@ export const getJournalView = async (
 	const author = nameOf(checkpoint.project.authorId);
 	const taskText = new Map(tasks.map((item) => [item.id, item.text]));
 	const taskName = (id: string | null) => (id && taskText.get(id)) || null;
-	// An artifact may prove several tasks, and a task carry several artifacts (GDHUB-115).
+	// An artifact may prove several tasks, and a task carry several artifacts.
 	const tasksOfArtifact = new Map<string, string[]>();
 	for (const item of tasks) {
 		for (const { artifact } of item.evidence) {

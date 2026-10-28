@@ -10,6 +10,7 @@ import {
 import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useAttachEvidence } from "@/hooks/checkpoints";
+import { canTakeEvidence } from "@/lib/checkpoint-verdict";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -48,8 +49,10 @@ export function AttachEvidenceModal({
 
 	// A task already holding the most it can takes nothing new; the artifact it has is still ticked.
 	const full = (line: (typeof provable)[number]) =>
-		line.evidence.length >= CHECKPOINT_MAX_EVIDENCE_PER_ITEM &&
-		!line.evidence.some((piece) => piece.artifact.id === artifact?.id);
+		!canTakeEvidence(
+			line.evidence.map((piece) => piece.artifact.id),
+			artifact?.id,
+		);
 
 	const close = () => {
 		setArtifact(undefined);

@@ -13,6 +13,7 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import { standingOf } from "@/lib/checkpoint-verdict";
 import { capped, devlogWords } from "@/lib/curator-text";
 import { checkArtifact } from "@/repositories/artifact-check";
 import {
@@ -106,7 +107,7 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 	// Read once, and only when something is about to be judged.
 	let devlogs: string[] | undefined;
 
-	// Every artifact offered for an open task, each judged on its own (GDHUB-115).
+	// Every artifact offered for an open task, each judged on its own.
 	const pieces = await prisma.checkpointItemEvidence.findMany({
 		where: {
 			item: { checkpointId, kind: CheckpointItemKind.Outcome, cut: false },
@@ -123,6 +124,11 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 		},
 	});
 
+	// A task whose artifact missed it this run, told about once all are judged.
+	const missed = new Map<
+		string,
+		{ item: { id: string; text: string }; note: string; link: string }
+	>();
 	let left =
 		SPRINT_VIDEO_SECONDS -
 		videoSecondsOf(await sprintLooks(checkpointId, sprint));
@@ -167,23 +173,11 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 				seenLink: artifact.link,
 			},
 		});
-		// Another artifact that already shows the task leaves nothing to fix.
 		if (
-			(judged.match === EvidenceMatch.DoesNotMatch ||
-				judged.match === EvidenceMatch.Partly) &&
-			!(await prisma.checkpointItemEvidence.count({
-				where: { itemId: item.id, match: EvidenceMatch.Matches },
-			}))
+			judged.match === EvidenceMatch.DoesNotMatch ||
+			judged.match === EvidenceMatch.Partly
 		) {
-			const { notifyEvidenceMismatch } = await import(
-				"@/services/checkpoint-notifications"
-			);
-			await notifyEvidenceMismatch(
-				checkpointId,
-				item,
-				judged.note,
-				artifact.link,
-			);
+			missed.set(item.id, { item, note: judged.note, link: artifact.link });
 		}
 		await journal({
 			checkpointId,
@@ -194,6 +188,39 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 			input: { ...task, ...whatWasRead(artifact.link, content) },
 			output: judged,
 		});
+	}
+
+	if (!missed.size) return;
+	// The task counts by its best artifact: one that shows it leaves nothing to fix.
+	const tasks = await prisma.checkpointItem.findMany({
+		where: { id: { in: [...missed.keys()] } },
+		select: {
+			id: true,
+			kind: true,
+			text: true,
+			cut: true,
+			acceptedNote: true,
+			evidence: {
+				select: {
+					match: true,
+					matchNote: true,
+					artifact: { select: { checkStatus: true, checkNote: true } },
+				},
+			},
+		},
+	});
+	const { notifyEvidenceMismatch } = await import(
+		"@/services/checkpoint-notifications"
+	);
+	const delivered = new Set(
+		tasks
+			.filter((task) => standingOf(task).is === "delivered")
+			.map(({ id }) => id),
+	);
+	for (const { item, note, link } of missed.values()) {
+		if (!delivered.has(item.id)) {
+			await notifyEvidenceMismatch(checkpointId, item, note, link);
+		}
 	}
 }
 

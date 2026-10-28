@@ -80,7 +80,7 @@ export const CheckpointEvidenceSchema = z.object({
 	itemIds: z.array(z.string().min(1)).min(1).max(CHECKPOINT_MAX_ITEMS_PER_KIND),
 });
 
-/** One artifact let go from one task; the task keeps any others (GDHUB-115). */
+/** One artifact let go from one task; the task keeps any others. */
 export const DetachEvidenceSchema = z.object({
 	artifactId: z.string().min(1),
 	itemId: z.string().min(1),

@@ -35,6 +35,7 @@ import {
 import { curatorNow } from "@/lib/curator-now";
 import { checkpointLineage } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
+import type { Tx } from "@/repositories/project-workflow";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { characterFace } from "@/services/checkpoint-curator/prompts/card";
@@ -403,25 +404,24 @@ const buildEvidence = (
 	items: DetailRow["items"],
 	startedAt: Date | null,
 ): CheckpointEvidenceDto[] => {
-	const itemIdsByArtifact = new Map<string, string[]>();
-
-	const byId = new Map<string, EvidenceArtifact>();
-
+	const byId = new Map<
+		string,
+		{ artifact: EvidenceArtifact; itemIds: string[] }
+	>();
 	for (const item of items) {
 		for (const { artifact } of item.evidence) {
-			const known = itemIdsByArtifact.get(artifact.id);
-			if (known) known.push(item.id);
-			else itemIdsByArtifact.set(artifact.id, [item.id]);
-			byId.set(artifact.id, artifact);
+			const known = byId.get(artifact.id);
+			if (known) known.itemIds.push(item.id);
+			else byId.set(artifact.id, { artifact, itemIds: [item.id] });
 		}
 	}
 
 	return [...byId.values()]
-		.map((artifact) => ({
+		.map(({ artifact, itemIds }) => ({
 			artifact: toArtifactRef(artifact),
 			addedAt: artifact.createdAt.toISOString(),
 			addedBy: artifact.createdByUser,
-			itemIds: itemIdsByArtifact.get(artifact.id) ?? [],
+			itemIds,
 			sprint: startedAt ? sprintOfDate(startedAt, artifact.createdAt) : null,
 		}))
 		.sort(
@@ -824,28 +824,41 @@ export const lastClosedOutcomes = async (projectId: string) => {
 	return previous?.items ?? [];
 };
 
+/** Writes one side of the goal card in order, with the artifact each line names. */
+export const createCheckpointItems = async (
+	db: Tx,
+	checkpointId: string,
+	kind: CheckpointItemKind,
+	items: { text: string; artifactId?: string | null }[],
+) => {
+	const created = await db.checkpointItem.createManyAndReturn({
+		data: items.map((item, index) => ({
+			checkpointId,
+			kind,
+			order: index + 1,
+			text: item.text,
+		})),
+		select: { id: true, order: true },
+	});
+	const evidence = created.flatMap(({ id, order }) => {
+		const artifactId = items[order - 1].artifactId;
+		return artifactId ? [{ itemId: id, artifactId }] : [];
+	});
+	if (evidence.length) {
+		await db.checkpointItemEvidence.createMany({ data: evidence });
+	}
+};
+
 /** Replaces one side of the goal card. Only a `Draft` may be rewritten this way. */
-export const replaceCheckpointItems = async (
+export const replaceCheckpointItems = (
 	checkpointId: string,
 	kind: CheckpointItemKind,
 	items: { text: string; artifactId?: string | null }[],
 ) =>
-	prisma.$transaction([
-		prisma.checkpointItem.deleteMany({ where: { checkpointId, kind } }),
-		...items.map((item, index) =>
-			prisma.checkpointItem.create({
-				data: {
-					checkpointId,
-					kind,
-					order: index + 1,
-					text: item.text,
-					...(item.artifactId && {
-						evidence: { create: { artifactId: item.artifactId } },
-					}),
-				},
-			}),
-		),
-	]);
+	prisma.$transaction(async (tx) => {
+		await tx.checkpointItem.deleteMany({ where: { checkpointId, kind } });
+		await createCheckpointItems(tx, checkpointId, kind, items);
+	});
 
 /**
  * The day counter, and only where it is true.

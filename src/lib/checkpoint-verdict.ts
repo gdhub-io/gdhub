@@ -1,3 +1,4 @@
+import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
 	CheckpointItemKind,
@@ -34,7 +35,6 @@ export type VerdictItem = {
 	cut: boolean;
 	/** A human curator counting an outcome no artifact covers. */
 	acceptedNote?: string | null;
-	/** Every artifact offered for it (GDHUB-115), with what the AI saw in each. */
 	evidence: VerdictEvidence[];
 };
 
@@ -96,11 +96,22 @@ export const standingOfPiece = ({
 	}
 };
 
-/** Best first: one artifact that shows the task is enough (GDHUB-115). */
-const RANK = (standing: Standing) =>
-	({ delivered: 0, partly: 1, trusted: 2, unproven: 3 })[standing.is] +
-	// Of two that fail, "shows something else" says more than "does not open".
-	(standing.is === "unproven" && standing.reason === "broken" ? 0.5 : 0);
+/**
+ * Best first: one artifact that shows the task is enough. Of two that fail,
+ * "shows something else" says more than "does not open".
+ */
+const BEST_FIRST = [
+	"delivered",
+	"partly",
+	"trusted",
+	"doesNotMatch",
+	"broken",
+	"missing",
+];
+const rank = (standing: Standing) =>
+	BEST_FIRST.indexOf(
+		standing.is === "unproven" ? standing.reason : standing.is,
+	);
 
 /**
  * How the AI curator counts one outcome: by the best of its artifacts. One that
@@ -110,8 +121,13 @@ export const standingOf = (item: VerdictItem): Standing => {
 	if (item.acceptedNote?.trim()) return { is: "delivered" };
 	const pieces = item.evidence.map(standingOfPiece);
 	if (!pieces.length) return { is: "unproven", reason: "missing" };
-	return pieces.reduce((best, next) => (RANK(next) < RANK(best) ? next : best));
+	return pieces.reduce((best, next) => (rank(next) < rank(best) ? next : best));
 };
+
+/** Whether a task holding `held` artifacts takes this one: there is room, or it already holds it. */
+export const canTakeEvidence = (held: string[], artifactId?: string) =>
+	held.length < CHECKPOINT_MAX_EVIDENCE_PER_ITEM ||
+	(!!artifactId && held.includes(artifactId));
 
 /** Counted as delivered by a human curator: a readable artifact, or their own note. */
 export const isProven = (item: VerdictItem) =>

@@ -4,6 +4,7 @@ import { IconHourglass, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
+import { artifactLabel } from "@/components/checkpoints/EvidenceSlot";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
@@ -132,7 +133,7 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 							<Typography.Text className={styles.col} type="secondary">
 								{item.evidence.length
 									? item.evidence
-											.map(({ artifact }) => artifact.name ?? artifact.link)
+											.map(({ artifact }) => artifactLabel(artifact))
 											.join(", ")
 									: item.acceptedNote
 										? t(

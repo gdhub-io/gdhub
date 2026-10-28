@@ -330,7 +330,7 @@ export const ClosedAIEvidenceLabels: StoryObj = {
 						verdictNote:
 							"I accepted the mood board on trust: it is behind a login and I could not check it. The pitch video shows a different game and the trailer link does not open, so the goal is missed.",
 						items: [
-							// Two artifacts: the task counts by the one that shows it (GDHUB-115).
+							// Two artifacts: the task counts by the one that shows it.
 							{
 								...running.items[0],
 								id: "o1",
