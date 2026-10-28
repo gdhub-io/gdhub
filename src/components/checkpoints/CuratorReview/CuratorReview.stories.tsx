@@ -12,6 +12,7 @@ import {
 	ParticipantTile,
 } from "@/components/checkpoints/CallRoom/CallParts";
 import { ClosedStage } from "@/components/checkpoints/CallRoom/ClosedStage";
+import { curatorNow } from "@/lib/curator-now";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type {
@@ -263,32 +264,47 @@ const aiReview = (
 	plan: Pick<CheckpointReviewDto["plan"], "edit" | "editUntil">,
 	contents: (CuratorReview | null)[],
 	extra: Partial<CheckpointReviewDto> = {},
-): CheckpointReviewDto => ({
-	current,
-	number: 3,
-	previous: null,
-	stageName: "Concepting",
-	startedAt: "2026-10-01T00:00:00.000Z",
-	dueAt: "2026-10-28T00:00:00.000Z",
-	project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
-	plan: {
-		goal: GOAL,
-		checked: plan.edit !== "goalAndTasks",
-		approved: plan.edit !== "goalAndTasks",
-		...plan,
-		tasks,
-	},
-	sessions: DAYS.map((day, offset) => ({
+): CheckpointReviewDto => {
+	const settled = plan.edit !== "goalAndTasks";
+	const sessions = DAYS.map((day, offset) => ({
 		index: offset + 1,
 		scheduledAt: `${day}T00:00:00.000Z`,
-		contentStatus: contents[offset] ? "Ready" : null,
+		contentStatus: contents[offset] ? ("Ready" as const) : null,
 		content: contents[offset] ?? null,
-	})),
-	verdict: null,
-	nextStage: null,
-	character: null,
-	...extra,
-});
+	}));
+	return {
+		current,
+		// What the page would say at noon of the day it is drawn on.
+		curatorNow: curatorNow(
+			{
+				startedAt: sessions[0].scheduledAt,
+				goalAgreedAt: settled ? sessions[0].scheduledAt : null,
+				planCheckedAt: settled ? sessions[0].scheduledAt : null,
+				scopeConfirmedAt: null,
+				sessions: sessions.map((row) => ({ ...row, endedAt: row.scheduledAt })),
+			},
+			new Date(`${DAYS[current - 1]}T12:00:00.000Z`),
+		),
+		number: 3,
+		previous: null,
+		stageName: "Concepting",
+		startedAt: "2026-10-01T00:00:00.000Z",
+		dueAt: "2026-10-28T00:00:00.000Z",
+		project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
+		plan: {
+			goal: GOAL,
+			checked: plan.edit !== "goalAndTasks",
+			approved: plan.edit !== "goalAndTasks",
+			...plan,
+			tasks,
+		},
+		sessions,
+		verdict: null,
+		nextStage: null,
+		character: null,
+		...extra,
+	};
+};
 
 const startContent: CuratorReview = {
 	message:

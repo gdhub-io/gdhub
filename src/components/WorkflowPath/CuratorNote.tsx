@@ -14,6 +14,7 @@ import type { ReactNode } from "react";
 import { CallCountdown } from "@/components/checkpoints/CallRoom/CallCountdown";
 import { firstName } from "@/components/checkpoints/CallRoom/CallHeader";
 import { useLockedJoinLabel } from "@/components/checkpoints/CallRoom/ClosedStage";
+import { useCuratorNow } from "@/components/checkpoints/CuratorReview/useCuratorNow";
 import { InverseBand } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
@@ -55,6 +56,10 @@ export function CuratorNote({
 	const lockedJoin = useLockedJoinLabel();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 	const { curator } = checkpoint;
+	const said = useCuratorNow(isAI ? checkpoint.curatorNow : null, [
+		"checkpoint",
+		checkpoint.id,
+	]);
 
 	let date: string | null = null;
 	let message: string;
@@ -62,25 +67,20 @@ export function CuratorNote({
 	let join: Join | null = null;
 	let countdown: string | null = null;
 
+	let deadline: string | null = null;
+
 	if (isAI) {
-		const { letter } = checkpoint;
-		const index = letter?.index ?? 1;
-		date = letter ? formatShort(letter.at) : null;
-		message =
-			letter?.text ??
-			t(
-				"workflow.aside.letterSoon",
-				"Your AI curator is reading the goal. The first letter will be here in a minute.",
-			);
-		// Day 1 asks for the tasks until the plan is approved.
-		const planOpen = index === 1 && !checkpoint.goalAgreedAt;
-		action = {
-			label: planOpen
-				? t("workflow.aside.setTasks", "Set the tasks")
-				: t("workflow.aside.readReview", "Read the review"),
-			icon: <IconFileText size={16} />,
-			href: reviewHref(index),
-		};
+		const index = checkpoint.curatorNow?.index ?? 1;
+		date = checkpoint.curatorNow ? formatShort(checkpoint.curatorNow.at) : null;
+		message = said?.message ?? "";
+		deadline = said?.deadline ?? null;
+		if (said?.label) {
+			action = {
+				label: said.label,
+				icon: <IconFileText size={16} />,
+				href: reviewHref(index),
+			};
+		}
 	} else {
 		const sessions = (checkpoint.sessions ?? []).map((session) => ({
 			...session,
@@ -227,6 +227,11 @@ export function CuratorNote({
 			<Paragraph ellipsis={{ rows: 5 }} className={styles.curatorText}>
 				{message}
 			</Paragraph>
+			{deadline && (
+				<Text type="secondary" className={styles.asideMeta}>
+					{deadline}
+				</Text>
+			)}
 			{countdown && <CallCountdown at={countdown} />}
 			{(action || join) && (
 				<div className={styles.curatorActions}>

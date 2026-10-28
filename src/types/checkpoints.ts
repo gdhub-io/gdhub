@@ -21,6 +21,7 @@ import type {
 } from "@/lib/checkpoint-refund";
 import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
 import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
+import type { CuratorNow } from "@/lib/curator-now";
 import type { CuratorStatus } from "@/lib/curator-status";
 
 /**
@@ -191,8 +192,8 @@ export type CheckpointDto = {
 	sprints?: CheckpointSprintDto[];
 	/** Detail only, and empty until the checkpoint starts. */
 	sessions?: CheckpointSessionDto[];
-	/** Detail only: the AI curator's latest letter, null before the first one or with a pro curator. */
-	letter?: { index: number; text: string; at: string } | null;
+	/** Detail only: what the AI curator says now; null with a pro curator. */
+	curatorNow?: CuratorNow | null;
 	/** Detail only: who the AI curator plays on this checkpoint — its name and avatar. */
 	character?: { name: string; avatar: string | null } | null;
 	/**
@@ -418,6 +419,8 @@ export type CuratorReview = {
 	suggestions?: TaskSuggestion[];
 	/** Day 1: the first letter, kept once the check's letter takes its place. */
 	firstLetter?: string;
+	/** Day 1 with the AI curator: the letter once the plan is approved, read through sprint 1. */
+	planLetter?: string;
 };
 
 export const GOAL_FITS = ["fits", "widen", "narrow"] as const;

@@ -8,6 +8,7 @@ import {
 	IconHourglass,
 	IconSparkles,
 } from "@tabler/icons-react";
+import type { QueryKey } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Tabs, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
@@ -48,6 +49,7 @@ import { CuratorHeader } from "./CuratorHeader";
 import { type CuratorAction, CuratorMessage } from "./CuratorMessage";
 import { CuratorReviewSkeleton } from "./CuratorReviewSkeleton";
 import { PreviousVerdict } from "./PreviousVerdict";
+import { useCuratorNow } from "./useCuratorNow";
 
 /** Where "Review the tasks" takes the author. */
 const PLAN_ANCHOR = "curator-plan";
@@ -142,6 +144,7 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 			advising={advise.isPending}
 			onApprove={approvePlan}
 			approving={approve.isPending}
+			refreshKey={["checkpoint-review", checkpointId]}
 			aside={
 				<CuratorAside
 					projectId={review.project.id}
@@ -166,6 +169,8 @@ export type AiReviewViewProps = {
 	approving: boolean;
 	/** The Workflow sidebar; the stories leave it out. */
 	aside?: ReactNode;
+	/** The query the curator's message is read from, asked again when it is due to change. */
+	refreshKey?: QueryKey;
 };
 
 /** The page itself, from its data: what the stories render, moment by moment. */
@@ -179,6 +184,7 @@ export function AiReviewView({
 	onApprove,
 	approving,
 	aside,
+	refreshKey,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
 	const [picked, setPicked] = useState<number | null>(null);
@@ -194,14 +200,16 @@ export function AiReviewView({
 		(current === 1 || selected === 1 || selected === SCOPE_SESSION
 			? "plan"
 			: "review");
-	const reviewTasks = () => {
-		if (editing) setPicked(editing);
-		setTab("plan");
+	const scrollToPanel = () =>
 		requestAnimationFrame(() =>
 			document
 				.getElementById(PLAN_ANCHOR)
 				?.scrollIntoView({ behavior: "smooth", block: "start" }),
 		);
+	const reviewTasks = () => {
+		if (editing) setPicked(editing);
+		setTab("plan");
+		scrollToPanel();
 	};
 
 	return (
@@ -222,7 +230,18 @@ export function AiReviewView({
 					)}
 				/>
 			}
-			stage={<Message review={review} onShowPlan={reviewTasks} />}
+			stage={
+				<Message
+					review={review}
+					refreshKey={refreshKey ?? null}
+					onShowPlan={reviewTasks}
+					onShowReview={(at) => {
+						setPicked(at);
+						setTab("review");
+						scrollToPanel();
+					}}
+				/>
+			}
 			aside={aside}
 			below={
 				<>
@@ -527,39 +546,37 @@ function ReviewBody({
 	);
 }
 
-/** The curator's latest letter, and the buttons for what it asks now. */
+/** What the curator says now, and the buttons for what it asks (GDHUB-117). */
 function Message({
 	review,
+	refreshKey,
 	onShowPlan,
+	onShowReview,
 }: {
 	review: CheckpointReviewDto;
+	refreshKey: QueryKey | null;
 	onShowPlan: () => void;
+	onShowReview: (index: number) => void;
 }) {
 	const { t } = useTranslate();
 	const router = useRouter();
 	const workflow = `/user/project/${review.project.slug}/workflow`;
-	const session = sessionOf(review, review.current);
+	const now = review.curatorNow;
+	const said = useCuratorNow(now, refreshKey);
 	const final = review.current === FINAL_SESSION;
 
-	// Sprint 1, the plan approved: the fixed closing letter of day 1 (frame 12.10.1a).
-	const closing = review.current === 1 && review.plan.approved;
-
 	const actions: CuratorAction[] = [];
-	// The curator points at the tasks; the author decides on them there.
-	if (review.plan.edit) {
+	if (said?.action && now) {
+		const asks = said.action === "tasks";
 		actions.push({
-			key: "tasks",
-			label: t("checkpoints.review.action.reviewTasks", "Review the tasks"),
+			key: said.action,
+			label: said.label ?? "",
 			icon: <IconArrowDown size={16} />,
-			primary: true,
-			onClick: onShowPlan,
-		});
-	} else if (closing) {
-		actions.push({
-			key: "plan",
-			label: t("checkpoints.review.action.seePlan", "See the plan"),
-			icon: <IconArrowDown size={16} />,
-			onClick: onShowPlan,
+			primary: asks,
+			onClick:
+				said.action === "review" || said.action === "verdict"
+					? () => onShowReview(now.index)
+					: onShowPlan,
 		});
 	}
 	if (final && review.verdict) {
@@ -589,35 +606,15 @@ function Message({
 	return (
 		<CuratorMessage
 			character={review.character}
-			date={dayjs(session?.scheduledAt).format("D MMM")}
-			message={
-				closing
-					? t(
-							"checkpoints.review.message.closing",
-							"Well done with the tasks — now you know what to do. I look forward to your new devlog posts, artifacts and other activity, to see how the team is getting on with them ;)",
-						)
-					: (session?.content?.message ?? fallbackMessage(t, review))
+			date={dayjs(now?.at ?? review.startedAt).format("D MMM")}
+			message={said?.message ?? ""}
+			extra={
+				said?.deadline && (
+					<Typography.Text type="secondary">{said.deadline}</Typography.Text>
+				)
 			}
 			verdict={final ? review.verdict?.verdict : null}
 			actions={actions}
 		/>
 	);
 }
-
-/** Before the curator has written: what it is doing, in its own voice. */
-const fallbackMessage = (
-	t: ReturnType<typeof useTranslate>["t"],
-	review: CheckpointReviewDto,
-) => {
-	if (review.current === 1) {
-		return t(
-			"checkpoints.review.message.reading",
-			"Hello! I'm the AI curator of {project} for the next 28 days. I'm reading your goal now and will suggest tasks to start from — it takes a minute.",
-			{ project: review.project.name },
-		);
-	}
-	return t(
-		"checkpoints.review.message.sprintReading",
-		"The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
-	);
-};

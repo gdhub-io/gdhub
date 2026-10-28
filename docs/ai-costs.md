@@ -41,6 +41,7 @@ What runs over the 28 days, in order (GDHUB-117):
 | Character — the role made the author's own | day 1, at payment | Luna | 1 | 365 | ~345 | $0.0002 |
 | Goal read — word on the goal, suggested tasks | day 1, at payment | Luna | 1 | ~2 790 | ~360 | $0.0005 |
 | Tasks check — the one check of the sent tasks | day 1 | Sol | 1 | ~1 950 | ~840 | $0.0123 |
+| Plan letter — the plan approved, read through sprint 1 | day 1, at approval | Luna | 1 | ~2 100 | ~680 | $0.0006 |
 | Sprint review | days 8, 15, 22, 29 | Sol | 4 | ~2 020 | ~710 | $0.0112 |
 | Media in the sprint's devlogs, described | with each review | Sol | 0–6 a sprint | 360–610 | ~45 | $0.0014 |
 | Plan advice — the last change to the tasks | day 15 | Sol | 1 | ~2 000 | ~580 | $0.0098 |
@@ -51,11 +52,11 @@ A typical run — four tasks, two images or videos in each sprint's devlogs:
 
 | | Calls | Cost |
 |---|---|---|
-| Luna: character, goal read, report | 3 | $0.0011 |
+| Luna: character, goal read, plan letter, report | 4 | $0.0017 |
 | Sol: tasks check, four reviews, plan advice | 6 | $0.0670 |
 | Sol: eight media descriptions | 8 | $0.0112 |
 | Sol: four evidence checks | 4 | $0.0060 |
-| **One AI checkpoint** | **21** | **≈ $0.085** |
+| **One AI checkpoint** | **22** | **≈ $0.086** |
 
 **Under nine cents, and nine tenths of it is Sol.** The three Luna calls cost a
 tenth of a cent together. The letters the author reads every week — the sprint

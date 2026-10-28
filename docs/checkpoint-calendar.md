@@ -25,6 +25,11 @@ said otherwise). The engineering side is in [checkpoints.md](checkpoints.md).
 - **Two scheduled runs.** `/api/cron/checkpoints` daily at 01:00 UTC;
   `/api/cron/checkpoint-calls` every hour.
 
+**What the team sees.** On any day the Workflow widget and Curator's Review show
+the same message from the curator — what it has done and what it waits for
+(`curatorNow`, [src/lib/curator-now.ts](../src/lib/curator-now.ts)). The page asks
+for it again once, when it is next due to change, and when the tab comes back.
+
 **Tags.** `ai request` — a model call; `cron` — started by a scheduled run, not
 by anyone's click (the time says which run). Untagged platform work happens
 right away, in answer to someone's action.
@@ -33,7 +38,7 @@ right away, in answer to someone's action.
 
 | Day | Curator (AI) | Platform | Author and team |
 |---|---|---|---|
-| **1** | At payment: the character it plays `ai request`, then the first letter — a word on the goal and suggested tasks `ai request`. When the tasks are sent: **one** check of them `ai request`; a second is refused. | Letter "day 1". After the check, a letter saying when the plan approves itself. **`AI_APPROVE_HOURS` (12)** after the check, an unapproved plan approves itself and the author is told `cron` hourly. | Write one to five tasks and send them for the check, then approve the plan — or let it approve itself. **No deadline for sending the tasks**: goal and tasks stay open until the plan is approved. |
+| **1** | At payment: the character it plays `ai request`, then the first letter — a word on the goal and suggested tasks `ai request`. When the tasks are sent: **one** check of them `ai request`; a second is refused. When the plan is approved: the letter the team reads through sprint 1 — start, tell it in devlogs, attach proof, I look again on day 8 `ai request`. | Letter "day 1". After the check, a letter saying when the plan approves itself. **`AI_APPROVE_HOURS` (12)** after the check, an unapproved plan approves itself and the author is told `cron` hourly. | Write one to five tasks and send them for the check, then approve the plan — or let it approve itself. **No deadline for sending the tasks**: goal and tasks stay open until the plan is approved. |
 | **2–4** | — | Tasks still not sent: a reminder after **24 h** and after **72 h** from payment (`AI_REMIND_HOURS`), each on the first **10:00 in the author's zone** past the mark (`AI_REMIND_LOCAL_HOUR`) `cron` hourly. | — |
 | **7, 14, 21** | — | A devlog reminder if the sprint has none; the pulse: every confirmed member — the author included — who changed anything of the project in the sprint (a devlog, an artifact, a task ticked, a vacancy posted…) is counted, the rest are asked `cron` 01:00. | **Sprint deadline**: devlog, build, artifacts. Answer the pulse. |
 | **8, 22** | Reviews of sprints 1 and 3 `ai request`, with the media in the sprint's devlogs described `ai request`. Looks at evidence it has not seen first `ai request`. | The review is written and the team told it is ready `cron` 01:00. | Read the review. |

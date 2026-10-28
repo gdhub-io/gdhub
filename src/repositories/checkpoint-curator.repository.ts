@@ -10,6 +10,8 @@ import {
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { dateOfDay } from "@/lib/checkpoint-plan";
+import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	settleVerdict,
 	type VerdictItem,
@@ -43,6 +45,7 @@ import type {
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { createCharacter } from "@/services/checkpoint-curator/character";
+import { composePlanLetter } from "@/services/checkpoint-curator/plan-letter";
 import { notifyDayOne } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import type {
@@ -331,6 +334,62 @@ export const writeFirstLetter = async (
 	}
 	if (notify) await notifyDayOne(checkpointId, !!read);
 	return !!read;
+};
+
+/**
+ * Day 1 with the AI curator (GDHUB-117): once the plan is approved, by the
+ * author or by itself, the letter the team reads through sprint 1. Written
+ * once; one that fails leaves the page its plain line.
+ */
+export const writePlanLetter = async (checkpointId: string) => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			curatorKind: true,
+			goal: true,
+			curatorCharacter: true,
+			startedAt: true,
+			items: {
+				where: { kind: CheckpointItemKind.Outcome, cut: false },
+				orderBy: { order: "asc" },
+				select: { text: true },
+			},
+			sessions: { select: { id: true, index: true, content: true } },
+		},
+	});
+	if (
+		!checkpoint?.startedAt ||
+		checkpoint.curatorKind !== CheckpointCuratorKind.AI
+	) {
+		return;
+	}
+	const first = checkpoint.sessions.find((session) => session.index === 1);
+	const content = first?.content as CuratorReview | null;
+	if (!first || !content || content.planLetter) return;
+
+	const message = await composePlanLetter(
+		{
+			character: checkpoint.curatorCharacter,
+			goal: checkpoint.goal,
+			tasks: checkpoint.items.map((item) => item.text),
+			journal: lettersSoFar(checkpoint.sessions),
+			reviewOn: dateOfDay(
+				checkpoint.startedAt,
+				sessionDay(2),
+			).toLocaleDateString("en-GB", {
+				weekday: "long",
+				day: "numeric",
+				month: "long",
+				timeZone: "UTC",
+			}),
+		},
+		{ checkpointId, purpose: "planLetter" },
+	);
+	if (!message) return;
+	await prisma.checkpointSession.update({
+		where: { id: first.id },
+		data: { content: { ...content, planLetter: message } },
+	});
 };
 
 /**

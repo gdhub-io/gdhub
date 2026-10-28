@@ -28,4 +28,22 @@ describe("the curator's letters so far", () => {
 			1, 1, 8,
 		]);
 	});
+
+	it("reads the plan's letter after the check, once the plan is approved", () => {
+		const approved = [
+			{
+				index: 1,
+				content: {
+					message: "The check.",
+					firstLetter: "Hello.",
+					planLetter: "The plan is ready, set out.",
+				},
+			},
+		];
+		expect(lettersSoFar(approved).map((letter) => letter.text)).toEqual([
+			"Hello.",
+			"The check.",
+			"The plan is ready, set out.",
+		]);
+	});
 });

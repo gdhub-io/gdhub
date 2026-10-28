@@ -203,5 +203,14 @@ export type LabLanguage = "en" | "ru";
 export const say = (language: LabLanguage, en: string, ru: string) =>
 	language === "ru" ? ru : en;
 
+/** Day 1, the plan approved: what the letter read through sprint 1 is written from. */
+export const planLetterInput = z.object({
+	character,
+	goal: z.string(),
+	tasks: z.array(z.string()),
+	journal,
+	reviewOn: z.string(),
+});
+
 /** The whole road: the character is all it takes; the situations are the lab's own. */
 export const roadInput = z.object({ character });

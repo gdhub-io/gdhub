@@ -4,8 +4,9 @@ import type { CuratorReview } from "@/types/checkpoints";
 
 /**
  * The AI curator's letters the team has read, oldest first, for the next one
- * to continue: day 1's first letter and its check, then one a review. Only
- * sessions before `before` count; a pro curator's call notes carry no letter.
+ * to continue: day 1's first letter, its check and the plan's letter, then
+ * one a review. Only sessions before `before` count; a pro curator's call
+ * notes carry no letter.
  */
 export const lettersSoFar = (
 	sessions: { index: number; content: unknown }[],
@@ -18,10 +19,11 @@ export const lettersSoFar = (
 			const content = session.content as CuratorReview | null;
 			if (!content?.message) return [];
 			const day = sessionDay(session.index);
-			return content.firstLetter && content.firstLetter !== content.message
-				? [
-						{ day, text: content.firstLetter },
-						{ day, text: content.message },
-					]
-				: [{ day, text: content.message }];
+			return [
+				content.firstLetter !== content.message && content.firstLetter,
+				content.message,
+				content.planLetter,
+			]
+				.filter((text): text is string => !!text)
+				.map((text) => ({ day, text }));
 		});

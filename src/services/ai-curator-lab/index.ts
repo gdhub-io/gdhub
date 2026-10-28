@@ -21,6 +21,7 @@ import {
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { createCharacter } from "@/services/checkpoint-curator/character";
+import { composePlanLetter } from "@/services/checkpoint-curator/plan-letter";
 import {
 	characterFace,
 	type JournalEntry,
@@ -33,6 +34,7 @@ import {
 	goalCheckInput,
 	type LabLanguage,
 	planAdviceInput,
+	planLetterInput,
 	reportInput,
 	roadInput,
 	type Situation,
@@ -41,6 +43,7 @@ import {
 } from "./schemas";
 import { evidenceSituations } from "./situations/evidence";
 import { goalCheckSituations } from "./situations/goal-check";
+import { hollowTide } from "./situations/hollow-tide";
 import {
 	planAdviceSituations,
 	tasksCheckSituations,
@@ -158,6 +161,41 @@ const CALLS: LabCall[] = [
 		situations: tasksCheckSituations,
 		run: async (input, locale) => ({
 			answer: await writePlanAdvice(input, undefined, locale),
+		}),
+	}),
+	call({
+		id: "planLetter",
+		purpose: {
+			en: "Day 1, once the plan is approved: the letter the team reads for the whole first sprint — start on the plan, tell how it goes in devlog posts, attach what proves a task done, and when the curator looks again. No advice: that was the check.",
+			ru: "День 1, когда план утверждён: письмо, которое команда видит весь первый спринт, — начинайте, рассказывайте в девлогах, прикладывайте доказательства к задачам, и когда куратор посмотрит снова. Без советов: они были в проверке.",
+		},
+		label: { en: "The plan approved", ru: "План утверждён" },
+		when: { en: "Day 1, after approval", ru: "День 1, после утверждения" },
+		model: AI_MODELS.curatorAssist,
+		schema: planLetterInput,
+		situations: (language) => {
+			const project = hollowTide(language);
+			const { demo, board, playtest } = project.outcomes;
+			return [
+				{
+					id: "approved",
+					label: say(
+						language,
+						"Hollow Tide: the plan approved",
+						"Hollow Tide: план утверждён",
+					),
+					input: {
+						goal: project.goal,
+						tasks: [demo, board, playtest].map((task) => task.text),
+						reviewOn: say(language, "Thursday 8 October", "четверг, 8 октября"),
+					},
+				},
+			];
+		},
+		run: async ({ journal, ...input }) => ({
+			answer: {
+				message: await composePlanLetter({ ...input, journal: journal ?? [] }),
+			},
 		}),
 	}),
 	call({
@@ -326,6 +364,13 @@ const ROAD: {
 		situation: "fits",
 		day: 1,
 		label: { en: "The tasks checked", ru: "Задачи проверены" },
+		letter: (answer) => answer.message as string,
+	},
+	{
+		call: "planLetter",
+		situation: "approved",
+		day: 1,
+		label: { en: "The plan approved", ru: "План утверждён" },
 		letter: (answer) => answer.message as string,
 	},
 	{

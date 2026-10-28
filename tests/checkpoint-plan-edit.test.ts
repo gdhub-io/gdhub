@@ -11,6 +11,7 @@ const itemDelete = vi.fn();
 const sessionUpdate = vi.fn();
 const checkpointFindMany = vi.fn();
 const notifyPlanApproved = vi.fn();
+const writePlanLetter = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -34,6 +35,9 @@ vi.mock("@/services/prisma", () => ({
 
 vi.mock("@/services/checkpoint-notifications", () => ({
 	notifyPlanApproved: (...a: unknown[]) => notifyPlanApproved(...a),
+}));
+vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+	writePlanLetter: (...a: unknown[]) => writePlanLetter(...a),
 }));
 
 const { agreeGoal, approveCheckedPlans, approvePlan, changePlan } = await import(
@@ -289,11 +293,14 @@ describe("approvePlan, with the AI curator", () => {
 	it("approves the checked plan on day 1, by the author only", async () => {
 		checkpointFindUnique.mockResolvedValue(aiPlan());
 		expect(await approvePlan("cp", "stranger", day1)).toBe("forbidden");
+		checkpointUpdateMany.mockResolvedValue({ count: 1 });
 		expect(await approvePlan("cp", "author", day1)).toBeNull();
 		expect(checkpointUpdateMany).toHaveBeenCalledWith({
 			where: { id: "cp", goalAgreedAt: null },
 			data: { goalAgreedAt: day1, goalAgreedById: "author" },
 		});
+		// The letter the team reads through sprint 1.
+		expect(writePlanLetter).toHaveBeenCalledWith("cp");
 	});
 
 	it("refuses before the check and with no tasks", async () => {
@@ -348,6 +355,8 @@ describe("approvePlan, with the AI curator", () => {
 		});
 		expect(notifyPlanApproved).toHaveBeenCalledTimes(1);
 		expect(notifyPlanApproved).toHaveBeenCalledWith("cp1");
+		expect(writePlanLetter).toHaveBeenCalledTimes(1);
+		expect(writePlanLetter).toHaveBeenCalledWith("cp1");
 	});
 
 });

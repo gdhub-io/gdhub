@@ -10,6 +10,7 @@ import type {
 } from "@/config/prisma-enums";
 import { MS_PER_HOUR } from "@/lib/checkpoint-days";
 import type { Standing } from "@/lib/checkpoint-verdict";
+import { curatorNow } from "@/lib/curator-now";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { LabSettled } from "@/services/ai-curator-lab";
 import { characterFace } from "@/services/checkpoint-curator/prompts/card";
@@ -58,8 +59,10 @@ const review = ({
 	verdict = null,
 	character = null,
 	checked = false,
+	approved = false,
 }: {
 	checked?: boolean;
+	approved?: boolean;
 	character?: CheckpointReviewDto["character"];
 	current: number;
 	goal: string;
@@ -68,37 +71,51 @@ const review = ({
 	content: CuratorReview;
 	edit?: CheckpointReviewDto["plan"]["edit"];
 	verdict?: CheckpointReviewDto["verdict"];
-}): CheckpointReviewDto => ({
-	previous: null,
-	current,
-	number: 2,
-	stageName: workflow.currentStage,
-	startedAt: DAYS[0],
-	dueAt: "2026-10-28T00:00:00.000Z",
-	project: { id: "lab", name: "Hollow Tide", slug: "hollow-tide" },
-	plan: {
-		goal,
-		edit,
-		editUntil: edit
-			? new Date(Date.now() + AI_APPROVE_HOURS * MS_PER_HOUR).toISOString()
-			: null,
-		checked,
-		approved: false,
-		tasks,
-	},
-	sessions: DAYS.map((scheduledAt, offset) => ({
+}): CheckpointReviewDto => {
+	const sessions = DAYS.map((scheduledAt, offset) => ({
 		index: offset + 1,
 		scheduledAt,
-		contentStatus: offset + 1 === current ? "Ready" : null,
+		contentStatus: offset + 1 === current ? ("Ready" as const) : null,
 		content: offset + 1 === current ? content : null,
-	})),
-	verdict,
-	character,
-	nextStage:
-		verdict?.verdict === "StageClosed" && workflow.nextStage
-			? { name: workflow.nextStage, key: "" }
-			: null,
-});
+	}));
+	return {
+		previous: null,
+		current,
+		// What the page says at noon of the day this answer belongs to.
+		curatorNow: curatorNow(
+			{
+				startedAt: DAYS[0],
+				goalAgreedAt: approved ? DAYS[0] : null,
+				planCheckedAt: checked ? DAYS[0] : null,
+				scopeConfirmedAt: null,
+				sessions: sessions.map((row) => ({ ...row, endedAt: row.scheduledAt })),
+			},
+			new Date(new Date(DAYS[current - 1]).getTime() + 12 * MS_PER_HOUR),
+		),
+		number: 2,
+		stageName: workflow.currentStage,
+		startedAt: DAYS[0],
+		dueAt: "2026-10-28T00:00:00.000Z",
+		project: { id: "lab", name: "Hollow Tide", slug: "hollow-tide" },
+		plan: {
+			goal,
+			edit,
+			editUntil: edit
+				? new Date(Date.now() + AI_APPROVE_HOURS * MS_PER_HOUR).toISOString()
+				: null,
+			checked,
+			approved,
+			tasks,
+		},
+		sessions,
+		verdict,
+		character,
+		nextStage:
+			verdict?.verdict === "StageClosed" && workflow.nextStage
+				? { name: workflow.nextStage, key: "" }
+				: null,
+	};
+};
 
 type Input = Record<string, unknown>;
 type Item = {
@@ -150,6 +167,30 @@ const reviewOf = (
 					suggestions: answer.suggestions as CuratorReview["suggestions"],
 				},
 				edit: "goalAndTasks",
+			}),
+		};
+	}
+	if (call === "planLetter") {
+		const letter = answer.message as string;
+		return {
+			index: 1,
+			review: review({
+				character,
+				current: 1,
+				goal,
+				workflow: { currentStage: "Concepting", nextStage: null },
+				tasks: (input.tasks as string[]).map((text, at) =>
+					task(`t${at}`, text),
+				),
+				// The check's letter stands behind it; the page reads the plan's.
+				content: {
+					message: letter,
+					notes: null,
+					advice: null,
+					planLetter: letter,
+				},
+				checked: true,
+				approved: true,
 			}),
 		};
 	}

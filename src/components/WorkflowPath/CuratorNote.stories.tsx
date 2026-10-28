@@ -3,6 +3,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
+import type { CuratorNow } from "@/lib/curator-now";
 import type { CheckpointDto, CheckpointSessionDto } from "@/types/checkpoints";
 import { CuratorNote } from "./CuratorNote";
 
@@ -35,16 +36,27 @@ const pro = {
 	],
 } as CheckpointDto;
 
-const ai = {
-	curatorKind: CheckpointCuratorKind.AI,
-	curator: null,
-	goalAgreedAt: "2026-10-01T15:00:00Z",
-	letter: {
-		index: 1,
-		at: "2026-10-01T00:00:00Z",
-		text: "Day 1: the route to the first island is laid. Keep the demo to one route with the core mechanic, and tell me the programmer's hours before you approve the plan. I look forward to your first build ;)",
-	},
-} as CheckpointDto;
+const said = (
+	state: CuratorNow["state"],
+	text: string | null,
+	extra: Partial<CuratorNow> = {},
+): CuratorNow => ({
+	state,
+	index: 1,
+	at: "2026-10-01T00:00:00Z",
+	text,
+	until: null,
+	nextAt: null,
+	...extra,
+});
+
+const ai = (curatorNow: CuratorNow) =>
+	({
+		id: "cp-ai",
+		curatorKind: CheckpointCuratorKind.AI,
+		curator: null,
+		curatorNow,
+	}) as CheckpointDto;
 
 const meta: Meta<typeof CuratorNote> = {
 	title: "Checkpoints/Workflow/CuratorNote",
@@ -91,10 +103,82 @@ export const ProCallMissed: Story = {
 	},
 };
 
-/** 12.10: the AI curator's last letter. */
-export const AiLetter: Story = { args: { checkpoint: ai } };
+/** Day 1, the first letter still being written. */
+export const AiReading: Story = {
+	args: { checkpoint: ai(said("reading", null)) },
+};
 
-/** Day 1, the first letter still on its way. */
-export const AiLetterOnItsWay: Story = {
-	args: { checkpoint: { ...ai, letter: null, goalAgreedAt: null } },
+/** Day 1: the first letter asks for the tasks. */
+export const AiTasksWanted: Story = {
+	args: {
+		checkpoint: ai(
+			said(
+				"tasksWanted",
+				"Ahoy! Captain Flint here. The route to the first island is laid — write me your tasks and I'll check them.",
+			),
+		),
+	},
+};
+
+/** Day 1: the tasks are checked; approve, or it approves itself. */
+export const AiApproveWanted: Story = {
+	args: {
+		checkpoint: ai(
+			said(
+				"approveWanted",
+				"Day 1: the route holds. Keep the demo to one route with the core mechanic.",
+				{ until: "2026-10-01T22:00:00Z" },
+			),
+		),
+	},
+};
+
+/** Sprint 1: the plan is approved — the letter read until the day-8 review. */
+export const AiPlanReady: Story = {
+	args: {
+		checkpoint: ai(
+			said(
+				"planReady",
+				"The sails are up — the plan is ready. Log the voyage in your devlog and pin to each task what proves it done. In a week I'll board and see what's new.",
+			),
+		),
+	},
+};
+
+/** Day 8 before the run: the sprint is being read. */
+export const AiSprintReading: Story = {
+	args: {
+		checkpoint: ai(
+			said("sprintReading", null, { index: 2, at: "2026-10-08T00:00:00Z" }),
+		),
+	},
+};
+
+/** Day 15: the review, with the change to the tasks still open. */
+export const AiScopeOpen: Story = {
+	args: {
+		checkpoint: ai(
+			said(
+				"scopeOpen",
+				"Half the road behind. Drop the trailer, keep the loop.",
+				{
+					index: 3,
+					at: "2026-10-15T00:00:00Z",
+					until: "2026-10-16T01:00:00Z",
+				},
+			),
+		),
+	},
+};
+
+/** 12.10: the AI curator's last review. */
+export const AiReview: Story = {
+	args: {
+		checkpoint: ai(
+			said("review", "The first island is behind you. Now the reef.", {
+				index: 2,
+				at: "2026-10-08T00:00:00Z",
+			}),
+		),
+	},
 };

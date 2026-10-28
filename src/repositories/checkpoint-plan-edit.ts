@@ -215,12 +215,19 @@ export const approvePlan = async (
 	if (!checkpoint.planCheckedAt) return "notChecked";
 	if (!checkpoint.items.length) return "noTasks";
 
-	await prisma.projectCheckpoint.updateMany({
+	const { count } = await prisma.projectCheckpoint.updateMany({
 		where: { id: checkpointId, goalAgreedAt: null },
 		data: { goalAgreedAt: now, goalAgreedById: userId },
 	});
+	// The page reads the plan's letter as soon as it reloads.
+	if (count) await writePlanLetterOf(checkpointId);
 	return null;
 };
+
+const writePlanLetterOf = async (checkpointId: string) =>
+	(
+		await import("@/repositories/checkpoint-curator.repository")
+	).writePlanLetter(checkpointId);
 
 /**
  * The hourly run: a checked plan nobody approved approves itself
@@ -249,6 +256,7 @@ export const approveCheckedPlans = async (now = new Date()) => {
 			"@/services/checkpoint-notifications"
 		);
 		await notifyPlanApproved(id);
+		await writePlanLetterOf(id);
 	}
 	return due.length;
 };

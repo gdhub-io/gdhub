@@ -24,6 +24,7 @@ import { scopeWindow } from "@/lib/checkpoint-scope";
 import { sessionDay } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
 import { lettersSoFar } from "@/lib/curator-letters";
+import { type CuratorNow, curatorNow } from "@/lib/curator-now";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import {
 	knownOnly,
@@ -90,6 +91,8 @@ export type CheckpointReviewDto = {
 	previous: PreviousVerdict | null;
 	/** The session the checkpoint is at now: the last one whose day has come. */
 	current: number;
+	/** What the AI curator says now, and what it waits for (GDHUB-117). */
+	curatorNow: CuratorNow;
 	number: number;
 	stageName: string;
 	startedAt: string;
@@ -272,6 +275,10 @@ export const getReview = async (
 
 	return {
 		current,
+		curatorNow: curatorNow(
+			{ ...checkpoint, startedAt: checkpoint.startedAt },
+			now,
+		),
 		number,
 		previous,
 		stageName: checkpoint.stageName,
