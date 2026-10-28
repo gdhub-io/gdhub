@@ -31,8 +31,7 @@ type ViewerRow = {
 	curatorId: string | null;
 	project: {
 		authorId: string;
-		/** Left out where only the curator and the author matter. */
-		team?: { members: unknown[] } | null;
+		team: { members: unknown[] } | null;
 	};
 };
 
@@ -57,7 +56,7 @@ export const checkpointViewer = async (
 };
 
 /** The plan's editors: its curator and the project's author, nobody else on the team. */
-export const canEditPlan = (row: ViewerRow, userId: string) => {
-	const viewer = viewerOf(row, userId);
-	return viewer === "curator" || viewer === "author";
-};
+export const canEditPlan = (
+	row: { curatorId: string | null; project: { authorId: string } },
+	userId: string,
+) => row.curatorId === userId || row.project.authorId === userId;

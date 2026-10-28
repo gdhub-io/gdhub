@@ -21,7 +21,7 @@ type SessionRow = {
  */
 export const currentSessionOf = (
 	sessions: { index: number; scheduledAt: Date | string }[],
-	now = new Date(),
+	now: Date,
 ) => {
 	const endOfToday = utcStartOfDay(now).getTime() + MS_PER_DAY;
 	return sessions.reduce(

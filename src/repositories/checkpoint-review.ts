@@ -255,13 +255,11 @@ export const getReview = async (
 	) {
 		return null;
 	}
+	const viewer = viewerOf(checkpoint, userId);
+	if (!viewer) return null;
 	const { project } = checkpoint;
-	if (!viewerOf(checkpoint, userId)) return null;
 	const current = currentSessionOf(checkpoint.sessions, now);
-
-	const edit = canEditPlan({ ...checkpoint, project }, userId)
-		? planEdit(checkpoint, now)
-		: null;
+	const edit = viewer === "team" ? null : planEdit(checkpoint, now);
 
 	const stillOnStage =
 		!!checkpoint.stepId &&

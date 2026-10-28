@@ -34,7 +34,6 @@ export type CallRoomProps = {
 	checkpointId: string;
 	index: number;
 	backHref: string;
-	/** The tab a link asked for. */
 	tab?: PathTab;
 };
 

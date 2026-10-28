@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { pathTabOf, sessionOfSprintParam } from "@/lib/checkpoint-hrefs";
 import { checkpointIdByNumber } from "@/repositories/checkpoint-number";
 import {
@@ -32,20 +33,22 @@ export default async function CheckpointPathPage({
 	const index = sessionOfSprintParam(sprint);
 	const checkpointId = await checkpointIdByNumber(slug, number);
 	if (!checkpointId) notFound();
-	const [kind, current] = await Promise.all([
-		curatorKindOf(checkpointId),
-		index ? null : currentSessionIndex(checkpointId),
-	]);
+	const kind = await curatorKindOf(checkpointId);
 	if (!kind) notFound();
+	// A pro's page is a call, so it needs one; the AI's review opens on its own moment.
+	const session =
+		index ??
+		(kind === CheckpointCuratorKind.AI
+			? undefined
+			: await currentSessionIndex(checkpointId));
 
 	return (
 		<ProjectSpace>
 			<CuratorReview
 				kind={kind}
 				checkpointId={checkpointId}
-				index={index ?? current ?? 1}
+				index={session}
 				tab={pathTabOf(tab)}
-				pinned={!!index}
 				backHref={`/user/project/${slug}/workflow`}
 			/>
 		</ProjectSpace>

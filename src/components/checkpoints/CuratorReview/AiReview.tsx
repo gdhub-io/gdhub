@@ -66,25 +66,23 @@ type AiTab = "plan" | "review" | "sprint";
 
 export type AiReviewProps = {
 	checkpointId: string;
-	index: number;
+	/** The sprint the address names; without one, the open plan or the one under way. */
+	index?: number;
 	backHref: string;
 	tab?: PathTab;
-	pinned?: boolean;
 };
 
 /**
  * Curator's Review with the AI curator, laid out as the call room (frames
  * 10.1–10.5). The curator's message, the goal and the open plan are always the
  * checkpoint's moment now; the switcher changes only its own panel — the
- * start, the three sprint reviews, the verdict. `index` picks what the panel
- * opens on, as a letter's link does.
+ * start, the three sprint reviews, the verdict.
  */
 export function AiReview({
 	checkpointId,
 	index,
 	backHref,
 	tab,
-	pinned,
 }: AiReviewProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
@@ -116,15 +114,15 @@ export function AiReview({
 				),
 		});
 
-	const loaded = !!review;
+	const opened = review && (index ?? review.current);
 	useEffect(() => {
-		if (!loaded) return;
+		if (!opened) return;
 		trackCheckpoint(
 			"checkpoint_review_opened",
-			{ session_index: index, curator_kind: "ai" },
-			{ once: `review_opened:${checkpointId}:${index}` },
+			{ session_index: opened, curator_kind: "ai" },
+			{ once: `review_opened:${checkpointId}:${opened}` },
 		);
-	}, [loaded, checkpointId, index]);
+	}, [opened, checkpointId]);
 
 	// Day 1 without a letter (the read after payment failed) greets on first open.
 	const greeted = useRef(false);
@@ -157,7 +155,6 @@ export function AiReview({
 				review={review}
 				index={index}
 				initialTab={tab}
-				pinned={pinned}
 				syncAddress
 				backHref={backHref}
 				onChange={onChange}
@@ -188,8 +185,8 @@ export function AiReview({
 
 export type AiReviewViewProps = {
 	review: CheckpointReviewDto;
-	/** The session the panel opens on, as the link asked. */
-	index: number;
+	/** The session the panel opens on, when the address names one. */
+	index?: number;
 	backHref: string;
 	onChange: (change: PlanChange) => Promise<void>;
 	/** Day 1: sends the tasks for the curator's one check. */
@@ -210,8 +207,6 @@ export type AiReviewViewProps = {
 	initialTab?: PathTab;
 	/** Keeps the sprint and the tab in the address; the lab and the stories do not. */
 	syncAddress?: boolean;
-	/** `index` came from the address: it wins over the open plan. */
-	pinned?: boolean;
 };
 
 /** The page itself, from its data: what the stories render, moment by moment. */
@@ -230,17 +225,12 @@ export function AiReviewView({
 	onAttach,
 	initialTab,
 	syncAddress,
-	pinned,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
-	const [picked, setPicked] = useAddressPick<number>(
-		"sprint",
-		pinned ? index : null,
-		{
-			toParam: sprintParam,
-			sync: syncAddress,
-		},
-	);
+	const [picked, setPicked] = useAddressPick<number>("sprint", index ?? null, {
+		toParam: sprintParam,
+		sync: syncAddress,
+	});
 	const [pickedTab, setTab] = useAddressPick<AiTab>(
 		"tab",
 		initialTab === "sprint" || initialTab === "review" || initialTab === "plan"
@@ -252,7 +242,7 @@ export function AiReviewView({
 	const editing = planSession(plan.edit);
 	const open = editing ? sessionOf(review, editing)?.content : null;
 	// A sprint picked or named in the address, else the open plan; a session still ahead never.
-	const selected = Math.min(picked ?? editing ?? index, current);
+	const selected = Math.min(picked ?? editing ?? current, current);
 	// Review by default; the start and sprint 2's review are where the plan is changed.
 	const asked =
 		pickedTab ??
