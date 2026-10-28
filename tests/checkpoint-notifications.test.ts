@@ -218,8 +218,13 @@ describe("remindVerdictsDue", () => {
 });
 
 describe("remindPlansUnsent", () => {
-	const firstSession = (content: unknown, checkpointId = "cp") => ({
+	const firstSession = (
+		content: unknown,
+		createdAt: string,
+		checkpointId = "cp",
+	) => ({
 		checkpointId,
+		createdAt: new Date(createdAt),
 		content,
 		checkpoint: {
 			projectId: "p",
@@ -228,30 +233,36 @@ describe("remindPlansUnsent", () => {
 		},
 	});
 
-	it("looks at checkpoints paid 24 and 72 hours ago, still unapproved", async () => {
+	it("looks at checkpoints paid 24 and 72 hours ago, still unapproved, in one query", async () => {
 		sessionFindMany.mockResolvedValue([]);
 		await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"));
+		expect(sessionFindMany).toHaveBeenCalledTimes(1);
 		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
 			index: 1,
-			createdAt: {
-				gte: new Date("2026-10-05T09:00:00Z"),
-				lt: new Date("2026-10-05T10:00:00Z"),
-			},
+			OR: [
+				{
+					createdAt: {
+						gte: new Date("2026-10-05T09:00:00Z"),
+						lt: new Date("2026-10-05T10:00:00Z"),
+					},
+				},
+				{
+					createdAt: {
+						gte: new Date("2026-10-03T09:00:00Z"),
+						lt: new Date("2026-10-03T10:00:00Z"),
+					},
+				},
+			],
 			checkpoint: { goalAgreedAt: null, status: CheckpointStatus.Active },
-		});
-		expect(sessionFindMany.mock.calls[1][0].where.createdAt).toEqual({
-			gte: new Date("2026-10-03T09:00:00Z"),
-			lt: new Date("2026-10-03T10:00:00Z"),
 		});
 	});
 
 	it("reminds once at each mark, and never a plan already sent for the check", async () => {
-		sessionFindMany
-			.mockResolvedValueOnce([
-				firstSession({ step: "suggested" }),
-				firstSession({ step: "checked" }, "sent"),
-			])
-			.mockResolvedValueOnce([firstSession(null, "late")]);
+		sessionFindMany.mockResolvedValueOnce([
+			firstSession({ step: "suggested" }, "2026-10-05T09:30:00Z"),
+			firstSession({ step: "checked" }, "2026-10-05T09:40:00Z", "sent"),
+			firstSession(null, "2026-10-03T09:10:00Z", "late"),
+		]);
 		expect(await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"))).toBe(2);
 		expect(send.mock.calls.map(([call]) => call.transactionId)).toEqual([
 			"cp-plan-remind-cp-24",
@@ -290,31 +301,35 @@ describe("remindScopeClosing", () => {
 });
 
 describe("remindEvidenceDue", () => {
-	const startedAt = new Date("2026-10-01T00:00:00Z");
 	const running = (items: { text: string }[]) => ({
 		id: "cp",
 		projectId: "p",
 		createdAt: new Date(),
-		startedAt,
 		project: { slug: "hollow-tide", author: person("author") },
 		items,
 	});
 
-	it("names the tasks without evidence on day 26 only", async () => {
+	it("asks only for checkpoints on day 26 with a task still unproven", async () => {
+		checkpointFindMany.mockResolvedValue([]);
+		await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"));
+		expect(checkpointFindMany.mock.calls[0][0].where).toMatchObject({
+			status: CheckpointStatus.Active,
+			// Day 26 on 26 Oct is a checkpoint started on 1 Oct, any hour of it.
+			startedAt: {
+				gte: new Date("2026-10-01T00:00:00Z"),
+				lt: new Date("2026-10-02T00:00:00Z"),
+			},
+			items: { some: { cut: false, artifactId: null } },
+		});
+	});
+
+	it("names the tasks without evidence", async () => {
 		checkpointFindMany.mockResolvedValue([
 			running([{ text: "Island demo" }, { text: "Playtest" }]),
 		]);
-		expect(await remindEvidenceDue(new Date("2026-10-25T09:00:00Z"))).toBe(0);
 		expect(await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"))).toBe(1);
-		expect(send).toHaveBeenCalledTimes(1);
 		expect(send.mock.calls[0][0].payload.message).toContain(
 			'"Island demo", "Playtest"',
 		);
-	});
-
-	it("stays quiet when every task has evidence", async () => {
-		checkpointFindMany.mockResolvedValue([running([])]);
-		expect(await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"))).toBe(0);
-		expect(send).not.toHaveBeenCalled();
 	});
 });

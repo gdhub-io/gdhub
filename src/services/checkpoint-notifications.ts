@@ -95,14 +95,17 @@ export const notifyCuratorAsked = async (checkpointId: string) => {
 	});
 };
 
-const dayOneRow = (checkpointId: string) =>
+/** What a letter to the author needs: where to send it and how to number the checkpoint. */
+const authorRowSelect = {
+	projectId: true,
+	createdAt: true,
+	project: { select: { slug: true, author: recipient } },
+} as const;
+
+const authorRow = (checkpointId: string) =>
 	prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
-		select: {
-			projectId: true,
-			createdAt: true,
-			project: { select: { slug: true, author: recipient } },
-		},
+		select: authorRowSelect,
 	});
 
 /**
@@ -110,7 +113,7 @@ const dayOneRow = (checkpointId: string) =>
  * tasks. Sent once, whether or not the read came back.
  */
 export const notifyDayOne = async (checkpointId: string, read: boolean) => {
-	const row = await dayOneRow(checkpointId);
+	const row = await authorRow(checkpointId);
 	if (!row) return;
 
 	const number = await checkpointNumber(row);
@@ -126,7 +129,7 @@ export const notifyDayOne = async (checkpointId: string, read: boolean) => {
 
 /** Day 1: the one check of the tasks is written; the author approves the plan next. */
 export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
-	const row = await dayOneRow(checkpointId);
+	const row = await authorRow(checkpointId);
 	if (!row) return;
 
 	const number = await checkpointNumber(row);
@@ -144,60 +147,56 @@ export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
  */
 export const remindPlansUnsent = async (now = new Date()) => {
 	const hour = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
-	let sent = 0;
-	for (const after of AI_REMIND_HOURS) {
-		const sessions = await prisma.checkpointSession.findMany({
-			where: {
-				index: 1,
-				// Written at payment, with the rest of the checkpoint's sessions.
-				createdAt: {
-					gte: new Date(hour - (after + 1) * MS_PER_HOUR),
-					lt: new Date(hour - after * MS_PER_HOUR),
-				},
-				checkpoint: {
-					curatorKind: CheckpointCuratorKind.AI,
-					status: CheckpointStatus.Active,
-					goalAgreedAt: null,
-				},
+	const windows = AI_REMIND_HOURS.map((after) => ({
+		after,
+		gte: new Date(hour - (after + 1) * MS_PER_HOUR),
+		lt: new Date(hour - after * MS_PER_HOUR),
+	}));
+	const sessions = await prisma.checkpointSession.findMany({
+		where: {
+			index: 1,
+			// Written at payment, with the rest of the checkpoint's sessions.
+			OR: windows.map(({ gte, lt }) => ({ createdAt: { gte, lt } })),
+			checkpoint: {
+				curatorKind: CheckpointCuratorKind.AI,
+				status: CheckpointStatus.Active,
+				goalAgreedAt: null,
 			},
-			select: {
-				checkpointId: true,
-				content: true,
-				checkpoint: {
-					select: {
-						projectId: true,
-						createdAt: true,
-						project: { select: { slug: true, author: recipient } },
-					},
-				},
-			},
-		});
-		const waiting = sessions.filter(
-			(session) =>
-				(session.content as { step?: string } | null)?.step !== "checked",
-		);
+		},
+		select: {
+			checkpointId: true,
+			createdAt: true,
+			content: true,
+			checkpoint: { select: authorRowSelect },
+		},
+	});
+	const waiting = sessions.filter(
+		(session) =>
+			(session.content as { step?: string } | null)?.step !== "checked",
+	);
 
-		for (const { checkpointId, checkpoint } of waiting) {
-			const number = await checkpointNumber(checkpoint);
-			await notify(
-				checkpoint.project.author,
-				`cp-plan-remind-${checkpointId}-${after}`,
-				{
-					title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
-					message:
-						"Write one to five tasks and send them for a check. Without tasks the checkpoint has nothing to measure at the end.",
-					redirectUrl: reviewUrl(checkpoint.project.slug, number, 1),
-				},
-			);
-		}
-		sent += waiting.length;
+	for (const { checkpointId, createdAt, checkpoint } of waiting) {
+		const after = windows.find(
+			({ gte, lt }) => createdAt >= gte && createdAt < lt,
+		)?.after;
+		const number = await checkpointNumber(checkpoint);
+		await notify(
+			checkpoint.project.author,
+			`cp-plan-remind-${checkpointId}-${after}`,
+			{
+				title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
+				message:
+					"Write one to five tasks and send them for a check. Without tasks the checkpoint has nothing to measure at the end.",
+				redirectUrl: reviewUrl(checkpoint.project.slug, number, 1),
+			},
+		);
 	}
-	return sent;
+	return waiting.length;
 };
 
 /** Day 1: nobody approved the checked plan, so it approved itself as it stood. */
 export const notifyPlanApproved = async (checkpointId: string) => {
-	const row = await dayOneRow(checkpointId);
+	const row = await authorRow(checkpointId);
 	if (!row) return;
 
 	const number = await checkpointNumber(row);
@@ -231,13 +230,7 @@ export const remindScopeClosing = async (now = new Date()) => {
 		select: {
 			id: true,
 			content: true,
-			checkpoint: {
-				select: {
-					projectId: true,
-					createdAt: true,
-					project: { select: { slug: true, author: recipient } },
-				},
-			},
+			checkpoint: { select: authorRowSelect },
 		},
 	});
 	const open = sessions.filter(
@@ -261,20 +254,28 @@ export const remindScopeClosing = async (now = new Date()) => {
  * attached, so an author with tasks that still have nothing is told which.
  */
 export const remindEvidenceDue = async (now = new Date()) => {
+	const unproven = {
+		kind: CheckpointItemKind.Outcome,
+		cut: false,
+		artifactId: null,
+	};
+	// Today is that day for a checkpoint started EVIDENCE_REMIND_DAY - 1 midnights ago.
+	const startDay =
+		utcStartOfDay(now).getTime() - (EVIDENCE_REMIND_DAY - 1) * MS_PER_DAY;
 	const checkpoints = await prisma.projectCheckpoint.findMany({
-		where: { status: CheckpointStatus.Active, startedAt: { not: null } },
+		where: {
+			status: CheckpointStatus.Active,
+			startedAt: {
+				gte: new Date(startDay),
+				lt: new Date(startDay + MS_PER_DAY),
+			},
+			items: { some: unproven },
+		},
 		select: {
 			id: true,
-			projectId: true,
-			createdAt: true,
-			startedAt: true,
-			project: { select: { slug: true, author: recipient } },
+			...authorRowSelect,
 			items: {
-				where: {
-					kind: CheckpointItemKind.Outcome,
-					cut: false,
-					artifactId: null,
-				},
+				where: unproven,
 				orderBy: { order: "asc" },
 				select: { text: true },
 			},
@@ -283,10 +284,6 @@ export const remindEvidenceDue = async (now = new Date()) => {
 
 	let sent = 0;
 	for (const checkpoint of checkpoints) {
-		if (!checkpoint.startedAt || !checkpoint.items.length) continue;
-		if (dayNumberOn(checkpoint.startedAt, now) !== EVIDENCE_REMIND_DAY)
-			continue;
-
 		const number = await checkpointNumber(checkpoint);
 		const tasks = checkpoint.items.map((item) => `"${item.text}"`).join(", ");
 		await notify(
@@ -310,7 +307,7 @@ export const notifyEvidenceMismatch = async (
 	note: string,
 	link: string,
 ) => {
-	const row = await dayOneRow(checkpointId);
+	const row = await authorRow(checkpointId);
 	if (!row) return;
 
 	const linkKey = createHash("sha256").update(link).digest("hex").slice(0, 12);

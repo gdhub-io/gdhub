@@ -359,6 +359,8 @@ export const adviseOnPlan = async (
 	checkpointId: string,
 	userId: string,
 	now = new Date(),
+	/** Where the letter goes out: after the response in a request, inline otherwise. */
+	later: (task: () => Promise<void>) => unknown = (task) => task(),
 ): Promise<AdviceRefusal | null> => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
@@ -459,7 +461,7 @@ export const adviseOnPlan = async (
 	});
 	if (start) {
 		const closes = planCloses({ ...checkpoint, checkedAt: now });
-		if (closes) await notifyPlanChecked(checkpointId, closes);
+		if (closes) await later(() => notifyPlanChecked(checkpointId, closes));
 	}
 	return null;
 };
