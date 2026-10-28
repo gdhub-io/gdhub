@@ -178,7 +178,7 @@ export function SprintChecklist({
 					)
 				: t("workflow.path.check.build", "Upload the current build"),
 			devlog: t("workflow.path.check.devlog", "Write the sprint devlog"),
-			artifacts: t("workflow.path.check.artifacts", "Attach artifacts"),
+			artifacts: t("workflow.path.check.evidence", "Attach evidence"),
 		})[item.key];
 
 	/** The line's date on the right; today's is marked, a missed one is red. */
