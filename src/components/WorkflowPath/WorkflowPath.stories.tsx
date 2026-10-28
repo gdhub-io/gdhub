@@ -122,7 +122,7 @@ const running: CheckpointDto = {
 			addedAt: null,
 			note: null,
 			acceptedNote: null,
-			artifact,
+			evidence: [{ artifact: artifact, match: null, matchNote: null }],
 		},
 		{
 			id: "o2",
@@ -134,7 +134,7 @@ const running: CheckpointDto = {
 			addedAt: null,
 			note: null,
 			acceptedNote: null,
-			artifact: null,
+			evidence: [],
 		},
 	],
 	reports: [],
@@ -291,18 +291,29 @@ export const ClosedOne: StoryObj = {
 	),
 };
 
+const piece = (
+	id: string,
+	checkStatus: ArtifactCheckStatus,
+	match: EvidenceMatch | null,
+	checkNote: string | null = null,
+	name = artifact.name,
+) => ({
+	artifact: { ...artifact, id: `a-${id}`, name, checkStatus, checkNote },
+	match,
+	matchNote: null,
+});
+
 const evidenceTask = (
 	id: string,
 	text: string,
 	checkStatus: ArtifactCheckStatus,
-	evidenceMatch: EvidenceMatch | null,
+	match: EvidenceMatch | null,
 	checkNote: string | null = null,
 ) => ({
 	...running.items[0],
 	id,
 	text,
-	evidenceMatch,
-	artifact: { ...artifact, id: `a-${id}`, checkStatus, checkNote },
+	evidence: [piece(id, checkStatus, match, checkNote)],
 });
 
 /** The AI curator's labels on each task's evidence — frame 12.07.4 (GDHUB-81). */
@@ -319,12 +330,28 @@ export const ClosedAIEvidenceLabels: StoryObj = {
 						verdictNote:
 							"I accepted the mood board on trust: it is behind a login and I could not check it. The pitch video shows a different game and the trailer link does not open, so the goal is missed.",
 						items: [
-							evidenceTask(
-								"o1",
-								"Pitch one-pager",
-								ArtifactCheckStatus.Readable,
-								EvidenceMatch.Matches,
-							),
+							// Two artifacts: the task counts by the one that shows it.
+							{
+								...running.items[0],
+								id: "o1",
+								text: "Pitch one-pager",
+								evidence: [
+									piece(
+										"o1",
+										ArtifactCheckStatus.Readable,
+										EvidenceMatch.Matches,
+										null,
+										"Pitch.pdf",
+									),
+									piece(
+										"o1-video",
+										ArtifactCheckStatus.Unreachable,
+										null,
+										"notFound",
+										"Pitch walkthrough video",
+									),
+								],
+							},
 							evidenceTask(
 								"o2",
 								"Mood board",

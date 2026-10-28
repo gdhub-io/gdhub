@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
-import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
+import { EvidenceSlots } from "@/components/checkpoints/EvidenceSlot";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import {
 	HeadlineCard,
@@ -55,7 +55,9 @@ export function CheckpointTab({
 							>
 								{item.text}
 							</Text>
-							<EvidenceSlot artifact={item.artifact} />
+							<EvidenceSlots
+								artifacts={item.evidence.map((piece) => piece.artifact)}
+							/>
 						</Flex>
 					))
 				) : (

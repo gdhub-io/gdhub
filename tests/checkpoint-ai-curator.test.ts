@@ -156,14 +156,20 @@ describe("startAiCheckpoint", () => {
 });
 
 const items = [
-	{ id: "t1", text: "Loop", cut: false, originalText: null, addedAt: null, artifact: null },
+	{ id: "t1", text: "Loop", cut: false, originalText: null, addedAt: null, evidence: [] },
 	{
 		id: "t2",
 		text: "One-pager",
 		cut: false,
 		originalText: null,
 		addedAt: null,
-		artifact: { id: "a", type: "Document", name: "Doc", link: "x", checkStatus: "Readable" },
+		evidence: [
+			{
+				match: null,
+				matchNote: null,
+				artifact: { id: "a", type: "Document", name: "Doc", link: "x", checkStatus: "Readable" },
+			},
+		],
 	},
 ];
 

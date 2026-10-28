@@ -128,7 +128,14 @@ const writeNotesFor = async (sessionId: string) => {
 							text: true,
 							cut: true,
 							originalText: true,
-							artifact: { select: { type: true, name: true } },
+							evidence: {
+								orderBy: { createdAt: "asc" },
+								select: {
+									match: true,
+									matchNote: true,
+									artifact: { select: { type: true, name: true } },
+								},
+							},
 						},
 					},
 					sessions: { select: { index: true, content: true } },

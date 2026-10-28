@@ -126,7 +126,12 @@ describe("startFreeCheckpoint", () => {
 		const { data } = checkpointUpdate.mock.calls[0][0];
 		expect(data.goal).toBe("Do what the Prototyping stage asks for");
 		expect(data.items.create).toEqual([
-			{ kind: "Input", order: 1, text: "Concept document", artifactId: "a1" },
+			{
+				kind: "Input",
+				order: 1,
+				text: "Concept document",
+				evidence: { create: { artifactId: "a1" } },
+			},
 		]);
 		expect(assignCurator).toHaveBeenCalledWith("cp1", "admin", {
 			kind: "AI",

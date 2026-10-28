@@ -176,9 +176,12 @@ const artifact = async (
 	});
 	posted.artifacts.push(row.id);
 	if (task !== undefined) {
-		await prisma.checkpointItem.updateMany({
+		const item = await prisma.checkpointItem.findFirstOrThrow({
 			where: { checkpointId: id, kind: CheckpointItemKind.Outcome, order: task },
-			data: { artifactId: row.id },
+			select: { id: true },
+		});
+		await prisma.checkpointItemEvidence.create({
+			data: { itemId: item.id, artifactId: row.id },
 		});
 	}
 };

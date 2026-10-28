@@ -31,7 +31,14 @@ const db = {
 		count: vi.fn(),
 		create: vi.fn(),
 	},
-	checkpointItem: { deleteMany: vi.fn(), createMany: vi.fn() },
+	checkpointItem: {
+		deleteMany: vi.fn(),
+		createManyAndReturn: vi.fn(
+			async ({ data }: { data: { order: number }[] }) =>
+				data.map(({ order }) => ({ id: `item-${order}`, order })),
+		),
+	},
+	checkpointItemEvidence: { createMany: vi.fn() },
 	profile: { findUnique: vi.fn(), upsert: vi.fn() },
 	speciality: {
 		count: vi.fn(),
@@ -50,7 +57,10 @@ const db = {
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 vi.mock("@/services/prisma", () => ({ prisma: db }));
-vi.mock("@/repositories/checkpoint.repository", () => ({
+vi.mock("@/repositories/checkpoint.repository", async (actual) => ({
+	createCheckpointItems: (
+		await actual<typeof import("@/repositories/checkpoint.repository")>()
+	).createCheckpointItems,
 	getCreationBlocker: (...args: unknown[]) => getCreationBlocker(...args),
 	toArtifactRef: <T>(artifact: T) => artifact,
 }));
@@ -90,14 +100,14 @@ const outcome = (
 	kind: CheckpointItemKind.Outcome,
 	text,
 	cut,
-	artifact: withArtifact ? artifact(`a-${text}`, check) : null,
+	evidence: withArtifact ? [{ artifact: artifact(`a-${text}`, check) }] : [],
 });
 
 const input = (text: string) => ({
 	kind: CheckpointItemKind.Input,
 	text,
 	cut: false,
-	artifact: null,
+	evidence: [],
 });
 
 beforeEach(() => {
@@ -157,7 +167,7 @@ describe("getEntryPrefill", () => {
 		db.projectCheckpoint.findFirst.mockResolvedValueOnce({
 			id: "cp-draft",
 			projectId: "p1",
-			items: [{ text: "Saved line", artifact: null }],
+			items: [{ text: "Saved line", evidence: [] }],
 		});
 
 		await expect(getEntryPrefill("p1")).resolves.toEqual({
@@ -233,7 +243,7 @@ describe("getEntryStatus", () => {
 			draft: {
 				id: "cp-draft",
 				projectId: "p1",
-				items: [{ text: "Greybox", artifact: null }],
+				items: [{ text: "Greybox", evidence: [] }],
 			},
 		});
 		checkpointNumber.mockResolvedValue(3);
@@ -416,7 +426,7 @@ describe("PUT /api/checkpoint/entry/project", () => {
 		expect(db.teamMember.count).toHaveBeenCalledWith({
 			where: { userId: "u1", status: "Founder", team: { projectId: "p1" } },
 		});
-		expect(db.checkpointItem.createMany).not.toHaveBeenCalled();
+		expect(db.checkpointItem.createManyAndReturn).not.toHaveBeenCalled();
 	});
 
 	it("refuses an artifact of another project", async () => {
@@ -432,7 +442,7 @@ describe("PUT /api/checkpoint/entry/project", () => {
 			where: { id: { in: ["art-1"] }, projectId: "p1" },
 			select: { id: true },
 		});
-		expect(db.checkpointItem.createMany).not.toHaveBeenCalled();
+		expect(db.checkpointItem.createManyAndReturn).not.toHaveBeenCalled();
 	});
 
 	it("refuses more than five lines, and none", async () => {
@@ -464,7 +474,7 @@ describe("PUT /api/checkpoint/entry/project", () => {
 			blocker: { reason },
 		});
 		expect(db.projectCheckpoint.create).not.toHaveBeenCalled();
-		expect(db.checkpointItem.createMany).not.toHaveBeenCalled();
+		expect(db.checkpointItem.createManyAndReturn).not.toHaveBeenCalled();
 	});
 
 	it("opens a draft under the project's lock and writes the trimmed lines", async () => {
@@ -492,23 +502,26 @@ describe("PUT /api/checkpoint/entry/project", () => {
 		expect(db.checkpointItem.deleteMany).toHaveBeenCalledWith({
 			where: { checkpointId: "cp-new", kind: CheckpointItemKind.Input },
 		});
-		expect(db.checkpointItem.createMany).toHaveBeenCalledWith({
+		expect(db.checkpointItem.createManyAndReturn).toHaveBeenCalledWith({
 			data: [
 				{
 					checkpointId: "cp-new",
 					kind: CheckpointItemKind.Input,
 					order: 1,
 					text: "Greybox level",
-					artifactId: "art-1",
 				},
 				{
 					checkpointId: "cp-new",
 					kind: CheckpointItemKind.Input,
 					order: 2,
 					text: "Design doc",
-					artifactId: null,
 				},
 			],
+			select: { id: true, order: true },
+		});
+		// Only the line that named an artifact carries it.
+		expect(db.checkpointItemEvidence.createMany).toHaveBeenCalledWith({
+			data: [{ itemId: "item-1", artifactId: "art-1" }],
 		});
 		expect(await response.json()).toMatchObject({ projects: [], draft: null });
 	});

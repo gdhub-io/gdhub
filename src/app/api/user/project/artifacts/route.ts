@@ -56,15 +56,21 @@ export const GET = pipe(
 			},
 			step: { select: { id: true, name: true, order: true } },
 			// Evidence is what a checkpoint picked for one of its outcomes.
-			checkpointItems: {
+			checkpointEvidence: {
 				where: {
-					kind: CheckpointItemKind.Outcome,
-					checkpoint: { status: { notIn: UNNUMBERED } },
+					item: {
+						kind: CheckpointItemKind.Outcome,
+						checkpoint: { status: { notIn: UNNUMBERED } },
+					},
 				},
 				select: {
-					text: true,
-					checkpoint: {
-						select: { id: true, projectId: true, createdAt: true },
+					item: {
+						select: {
+							text: true,
+							checkpoint: {
+								select: { id: true, projectId: true, createdAt: true },
+							},
+						},
 					},
 				},
 			},

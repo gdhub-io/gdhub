@@ -1,3 +1,4 @@
+import type { CuratorEvidence } from "@/services/call-notes";
 import {
 	type LabLanguage,
 	type Situation,
@@ -84,10 +85,9 @@ export const sprintReviewSituations = (
 	const { demo, board, playtest } = project.outcomes;
 	const open = (each: { id: string; text: string }) => ({
 		...each,
-		done: null,
 		cut: false,
 		firstWording: null,
-		seen: null,
+		evidence: [] as CuratorEvidence[],
 	});
 	const done = (
 		each: { id: string; text: string },
@@ -96,8 +96,7 @@ export const sprintReviewSituations = (
 		note: string,
 	) => ({
 		...open(each),
-		done: { type, name },
-		seen: { match: "Matches" as const, note },
+		evidence: [{ type, name, seen: { match: "Matches" as const, note } }],
 	});
 	const demoDone = done(demo, "ExecutableBuild", artifacts.demo, t.demoSeen);
 	/** Day 15 without the artist: Tom left in sprint 2, nobody on the team draws, and the board never moved. */
@@ -126,8 +125,8 @@ export const sprintReviewSituations = (
 		};
 	};
 	const boardWith = (match: "Partly" | "DoesNotMatch", note: string) => ({
-		...done(board, "Image", artifacts.board, note),
-		seen: { match, note },
+		...open(board),
+		evidence: [{ type: "Image", name: artifacts.board, seen: { match, note } }],
 	});
 
 	// Day 8: sprint 1 landed the greybox and its demo build.

@@ -88,7 +88,7 @@ const outcomes = () =>
 			id: true,
 			text: true,
 			cut: true,
-			evidenceMatch: true,
+			evidence: { select: { match: true } },
 		},
 	});
 
@@ -161,7 +161,9 @@ test.describe.serial("a whole AI checkpoint", () => {
 		}
 		await expect
 			.poll(
-				async () => (await outcomes()).filter((task) => task.evidenceMatch).length,
+				async () => (await outcomes()).filter((task) =>
+					task.evidence.some((piece) => piece.match),
+				).length,
 				{ timeout: 180_000 },
 			)
 			.toBeGreaterThanOrEqual(3);

@@ -1,3 +1,4 @@
+import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
 	CheckpointItemKind,
@@ -34,13 +35,16 @@ export type VerdictItem = {
 	cut: boolean;
 	/** A human curator counting an outcome no artifact covers. */
 	acceptedNote?: string | null;
-	/** What the AI saw in the artifact, against the task. */
-	evidenceMatch?: EvidenceMatch | null;
-	evidenceMatchNote?: string | null;
-	artifact?: {
+	evidence: VerdictEvidence[];
+};
+
+export type VerdictEvidence = {
+	match?: EvidenceMatch | null;
+	matchNote?: string | null;
+	artifact: {
 		checkStatus: ArtifactCheckStatus | null;
 		checkNote?: string | null;
-	} | null;
+	};
 };
 
 export type UnprovenOutcome = {
@@ -59,15 +63,16 @@ export type Standing =
 
 const NEEDS_LOGIN: OpenFailure = "needsLogin";
 
-/** How the AI curator counts one outcome's evidence. */
-export const standingOf = (item: VerdictItem): Standing => {
-	if (item.acceptedNote?.trim()) return { is: "delivered" };
-	if (!item.artifact) return { is: "unproven", reason: "missing" };
-
-	switch (item.artifact.checkStatus) {
+/** How the AI curator counts one artifact offered for an outcome. */
+export const standingOfPiece = ({
+	artifact,
+	match,
+	matchNote,
+}: VerdictEvidence): Standing => {
+	switch (artifact.checkStatus) {
 		case ArtifactCheckStatus.Unreachable:
 			// Behind a login the work may well be there; a dead link shows nothing.
-			return item.artifact.checkNote === NEEDS_LOGIN
+			return artifact.checkNote === NEEDS_LOGIN
 				? { is: "trusted", reason: "needsLogin" }
 				: { is: "unproven", reason: "broken" };
 		case ArtifactCheckStatus.Unsupported:
@@ -78,11 +83,11 @@ export const standingOf = (item: VerdictItem): Standing => {
 			return { is: "trusted", reason: "notChecked" };
 	}
 
-	switch (item.evidenceMatch) {
+	switch (match) {
 		case EvidenceMatch.Matches:
 			return { is: "delivered" };
 		case EvidenceMatch.Partly:
-			return { is: "partly", note: item.evidenceMatchNote ?? null };
+			return { is: "partly", note: matchNote ?? null };
 		case EvidenceMatch.DoesNotMatch:
 			return { is: "unproven", reason: "doesNotMatch" };
 		default:
@@ -91,10 +96,45 @@ export const standingOf = (item: VerdictItem): Standing => {
 	}
 };
 
+/**
+ * Best first: one artifact that shows the task is enough. Of two that fail,
+ * "shows something else" says more than "does not open".
+ */
+const BEST_FIRST = [
+	"delivered",
+	"partly",
+	"trusted",
+	"doesNotMatch",
+	"broken",
+	"missing",
+];
+const rank = (standing: Standing) =>
+	BEST_FIRST.indexOf(
+		standing.is === "unproven" ? standing.reason : standing.is,
+	);
+
+/**
+ * How the AI curator counts one outcome: by the best of its artifacts. One that
+ * does not open, or shows something else, does not undo another that shows it.
+ */
+export const standingOf = (item: VerdictItem): Standing => {
+	if (item.acceptedNote?.trim()) return { is: "delivered" };
+	const pieces = item.evidence.map(standingOfPiece);
+	if (!pieces.length) return { is: "unproven", reason: "missing" };
+	return pieces.reduce((best, next) => (rank(next) < rank(best) ? next : best));
+};
+
+/** Whether a task holding `held` artifacts takes this one: there is room, or it already holds it. */
+export const canTakeEvidence = (held: string[], artifactId?: string) =>
+	held.length < CHECKPOINT_MAX_EVIDENCE_PER_ITEM ||
+	(!!artifactId && held.includes(artifactId));
+
 /** Counted as delivered by a human curator: a readable artifact, or their own note. */
 export const isProven = (item: VerdictItem) =>
 	!!item.acceptedNote?.trim() ||
-	item.artifact?.checkStatus === ArtifactCheckStatus.Readable;
+	item.evidence.some(
+		(piece) => piece.artifact.checkStatus === ArtifactCheckStatus.Readable,
+	);
 
 export type WeighedOutcomes = {
 	unproven: UnprovenOutcome[];

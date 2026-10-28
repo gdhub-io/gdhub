@@ -81,9 +81,13 @@ async function checkpointSection(id: string) {
 					kind: true,
 					text: true,
 					cut: true,
-					evidenceMatch: true,
-					evidenceMatchNote: true,
-					artifact: { select: { link: true, checkStatus: true } },
+					evidence: {
+						select: {
+							match: true,
+							matchNote: true,
+							artifact: { select: { link: true, checkStatus: true } },
+						},
+					},
 				},
 			},
 			sessions: {
@@ -118,12 +122,13 @@ async function checkpointSection(id: string) {
 		...checkpoint.items.map(
 			(item) =>
 				`- ${item.kind}${item.cut ? " (cut)" : ""}: ${item.text}` +
-				(item.artifact
-					? ` — ${item.artifact.link} [${item.artifact.checkStatus ?? "unchecked"}]`
-					: "") +
-				(item.evidenceMatch
-					? `\n  - AI: ${item.evidenceMatch} — ${item.evidenceMatchNote ?? ""}`
-					: ""),
+				item.evidence
+					.map(
+						(piece) =>
+							`\n  - ${piece.artifact.link} [${piece.artifact.checkStatus ?? "unchecked"}]` +
+							(piece.match ? ` AI: ${piece.match} — ${piece.matchNote ?? ""}` : ""),
+					)
+					.join(""),
 		),
 		"",
 		"### The curator's journal",

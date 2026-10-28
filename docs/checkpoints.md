@@ -109,8 +109,7 @@ model CheckpointItem {
   order        Int
   text         String
 
-  artifactId   String?                    // the evidence, chosen or added on the spot
-  artifact     TeamDocument? @relation(fields: [artifactId], references: [id], onDelete: SetNull)
+  evidence     CheckpointItemEvidence[]   // the artifacts offered for it, up to three
 
   cut          Boolean  @default(false)   // dropped on day 15; still shown, no longer owed
   originalText String?                    // the wording bought, kept from the first rewrite on day 1 or 14
@@ -119,7 +118,18 @@ model CheckpointItem {
   acceptedNote String?                    // a human curator counting an outcome with no artifact
 
   @@unique([checkpointId, kind, order])
-  @@index([artifactId])
+}
+
+model CheckpointItemEvidence {
+  id         String   @id @default(cuid())
+  itemId     String
+  artifactId String
+  match      EvidenceMatch?             // what the AI saw in this artifact against the task
+  matchNote  String?
+  seenLink   String?                    // the link it last looked at; a new link is looked at again
+  createdAt  DateTime @default(now())
+
+  @@unique([itemId, artifactId])
 }
 
 model CheckpointPulse {
@@ -459,10 +469,12 @@ and shows either the AI curator or the person's name.
 
 ## 10. Artifacts
 
-### One artifact per item, and that is what "done" means
+### Artifacts per item, and that is what "done" means
 
 An artifact is evidence that one item exists, and it hangs on that item rather
-than on the checkpoint as a whole. A concept is proven by the concept document; a
+than on the checkpoint as a whole. An item holds up to three
+(`CHECKPOINT_MAX_EVIDENCE_PER_ITEM`): a pitch can be both the PDF and the video
+of it being given. A concept is proven by the concept document; a
 demo, by the video of it running. Both sides of the goal card carry the same
 slot:
 
@@ -481,6 +493,11 @@ Attaching is one press from the item: pick an artifact the project already has,
 or add a new one, which lands in the Artifacts tab like any other. One artifact
 may prove several items — a build video that is both "the demo runs" and "the
 level is finished" is one upload, chosen twice.
+
+Adding an artifact never takes another away; each one is let go on its own, from
+the sprint's Evidence tab. The AI looks at each artifact separately and the item
+counts by the best of them: one that shows the task is enough, and a second link
+that does not open takes nothing away from it (GDHUB-115).
 
 An item cut on day 15 keeps its text, is struck through, and is never counted as
 missing evidence.

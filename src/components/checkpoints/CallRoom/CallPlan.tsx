@@ -10,17 +10,19 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Input, Tooltip, Typography } from "antd";
+import { App, Button, Flex, Input, Tooltip, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { type ReactNode, useRef, useState } from "react";
-import { ArtifactLink } from "@/components/WorkflowPath/ArtifactLink";
+import type { EvidenceActions } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
+import { ArtifactLinks } from "@/components/WorkflowPath/ArtifactLink";
 import {
 	CHECKPOINT_ITEM_TEXT_MAX,
 	CHECKPOINT_MAX_ITEMS_PER_KIND,
 } from "@/config/checkpoint";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useChangePlan } from "@/hooks/checkpoint-call";
+import { canTakeEvidence } from "@/lib/checkpoint-verdict";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
 import type {
@@ -87,8 +89,8 @@ export type PlanBodyProps = {
 	listAction?: ReactNode;
 	/** An empty task field always open above "Add task" (frame kezVq). */
 	blank?: boolean;
-	/** Attach an artifact that proves a task; absent for whoever may not. */
-	onAttach?: () => void;
+	/** Add or let go of the artifacts that prove a task; absent for whoever may not. */
+	evidence?: EvidenceActions;
 };
 
 /**
@@ -104,7 +106,7 @@ export function PlanBody({
 	footer,
 	listAction,
 	blank,
-	onAttach,
+	evidence,
 }: PlanBodyProps) {
 	const { t } = useTranslate();
 	const { edit } = plan;
@@ -137,7 +139,7 @@ export function PlanBody({
 					blank={blank}
 				/>
 			) : (
-				<PlanView plan={plan} onAttach={onAttach} />
+				<PlanView plan={plan} evidence={evidence} />
 			)}
 			{edit &&
 				(footer ?? (
@@ -233,7 +235,7 @@ function AdviseFooter({
 
 /** Done once an artifact closes it; cut and open tasks share the empty circle. */
 export function TaskIcon({ task }: { task: Task }) {
-	return task.artifact ? (
+	return task.artifacts.length ? (
 		<IconCircleCheck size={16} className={styles.success} />
 	) : (
 		<IconCircle size={16} className={styles.tertiary} />
@@ -267,10 +269,16 @@ function Field({
 }
 
 /** Read-only: another call than this one, and anyone on the team but the author. */
-function PlanView({ plan, onAttach }: { plan: Plan; onAttach?: () => void }) {
+function PlanView({
+	plan,
+	evidence,
+}: {
+	plan: Plan;
+	evidence?: EvidenceActions;
+}) {
 	const { t } = useTranslate();
 	const kept = plan.tasks.filter((task) => !task.cut);
-	const done = kept.filter((task) => task.artifact).length;
+	const done = kept.filter((task) => task.artifacts.length).length;
 
 	return (
 		<Field
@@ -291,16 +299,25 @@ function PlanView({ plan, onAttach }: { plan: Plan; onAttach?: () => void }) {
 							<TaskIcon task={task} />
 							<Typography.Text
 								delete={task.cut}
-								type={task.cut || task.artifact ? "secondary" : undefined}
+								type={
+									task.cut || task.artifacts.length ? "secondary" : undefined
+								}
 								className={styles.grow}
 							>
 								{task.text}
 							</Typography.Text>
-							{task.artifact ? (
-								<ArtifactLink artifact={task.artifact} />
-							) : (
-								onAttach &&
-								!task.cut && (
+							{task.artifacts.length > 0 && (
+								<ArtifactLinks
+									artifacts={task.artifacts}
+									onDetach={
+										evidence &&
+										((artifactId) => evidence.detach(artifactId, task.id))
+									}
+								/>
+							)}
+							{evidence &&
+								!task.cut &&
+								canTakeEvidence(task.artifacts.map(({ id }) => id)) && (
 									<Tooltip
 										title={t("workflow.aside.attach", "Attach an artifact")}
 									>
@@ -312,11 +329,10 @@ function PlanView({ plan, onAttach }: { plan: Plan; onAttach?: () => void }) {
 												"workflow.aside.attach",
 												"Attach an artifact",
 											)}
-											onClick={onAttach}
+											onClick={() => evidence.attach(task.id)}
 										/>
 									</Tooltip>
-								)
-							)}
+								)}
 						</div>
 					))}
 				</div>
@@ -468,11 +484,11 @@ function TaskRow({
 }) {
 	const { t } = useTranslate();
 
-	if (task.artifact) {
+	if (task.artifacts.length) {
 		return (
 			<LockedRow
 				icon={<TaskIcon task={task} />}
-				end={<ArtifactLink artifact={task.artifact} />}
+				end={<ArtifactLinks artifacts={task.artifacts} />}
 			>
 				{task.text}
 			</LockedRow>

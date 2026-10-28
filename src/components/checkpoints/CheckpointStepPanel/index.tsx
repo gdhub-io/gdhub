@@ -4,6 +4,7 @@ import { IconHourglass, IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
+import { artifactLabel } from "@/components/checkpoints/EvidenceSlot";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
@@ -28,7 +29,7 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome,
 	);
-	const proven = outcomes.filter((item) => item.artifact).length;
+	const proven = outcomes.filter((item) => item.evidence.length).length;
 
 	if (!checkpoint.verdict) {
 		return checkpoint.status === CheckpointStatus.Review ? (
@@ -130,8 +131,10 @@ export function CheckpointStepPanel({ checkpoint }: CheckpointStepPanelProps) {
 							</Typography.Text>
 
 							<Typography.Text className={styles.col} type="secondary">
-								{item.artifact
-									? (item.artifact.name ?? item.artifact.link)
+								{item.evidence.length
+									? item.evidence
+											.map(({ artifact }) => artifactLabel(artifact))
+											.join(", ")
 									: item.acceptedNote
 										? t(
 												"checkpoints.evidence.accepted",

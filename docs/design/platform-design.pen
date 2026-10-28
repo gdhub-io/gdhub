@@ -201812,10 +201812,10 @@
                           "type": "text",
                           "id": "VP4g9",
                           "name": "L",
-                          "fill": "$text-primary",
+                          "fill": "$text-tertiary",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "The soundtrack loops without a seam",
+                          "content": "The soundtrack loops without a seam · already has 3 artifacts",
                           "lineHeight": 1.4,
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -201895,14 +201895,11 @@
             {
               "type": "text",
               "id": "Msnfs",
-              "x": 24,
-              "y": 28.5,
               "name": "N",
-              "enabled": false,
               "fill": "$text-tertiary",
               "textGrowth": "fixed-width",
-              "width": "fill_container(451)",
-              "content": "One artifact can prove more than one outcome.",
+              "width": "fill_container",
+              "content": "One artifact can prove several outcomes; an outcome holds up to 3.",
               "fontFamily": "$font",
               "fontSize": 12,
               "fontWeight": "normal"
@@ -235798,66 +235795,225 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Y5tIAm",
-                  "name": "Outcome",
+                  "id": "YTaMF",
+                  "name": "Outcome — two artifacts",
                   "width": "fill_container",
-                  "height": 32,
-                  "gap": 12,
-                  "alignItems": "center",
+                  "layout": "vertical",
+                  "gap": 4,
                   "children": [
                     {
-                      "type": "icon",
-                      "id": "fqe4H",
-                      "name": "Icon circle-check",
-                      "width": 16,
-                      "height": 16,
-                      "icon": "circle-check",
-                      "library": "lucide",
-                      "fill": "$success"
-                    },
-                    {
-                      "type": "text",
-                      "id": "V6Y0d",
-                      "name": "L",
-                      "fill": "$text-primary",
-                      "content": "Pitch one-pager",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
                       "type": "frame",
-                      "id": "dd96n",
-                      "name": "Spacer",
+                      "id": "Y5tIAm",
+                      "name": "Outcome",
                       "width": "fill_container",
-                      "height": 1
-                    },
-                    {
-                      "type": "frame",
-                      "id": "PtuJH",
-                      "name": "Link — artifact",
-                      "gap": 4,
+                      "height": 32,
+                      "gap": 12,
                       "alignItems": "center",
                       "children": [
                         {
+                          "type": "icon",
+                          "id": "fqe4H",
+                          "name": "Icon circle-check",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "circle-check",
+                          "library": "lucide",
+                          "fill": "$success"
+                        },
+                        {
                           "type": "text",
-                          "id": "nktCc",
+                          "id": "V6Y0d",
                           "name": "L",
-                          "fill": "$link",
-                          "content": "Artifact",
+                          "fill": "$text-primary",
+                          "content": "Pitch one-pager",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dd96n",
+                          "name": "Spacer",
+                          "width": "fill_container",
+                          "height": 1
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Nctoj",
+                      "name": "Artifact — Pitch.pdf",
+                      "width": "fill_container",
+                      "height": 24,
+                      "gap": 12,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        28
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "H13Y1",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "paperclip",
+                          "library": "lucide",
+                          "fill": "$text-tertiary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "kUTin",
+                          "name": "N",
+                          "fill": "$text-secondary",
+                          "content": "Pitch.pdf",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
                         },
                         {
+                          "type": "frame",
+                          "id": "PYUkt",
+                          "name": "Spacer",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "id": "YV7kc",
+                          "type": "ref",
+                          "ref": "StXPy",
+                          "name": "Evidence status",
+                          "descendants": {
+                            "v3xypZ": {
+                              "fill": "$success"
+                            },
+                            "xcwxi": {
+                              "content": "Matches",
+                              "fontWeight": "normal",
+                              "fill": "$text-secondary"
+                            }
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "asjEb",
+                          "name": "Link — artifact",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pqblp",
+                              "name": "L",
+                              "fill": "$link",
+                              "content": "Artifact",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "CLAfH",
+                              "name": "Icon arrow-up-right",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$link"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "dtm4a",
+                      "name": "Artifact — Pitch walkthrough video",
+                      "width": "fill_container",
+                      "height": 24,
+                      "gap": 12,
+                      "padding": [
+                        0,
+                        0,
+                        0,
+                        28
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
                           "type": "icon",
-                          "id": "DMrb0",
-                          "name": "Icon arrow-up-right",
+                          "id": "OoH1Y",
+                          "name": "Ic",
                           "width": 14,
                           "height": 14,
-                          "icon": "arrow-up-right",
+                          "icon": "paperclip",
                           "library": "lucide",
-                          "fill": "$link"
+                          "fill": "$text-tertiary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "m9kmb",
+                          "name": "N",
+                          "fill": "$text-secondary",
+                          "content": "Pitch walkthrough video",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PJAtO",
+                          "name": "Spacer",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "id": "YOO2P",
+                          "type": "ref",
+                          "ref": "StXPy",
+                          "name": "Evidence status",
+                          "descendants": {
+                            "v3xypZ": {
+                              "fill": "$error"
+                            },
+                            "xcwxi": {
+                              "content": "Link doesn't open",
+                              "fontWeight": "normal",
+                              "fill": "$text-secondary"
+                            }
+                          }
+                        },
+                        {
+                          "type": "frame",
+                          "id": "l0aRg",
+                          "name": "Link — artifact",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wvEmK",
+                              "name": "L",
+                              "fill": "$link",
+                              "content": "Artifact",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "v4gsS",
+                              "name": "Icon arrow-up-right",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$link"
+                            }
+                          ]
                         }
                       ]
                     }

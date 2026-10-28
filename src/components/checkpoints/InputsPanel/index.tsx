@@ -5,7 +5,7 @@ import { Card, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
-import { EvidenceSlot } from "../EvidenceSlot";
+import { EvidenceSlots } from "../EvidenceSlot";
 import { MoneyNotice } from "../MoneyNotice";
 import styles from "./style.module.scss";
 
@@ -67,7 +67,9 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 							>
 								{item.text}
 							</Typography.Text>
-							<EvidenceSlot artifact={item.artifact} />
+							<EvidenceSlots
+								artifacts={item.evidence.map((piece) => piece.artifact)}
+							/>
 						</Flex>
 					))}
 				</div>
@@ -80,7 +82,7 @@ export function InputsPanel({ checkpoint }: InputsPanelProps) {
 	);
 
 	const outcomes = side(CheckpointItemKind.Outcome);
-	const claimed = outcomes.filter((item) => item.artifact).length;
+	const claimed = outcomes.filter((item) => item.evidence.length).length;
 
 	return (
 		<Flex vertical gap={16}>

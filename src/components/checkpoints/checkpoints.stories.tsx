@@ -398,7 +398,7 @@ const items: CheckpointItemDto[] = [
 		addedAt: null,
 		note: null,
 		acceptedNote: null,
-		artifact: null,
+		evidence: [],
 	},
 	{
 		id: "o1",
@@ -410,7 +410,7 @@ const items: CheckpointItemDto[] = [
 		addedAt: null,
 		note: null,
 		acceptedNote: null,
-		artifact,
+		evidence: [{ artifact, match: null, matchNote: null }],
 	},
 	{
 		id: "o2",
@@ -422,7 +422,7 @@ const items: CheckpointItemDto[] = [
 		addedAt: null,
 		note: null,
 		acceptedNote: null,
-		artifact: null,
+		evidence: [],
 	},
 	{
 		id: "o3",
@@ -434,7 +434,7 @@ const items: CheckpointItemDto[] = [
 		addedAt: null,
 		note: null,
 		acceptedNote: null,
-		artifact: null,
+		evidence: [],
 	},
 ];
 

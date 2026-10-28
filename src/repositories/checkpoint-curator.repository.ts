@@ -75,16 +75,21 @@ const curatorItemSelect = {
 	cut: true,
 	addedAt: true,
 	acceptedNote: true,
-	evidenceMatch: true,
-	evidenceMatchNote: true,
-	artifact: {
+	evidence: {
+		orderBy: { createdAt: "asc" },
 		select: {
-			type: true,
-			name: true,
-			description: true,
-			link: true,
-			checkStatus: true,
-			checkNote: true,
+			match: true,
+			matchNote: true,
+			artifact: {
+				select: {
+					type: true,
+					name: true,
+					description: true,
+					link: true,
+					checkStatus: true,
+					checkNote: true,
+				},
+			},
 		},
 	},
 } as const;
@@ -126,17 +131,17 @@ const toDevlog = (post: {
 	content: devlogWords(post),
 });
 
-type ReportItem = CardItem &
-	VerdictItem & {
-		artifact:
-			| (NonNullable<VerdictItem["artifact"]> & {
-					type: string;
-					name: string | null;
-					description: string | null;
-					link: string;
-			  })
-			| null;
+type ReportEvidence = VerdictItem["evidence"][number] & {
+	artifact: VerdictItem["evidence"][number]["artifact"] & {
+		type: string;
+		name: string | null;
+		description: string | null;
+		link: string;
 	};
+};
+
+type ReportItem = CardItem &
+	Omit<VerdictItem, "evidence"> & { evidence: ReportEvidence[] };
 
 /**
  * The card and what its evidence came to, as the report reads them. Pure, so
@@ -145,24 +150,15 @@ type ReportItem = CardItem &
 export const reportEvidence = (goal: string, items: ReportItem[]) => ({
 	card: toCard(goal, items),
 	artifacts: items.flatMap((item) =>
-		item.artifact
-			? [
-					{
-						itemId: item.id,
-						type: item.artifact.type,
-						name: item.artifact.name,
-						description: item.artifact.description,
-						link: item.artifact.link,
-						readable: item.artifact.checkStatus === "Readable",
-						seen: item.evidenceMatch
-							? {
-									match: item.evidenceMatch,
-									note: item.evidenceMatchNote ?? null,
-								}
-							: null,
-					},
-				]
-			: [],
+		item.evidence.map(({ artifact, match, matchNote }) => ({
+			itemId: item.id,
+			type: artifact.type,
+			name: artifact.name,
+			description: artifact.description,
+			link: artifact.link,
+			readable: artifact.checkStatus === "Readable",
+			seen: match ? { match, note: matchNote ?? null } : null,
+		})),
 	),
 	...weighOutcomes(items),
 });

@@ -8,7 +8,7 @@ import {
 	IconPlayerPlay,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Select, Tooltip, Typography } from "antd";
+import { Flex, Select, Tooltip, Typography } from "antd";
 import { ProjectArtifactType } from "@/config/prisma-enums";
 import type { CheckpointArtifactRef } from "@/types/checkpoints";
 import styles from "./style.module.scss";
@@ -48,8 +48,9 @@ export type EvidenceSlotProps = {
 	plain?: boolean;
 };
 
-const artifactLabel = (artifact: CheckpointArtifactRef) =>
-	artifact.name?.trim() || artifact.link;
+export const artifactLabel = (
+	artifact: Pick<CheckpointArtifactRef, "name" | "link">,
+) => artifact.name?.trim() || artifact.link;
 
 /**
  * One line's proof (component `vFBkk`).
@@ -135,5 +136,21 @@ export function EvidenceSlot({
 				label: artifactLabel(option),
 			}))}
 		/>
+	);
+}
+
+/** A line's every proof, read-only; one empty slot when there is none. */
+export function EvidenceSlots({
+	artifacts,
+}: {
+	artifacts: CheckpointArtifactRef[];
+}) {
+	if (!artifacts.length) return <EvidenceSlot artifact={null} />;
+	return (
+		<Flex vertical align="end" gap={4}>
+			{artifacts.map((artifact) => (
+				<EvidenceSlot key={artifact.id} artifact={artifact} />
+			))}
+		</Flex>
 	);
 }

@@ -8,6 +8,7 @@ import {
 import {
 	isProven,
 	settleVerdict,
+	standingOf,
 	type VerdictItem,
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
@@ -17,14 +18,21 @@ const outcome = (id: string, over: Partial<VerdictItem> = {}): VerdictItem => ({
 	kind: CheckpointItemKind.Outcome,
 	text: `outcome ${id}`,
 	cut: false,
+	evidence: [],
 	...over,
 });
 
 const readable = { checkStatus: ArtifactCheckStatus.Readable };
-const seen = (evidenceMatch: EvidenceMatch, note: string | null = null) => ({
+const piece = (match: EvidenceMatch, note: string | null = null) => ({
 	artifact: readable,
-	evidenceMatch,
-	evidenceMatchNote: note,
+	match,
+	matchNote: note,
+});
+const seen = (match: EvidenceMatch, note: string | null = null) => ({
+	evidence: [piece(match, note)],
+});
+const on = (artifact: VerdictItem["evidence"][number]["artifact"]) => ({
+	evidence: [{ artifact }],
 });
 
 describe("weighOutcomes — the AI curator, a cautious optimist (GDHUB-81)", () => {
@@ -36,6 +44,7 @@ describe("weighOutcomes — the AI curator, a cautious optimist (GDHUB-81)", () 
 					kind: CheckpointItemKind.Input,
 					text: "a concept document",
 					cut: false,
+					evidence: [],
 				},
 				outcome("o1", seen(EvidenceMatch.Matches)),
 			]),
@@ -62,9 +71,7 @@ describe("weighOutcomes — the AI curator, a cautious optimist (GDHUB-81)", () 
 		for (const checkNote of ["notFound", "unreachable", "timeout", null]) {
 			expect(
 				weighOutcomes([
-					outcome("o1", {
-						artifact: { checkStatus: ArtifactCheckStatus.Unreachable, checkNote },
-					}),
+					outcome("o1", on({ checkStatus: ArtifactCheckStatus.Unreachable, checkNote })),
 				]).unproven,
 			).toMatchObject([{ id: "o1", reason: "broken" }]);
 		}
@@ -72,18 +79,14 @@ describe("weighOutcomes — the AI curator, a cautious optimist (GDHUB-81)", () 
 
 	it("takes on trust what the AI could not see into", () => {
 		const weighed = weighOutcomes([
-			outcome("login", {
-				artifact: {
+			outcome("login", on({
 					checkStatus: ArtifactCheckStatus.Unreachable,
 					checkNote: "needsLogin",
-				},
-			}),
-			outcome("format", {
-				artifact: { checkStatus: ArtifactCheckStatus.Unsupported },
-			}),
+				})),
+			outcome("format", on({ checkStatus: ArtifactCheckStatus.Unsupported })),
 			outcome("unclear", seen(EvidenceMatch.CannotTell)),
-			outcome("unjudged", { artifact: readable }),
-			outcome("waiting", { artifact: { checkStatus: null } }),
+			outcome("unjudged", on(readable)),
+			outcome("waiting", on({ checkStatus: null })),
 		]);
 
 		expect(weighed.unproven).toEqual([]);
@@ -119,6 +122,47 @@ describe("weighOutcomes — the AI curator, a cautious optimist (GDHUB-81)", () 
 	});
 });
 
+describe("standingOf — the best of a task's artifacts (GDHUB-115)", () => {
+	it("delivers a task when one artifact shows it, beside one that does not open", () => {
+		expect(
+			standingOf(
+				outcome("o1", {
+					evidence: [
+						{ artifact: { checkStatus: ArtifactCheckStatus.Unreachable } },
+						piece(EvidenceMatch.Matches),
+					],
+				}),
+			),
+		).toEqual({ is: "delivered" });
+	});
+
+	it("prefers shown in part over taken on trust", () => {
+		expect(
+			standingOf(
+				outcome("o1", {
+					evidence: [
+						{ artifact: { checkStatus: ArtifactCheckStatus.Unsupported } },
+						piece(EvidenceMatch.Partly, "one island"),
+					],
+				}),
+			),
+		).toEqual({ is: "partly", note: "one island" });
+	});
+
+	it("of two that fail, says the one that shows something else", () => {
+		expect(
+			standingOf(
+				outcome("o1", {
+					evidence: [
+						{ artifact: { checkStatus: ArtifactCheckStatus.Unreachable } },
+						piece(EvidenceMatch.DoesNotMatch),
+					],
+				}),
+			),
+		).toEqual({ is: "unproven", reason: "doesNotMatch" });
+	});
+});
+
 describe("isProven — the human curator's plain rule", () => {
 	it("counts a readable artifact whatever the AI made of it", () => {
 		expect(isProven(outcome("o1", seen(EvidenceMatch.DoesNotMatch)))).toBe(true);
@@ -127,12 +171,10 @@ describe("isProven — the human curator's plain rule", () => {
 	it("does not count an artifact behind a login", () => {
 		expect(
 			isProven(
-				outcome("o1", {
-					artifact: {
+				outcome("o1", on({
 						checkStatus: ArtifactCheckStatus.Unreachable,
 						checkNote: "needsLogin",
-					},
-				}),
+					})),
 			),
 		).toBe(false);
 	});

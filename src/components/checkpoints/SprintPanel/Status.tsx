@@ -8,6 +8,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useState } from "react";
+import { artifactLabel } from "@/components/checkpoints/EvidenceSlot";
 import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SCOPE_SESSION } from "@/config/checkpoint";
@@ -289,7 +290,9 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 									{item.text}
 								</Typography.Text>
 								<Typography.Text className={styles.proof}>
-									{item.artifact?.name ?? item.artifact?.link}
+									{item.evidence
+										.map(({ artifact }) => artifactLabel(artifact))
+										.join(", ")}
 								</Typography.Text>
 							</Flex>
 						))}

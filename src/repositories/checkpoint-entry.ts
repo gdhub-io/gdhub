@@ -13,7 +13,10 @@ import {
 	CHECKPOINT_OPEN_STATUSES,
 } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
-import { toArtifactRef } from "@/repositories/checkpoint.repository";
+import {
+	createCheckpointItems,
+	toArtifactRef,
+} from "@/repositories/checkpoint.repository";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { prisma } from "@/services/prisma";
@@ -57,15 +60,16 @@ type ItemRow = {
 	kind: CheckpointItemKind;
 	text: string;
 	cut: boolean;
-	artifact: CheckpointArtifactRef | null;
+	evidence: { artifact: CheckpointArtifactRef }[];
 };
 
+/** What the project has, one line each; a line names the first artifact that shows it. */
 const toEntryItem = (
-	item: Pick<ItemRow, "text" | "artifact">,
-): EntryItemDto => ({
-	text: item.text,
-	artifact: item.artifact ? toArtifactRef(item.artifact) : null,
-});
+	item: Pick<ItemRow, "text" | "evidence">,
+): EntryItemDto => {
+	const first = item.evidence[0]?.artifact;
+	return { text: item.text, artifact: first ? toArtifactRef(first) : null };
+};
 
 /** Money that reached us for a checkpoint, whatever happened to it afterwards. */
 const PAID_STATUSES = [
@@ -97,7 +101,10 @@ export const carryOverItems = (items: ItemRow[]): EntryItemDto[] =>
 			(item) =>
 				item.kind === CheckpointItemKind.Outcome &&
 				!item.cut &&
-				item.artifact?.checkStatus === ArtifactCheckStatus.Readable,
+				item.evidence.some(
+					({ artifact }) =>
+						artifact.checkStatus === ArtifactCheckStatus.Readable,
+				),
 		),
 		...items.filter((item) => item.kind === CheckpointItemKind.Input),
 	]
@@ -110,7 +117,13 @@ const draftInputsSelect = {
 	items: {
 		where: { kind: CheckpointItemKind.Input },
 		orderBy: { order: "asc" },
-		select: { text: true, artifact: { select: artifactRefSelect } },
+		select: {
+			text: true,
+			evidence: {
+				orderBy: { createdAt: "asc" },
+				select: { artifact: { select: artifactRefSelect } },
+			},
+		},
 	},
 } as const;
 
@@ -275,7 +288,10 @@ export const getEntryPrefill = async (
 					kind: true,
 					text: true,
 					cut: true,
-					artifact: { select: artifactRefSelect },
+					evidence: {
+						orderBy: { createdAt: "asc" },
+						select: { artifact: { select: artifactRefSelect } },
+					},
 				},
 			},
 		},
@@ -359,15 +375,7 @@ export const saveEntryProject = async ({
 		await tx.checkpointItem.deleteMany({
 			where: { checkpointId: draftId, kind: CheckpointItemKind.Input },
 		});
-		await tx.checkpointItem.createMany({
-			data: items.map((item, index) => ({
-				checkpointId: draftId,
-				kind: CheckpointItemKind.Input,
-				order: index + 1,
-				text: item.text,
-				artifactId: item.artifactId,
-			})),
-		});
+		await createCheckpointItems(tx, draftId, CheckpointItemKind.Input, items);
 
 		return draftId;
 	});

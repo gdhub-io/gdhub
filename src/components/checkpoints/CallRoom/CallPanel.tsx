@@ -5,7 +5,10 @@ import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
-import { useEvidencePicker } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
+import {
+	type EvidenceActions,
+	useEvidencePicker,
+} from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
@@ -105,7 +108,7 @@ export function CallPanel({
 						project={call.project}
 					/>
 				)}
-				onAttach={evidence.open}
+				evidence={evidence.actions}
 			/>
 			{evidence.modal}
 		</>
@@ -136,8 +139,8 @@ export type PanelBlockProps = {
 	briefs?: CallBriefData[];
 	/** The Sprint tab for a call; the stories go without it. */
 	sprintTab?: (index: number) => ReactNode;
-	/** Attach an artifact that proves a task, from the plan. */
-	onAttach?: () => void;
+	/** Add or let go of the artifacts that prove a task; absent for whoever may not. */
+	evidence?: EvidenceActions;
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -158,7 +161,7 @@ export function PanelBlock({
 	advise,
 	briefs,
 	sprintTab,
-	onAttach,
+	evidence,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -234,7 +237,7 @@ export function PanelBlock({
 				// One plan for every call; only the page's own call may change it.
 				plan={selected === current ? plan : { ...plan, edit: null }}
 				onChange={onChange}
-				onAttach={onAttach}
+				evidence={evidence}
 				// Before call 1 the AI reads the author's draft.
 				{...(advise &&
 					selected === current &&

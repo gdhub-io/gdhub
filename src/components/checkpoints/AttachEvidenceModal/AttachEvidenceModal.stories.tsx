@@ -27,7 +27,7 @@ const outcome = (
 	addedAt: null,
 	note: null,
 	acceptedNote: null,
-	artifact: null,
+	evidence: [],
 	...extra,
 });
 

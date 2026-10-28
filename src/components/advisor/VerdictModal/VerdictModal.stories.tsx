@@ -53,7 +53,7 @@ const item = (
 	addedAt: null,
 	note: null,
 	acceptedNote: null,
-	artifact: null,
+	evidence: [],
 	...extra,
 });
 
@@ -92,26 +92,54 @@ const checkpoint = (started: number): AdvisorCheckpointDto => ({
 			"i1",
 			CheckpointItemKind.Input,
 			"A paper prototype played by six people outside the team",
-			{ artifact: artifact("paper-playtest-notes.pdf") },
+			{
+				evidence: [
+					{
+						artifact: artifact("paper-playtest-notes.pdf"),
+						match: null,
+						matchNote: null,
+					},
+				],
+			},
 		),
 		item("i2", CheckpointItemKind.Input, "One environment key, signed off"),
 		item(
 			"o1",
 			CheckpointItemKind.Outcome,
 			"A 15-minute build a stranger can finish without help",
-			{ artifact: artifact("build-0.4.zip") },
+			{
+				evidence: [
+					{ artifact: artifact("build-0.4.zip"), match: null, matchNote: null },
+				],
+			},
 		),
 		item(
 			"o2",
 			CheckpointItemKind.Outcome,
 			"Three tide states with art, not placeholders",
-			{ artifact: artifact("tide-states.mp4") },
+			{
+				evidence: [
+					{
+						artifact: artifact("tide-states.mp4"),
+						match: null,
+						matchNote: null,
+					},
+				],
+			},
 		),
 		item(
 			"o3",
 			CheckpointItemKind.Outcome,
 			"A save system that survives a crash",
-			{ artifact: artifact("save-crash-test.mp4", false) },
+			{
+				evidence: [
+					{
+						artifact: artifact("save-crash-test.mp4", false),
+						match: null,
+						matchNote: null,
+					},
+				],
+			},
 		),
 		item("o4", CheckpointItemKind.Outcome, "A trailer cut from the prototype", {
 			cut: true,

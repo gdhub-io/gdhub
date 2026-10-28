@@ -47,13 +47,13 @@ describe("an artifact says which checkpoint tasks it proves (GDHUB-39)", () => {
 			{
 				id: "a1",
 				name: "Greybox",
-				checkpointItems: [
-					{ text: "Greybox build", checkpoint: checkpoint("cp2") },
-					{ text: "Five playtesters", checkpoint: checkpoint("cp2") },
-					{ text: "Core loop", checkpoint: checkpoint("cp1") },
+				checkpointEvidence: [
+					{ item: { text: "Greybox build", checkpoint: checkpoint("cp2") } },
+					{ item: { text: "Five playtesters", checkpoint: checkpoint("cp2") } },
+					{ item: { text: "Core loop", checkpoint: checkpoint("cp1") } },
 				],
 			},
-			{ id: "a2", name: "Concept art", checkpointItems: [] },
+			{ id: "a2", name: "Concept art", checkpointEvidence: [] },
 		]);
 		// The project's numbered checkpoints, as the shared numbering reads them.
 		checkpointFindMany.mockResolvedValue([
@@ -70,7 +70,7 @@ describe("an artifact says which checkpoint tasks it proves (GDHUB-39)", () => {
 			],
 			[],
 		]);
-		expect(body[0].checkpointItems).toBeUndefined();
+		expect(body[0].checkpointEvidence).toBeUndefined();
 	});
 
 	it("counts only outcomes of checkpoints that ran", async () => {
@@ -79,10 +79,12 @@ describe("an artifact says which checkpoint tasks it proves (GDHUB-39)", () => {
 		await get();
 
 		expect(
-			artifactFindMany.mock.calls[0][0].include.checkpointItems.where,
+			artifactFindMany.mock.calls[0][0].include.checkpointEvidence.where,
 		).toEqual({
-			kind: "Outcome",
-			checkpoint: { status: { notIn: ["Draft", "Cancelled"] } },
+			item: {
+				kind: "Outcome",
+				checkpoint: { status: { notIn: ["Draft", "Cancelled"] } },
+			},
 		});
 	});
 });

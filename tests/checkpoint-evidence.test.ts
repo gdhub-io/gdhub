@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
 const artifactFindUnique = vi.fn();
-const itemUpdateMany = vi.fn();
+const evidenceCreateMany = vi.fn();
+const evidenceDeleteMany = vi.fn();
 const getCheckpoint = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
@@ -33,8 +34,9 @@ vi.mock("@/services/prisma", () => ({
 		projectArtifact: {
 			findUnique: (...args: unknown[]) => artifactFindUnique(...args),
 		},
-		checkpointItem: {
-			updateMany: (...args: unknown[]) => itemUpdateMany(...args),
+		checkpointItemEvidence: {
+			createMany: (...args: unknown[]) => evidenceCreateMany(...args),
+			deleteMany: (...args: unknown[]) => evidenceDeleteMany(...args),
 		},
 	},
 }));
@@ -45,35 +47,42 @@ const checkpoint = (over: Record<string, unknown> = {}) => ({
 	status: "Active",
 	projectId: "p1",
 	items: [
-		{ id: "in1", kind: "Input" },
-		{ id: "out1", kind: "Outcome" },
-		{ id: "out2", kind: "Outcome" },
+		{ id: "in1", kind: "Input", evidence: [] },
+		{ id: "out1", kind: "Outcome", evidence: [] },
+		{ id: "out2", kind: "Outcome", evidence: [] },
 	],
 	...over,
 });
 
-const post = async (body: unknown) => {
-	const { POST } = await import("@/app/api/checkpoint/[id]/evidence/route");
+const call = async (method: "POST" | "DELETE", body: unknown) => {
+	const route = await import("@/app/api/checkpoint/[id]/evidence/route");
 	const request = new NextRequest(
 		"http://localhost/api/checkpoint/cp1/evidence",
 		{
-			method: "POST",
+			method,
 			body: JSON.stringify(body),
 			headers: { "content-type": "application/json" },
 		},
 	);
 
-	return (POST as (r: NextRequest, c: unknown) => Promise<Response>)(request, {
-		params: Promise.resolve({ id: "cp1" }),
-	});
+	return (route[method] as (r: NextRequest, c: unknown) => Promise<Response>)(
+		request,
+		{ params: Promise.resolve({ id: "cp1" }) },
+	);
 };
+
+const post = (body: unknown) => call("POST", body);
+const remove = (body: unknown) => call("DELETE", body);
+
+const full = (ids: string[]) => ids.map((artifactId) => ({ artifactId }));
 
 beforeEach(() => {
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: author });
 	checkpointFindUnique.mockResolvedValue(checkpoint());
 	artifactFindUnique.mockResolvedValue({ projectId: "p1" });
-	itemUpdateMany.mockResolvedValue({ count: 2 });
+	evidenceCreateMany.mockResolvedValue({ count: 2 });
+	evidenceDeleteMany.mockResolvedValue({ count: 1 });
 	getCheckpoint.mockResolvedValue({ id: "cp1" });
 });
 
@@ -85,23 +94,58 @@ describe("POST /api/checkpoint/[id]/evidence", () => {
 		});
 
 		expect(response.status).toBe(200);
-		// The whole point of the route: one column, on the rows that were ticked.
-		// A goal-card replacement would take `cut`, `addedAt` and the curator's
-		// note with it.
-		expect(itemUpdateMany).toHaveBeenCalledWith({
-			where: { id: { in: ["out1", "out2"] }, checkpointId: "cp1" },
-			data: { artifactId: "a1" },
+		// The whole point of the route: evidence rows on the lines that were
+		// ticked, the lines themselves untouched. A goal-card replacement would
+		// take `cut`, `addedAt` and the curator's note with it.
+		expect(evidenceCreateMany).toHaveBeenCalledWith({
+			data: [
+				{ itemId: "out1", artifactId: "a1" },
+				{ itemId: "out2", artifactId: "a1" },
+			],
+			skipDuplicates: true,
 		});
+		expect(evidenceDeleteMany).not.toHaveBeenCalled();
 	});
 
-	it("lets an artifact go without touching the line's text", async () => {
-		await post({ artifactId: null, itemIds: ["out1"] });
+	it("refuses a fourth artifact on a task that already holds three", async () => {
+		checkpointFindUnique.mockResolvedValue(
+			checkpoint({
+				items: [
+					{ id: "out1", kind: "Outcome", evidence: full(["a1", "a2", "a3"]) },
+					{ id: "out2", kind: "Outcome", evidence: [] },
+				],
+			}),
+		);
 
-		expect(itemUpdateMany).toHaveBeenCalledWith({
-			where: { id: { in: ["out1"] }, checkpointId: "cp1" },
-			data: { artifactId: null },
+		const response = await post({
+			artifactId: "a4",
+			itemIds: ["out1", "out2"],
 		});
-		expect(artifactFindUnique).not.toHaveBeenCalled();
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "evidenceFull",
+		});
+		// Refused whole: the free task does not get it either.
+		expect(evidenceCreateMany).not.toHaveBeenCalled();
+	});
+
+	it("lets an artifact already on a full task be offered again, as a no-op there", async () => {
+		checkpointFindUnique.mockResolvedValue(
+			checkpoint({
+				items: [
+					{ id: "out1", kind: "Outcome", evidence: full(["a1", "a2", "a3"]) },
+				],
+			}),
+		);
+
+		const response = await post({ artifactId: "a2", itemIds: ["out1"] });
+
+		expect(response.status).toBe(200);
+		expect(evidenceCreateMany).toHaveBeenCalledWith({
+			data: [{ itemId: "out1", artifactId: "a2" }],
+			skipDuplicates: true,
+		});
 	});
 
 	it("refuses an input line — inputs are what the project already had", async () => {
@@ -111,7 +155,7 @@ describe("POST /api/checkpoint/[id]/evidence", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "itemNotOutcome",
 		});
-		expect(itemUpdateMany).not.toHaveBeenCalled();
+		expect(evidenceCreateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses a line belonging to another checkpoint", async () => {
@@ -132,7 +176,7 @@ describe("POST /api/checkpoint/[id]/evidence", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "artifactNotInProject",
 		});
-		expect(itemUpdateMany).not.toHaveBeenCalled();
+		expect(evidenceCreateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses once the verdict is being written", async () => {
@@ -144,5 +188,50 @@ describe("POST /api/checkpoint/[id]/evidence", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "checkpointClosed",
 		});
+	});
+});
+
+describe("DELETE /api/checkpoint/[id]/evidence", () => {
+	it("lets one artifact go from one task without touching the line's text", async () => {
+		const response = await remove({ artifactId: "a1", itemId: "out1" });
+
+		expect(response.status).toBe(200);
+		expect(evidenceDeleteMany).toHaveBeenCalledWith({
+			where: { itemId: "out1", artifactId: "a1" },
+		});
+		expect(evidenceCreateMany).not.toHaveBeenCalled();
+		expect(artifactFindUnique).not.toHaveBeenCalled();
+	});
+
+	it("refuses once the verdict is being written", async () => {
+		checkpointFindUnique.mockResolvedValue(checkpoint({ status: "Review" }));
+
+		const response = await remove({ artifactId: "a1", itemId: "out1" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "checkpointClosed",
+		});
+		expect(evidenceDeleteMany).not.toHaveBeenCalled();
+	});
+
+	it("refuses an input line", async () => {
+		const response = await remove({ artifactId: "a1", itemId: "in1" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "itemNotOutcome",
+		});
+		expect(evidenceDeleteMany).not.toHaveBeenCalled();
+	});
+
+	it("refuses a line belonging to another checkpoint", async () => {
+		const response = await remove({ artifactId: "a1", itemId: "someone-else" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "itemNotInCheckpoint",
+		});
+		expect(evidenceDeleteMany).not.toHaveBeenCalled();
 	});
 });

@@ -2,7 +2,7 @@
 
 import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Tag, Tooltip, Typography } from "antd";
+import { App, Button, Flex, Tag, Tooltip, Typography } from "antd";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
@@ -14,8 +14,8 @@ import {
 } from "@/config/prisma-enums";
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
-import type { CheckpointArtifactRef, CheckpointDto } from "@/types/checkpoints";
-import { ArtifactLink } from "./ArtifactLink";
+import type { CheckpointDto } from "@/types/checkpoints";
+import { ArtifactLinks } from "./ArtifactLink";
 import { AsideHead } from "./AsideHead";
 import { CuratorNote } from "./CuratorNote";
 import { formatDayRange } from "./dates";
@@ -45,11 +45,6 @@ export function CheckpointAside({
 	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
 	);
-	// An outcome is proven by its own artifact or by evidence offered against it.
-	const proofOf = (id: string): CheckpointArtifactRef | null =>
-		checkpoint.items.find((item) => item.id === id)?.artifact ??
-		checkpoint.evidence?.find((row) => row.itemIds.includes(id))?.artifact ??
-		null;
 	const curator = checkpoint.curator;
 	const { slug } = useParams<{ slug: string }>();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
@@ -111,15 +106,19 @@ export function CheckpointAside({
 							</Text>
 							<div className={styles.asideTasks}>
 								{outcomes.map((item) => {
-									const proof = proofOf(item.id);
 									return (
 										<WorkflowTaskCard
 											key={item.id}
 											label={item.text}
-											completed={!!proof}
+											completed={item.evidence.length > 0}
 											action={
-												proof ? (
-													<ArtifactLink artifact={proof} compact />
+												item.evidence.length ? (
+													<ArtifactLinks
+														artifacts={item.evidence.map(
+															({ artifact }) => artifact,
+														)}
+														compact
+													/>
 												) : (
 													canManage && (
 														<Tooltip

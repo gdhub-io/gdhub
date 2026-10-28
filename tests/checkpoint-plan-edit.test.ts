@@ -68,8 +68,8 @@ const plan = (overrides: Record<string, unknown> = {}) => ({
 	project: { authorId: "author" },
 	sessions,
 	items: [
-		{ id: "open", order: 1, text: "Greybox", originalText: null, artifactId: null },
-		{ id: "done", order: 2, text: "One-pager", originalText: null, artifactId: "a1" },
+		{ id: "open", order: 1, text: "Greybox", originalText: null, _count: { evidence: 0 } },
+		{ id: "done", order: 2, text: "One-pager", originalText: null, _count: { evidence: 1 } },
 	],
 	...overrides,
 });
@@ -245,7 +245,7 @@ describe("changePlan", () => {
 			checkpointFindUnique.mockResolvedValue(
 				plan({
 					items: [
-						{ id: "open", order: 1, text: "Second", originalText: "First", artifactId: null },
+						{ id: "open", order: 1, text: "Second", originalText: "First", _count: { evidence: 0 } },
 					],
 				}),
 			);

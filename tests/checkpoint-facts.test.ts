@@ -179,7 +179,7 @@ describe("sprintFactsOf", () => {
 					addedAt: null,
 					note: null,
 					acceptedNote: null,
-					artifact,
+					evidence: [{ artifact, match: null, matchNote: null }],
 				},
 			],
 			evidence: [

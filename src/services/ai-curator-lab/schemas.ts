@@ -81,10 +81,11 @@ const seen = z
 const task = z.object({
 	id: z.string(),
 	text: z.string(),
-	done: z.object({ type: z.string(), name: z.string().nullable() }).nullable(),
 	cut: z.boolean(),
 	firstWording: z.string().nullable(),
-	seen,
+	evidence: z.array(
+		z.object({ type: z.string(), name: z.string().nullable(), seen }),
+	),
 });
 
 export const goalCheckInput = z.object({
@@ -168,18 +169,22 @@ const item = z.object({
 	cut: z.boolean().default(false),
 	addedAt: z.string().nullable().default(null),
 	acceptedNote: z.string().nullish(),
-	evidenceMatch: z.nativeEnum(EvidenceMatch).nullish(),
-	evidenceMatchNote: z.string().nullish(),
-	artifact: z
-		.object({
-			type: z.string(),
-			name: z.string().nullable(),
-			description: z.string().nullable(),
-			link: z.string(),
-			checkStatus: z.nativeEnum(ArtifactCheckStatus).nullable(),
-			checkNote: z.string().nullish(),
-		})
-		.nullable(),
+	evidence: z
+		.array(
+			z.object({
+				match: z.nativeEnum(EvidenceMatch).nullish(),
+				matchNote: z.string().nullish(),
+				artifact: z.object({
+					type: z.string(),
+					name: z.string().nullable(),
+					description: z.string().nullable(),
+					link: z.string(),
+					checkStatus: z.nativeEnum(ArtifactCheckStatus).nullable(),
+					checkNote: z.string().nullish(),
+				}),
+			}),
+		)
+		.default([]),
 });
 
 /** Day 29 as the checkpoint's rows hold it, before the evidence is weighed. */

@@ -35,6 +35,7 @@ import {
 import { curatorNow } from "@/lib/curator-now";
 import { checkpointLineage } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
+import type { Tx } from "@/repositories/project-workflow";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
 import { characterFace } from "@/services/checkpoint-curator/prompts/card";
@@ -65,15 +66,21 @@ const checkpointItemSelect = {
 	addedAt: true,
 	note: true,
 	acceptedNote: true,
-	evidenceMatch: true,
-	artifact: {
+	evidence: {
+		orderBy: { createdAt: "asc" },
 		select: {
-			id: true,
-			name: true,
-			type: true,
-			link: true,
-			checkStatus: true,
-			checkNote: true,
+			match: true,
+			matchNote: true,
+			artifact: {
+				select: {
+					id: true,
+					name: true,
+					type: true,
+					link: true,
+					checkStatus: true,
+					checkNote: true,
+				},
+			},
 		},
 	},
 } as const;
@@ -196,7 +203,13 @@ const checkpointDetailSelect = {
 	items: {
 		select: {
 			...checkpointItemSelect,
-			artifact: { select: evidenceArtifactSelect },
+			evidence: {
+				...checkpointItemSelect.evidence,
+				select: {
+					...checkpointItemSelect.evidence.select,
+					artifact: { select: evidenceArtifactSelect },
+				},
+			},
 		},
 		orderBy: { order: "asc" },
 	},
@@ -245,7 +258,8 @@ type DetailRow = Prisma.ProjectCheckpointGetPayload<{
 	select: typeof checkpointDetailSelect;
 }>;
 
-type EvidenceArtifact = NonNullable<DetailRow["items"][number]["artifact"]>;
+type EvidenceArtifact =
+	DetailRow["items"][number]["evidence"][number]["artifact"];
 type PulseRow = DetailRow["pulses"][number];
 type TeamMemberRow = NonNullable<
 	DetailRow["project"]["team"]
@@ -390,29 +404,24 @@ const buildEvidence = (
 	items: DetailRow["items"],
 	startedAt: Date | null,
 ): CheckpointEvidenceDto[] => {
-	const itemIdsByArtifact = new Map<string, string[]>();
-
+	const byId = new Map<
+		string,
+		{ artifact: EvidenceArtifact; itemIds: string[] }
+	>();
 	for (const item of items) {
-		if (!item.artifact) continue;
-		const known = itemIdsByArtifact.get(item.artifact.id);
-		if (known) known.push(item.id);
-		else itemIdsByArtifact.set(item.artifact.id, [item.id]);
-	}
-
-	const byId = new Map<string, EvidenceArtifact>();
-
-	for (const artifact of items.flatMap((item) =>
-		item.artifact ? [item.artifact] : [],
-	)) {
-		byId.set(artifact.id, artifact);
+		for (const { artifact } of item.evidence) {
+			const known = byId.get(artifact.id);
+			if (known) known.itemIds.push(item.id);
+			else byId.set(artifact.id, { artifact, itemIds: [item.id] });
+		}
 	}
 
 	return [...byId.values()]
-		.map((artifact) => ({
+		.map(({ artifact, itemIds }) => ({
 			artifact: toArtifactRef(artifact),
 			addedAt: artifact.createdAt.toISOString(),
 			addedBy: artifact.createdByUser,
-			itemIds: itemIdsByArtifact.get(artifact.id) ?? [],
+			itemIds,
 			sprint: startedAt ? sprintOfDate(startedAt, artifact.createdAt) : null,
 		}))
 		.sort(
@@ -466,7 +475,10 @@ const toCheckpointDetail = (row: DetailRow) => {
 		curator: withCraft(curator),
 		items: items.map((item) => ({
 			...item,
-			artifact: item.artifact ? toArtifactRef(item.artifact) : null,
+			evidence: item.evidence.map((piece) => ({
+				...piece,
+				artifact: toArtifactRef(piece.artifact),
+			})),
 		})),
 		reports: reports.map((report) => ({
 			...report,
@@ -653,7 +665,10 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 			members: project.team?.members ?? [],
 			outcomes: checkpoint.items
 				.filter((item) => item.kind === CheckpointItemKind.Outcome)
-				.map((item) => ({ cut: item.cut, hasArtifact: !!item.artifact })),
+				.map((item) => ({
+					cut: item.cut,
+					hasArtifact: item.evidence.length > 0,
+				})),
 		}),
 	};
 };
@@ -787,7 +802,9 @@ const carryForwardInputs = async (projectId: string) =>
 		kind: CheckpointItemKind.Input,
 		order: index + 1,
 		text: item.text,
-		artifactId: item.artifactId,
+		evidence: {
+			create: item.evidence.map(({ artifactId }) => ({ artifactId })),
+		},
 	}));
 
 /** What the project's last closed checkpoint owed — which is what it has now. */
@@ -799,7 +816,7 @@ export const lastClosedOutcomes = async (projectId: string) => {
 			items: {
 				where: { kind: CheckpointItemKind.Outcome },
 				orderBy: { order: "asc" },
-				select: { text: true, artifactId: true },
+				select: { text: true, evidence: { select: { artifactId: true } } },
 			},
 		},
 	});
@@ -807,24 +824,41 @@ export const lastClosedOutcomes = async (projectId: string) => {
 	return previous?.items ?? [];
 };
 
+/** Writes one side of the goal card in order, with the artifact each line names. */
+export const createCheckpointItems = async (
+	db: Tx,
+	checkpointId: string,
+	kind: CheckpointItemKind,
+	items: { text: string; artifactId?: string | null }[],
+) => {
+	const created = await db.checkpointItem.createManyAndReturn({
+		data: items.map((item, index) => ({
+			checkpointId,
+			kind,
+			order: index + 1,
+			text: item.text,
+		})),
+		select: { id: true, order: true },
+	});
+	const evidence = created.flatMap(({ id, order }) => {
+		const artifactId = items[order - 1].artifactId;
+		return artifactId ? [{ itemId: id, artifactId }] : [];
+	});
+	if (evidence.length) {
+		await db.checkpointItemEvidence.createMany({ data: evidence });
+	}
+};
+
 /** Replaces one side of the goal card. Only a `Draft` may be rewritten this way. */
-export const replaceCheckpointItems = async (
+export const replaceCheckpointItems = (
 	checkpointId: string,
 	kind: CheckpointItemKind,
 	items: { text: string; artifactId?: string | null }[],
 ) =>
-	prisma.$transaction([
-		prisma.checkpointItem.deleteMany({ where: { checkpointId, kind } }),
-		prisma.checkpointItem.createMany({
-			data: items.map((item, index) => ({
-				checkpointId,
-				kind,
-				order: index + 1,
-				text: item.text,
-				artifactId: item.artifactId ?? null,
-			})),
-		}),
-	]);
+	prisma.$transaction(async (tx) => {
+		await tx.checkpointItem.deleteMany({ where: { checkpointId, kind } });
+		await createCheckpointItems(tx, checkpointId, kind, items);
+	});
 
 /**
  * The day counter, and only where it is true.

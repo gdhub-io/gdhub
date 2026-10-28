@@ -86,14 +86,23 @@ export const useUpdateCheckpoint = (id?: string) => {
 	});
 };
 
-/** A POST to one of the checkpoint's sub-routes that answers with the whole checkpoint. */
-const useCheckpointPost = <B>(id: string | undefined, path: string) => {
+/** A write to one of the checkpoint's sub-routes that answers with the whole checkpoint. */
+const useCheckpointWrite = <B>(
+	id: string | undefined,
+	path: string,
+	method: "post" | "delete" = "post",
+) => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (body: B) =>
-			(await axios.post<CheckpointDto>(`/api/checkpoint/${id}/${path}`, body))
-				.data,
+		mutationFn: async (data: B) =>
+			(
+				await axios.request<CheckpointDto>({
+					method,
+					url: `/api/checkpoint/${id}/${path}`,
+					data,
+				})
+			).data,
 		onSuccess: (checkpoint) => {
 			queryClient.setQueryData(["checkpoint", id], checkpoint);
 			queryClient.invalidateQueries({
@@ -103,9 +112,17 @@ const useCheckpointPost = <B>(id: string | undefined, path: string) => {
 	});
 };
 
-/** Bind an artifact to the outcomes it proves, or let one go with `artifactId: null`. */
+/** Add an artifact to the outcomes it proves; each keeps the artifacts it has. */
 export const useAttachEvidence = (id?: string) =>
-	useCheckpointPost<CheckpointEvidenceBody>(id, "evidence");
+	useCheckpointWrite<CheckpointEvidenceBody>(id, "evidence");
+
+/** Let one artifact go from one outcome. */
+export const useDetachEvidence = (id?: string) =>
+	useCheckpointWrite<{ artifactId: string; itemId: string }>(
+		id,
+		"evidence",
+		"delete",
+	);
 
 /**
  * Opens the checkout for a draft and hands back where the author pays: a hosted
