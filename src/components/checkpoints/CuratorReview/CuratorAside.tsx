@@ -5,8 +5,9 @@ import { WorkflowAside } from "@/components/WorkflowPath/WorkflowAside";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 
 /**
- * Curator's Review keeps the Workflow sidebar. It is the team's to read: a pro
- * curator outside the project gets the people in the call alone.
+ * Path to Checkpoint keeps the Workflow sidebar, less the checkpoint it is.
+ * It is the team's to read: a pro curator outside the project gets the people
+ * in the call alone.
  */
 export function CuratorAside({
 	projectId,
@@ -20,7 +21,11 @@ export function CuratorAside({
 	if (!projectId) return children ? <aside>{children}</aside> : null;
 
 	return (
-		<WorkflowAside projectId={projectId} checkpointId={checkpointId}>
+		<WorkflowAside
+			projectId={projectId}
+			checkpointId={checkpointId}
+			withCheckpoint={false}
+		>
 			{children}
 		</WorkflowAside>
 	);

@@ -18,6 +18,8 @@ const writeSprintReview = vi.fn();
 const writePlanAdvice = vi.fn();
 const closeCheckpoint = vi.fn();
 const notify = vi.fn();
+const writeFirstLetter = vi.fn();
+const notifyPlanChecked = vi.fn();
 const notifyVerdictSent = vi.fn();
 const journalFindFirst = vi.fn();
 
@@ -47,9 +49,31 @@ vi.mock("@/services/prisma", () => ({
 vi.mock("@/repositories/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
+	sprintArtifactLines: vi.fn(async () => [
+		'GameplayVideo "Sprint 1 build" https://x.test/v: one tide loop played through',
+	]),
 }));
 vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
-vi.mock("@/repositories/curator-context", () => ({
+vi.mock("@/repositories/curator-context", async (actual) => ({
+	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
+		.memberRole,
+	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
+	curatorTeam: vi.fn(async () => ({
+		members: 2,
+		stated: 0,
+		hoursPerWeek: null,
+		hoursPerRun: null,
+		people: [
+			{ name: "A", role: "Game designer", level: null, hoursPerWeek: null, weeks: [true] },
+			{ name: "B", role: "Lead artist", level: null, hoursPerWeek: null, weeks: [false] },
+		],
+	})),
+	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
+		currentStage,
+		nextStage: null,
+		description: null,
+		requiredTasks: [],
+	})),
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
@@ -59,10 +83,12 @@ vi.mock("@/services/curator-review", () => ({
 }));
 vi.mock("@/repositories/checkpoint-curator.repository", () => ({
 	closeCheckpoint: (...a: unknown[]) => closeCheckpoint(...a),
+	writeFirstLetter: (...a: unknown[]) => writeFirstLetter(...a),
 }));
 vi.mock("@/services/checkpoint-notifications", () => ({
 	appUrl: () => "https://gdhub.test",
 	notify: (...a: unknown[]) => notify(...a),
+	notifyPlanChecked: (...a: unknown[]) => notifyPlanChecked(...a),
 	recipient: { select: { id: true, email: true } },
 	reviewUrl: (slug: string, number: number, index: number) =>
 		`https://gdhub.test/user/project/${slug}/workflow/cp${number}/review/${index}`,
@@ -98,7 +124,7 @@ describe("startAiCheckpoint", () => {
 			paymentId: "pay",
 			startedAt: new Date("2026-10-04T00:00:00Z"),
 			dueAt: new Date("2026-10-31T00:00:00Z"),
-			goalAgreedAt: now,
+			goalAgreedAt: null,
 			goalAgreedById: null,
 		});
 		expect(
@@ -148,8 +174,16 @@ const reviewed = (index: number, overrides: Record<string, unknown> = {}) => ({
 	items,
 	sessions: [{ index: index - 1, content: null }],
 	pulses: [
-		{ week: index - 1, confirmedAt: new Date() },
-		{ week: index - 1, confirmedAt: null },
+		{
+			week: index - 1,
+			confirmedAt: new Date(),
+			teamMember: { position: null, speciality: { name: "Game designer" } },
+		},
+		{
+			week: index - 1,
+			confirmedAt: null,
+			teamMember: { position: "Lead artist", speciality: { name: "Artist" } },
+		},
 	],
 	project: {
 		name: "Hollow Tide",
@@ -222,7 +256,15 @@ describe("writeDueReviews", () => {
 
 		const input = writeSprintReview.mock.calls[0][0];
 		expect(input.sprint).toBe(1);
-		expect(input.pulse).toEqual({ worked: 1, missing: 1 });
+		// The sprint's build video and other artifacts beside its tasks.
+		expect(input.artifactsSeen).toEqual([
+			'GameplayVideo "Sprint 1 build" https://x.test/v: one tide loop played through',
+		]);
+		// The team in one block, with each member's weeks: the sprint's pulse is read from it.
+		expect(input.team.people.map((person: { role: string }) => person.role)).toEqual([
+			"Game designer",
+			"Lead artist",
+		]);
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 		expect(closeCheckpoint).not.toHaveBeenCalled();
 
@@ -324,11 +366,23 @@ describe("writeDueReviews", () => {
 
 describe("adviseOnPlan", () => {
 	const onDay1 = new Date("2026-10-01T10:00:00Z");
-	const plan = (content: unknown = null) => ({
+	const firstLetter = {
+		message: "Hello! Write your tasks.",
+		notes: null,
+		advice: null,
+		goal: { fit: "fits", note: "Fits." },
+		suggestions: [],
+	};
+	const plan = (
+		content: unknown = firstLetter,
+		planCheckedAt: Date | null = null,
+	) => ({
 		curatorId: null,
 		curatorKind: CheckpointCuratorKind.AI,
 		goal: "A greybox",
-		goalAgreedAt: startedAt,
+		goalAgreedAt: null as Date | null,
+		planCheckedAt,
+		scopeConfirmedAt: null,
 		stageName: "Concepting",
 		startedAt,
 		project: { authorId: "author" },
@@ -349,27 +403,53 @@ describe("adviseOnPlan", () => {
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 	});
 
-	it("writes the start's letter and advice on session 1", async () => {
+	it("checks the sent tasks once on day 1 and tells the author", async () => {
 		checkpointFindUnique.mockResolvedValue(plan());
-		writePlanAdvice.mockResolvedValue(advice);
+		writePlanAdvice.mockResolvedValue({
+			...advice,
+			goal: { fit: "narrow", note: "Narrow it." },
+		});
 		expect(await adviseOnPlan("cp", "author", onDay1)).toBeNull();
 		expect(writePlanAdvice.mock.calls[0][0].moment).toBe("start");
 		const { where, data } = sessionUpdate.mock.calls[0][0];
 		expect(where).toEqual({ id: "s1" });
-		expect(data.content.message).toBe("Hi.");
-		expect(data.content.notes).toBeNull();
+		expect(data.content).toMatchObject({
+			message: "Hi.",
+			notes: null,
+			goal: { fit: "narrow", note: "Narrow it." },
+		});
+		expect(checkpointUpdate).toHaveBeenCalledWith({
+			where: { id: "cp" },
+			data: { planCheckedAt: onDay1 },
+		});
 		expect(data.content.advice.tasks).toHaveLength(1);
+		// The plan approves itself 12 hours after the check.
+		expect(notifyPlanChecked).toHaveBeenCalledWith(
+			"cp",
+			new Date("2026-10-01T22:00:00Z"),
+		);
 	});
 
-	it("does not read the same plan twice", async () => {
-		checkpointFindUnique.mockResolvedValue(plan());
-		writePlanAdvice.mockResolvedValue(advice);
-		await adviseOnPlan("cp", "author", onDay1);
-		const saved = sessionUpdate.mock.calls[0][0].data.content;
+	it("checks the tasks only once", async () => {
+		checkpointFindUnique.mockResolvedValue(plan(firstLetter, onDay1));
+		expect(await adviseOnPlan("cp", "author", onDay1)).toBe("alreadyChecked");
+		expect(writePlanAdvice).not.toHaveBeenCalled();
+	});
 
-		vi.clearAllMocks();
-		checkpointFindUnique.mockResolvedValue(plan(saved));
+	it("refuses to check a plan with no tasks", async () => {
+		checkpointFindUnique.mockResolvedValue({
+			...plan(),
+			items: items.map((item) => ({ ...item, cut: true })),
+		});
+		expect(await adviseOnPlan("cp", "author", onDay1)).toBe("noTasks");
+		expect(writePlanAdvice).not.toHaveBeenCalled();
+	});
+
+	it("writes the first letter instead when the read after payment failed", async () => {
+		checkpointFindUnique.mockResolvedValue(plan(null));
+		writeFirstLetter.mockResolvedValue(true);
 		expect(await adviseOnPlan("cp", "author", onDay1)).toBeNull();
+		expect(writeFirstLetter).toHaveBeenCalledWith("cp", { notify: false });
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 	});
 
@@ -395,8 +475,8 @@ describe("adviseOnPlan", () => {
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 	});
 
-	it("refuses once the plan is closed", async () => {
-		checkpointFindUnique.mockResolvedValue(plan());
+	it("refuses once the plan is approved", async () => {
+		checkpointFindUnique.mockResolvedValue({ ...plan(), goalAgreedAt: onDay1 });
 		expect(
 			await adviseOnPlan("cp", "author", new Date("2026-10-10T10:00:00Z")),
 		).toBe("planClosed");

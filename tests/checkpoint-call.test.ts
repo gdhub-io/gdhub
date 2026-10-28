@@ -6,6 +6,7 @@ import {
 	CheckpointStatus,
 } from "@/config/prisma-enums";
 import {
+	callMissed,
 	callState,
 	parseCallRoomName,
 	sessionHeld,
@@ -34,7 +35,10 @@ const planFind = vi.fn(async () => ({
 const callRoom = vi.fn(async () => "https://gdhub.daily.co/cp-abc-2");
 const callToken = vi.fn(async () => "token");
 const closeCallRoom = vi.fn(async () => undefined);
-const roomParticipantMinutes = vi.fn(async () => 120);
+const roomParticipants = vi.fn(async () => ({
+	minutes: 120,
+	userIds: ["curator", "author"],
+}));
 const startTranscriptJob = vi.fn(async () => ({ id: "job" }));
 const transcriptOfJob = vi.fn();
 
@@ -69,8 +73,7 @@ vi.mock("@/services/daily", async (importOriginal) => ({
 	callRoom: (...a: unknown[]) => callRoom(...(a as [])),
 	callToken: (...a: unknown[]) => callToken(...(a as [])),
 	closeCallRoom: (...a: unknown[]) => closeCallRoom(...(a as [])),
-	roomParticipantMinutes: (...a: unknown[]) =>
-		roomParticipantMinutes(...(a as [])),
+	roomParticipants: (...a: unknown[]) => roomParticipants(...(a as [])),
 	startTranscriptJob: (...a: unknown[]) => startTranscriptJob(...(a as [])),
 	transcriptOfJob: (...a: unknown[]) => transcriptOfJob(...a),
 }));
@@ -284,7 +287,11 @@ describe("Daily's webhooks", () => {
 		await recordMeetingEnded("cp-abc-2", new Date("2026-10-21T15:00:00Z"));
 		expect(sessionUpdate).toHaveBeenCalledWith({
 			where: { checkpointId_index: { checkpointId: "abc", index: 2 } },
-			data: { endedAt: during, participantMinutes: 120 },
+			data: {
+				endedAt: during,
+				participantMinutes: 120,
+				attendeeIds: ["curator", "author"],
+			},
 		});
 	});
 
@@ -361,5 +368,31 @@ describe("the webhook route", () => {
 		);
 		expect(response.status).toBe(200);
 		expect(startTranscriptJob).toHaveBeenCalledWith("rec");
+	});
+});
+
+describe("callMissed", () => {
+	const at = "2026-10-24T10:00:00Z";
+	const later = new Date("2026-10-25T10:00:00Z");
+
+	it("is missed once the window passes with no curator in it", () => {
+		expect(
+			callMissed({ scheduledAt: at, curatorJoinedAt: null, endedAt: null }, later),
+		).toBe(true);
+	});
+
+	it("is not missed while the window is still to come or open", () => {
+		const session = { scheduledAt: at, curatorJoinedAt: null, endedAt: null };
+		expect(callMissed(session, new Date("2026-10-24T09:00:00Z"))).toBe(false);
+		expect(callMissed(session, new Date("2026-10-24T10:05:00Z"))).toBe(false);
+	});
+
+	it("is not missed when the curator came in", () => {
+		expect(
+			callMissed(
+				{ scheduledAt: at, curatorJoinedAt: at, endedAt: null },
+				later,
+			),
+		).toBe(false);
 	});
 });

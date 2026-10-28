@@ -35,9 +35,8 @@ import {
 	useUpdateCheckpoint,
 } from "@/hooks/checkpoints";
 import { useJoinWaitlist, useWaitlistStatus } from "@/hooks/feature-waitlist";
-import { dueDateFrom } from "@/lib/checkpoint-days";
+import { dueDateFrom, sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import styles from "./CuratorStep.module.scss";
 import { CuratorTable } from "./CuratorTable";
 import { ExpertWaitlist } from "./ExpertWaitlist";

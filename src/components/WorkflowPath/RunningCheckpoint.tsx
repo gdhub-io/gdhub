@@ -2,7 +2,6 @@ import {
 	IconArrowUpRight,
 	IconCalendarPlus,
 	IconChevronDown,
-	IconChevronRight,
 	IconChevronUp,
 	IconCircleCheck,
 	IconDotsVertical,
@@ -10,37 +9,26 @@ import {
 	IconLayoutGridAdd,
 	IconLock,
 	IconNotebook,
-	IconPackage,
 	IconSparkles,
 	IconVideo,
 } from "@tabler/icons-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Dropdown, Flex, Modal, Tooltip, Typography } from "antd";
-import axios from "axios";
+import { Button, Dropdown, Flex, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
-import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
-import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
-import { SectionHeading, StatusDot } from "@/components/ui";
+import { SectionHeading } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { SESSION_MINUTES } from "@/config/checkpoint";
+import { AI_CURATOR_AVATAR, SESSION_MINUTES } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
-import { useMarkVerdictRead } from "@/hooks/checkpoints";
 import { downloadIcs } from "@/lib/calendar";
 import { sessionHeld } from "@/lib/checkpoint-call";
-import {
-	type ChecklistItem,
-	type ChecklistKey,
-	sprintChecklist,
-} from "@/lib/checkpoint-checklist";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
 import type {
 	CheckpointDto,
@@ -48,29 +36,11 @@ import type {
 	CheckpointSprintDto,
 } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
-import { CheckpointResult } from "./ClosedCheckpoint";
 import { daysUntil, formatShort } from "./dates";
 import { PathNode } from "./PathNode";
 import { PulseChip } from "./PulseChip";
+import { SprintChecklist } from "./SprintChecklist";
 import styles from "./style.module.scss";
-
-// The editor's tools touch `Element` as they load, so the modal cannot be
-// rendered on the server.
-const DevLogPostModal = dynamic(
-	() =>
-		import("@/components/modals/DevLogPostModal").then(
-			(module) => module.DevLogPostModal,
-		),
-	{ ssr: false },
-);
-
-const ICON: Record<ChecklistKey, ReactNode> = {
-	verdict: <IconFileText size={20} />,
-	priorities: <IconVideo size={20} />,
-	build: <IconPackage size={20} />,
-	devlog: <IconNotebook size={20} />,
-	artifacts: <IconLayoutGridAdd size={20} />,
-};
 
 export type RunningCheckpointProps = {
 	checkpoint: CheckpointDto;
@@ -96,11 +66,6 @@ export function RunningCheckpoint({
 }: RunningCheckpointProps) {
 	const { t } = useTranslate();
 	const router = useRouter();
-	const queryClient = useQueryClient();
-	const [modal, setModal] = useState<
-		"results" | "build" | "devlog" | "artifacts" | null
-	>(null);
-	const markRead = useMarkVerdictRead(checkpoint.id);
 	const [opened, setOpened] = useState<number[]>([]);
 
 	const sprints = checkpoint.sprints ?? [];
@@ -113,25 +78,11 @@ export function RunningCheckpoint({
 		name: curatorName,
 	});
 	const number = checkpoint.number ?? 1;
-	const base = `/user/project/${project.slug}/workflow/cp${number}`;
 	const sessionHref = (session: CheckpointSessionDto) =>
-		`${base}/review/${session.index}`;
-
-	const { data: reports } = useQuery<{ number: number | null }[]>({
-		queryKey: ["project-reports", project.id],
-		queryFn: () =>
-			axios
-				.get("/api/user/project/reports", { params: { projectId: project.id } })
-				.then((res) => res.data),
-		enabled: modal === "devlog",
-	});
+		checkpointPathHref(project.slug, number, session.index);
 
 	if (!current) return null;
 
-	const refresh = () =>
-		queryClient.invalidateQueries({ queryKey: ["checkpoint", checkpoint.id] });
-
-	const checklist = sprintChecklist(checkpoint, current, !!previous);
 	const nextSession = sessions.find(
 		(session) => session.index === current.number + 1,
 	);
@@ -139,119 +90,6 @@ export function RunningCheckpoint({
 		(session) => session.index === current.number,
 	);
 	const finalSession = sessions.at(-1);
-
-	const itemLabel = (item: ChecklistItem) =>
-		({
-			verdict: t(
-				"workflow.path.check.verdict",
-				"Read the Checkpoint {number} verdict",
-				{ number: String(previous?.number) },
-			),
-			priorities: t(
-				"workflow.path.check.priorities",
-				"Set sprint priorities with {name}",
-				{ name: curatorName },
-			),
-			build: t("workflow.path.check.build", "Upload the current build"),
-			devlog: t("workflow.path.check.devlog", "Write the sprint devlog"),
-			artifacts: t("workflow.path.check.artifacts", "Attach artifacts"),
-		})[item.key];
-
-	/** The line's date on the right; today's is marked, a missed one is red. */
-	const itemDue = (item: ChecklistItem) => {
-		if (!item.dueAt) return null;
-		const days = daysUntil(item.dueAt);
-		const date = formatShort(item.dueAt);
-		if (item.done) return <span className={styles.tertiary}>{date}</span>;
-		if (days < 0)
-			return (
-				<Typography.Text type="danger">
-					{t("workflow.path.due.overdue", "overdue since {date}", { date })}
-				</Typography.Text>
-			);
-		const label =
-			item.key === "priorities" || item.key === "verdict"
-				? t("workflow.path.check.at-session", "at the session {date}", { date })
-				: t("workflow.path.due.on", "due {date}", { date });
-		return (
-			<>
-				{days === 0 && (
-					<StatusDot
-						tone="danger"
-						label={t("workflow.path.due.todayTag", "Today")}
-					/>
-				)}
-				{label}
-			</>
-		);
-	};
-
-	const openItem = (key: ChecklistKey) => {
-		if (key === "verdict") {
-			setModal("results");
-			if (!checkpoint.previousVerdictReadAt) markRead.mutate();
-			return;
-		}
-		if (key === "priorities" && openingSession) {
-			router.push(sessionHref(openingSession));
-			return;
-		}
-		if (key === "build" || key === "devlog" || key === "artifacts")
-			setModal(key);
-	};
-
-	const checklistRow = (item: ChecklistItem) => {
-		// The priorities are set in the call: the line opens it, as Join session does.
-		const actionable =
-			item.key === "priorities"
-				? !!openingSession
-				: canManage && !item.done && item.key !== "verdict";
-		const due = itemDue(item);
-		const body = (
-			<>
-				{item.done ? (
-					<IconCircleCheck size={20} className={styles.taskIconDone} />
-				) : (
-					ICON[item.key]
-				)}
-				<span
-					className={`${styles.itemText}${item.done ? ` ${styles.secondary}` : ""}`}
-				>
-					{itemLabel(item)}
-				</span>
-				{due && <span className={styles.itemDue}>{due}</span>}
-				{item.key === "verdict" && (
-					<Button
-						type="text"
-						size="small"
-						className={styles.viewResults}
-						onClick={() => openItem("verdict")}
-					>
-						{t("workflow.path.check.view-results", "View results")}
-					</Button>
-				)}
-				{actionable && (
-					<IconChevronRight size={16} className={styles.chevron} />
-				)}
-			</>
-		);
-
-		return actionable ? (
-			// ui-guard-ignore the whole checklist row is the action, as in frame d6Yh7
-			<button
-				key={item.key}
-				type="button"
-				className={styles.checklistItem}
-				onClick={() => openItem(item.key)}
-			>
-				{body}
-			</button>
-		) : (
-			<div key={item.key} className={styles.checklistItem}>
-				{body}
-			</div>
-		);
-	};
 
 	const who = (
 		<span className={styles.chip}>
@@ -285,12 +123,20 @@ export function RunningCheckpoint({
 			<span className={`${styles.meta} ${styles.grow}`}>
 				{formatShort(session.scheduledAt)}
 			</span>
-			<Link href={sessionHref(session)} className={styles.link}>
-				{isAI
-					? t("workflow.path.session.review", "Review")
-					: t("workflow.path.session.notes", "Notes")}
-				<IconArrowUpRight size={14} />
-			</Link>
+			{session.missed ? (
+				<Typography.Text type="danger">
+					{t("workflow.path.session.missed", "{name} didn't join", {
+						name: curatorName,
+					})}
+				</Typography.Text>
+			) : (
+				<Link href={sessionHref(session)} className={styles.link}>
+					{isAI
+						? t("workflow.path.session.review", "Review")
+						: t("workflow.path.session.notes", "Notes")}
+					<IconArrowUpRight size={14} />
+				</Link>
+			)}
 		</div>
 	);
 
@@ -569,9 +415,10 @@ export function RunningCheckpoint({
 			<div className={today ? styles.sessionToday : styles.session}>
 				<div className={styles.sessionWho}>
 					{isAI ? (
-						<span className={`${styles.chipIcon} ${styles.aiTile}`}>
-							<IconSparkles size={24} />
-						</span>
+						<AppAvatar
+							src={checkpoint.character?.avatar ?? AI_CURATOR_AVATAR}
+							size={56}
+						/>
 					) : (
 						<AppAvatar src={checkpoint.curator?.image} size={56}>
 							{curatorName[0]}
@@ -710,25 +557,26 @@ export function RunningCheckpoint({
 						held(openingSession) &&
 						sessionDone(openingSession)}
 
-					<div>
-						<div className={styles.checklistHead}>
-							{nextLabel}
-							<span className={styles.meta}>
-								{t("workflow.path.count", "{done} of {total}", {
-									done: String(checklist.filter((item) => item.done).length),
-									total: String(checklist.length),
-								})}
-							</span>
-						</div>
-						{checklist.map(checklistRow)}
-					</div>
+					<SprintChecklist
+						checkpoint={checkpoint}
+						sprint={current}
+						project={project}
+						previous={previous}
+						canManage={canManage}
+						head={nextLabel}
+					/>
 				</div>
 			</PathNode>
 
 			{!sessionToday &&
 				nextSession &&
 				nextSession.index <= 4 &&
-				sessionCard(nextSession)}
+				// A call moved before its sprint and let pass is behind, not ahead.
+				(!isAI && held(nextSession) ? (
+					<PathNode marker="session">{sessionDone(nextSession)}</PathNode>
+				) : (
+					sessionCard(nextSession)
+				))}
 
 			{ahead.length > 0 && (
 				<PathNode marker="none">
@@ -797,55 +645,6 @@ export function RunningCheckpoint({
 					</span>
 				</div>
 			</PathNode>
-
-			{previous && (
-				<Modal
-					open={modal === "results"}
-					onCancel={() => setModal(null)}
-					footer={null}
-					title={t(
-						"workflow.path.results.title",
-						"Checkpoint {number} results",
-						{
-							number: String(previous.number),
-						},
-					)}
-				>
-					<div className={styles.result}>
-						<CheckpointResult checkpoint={previous.checkpoint} />
-					</div>
-				</Modal>
-			)}
-
-			<DevLogPostModal
-				projectId={project.id}
-				projectName={project.name}
-				stageName={checkpoint.stageName}
-				nextNumber={
-					Math.max(0, ...(reports ?? []).map((r) => r.number ?? 0)) + 1
-				}
-				open={modal === "devlog"}
-				onClose={() => setModal(null)}
-				onSave={() => {
-					setModal(null);
-					refresh();
-				}}
-			/>
-			<CreateArtifactModal
-				open={modal === "build"}
-				projectId={project.id}
-				stageName={checkpoint.stageName}
-				onCreate={() => {
-					setModal(null);
-					refresh();
-				}}
-				onCancel={() => setModal(null)}
-			/>
-			<AttachEvidenceModal
-				open={modal === "artifacts"}
-				checkpoint={checkpoint}
-				onClose={() => setModal(null)}
-			/>
 		</>
 	);
 }

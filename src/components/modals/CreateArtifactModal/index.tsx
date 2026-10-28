@@ -49,6 +49,8 @@ type CreateArtifactModalProps = {
 	stageName?: string;
 	onCreate: (created: ProjectArtifact) => void;
 	onCancel: () => void;
+	/** The kind the form opens on: a sprint's build asks for a video or a build. */
+	initialKind?: ArtifactKind;
 };
 
 /** Frame `ZKHiF`, minus the file drop: there is no storage for uploads yet. */
@@ -58,13 +60,14 @@ const CreateArtifactModal = ({
 	stageName,
 	onCreate,
 	onCancel,
+	initialKind = INITIAL_KIND,
 }: CreateArtifactModalProps) => {
 	const { t } = useTranslate();
 	const kindLabel = useArtifactKindLabel();
 	const linkHint = useLinkHint();
 	const typeLabel = useArtifactTypeLabel();
 	const [form] = Form.useForm<ArtifactForm>();
-	const kind = Form.useWatch("kind", form) ?? INITIAL_KIND;
+	const kind = Form.useWatch("kind", form) ?? initialKind;
 
 	const { mutateAsync: createArtifact, isPending } = useMutation({
 		mutationFn: ({ kind: _kind, ...artifact }: ArtifactForm) =>
@@ -140,8 +143,8 @@ const CreateArtifactModal = ({
 				autoComplete="off"
 				requiredMark={false}
 				initialValues={{
-					kind: INITIAL_KIND,
-					type: TYPES_OF_KIND[INITIAL_KIND][0],
+					kind: initialKind,
+					type: TYPES_OF_KIND[initialKind][0],
 				}}
 			>
 				<Form.Item name="kind" label={t("artifacts.modal.kind.label", "Kind")}>

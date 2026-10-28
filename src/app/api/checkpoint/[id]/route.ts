@@ -39,24 +39,9 @@ import {
 } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 
-/**
- * The space is resolved from the checkpoint itself, so a checkpoint id from one
- * project cannot be paired with a project id from another.
- */
-
-export const GET = pipe(
-	withAuth({ mode: "user" }),
-	withSpaceGuard({
-		permission: "project.checkpoints.view",
-		idFrom: projectOfCheckpoint,
-	}),
-)(async (_req, ctx, { user }) => {
-	const currentUser = user as SessionUser | undefined;
-	if (!currentUser) return apiError.unauthorized();
-
-	const { id } = (await ctx.params) as { id: string };
+/** The checkpoint as its page reads it; a draft paid for without the webhook is settled first. */
+const readCheckpoint = async (id: string) => {
 	let checkpoint = await getCheckpoint(id);
-
 	if (!checkpoint) return apiError.notFound();
 
 	// A draft may have been paid for without the webhook ever arriving; Stripe
@@ -70,6 +55,37 @@ export const GET = pipe(
 	}
 
 	return json(withProgress(checkpoint));
+};
+
+/**
+ * The space is resolved from the checkpoint itself, so a checkpoint id from one
+ * project cannot be paired with a project id from another.
+ */
+const readInSpace = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.checkpoints.view",
+		idFrom: projectOfCheckpoint,
+	}),
+)(async (_req, ctx) => {
+	const { id } = (await ctx.params) as { id: string };
+	return readCheckpoint(id);
+});
+
+/**
+ * The project's team reads through its space; the checkpoint's own curator,
+ * who is no member of it, reads this one checkpoint (GDHUB-117: the Sprint tab
+ * on Path to Checkpoint).
+ */
+export const GET = withAuth({ mode: "user" })(async (req, ctx, locals) => {
+	const user = locals.user as SessionUser | undefined;
+	if (!user) return apiError.unauthorized();
+
+	const { id } = (await ctx.params) as { id: string };
+	const curated = await prisma.projectCheckpoint.count({
+		where: { id, curatorId: user.id },
+	});
+	return curated ? readCheckpoint(id) : readInSpace(req, ctx, locals);
 });
 
 /**

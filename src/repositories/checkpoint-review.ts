@@ -14,35 +14,53 @@ import {
 	type CheckpointVerdict,
 } from "@/config/prisma-enums";
 import {
-	aiPlanCloses,
 	type PlanEdit,
+	planCloses,
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
-import { MS_PER_DAY } from "@/lib/checkpoint-days";
+import { MS_PER_DAY, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
 import { sprintRange } from "@/lib/checkpoint-sprints";
+import { lettersSoFar } from "@/lib/curator-letters";
+import { type CuratorNow, curatorNow } from "@/lib/curator-now";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import {
 	knownOnly,
 	sprintEvidence,
 } from "@/repositories/checkpoint-call-notes";
-import { closeCheckpoint } from "@/repositories/checkpoint-curator.repository";
+import {
+	closeCheckpoint,
+	writeFirstLetter,
+} from "@/repositories/checkpoint-curator.repository";
 import {
 	checkpointNumber,
 	previousVerdict,
 } from "@/repositories/checkpoint-number";
 import { canEditPlan } from "@/repositories/checkpoint-plan-edit";
-import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import {
+	curatorTeam,
+	projectPicture,
+	runPeriod,
+	stageWorkflow,
+} from "@/repositories/curator-context";
 import { journal } from "@/repositories/curator-journal";
 import {
 	devlogMediaLines,
 	seeCheckpointEvidence,
+	sprintArtifactLines,
 } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
+import type { JournalEntry } from "@/services/checkpoint-curator/prompts/card";
+import { characterFace } from "@/services/checkpoint-curator/prompts/card";
+import type {
+	CuratorTeam,
+	CuratorWorkflow,
+} from "@/services/checkpoint-curator/types";
 import {
 	notify,
+	notifyPlanChecked,
 	recipient,
 	reviewUrl,
 } from "@/services/checkpoint-notifications";
@@ -73,6 +91,8 @@ export type CheckpointReviewDto = {
 	previous: PreviousVerdict | null;
 	/** The session the checkpoint is at now: the last one whose day has come. */
 	current: number;
+	/** What the AI curator says now, and what it waits for (GDHUB-117). */
+	curatorNow: CuratorNow;
 	number: number;
 	stageName: string;
 	startedAt: string;
@@ -84,6 +104,10 @@ export type CheckpointReviewDto = {
 		edit: PlanEdit;
 		/** Until when `edit` holds. */
 		editUntil: string | null;
+		/** The AI curator has read the tasks the author sent: its one check of day 1. */
+		checked: boolean;
+		/** The goal and tasks agreed: approved on the AI curator's day 1, on call 1 with a pro one. */
+		approved: boolean;
 		tasks: {
 			id: string;
 			text: string;
@@ -101,6 +125,8 @@ export type CheckpointReviewDto = {
 	verdict: { verdict: CheckpointVerdict; note: string | null } | null;
 	/** The stage a "Ready for the next stage" verdict opens, while the project is still on this one. */
 	nextStage: { name: string; key: string } | null;
+	/** Who the AI curator plays on this checkpoint — its name and avatar. */
+	character: { name: string; avatar: string | null } | null;
 };
 
 const taskSelect = {
@@ -149,6 +175,23 @@ export const curatorKindOf = async (checkpointId: string) =>
 	)?.curatorKind ?? null;
 
 /**
+ * The session Path to Checkpoint opens on without a sprint asked for: the last
+ * whose day has come, a call later today included — the one the team is in.
+ */
+export const currentSessionIndex = async (
+	checkpointId: string,
+	now = new Date(),
+) => {
+	const endOfToday = new Date(utcStartOfDay(now).getTime() + MS_PER_DAY);
+	const latest = await prisma.checkpointSession.findFirst({
+		where: { checkpointId, scheduledAt: { lt: endOfToday } },
+		orderBy: { index: "desc" },
+		select: { index: true },
+	});
+	return latest?.index ?? 1;
+};
+
+/**
  * An AI checkpoint's Curator's Review, all five sessions, for its team. Anyone
  * else, and a checkpoint with a person as curator, gets null.
  */
@@ -169,6 +212,9 @@ export const getReview = async (
 			stepId: true,
 			goal: true,
 			goalAgreedAt: true,
+			planCheckedAt: true,
+			scopeConfirmedAt: true,
+			curatorCharacter: true,
 			startedAt: true,
 			dueAt: true,
 			verdict: true,
@@ -246,6 +292,10 @@ export const getReview = async (
 
 	return {
 		current,
+		curatorNow: curatorNow(
+			{ ...checkpoint, startedAt: checkpoint.startedAt },
+			now,
+		),
 		number,
 		previous,
 		stageName: checkpoint.stageName,
@@ -260,11 +310,12 @@ export const getReview = async (
 			goal: checkpoint.goal,
 			edit,
 			editUntil:
-				editUntil(
-					edit,
-					checkpoint.startedAt,
-					checkpoint.sessions,
-				)?.toISOString() ?? null,
+				editUntil(edit, {
+					...checkpoint,
+					startedAt: checkpoint.startedAt,
+				})?.toISOString() ?? null,
+			checked: !!checkpoint.planCheckedAt,
+			approved: !!checkpoint.goalAgreedAt,
 			tasks: checkpoint.items.map((item) => ({
 				id: item.id,
 				text: item.text,
@@ -282,6 +333,7 @@ export const getReview = async (
 		verdict: checkpoint.verdict
 			? { verdict: checkpoint.verdict, note: checkpoint.verdictNote }
 			: null,
+		character: characterFace(checkpoint.curatorCharacter),
 		nextStage: next
 			? {
 					name: next.name ?? "",
@@ -293,26 +345,43 @@ export const getReview = async (
 
 const editUntil = (
 	edit: PlanEdit,
-	startedAt: Date,
-	sessions: { index: number; scheduledAt: Date; endedAt: Date | null }[],
+	checkpoint: Parameters<typeof planCloses>[0] & {
+		startedAt: Date;
+		sessions: { index: number; scheduledAt: Date; endedAt: Date | null }[];
+	},
 ) => {
-	if (edit === "plan") return aiPlanCloses(startedAt);
-	if (edit === "tasks") return scopeWindow(startedAt, sessions).closes;
+	if (edit === "goalAndTasks") return planCloses(checkpoint);
+	if (edit === "tasks") {
+		return scopeWindow(
+			checkpoint.startedAt,
+			checkpoint.sessions,
+			checkpoint.curatorKind,
+		).closes;
+	}
 	return null;
 };
 
-export type AdviceRefusal = "notFound" | "forbidden" | "planClosed" | "failed";
+export type AdviceRefusal =
+	| "notFound"
+	| "forbidden"
+	| "planClosed"
+	| "alreadyChecked"
+	| "noTasks"
+	| "failed";
 
 /**
  * The AI's read of the tasks as saved, written on the session the plan is open
  * on — the AI curator's start and day 15, or a pro checkpoint's draft before
  * call 1. The same plan is not read twice: the answer is kept with the
- * hash of what it answered.
+ * hash of what it answered. The AI curator's start is checked once, on the
+ * tasks the author sends; before its first letter, this writes that instead.
  */
 export const adviseOnPlan = async (
 	checkpointId: string,
 	userId: string,
 	now = new Date(),
+	/** Where the letter goes out: after the response in a request, inline otherwise. */
+	later: (task: () => Promise<void>) => unknown = (task) => task(),
 ): Promise<AdviceRefusal | null> => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
@@ -320,8 +389,13 @@ export const adviseOnPlan = async (
 			curatorId: true,
 			curatorKind: true,
 			goal: true,
+			curatorCharacter: true,
 			goalAgreedAt: true,
+			planCheckedAt: true,
+			scopeConfirmedAt: true,
+			projectId: true,
 			stageName: true,
+			stepId: true,
 			startedAt: true,
 			project: { select: { authorId: true } },
 			sessions: {
@@ -347,8 +421,20 @@ export const adviseOnPlan = async (
 	if (!session) return "planClosed";
 
 	const content = session.content as CuratorReview | null;
+	const start = ai && index === 1;
+	if (start && !content) {
+		// The read after payment failed: the page asks for the letter on first open.
+		return (await writeFirstLetter(checkpointId, { notify: false }))
+			? null
+			: "failed";
+	}
+	if (start && checkpoint.planCheckedAt) return "alreadyChecked";
+	if (start && !checkpoint.items.some((item) => !item.cut)) return "noTasks";
+
 	const input = adviceInput(
 		checkpoint,
+		await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		await curatorTeam(checkpointId, checkpoint.projectId),
 		index === 1 ? "start" : "midway",
 		content?.notes?.inShort ?? null,
 		// Halfway reads the first two sprints, a period that does not move day by day.
@@ -361,6 +447,8 @@ export const adviseOnPlan = async (
 					}
 				: undefined,
 		),
+		checkpoint.curatorCharacter,
+		lettersSoFar(checkpoint.sessions, session.index + 1),
 	);
 	if (content?.advice?.hash === hashOf(input)) return null;
 
@@ -377,15 +465,30 @@ export const adviseOnPlan = async (
 		data: {
 			// The start's letter is the advice itself; a review keeps its own.
 			content: {
-				message: content?.notes ? content.message : written.message,
+				...content,
+				message: content?.notes
+					? content.message
+					: (written.message ?? content?.message ?? ""),
 				notes: content?.notes ?? null,
 				advice: written.advice,
+				goal: written.goal ?? content?.goal,
+				...(start && {
+					firstLetter: content?.firstLetter ?? content?.message,
+				}),
 			} satisfies CuratorReview,
 			// With a pro curator the session stays unwritten: call 1's notes
 			// claim it by a null status, and they replace this draft advice.
 			...(ai && { contentStatus: CheckpointSessionContentStatus.Ready }),
 		},
 	});
+	if (start) {
+		await prisma.projectCheckpoint.update({
+			where: { id: checkpointId },
+			data: { planCheckedAt: now },
+		});
+		const closes = planCloses({ ...checkpoint, planCheckedAt: now });
+		if (closes) await later(() => notifyPlanChecked(checkpointId, closes));
+	}
 	return null;
 };
 
@@ -393,15 +496,21 @@ export const adviseOnPlan = async (
 const adviceInput = (
 	checkpoint: {
 		goal: string;
-		stageName: string;
 		items: Parameters<typeof toCuratorTask>[0][];
 	},
+	workflow: CuratorWorkflow,
+	team: CuratorTeam,
 	moment: PlanAdviceInput["moment"],
 	review: string | null,
 	picture: string,
+	character: string | null,
+	journal: JournalEntry[],
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
-	stage: checkpoint.stageName,
+	character,
+	journal,
+	workflow,
+	team,
 	tasks: checkpoint.items.map(toCuratorTask),
 	moment,
 	review,
@@ -427,7 +536,7 @@ const adviceFor = async (
 		add: written.add,
 		hash: hashOf(input),
 	};
-	return { message: written.message, advice };
+	return { message: written.message, advice, goal: written.goal };
 };
 
 /**
@@ -490,13 +599,14 @@ const reviewSelect = {
 	projectId: true,
 	goal: true,
 	stageName: true,
+	stepId: true,
 	startedAt: true,
 	dueAt: true,
 	verdict: true,
 	verdictNote: true,
+	curatorCharacter: true,
 	items: taskSelect,
 	sessions: { select: { index: true, content: true } },
-	pulses: { select: { week: true, confirmedAt: true } },
 } as const;
 
 type ReviewCheckpoint = Prisma.ProjectCheckpointGetPayload<{
@@ -515,17 +625,22 @@ const sprintReviewInput = async (
 	final: boolean,
 ) => {
 	const sprint = sessionIndex - 1;
-	const [{ devlogs, posts, artifacts }, picture] = await Promise.all([
-		sprintEvidence(checkpoint.projectId, startedAt, sprint),
-		projectPicture(
-			checkpoint.id,
-			final
-				? runPeriod(startedAt, checkpoint.dueAt)
-				: sprintRange(startedAt, sprint),
-		),
+	const [{ devlogs, posts, artifacts }, picture, workflow, team] =
+		await Promise.all([
+			sprintEvidence(checkpoint.projectId, startedAt, sprint),
+			projectPicture(
+				checkpoint.id,
+				final
+					? runPeriod(startedAt, checkpoint.dueAt)
+					: sprintRange(startedAt, sprint),
+			),
+			stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+			curatorTeam(checkpoint.id, checkpoint.projectId),
+		]);
+	const [devlogMedia, artifactsSeen] = await Promise.all([
+		devlogMediaLines(posts.map((post) => post.id)),
+		sprintArtifactLines(checkpoint.id, sprint),
 	]);
-	const devlogMedia = await devlogMediaLines(posts.map((post) => post.id));
-	const pulses = checkpoint.pulses.filter((pulse) => pulse.week === sprint);
 	// An AI review keeps its notes under `notes`; a human call's notes are the content.
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === sessionIndex - 1,
@@ -537,16 +652,16 @@ const sprintReviewInput = async (
 
 	return {
 		goal: checkpoint.goal,
-		stage: checkpoint.stageName,
+		character: checkpoint.curatorCharacter,
+		journal: lettersSoFar(checkpoint.sessions, sessionIndex),
+		workflow,
 		sprint,
 		tasks: checkpoint.items.map(toCuratorTask),
 		devlogs,
 		devlogMedia,
+		artifactsSeen,
 		artifacts,
-		pulse: {
-			worked: pulses.filter((pulse) => pulse.confirmedAt).length,
-			missing: pulses.filter((pulse) => !pulse.confirmedAt).length,
-		},
+		team,
 		focusLastReview: agreed.map((line) => line.text),
 		verdict:
 			final && checkpoint.verdict
@@ -611,7 +726,19 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 	const midway =
 		session.index === SCOPE_SESSION
 			? await adviceFor(
-					adviceInput(checkpoint, "midway", notes.inShort, input.picture),
+					adviceInput(
+						checkpoint,
+						input.workflow,
+						input.team,
+						"midway",
+						notes.inShort,
+						input.picture,
+						input.character ?? null,
+						[
+							...(input.journal ?? []),
+							{ day: sessionDay(session.index), text: review.message },
+						],
+					),
 					checkpoint.items,
 					session.checkpointId,
 				).catch(() => null)
@@ -655,9 +782,14 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 				title: `The Sprint ${sprint} review of ${checkpoint.project.name} is ready`,
 				message:
 					session.index === SCOPE_SESSION
-						? "What the sprint showed, the focus for the next one, and the curator's advice on the tasks — they can change until tomorrow."
+						? "What the sprint showed, the focus for the next one, and the curator's advice on the tasks. This is the last change to them: adjust them if needed and press Confirm the tasks by this time tomorrow."
 						: "What the sprint showed and the focus for the next one.",
-				redirectUrl: reviewUrl(checkpoint.project.slug, number, session.index),
+				redirectUrl: reviewUrl(
+					checkpoint.project.slug,
+					number,
+					session.index,
+					"review",
+				),
 			}),
 		),
 	);

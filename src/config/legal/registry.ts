@@ -130,7 +130,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"60779eba75cd00db7807b0b325c4d15a812a379031d40023dc1154334938a9ae",
+					"36e6728770eefde4efa6cc37b143f85e3d822bac448fa05876f8cde2a5de59ad",
 			},
 		],
 	},

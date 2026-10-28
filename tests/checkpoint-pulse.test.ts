@@ -10,6 +10,8 @@ const pulseFindMany = vi.fn();
 const pulseCreate = vi.fn();
 const pulseFindUnique = vi.fn();
 const pulseUpdateMany = vi.fn();
+const projectFindUnique = vi.fn();
+const auditFindMany = vi.fn();
 
 vi.mock("@/services/checkpoint-notifications", () => ({
 	appUrl: () => "https://gdhub.test",
@@ -25,6 +27,8 @@ vi.mock("@/services/prisma", () => ({
 		},
 		projectReport: { findMany: (...a: unknown[]) => reportFindMany(...a) },
 		projectArtifact: { findMany: (...a: unknown[]) => artifactFindMany(...a) },
+		project: { findUnique: (...a: unknown[]) => projectFindUnique(...a) },
+		auditLog: { findMany: (...a: unknown[]) => auditFindMany(...a) },
 		checkpointPulse: {
 			findMany: (...a: unknown[]) => pulseFindMany(...a),
 			create: (...a: unknown[]) => pulseCreate(...a),
@@ -74,6 +78,7 @@ describe("requestPulses", () => {
 					member("oleg"),
 					member("ana"),
 					member("ivan"),
+					member("kira"),
 					member("curator"),
 				],
 			},
@@ -85,19 +90,34 @@ describe("requestPulses", () => {
 		reportFindMany.mockResolvedValue([{ authorId: "marta" }]);
 		artifactFindMany.mockResolvedValue([{ createdById: "oleg" }]);
 		pulseFindMany.mockResolvedValue([{ teamMemberId: "m-ivan" }]);
+		projectFindUnique.mockResolvedValue({
+			team: {
+				id: "team",
+				members: [],
+				vacancies: [{ id: "vac" }],
+				invitations: [],
+			},
+			workflow: null,
+			reports: [],
+			artifacts: [],
+			checkpoints: [{ id: "cp" }],
+		});
+		// Kira posted a vacancy this sprint.
+		auditFindMany.mockResolvedValue([{ actorUserId: "kira" }]);
 		pulseCreate.mockImplementation(async ({ data }) => ({
 			id: `pulse-${data.teamMemberId}`,
 		}));
 	});
 
 	it("counts work already shown, asks the rest once, leaves the curator out", async () => {
-		expect(await requestPulses(lastDay)).toEqual({ asked: 1, counted: 2 });
+		expect(await requestPulses(lastDay)).toEqual({ asked: 1, counted: 3 });
 
 		const created = pulseCreate.mock.calls.map(([args]) => args.data);
 		expect(created).toEqual([
 			expect.objectContaining({ teamMemberId: "m-marta", week: 1, source: "devlog", confirmedAt: lastDay }),
 			expect.objectContaining({ teamMemberId: "m-oleg", week: 1, source: "artifact", confirmedAt: lastDay }),
 			{ checkpointId: "cp", teamMemberId: "m-ana", week: 1, requestedAt: lastDay },
+			expect.objectContaining({ teamMemberId: "m-kira", week: 1, source: "activity", confirmedAt: lastDay }),
 		]);
 
 		expect(send).toHaveBeenCalledTimes(1);
@@ -106,6 +126,21 @@ describe("requestPulses", () => {
 		expect(transactionId).toBe("cp-pulse-pulse-m-ana");
 		expect(payload.message).toContain("ignore this email");
 		expect(pulseIdOf(payload.redirectUrl.split("/pulse/")[1])).toBe("pulse-m-ana");
+	});
+
+	it("traces activity to the project through what it touched, in the sprint", async () => {
+		await requestPulses(lastDay);
+		const { where } = auditFindMany.mock.calls[0][0];
+		expect(where.createdAt).toEqual({
+			gte: new Date("2026-10-05T00:00:00Z"),
+			lt: new Date("2026-10-12T00:00:00Z"),
+		});
+		expect(where.OR).toEqual([
+			{ entity: "Project", entityId: { in: ["p"] } },
+			{ entity: "Team", entityId: { in: ["team"] } },
+			{ entity: "TeamVacancy", entityId: { in: ["vac"] } },
+			{ entity: "ProjectCheckpoint", entityId: { in: ["cp"] } },
+		]);
 	});
 
 	it("asks nothing on other days of the sprint", async () => {

@@ -16,6 +16,7 @@ import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
+import { type PathTab, rememberInAddress } from "@/lib/checkpoint-hrefs";
 import { CallGoal } from "./CallGoal";
 import { CallHeader } from "./CallHeader";
 import { CallPanel, type PanelTab } from "./CallPanel";
@@ -32,17 +33,30 @@ export type CallRoomProps = {
 	checkpointId: string;
 	index: number;
 	backHref: string;
+	/** The tab a link asked for; a call's review is its notes. */
+	tab?: PathTab;
 };
 
 /**
  * A checkpoint call, for its curator and its team alike. The room is Daily's;
  * who may enter it and when is the server's, asked again while waiting.
  */
-export function CallRoom({ checkpointId, index, backHref }: CallRoomProps) {
+export function CallRoom({
+	checkpointId,
+	index,
+	backHref,
+	tab: asked,
+}: CallRoomProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [joined, setJoined] = useState(false);
-	const [tab, setTab] = useState<PanelTab | null>(null);
+	const [tab, setPickedTab] = useState<PanelTab | null>(
+		asked === "review" ? "notes" : (asked ?? null),
+	);
+	const setTab = (key: PanelTab) => {
+		setPickedTab(key);
+		rememberInAddress("tab", key === "notes" ? "review" : key);
+	};
 	const {
 		data: call,
 		isPending,

@@ -34,7 +34,7 @@ const DOMAIN = "example.com";
 const contexts: BrowserContext[] = [];
 
 export const IMAGE =
-	"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Fronalpstock_big.jpg/640px-Fronalpstock_big.jpg";
+	"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Fronalpstock_big.jpg/960px-Fronalpstock_big.jpg";
 const VIDEO_ID = "aqz-KE-bpKQ";
 export const VIDEO = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
 

@@ -144,6 +144,13 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const requiredOpen = current.tasks.some(
 		(task) => task.required && !task.done,
 	);
+	// Once a checkpoint ran on this stage, one of them has to approve the move.
+	const stageVerdicts = (list?.closed.rows ?? []).filter(
+		(row) => row.stepId === current.id && row.verdict,
+	);
+	const notApproved =
+		stageVerdicts.length > 0 &&
+		!stageVerdicts.some((row) => row.verdict === CheckpointVerdict.StageClosed);
 	const nextStep = steps[current.order + 1];
 	const lockedReason = heldBy
 		? t(
@@ -153,7 +160,12 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 			)
 		: requiredOpen
 			? t("workflow.path.stage.locked", "Finish the required tasks to move on")
-			: null;
+			: notApproved
+				? t(
+						"workflow.path.stage.notApproved",
+						"Opens when a checkpoint on this stage ends with Ready for the next stage",
+					)
+				: null;
 	const currentName = stepName(current.order);
 	const nextName = nextStep ? stepName(nextStep.order) : "";
 	const goNext = (afterVerdict: boolean) => setConfirm({ afterVerdict });

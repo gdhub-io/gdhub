@@ -7,8 +7,11 @@ import {
 	CURATOR_STANCE,
 	localeLine,
 	renderCard,
+	renderCharacter,
+	renderJournal,
 	renderPicture,
-	renderStage,
+	renderTeam,
+	renderWorkflow,
 } from "./card";
 
 /**
@@ -42,7 +45,7 @@ export const reportSchema = () => ({
 		summary: {
 			type: "string",
 			description:
-				"The report the author reads. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 300 words.",
+				"The report, plain and to the point. What was promised, what changed on day 15 if anything, what is proven and what is not, and what the next checkpoint starts from. Under 150 words.",
 		},
 		verdict: {
 			type: "string",
@@ -55,7 +58,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing.",
+				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -65,6 +68,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 	{
 		role: "system" as const,
 		content: stripIndents`
+			${renderCharacter(input.character, "verdict")}
+
 			${CURATOR_STANCE}
 
 			This is the day-28 report. Facts only — everything you write must be
@@ -73,10 +78,11 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			The three verdicts:
 			- StageClosed: every outcome that was not cut is delivered, AND what has to
 			  be done on this stage to move on (listed under "What the project
-			  shows") is done. The project can leave this stage. Tasks the
-			  stage only suggests never hold it.
+			  shows") is done. The project can leave this stage.
 			- GoalMet: every outcome that was not cut is delivered, but the stage
-			  needs more. The next checkpoint runs on the same stage.
+			  needs more. The next checkpoint runs on the same stage — a normal
+			  outcome, since a stage often takes several checkpoints; never frame
+			  it as falling short.
 			- GoalMissed: an outcome that was not cut is not delivered.
 
 			You are a cautious optimist. Whether an outcome is delivered is not yours
@@ -102,15 +108,27 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			Where evidence was looked at, say what it shows.
 
+			The project may move to the next stage only when both hold: every
+			outcome of this checkpoint is delivered, and every required task of the
+			stage is done. With the goal missed, never say the project can move on,
+			even where the stage's own tasks are done — say what still stands
+			between it and the next stage.
+
+			In the summary and the note, name the verdict the way the author sees it
+			— the goal was met, the goal was missed, or the project is ready for the
+			next stage — never by its code (GoalMet, GoalMissed, StageClosed).
+
 			${localeLine(locale)}
 		`,
 	},
 	{
 		role: "user" as const,
 		content: stripIndents`
+			${renderJournal(input.journal)}
+
 			${renderCard(input.card)}
 
-			${renderStage(input.stage)}
+			${renderWorkflow(input.workflow)}
 
 			${
 				input.revision
@@ -163,15 +181,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					: ""
 			}
 
-			Weekly pulse, member by week:
-			${
-				input.pulses
-					.map(
-						(row) =>
-							`- ${row.member}: ${row.weeks.map((week) => (week ? "yes" : "—")).join(" ")}`,
-					)
-					.join("\n") || "- (no pulse recorded)"
-			}
+			${renderTeam(input.team)}
 
 			${renderPicture(input.picture)}
 

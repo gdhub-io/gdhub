@@ -338,9 +338,8 @@
 	align-items: flex-start;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-4) var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
 	min-width: 0;
 }
 
@@ -361,9 +360,8 @@
 // Call panel `gP5gH` / `Ovz5i`: the tabs on the left, the call switcher on the right.
 .panel {
 	padding: var(--gd-space-2) var(--gd-space-6) var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
 	min-width: 0;
 }
 
@@ -378,16 +376,6 @@
 	}
 }
 
-.switcher {
-	max-width: 100%;
-	overflow-x: auto;
-}
-
-.lockedOption {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--gd-space-1);
-}
 
 .tabBody {
 	display: flex;
@@ -619,6 +607,15 @@
 }
 
 // The AI's colour: the game-design direction's ink, the purple the AI tag wears.
+.goalAdvice {
+	margin-top: var(--gd-space-2);
+}
+
+.why {
+	padding-inline: var(--gd-space-3);
+	font-size: var(--gd-font-size-caption);
+}
+
 .advice {
 	display: flex;
 	align-items: flex-start;
@@ -636,11 +633,6 @@
 .adviceText.adviceText {
 	color: inherit;
 	font-size: var(--gd-font-size-body-sm);
-}
-
-// On call 1 the goal is edited in place: no field outline, the text where it reads.
-.goalInput.goalInput {
-	padding: 0;
 }
 
 .brief {
@@ -662,4 +654,20 @@
 .briefEmpty {
 	display: block;
 	padding-top: var(--gd-space-4);
+}
+
+// Frame mSnxr: the arrows on the panel's own ground, the session in a filled chip.
+.sessionSwitcher {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+}
+
+.sessionCurrent {
+	display: inline-flex;
+	align-items: baseline;
+	padding: var(--gd-space-1) var(--gd-space-3);
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-color-surface-sunken);
+	white-space: nowrap;
 }

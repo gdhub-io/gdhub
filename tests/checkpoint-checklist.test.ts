@@ -73,7 +73,7 @@ describe("sprint checklist", () => {
 		expect(keys(items)).toEqual(["build", "devlog", "artifacts"]);
 	});
 
-	it("ticks the call only once the session opening the sprint has ended", () => {
+	it("ticks the call once it has ended with the team in it", () => {
 		const session = {
 			index: 2,
 			day: 8,
@@ -83,11 +83,14 @@ describe("sprint checklist", () => {
 			curatorJoinedAt: "2026-10-08T14:01:00.000Z",
 			endedAt: null,
 			contentStatus: null,
+			missed: false,
 		};
 		const open = sprintChecklist(checkpoint({ sessions: [session] }), sprint2, false);
 		const ended = sprintChecklist(
 			checkpoint({
-				sessions: [{ ...session, endedAt: "2026-10-08T14:50:00.000Z" }],
+				sessions: [
+					{ ...session, endedAt: "2026-10-08T14:50:00.000Z", teamJoined: true },
+				],
 			}),
 			sprint2,
 			false,
@@ -135,7 +138,7 @@ describe("sprint checklist", () => {
 		expect(devlog?.dueAt).toBe("2026-10-14T00:00:00.000Z");
 	});
 
-	it("gives every line a date: the verdict and the priorities the call, the rest the sprint's last day", () => {
+	it("dates the owed lines: the verdict and the priorities the call, the rest the sprint's last day", () => {
 		const items = sprintChecklist(
 			checkpoint({
 				sessions: [
@@ -152,10 +155,116 @@ describe("sprint checklist", () => {
 
 		expect(due).toEqual({
 			verdict: "2026-10-01T14:00:00.000Z",
+			plan: "2026-10-01T14:00:00.000Z",
 			priorities: "2026-10-01T14:00:00.000Z",
 			build: "2026-10-07T00:00:00.000Z",
 			devlog: "2026-10-07T00:00:00.000Z",
-			artifacts: "2026-10-07T00:00:00.000Z",
+			// Optional: it tells what was added, not a deadline.
+			artifacts: null,
+		});
+	});
+
+	describe("the plan", () => {
+		const ai = (overrides: Partial<CheckpointDto> = {}) =>
+			checkpoint({
+				curatorKind: CheckpointCuratorKind.AI,
+				goalAgreedAt: null,
+				items: [],
+				...overrides,
+			});
+		const task = { kind: "Outcome", cut: false } as CheckpointDto["items"][number];
+		const planOf = (data: CheckpointDto, sprint = sprint1, now?: Date) =>
+			sprintChecklist(data, sprint, false, now).find((item) => item.key === "plan");
+
+		it("walks day 1 with the AI curator: write, send, approve, ready", () => {
+			expect(planOf(ai())?.step).toBe("write");
+			expect(planOf(ai({ items: [task] }))?.step).toBe("send");
+			expect(
+				planOf(ai({ items: [task], planCheckedAt: "2026-10-01T10:00:00.000Z" })),
+			).toMatchObject({ step: "approve", dueAt: "2026-10-01T22:00:00.000Z" });
+			expect(
+				planOf(ai({ goalAgreedAt: "2026-10-01T12:00:00.000Z" }))?.done,
+			).toBe(true);
+		});
+
+		it("is drafted for call 1 with a person", () => {
+			expect(planOf(checkpoint({ goalAgreedAt: null, items: [] }))).toMatchObject({
+				step: "write",
+				done: false,
+			});
+		});
+
+		it("waits on day 15 for the review, opens, then is fixed", () => {
+			const sprint3 = { ...sprint2, number: 3, firstDay: 15, lastDay: 21, devlogDay: 21 };
+			const written = ai({
+				sessions: [
+					{
+						index: 3,
+						scheduledAt: "2026-10-15T00:00:00.000Z",
+						endedAt: "2026-10-15T01:00:00.000Z",
+					} as NonNullable<CheckpointDto["sessions"]>[number],
+				],
+			});
+			expect(planOf(ai(), sprint3, new Date("2026-10-15T00:30:00Z"))?.step).toBe(
+				"waiting",
+			);
+			expect(planOf(written, sprint3, new Date("2026-10-15T12:00:00Z"))).toMatchObject({
+				step: "open",
+				dueAt: "2026-10-16T01:00:00.000Z",
+			});
+			expect(planOf(written, sprint3, new Date("2026-10-16T02:00:00Z"))?.done).toBe(true);
+			expect(
+				planOf(
+					{ ...written, scopeConfirmedAt: "2026-10-15T13:00:00.000Z" },
+					sprint3,
+					new Date("2026-10-15T14:00:00Z"),
+				)?.done,
+			).toBe(true);
+		});
+
+		it("is not a line in sprints 2 and 4", () => {
+			expect(planOf(ai(), sprint2)).toBeUndefined();
+		});
+	});
+
+	it("says who came to the call: the team, nobody from it, or not the curator", () => {
+		const callOf = (session: Partial<NonNullable<CheckpointDto["sessions"]>[number]>) =>
+			sprintChecklist(
+				checkpoint({
+					sessions: [
+						{ index: 2, scheduledAt: "2026-10-08T14:00:00.000Z", ...session } as NonNullable<
+							CheckpointDto["sessions"]
+						>[number],
+					],
+				}),
+				sprint2,
+				false,
+			).find((item) => item.key === "priorities");
+
+		expect(callOf({ teamJoined: true })).toMatchObject({ done: true, call: "team" });
+		expect(callOf({ teamJoined: false })).toMatchObject({ done: false, call: "noTeam" });
+		expect(callOf({ missed: true })).toMatchObject({ done: false, call: "missed" });
+	});
+
+	it("counts what the sprint added for the optional artifacts line", () => {
+		const items = sprintChecklist(
+			checkpoint({
+				builds: [{ id: "b2", addedAt: "2026-10-09T09:00:00.000Z", sprint: 2 }],
+				sprintArtifacts: [
+					{ id: "b2", addedAt: "2026-10-09T09:00:00.000Z", sprint: 2 },
+					{ id: "doc", addedAt: "2026-10-10T09:00:00.000Z", sprint: 2 },
+					{ id: "old", addedAt: "2026-10-03T09:00:00.000Z", sprint: 1 },
+				],
+				evidence: [evidence(2, "Concept", ["o2"])],
+			}),
+			sprint2,
+			false,
+		);
+		// The doc and the evidence; the build is its own line, sprint 1 is behind.
+		expect(items.find((item) => item.key === "artifacts")).toMatchObject({
+			optional: true,
+			done: true,
+			added: 2,
 		});
 	});
 });

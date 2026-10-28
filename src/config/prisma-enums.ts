@@ -158,6 +158,7 @@ export type EvidenceMatch = EvidenceMatchType;
 export const CheckpointJournalKind = {
 	Evidence: "Evidence",
 	DevlogMedia: "DevlogMedia",
+	Artifact: "Artifact",
 	Review: "Review",
 	Verdict: "Verdict",
 } as const satisfies Record<

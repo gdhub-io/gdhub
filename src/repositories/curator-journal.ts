@@ -30,7 +30,11 @@ export const sprintLooks = (checkpointId: string, sprint: number) =>
 			checkpointId,
 			sprint,
 			kind: {
-				in: [CheckpointJournalKind.Evidence, CheckpointJournalKind.DevlogMedia],
+				in: [
+					CheckpointJournalKind.Evidence,
+					CheckpointJournalKind.DevlogMedia,
+					CheckpointJournalKind.Artifact,
+				],
 			},
 		},
 		select: { kind: true, devlogId: true, link: true, input: true },

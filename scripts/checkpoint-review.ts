@@ -2,10 +2,11 @@
  * Dev only: write an AI checkpoint's sprint review now instead of waiting for
  * its day (GDHUB-110) — or, on a human curator's checkpoint, the brief for the
  * call that opens the next sprint, and on sprint 4 the AI's read of the
- * verdict too (GDHUB-114). The checkpoint is moved back in time so that today is the
- * chosen sprint's last day — the devlogs and artifacts of the last seven days
- * fall into it — and the review is written by the same code the
- * nightly cron runs, real model calls included (a few cents a run).
+ * verdict too (GDHUB-114). The checkpoint is moved back in time so that today
+ * is the chosen sprint's last day — for an AI review, the day after, its own —
+ * and the devlogs and artifacts of the last days fall into it; the review is
+ * written by the same code the nightly cron runs, real model calls included
+ * (a few cents a run).
  *
  *   bun run checkpoint:review <checkpointId> <sprint 1–4>
  *
@@ -13,6 +14,8 @@
  * checkpoint. Refuses any database that is not on this machine.
  */
 import { CheckpointSessionContentStatus } from "@gdhub-io/gdhub-prisma";
+import { SPRINT_DAYS } from "@/config/checkpoint";
+import { MS_PER_DAY } from "@/lib/checkpoint-days";
 import { writeVerdictRead } from "@/repositories/checkpoint-curator.repository";
 import {
 	writeBriefFor,
@@ -22,7 +25,6 @@ import { getJournal } from "@/repositories/curator-journal";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
 
-const DAY = 24 * 60 * 60 * 1000;
 
 const [checkpointId, sprintArg] = process.argv.slice(2);
 const sprint = Number(sprintArg);
@@ -54,11 +56,14 @@ if (!checkpoint?.startedAt) {
 }
 const human = checkpoint.curatorKind === "Human";
 
-// Today becomes the sprint's last day, so what was posted or attached today is
-// part of it: the run started 7·sprint − 1 days ago.
+// A brief is read the night before its call: today becomes the sprint's last
+// day. An AI review lives on the next session's day, so today becomes that day
+// and the page shows it; the sprint's window runs a day past its last, so what
+// was posted or attached today is part of it either way.
 const now = new Date();
+const daysBack = human ? sprint * SPRINT_DAYS - 1 : sprint * SPRINT_DAYS;
 const shift =
-	now.getTime() - (sprint * 7 - 1) * DAY - checkpoint.startedAt.getTime();
+	now.getTime() - daysBack * MS_PER_DAY - checkpoint.startedAt.getTime();
 const moved = (date: Date | null) =>
 	date ? new Date(date.getTime() + shift) : null;
 

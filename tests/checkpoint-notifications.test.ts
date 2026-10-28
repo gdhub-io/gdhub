@@ -32,6 +32,9 @@ const {
 	notifyAuthorOfAnswer,
 	remindCallsSoon,
 	remindDevlogsDue,
+	remindEvidenceDue,
+	remindPlansUnsent,
+	remindScopeClosing,
 	remindVerdictsDue,
 } = await import("@/services/checkpoint-notifications");
 
@@ -98,7 +101,7 @@ describe("remindCallsSoon", () => {
 		expect(byUser.author.payload.message).toContain("18:00 (Asia/Tbilisi)");
 		expect(byUser.oleg.payload.message).toContain("14:00 (UTC)");
 		expect(byUser.oleg.payload.redirectUrl).toMatch(
-			/\/user\/project\/hollow-tide\/workflow\/cp2\/review\/2$/,
+			/\/user\/project\/hollow-tide\/workflow\/cp2\?sprint=2$/,
 		);
 		expect(byUser.oleg.transactionId).toBe("cp-call-s2-oleg");
 	});
@@ -211,5 +214,125 @@ describe("remindVerdictsDue", () => {
 			}),
 		);
 		expect(userFindMany).not.toHaveBeenCalled();
+	});
+});
+
+describe("remindPlansUnsent", () => {
+	const firstSession = (
+		createdAt: string,
+		checkpointId = "cp",
+		timezone: string | null = null,
+	) => ({
+		checkpointId,
+		createdAt: new Date(createdAt),
+		checkpoint: {
+			projectId: "p",
+			createdAt: new Date(),
+			project: {
+				slug: "hollow-tide",
+				author: { ...person("author"), profile: { timezone } },
+			},
+		},
+	});
+
+	it("asks for unchecked plans paid one to four days ago", async () => {
+		sessionFindMany.mockResolvedValue([]);
+		await remindPlansUnsent(new Date("2026-10-06T10:00:00Z"));
+		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
+			index: 1,
+			createdAt: {
+				gt: new Date("2026-10-02T10:00:00Z"),
+				lte: new Date("2026-10-05T10:00:00Z"),
+			},
+			checkpoint: {
+				goalAgreedAt: null,
+				planCheckedAt: null,
+				status: CheckpointStatus.Active,
+			},
+		});
+	});
+
+	it("reminds on the first 10:00 past each mark, in the author's zone", async () => {
+		sessionFindMany.mockResolvedValue([
+			// Paid 30 hours ago: past the 24-hour mark.
+			firstSession("2026-10-05T04:00:00Z"),
+			// Paid 75 hours ago: past the 72-hour mark.
+			firstSession("2026-10-03T07:00:00Z", "late"),
+			// Paid 30 hours ago, but it is 13:00 in Moscow.
+			firstSession("2026-10-05T04:00:00Z", "msk", "Europe/Moscow"),
+		]);
+		expect(await remindPlansUnsent(new Date("2026-10-06T10:00:00Z"))).toBe(2);
+		expect(send.mock.calls.map(([call]) => call.transactionId)).toEqual([
+			"cp-plan-remind-cp-24",
+			"cp-plan-remind-late-72",
+		]);
+	});
+
+	it("stays quiet between the marks", async () => {
+		// Paid 50 hours ago: the first reminder's day is over, the second not due.
+		sessionFindMany.mockResolvedValue([firstSession("2026-10-04T08:00:00Z")]);
+		expect(await remindPlansUnsent(new Date("2026-10-06T10:00:00Z"))).toBe(0);
+		expect(send).not.toHaveBeenCalled();
+	});
+});
+
+describe("remindScopeClosing", () => {
+	const scope = (content: unknown) => ({
+		id: "s3",
+		content,
+		checkpoint: {
+			projectId: "p",
+			createdAt: new Date(),
+			project: { slug: "hollow-tide", author: person("author") },
+		},
+	});
+
+	it("reminds four hours before the day-15 change closes, unless confirmed", async () => {
+		sessionFindMany.mockResolvedValue([scope(null)]);
+		expect(await remindScopeClosing(new Date("2026-10-20T08:30:00Z"))).toBe(1);
+		// The change closes 24 hours after the review: reviews that ended 20 to 21 hours ago.
+		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
+			index: 3,
+			checkpoint: { scopeConfirmedAt: null },
+			endedAt: {
+				gte: new Date("2026-10-19T11:00:00Z"),
+				lt: new Date("2026-10-19T12:00:00Z"),
+			},
+		});
+		expect(send.mock.calls[0][0].transactionId).toBe("cp-scope-closing-s3");
+	});
+});
+
+describe("remindEvidenceDue", () => {
+	const running = (items: { text: string }[]) => ({
+		id: "cp",
+		projectId: "p",
+		createdAt: new Date(),
+		project: { slug: "hollow-tide", author: person("author") },
+		items,
+	});
+
+	it("asks only for checkpoints on day 26 with a task still unproven", async () => {
+		checkpointFindMany.mockResolvedValue([]);
+		await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"));
+		expect(checkpointFindMany.mock.calls[0][0].where).toMatchObject({
+			status: CheckpointStatus.Active,
+			// Day 26 on 26 Oct is a checkpoint started on 1 Oct, any hour of it.
+			startedAt: {
+				gte: new Date("2026-10-01T00:00:00Z"),
+				lt: new Date("2026-10-02T00:00:00Z"),
+			},
+			items: { some: { cut: false, artifactId: null } },
+		});
+	});
+
+	it("names the tasks without evidence", async () => {
+		checkpointFindMany.mockResolvedValue([
+			running([{ text: "Island demo" }, { text: "Playtest" }]),
+		]);
+		expect(await remindEvidenceDue(new Date("2026-10-26T09:00:00Z"))).toBe(1);
+		expect(send.mock.calls[0][0].payload.message).toContain(
+			'"Island demo", "Playtest"',
+		);
 	});
 });

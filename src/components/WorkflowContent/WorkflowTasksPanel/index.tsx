@@ -1,5 +1,6 @@
 import { useTranslate } from "@tolgee/react";
 import { Typography } from "antd";
+import { AsideHead } from "@/components/WorkflowPath/AsideHead";
 import WorkflowTaskCard from "../WorkflowTaskCard";
 import styles from "./style.module.scss";
 
@@ -17,6 +18,8 @@ export type WorkflowTasksPanelProps = {
 	tasks: WorkflowTaskItem[];
 	/** Show the "required tasks unlock the next step" caption below the panel. */
 	showHint?: boolean;
+	/** The stage's name, over "Stage tasks". */
+	stageName?: string;
 };
 
 /**
@@ -26,43 +29,31 @@ export type WorkflowTasksPanelProps = {
 const WorkflowTasksPanel = ({
 	tasks,
 	showHint = true,
+	stageName,
 }: WorkflowTasksPanelProps) => {
 	const { t } = useTranslate();
 
 	if (tasks.length === 0) return null;
-
-	const requiredTasks = tasks.filter((task) => task.required);
-	const doneRequiredCount = requiredTasks.filter((task) => task.done).length;
+	const stageTasks = t("workflow.tasks.stageTitle", "Stage tasks");
 
 	return (
 		<div className={styles.wrapper}>
 			<div className={styles.panel}>
-				<div className={styles.header}>
-					<span className={styles.title}>
-						{t("workflow.tasks.stageTitle", "Stage tasks")}
-					</span>
-					{requiredTasks.length > 0 && (
-						<span className={styles.progress}>
-							{t(
-								"workflow.tasks.required-progress",
-								"{done} of {total} required",
-								{
-									done: doneRequiredCount.toString(),
-									total: requiredTasks.length.toString(),
-								},
-							)}
-						</span>
-					)}
+				<AsideHead
+					title={stageName ?? stageTasks}
+					sub={stageName && stageTasks}
+				/>
+				<div className={styles.rows}>
+					{tasks.map((task) => (
+						<WorkflowTaskCard
+							key={task.id}
+							label={task.label}
+							description={task.description}
+							required={task.required}
+							completed={task.done}
+						/>
+					))}
 				</div>
-				{tasks.map((task) => (
-					<WorkflowTaskCard
-						key={task.id}
-						label={task.label}
-						description={task.description}
-						required={task.required}
-						completed={task.done}
-					/>
-				))}
 			</div>
 			{showHint && (
 				<Text type="secondary" className={styles.hint}>

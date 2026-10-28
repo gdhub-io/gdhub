@@ -1,24 +1,21 @@
 import { stripIndents } from "common-tags";
+import { GOAL_FITS } from "@/types/checkpoints";
 import type { CuratorAuthor, CuratorProject, GoalCheckInput } from "../types";
 import {
 	CURATOR_STANCE,
 	localeLine,
 	renderCard,
+	renderCharacter,
 	renderPicture,
-	renderStage,
 	renderTeam,
+	renderWorkflow,
 } from "./card";
 
 /**
- * Day 1, consultation 1: is this reachable in 28 days (§6).
- *
- * The card is a draft. Someone with no shipped project writes "a finished game"
- * into the outcome list, and 28 days later fails at something that was never 28
- * days of work. This call is what stops that — by naming what does not fit and
- * offering a smaller version of each, never by rewriting the list.
- *
- * "Does not fit" is measured against the team's own stated hours, which is the
- * one number that turns a scope opinion into an argument the author can check.
+ * Day 1, right after payment (GDHUB-117): the goal alone is read — is it a
+ * fair 28 days for this team, against the hours they stated — and the first
+ * letter asks for the tasks, with a few suggested to start from. The tasks the
+ * author then writes are checked by the plan advice, once.
  */
 
 const renderProject = (project: CuratorProject) =>
@@ -34,82 +31,85 @@ const renderAuthor = (author: CuratorAuthor | null) =>
 
 export const GOAL_CHECK_FUNCTION_NAME = "report_goal_check";
 
-export const goalCheckSchema = (input: GoalCheckInput) => ({
+export const goalCheckSchema = () => ({
 	type: "object",
 	properties: {
-		reachable: {
-			type: "boolean",
-			description:
-				"true if this outcome list is plausible in 28 days for a team with the hours stated below",
+		goal: {
+			type: "object",
+			description: "Your word on the goal, shown right under it.",
+			properties: {
+				fit: {
+					type: "string",
+					enum: [...GOAL_FITS],
+					description:
+						"fits: 28 days of this team's hours can reach it; widen: it asks too little of four weeks; narrow: it outruns them. Fits unless it clearly does not.",
+				},
+				note: {
+					type: "string",
+					description:
+						"One or two sentences: why, and for widen or narrow the goal reworded, ready to use.",
+				},
+			},
+			required: ["fit", "note"],
 		},
-		notes: {
+		suggestions: {
 			type: "array",
 			description:
-				"At most one note per task, and only where there is something to say.",
+				"Three to five tasks that together would show the goal is reached, in the order to do them. Each ends in something anyone can open — a build, a document, a video.",
 			items: {
 				type: "object",
 				properties: {
-					// An empty enum is not a valid schema: before call 1 there are no
-					// tasks yet, only the goal.
-					itemId: input.card.outcomes.length
-						? {
-								type: "string",
-								enum: input.card.outcomes.map((item) => item.id),
-							}
-						: { type: "string" },
-					note: {
+					text: {
+						type: "string",
+						description: "The task, ready to add as it is.",
+					},
+					why: {
 						type: "string",
 						description:
-							"One or two sentences about this task. Where it is several tasks' worth of work, say so and offer a smaller wording. Where nothing on the day-1 list builds towards it, say that. Where nothing about it would prove it exists at the end, say that.",
+							"One short sentence: what this task proves about the goal.",
 					},
 				},
-				required: ["itemId", "note"],
+				required: ["text", "why"],
 			},
-		},
-		missing: {
-			type: "array",
-			description:
-				"Outcomes the stage requires that this card does not promise. Empty where there are none.",
-			items: { type: "string" },
 		},
 		note: {
 			type: "string",
 			description:
-				"One short paragraph the author reads. Say what stands out; do not repeat the list back. Where the list outruns the hours the team has, say so and name those hours.",
+				'The first letter, spoken by your character: the reader must hear who you are from the first word — greet them the way your character greets, use its turns of phrase. Four or five short sentences: introduce yourself — your name and role, if you have them, and that you will guide them for the next 28 days and help them reach the goal; then what you looked at — the goal against the hours of the team and the stage — and what you make of it, in one or two sentences: it fits, better make it smaller, or they could do more (the details are shown under the goal: do not repeat them or point at them); you suggested a few tasks below to take or replace with their own; and when the tasks are ready they press "Save and send to the curator" and you will check them. End with a short farewell in character, without your name; nothing about the next sprint.',
 		},
 	},
-	required: ["reachable", "notes", "missing", "note"],
+	required: ["goal", "suggestions", "note"],
 });
 
 export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 	{
 		role: "system" as const,
 		content: stripIndents`
+			${renderCharacter(input.character, "route", true)}
+
 			${CURATOR_STANCE}
 
-			This is day 1. The card is still a draft and the author can change it.
-			Judge only whether it fits 28 days of work for this team, with the
-			hours it has, and whether the stage's own requirements are covered.
-			The card may hold only the goal: tasks are set with the curator on the
-			first call. Then judge the goal itself, and leave the notes empty.
-			Where the last checkpoint is given, weigh this goal against how that
-			one ended with the same team. Read the goal against what the game is
-			and who the author is: a goal outside their own craft leans on the
-			rest of the team, and where there is no one, say so.
+			This is day 1, right after payment: your first letter to the author.
+			They have written only the goal; the tasks come next, from them, and
+			your suggestions are where they may start. Judge whether the goal is a
+			fair 28 days for this team, with the hours it has. Where the last
+			checkpoint is given, weigh this goal against how that one ended with
+			the same team. Read the goal against what the game is and who the
+			author is: a goal outside their own craft leans on the rest of the
+			team, and where there is no one, say so.
 
 			The hours are what the members themselves stated they have per week,
-			summed and carried over the 28 days. Weigh the list against them and
-			say plainly where the promise outruns the time, naming the hours it
-			has — never a rate of work you made up, and never a task-by-task
-			estimate in hours. Where nobody has stated their hours, say the time
-			available is unknown and judge the list on its own; unknown hours are
-			not zero hours, and must never make everything unreachable.
+			summed and carried over the 28 days. Where the goal outruns them, say so
+			and name the hours — never a rate of work you made up. Where nobody has
+			stated their hours, the time is unknown, not zero: judge the goal on
+			its own.
 
-			The author reads you and then edits their own tasks, so write to be
-			read rather than to be parsed. Offer a smaller wording where a task is
-			several tasks' worth of work. Say plainly where nothing on the day-1
-			list builds towards one — do not assume they will start it from scratch
-			and still finish. Say where nothing about a task would prove it exists.
+			Suggest tasks this team can do in four weeks, sized to the goal as it
+			should be — the narrowed or widened one where you advise that. Never
+			suggest the stage's required tasks: the workflow tracks those, and a
+			checkpoint may be one of several on a stage.
+
+			Be fair rather than strict: the goal fits unless it clearly does not.
 
 			${localeLine(locale)}
 		`,
@@ -122,7 +122,7 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 
 			${renderCard(input.card)}
 
-			${renderStage(input.stage)}
+			${renderWorkflow(input.workflow)}
 
 			${renderTeam(input.team)}
 

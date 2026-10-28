@@ -7,6 +7,7 @@ import {
 	type PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
@@ -16,10 +17,9 @@ import {
 	SESSIONS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { dueDateFrom, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundRowReason } from "@/lib/checkpoint-refund";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	bookSessions,
 	isFirstCallFree,
@@ -411,8 +411,10 @@ export const settleCheckpointCheckout = async (
 
 /**
  * The AI curator starts on payment. The day picked may have passed while the
- * draft waited to be paid, so it starts today at the earliest; the goal is the
- * one paid for; and its five review days are written like a person's calls.
+ * draft waited to be paid, so it starts today at the earliest; the plan waits
+ * for the author's tasks and approval; and its five review days are written
+ * like a person's calls. Then the curator takes its character and reads the
+ * goal.
  */
 export const startAiCheckpoint = async (
 	checkpointId: string,
@@ -436,7 +438,7 @@ export const startAiCheckpoint = async (
 				paymentId,
 				startedAt,
 				dueAt: dueDateFrom(startedAt),
-				goalAgreedAt: now,
+				goalAgreedAt: null,
 				goalAgreedById: null,
 			},
 		}),
@@ -449,6 +451,26 @@ export const startAiCheckpoint = async (
 			})),
 		}),
 	]);
+	// After the payment is answered: the read is a model call, the webhook must not wait on it.
+	afterResponse(async () => {
+		const { writeFirstLetter } = await import(
+			"@/repositories/checkpoint-curator.repository"
+		);
+		await writeFirstLetter(checkpointId);
+	});
+};
+
+/** Runs `work` once the response is sent; outside a request (a script), right away. */
+const afterResponse = (work: () => Promise<void>) => {
+	const run = () =>
+		work().catch((error) =>
+			console.error("[checkpoint] after the response", error),
+		);
+	try {
+		after(run);
+	} catch {
+		void run();
+	}
 };
 
 type PendingCheckout = {

@@ -5,11 +5,11 @@ import {
 	PayableType,
 	PaymentStatus,
 	type Prisma,
-	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
 import {
 	CHECKPOINT_DAYS,
 	CHECKPOINT_OPEN_STATUSES,
+	SPRINT_BUILD_TYPES,
 	SPRINTS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
@@ -32,10 +32,12 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import { curatorNow } from "@/lib/curator-now";
 import { checkpointLineage } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_STATUS } from "@/repositories/scout.games";
+import { characterFace } from "@/services/checkpoint-curator/prompts/card";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,
@@ -107,6 +109,8 @@ export const checkpointSelect = {
 	startedAt: true,
 	dueAt: true,
 	goalAgreedAt: true,
+	planCheckedAt: true,
+	scopeConfirmedAt: true,
 	previousVerdictReadAt: true,
 	revisedAt: true,
 	revisedNote: true,
@@ -135,6 +139,7 @@ const sessionRowSelect = {
 		curatorJoinedAt: true,
 		endedAt: true,
 		contentStatus: true,
+		attendeeIds: true,
 	},
 } as const;
 
@@ -213,6 +218,7 @@ const checkpointDetailSelect = {
 		},
 	},
 	sessions: sessionRowSelect,
+	curatorCharacter: true,
 	project: {
 		select: {
 			team: {
@@ -418,10 +424,41 @@ const buildEvidence = (
 
 export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
+/** What the AI curator says now, read with its letters; a pro's call notes stay on their page. */
+const nowOfCurator = async (checkpoint: {
+	id: string;
+	startedAt: Date | null;
+	goalAgreedAt: Date | null;
+	planCheckedAt: Date | null;
+	scopeConfirmedAt: Date | null;
+}) => {
+	const { startedAt } = checkpoint;
+	if (!startedAt) return null;
+	const sessions = await prisma.checkpointSession.findMany({
+		where: { checkpointId: checkpoint.id },
+		select: {
+			index: true,
+			scheduledAt: true,
+			endedAt: true,
+			contentStatus: true,
+			content: true,
+		},
+	});
+	return curatorNow({ ...checkpoint, startedAt, sessions });
+};
+
 /** The row as the checkpoint page reads it; the artifact joins stay behind. */
 const toCheckpointDetail = (row: DetailRow) => {
-	const { curator, items, project, pulses, reports, sessions, ...checkpoint } =
-		withAcceptedTerms(row);
+	const {
+		curator,
+		curatorCharacter,
+		items,
+		project,
+		pulses,
+		reports,
+		sessions,
+		...checkpoint
+	} = withAcceptedTerms(row);
 	const { startedAt } = checkpoint;
 
 	return {
@@ -436,7 +473,10 @@ const toCheckpointDetail = (row: DetailRow) => {
 			sprint: startedAt ? sprintOfDate(startedAt, report.publishedAt) : null,
 		})),
 		sprints: buildSprints(startedAt),
-		sessions: buildSessions(startedAt, sessions),
+		sessions: buildSessions(startedAt, sessions, checkpoint.curatorKind, {
+			curatorId: curator?.id ?? null,
+		}),
+		character: characterFace(curatorCharacter),
 		pulses: buildPulseRows(
 			project.team?.members ?? [],
 			pulses,
@@ -450,8 +490,8 @@ const toCheckpointDetail = (row: DetailRow) => {
 	};
 };
 
-/** The project's builds uploaded inside the 28 days, each filed in its sprint. */
-const buildsDuring = async (row: {
+/** Every artifact the project added inside the 28 days, each filed in its sprint. */
+const artifactsDuring = async (row: {
 	projectId: string;
 	startedAt: Date | null;
 }) => {
@@ -461,13 +501,13 @@ const buildsDuring = async (row: {
 	const artifacts = await prisma.projectArtifact.findMany({
 		where: {
 			projectId: row.projectId,
-			type: ProjectArtifactType.ExecutableBuild,
 			createdAt: {
 				gte: utcStartOfDay(startedAt),
 				lt: dateOfDay(startedAt, CHECKPOINT_DAYS + 1),
 			},
 		},
-		select: { id: true, createdAt: true },
+		select: { id: true, createdAt: true, type: true },
+		orderBy: { createdAt: "asc" },
 	});
 
 	return artifacts.flatMap((artifact) => {
@@ -479,6 +519,7 @@ const buildsDuring = async (row: {
 					{
 						id: artifact.id,
 						addedAt: artifact.createdAt.toISOString(),
+						type: artifact.type,
 						sprint,
 					},
 				];
@@ -494,18 +535,23 @@ export const getCheckpoint = async (id: string) => {
 	if (!row) return null;
 
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
-	const [held, lineage, builds] = await Promise.all([
+	const [held, lineage, added, now] = await Promise.all([
 		row.paymentId ? heldAmount(id) : null,
 		checkpointLineage(row),
 		// A draft has no sprints to file builds in.
-		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
+		row.status === CheckpointStatus.Draft ? [] : artifactsDuring(row),
+		row.curatorKind === CheckpointCuratorKind.AI ? nowOfCurator(row) : null,
 	]);
 
 	return {
 		...toCheckpointDetail(row),
 		// A draft has no number yet.
 		number: row.status === CheckpointStatus.Draft ? undefined : lineage.number,
-		builds,
+		builds: added.filter((artifact) =>
+			SPRINT_BUILD_TYPES[row.curatorKind].includes(artifact.type),
+		),
+		sprintArtifacts: added,
+		curatorNow: now,
 		previousCuratorKind: lineage.previousCuratorKind,
 		heldPrice: held === null ? null : toWholePrice(held),
 	};
@@ -687,7 +733,9 @@ export const listClosedCheckpoints = async (
 	return {
 		rows: rows.map(({ sessions, ...row }) => ({
 			...withAcceptedTerms(row),
-			sessions: buildSessions(row.startedAt, sessions),
+			sessions: buildSessions(row.startedAt, sessions, row.curatorKind, {
+				curatorId: row.curator?.id ?? null,
+			}),
 		})),
 		total,
 		page,

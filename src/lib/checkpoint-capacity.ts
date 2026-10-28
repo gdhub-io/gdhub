@@ -1,5 +1,5 @@
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import type { CuratorTeam } from "@/services/checkpoint-curator";
+import type { TeamCapacity } from "@/services/checkpoint-curator";
 
 /**
  * The hours a team says it has for a checkpoint.
@@ -26,7 +26,7 @@ export const weeklyRange = (hours: number[] | null | undefined) => {
 	return { from: Math.min(first, second), to: Math.max(first, second) };
 };
 
-export const teamCapacity = (members: StatedHours[]): CuratorTeam => {
+export const teamCapacity = (members: StatedHours[]): TeamCapacity => {
 	const stated = members.flatMap((member) => {
 		const range = weeklyRange(member.timeForWork);
 

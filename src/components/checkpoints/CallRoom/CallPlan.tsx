@@ -4,6 +4,7 @@ import {
 	IconCheck,
 	IconCircle,
 	IconCircleCheck,
+	IconPaperclip,
 	IconPlus,
 	IconSparkles,
 	IconX,
@@ -22,7 +23,11 @@ import { trackCheckpoint } from "@/helpers/gtm";
 import { useChangePlan } from "@/hooks/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { PlanChange } from "@/schemas/checkpoint";
-import type { PlanAdvice, TaskAdvice } from "@/types/checkpoints";
+import type {
+	PlanAdvice,
+	TaskAdvice,
+	TaskSuggestion,
+} from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 /** What the plan editor needs, from a call or from an AI review page. */
@@ -72,12 +77,18 @@ export type PlanBodyProps = {
 	onChange: (change: PlanChange) => Promise<void>;
 	/** The AI curator's read of the tasks, shown under each one. */
 	advice?: PlanAdvice | null;
+	/** Day 1: the tasks the AI curator suggests, each with why. */
+	suggestions?: TaskSuggestion[];
 	/** Above the tasks while they can change; call 3's rule by default. */
 	hint?: ReactNode;
 	/** Under the tasks while they can change; "saved as you type" by default. */
 	footer?: ReactNode;
 	/** Beside "Add task": the AI's "Suggest tasks". */
 	listAction?: ReactNode;
+	/** An empty task field always open above "Add task" (frame kezVq). */
+	blank?: boolean;
+	/** Attach an artifact that proves a task; absent for whoever may not. */
+	onAttach?: () => void;
 };
 
 /**
@@ -88,14 +99,17 @@ export function PlanBody({
 	plan,
 	onChange,
 	advice,
+	suggestions,
 	hint,
 	footer,
 	listAction,
+	blank,
+	onAttach,
 }: PlanBodyProps) {
 	const { t } = useTranslate();
 	const { edit } = plan;
 	let lead = hint;
-	if (lead === undefined && edit === "plan") {
+	if (lead === undefined && (edit === "plan" || edit === "goalAndTasks")) {
 		// The first sprint reads the same with either curator.
 		lead = t(
 			"checkpoints.review.plan.startHint",
@@ -118,10 +132,12 @@ export function PlanBody({
 					plan={plan}
 					onChange={onChange}
 					advice={advice}
+					suggestions={suggestions}
 					listAction={listAction}
+					blank={blank}
 				/>
 			) : (
-				<PlanView plan={plan} />
+				<PlanView plan={plan} onAttach={onAttach} />
 			)}
 			{edit &&
 				(footer ?? (
@@ -251,7 +267,7 @@ function Field({
 }
 
 /** Read-only: another call than this one, and anyone on the team but the author. */
-function PlanView({ plan }: { plan: Plan }) {
+function PlanView({ plan, onAttach }: { plan: Plan; onAttach?: () => void }) {
 	const { t } = useTranslate();
 	const kept = plan.tasks.filter((task) => !task.cut);
 	const done = kept.filter((task) => task.artifact).length;
@@ -280,7 +296,27 @@ function PlanView({ plan }: { plan: Plan }) {
 							>
 								{task.text}
 							</Typography.Text>
-							{task.artifact && <ArtifactLink artifact={task.artifact} />}
+							{task.artifact ? (
+								<ArtifactLink artifact={task.artifact} />
+							) : (
+								onAttach &&
+								!task.cut && (
+									<Tooltip
+										title={t("workflow.aside.attach", "Attach an artifact")}
+									>
+										<Button
+											type="text"
+											size="small"
+											icon={<IconPaperclip size={16} />}
+											aria-label={t(
+												"workflow.aside.attach",
+												"Attach an artifact",
+											)}
+											onClick={onAttach}
+										/>
+									</Tooltip>
+								)
+							)}
 						</div>
 					))}
 				</div>
@@ -316,12 +352,16 @@ function PlanForm({
 	plan,
 	onChange,
 	advice,
+	suggestions = [],
 	listAction,
+	blank,
 }: {
 	plan: Plan;
 	onChange: PlanBodyProps["onChange"];
 	advice?: PlanAdvice | null;
+	suggestions?: TaskSuggestion[];
 	listAction?: ReactNode;
+	blank?: boolean;
 }) {
 	const { t } = useTranslate();
 	const [drafts, setDrafts] = useState<number[]>([]);
@@ -359,12 +399,16 @@ function PlanForm({
 						advice={advice?.tasks.find((row) => row.itemId === task.id)}
 					/>
 				))}
-				{advice?.add
-					.filter((text) => !plan.tasks.some((task) => task.text === text))
-					.map((text) => (
+				{[
+					...suggestions,
+					...(advice?.add ?? []).map((text) => ({ text, why: null })),
+				]
+					.filter(({ text }) => !plan.tasks.some((task) => task.text === text))
+					.map(({ text, why }) => (
 						<SuggestedTask
 							key={text}
 							text={text}
+							why={why}
 							disabled={full}
 							onAdd={() => onChange({ op: "add", text })}
 						/>
@@ -380,6 +424,18 @@ function PlanForm({
 						onEmpty={() => dropDraft(draft)}
 					/>
 				))}
+				{blank && !full && (
+					<TaskInput
+						// A fresh field once the one typed into is saved as a task.
+						key={`blank-${plan.tasks.length}`}
+						text=""
+						placeholder={t(
+							"checkpoints.call.plan.ownTask",
+							"Write a task of your own…",
+						)}
+						onSave={(text) => onChange({ op: "add", text })}
+					/>
+				)}
 				<div className={styles.listActions}>
 					{full ? (
 						<Tooltip
@@ -483,19 +539,21 @@ function AdviceLine({ children }: { children: ReactNode }) {
 	);
 }
 
-/** A task the AI curator proposes adding: frame r5hAR. */
+/** A task the AI curator proposes adding: frame r5hAR, with its why on day 1. */
 function SuggestedTask({
 	text,
+	why,
 	disabled,
 	onAdd,
 }: {
 	text: string;
+	why: string | null;
 	disabled: boolean;
 	onAdd: () => Promise<void>;
 }) {
 	const { t } = useTranslate();
 
-	return (
+	const row = (
 		<div className={styles.lockedRow}>
 			<IconSparkles size={16} className={styles.tertiary} />
 			<span className={styles.grow}>{text}</span>
@@ -507,6 +565,16 @@ function SuggestedTask({
 			>
 				{t("checkpoints.review.plan.add", "Add")}
 			</Button>
+		</div>
+	);
+	if (!why) return row;
+
+	return (
+		<div className={styles.advisedTask}>
+			{row}
+			<Typography.Text type="secondary" className={styles.why}>
+				{t("checkpoints.review.plan.why", "Why: {why}", { why })}
+			</Typography.Text>
 		</div>
 	);
 }
@@ -522,6 +590,7 @@ const WARNING_KINDS = new Set<TaskAdvice["kind"]>([
 /** Saved on blur or Enter; an emptied or refused field goes back to what was saved. */
 function TaskInput({
 	text,
+	placeholder,
 	autoFocus,
 	warning,
 	onSave,
@@ -530,6 +599,7 @@ function TaskInput({
 	removeLabel,
 }: {
 	text: string;
+	placeholder?: string;
 	autoFocus?: boolean;
 	warning?: boolean;
 	onSave: (text: string) => Promise<void>;
@@ -553,6 +623,7 @@ function TaskInput({
 	return (
 		<Input
 			value={value}
+			placeholder={placeholder}
 			autoFocus={autoFocus}
 			status={warning ? "warning" : undefined}
 			maxLength={CHECKPOINT_ITEM_TEXT_MAX}

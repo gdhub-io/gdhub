@@ -152,6 +152,7 @@ The 28-day checkpoint: landing, purchase, path, calls, reviews, verdict, admin, 
 | 12.15 | Components · verdict status, curator badge, pulse cell, plan task | 3 |
 | 12.16 | Notes · long content, captions | 2 |
 | 12.17 | The old workflow widget (kept for reference) | 6 |
+| 12.18 | Dev · AI curator lab — `/dev/ai-curator` | 3 |
 
 ## C. Spaces and their features
 

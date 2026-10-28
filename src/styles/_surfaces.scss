@@ -15,3 +15,13 @@
 	background-color: var(--gd-color-surface);
 	color: var(--gd-color-text);
 }
+
+// The checkpoint cards' warm wash (frame X63RjU): the offer, the curator's
+// word in the widget and on Path to Checkpoint.
+@mixin checkpoint-wash {
+	background: linear-gradient(
+		118deg,
+		var(--gd-color-accent-subtle),
+		var(--gd-warning-tint)
+	);
+}

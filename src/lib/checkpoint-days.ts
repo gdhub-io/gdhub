@@ -1,4 +1,4 @@
-import { CHECKPOINT_DAYS } from "@/config/checkpoint";
+import { CHECKPOINT_DAYS, SPRINT_DAYS } from "@/config/checkpoint";
 
 /**
  * The 28 days, counted once.
@@ -16,7 +16,9 @@ export const dueDateFrom = (startedAt: Date) => {
 	return due;
 };
 
-export const MS_PER_DAY = 24 * 60 * 60 * 1000;
+export const MS_PER_MINUTE = 60 * 1000;
+export const MS_PER_HOUR = 60 * MS_PER_MINUTE;
+export const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 const utcMidnight = (date: Date) =>
 	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
@@ -57,3 +59,6 @@ export const checkpointProgress = (
 
 	return { day, daysLeft: CHECKPOINT_DAYS - day };
 };
+
+/** Session 1 is on day 1, session 5 on day 29. */
+export const sessionDay = (index: number) => (index - 1) * SPRINT_DAYS + 1;

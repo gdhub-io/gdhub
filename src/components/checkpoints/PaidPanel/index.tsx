@@ -302,8 +302,23 @@ export function PaidPanel({
 								{ day: checkpoint.day ?? 1, days: CHECKPOINT_DAYS, number },
 							),
 				)}
+				{/* Frame 12.12.6: day 1 waits for the tasks (GDHUB-117). */}
+				{!checkpoint.goalAgreedAt && (
+					<Typography.Text type="secondary" className={styles.sub}>
+						{t(
+							"checkpoints.paid.dayOne",
+							"Your AI curator is reading your goal and will suggest tasks. Write one to five tasks and send them for a check.",
+						)}
+					</Typography.Text>
+				)}
 				<MoneyNotice checkpoint={checkpoint} centered />
-				{toWorkflow}
+				{exitHref && (
+					<Link href={`${exitHref}/cp${number}?sprint=1&tab=plan`}>
+						<Button type="primary">
+							{t("checkpoints.paid.readLetter", "Read the curator's letter")}
+						</Button>
+					</Link>
+				)}
 			</>
 		);
 	} else {

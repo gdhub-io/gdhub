@@ -4,15 +4,15 @@ import { prisma } from "@/services/prisma";
 /** Every AI task run for a checkpoint, as its usage row names it. */
 export type AiPurpose =
 	| "goalCheck"
-	| "suggestLines"
-	| "midNote"
 	| "report"
 	| "callNotes"
 	| "planAdvice"
 	| "sprintReview"
 	| "evidence"
 	| "callBrief"
-	| "verdictRead";
+	| "verdictRead"
+	| "character"
+	| "planLetter";
 
 /** Which checkpoint an AI call is charged to, and for what. */
 export type AiMeter = { checkpointId: string; purpose: AiPurpose };

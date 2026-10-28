@@ -21,6 +21,7 @@ import type {
 } from "@/lib/checkpoint-refund";
 import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
 import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
+import type { CuratorNow } from "@/lib/curator-now";
 import type { CuratorStatus } from "@/lib/curator-status";
 
 /**
@@ -101,6 +102,10 @@ export type CheckpointSessionDto = {
 	curatorJoinedAt: string | null;
 	endedAt: string | null;
 	contentStatus: CheckpointSessionContentStatus | null;
+	/** The call's window passed and the curator never came in. */
+	missed: boolean;
+	/** Someone of the team was in the call; null until it has ended. */
+	teamJoined?: boolean | null;
 };
 
 /**
@@ -162,6 +167,10 @@ export type CheckpointDto = {
 	startedAt: string | null;
 	dueAt: string | null;
 	goalAgreedAt: string | null;
+	/** The AI curator's one check of the day-1 tasks. */
+	planCheckedAt?: string | null;
+	/** The AI curator's day 15: the author confirmed the tasks. */
+	scopeConfirmedAt?: string | null;
 	revisedAt: string | null;
 	revisedNote: string | null;
 	midNote: string | null;
@@ -189,12 +198,18 @@ export type CheckpointDto = {
 	sprints?: CheckpointSprintDto[];
 	/** Detail only, and empty until the checkpoint starts. */
 	sessions?: CheckpointSessionDto[];
+	/** Detail only: what the AI curator says now; null with a pro curator. */
+	curatorNow?: CuratorNow | null;
+	/** Detail only: who the AI curator plays on this checkpoint — its name and avatar. */
+	character?: { name: string; avatar: string | null } | null;
 	/**
 	 * Builds the project uploaded during the 28 days, whether or not they were
 	 * offered as evidence: uploading one is what a sprint asks, proving with it
 	 * is a separate step. Detail only.
 	 */
 	builds?: { id: string; addedAt: string; sprint: number }[];
+	/** Every artifact added inside the 28 days, by sprint: what "attach artifacts" counts. Detail only. */
+	sprintArtifacts?: { id: string; addedAt: string; sprint: number }[];
 	/** Counted through the project, not the stage: the third checkpoint is 3. Detail only. */
 	number?: number;
 	/** When the team first opened the previous checkpoint's verdict. */
@@ -406,7 +421,26 @@ export type CuratorReview = {
 	message: string;
 	notes: CallNotes | null;
 	advice: PlanAdvice | null;
+	/** Day 1 (GDHUB-117): the curator's word on the goal, shown under it. */
+	goal?: GoalAdvice | null;
+	/** Day 1: tasks the curator suggests before any are written, each with why. */
+	suggestions?: TaskSuggestion[];
+	/** Day 1: the first letter, kept once the check's letter takes its place. */
+	firstLetter?: string;
+	/** Day 1 with the AI curator: the letter once the plan is approved, read through sprint 1. */
+	planLetter?: string;
 };
+
+export const GOAL_FITS = ["fits", "widen", "narrow"] as const;
+
+/** Whether the goal fits the team and the 28 days, and if not, which way to move it. */
+export type GoalAdvice = {
+	fit: (typeof GOAL_FITS)[number];
+	note: string;
+};
+
+/** A task the curator suggests, and the one sentence on why this one. */
+export type TaskSuggestion = { text: string; why: string };
 
 /** A Stripe promotion code as the admin's Promo codes tab lists it. */
 export type PromoCodeDto = {

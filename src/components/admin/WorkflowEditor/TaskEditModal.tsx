@@ -58,6 +58,8 @@ function conditionToForm(
 		values.conditionFilter = condition.status;
 	if ("type" in condition && condition.type)
 		values.conditionFilter = condition.type;
+	if ("kind" in condition && condition.kind)
+		values.conditionFilter = condition.kind;
 	return values;
 }
 

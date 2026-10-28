@@ -9,7 +9,10 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { runningCheckpointLock } from "@/repositories/checkpoint-guards";
+import {
+	runningCheckpointLock,
+	stageMoveApproved,
+} from "@/repositories/checkpoint-guards";
 import { prisma } from "@/services/prisma";
 import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 
@@ -75,6 +78,9 @@ export const PUT = pipe(
 		return apiError.badRequest(
 			"Complete all required tasks before moving to the next step",
 		);
+	}
+	if (!(await stageMoveApproved(projectId, currentStep.id))) {
+		return apiError.conflict("stageNotApproved");
 	}
 
 	const nextStep = project.workflow?.steps.find(

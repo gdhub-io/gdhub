@@ -5,6 +5,7 @@ import {
 } from "@/config/prisma-enums";
 import {
 	type CallState,
+	callMissed,
 	callRoomName,
 	callState,
 	callWindow,
@@ -24,7 +25,7 @@ import {
 	callRoom,
 	callToken,
 	closeCallRoom,
-	roomParticipantMinutes,
+	roomParticipants,
 	startTranscriptJob,
 	transcriptOfJob,
 } from "@/services/daily";
@@ -56,6 +57,8 @@ export type CheckpointCallDto = {
 	curator: { id: string; name: string; image: string | null };
 	scheduledAt: string;
 	state: CallState;
+	/** Its window passed and the curator never came in. */
+	missed: boolean;
 	curatorJoinedAt: string | null;
 	role: CallRole;
 	/** The curator's only: the AI's read of the sprint behind each call (GDHUB-114). */
@@ -80,6 +83,7 @@ export type CheckpointCallDto = {
 		index: number;
 		scheduledAt: string;
 		held: boolean;
+		missed: boolean;
 		contentStatus: CheckpointSessionContentStatus | null;
 	}[];
 };
@@ -174,6 +178,7 @@ export const getCall = async (
 					select: {
 						index: true,
 						scheduledAt: true,
+						curatorJoinedAt: true,
 						endedAt: true,
 						contentStatus: true,
 						content: true,
@@ -223,6 +228,7 @@ export const getCall = async (
 		curator: { id: curator.id, name: curator.name ?? "", image: curator.image },
 		scheduledAt: session.scheduledAt.toISOString(),
 		state: callState(session.scheduledAt, session.endedAt, now),
+		missed: callMissed(session, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
 		role: call.role,
 		briefs,
@@ -243,6 +249,7 @@ export const getCall = async (
 			index: row.index,
 			scheduledAt: row.scheduledAt.toISOString(),
 			held: callState(row.scheduledAt, row.endedAt, now) === "over",
+			missed: callMissed(row, now),
 			contentStatus: row.contentStatus,
 		})),
 	};
@@ -358,11 +365,13 @@ export const recordMeetingEnded = async (room: string, endedAt: Date) => {
 	});
 	if (!session) return;
 
+	const { minutes, userIds } = await roomParticipants(room);
 	await prisma.checkpointSession.update({
 		where,
 		data: {
 			endedAt: session.endedAt ?? endedAt,
-			participantMinutes: await roomParticipantMinutes(room),
+			participantMinutes: minutes,
+			attendeeIds: userIds,
 		},
 	});
 	if (call.index === 1) await agreeGoal(call.checkpointId, endedAt);

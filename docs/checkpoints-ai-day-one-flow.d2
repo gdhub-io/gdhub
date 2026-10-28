@@ -1,0 +1,79 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-117 — day 1: the goal is read after payment, the tasks are set and checked" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+buy: "Purchase: the author writes only the goal,\npicks the curator, pays\n(no AI call before payment — pro or AI)"
+
+paid: "Payment confirmed"
+buy -> paid
+
+kind: "Curator?" {
+  shape: diamond
+}
+paid -> kind
+
+pro: "Pro: the checkpoint starts on the day of call 1;\nthe goal and tasks open for that day and 12 hours more"
+kind -> pro: "pro, once the curator accepts"
+
+call: "Call 1 inside the window:\nthe author adjusts the goal and tasks on the call or after it"
+pro -> call
+call -> closes
+
+start: "The checkpoint starts; the goal and tasks open"
+kind -> start: "AI"
+
+read: "Call 1 — the goal read: does the goal fit 28 days and the team?\nand 3–5 suggested tasks, each with why"
+start -> read
+
+letter: "The first letter: hello, write 1–5 tasks that will show the goal is reached;\nunder the goal: it fits, or widen / narrow it;\nthe suggestions with Add"
+read -> letter
+
+edit: "/workflow/cp{N}/review/1\nthe author adds suggestions or writes tasks, may change the goal"
+letter -> edit
+
+remind: "24 hours and no tasks yet:\na reminder; the window stays open"
+edit -> remind: "nothing sent"
+remind -> edit
+
+send: "Save and send to the curator? (confirm)"
+edit -> send
+
+check: "Call 2 — the check: advice under the goal and under each task\n(keep / shorten / reword / cut, and why)"
+send -> check
+
+notify: "The author is told: the curator checked your plan"
+check -> notify
+
+review: "The author re-reads, adjusts the goal and tasks if needed\n(no second check)"
+notify -> review
+
+approve: "Approve the plan"
+review -> approve
+
+auto: "12 hours after the check, not approved:\nthe plan approves itself as it stands"
+review -> auto: "nothing pressed"
+
+closes: "The plan is approved: the goal and tasks lock\n(tasks open again after the sprint 2 review, as today)"
+approve -> closes
+auto -> closes
+
+closing: "AI: the closing letter (fixed text):\nwell done with the tasks — now you know what to do; looking forward to your devlogs"
+closes -> closing
+
+critical: "Critical" {
+  shape: page
+  a: "No model call before payment: nobody who does not buy costs anything"
+  b: "No tasks, no close: the checkpoint never runs on an empty plan"
+  c: "One check per checkpoint start: edits after it are the author's, approved as they stand"
+  d: "The first letter is written once, however many times the payment webhook fires"
+}

@@ -6,8 +6,13 @@ import {
 	EvidenceMatch,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
+import { dateOfDay } from "@/lib/checkpoint-plan";
 import { isRunning } from "@/lib/checkpoint-refund";
-import { currentSprint, sprintOfDate } from "@/lib/checkpoint-sprints";
+import {
+	currentSprint,
+	sprintOfDate,
+	sprintRange,
+} from "@/lib/checkpoint-sprints";
 import { capped } from "@/lib/curator-text";
 import { checkArtifact } from "@/repositories/artifact-check";
 import {
@@ -15,15 +20,22 @@ import {
 	sprintLooks,
 	videoSecondsOf,
 } from "@/repositories/curator-journal";
-import { describeMedia, judgeEvidence } from "@/services/evidence/judge";
+import type { AiMeter } from "@/services/ai-usage";
+import {
+	describeMedia,
+	type EvidenceTask,
+	judgeEvidence,
+} from "@/services/evidence/judge";
 import { readableLink } from "@/services/evidence/links";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { prisma } from "@/services/prisma";
 
 /** Seconds of video looked at per sprint (Dmitry, 2026-10-24). */
-const SPRINT_VIDEO_SECONDS = 10 * 60;
+export const SPRINT_VIDEO_SECONDS = 10 * 60;
 /** Devlog images and videos looked at per sprint. */
 const DEVLOG_MEDIA_PER_SPRINT = 6;
+/** Artifacts that prove no task, looked at per sprint. */
+const ARTIFACTS_PER_SPRINT = 6;
 /** What the journal keeps of a document's text. */
 const JOURNAL_TEXT_CHARS = 2000;
 
@@ -40,11 +52,40 @@ const whatWasRead = (link: string, content: EvidenceContent) => ({
 export type JournalRead = ReturnType<typeof whatWasRead> & {
 	task?: string;
 	artifactName?: string | null;
+	artifactType?: string;
 	devlog?: string;
 };
 
 const readable = (content: EvidenceContent) =>
 	!!content.text || content.images.length > 0;
+
+/** An artifact read as the curator reads it: a build's page, never the build. */
+export const readArtifact = (
+	artifact: { link: string; type: string },
+	videoSecondsLeft: number,
+) =>
+	readEvidence(artifact.link, {
+		videoSecondsLeft,
+		pageOnly: artifact.type === ProjectArtifactType.ExecutableBuild,
+	});
+
+/** What was read, judged against its task; nothing readable is CannotTell and costs no model call. */
+export const judgeRead = async (
+	task: EvidenceTask,
+	content: EvidenceContent,
+	meter?: AiMeter,
+	locale?: string,
+) =>
+	readable(content)
+		? judgeEvidence(task, content, meter, locale)
+		: { match: EvidenceMatch.CannotTell, note: content.unread };
+
+/** What a devlog's image or video shows; null when nothing could be read. */
+export const describeRead = async (
+	content: EvidenceContent,
+	meter?: AiMeter,
+	locale?: string,
+) => (readable(content) ? describeMedia(content, meter, locale) : null);
 
 /**
  * Look at the evidence on a checkpoint's tasks that has not been looked at yet,
@@ -55,10 +96,15 @@ const readable = (content: EvidenceContent) =>
 export async function seeCheckpointEvidence(checkpointId: string) {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
-		select: { startedAt: true, status: true },
+		select: {
+			startedAt: true,
+			status: true,
+		},
 	});
 	if (!checkpoint?.startedAt || !isRunning(checkpoint.status)) return;
 	const sprint = currentSprint(checkpoint.startedAt);
+	// Read once, and only when something is about to be judged.
+	let devlogs: string[] | undefined;
 
 	const items = await prisma.checkpointItem.findMany({
 		where: {
@@ -85,11 +131,7 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 		const { artifact } = item;
 		if (!artifact || item.evidenceSeenLink === artifact.link) continue;
 
-		const content = await readEvidence(artifact.link, {
-			videoSecondsLeft: left,
-			// A build's page is read; the build itself never is.
-			pageOnly: artifact.type === ProjectArtifactType.ExecutableBuild,
-		}).catch((error) => {
+		const content = await readArtifact(artifact, left).catch((error) => {
 			console.error("[evidence] read failed", item.id, error);
 			return null;
 		});
@@ -102,16 +144,20 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 			artifactName: artifact.name,
 			description: artifact.description,
 		};
-		// Nothing readable: the answer is CannotTell, and it costs no model call.
-		const judged = !readable(content)
-			? { match: EvidenceMatch.CannotTell, note: content.unread }
-			: await judgeEvidence(task, content, {
-					checkpointId,
-					purpose: "evidence",
-				}).catch((error) => {
-					console.error("[evidence] judge failed", item.id, error);
-					return null;
-				});
+		devlogs ??= (
+			await prisma.projectReport.findMany({
+				where: { checkpointId },
+				orderBy: { publishedAt: "asc" },
+				select: { content: true },
+			})
+		).map((post) => post.content);
+		const judged = await judgeRead({ ...task, devlogs }, content, {
+			checkpointId,
+			purpose: "evidence",
+		}).catch((error) => {
+			console.error("[evidence] judge failed", item.id, error);
+			return null;
+		});
 		if (!judged) continue;
 
 		await prisma.checkpointItem.update({
@@ -122,6 +168,20 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 				evidenceSeenLink: artifact.link,
 			},
 		});
+		if (
+			judged.match === EvidenceMatch.DoesNotMatch ||
+			judged.match === EvidenceMatch.Partly
+		) {
+			const { notifyEvidenceMismatch } = await import(
+				"@/services/checkpoint-notifications"
+			);
+			await notifyEvidenceMismatch(
+				checkpointId,
+				item,
+				judged.note,
+				artifact.link,
+			);
+		}
 		await journal({
 			checkpointId,
 			kind: CheckpointJournalKind.Evidence,
@@ -235,12 +295,10 @@ export async function seeDevlogMedia(devlogId: string) {
 		if (!content) continue;
 		left -= content.videoSeconds;
 
-		const shows = readable(content)
-			? await describeMedia(content, {
-					checkpointId,
-					purpose: "evidence",
-				}).catch(() => null)
-			: null;
+		const shows = await describeRead(content, {
+			checkpointId,
+			purpose: "evidence",
+		}).catch(() => null);
 		await journal({
 			checkpointId,
 			kind: CheckpointJournalKind.DevlogMedia,
@@ -271,10 +329,106 @@ export async function devlogMediaLines(devlogIds: string[]) {
 		orderBy: { createdAt: "asc" },
 		select: { link: true, input: true, output: true },
 	});
+	return looked.map(({ link, input, output }) =>
+		mediaLine(
+			link,
+			(output as { shows: string | null }).shows,
+			(input as { unread: string | null }).unread,
+		),
+	);
+}
+
+/** One devlog image or video as the sprint review reads it. */
+export const mediaLine = (
+	link: string | null,
+	shows: string | null,
+	unread: string | null,
+) =>
+	shows
+		? `- ${link}: ${shows}${unread ? ` (${unread})` : ""}`
+		: `- ${link}: not read — ${unread ?? "nothing readable"}`;
+
+/**
+ * A sprint's artifacts that prove no task — its build video, a document, an
+ * image — looked at once each, inside the sprint's video budget, so the review
+ * reads what the team showed beside its tasks.
+ */
+export async function seeSprintArtifacts(checkpointId: string, sprint: number) {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			projectId: true,
+			startedAt: true,
+			items: {
+				where: { artifactId: { not: null } },
+				select: { artifactId: true },
+			},
+		},
+	});
+	if (!checkpoint?.startedAt) return;
+	const range = sprintRange(checkpoint.startedAt, sprint);
+	const proving = new Set(checkpoint.items.map((item) => item.artifactId));
+
+	const looks = await sprintLooks(checkpointId, sprint);
+	const looked = looks.filter(
+		(look) => look.kind === CheckpointJournalKind.Artifact,
+	);
+	const seen = new Set(looked.map((look) => look.link));
+	const artifacts = (
+		await prisma.projectArtifact.findMany({
+			where: {
+				projectId: checkpoint.projectId,
+				createdAt: { gte: range.from, lt: dateOfDay(range.to, 2) },
+			},
+			orderBy: { createdAt: "asc" },
+			select: { id: true, link: true, type: true, name: true },
+		})
+	)
+		.filter((artifact) => !proving.has(artifact.id) && !seen.has(artifact.link))
+		.slice(0, Math.max(0, ARTIFACTS_PER_SPRINT - looked.length));
+
+	let left = SPRINT_VIDEO_SECONDS - videoSecondsOf(looks);
+	for (const artifact of artifacts) {
+		const content = await readArtifact(artifact, left).catch(() => null);
+		if (!content) continue;
+		left -= content.videoSeconds;
+
+		const shows = await describeRead(content, {
+			checkpointId,
+			purpose: "evidence",
+		}).catch(() => null);
+		await journal({
+			checkpointId,
+			kind: CheckpointJournalKind.Artifact,
+			sprint,
+			link: artifact.link,
+			input: {
+				artifactName: artifact.name,
+				artifactType: artifact.type,
+				...whatWasRead(artifact.link, content),
+			},
+			output: { shows },
+		});
+	}
+}
+
+/** What a sprint's other artifacts show, one line each, for its review. */
+export async function sprintArtifactLines(
+	checkpointId: string,
+	sprint: number,
+) {
+	await seeSprintArtifacts(checkpointId, sprint);
+	const looked = await prisma.checkpointJournalEntry.findMany({
+		where: { checkpointId, sprint, kind: CheckpointJournalKind.Artifact },
+		orderBy: { createdAt: "asc" },
+		select: { link: true, input: true, output: true },
+	});
 	return looked.map(({ link, input, output }) => {
-		const { unread } = input as { unread: string | null };
-		const { shows } = output as { shows: string | null };
-		if (!shows) return `- ${link}: not read — ${unread ?? "nothing readable"}`;
-		return `- ${link}: ${shows}${unread ? ` (${unread})` : ""}`;
+		const read = input as JournalRead;
+		return `${read.artifactType ?? "Artifact"} "${read.artifactName ?? ""}" ${mediaLine(
+			link,
+			(output as { shows: string | null }).shows,
+			read.unread,
+		).slice(2)}`;
 	});
 }

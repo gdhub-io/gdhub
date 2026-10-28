@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { planEdit } from "@/lib/checkpoint-call";
+import { planCloses, planEdit } from "@/lib/checkpoint-call";
 
 const checkpointFindUnique = vi.fn();
 const checkpointUpdate = vi.fn();
@@ -8,14 +8,22 @@ const checkpointUpdateMany = vi.fn();
 const itemCreate = vi.fn();
 const itemUpdate = vi.fn();
 const itemDelete = vi.fn();
+const sessionUpdate = vi.fn();
+const checkpointFindMany = vi.fn();
+const notifyPlanApproved = vi.fn();
+const writePlanLetter = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		$transaction: vi.fn(async (ops: unknown[]) => ops),
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
+			findMany: (...a: unknown[]) => checkpointFindMany(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
 			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
+		},
+		checkpointSession: {
+			update: (...a: unknown[]) => sessionUpdate(...a),
 		},
 		checkpointItem: {
 			create: (...a: unknown[]) => itemCreate(...a),
@@ -25,7 +33,14 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-const { agreeGoal, changePlan } = await import(
+vi.mock("@/services/checkpoint-notifications", () => ({
+	notifyPlanApproved: (...a: unknown[]) => notifyPlanApproved(...a),
+}));
+vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+	writePlanLetter: (...a: unknown[]) => writePlanLetter(...a),
+}));
+
+const { agreeGoal, approveCheckedPlans, approvePlan, changePlan } = await import(
 	"@/repositories/checkpoint-plan-edit"
 );
 
@@ -70,17 +85,29 @@ describe("planEdit", () => {
 		expect(planEdit(checkpoint, duringCall3)).toBe("tasks");
 	});
 
-	it("closes call 1 once the goal is agreed, even inside its window", () => {
-		expect(
-			planEdit(
-				{ curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions },
-				duringCall1,
-			),
-		).toBeNull();
+	it("keeps the goal and tasks open for 12 hours after call 1 ends", () => {
+		const ended = [
+			{ ...sessions[0], endedAt: new Date("2026-10-05T15:00:00Z") },
+			sessions[1],
+		];
+		const agreed = { curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions: ended };
+		expect(planEdit(agreed, new Date("2026-10-06T02:59:00Z"))).toBe(
+			"goalAndTasks",
+		);
+		expect(planEdit(agreed, new Date("2026-10-06T03:00:00Z"))).toBeNull();
+	});
+
+	it("counts the 12 hours from the room closing when nobody ended call 1", () => {
+		// The room closes three hours after the start: 17:00, so 05:00 the next day.
+		const agreed = { curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions };
+		expect(planEdit(agreed, new Date("2026-10-06T04:59:00Z"))).toBe(
+			"goalAndTasks",
+		);
+		expect(planEdit(agreed, new Date("2026-10-06T05:00:00Z"))).toBeNull();
 	});
 
 	describe("with the AI curator", () => {
-		// No calls: its sessions are review days at UTC midnight, the goal agreed at payment.
+		// No calls: its sessions are review days at UTC midnight; the plan approved on day 1.
 		const aiSessions = [
 			{ index: 1, scheduledAt: startedAt, endedAt: null as Date | null },
 			{
@@ -96,10 +123,23 @@ describe("planEdit", () => {
 			sessions: aiSessions,
 		};
 
-		it("opens the tasks freely through day 2, never the goal", () => {
-			expect(planEdit(ai, new Date("2026-10-05T09:00:00Z"))).toBe("plan");
-			expect(planEdit(ai, new Date("2026-10-06T23:59:00Z"))).toBe("plan");
-			expect(planEdit(ai, new Date("2026-10-07T00:00:00Z"))).toBeNull();
+		it("keeps the goal and tasks open until the plan is approved (GDHUB-117)", () => {
+			const waiting = { ...ai, goalAgreedAt: null };
+			// No deadline before approval: a week later the author can still write.
+			expect(planEdit(waiting, new Date("2026-10-12T16:00:00Z"))).toBe(
+				"goalAndTasks",
+			);
+			expect(planEdit(ai, new Date("2026-10-05T16:00:00Z"))).toBeNull();
+		});
+
+		it("approves itself 12 hours after the check", () => {
+			const checked = {
+				...ai,
+				goalAgreedAt: null,
+				planCheckedAt: new Date("2026-10-05T15:00:00Z"),
+			};
+			expect(planCloses(checked)).toEqual(new Date("2026-10-06T03:00:00Z"));
+			expect(planCloses({ ...checked, planCheckedAt: null })).toBeNull();
 		});
 
 		it("opens them on the record for a day after the sprint 2 review", () => {
@@ -108,14 +148,14 @@ describe("planEdit", () => {
 			expect(planEdit(ai, new Date("2026-10-20T01:00:00Z"))).toBeNull();
 		});
 
-		it("writes the start freely but keeps the goal paid for", async () => {
+		it("lets the author change the goal on day 1, and write the start freely", async () => {
 			const start = new Date("2026-10-05T09:00:00Z");
 			checkpointFindUnique.mockResolvedValue(
-				plan({ ...ai, curatorId: null }),
+				plan({ ...ai, goalAgreedAt: null, curatorId: null }),
 			);
 			expect(
 				await changePlan("cp", "author", { op: "goal", goal: "Other" }, start),
-			).toBe("goalLocked");
+			).toBeNull();
 			await changePlan("cp", "author", { op: "remove", itemId: "open" }, start);
 			expect(itemDelete).toHaveBeenCalledWith({ where: { id: "open" } });
 		});
@@ -224,4 +264,99 @@ describe("agreeGoal", () => {
 			data: { goalAgreedAt: duringCall1, goalAgreedById: "curator" },
 		});
 	});
+});
+
+describe("approvePlan, with the AI curator", () => {
+	const ai = CheckpointCuratorKind.AI;
+	const aiPlan = (overrides: Record<string, unknown> = {}) =>
+		plan({
+			curatorId: null,
+			curatorKind: ai,
+			planCheckedAt: startedAt,
+			scopeConfirmedAt: null,
+			sessions: [
+				{ id: "s1", index: 1, scheduledAt: startedAt, endedAt: null },
+				{
+					id: "s3",
+					index: 3,
+					scheduledAt: new Date("2026-10-19T00:00:00Z"),
+					endedAt: new Date("2026-10-19T01:00:00Z"),
+				},
+			],
+			items: [{ id: "open" }],
+			...overrides,
+		});
+	const day1 = new Date("2026-10-05T10:00:00Z");
+
+	beforeEach(() => vi.clearAllMocks());
+
+	it("approves the checked plan on day 1, by the author only", async () => {
+		checkpointFindUnique.mockResolvedValue(aiPlan());
+		expect(await approvePlan("cp", "stranger", day1)).toBe("forbidden");
+		checkpointUpdateMany.mockResolvedValue({ count: 1 });
+		expect(await approvePlan("cp", "author", day1)).toBeNull();
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "cp", goalAgreedAt: null },
+			data: { goalAgreedAt: day1, goalAgreedById: "author" },
+		});
+		// The letter the team reads through sprint 1.
+		expect(writePlanLetter).toHaveBeenCalledWith("cp");
+	});
+
+	it("refuses before the check and with no tasks", async () => {
+		checkpointFindUnique.mockResolvedValue(
+			aiPlan({ planCheckedAt: null }),
+		);
+		expect(await approvePlan("cp", "author", day1)).toBe("notChecked");
+		checkpointFindUnique.mockResolvedValue(aiPlan({ items: [] }));
+		expect(await approvePlan("cp", "author", day1)).toBe("noTasks");
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
+	});
+
+	it("confirms the tasks on day 15, which closes the window early", async () => {
+		const approved = aiPlan({ goalAgreedAt: day1 });
+		const day15 = new Date("2026-10-19T12:00:00Z");
+		checkpointFindUnique.mockResolvedValue(approved);
+		expect(await approvePlan("cp", "author", day15)).toBeNull();
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "cp", scopeConfirmedAt: null },
+			data: { scopeConfirmedAt: day15 },
+		});
+
+		const confirmed = {
+			...approved,
+			scopeConfirmedAt: day15,
+		} as Parameters<typeof planEdit>[0];
+		expect(planEdit(confirmed, day15)).toBeNull();
+	});
+
+	it("refuses between the two windows", async () => {
+		checkpointFindUnique.mockResolvedValue(aiPlan({ goalAgreedAt: day1 }));
+		expect(await approvePlan("cp", "author", between)).toBe("planClosed");
+	});
+
+	it("approves checked plans 12 hours old, never an empty one, and says so", async () => {
+		checkpointFindMany.mockResolvedValue([{ id: "cp1" }, { id: "cp2" }]);
+		// cp2 was approved by its author in between.
+		checkpointUpdateMany
+			.mockResolvedValueOnce({ count: 1 })
+			.mockResolvedValueOnce({ count: 0 });
+		const now = new Date("2026-10-06T10:00:00Z");
+		expect(await approveCheckedPlans(now)).toBe(2);
+		expect(checkpointFindMany.mock.calls[0][0].where).toMatchObject({
+			curatorKind: ai,
+			goalAgreedAt: null,
+			items: { some: { cut: false } },
+			planCheckedAt: { lte: new Date("2026-10-05T22:00:00Z") },
+		});
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "cp1", goalAgreedAt: null },
+			data: { goalAgreedAt: now },
+		});
+		expect(notifyPlanApproved).toHaveBeenCalledTimes(1);
+		expect(notifyPlanApproved).toHaveBeenCalledWith("cp1");
+		expect(writePlanLetter).toHaveBeenCalledTimes(1);
+		expect(writePlanLetter).toHaveBeenCalledWith("cp1");
+	});
+
 });

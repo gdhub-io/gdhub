@@ -35,10 +35,13 @@ export function WorkflowAside({
 	projectId,
 	checkpointId,
 	children,
+	withCheckpoint = true,
 }: {
 	projectId: string;
 	checkpointId?: string;
 	children?: ReactNode;
+	/** Off on Path to Checkpoint, which is the checkpoint itself. */
+	withCheckpoint?: boolean;
 }) {
 	const { can } = useAccess();
 	const { data: workflow } = useProjectWorkflow(projectId);
@@ -48,7 +51,7 @@ export function WorkflowAside({
 	return (
 		<aside className={styles.aside}>
 			{children}
-			{detail && (
+			{withCheckpoint && detail && (
 				<CheckpointAside
 					checkpoint={detail}
 					canManage={can("project.checkpoints.manage")}
@@ -64,6 +67,7 @@ export function WorkflowAside({
 						done: task.done,
 					}))}
 					showHint={false}
+					stageName={current.name ?? undefined}
 				/>
 			)}
 			<ActivityFeed projectId={projectId} sprints={detail?.sprints} />

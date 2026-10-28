@@ -1,20 +1,23 @@
 "use client";
 
-import { IconMessageCircle, IconPaperclip } from "@tabler/icons-react";
+import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Tag, Tooltip, Typography } from "antd";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
-import { AppAvatar } from "@/components/ui/AppAvatar";
 import WorkflowTaskCard from "@/components/WorkflowContent/WorkflowTaskCard";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import { useCheckpointChat } from "@/hooks/checkpoints";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import type { CheckpointArtifactRef, CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
+import { AsideHead } from "./AsideHead";
+import { CuratorNote } from "./CuratorNote";
 import { formatDayRange } from "./dates";
 import styles from "./style.module.scss";
 
@@ -26,8 +29,9 @@ export type CheckpointAsideProps = {
 };
 
 /**
- * Frame 08 (`RV1gV`): the running checkpoint at a glance beside the path — its
- * goal, its tasks with what proves them, and the curator one click from a chat.
+ * Frame 08 (`RV1gV`): the running checkpoint at a glance beside the path — the
+ * curator's last word and what it asks, the goal, and the tasks with what
+ * proves them.
  */
 export function CheckpointAside({
 	checkpoint,
@@ -46,8 +50,8 @@ export function CheckpointAside({
 		checkpoint.items.find((item) => item.id === id)?.artifact ??
 		checkpoint.evidence?.find((row) => row.itemIds.includes(id))?.artifact ??
 		null;
-	const done = outcomes.filter((item) => proofOf(item.id)).length;
 	const curator = checkpoint.curator;
+	const { slug } = useParams<{ slug: string }>();
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 
 	const chat = () =>
@@ -64,24 +68,32 @@ export function CheckpointAside({
 		});
 
 	return (
-		<section className={styles.asideCard}>
-			<div className={styles.asideHead}>
-				<div className={styles.asideRow}>
-					<Text strong className={styles.asideTitle}>
-						{t("workflow.aside.checkpoint", "Checkpoint {number}", {
-							number: String(checkpoint.number ?? 1),
-						})}
-					</Text>
-					{isAI && (
+		<section className={`${styles.asideCard} ${styles.asideCheckpoint}`}>
+			{(curator || isAI) && (
+				<CuratorNote
+					checkpoint={checkpoint}
+					reviewHref={(index) =>
+						checkpointPathHref(slug, checkpoint.number ?? 1, index)
+					}
+					onChat={chat}
+					chatLoading={openChat.isPending}
+				/>
+			)}
+			<AsideHead
+				title={t("workflow.aside.checkpoint", "Checkpoint {number}", {
+					number: String(checkpoint.number ?? 1),
+				})}
+				badge={
+					isAI && (
 						<Tag className="gd-tag-on-page">{t("workflow.aside.ai", "AI")}</Tag>
-					)}
-				</div>
-				{checkpoint.startedAt && checkpoint.dueAt && (
-					<Text type="secondary" className={styles.asideMeta}>
-						{formatDayRange(checkpoint.startedAt, checkpoint.dueAt)}
-					</Text>
-				)}
-			</div>
+					)
+				}
+				extra={
+					checkpoint.startedAt &&
+					checkpoint.dueAt &&
+					formatDayRange(checkpoint.startedAt, checkpoint.dueAt)
+				}
+			/>
 
 			<div className={styles.asideBody}>
 				<div className={styles.asideBlock}>
@@ -94,17 +106,9 @@ export function CheckpointAside({
 				<div className={styles.asideBlock}>
 					{outcomes.length > 0 && (
 						<>
-							<div className={styles.asideRow}>
-								<Text type="secondary" strong className={styles.asideMeta}>
-									{t("workflow.aside.tasks", "Tasks")}
-								</Text>
-								<Text type="secondary" className={styles.asideMeta}>
-									{t("workflow.path.count", "{done} of {total}", {
-										done: String(done),
-										total: String(outcomes.length),
-									})}
-								</Text>
-							</div>
+							<Text type="secondary" strong className={styles.asideMeta}>
+								{t("workflow.aside.tasks", "Tasks")}
+							</Text>
 							<div className={styles.asideTasks}>
 								{outcomes.map((item) => {
 									const proof = proofOf(item.id);
@@ -144,29 +148,6 @@ export function CheckpointAside({
 						</>
 					)}
 				</div>
-
-				{curator && (
-					<div className={styles.asideCurator}>
-						<AppAvatar src={curator.image} size={40}>
-							{curator.name?.[0]}
-						</AppAvatar>
-						<div className={styles.grow}>
-							<Text strong>{curator.name}</Text>
-							<Text type="secondary" className={styles.asideMeta}>
-								{t("workflow.aside.curator", "Curator")}
-							</Text>
-						</div>
-						<Tooltip title={t("workflow.aside.chat", "Checkpoint chat")}>
-							<Button
-								size="large"
-								icon={<IconMessageCircle size={20} />}
-								loading={openChat.isPending}
-								onClick={chat}
-								aria-label={t("workflow.aside.chat", "Checkpoint chat")}
-							/>
-						</Tooltip>
-					</div>
-				)}
 			</div>
 
 			{canManage && (

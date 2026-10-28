@@ -306,6 +306,15 @@ export function withValidation<S extends ZodSchema>(
 	};
 }
 
+/** For dev tools: the route does not exist in production at all. */
+export const withDevOnly =
+	() =>
+	(handler: Handler): Handler =>
+	(req, ctx, locals) =>
+		process.env.NODE_ENV === "production"
+			? apiError.notFound()
+			: handler(req, ctx, locals);
+
 /**
  * Compose HOF wrappers right-to-left. The first wrapper in the list runs
  * outermost (the very last thing before reaching the inner handler is the

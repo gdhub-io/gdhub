@@ -6,6 +6,7 @@ import {
 	seeDevlogMedia,
 } from "@/repositories/evidence-seen";
 import { fetchBody } from "@/services/artifact-check/safe-fetch";
+import { notifyEvidenceMismatch } from "@/services/checkpoint-notifications";
 import { describeMedia, judgeEvidence } from "@/services/evidence/judge";
 import { readableLink } from "@/services/evidence/links";
 import { readEvidence } from "@/services/evidence/read";
@@ -19,6 +20,9 @@ vi.mock("@/services/evidence/frames", () => ({
 	})),
 }));
 vi.mock("@/repositories/artifact-check", () => ({ checkArtifact: vi.fn() }));
+vi.mock("@/services/checkpoint-notifications", () => ({
+	notifyEvidenceMismatch: vi.fn(),
+}));
 vi.mock("@/services/evidence/judge", () => ({
 	judgeEvidence: vi.fn(async () => ({ match: "Matches", note: "A level." })),
 	describeMedia: vi.fn(async () => "A level."),
@@ -26,7 +30,10 @@ vi.mock("@/services/evidence/judge", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		projectCheckpoint: { findUnique: vi.fn() },
-		projectReport: { findUnique: vi.fn() },
+		projectReport: {
+			findUnique: vi.fn(),
+			findMany: vi.fn(async () => [{ content: "Week 1: the greybox is up." }]),
+		},
 		checkpointItem: { findMany: vi.fn(), update: vi.fn() },
 		checkpointJournalEntry: {
 			findMany: vi.fn(async () => []),
@@ -178,6 +185,27 @@ describe("looking at a checkpoint's evidence", () => {
 		artifact: { type: "GameplayVideo", name: null, description: null, link },
 	});
 
+	it("tells the author when the evidence does not show the task, and only then", async () => {
+		vi.mocked(prisma.checkpointItem.findMany).mockResolvedValue([
+			item("a", "https://example.com/a.png"),
+			item("b", "https://example.com/b.png"),
+		] as never);
+		vi.mocked(fetchBody).mockResolvedValue(body("image/png"));
+		vi.mocked(judgeEvidence)
+			.mockResolvedValueOnce({ match: "Matches", note: "A level." } as never)
+			.mockResolvedValueOnce({ match: "DoesNotMatch", note: "A menu." } as never);
+
+		await seeCheckpointEvidence("cp1");
+
+		expect(notifyEvidenceMismatch).toHaveBeenCalledTimes(1);
+		expect(notifyEvidenceMismatch).toHaveBeenCalledWith(
+			"cp1",
+			expect.objectContaining({ id: "b", text: "Task b" }),
+			"A menu.",
+			"https://example.com/b.png",
+		);
+	});
+
 	it("looks at a link once, again only when it changes, and journals what it read", async () => {
 		vi.mocked(prisma.checkpointItem.findMany).mockResolvedValue([
 			item("a", "https://example.com/a.png", "https://example.com/a.png"),
@@ -188,6 +216,10 @@ describe("looking at a checkpoint's evidence", () => {
 		await seeCheckpointEvidence("cp1");
 
 		expect(judgeEvidence).toHaveBeenCalledTimes(1);
+		// The devlogs go to the model as context, never into the journal.
+		expect(vi.mocked(judgeEvidence).mock.calls[0][0].devlogs).toEqual([
+			"Week 1: the greybox is up.",
+		]);
 		expect(prisma.checkpointItem.update).toHaveBeenCalledWith({
 			where: { id: "b" },
 			data: {
@@ -206,6 +238,7 @@ describe("looking at a checkpoint's evidence", () => {
 				output: { match: "Matches", note: "A level." },
 			}),
 		]);
+		expect(journalled()[0].input).not.toHaveProperty("devlogs");
 	});
 
 	it("pays for no model call when nothing could be read, and journals why", async () => {

@@ -83,15 +83,26 @@ export const callToken = async (input: {
 export const closeCallRoom = (name: string) =>
 	daily(`/rooms/${name}`, { method: "DELETE" });
 
-/** Everyone's minutes across every meeting the room has held. */
-export const roomParticipantMinutes = async (room: string) => {
+/** Who was in a room's meetings, by the user id their token carried, and the minutes they spent. */
+export const roomParticipants = async (room: string) => {
 	const { data } = await daily<{
-		data: { participants: { duration: number }[] }[];
+		data: { participants: { duration: number; user_id?: string | null }[] }[];
 	}>(`/meetings?room=${room}&limit=100`);
-	const total = data
-		.flatMap((meeting) => meeting.participants)
-		.reduce((sum, participant) => sum + participant.duration, 0);
-	return Math.round(total / 60);
+	const participants = data.flatMap((meeting) => meeting.participants);
+	const total = participants.reduce(
+		(sum, participant) => sum + participant.duration,
+		0,
+	);
+	return {
+		minutes: Math.round(total / 60),
+		userIds: [
+			...new Set(
+				participants.flatMap((participant) =>
+					participant.user_id ? [participant.user_id] : [],
+				),
+			),
+		],
+	};
 };
 
 export const startTranscriptJob = (recordingId: string) =>

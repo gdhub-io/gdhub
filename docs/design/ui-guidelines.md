@@ -27,7 +27,7 @@ A wall of brand-coloured buttons reads as errors, which is why the split exists.
 Filled brand is allowed on marketing surfaces (`inverse` mode) — there it carries
 a white label (`[data-gd-landing]` in globals.scss).
 A dark panel inside the product (`InverseBand density="product"`: the call
-stage, the curator's message) is not marketing: its committing button is white
+stage) is not marketing: its committing button is white
 with an ink label, the mirror of the graphite one.
 
 **Marketing has a second accent.** The landing speaks to two audiences and tells

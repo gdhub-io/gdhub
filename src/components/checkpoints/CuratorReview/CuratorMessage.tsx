@@ -1,6 +1,5 @@
 "use client";
 
-import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Typography } from "antd";
 import type { ReactNode } from "react";
@@ -9,8 +8,9 @@ import {
 	useVerdictCopy,
 	VERDICT_TONE,
 } from "@/components/checkpoints/VerdictChip";
-import { InverseBand, StatusDot } from "@/components/ui";
+import { StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import type { CheckpointVerdict } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 
@@ -27,10 +27,14 @@ export type CuratorAction = {
 export type CuratorMessageProps = {
 	/** A pro curator; without one the AI curator speaks. */
 	curator?: { name: string; image: string | null };
+	/** Who the AI curator plays on this checkpoint, if anyone. */
+	character?: { name: string; avatar: string | null } | null;
 	/** Already formatted: "8 Oct". */
 	date: string;
 	message: string;
 	verdict?: CheckpointVerdict | null;
+	/** Under the message: the countdown to a call. */
+	extra?: ReactNode;
 	actions?: CuratorAction[];
 };
 
@@ -41,24 +45,24 @@ export type CuratorMessageProps = {
  */
 export function CuratorMessage({
 	curator,
+	character,
 	date,
 	message,
 	verdict,
+	extra,
 	actions = [],
 }: CuratorMessageProps) {
 	const { t } = useTranslate();
 	const { label } = useVerdictCopy();
 
 	return (
-		<InverseBand density="product" className={styles.message}>
+		<div className={styles.message}>
 			{curator ? (
 				<AppAvatar src={curator.image} size={48}>
 					{initials(curator.name)}
 				</AppAvatar>
 			) : (
-				<span className={styles.avatar}>
-					<IconSparkles size={24} />
-				</span>
+				<AppAvatar src={character?.avatar ?? AI_CURATOR_AVATAR} size={48} />
 			)}
 			<div className={styles.body}>
 				<div className={styles.head}>
@@ -67,7 +71,11 @@ export function CuratorMessage({
 							? t("checkpoints.review.proCurator", "{name} · curator", {
 									name: curator.name,
 								})
-							: t("checkpoints.review.curator", "AI curator")}
+							: character
+								? t("checkpoints.review.aiCharacter", "{name} · AI curator", {
+										name: character.name,
+									})
+								: t("checkpoints.review.curator", "AI curator")}
 					</Typography.Text>
 					<Typography.Text type="secondary" className={styles.small}>
 						{date}
@@ -84,6 +92,7 @@ export function CuratorMessage({
 				<Typography.Paragraph className={styles.text}>
 					{message}
 				</Typography.Paragraph>
+				{extra}
 				{actions.length > 0 && (
 					<div className={styles.actions}>
 						{actions.map((action) => (
@@ -101,6 +110,6 @@ export function CuratorMessage({
 					</div>
 				)}
 			</div>
-		</InverseBand>
+		</div>
 	);
 }

@@ -33,3 +33,16 @@ export const useAdvisePlan = (id: string) => {
 			]),
 	});
 };
+
+/** Day 1 with the AI curator: the author approves the checked plan. */
+export const useApprovePlan = (id: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async () => {
+			await axios.post(`/api/checkpoint/${id}/plan/approve`);
+		},
+		onSuccess: () =>
+			queryClient.invalidateQueries({ queryKey: ["checkpoint-review", id] }),
+	});
+};

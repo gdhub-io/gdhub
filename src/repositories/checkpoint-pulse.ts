@@ -1,8 +1,7 @@
-import { CheckpointStatus } from "@/config/prisma-enums";
-import { dayNumberOn } from "@/lib/checkpoint-days";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
+import { dayNumberOn, sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { pulseIdOf, pulseToken } from "@/lib/checkpoint-pulse-token";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	devlogDayOf,
 	sprintOfDay,
@@ -14,6 +13,75 @@ import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { appUrl, notify } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import type { CheckpointPulseCellDto } from "@/types/checkpoints";
+
+/**
+ * Who of `userIds` changed anything of the project in the window — a task
+ * ticked, a vacancy posted, an invitation sent, the plan edited: every write
+ * the audit log keeps, traced back to the project through what it touched.
+ */
+const activeOnProject = async (
+	projectId: string,
+	userIds: string[],
+	window: { gte: Date; lt: Date },
+) => {
+	if (!userIds.length) return new Set<string>();
+	const project = await prisma.project.findUnique({
+		where: { id: projectId },
+		select: {
+			team: {
+				select: {
+					id: true,
+					members: { select: { id: true } },
+					vacancies: { select: { id: true } },
+					invitations: { select: { id: true } },
+				},
+			},
+			workflow: {
+				select: {
+					id: true,
+					steps: { select: { id: true, tasks: { select: { id: true } } } },
+				},
+			},
+			reports: { select: { id: true } },
+			artifacts: { select: { id: true } },
+			checkpoints: { select: { id: true } },
+		},
+	});
+	if (!project) return new Set<string>();
+	const ids = (rows: { id: string }[] = []) => rows.map((row) => row.id);
+	const { team, workflow } = project;
+	const owned: Record<string, string[]> = {
+		Project: [projectId],
+		Team: team ? [team.id] : [],
+		TeamMember: ids(team?.members),
+		TeamVacancy: ids(team?.vacancies),
+		TeamInvitation: ids(team?.invitations),
+		ProjectWorkflow: workflow ? [workflow.id] : [],
+		ProjectWorkflowStep: ids(workflow?.steps),
+		ProjectWorkflowTask:
+			workflow?.steps.flatMap((step) => ids(step.tasks)) ?? [],
+		ProjectReport: ids(project.reports),
+		ProjectArtifact: ids(project.artifacts),
+		ProjectCheckpoint: ids(project.checkpoints),
+	};
+	const rows = await prisma.auditLog.findMany({
+		where: {
+			actorUserId: { in: userIds },
+			createdAt: window,
+			OR: Object.entries(owned)
+				.filter(([, entityIds]) => entityIds.length)
+				.map(([entity, entityIds]) => ({
+					entity,
+					entityId: { in: entityIds },
+				})),
+		},
+		distinct: ["actorUserId"],
+		select: { actorUserId: true },
+	});
+	return new Set(
+		rows.map((row) => row.actorUserId).filter((id) => id !== null),
+	);
+};
 
 /**
  * The daily run, on a sprint's last day: everyone on the team is either shown
@@ -28,6 +96,7 @@ export const requestPulses = async (now = new Date()) => {
 			startedAt: true,
 			projectId: true,
 			curatorId: true,
+			curatorKind: true,
 			project: {
 				select: {
 					name: true,
@@ -77,6 +146,20 @@ export const requestPulses = async (now = new Date()) => {
 		const wrote = new Set(devlogs.map((row) => row.authorId));
 		const made = new Set(artifacts.map((row) => row.createdById));
 		const already = new Set(pulses.map((row) => row.teamMemberId));
+		// The audit log is read only for those no devlog, artifact or pulse covers.
+		const busy = await activeOnProject(
+			checkpoint.projectId,
+			(checkpoint.project.team?.members ?? [])
+				.filter(
+					(member) =>
+						!already.has(member.id) &&
+						member.user.id !== checkpoint.curatorId &&
+						!wrote.has(member.user.id) &&
+						!made.has(member.user.id),
+				)
+				.map((member) => member.user.id),
+			inSprint,
+		);
 
 		for (const member of checkpoint.project.team?.members ?? []) {
 			if (already.has(member.id)) continue;
@@ -87,9 +170,10 @@ export const requestPulses = async (now = new Date()) => {
 				teamMemberId: member.id,
 				week: sprint,
 			};
-			let source: "devlog" | "artifact" | null = null;
+			let source: "devlog" | "artifact" | "activity" | null = null;
 			if (wrote.has(member.user.id)) source = "devlog";
 			else if (made.has(member.user.id)) source = "artifact";
+			else if (busy.has(member.user.id)) source = "activity";
 			if (source) {
 				await prisma.checkpointPulse.create({
 					data: { ...key, requestedAt: now, confirmedAt: now, source },
@@ -103,8 +187,7 @@ export const requestPulses = async (now = new Date()) => {
 			});
 			await notify(member.user, `cp-pulse-${pulse.id}`, {
 				title: `Were you working on ${checkpoint.project.name} this sprint?`,
-				message:
-					"Answer in one click — your curator reads the team's pulse at the next call. If you weren't working on it this sprint, ignore this email.",
+				message: `Answer in one click — your curator reads the team's pulse ${checkpoint.curatorKind === CheckpointCuratorKind.AI ? "for the sprint review" : "at the next call"}. If you weren't working on it this sprint, ignore this email.`,
 				redirectUrl: `${appUrl()}/pulse/${pulseToken(pulse.id)}`,
 			});
 			asked += 1;

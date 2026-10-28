@@ -19,6 +19,7 @@
 
 import { AI_MODELS } from "@/config/ai-models";
 import { isValidJSON } from "@/helpers/format";
+import { traceAiCall } from "@/services/ai-trace";
 import {
 	type AiMeter,
 	type AiPurpose,
@@ -30,30 +31,16 @@ import {
 	goalCheckSchema,
 } from "./prompts/goal-check";
 import {
-	MID_NOTE_FUNCTION_NAME,
-	midNoteMessages,
-	midNoteSchema,
-} from "./prompts/mid-note";
-import {
 	REPORT_FUNCTION_NAME,
 	reportMessages,
 	reportSchema,
 } from "./prompts/report";
-import {
-	SUGGEST_LINES_FUNCTION_NAME,
-	suggestLinesMessages,
-	suggestLinesSchema,
-} from "./prompts/suggest-lines";
 import type {
 	CuratorOptions,
 	GoalCheckInput,
 	GoalCheckResult,
-	MidNoteInput,
-	MidNoteResult,
 	ReportInput,
 	ReportResult,
-	SuggestLinesInput,
-	SuggestLinesResult,
 } from "./types";
 
 type Message = { role: "system" | "user"; content: string };
@@ -64,7 +51,7 @@ const meter = (options: CuratorOptions, purpose: AiPurpose) =>
 		: undefined;
 
 class CheckpointCuratorService {
-	private get model() {
+	get model() {
 		return process.env.CHECKPOINT_CURATOR_MODEL || AI_MODELS.curatorAssist;
 	}
 
@@ -82,6 +69,7 @@ class CheckpointCuratorService {
 			// Lazy: constructing the OpenAI client needs OPENAI_API_KEY, and the
 			// cron route must stay loadable without one.
 			const { openAI } = await import("@/services/openai");
+			const started = Date.now();
 			const completion = await openAI.openai.chat.completions.create({
 				model: this.model,
 				messages,
@@ -100,6 +88,16 @@ class CheckpointCuratorService {
 			const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
 			const args =
 				toolCall?.type === "function" ? toolCall.function.arguments : undefined;
+			traceAiCall(() => ({
+				name,
+				model: this.model,
+				system: messages.find((m) => m.role === "system")?.content ?? "",
+				messages: messages.filter((m) => m.role !== "system"),
+				raw: args ?? null,
+				inputTokens: completion.usage?.prompt_tokens ?? 0,
+				outputTokens: completion.usage?.completion_tokens ?? 0,
+				ms: Date.now() - started,
+			}));
 
 			if (!isValidJSON(args)) {
 				console.error(`[checkpoint-curator] ${name} answered no usable JSON`);
@@ -115,23 +113,13 @@ class CheckpointCuratorService {
 		}
 	}
 
-	/** Day 1: is this reachable in 28 days, and what is missing from the list. */
+	/** Day 1: does the goal fit 28 days, and which tasks to start from. */
 	checkGoal(input: GoalCheckInput, options: CuratorOptions = {}) {
 		return this.call<GoalCheckResult>(
 			GOAL_CHECK_FUNCTION_NAME,
-			goalCheckSchema(input),
+			goalCheckSchema(),
 			goalCheckMessages(input, options.locale),
 			meter(options, "goalCheck"),
-		);
-	}
-
-	/** Day 15: the unclaimed outcomes and the question. Never the cut. */
-	writeMidNote(input: MidNoteInput, options: CuratorOptions = {}) {
-		return this.call<MidNoteResult>(
-			MID_NOTE_FUNCTION_NAME,
-			midNoteSchema(),
-			midNoteMessages(input, options.locale),
-			meter(options, "midNote"),
 		);
 	}
 
@@ -142,16 +130,6 @@ class CheckpointCuratorService {
 			reportSchema(),
 			reportMessages(input, options.locale),
 			meter(options, options.purpose ?? "report"),
-		);
-	}
-
-	/** While the card is a draft: lines for one side of it, on demand. */
-	suggestLines(input: SuggestLinesInput, options: CuratorOptions = {}) {
-		return this.call<SuggestLinesResult>(
-			SUGGEST_LINES_FUNCTION_NAME,
-			suggestLinesSchema(input),
-			suggestLinesMessages(input, options.locale),
-			meter(options, "suggestLines"),
 		);
 	}
 }

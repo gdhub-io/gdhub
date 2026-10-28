@@ -1,0 +1,79 @@
+direction: down
+
+title: "GDHUB-117 — an AI checkpoint: who does what, day 1 to day 29" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+flow: "" {
+  shape: sequence_diagram
+
+  author: "Author (and the team)"
+  platform: "Platform"
+  curator: "AI curator"
+
+  buy: "Day 0 — purchase" {
+    author -> platform: "writes the goal, picks the AI curator, pays"
+    platform -> curator: "the goal; the game and its author; the team, roles and hours; the stage;\nthe last checkpoint's verdict; the project's activity in the two weeks before"
+    curator -> platform: "first letter: a word on the goal, 3–5 suggested tasks with why"
+    platform -> author: "✉ letter on the page: write your tasks"
+  }
+
+  day1: "Day 1 — the plan" {
+    author -> platform: "writes 1–5 tasks, may change the goal"
+    platform -> author: "✉ 24 h and 72 h, nothing sent: a reminder"
+    author -> platform: "Save and send to the curator (confirm)"
+    platform -> curator: "the goal and the tasks"
+    curator -> platform: "the one check: advice under the goal and each task"
+    platform -> author: "✉ the plan was checked; approves itself on <time>"
+    author -> platform: "adjusts, then Approve the plan"
+    platform -> platform: "or approves it itself 12 h after the check"
+    platform -> author: "✉ the plan approved itself as it stood"
+    platform -> author: "goal and tasks locked; the closing letter"
+  }
+
+  sprints: "Sprints 1–4 — the work" {
+    platform -> author: "✉ last day of a sprint, no devlog: due today"
+    platform -> author: "✉ each member not seen working: were you on it this sprint?"
+    author -> platform: "devlogs, artifacts, weekly check-ins"
+    platform -> curator: "on days 8, 15, 22: the sprint's devlogs, media, artifacts, pulse"
+    curator -> platform: "sprint review: what landed, what is at risk, the focus"
+    platform -> author: "✉ the sprint review is ready (the whole team)"
+    platform -> curator: "each task's artifact"
+    curator -> platform: "does it show what the task promised"
+    platform -> author: "✉ it does not: what is missing, while there is time"
+  }
+
+  day15: "Day 15 — the last change" {
+    platform -> curator: "after the sprint 2 review: the tasks and what it showed"
+    curator -> platform: "advice: keep, shorten, reword or cut — or nothing to change"
+    platform -> author: "✉ review + advice: adjust and Confirm the tasks by tomorrow"
+    platform -> author: "✉ 4 h before it closes, not confirmed: a reminder"
+    author -> platform: "edits the tasks, then Confirm the tasks"
+    platform -> platform: "or closes the change itself after 24 h; the tasks stay"
+  }
+
+  day26: "Day 26 — three days to go" {
+    platform -> author: "✉ tasks with no evidence yet, by name"
+  }
+
+  day29: "Day 29 — the verdict" {
+    platform -> curator: "the goal card, the evidence, the reviews"
+    curator -> platform: "report and a proposed verdict"
+    platform -> platform: "the rule settles the verdict from the evidence"
+    platform -> author: "✉ final review + verdict; move to the next stage if it closed"
+  }
+}
+
+critical: "Critical" {
+  shape: page
+  near: bottom-center
+  grid-columns: 1
+  a: "No model call before payment"
+  b: "One check of the tasks on day 1; edits after it are the author's"
+  c: "No tasks, no approval: the checkpoint never runs on an empty plan"
+  d: "The curator advises; only the author changes the goal and the tasks"
+  e: "The verdict is settled by the platform's rule, not by the model alone"
+  f: "✉ = an email and the bell. Each is sent once, and only when something waits for the author"
+}

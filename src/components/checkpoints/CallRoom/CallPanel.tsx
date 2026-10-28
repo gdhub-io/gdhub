@@ -1,13 +1,16 @@
 "use client";
 
-import { IconLock } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Segmented, Tabs, Tooltip, Typography } from "antd";
+import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { type ReactNode, useState } from "react";
+import { useEvidencePicker } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
+import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import type {
 	CallNotesDto,
 	CheckpointCallDto,
@@ -22,10 +25,11 @@ import {
 	type PlanBodyProps,
 	usePlanChange,
 } from "./CallPlan";
+import { SessionSwitcher, useSprintLabel } from "./SessionSwitcher";
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
-export type PanelTab = "plan" | "notes" | "brief" | "transcript";
+export type PanelTab = "plan" | "notes" | "sprint" | "brief" | "transcript";
 
 // The transcript tab is built but not shown yet.
 const SHOW_TRANSCRIPT = false;
@@ -43,7 +47,12 @@ export function CallPanel({
 	picked: PanelTab | null;
 	onPick: (tab: PanelTab) => void;
 }) {
-	const [selected, setSelected] = useState(call.index);
+	const [pickedCall, setPickedCall] = useState(call.index);
+	// The team's sprint is the page's own, named in its address; a curator's
+	// panel picks among the calls in place.
+	const selected = call.role === "team" ? call.index : pickedCall;
+	const router = useRouter();
+	const evidence = useEvidencePicker(call.checkpointId);
 	const onChange = usePlanChange(call.checkpointId);
 	const advise = useAdvisePlan(call.checkpointId);
 	const held =
@@ -58,31 +67,60 @@ export function CallPanel({
 			?.contentStatus === CheckpointSessionContentStatus.Ready;
 
 	return (
-		<PanelBlock
-			sessions={call.sessions}
-			current={call.index}
-			selected={selected}
-			onSelect={setSelected}
-			tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
-			onTab={onPick}
-			plan={call.plan}
-			onChange={onChange}
-			advise={{
-				advice: call.plan.advice,
-				loading: advise.isPending,
-				onAdvise: () => advise.mutate(),
-			}}
-			notes={notes.data}
-			notesLoading={held && notes.isPending}
-			briefs={call.role === "curator" ? call.briefs : undefined}
-		/>
+		<>
+			<PanelBlock
+				sessions={call.sessions}
+				current={call.index}
+				reached={Math.max(
+					call.index,
+					...call.sessions
+						.filter((session) =>
+							dayjs(session.scheduledAt).isBefore(dayjs().endOf("day")),
+						)
+						.map((session) => session.index),
+				)}
+				selected={selected}
+				// The team's page is the whole sprint: picking one opens its call.
+				onSelect={
+					call.role === "team"
+						? (at) =>
+								router.push(
+									checkpointPathHref(call.project.slug, call.number, at),
+								)
+						: setPickedCall
+				}
+				tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
+				onTab={onPick}
+				plan={call.plan}
+				onChange={onChange}
+				advise={{
+					advice: call.plan.advice,
+					loading: advise.isPending,
+					onAdvise: () => advise.mutate(),
+				}}
+				notes={notes.data}
+				notesLoading={held && notes.isPending}
+				briefs={call.role === "curator" ? call.briefs : undefined}
+				sprintTab={(at) => (
+					<SprintTab
+						checkpointId={call.checkpointId}
+						index={at}
+						project={call.project}
+					/>
+				)}
+				onAttach={evidence.open}
+			/>
+			{evidence.modal}
+		</>
 	);
 }
 
 export type PanelBlockProps = {
 	sessions: Session[];
-	/** The page's own call; the calls after it are locked. */
+	/** The page's own call; its plan is the one that may change. */
 	current: number;
+	/** The last call whose day has come; the calls after it are locked. */
+	reached?: number;
 	selected: number;
 	onSelect: (index: number) => void;
 	tab: PanelTab;
@@ -99,6 +137,10 @@ export type PanelBlockProps = {
 	};
 	/** The curator's only: the AI's briefs, by call; undefined hides the tab. */
 	briefs?: CallBriefData[];
+	/** The Sprint tab for a call; the stories go without it. */
+	sprintTab?: (index: number) => ReactNode;
+	/** Attach an artifact that proves a task, from the plan. */
+	onAttach?: () => void;
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -107,6 +149,7 @@ export type PanelBlockProps = {
 export function PanelBlock({
 	sessions,
 	current,
+	reached = current,
 	selected,
 	onSelect,
 	tab,
@@ -117,6 +160,8 @@ export function PanelBlock({
 	notesLoading,
 	advise,
 	briefs,
+	sprintTab,
+	onAttach,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -124,87 +169,36 @@ export function PanelBlock({
 	const held =
 		sessions.find((session) => session.index === selected)?.held ?? false;
 
+	const sprintLabel = useSprintLabel();
 	const switcher = (
-		<div className={styles.switcher}>
-			<Segmented<number>
-				value={selected}
-				onChange={onSelect}
-				options={sessions.map((session) => {
-					const date = dayjs(session.scheduledAt);
-					const label = date.isSame(today, "day")
-						? t("checkpoints.call.panel.today", "Call {index} · today", {
-								index: session.index,
-							})
-						: t("checkpoints.call.notes.option", "Call {index} · {date}", {
-								index: session.index,
-								date: date.format("D MMM"),
-							});
-					const ahead = session.index > current;
-					return {
-						value: session.index,
-						disabled: ahead,
-						label: ahead ? (
-							<Tooltip
-								title={t(
-									"checkpoints.call.panel.ahead",
-									"This call is still ahead",
-								)}
-							>
-								<span className={styles.lockedOption}>
-									<IconLock size={14} />
-									{label}
-								</span>
-							</Tooltip>
-						) : (
-							label
-						),
-					};
-				})}
-			/>
-		</div>
+		<SessionSwitcher
+			value={selected}
+			onChange={onSelect}
+			aheadLabel={t("checkpoints.call.panel.ahead", "This call is still ahead")}
+			options={sessions.map((session) => {
+				const date = dayjs(session.scheduledAt);
+				const when = date.isSame(today, "day")
+					? t("checkpoints.call.panel.todayWord", "today")
+					: date.format("D MMM");
+				// Call N opens sprint N; the last one closes the checkpoint.
+				return {
+					value: session.index,
+					ahead: session.index > reached,
+					label: sprintLabel(session.index, when),
+				};
+			})}
+		/>
 	);
 
-	const items = [
-		{
-			key: "plan",
-			label: t("checkpoints.call.panel.plan", "Plan"),
-			children: (
-				<PlanBody
-					// One plan for every call; only the page's own call may change it.
-					plan={selected === current ? plan : { ...plan, edit: null }}
-					onChange={onChange}
-					// Before call 1 the AI reads the author's draft.
-					{...(advise &&
-						selected === current &&
-						plan.edit === "plan" && {
-							advice: advise.advice,
-							...adviceSlots({
-								// The draft is free until call 1; on it, the plan is agreed.
-								until:
-									sessions.find((session) => session.index === current)
-										?.scheduledAt ?? null,
-								loading: advise.loading,
-								onAdvise: advise.onAdvise,
-								sessionIndex: current,
-							}),
-						})}
-				/>
-			),
-		},
-		{
-			key: "notes",
-			label: t("checkpoints.call.panel.review", "Review"),
-			children: (
-				<NotesBody
-					index={selected}
-					held={held}
-					plan={plan}
-					notes={notes}
-					loading={notesLoading}
-				/>
-			),
-		},
-	];
+	// What this sprint asks, then what happened (the brief, the call), the whole plan.
+	const items: { key: PanelTab; label: string; children: ReactNode }[] = [];
+	if (sprintTab) {
+		items.push({
+			key: "sprint",
+			label: t("checkpoints.call.panel.sprint", "Sprint"),
+			children: <>{sprintTab(selected)}</>,
+		});
+	}
 	if (briefs) {
 		const brief = briefs.find((row) => row.index === selected);
 		items.push({
@@ -222,6 +216,46 @@ export function PanelBlock({
 			),
 		});
 	}
+	items.push({
+		key: "notes",
+		label: t("checkpoints.call.panel.review", "Review"),
+		children: (
+			<NotesBody
+				index={selected}
+				held={held}
+				plan={plan}
+				notes={notes}
+				loading={notesLoading}
+			/>
+		),
+	});
+	items.push({
+		key: "plan",
+		label: t("checkpoints.call.panel.plan", "Plan"),
+		children: (
+			<PlanBody
+				// One plan for every call; only the page's own call may change it.
+				plan={selected === current ? plan : { ...plan, edit: null }}
+				onChange={onChange}
+				onAttach={onAttach}
+				// Before call 1 the AI reads the author's draft.
+				{...(advise &&
+					selected === current &&
+					plan.edit === "plan" && {
+						advice: advise.advice,
+						...adviceSlots({
+							// The draft is free until call 1; on it, the plan is agreed.
+							until:
+								sessions.find((session) => session.index === current)
+									?.scheduledAt ?? null,
+							loading: advise.loading,
+							onAdvise: advise.onAdvise,
+							sessionIndex: current,
+						}),
+					})}
+			/>
+		),
+	});
 	if (SHOW_TRANSCRIPT && held) {
 		items.push({
 			key: "transcript",

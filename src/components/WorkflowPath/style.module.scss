@@ -1,3 +1,5 @@
+@use "../../styles/surfaces" as surfaces;
+
 // Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
 // platform-design.pen.
 
@@ -44,29 +46,42 @@
 	gap: var(--gd-space-6);
 }
 
-// Frame 08 `RV1gV`: outlined like the stage's Tasks panel beside it, with the
-// same ruled header.
+// The hub's sidebar card (`sectionCardSidebar`): transparent, the stronger
+// stroke, the panel radius — one look for every card in a right column.
 .asideCard {
 	display: flex;
 	flex-direction: column;
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-card);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
+
+	// As the hub's: alone above the page on a narrow screen, it needs a ground.
+	@media (max-width: 767px) {
+		background: var(--gd-color-surface);
+	}
+}
+
+// Frame 12.07 `C7axzV`: the running checkpoint takes the accent rim.
+.asideCheckpoint {
+	border-color: var(--gd-color-accent);
 }
 
 .asideHead {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-1);
-	padding: var(--gd-space-3) var(--gd-space-4);
-	border-bottom: 1px solid var(--gd-color-border);
+	padding: var(--gd-space-4) var(--gd-space-6) var(--gd-space-3);
+}
+
+.asideHead + .asideBody {
+	padding-top: 0;
 }
 
 .asideBody {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-6);
-	padding: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-6);
 }
 
 .asideBlock {
@@ -83,7 +98,8 @@
 }
 
 .asideTitle {
-	font-size: var(--gd-font-size-body-lg);
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
 }
 
 .asideMeta {
@@ -91,11 +107,10 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
-// The stage's task rows, edge to edge of the card.
+// The stage's task rows, edge to edge of the card, the last on its bottom.
 .asideTasks {
-	margin: 0 calc(-1 * var(--gd-space-4));
+	margin: 0 calc(-1 * var(--gd-space-6)) calc(-1 * var(--gd-space-4));
 	border-top: 1px solid var(--gd-color-border);
-	border-bottom: 1px solid var(--gd-color-border);
 }
 
 // Frame 08 `Dmwhm`: the feed scrolls inside its card; the page does not grow.
@@ -105,10 +120,11 @@
 	gap: var(--gd-space-4);
 	max-height: 500px;
 	overflow-y: auto;
-	// Runs to the card's edges and up to the header's rule, so rows scroll under
-	// them rather than vanish short of them; the rows keep the card's inset.
-	margin: calc(-1 * var(--gd-space-4));
+	// Runs to the card's edges under a rule, as the task lists do, so rows scroll
+	// under it rather than vanish short of it; the rows keep the card's inset.
+	margin: 0 calc(-1 * var(--gd-space-6)) calc(-1 * var(--gd-space-4));
 	padding: var(--gd-space-4) 0;
+	border-top: 1px solid var(--gd-color-border);
 
 	// A hairline, as in the expert request modal: the standard properties only
 	// for Firefox, since in Chrome they override the 6px webkit rules below.
@@ -134,7 +150,7 @@
 .activityEvent,
 .activityBoundary,
 .activityMore {
-	padding: 0 var(--gd-space-4);
+	padding: 0 var(--gd-space-6);
 }
 
 .activityEvent {
@@ -151,15 +167,17 @@
 	min-width: 0;
 }
 
+// The same type as the task rows above: a body line, a small line under it.
 .activityTitle {
-	font-size: var(--gd-font-size-body-sm);
-	font-weight: 500;
+	font-size: var(--gd-font-size-body);
+	line-height: 1.45;
 }
 
 .activitySub,
 .activityWhen,
 .activityMore {
-	font-size: var(--gd-font-size-caption);
+	font-size: var(--gd-font-size-body-sm);
+	line-height: 1.4;
 }
 
 .activityWhen {
@@ -928,12 +946,6 @@ button.checklistItem {
 	background: var(--gd-color-surface);
 }
 
-.aiTile {
-	width: 56px;
-	height: 56px;
-	flex: none;
-}
-
 .gate {
 	display: flex;
 	flex-direction: column;
@@ -1225,11 +1237,7 @@ button.checklistItem {
 	padding: var(--gd-space-6);
 	border: 1px solid var(--gd-color-accent);
 	border-radius: var(--gd-radius-panel);
-	background: linear-gradient(
-		118deg,
-		var(--gd-color-accent-subtle),
-		var(--gd-warning-tint)
-	);
+	@include surfaces.checkpoint-wash;
 }
 
 .offerFacts > * {
@@ -1325,4 +1333,36 @@ button.checklistItem {
 	padding: var(--gd-space-3) var(--gd-space-4);
 	border-radius: var(--gd-radius-control);
 	background: var(--gd-color-surface-sunken);
+}
+
+// Frames xZ32D / BixZr / ErNgO: the curator at the widget's top, edge to edge,
+// in the checkpoint cards' warm wash, ruled off the body.
+.curatorNote {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+	@include surfaces.checkpoint-wash;
+}
+
+.curatorName {
+	display: block;
+}
+
+.curatorText {
+	margin: 0 !important;
+}
+
+.curatorActions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+// "Optional" names what a line is, as the stage's task chips do.
+.optionalTag {
+	flex-shrink: 0;
+	margin: 0;
+	background: var(--gd-neutral-100);
 }

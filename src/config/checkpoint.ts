@@ -1,7 +1,9 @@
 import { hubLegalEntity } from "@/config/legal/entities";
 import {
+	CheckpointCuratorKind,
 	CheckpointStatus,
 	PaymentProvider,
+	ProjectArtifactType,
 	type SkillLevel,
 } from "@/config/prisma-enums";
 
@@ -58,8 +60,43 @@ export const SCOPE_ANSWER_HOURS = 24;
 
 // The AI curator
 
-/** With the AI curator the tasks are set on the review page, open this many days from the start. */
-export const AI_PLAN_DAYS = 2;
+/**
+ * Day 1 (Dmitry, 2026-10-26): after payment the author writes the tasks and
+ * sends them for the AI's one check; the plan stays open until they approve
+ * it, and approves itself this many hours after the check.
+ */
+export const AI_APPROVE_HOURS = 12;
+/** Hours after payment at which an author who has not sent the tasks is reminded; the plan stays open. */
+export const AI_REMIND_HOURS = [24, 72] as const;
+/**
+ * What counts as a sprint's build: the AI curator watches, it cannot run a
+ * game, so a video; a person can also open the build and play it.
+ */
+export const SPRINT_BUILD_TYPES: Record<
+	CheckpointCuratorKind,
+	ProjectArtifactType[]
+> = {
+	[CheckpointCuratorKind.AI]: [
+		ProjectArtifactType.GameplayVideo,
+		ProjectArtifactType.PrototypeVideo,
+	],
+	[CheckpointCuratorKind.Human]: [
+		ProjectArtifactType.ExecutableBuild,
+		ProjectArtifactType.GameplayVideo,
+		ProjectArtifactType.PrototypeVideo,
+	],
+};
+/** The author's local hour those reminders go out at: the first such morning after each mark. */
+export const AI_REMIND_LOCAL_HOUR = 10;
+/** Day 15 with the AI curator: hours before the change closes that an author who has not confirmed is reminded. */
+export const SCOPE_REMIND_BEFORE_HOURS = 4;
+/** The day an author whose tasks still lack evidence is told, three days before the verdict. */
+export const EVIDENCE_REMIND_DAY = 26;
+/** With a pro curator: the goal and tasks stay open this long after call 1 ends, then are fixed. */
+export const PRO_PLAN_AFTER_CALL_HOURS = 12;
+
+/** The AI curator's face when it plays no character: the platform's robot (frame 12.19). */
+export const AI_CURATOR_AVATAR = "/curators/robot.webp";
 
 // The verdict
 
@@ -204,4 +241,32 @@ export const AI_MODEL_PRICES: Record<
 	"gpt-6-sol": { input: 2, output: 10 },
 	"gpt-6.1-sol": { input: 2, output: 10 },
 	"gpt-6-luna": { input: 0.1, output: 0.5 },
+};
+
+/**
+ * What each stage of the Default workflow is for, as the AI curator reads it
+ * (Dmitry, 2026-10-26). Written for the model, not the author: the stage's
+ * Notion page is advice to the author, and handed to the model it reads as
+ * owed. Whether a stage is passed is never in here — that is its required
+ * tasks, all done. A stage not listed reaches the curator with no description.
+ */
+export const CURATOR_STAGE_BRIEFS: Record<string, string> = {
+	Introduction:
+		"The platform's own onboarding: the author learns how GDHub works and presses Next when ready. Nothing is built, and nobody else sees the project yet.",
+	Ideation:
+		"Generating ideas and choosing one — through research (the market, games like it) or the author's own vision — then writing it up: the ideas weighed, why this one, and a one-page description of it.",
+	Concepting:
+		"Turning the chosen idea into a concept the team can build from: core loop, main mechanics, audience, scope, art direction (mood board, references), and the riskiest open questions, which Prototyping answers.",
+	Prototyping:
+		"Answering the concept's riskiest questions cheaply: a rough playable build of the core mechanic, an art prototype (style variants, a visual target) or a technical test, and what the team learned from it. Polish and content are not expected; a proven core and a chosen style go on to the demo.",
+	"Preparing a demo version":
+		"Building a vertical slice on the proven core — one short part of the game at near-final quality, showing it can be made, not only that it is fun — and publishing it as a demo anyone can play (itch.io, a Steam demo or playtest), with the game's Steam page live by the end.",
+	"Taking and analyzing metrics":
+		"Putting the demo in front of players and reading what they do — wishlists, store traffic, playtime, where they drop off, what they say — and the decisions taken from it: what to fix, cut or build on.",
+	"Preparing a release version":
+		"Main production: building the full game on those decisions and finishing it — content locked, bugs going down, store page, price and release date set. Several checkpoints usually sit here. It ends with the launch: moving to Support is the release.",
+	Support:
+		"The game is out: fixes and patches, answers to players and reviews, and the sales and review numbers that the project's close reads.",
+	"Project Completion":
+		"Closing the project: a postmortem — what went right, what went wrong, the lessons — and the final numbers, for the team's next project.",
 };

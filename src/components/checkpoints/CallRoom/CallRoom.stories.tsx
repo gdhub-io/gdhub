@@ -81,6 +81,7 @@ const sessionsHeld = (held: number): CheckpointCallDto["sessions"] =>
 		index: index + 1,
 		scheduledAt,
 		held: index < held,
+		missed: false,
 		contentStatus: index < held ? "Ready" : null,
 	}));
 
@@ -94,6 +95,7 @@ const call: CheckpointCallDto = {
 	curator: { id: "u-curator", name: "Patrick Novak", image: null },
 	scheduledAt: "2026-10-08T12:00:00.000Z",
 	state: "open",
+	missed: false,
 	curatorJoinedAt: null,
 	role: "team",
 	briefs: [],

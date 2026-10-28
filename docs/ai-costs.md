@@ -4,10 +4,10 @@ Every model call the platform makes, what it sends, and what it costs. Written s
 a price change or a new feature is a line to edit rather than a spreadsheet to
 rebuild.
 
-**Input tokens are measured, not estimated.** They come from rendering each
-prompt with representative data and counting with `js-tiktoken`. Output tokens
-are estimates from the word limits each schema states — the model is told "under
-300 words", so the ceiling is known even when the answer comes back shorter.
+**Tokens are measured, not estimated.** The checkpoint numbers come from running
+every call of the AI curator lab (`/dev/ai-curator`) on its prepared situations
+on 27 October 2026 — the production prompt, the production model, the usage the
+API reported. The other features' numbers are older counts with `js-tiktoken`.
 
 Rates checked **14 September 2026** (the GPT-6 rows on 24 October 2026) against
 [OpenAI's pricing page](https://developers.openai.com/api/docs/pricing). They are
@@ -32,98 +32,66 @@ still falls back to. See [What the code still points at](#what-the-code-still-po
 
 ---
 
-## One checkpoint
+## One AI checkpoint
 
-Six calls over 28 days: the day-1 goal check, an answer under each of the first
-three devlogs, the day-14 scope note, and the day-28 report. The fourth devlog's
-answer folds into the report, so it costs nothing extra.
+What runs over the 28 days, in order (GDHUB-117):
 
-Measured against a representative checkpoint: a four-outcome goal card, a
-four-task stage template, devlogs of ~250 words, five members in the pulse
-matrix, two artifacts attached, four of the five members having stated the hours
-a week they have.
+| Call | When | Model | Times | Input | Output | Each |
+|---|---|---|---|---|---|---|
+| Character — the role made the author's own | day 1, at payment | Luna | 1 | 365 | ~345 | $0.0002 |
+| Goal read — word on the goal, suggested tasks | day 1, at payment | Luna | 1 | ~2 790 | ~360 | $0.0005 |
+| Tasks check — the one check of the sent tasks | day 1 | Sol | 1 | ~1 950 | ~840 | $0.0123 |
+| Plan letter — the plan approved, read through sprint 1 | day 1, at approval | Luna | 1 | ~2 100 | ~680 | $0.0006 |
+| Sprint review | days 8, 15, 22, 29 | Sol | 4 | ~2 020 | ~710 | $0.0112 |
+| Media in the sprint's devlogs, described | with each review | Sol | 0–6 a sprint | 360–610 | ~45 | $0.0014 |
+| Plan advice — the last change to the tasks | day 15 | Sol | 1 | ~2 000 | ~580 | $0.0098 |
+| Evidence — does the artifact show the task | once per link | Sol | ~1 per task | ~500 | ~50 | $0.0015 |
+| Report and proposed verdict | day 29 | Luna | 1 | ~2 670 | ~175 | $0.0004 |
 
-| Call | Times | Input each | Output each | Input total | Output total |
-|---|---|---|---|---|---|
-| Day 1 — goal check | 1 | 967 | ~300 | 967 | 300 |
-| Devlog answer | 3 | 926 | ~120 | 2 778 | 360 |
-| Day 14 — scope note | 1 | 895 | ~170 | 895 | 170 |
-| Day 28 — report | 1 | 1 714 | ~480 | 1 714 | 480 |
-| **Total** | **6** | | | **6 354** | **1 310** |
+A typical run — four tasks, two images or videos in each sprint's devlogs:
 
-| Model | Input | Output | **Per checkpoint** |
-|---|---|---|---|
-| `gpt-5.6-luna` | $0.0013 | $0.0016 | **$0.0028** |
-| `gpt-5.6-terra` | $0.0127 | $0.0157 | **$0.0284** |
-| `gpt-5.6-sol` | $0.0318 | $0.0393 | **$0.0711** |
-| **Luna, report on Terra** | | | **$0.0111** |
+| | Calls | Cost |
+|---|---|---|
+| Luna: character, goal read, plan letter, report | 4 | $0.0017 |
+| Sol: tasks check, four reviews, plan advice | 6 | $0.0670 |
+| Sol: eight media descriptions | 8 | $0.0112 |
+| Sol: four evidence checks | 4 | $0.0060 |
+| **One AI checkpoint** | **22** | **≈ $0.086** |
 
-The goal check grew from 782 to 967 tokens when it started weighing the card
-against the team's stated hours: 109 for the paragraph telling it how to use
-them (including what unknown hours mean), 54 for the hours themselves, 22 for
-the two schema descriptions that changed. The team block is 27 tokens where
-nobody stated anything, so the case that carries no information also costs the
-least.
-
-**A third of a cent on Luna, seven cents on Sol.** Against a checkpoint priced
-from a curator's hourly rate, the model is not a cost centre — it is rounding.
-That is the number to hold when someone proposes economising here: the saving is
-invisible and the quality is not.
-
-**The mixed row is the recommendation.** Luna for the goal check, the devlog
-answers and the scope note; Terra for the day-28 report, which is the one call
-that carries a verdict, closes a stage and follows money. One cent per checkpoint
-to put the better model where the decision is.
-
-### The suggested lines, on demand
-
-`POST /api/checkpoint/[id]/suggest` proposes three to six lines for one side of
-the goal card while it is still a draft. **It is not in the table above**, because
-it is not part of a checkpoint: the author presses it, and may press it twice, or
-once, or never. Nothing is stored, so a press is always a fresh call.
-
-| Side asked for | Input | Output | Luna | Terra |
-|---|---|---|---|---|
-| Outcomes — goal, inputs, stage template | 598 | ~120 | $0.00027 | $0.0027 |
-| Inputs — project, stage, last checkpoint's outcomes | 620 | ~120 | $0.00027 | $0.0027 |
-
-The smallest call the curator makes, and the one with the least room to grow: the
-input is a short card and a stage template, and the output is capped at six lines
-of under 15 words. Its JSON schema is 85 of those tokens — a seventh of the
-prompt, for a schema that is one array of strings.
-
-**Pressed both buttons twice, it adds about a tenth of a cent on Luna** — a
-third of what the checkpoint's six scheduled calls cost. Rate-limiting it would
-be about the model's patience, not about money.
+**Under nine cents, and nine tenths of it is Sol.** The three Luna calls cost a
+tenth of a cent together. The letters the author reads every week — the sprint
+reviews, the tasks check, the day-15 advice — are where the money is, and they
+are where the quality shows, so this is the right place to spend it.
 
 ### What moves it
 
-The report is the only call whose input scales with the team's activity: it
-carries every devlog of the 28 days. Four devlogs of 250 words are ~1 600 of its
-1 714 tokens — the rest is ~600 tokens of instructions and the goal card. A team
-writing 1 000-word devlogs quadruples that one call to ~6 000 input tokens, which
-on Terra is $0.012 instead of $0.003.
+- **Media.** Each image or video in a sprint's devlogs is described once, up to
+  six a sprint and ten minutes of video: at most about $0.035 more a checkpoint.
+- **Evidence.** A link is judged again only when it changes. A page read live
+  (an itch.io build page) carries its text: ~1 500 input tokens, $0.0035.
+- **Devlog length.** The sprint review carries the sprint's devlogs; the measured
+  ~2 000 tokens are a ~250-word devlog. A 1 000-word devlog adds ~1 000 tokens,
+  $0.002 a review.
+- **Not the team.** The team, its roles and hours reach every call as a few
+  lines, whether it is two people or twenty.
 
-The goal check does not scale with the team: the hours reach it summed, as two
-sentences, whether the team is two people or twenty.
+**Prompt caching is still not worth it.** Each call runs once in a week or more;
+there is nothing to keep warm.
 
-**Prompt caching is not worth chasing.** The prefix every prompt shares is the
-~250-token curator stance, and at six calls spread over 28 days there is nothing
-to amortise. Cache writes cost 1.25×, so switching it on would cost more than it
-saves at this volume.
+### A pro checkpoint
 
-### If the review becomes per item
+A human curator runs the calls; the AI writes around them. The goal read and the
+plan advice before call 1 are as above. On top of them:
 
-The pending redesign — one review per sprint instead of per devlog, with a line
-per outcome — adds output, not input.
+| Call | When | Model | Input | Output | Each |
+|---|---|---|---|---|---|
+| Brief before a call | the night before calls 2–5 | Sol | ~915 | ~1 040 | $0.0122 |
+| Call notes from the transcript | after each call | Sol | the transcript | ~800 | ~$0.02–0.05 |
+| The AI's read of the verdict | day 29 | Luna | ~2 700 | ~180 | $0.0004 |
 
-| | Input | Output | Luna | Luna + Terra report |
-|---|---|---|---|---|
-| Now | 6 354 | 1 310 | $0.0028 | $0.0111 |
-| Per-item reviews | ~7 100 | ~2 140 | **$0.0040** | **$0.0141** |
-
-Still under two cents. The design decision is not a cost decision, and should not
-be argued as one.
+The brief is from the usage log, not the lab; the call notes scale with how long
+the call ran and are not measured yet. Around **$0.15–0.30** a pro checkpoint —
+against the curator's hours it is invisible.
 
 ---
 
@@ -152,14 +120,13 @@ many. It should never be skipped to save anything, because it saves nothing.
 
 | Volume | Cost |
 |---|---|
-| 100 checkpoints, Luna | $0.28 |
-| 100 checkpoints, Luna + Terra report | $1.11 |
-| 100 checkpoints, Sol throughout | $7.11 |
+| 100 AI checkpoints | ≈ $8.50 |
+| 1 000 AI checkpoints | ≈ $85 |
 | 1 000 onboarding validations | $0.23 |
 | 1 000 CVs parsed | $0.94 |
 
-A thousand checkpoints a month with the report on Terra is $11. The AI curator
-does not need a budget line; it needs a quality decision.
+A thousand AI checkpoints a month is under a hundred dollars. The AI curator
+needs a quality decision, not a budget line.
 
 ---
 
@@ -169,8 +136,8 @@ Three defaults are behind, and one of them is costing five times what it needs t
 
 | Where | Now | Should be | Why |
 |---|---|---|---|
-| `checkpoint-curator` | `gpt-6-luna` | — | current (24 Oct 2026); no longer reads `OPENAI_API_MODEL` |
-| curator review, evidence, call notes | `gpt-6.1-sol` | — | current (24 Oct 2026): `gpt-6-sol`'s price, a newer model |
+| goal read, report, character | `gpt-6-luna` | — | current (27 Oct 2026) |
+| tasks check, reviews, plan advice, evidence, media, call notes, briefs | `gpt-6.1-sol` | — | current (27 Oct 2026) |
 | `ai-validation` relevance | `gpt-4.1-mini` | `gpt-5.6-luna` | two generations back, and dearer: $0.40/$1.60 against $0.20/$1.20 |
 | `openai.parseCV`, `matchingSpecAndProj` | `gpt-4o-mini` | `gpt-5.6-luna` | three generations back |
 | `openai.createEmbedding` | `text-embedding-ada-002` | `text-embedding-3-small` | **$0.10 against $0.02 — five times the price** for a worse embedding |

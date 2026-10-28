@@ -19,6 +19,7 @@ export type CallHeaderProps = {
 		| "curator"
 		| "scheduledAt"
 		| "state"
+		| "missed"
 		| "role"
 		| "project"
 	>;
@@ -74,7 +75,12 @@ export function CallHeader({
 	}
 
 	let status: { tone: StatusTone; label: string };
-	if (call.state === "over") {
+	if (call.missed) {
+		status = {
+			tone: "danger",
+			label: t("checkpoints.call.status.missed", "Missed"),
+		};
+	} else if (call.state === "over") {
 		status = {
 			tone: "neutral",
 			label: t("checkpoints.call.status.over", "Ended"),
@@ -100,6 +106,7 @@ export function CallHeader({
 	return (
 		<CuratorHeader
 			backHref={backHref}
+			number={call.number}
 			kind={CheckpointCuratorKind.Human}
 			status={status}
 			subtitle={t(

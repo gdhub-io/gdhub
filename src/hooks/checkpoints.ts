@@ -19,7 +19,6 @@ import type {
 	CheckpointEvidenceBody,
 	CheckpointItemInput,
 } from "@/schemas/checkpoint";
-import type { GoalCheckResult } from "@/services/checkpoint-curator/types";
 import type { CheckoutStart } from "@/services/payments/types";
 import type {
 	AdvisorCheckpointDto,
@@ -269,18 +268,6 @@ export const useCancelCheckpoint = (id?: string, projectId?: string) => {
 		},
 	});
 };
-
-/**
- * The curator reads the goal against the team's hours when the author moves on
- * from Now. The server keeps the read while nothing behind it changed, so asking
- * twice costs one model call.
- */
-export const useCheckGoal = (id?: string) =>
-	useMutation({
-		mutationFn: async () =>
-			(await axios.post<GoalCheckResult>(`/api/checkpoint/${id}/goal-check`))
-				.data,
-	});
 
 /** The room of the checkpoint's chat; the server opens it on first ask. */
 export const useCheckpointChat = (id?: string) =>

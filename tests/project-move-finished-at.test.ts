@@ -15,6 +15,7 @@ vi.mock("@/services/workflow/recomputeStepTasks", () => ({
 	recomputeStepTasks: async (tasks: unknown[]) => tasks,
 }));
 vi.mock("@/repositories/checkpoint-guards", () => ({
+	stageMoveApproved: vi.fn(async () => true),
 	runningCheckpointLock: (...a: unknown[]) => checkpointFindFirst(...a),
 }));
 vi.mock("@/services/prisma", () => ({

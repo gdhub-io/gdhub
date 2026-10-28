@@ -1,5 +1,6 @@
 import { CallRoom } from "@/components/checkpoints/CallRoom";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import type { PathTab } from "@/lib/checkpoint-hrefs";
 import { AiReview } from "./AiReview";
 
 export type CuratorReviewProps = {
@@ -7,6 +8,8 @@ export type CuratorReviewProps = {
 	index: number;
 	backHref: string;
 	kind: CheckpointCuratorKind;
+	/** The tab a link asked for. */
+	tab?: PathTab;
 };
 
 /**

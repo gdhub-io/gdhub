@@ -3,28 +3,34 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointJournalKind,
+	CheckpointSessionContentStatus,
 	CheckpointStatus,
 	type CheckpointVerdict,
-	type EvidenceMatch,
 	Prisma,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { teamCapacity } from "@/lib/checkpoint-capacity";
-import { checkpointDay } from "@/lib/checkpoint-days";
+import { sessionDay } from "@/lib/checkpoint-days";
+import { dateOfDay } from "@/lib/checkpoint-plan";
 import {
 	settleVerdict,
-	type UnprovenOutcome,
+	type VerdictItem,
 	weighOutcomes,
 } from "@/lib/checkpoint-verdict";
+import { lettersSoFar } from "@/lib/curator-letters";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
-import { lastClosedOutcomes } from "@/repositories/checkpoint.repository";
 import {
 	briefAuthor,
 	briefMemberSelect,
 	lastVerdict,
 } from "@/repositories/checkpoint-brief";
-import { projectPicture, runPeriod } from "@/repositories/curator-context";
+import {
+	curatorPersona,
+	curatorTeam,
+	projectPicture,
+	runPeriod,
+	stageWorkflow,
+} from "@/repositories/curator-context";
 import { journal } from "@/repositories/curator-journal";
 import { seeCheckpointEvidence } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
@@ -36,12 +42,17 @@ import type {
 	CuratorOptions,
 	GoalCheckInput,
 	GoalCheckResult,
-	ReportInput,
-	SuggestLinesResult,
 } from "@/services/checkpoint-curator";
 import { checkpointCurator } from "@/services/checkpoint-curator";
+import { createCharacter } from "@/services/checkpoint-curator/character";
+import { composePlanLetter } from "@/services/checkpoint-curator/plan-letter";
+import { notifyDayOne } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
-import type { CallNotes, VerdictContextDto } from "@/types/checkpoints";
+import type {
+	CallNotes,
+	CuratorReview,
+	VerdictContextDto,
+} from "@/types/checkpoints";
 
 /**
  * The AI curator's four moments, each gathering its own facts and writing back
@@ -110,18 +121,46 @@ const toDevlog = (post: { publishedAt: Date; content: string }) => ({
 	content: post.content,
 });
 
-/** What the stage's template says it requires — the required tasks, by name. */
-const stageRequirements = async (stepId: string | null) => {
-	if (!stepId) return [];
+type ReportItem = CardItem &
+	VerdictItem & {
+		artifact:
+			| (NonNullable<VerdictItem["artifact"]> & {
+					type: string;
+					name: string | null;
+					description: string | null;
+					link: string;
+			  })
+			| null;
+	};
 
-	const tasks = await prisma.projectWorkflowTask.findMany({
-		where: { stepId, required: true },
-		orderBy: { order: "asc" },
-		select: { name: true },
-	});
-
-	return tasks.flatMap((task) => (task.name ? [task.name] : []));
-};
+/**
+ * The card and what its evidence came to, as the report reads them. Pure, so
+ * the AI curator lab builds the same input from a prepared situation.
+ */
+export const reportEvidence = (goal: string, items: ReportItem[]) => ({
+	card: toCard(goal, items),
+	artifacts: items.flatMap((item) =>
+		item.artifact
+			? [
+					{
+						itemId: item.id,
+						type: item.artifact.type,
+						name: item.artifact.name,
+						description: item.artifact.description,
+						link: item.artifact.link,
+						readable: item.artifact.checkStatus === "Readable",
+						seen: item.evidenceMatch
+							? {
+									match: item.evidenceMatch,
+									note: item.evidenceMatchNote ?? null,
+								}
+							: null,
+					},
+				]
+			: [],
+	),
+	...weighOutcomes(items),
+});
 
 /**
  * What a stored read answers: everything the model is given and nothing else.
@@ -159,6 +198,7 @@ export const runGoalCheck = async (
 			stepId: true,
 			goalCheck: true,
 			goalCheckHash: true,
+			curatorCharacter: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			project: {
 				select: {
@@ -182,9 +222,9 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
-	const [previous, requirements] = await Promise.all([
+	const [previous, workflow] = await Promise.all([
 		lastVerdict(checkpoint.projectId, checkpointId),
-		stageRequirements(checkpoint.stepId),
+		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 	]);
 
 	const founder = members.find(
@@ -193,21 +233,15 @@ export const runGoalCheck = async (
 
 	const input: GoalCheckInput = {
 		card: toCard(checkpoint.goal, checkpoint.items),
-		stage: {
-			name: checkpoint.stageName,
-			requirements,
-		},
+		workflow,
 		project: {
 			name: checkpoint.project.name,
 			pitch: checkpoint.project.description?.trim() || null,
 			genre: checkpoint.project.genre?.trim() || null,
 		},
 		author: founder ? briefAuthor(founder) : null,
-		team: teamCapacity(
-			members.map((member) => ({
-				timeForWork: member.user.profile?.timeForWork,
-			})),
-		),
+		team: await curatorTeam(checkpointId, checkpoint.projectId),
+		character: checkpoint.curatorCharacter,
 		previous,
 		picture: await projectPicture(checkpointId),
 	};
@@ -226,126 +260,136 @@ export const runGoalCheck = async (
 
 	await prisma.projectCheckpoint.update({
 		where: { id: checkpointId },
-		data: { goalCheck: result, goalCheckHash: hash },
+		data: {
+			goalCheck: result,
+			goalCheckHash: hash,
+		},
 	});
 
 	return result;
 };
 
 /**
- * Lines for one side of the card, for an author who does not know what to write.
- *
- * It suggests and nothing more: nothing is written, and which side is asked for
- * decides what the model sees — outcomes are proposed against the goal and what
- * the project already has, inputs against the project itself and what the last
- * checkpoint left behind.
+ * The character the AI curator plays on this checkpoint, picked once from the
+ * author's profile and kept for the 28 days, whatever the profile says later.
  */
-export const suggestCardLines = async (
-	checkpointId: string,
-	kind: CheckpointItemKind,
-	options: CuratorOptions = {},
-): Promise<SuggestLinesResult | null> => {
+export const keepCharacter = async (checkpointId: string) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
-		select: {
-			goal: true,
-			projectId: true,
-			stageName: true,
-			stepId: true,
-			project: { select: { name: true, description: true } },
-			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
-		},
+		select: { projectId: true, curatorCharacter: true },
 	});
+	if (!checkpoint || checkpoint.curatorCharacter) return;
 
-	if (!checkpoint) return null;
-
-	const stage = {
-		name: checkpoint.stageName,
-		requirements: await stageRequirements(checkpoint.stepId),
-	};
-
-	if (kind === CheckpointItemKind.Outcome) {
-		const card = toCard(checkpoint.goal, checkpoint.items);
-
-		return checkpointCurator.suggestLines(
-			{
-				kind: CheckpointItemKind.Outcome,
-				goal: card.goal,
-				inputs: card.inputs.map((item) => item.text),
-				stage,
-			},
-			{ ...options, checkpointId },
-		);
-	}
-
-	const previous = await lastClosedOutcomes(checkpoint.projectId);
-
-	return checkpointCurator.suggestLines(
-		{
-			kind: CheckpointItemKind.Input,
-			project: checkpoint.project,
-			stage,
-			previousOutcomes: previous.map((item) => item.text),
-		},
-		{ ...options, checkpointId },
+	const character = await createCharacter(
+		await curatorPersona(checkpoint.projectId),
+		{ checkpointId, purpose: "character" },
 	);
+	if (!character) return;
+	await prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, curatorCharacter: null },
+		data: { curatorCharacter: character },
+	});
 };
 
 /**
- * Day 15: name the outcomes nothing has been claimed against and ask the author
- * to decide. Which outcomes those are is computed here, not asked of the model.
+ * Day 1 with the AI curator (GDHUB-117): once the checkpoint is paid, the
+ * curator reads the goal and writes the first letter — a word on the goal, the
+ * tasks to start from, and a request for the author's own. Written once: a
+ * second webhook finds the letter there. A read that fails leaves the letter
+ * to the review page, which asks for it on first open.
  */
-export const writeMidNote = async (
+export const writeFirstLetter = async (
 	checkpointId: string,
-	options: CuratorOptions = {},
+	{ notify = true } = {},
 ) => {
+	const session = await prisma.checkpointSession.findFirst({
+		where: { checkpointId, index: 1 },
+		select: { id: true, content: true },
+	});
+	if (!session || session.content) return true;
+	await keepCharacter(checkpointId);
+
+	const read = await runGoalCheck(checkpointId).catch((error) => {
+		console.error(
+			"[checkpoint-curator] first letter failed",
+			checkpointId,
+			error,
+		);
+		return null;
+	});
+	if (read) {
+		await prisma.checkpointSession.updateMany({
+			where: { id: session.id, content: { equals: Prisma.AnyNull } },
+			data: {
+				content: {
+					message: read.note,
+					notes: null,
+					advice: null,
+					goal: read.goal,
+					suggestions: read.suggestions,
+				} satisfies CuratorReview,
+				contentStatus: CheckpointSessionContentStatus.Ready,
+			},
+		});
+	}
+	if (notify) await notifyDayOne(checkpointId, !!read);
+	return !!read;
+};
+
+/**
+ * Day 1 with the AI curator (GDHUB-117): once the plan is approved, by the
+ * author or by itself, the letter the team reads through sprint 1. Written
+ * once; one that fails leaves the page its plain line.
+ */
+export const writePlanLetter = async (checkpointId: string) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
+			curatorKind: true,
 			goal: true,
-			midNote: true,
+			curatorCharacter: true,
 			startedAt: true,
-			status: true,
-			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
-			reports: {
-				orderBy: { publishedAt: "asc" },
-				select: { publishedAt: true, content: true },
+			items: {
+				where: { kind: CheckpointItemKind.Outcome, cut: false },
+				orderBy: { order: "asc" },
+				select: { text: true },
 			},
+			sessions: { select: { id: true, index: true, content: true } },
 		},
 	});
-
 	if (
-		!checkpoint ||
-		checkpoint.midNote ||
-		checkpoint.status !== CheckpointStatus.Active ||
-		!checkpoint.startedAt
+		!checkpoint?.startedAt ||
+		checkpoint.curatorKind !== CheckpointCuratorKind.AI
 	) {
-		return null;
+		return;
 	}
+	const first = checkpoint.sessions.find((session) => session.index === 1);
+	const content = first?.content as CuratorReview | null;
+	if (!first || !content || content.planLetter) return;
 
-	const items = checkpoint.items;
-	const written = await checkpointCurator.writeMidNote(
+	const message = await composePlanLetter(
 		{
-			card: toCard(checkpoint.goal, items),
-			unproven: weighOutcomes(items).unproven,
-			day: checkpointDay(checkpoint.startedAt),
-			devlogs: checkpoint.reports.map(toDevlog),
-			picture: await projectPicture(checkpointId, {
-				from: checkpoint.startedAt,
-				to: new Date(),
+			character: checkpoint.curatorCharacter,
+			goal: checkpoint.goal,
+			tasks: checkpoint.items.map((item) => item.text),
+			journal: lettersSoFar(checkpoint.sessions),
+			reviewOn: dateOfDay(
+				checkpoint.startedAt,
+				sessionDay(2),
+			).toLocaleDateString("en-GB", {
+				weekday: "long",
+				day: "numeric",
+				month: "long",
+				timeZone: "UTC",
 			}),
 		},
-		{ ...options, checkpointId },
+		{ checkpointId, purpose: "planLetter" },
 	);
-
-	if (!written) return null;
-
-	await prisma.projectCheckpoint.update({
-		where: { id: checkpointId },
-		data: { midNote: written.note },
+	if (!message) return;
+	await prisma.checkpointSession.update({
+		where: { id: first.id },
+		data: { content: { ...content, planLetter: message } },
 	});
-
-	return written;
 };
 
 /**
@@ -363,6 +407,7 @@ const reportInputFor = async (checkpointId: string) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
+			projectId: true,
 			goal: true,
 			stageName: true,
 			stepId: true,
@@ -371,6 +416,7 @@ const reportInputFor = async (checkpointId: string) => {
 			startedAt: true,
 			dueAt: true,
 			curatorKind: true,
+			curatorCharacter: true,
 			items: { select: curatorItemSelect, orderBy: { order: "asc" } },
 			sessions: {
 				where: { content: { not: Prisma.AnyNull } },
@@ -381,57 +427,25 @@ const reportInputFor = async (checkpointId: string) => {
 				orderBy: { publishedAt: "asc" },
 				select: { publishedAt: true, content: true },
 			},
-			pulses: {
-				select: {
-					week: true,
-					confirmedAt: true,
-					teamMember: { select: { user: { select: { name: true } } } },
-				},
-			},
 		},
 	});
 	if (!checkpoint) return null;
 
 	const items = checkpoint.items;
-	const { unproven, trusted, partly } = weighOutcomes(items);
 
 	const reportInput = {
-		card: toCard(checkpoint.goal, items),
-		stage: {
-			name: checkpoint.stageName,
-			requirements: await stageRequirements(checkpoint.stepId),
-		},
+		...reportEvidence(checkpoint.goal, items),
+		workflow: await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 		revision: checkpoint.revisedAt
 			? {
 					revisedAt: checkpoint.revisedAt.toISOString().slice(0, 10),
 					note: checkpoint.revisedNote,
 				}
 			: null,
-		artifacts: items.flatMap((item) =>
-			item.artifact
-				? [
-						{
-							itemId: item.id,
-							type: item.artifact.type,
-							name: item.artifact.name,
-							description: item.artifact.description,
-							link: item.artifact.link,
-							readable: item.artifact.checkStatus === "Readable",
-							seen: item.evidenceMatch
-								? {
-										match: item.evidenceMatch,
-										note: item.evidenceMatchNote,
-									}
-								: null,
-						},
-					]
-				: [],
-		),
-		unproven,
-		trusted,
-		partly,
 		devlogs: checkpoint.reports.map(toDevlog),
-		pulses: pulseMatrix(checkpoint.pulses),
+		team: await curatorTeam(checkpointId, checkpoint.projectId),
+		character: checkpoint.curatorCharacter,
+		journal: lettersSoFar(checkpoint.sessions),
 		calls:
 			checkpoint.curatorKind === CheckpointCuratorKind.Human
 				? checkpoint.sessions.map((session) => {
@@ -535,27 +549,6 @@ export const closeCheckpoint = async (
 	]);
 
 	return settled;
-};
-
-type PulseRow = {
-	week: number;
-	confirmedAt: Date | null;
-	teamMember: { user: { name: string | null } };
-};
-
-/** Member by week, in the shape the report reads: four booleans per person. */
-const pulseMatrix = (pulses: PulseRow[]) => {
-	const weeks = SPRINTS_PER_CHECKPOINT;
-	const byMember = new Map<string, boolean[]>();
-
-	for (const pulse of pulses) {
-		const member = pulse.teamMember.user.name ?? "Unnamed";
-		const row = byMember.get(member) ?? Array<boolean>(weeks).fill(false);
-		row[pulse.week - 1] = !!pulse.confirmedAt;
-		byMember.set(member, row);
-	}
-
-	return [...byMember].map(([member, weeks]) => ({ member, weeks }));
 };
 
 /**

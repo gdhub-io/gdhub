@@ -12,6 +12,7 @@ import {
 	ParticipantTile,
 } from "@/components/checkpoints/CallRoom/CallParts";
 import { ClosedStage } from "@/components/checkpoints/CallRoom/ClosedStage";
+import { curatorNow } from "@/lib/curator-now";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type {
@@ -127,6 +128,7 @@ const proCall = (
 	curator: { id: "u-curator", name: "Patrick Novak", image: null },
 	scheduledAt: `${DAYS[index - 1]}T12:00:00.000Z`,
 	state,
+	missed: false,
 	curatorJoinedAt: state === "open" ? `${DAYS[index - 1]}T11:58:00.000Z` : null,
 	role: "team",
 	briefs: [],
@@ -141,6 +143,7 @@ const proCall = (
 		index: offset + 1,
 		scheduledAt: `${day}T12:00:00.000Z`,
 		held: offset < held,
+		missed: false,
 		contentStatus: offset < held ? "Ready" : null,
 	})),
 });
@@ -261,25 +264,47 @@ const aiReview = (
 	plan: Pick<CheckpointReviewDto["plan"], "edit" | "editUntil">,
 	contents: (CuratorReview | null)[],
 	extra: Partial<CheckpointReviewDto> = {},
-): CheckpointReviewDto => ({
-	current,
-	number: 3,
-	previous: null,
-	stageName: "Concepting",
-	startedAt: "2026-10-01T00:00:00.000Z",
-	dueAt: "2026-10-28T00:00:00.000Z",
-	project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
-	plan: { goal: GOAL, ...plan, tasks },
-	sessions: DAYS.map((day, offset) => ({
+): CheckpointReviewDto => {
+	const settled = plan.edit !== "goalAndTasks";
+	const sessions = DAYS.map((day, offset) => ({
 		index: offset + 1,
 		scheduledAt: `${day}T00:00:00.000Z`,
-		contentStatus: contents[offset] ? "Ready" : null,
+		contentStatus: contents[offset] ? ("Ready" as const) : null,
 		content: contents[offset] ?? null,
-	})),
-	verdict: null,
-	nextStage: null,
-	...extra,
-});
+	}));
+	return {
+		current,
+		// What the page would say at noon of the day it is drawn on.
+		curatorNow: curatorNow(
+			{
+				startedAt: sessions[0].scheduledAt,
+				goalAgreedAt: settled ? sessions[0].scheduledAt : null,
+				planCheckedAt: settled ? sessions[0].scheduledAt : null,
+				scopeConfirmedAt: null,
+				sessions: sessions.map((row) => ({ ...row, endedAt: row.scheduledAt })),
+			},
+			new Date(`${DAYS[current - 1]}T12:00:00.000Z`),
+		),
+		number: 3,
+		previous: null,
+		stageName: "Concepting",
+		startedAt: "2026-10-01T00:00:00.000Z",
+		dueAt: "2026-10-28T00:00:00.000Z",
+		project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
+		plan: {
+			goal: GOAL,
+			checked: plan.edit !== "goalAndTasks",
+			approved: plan.edit !== "goalAndTasks",
+			...plan,
+			tasks,
+		},
+		sessions,
+		verdict: null,
+		nextStage: null,
+		character: null,
+		...extra,
+	};
+};
 
 const startContent: CuratorReview = {
 	message:
@@ -388,6 +413,8 @@ function AiPage({
 			onChange={saved}
 			onAdvise={noop}
 			advising={advising}
+			onApprove={noop}
+			approving={false}
 		/>
 	);
 }
@@ -473,6 +500,19 @@ export const ProSprint1: Story = {
 	),
 };
 
+/** Day 9: the curator never joined call 2; the page says so and names call 3. */
+export const ProCallMissed: Story = {
+	name: "Pro · call missed (day 9)",
+	render: () => (
+		<ProPage
+			call={{ ...proCall(2, "over", 1, startTasks), missed: true }}
+			now="2026-10-09T10:00:00.000Z"
+			shown={2}
+			tab="plan"
+		/>
+	),
+};
+
 /** Day 15, during call 3: the last change to the tasks, on the call. */
 export const ProSprint3Day1: Story = {
 	name: "Pro · first day of sprint 3 (day 15, in the call)",
@@ -513,10 +553,35 @@ export const ProDay29: Story = {
 	),
 };
 
+const firstLetter: CuratorReview = {
+	message:
+		"Hello! I'm your AI curator for the next 28 days. Write one to five tasks that will show the goal is reached — your own, or take some from my suggestions — and send them to me for a check.",
+	notes: null,
+	advice: null,
+	goal: {
+		fit: "narrow",
+		note: "Narrow it: with 120–160 hours and the programmer's time unknown, one part of the island is a slice you can finish — not the whole island.",
+	},
+	suggestions: [
+		{
+			text: "A playable demo of one island area on itch.io",
+			why: "It ends in a build anyone can open, and fits the hours you have.",
+		},
+		{
+			text: "A style board: palette and one hero sheet",
+			why: "Art direction is what the stage asks for, at the size one artist can do.",
+		},
+		{
+			text: "Playtest with 5 players, notes in a doc",
+			why: "Five strangers show whether the tide reads without you there.",
+		},
+	],
+};
+
 /**
- * Day 1, the page opened for the first time: only the goal was bought, so
- * there are no tasks yet — the curator greets the team, and "Suggest tasks"
- * asks it for a first list.
+ * Day 1, the page opened for the first time (frame 12.10.1): only the goal
+ * was bought — the first letter, the curator's word under the goal, and the
+ * tasks it suggests, each with why.
  */
 export const AiDay1: Story = {
 	name: "AI · day 1, first open",
@@ -526,8 +591,8 @@ export const AiDay1: Story = {
 			review={aiReview(
 				1,
 				[],
-				{ edit: "plan", editUntil: "2026-10-03T00:00:00.000Z" },
-				[],
+				{ edit: "goalAndTasks", editUntil: null },
+				[firstLetter],
 				{ previous },
 			)}
 		/>
