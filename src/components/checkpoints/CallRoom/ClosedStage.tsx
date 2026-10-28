@@ -10,9 +10,9 @@ import {
 import { useTranslate } from "@tolgee/react";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useCalendarMenu } from "@/components/checkpoints/AddToCalendar";
 import { CuratorMessage } from "@/components/checkpoints/CuratorReview/CuratorMessage";
 import { SESSION_MINUTES } from "@/config/checkpoint";
-import { downloadIcs } from "@/lib/calendar";
 import { callWindow } from "@/lib/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import { firstName } from "./CallHeader";
@@ -78,6 +78,7 @@ export function ClosedStage({
 	const scheduled = dayjs(call.scheduledAt);
 	const team = call.role === "team";
 	const [moving, setMoving] = useState(false);
+	const calendarMenu = useCalendarMenu();
 	// Who answers a request: the curator to the team, the team to the curator.
 	const otherSide = team
 		? firstName(call.curator.name)
@@ -160,21 +161,16 @@ export function ClosedStage({
 		);
 	}
 
-	const addToCalendar = () =>
-		downloadIcs(
-			{
-				uid: `checkpoint-${call.checkpointId}-session-${call.index}@gdhub.io`,
-				title: t("checkpoints.call.calendarTitle", "Call {index} · {project}", {
-					index: call.index,
-					project: call.project.name,
-				}),
-				start: scheduled.toDate(),
-				minutes: SESSION_MINUTES,
-				allDay: false,
-				url: window.location.href,
-			},
-			`call-${call.index}.ics`,
-		);
+	const calendarEvent = {
+		uid: `checkpoint-${call.checkpointId}-session-${call.index}@gdhub.io`,
+		title: t("checkpoints.call.calendarTitle", "Call {index} · {project}", {
+			index: call.index,
+			project: call.project.name,
+		}),
+		start: scheduled.toDate(),
+		minutes: SESSION_MINUTES,
+		url: window.location.href,
+	};
 	const when = {
 		date: scheduled.format("dddd D MMM"),
 		time: scheduled.format("HH:mm"),
@@ -224,7 +220,7 @@ export function ClosedStage({
 						key: "calendar",
 						label: t("workflow.path.session.calendar", "Add to calendar"),
 						icon: <IconCalendarPlus size={16} />,
-						onClick: addToCalendar,
+						menu: calendarMenu(calendarEvent, `call-${call.index}.ics`),
 					},
 					...(team
 						? [

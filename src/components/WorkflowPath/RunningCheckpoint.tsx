@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import { useCalendarMenu } from "@/components/checkpoints/AddToCalendar";
 import { MoveCallModal } from "@/components/checkpoints/CallRoom/MoveCallModal";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { SectionHeading } from "@/components/ui";
@@ -28,7 +29,6 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
-import { downloadIcs } from "@/lib/calendar";
 import { isMovable, sessionHeld } from "@/lib/checkpoint-call";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
@@ -71,6 +71,7 @@ export function RunningCheckpoint({
 	const [opened, setOpened] = useState<number[]>([]);
 	// The call whose move modal is open (12.08.11).
 	const [moving, setMoving] = useState<number | null>(null);
+	const calendarMenu = useCalendarMenu();
 
 	const sprints = checkpoint.sprints ?? [];
 	const sessions = checkpoint.sessions ?? [];
@@ -347,8 +348,8 @@ export function RunningCheckpoint({
 		);
 	};
 
-	const addToCalendar = (session: CheckpointSessionDto) =>
-		downloadIcs(
+	const calendarItems = (session: CheckpointSessionDto) =>
+		calendarMenu(
 			{
 				uid: `checkpoint-${checkpoint.id}-session-${session.index}@gdhub.io`,
 				title: `${sessionWith} · ${project.name}`,
@@ -502,7 +503,7 @@ export function RunningCheckpoint({
 											"workflow.path.session.calendar",
 											"Add to calendar",
 										),
-										onClick: () => addToCalendar(session),
+										children: calendarItems(session),
 									},
 								],
 							}}

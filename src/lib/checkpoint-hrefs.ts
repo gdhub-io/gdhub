@@ -20,6 +20,7 @@ export const PATH_TABS = [
 	"plan",
 	"brief",
 	"transcript",
+	"calendar",
 ] as const;
 export type PathTab = (typeof PATH_TABS)[number];
 

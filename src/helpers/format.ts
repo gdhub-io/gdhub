@@ -239,3 +239,6 @@ export function relativeStamp(
 export const toCents = (eur: number) => Math.round(eur * 100);
 export const fromCents = (cents: number | null | undefined) =>
 	cents != null ? cents / 100 : null;
+
+/** "Patrick" from "Patrick Novak". */
+export const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? "";

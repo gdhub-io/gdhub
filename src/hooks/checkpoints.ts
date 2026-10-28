@@ -12,6 +12,7 @@ import type {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
+import type { CheckpointCalendarDto } from "@/repositories/checkpoint-calendar";
 import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
 import type { ProjectActivity } from "@/repositories/project-activity.repository";
@@ -367,4 +368,13 @@ export const useConfirmPulse = (token: string) =>
 	useMutation({
 		mutationFn: async () =>
 			(await axios.post<PulseViewDto>(`/api/pulse/${token}`)).data,
+	});
+
+/** Every date of the checkpoint, for its Calendar tab. */
+export const useCheckpointCalendar = (id: string) =>
+	useQuery({
+		queryKey: ["checkpoint-calendar", id],
+		queryFn: async () =>
+			(await axios.get<CheckpointCalendarDto>(`/api/checkpoint/${id}/calendar`))
+				.data,
 	});

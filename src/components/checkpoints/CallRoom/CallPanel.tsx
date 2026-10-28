@@ -9,6 +9,7 @@ import {
 	type EvidenceActions,
 	useEvidencePicker,
 } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
+import { CheckpointCalendar } from "@/components/checkpoints/CheckpointCalendar";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
@@ -109,6 +110,7 @@ export function CallPanel({
 					/>
 				)}
 				evidence={evidence.actions}
+				calendar={<CheckpointCalendar checkpointId={call.checkpointId} />}
 			/>
 			{evidence.modal}
 		</>
@@ -141,6 +143,8 @@ export type PanelBlockProps = {
 	sprintTab?: (index: number) => ReactNode;
 	/** Add or let go of the artifacts that prove a task; absent for whoever may not. */
 	evidence?: EvidenceActions;
+	/** The checkpoint's Calendar tab; the stories go without it. */
+	calendar?: ReactNode;
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -162,6 +166,7 @@ export function PanelBlock({
 	briefs,
 	sprintTab,
 	evidence,
+	calendar,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -256,6 +261,13 @@ export function PanelBlock({
 			/>
 		),
 	});
+	if (calendar) {
+		items.push({
+			key: "calendar",
+			label: t("checkpoints.calendar.tab", "Calendar"),
+			children: calendar,
+		});
+	}
 	if (SHOW_TRANSCRIPT && held) {
 		items.push({
 			key: "transcript",
@@ -269,7 +281,8 @@ export function PanelBlock({
 			<Tabs
 				activeKey={tab}
 				onChange={(key) => onTab(key as PathTab)}
-				tabBarExtraContent={{ right: switcher }}
+				// The calendar is the whole checkpoint, not one call.
+				tabBarExtraContent={{ right: tab !== "calendar" && switcher }}
 				items={items}
 				size="large"
 				className={styles.panelTabs}

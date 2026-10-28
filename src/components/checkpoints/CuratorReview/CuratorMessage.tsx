@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { Button, Typography } from "antd";
+import { Button, Dropdown, type MenuProps, Typography } from "antd";
 import type { ReactNode } from "react";
 import { initials } from "@/components/checkpoints/CallRoom/CallParts";
 import {
@@ -22,6 +22,8 @@ export type CuratorAction = {
 	loading?: boolean;
 	disabled?: boolean;
 	onClick?: () => void;
+	/** Opens a menu instead of acting. */
+	menu?: MenuProps["items"];
 };
 
 export type CuratorMessageProps = {
@@ -95,18 +97,31 @@ export function CuratorMessage({
 				{extra}
 				{actions.length > 0 && (
 					<div className={styles.actions}>
-						{actions.map((action) => (
-							<Button
-								key={action.key}
-								type={action.primary ? "primary" : "default"}
-								icon={action.icon}
-								loading={action.loading}
-								disabled={action.disabled}
-								onClick={action.onClick}
-							>
-								{action.label}
-							</Button>
-						))}
+						{actions.map((action) => {
+							const button = (
+								<Button
+									key={action.key}
+									type={action.primary ? "primary" : "default"}
+									icon={action.icon}
+									loading={action.loading}
+									disabled={action.disabled}
+									onClick={action.onClick}
+								>
+									{action.label}
+								</Button>
+							);
+							return action.menu ? (
+								<Dropdown
+									key={action.key}
+									trigger={["click"]}
+									menu={{ items: action.menu }}
+								>
+									{button}
+								</Dropdown>
+							) : (
+								button
+							);
+						})}
 					</div>
 				)}
 			</div>
