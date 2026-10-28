@@ -7,12 +7,13 @@ import type { ReactNode } from "react";
 import { EvidenceMatchDot } from "@/components/checkpoints/EvidenceMatchTag";
 import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
 import { IconTile, StatusDot } from "@/components/ui";
+import { formatShort as day } from "@/components/WorkflowPath/dates";
 import type { ProjectArtifactType } from "@/config/prisma-enums";
 import type {
 	CuratorJournalViewDto,
 	JournalTaskDto,
 } from "@/repositories/curator-journal-view";
-import { Boundary, day, FoldOuts, when } from "./parts";
+import { Boundary, FoldOuts, when } from "./parts";
 import styles from "./style.module.scss";
 
 /** Frame 12.11.10f: the plan, its dates and where each task stands. */

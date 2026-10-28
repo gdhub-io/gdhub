@@ -17,12 +17,13 @@ import { EvidenceMatchDot } from "@/components/checkpoints/EvidenceMatchTag";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
 import { IconTile } from "@/components/ui";
+import { formatShort } from "@/components/WorkflowPath/dates";
 import type { ProjectArtifactType } from "@/config/prisma-enums";
 import type {
 	CuratorJournalViewDto,
 	JournalMessageDto,
 } from "@/repositories/curator-journal-view";
-import { Boundary, day, FoldOuts, when } from "./parts";
+import { Boundary, FoldOuts, when } from "./parts";
 import styles from "./style.module.scss";
 
 const LOOK_ICON: Record<string, Icon> = {
@@ -78,8 +79,8 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 						"Sprint {number} · {from} – {to}",
 						{
 							number: sprint.number,
-							from: day(sprint.from),
-							to: day(sprint.to),
+							from: formatShort(sprint.from),
+							to: formatShort(sprint.to),
 						},
 					)}
 				/>,
@@ -97,7 +98,7 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 					"admin.checkpoints.journal.finished",
 					"Checkpoint finished · {date}",
 					{
-						date: day(view.finishedAt),
+						date: formatShort(view.finishedAt),
 					},
 				)}
 			/>,
@@ -351,7 +352,7 @@ function Message({
 							</>
 						)}
 				</Flex>
-				{(message.kind === "sent" ? null : message.text) && (
+				{message.text && (
 					<Typography.Text type="secondary">{message.text}</Typography.Text>
 				)}
 				{notRead && (

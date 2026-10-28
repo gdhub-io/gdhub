@@ -283,7 +283,7 @@ export const assignCurator = async (
 
 	await Promise.all([
 		notify(curator, `cp-curator-assigned-${checkpointId}-${curator.id}`, {
-			checkpointId: checkpointId,
+			checkpointId,
 			title: `You now curate ${checkpoint.project.name}`,
 			message:
 				"An administrator handed this checkpoint to you. The calls keep their times; open it to read where it stands.",
@@ -293,7 +293,7 @@ export const assignCurator = async (
 			checkpoint.project.author,
 			`cp-curator-replaced-${checkpointId}-${curator.id}`,
 			{
-				checkpointId: checkpointId,
+				checkpointId,
 				title: `${checkpoint.project.name} has a new curator`,
 				message:
 					"Your curator could not go on, so we put another in their place. The calls keep their times.",

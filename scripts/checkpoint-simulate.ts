@@ -190,11 +190,30 @@ const devlog = async (by: string, content: string, media: { image?: string; vide
 			checkpointId: id,
 			publishedAt: new Date(),
 			number: (last._max.number ?? 0) + 1,
-			content,
+			// As the page writes a post: its words in the editor's blocks, `content` empty.
+			content: "",
 			video: media.video ?? null,
-			contentEditor: media.image
-				? { blocks: [{ type: "image", data: { file: { url: media.image } } }] }
-				: undefined,
+			contentEditor: {
+				blocks: [
+					{ type: "paragraph", data: { text: content } },
+					{
+						type: "list",
+						data: {
+							items: [
+								{ content: "What we tried this week", items: [] },
+								{ content: `Notes: <a href="https://example.com/notes">our doc</a>`, items: [] },
+							],
+						},
+					},
+					{
+						type: "table",
+						data: { content: [["Task", "State"], ["Island route", "in progress"]] },
+					},
+					...(media.image
+						? [{ type: "image", data: { file: { url: media.image }, caption: "This week's screen" } }]
+						: []),
+				],
+			},
 		},
 		select: { id: true },
 	});

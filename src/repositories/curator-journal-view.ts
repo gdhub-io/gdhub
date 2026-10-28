@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
@@ -121,6 +122,8 @@ export type JournalDevlogDto = {
 export type CuratorJournalViewDto = {
 	curator: { name: string; avatar: string | null; ai: boolean };
 	startedAt: string | null;
+	/** The links the AI looked at, how many it could not read, the video it watched. */
+	looked: { links: number; unread: number; videoSeconds: number };
 	sprints: { number: number; from: string; to: string }[];
 	/** When the verdict was settled: the conversation's last divider. */
 	finishedAt: string | null;
@@ -288,33 +291,33 @@ export const getJournalView = async (
 	const window = startedAt
 		? {
 				gte: startedAt,
-				lte: new Date(
-					sprintRange(startedAt, SPRINTS_PER_CHECKPOINT).to.getTime() +
-						2 * 24 * 60 * 60 * 1000,
-				),
+				lte: dayjs(sprintRange(startedAt, SPRINTS_PER_CHECKPOINT).to)
+					.add(2, "day")
+					.toDate(),
 			}
 		: null;
 
-	const before = startedAt
-		? await prisma.projectArtifact.findMany({
-				where: {
-					projectId: checkpoint.projectId,
-					createdAt: { lt: startedAt },
-				},
-				orderBy: { createdAt: "desc" },
-				take: BEFORE_SHOWN,
-				select: {
-					id: true,
-					name: true,
-					type: true,
-					link: true,
-					createdAt: true,
-				},
-			})
-		: [];
-	const [artifacts, devlogs] = window
-		? await Promise.all([
-				prisma.projectArtifact.findMany({
+	const none = Promise.resolve([]);
+	const [before, artifacts, devlogs] = await Promise.all([
+		startedAt
+			? prisma.projectArtifact.findMany({
+					where: {
+						projectId: checkpoint.projectId,
+						createdAt: { lt: startedAt },
+					},
+					orderBy: { createdAt: "desc" },
+					take: BEFORE_SHOWN,
+					select: {
+						id: true,
+						name: true,
+						type: true,
+						link: true,
+						createdAt: true,
+					},
+				})
+			: none,
+		window
+			? prisma.projectArtifact.findMany({
 					where: { projectId: checkpoint.projectId, createdAt: window },
 					orderBy: { createdAt: "asc" },
 					select: {
@@ -325,8 +328,10 @@ export const getJournalView = async (
 						createdAt: true,
 						createdById: true,
 					},
-				}),
-				prisma.projectReport.findMany({
+				})
+			: none,
+		window
+			? prisma.projectReport.findMany({
 					where: {
 						projectId: checkpoint.projectId,
 						isSystem: false,
@@ -341,14 +346,13 @@ export const getJournalView = async (
 						publishedAt: true,
 						authorId: true,
 					},
-				}),
-			])
-		: [[], []];
+				})
+			: none,
+	]);
 
 	const entries = checkpoint.journal;
-	const devlogTitle = new Map(
-		devlogs.map((row) => [row.id, firstLine(devlogWords(row))]),
-	);
+	const words = new Map(devlogs.map((row) => [row.id, devlogWords(row)]));
+	const devlogTitle = (id: string) => firstLine(words.get(id) ?? "");
 	const recipients = entries.flatMap((entry) =>
 		entry.kind === CheckpointJournalKind.Platform
 			? [(entry.input as { to: string }).to]
@@ -477,8 +481,8 @@ export const getJournalView = async (
 					variant,
 					title:
 						variant === "media"
-							? ((entry.devlogId && devlogTitle.get(entry.devlogId)) ??
-								read?.devlog ??
+							? (((entry.devlogId && devlogTitle(entry.devlogId)) ||
+									read?.devlog) ??
 								null)
 							: (read?.artifactName ?? read?.task ?? null),
 					text: output.note ?? output.shows ?? null,
@@ -527,7 +531,6 @@ export const getJournalView = async (
 					...base(entry.id, at, "platform", "sent"),
 					who: nameOf(input.to),
 					title: output.title,
-					text: output.message,
 					details: output.sent ? [] : [{ label: "sent", value: "failed" }],
 					source,
 				});
@@ -596,25 +599,52 @@ export const getJournalView = async (
 		messages.push({
 			...base(row.id, row.publishedAt, "team", "devlog"),
 			who: nameOf(row.authorId),
-			title: firstLine(devlogWords(row)),
+			title: devlogTitle(row.id),
 			variant: row.number ? String(row.number) : null,
 			source: { id: row.id, number: row.number, content: row.content },
 		});
 	}
 	messages.sort((a, b) => a.at.localeCompare(b.at));
 
-	const lookOf = (
-		kind: CheckpointJournalKind,
-		pick: (entry: (typeof entries)[number]) => boolean,
-	) => entries.filter((entry) => entry.kind === kind && pick(entry)).at(-1);
+	// One pass: the latest look at each task and link, each devlog's media, the
+	// settled verdict, and what the looks cost in links and video.
+	type Entry = (typeof entries)[number];
+	const evidenceOf = new Map<string, Entry>();
+	const artifactLookOf = new Map<string, Entry>();
+	const mediaOf = new Map<string, Entry[]>();
+	let verdictEntry: Entry | undefined;
+	const looked = { links: 0, unread: 0, videoSeconds: 0 };
+	for (const entry of entries) {
+		const read = entry.input as JournalRead | null;
+		if (entry.kind === CheckpointJournalKind.Evidence && entry.itemId) {
+			evidenceOf.set(entry.itemId, entry);
+		} else if (entry.kind === CheckpointJournalKind.Artifact && entry.link) {
+			artifactLookOf.set(entry.link, entry);
+		} else if (
+			entry.kind === CheckpointJournalKind.DevlogMedia &&
+			entry.devlogId
+		) {
+			mediaOf.set(entry.devlogId, [
+				...(mediaOf.get(entry.devlogId) ?? []),
+				entry,
+			]);
+		} else if (
+			entry.kind === CheckpointJournalKind.Verdict &&
+			(entry.output as { settled?: unknown }).settled
+		) {
+			verdictEntry = entry;
+		}
+		if (
+			entry.kind === CheckpointJournalKind.Evidence ||
+			entry.kind === CheckpointJournalKind.Artifact ||
+			entry.kind === CheckpointJournalKind.DevlogMedia
+		) {
+			looked.links += 1;
+			if (!read?.text && !read?.images) looked.unread += 1;
+			looked.videoSeconds += read?.videoSeconds ?? 0;
+		}
+	}
 	const face = ai ? characterFace(checkpoint.curatorCharacter) : null;
-	const verdictEntry = entries
-		.filter(
-			(entry) =>
-				entry.kind === CheckpointJournalKind.Verdict &&
-				(entry.output as { settled?: unknown }).settled,
-		)
-		.at(-1);
 
 	return {
 		curator: {
@@ -623,6 +653,7 @@ export const getJournalView = async (
 			ai,
 		},
 		startedAt: startedAt?.toISOString() ?? null,
+		looked,
 		sprints: startedAt
 			? Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) => {
 					const { from, to } = sprintRange(startedAt, index + 1);
@@ -684,14 +715,8 @@ export const getJournalView = async (
 		artifacts: artifacts.map((row) => {
 			const item = itemOfArtifact.get(row.id);
 			const look = item
-				? lookOf(
-						CheckpointJournalKind.Evidence,
-						(entry) => entry.itemId === item.id,
-					)
-				: lookOf(
-						CheckpointJournalKind.Artifact,
-						(entry) => entry.link === row.link,
-					);
+				? evidenceOf.get(item.id)
+				: artifactLookOf.get(row.link);
 			const output = look?.output as
 				| {
 						match?: EvidenceMatch;
@@ -707,7 +732,7 @@ export const getJournalView = async (
 				addedAt: row.createdAt.toISOString(),
 				addedBy: nameOf(row.createdById),
 				sprint: sprintAt(row.createdAt),
-				task: item ? (taskText.get(item.id) ?? null) : null,
+				task: item?.text ?? null,
 				read: look
 					? {
 							match: output?.match ?? null,
@@ -723,23 +748,17 @@ export const getJournalView = async (
 			publishedAt: row.publishedAt.toISOString(),
 			author: nameOf(row.authorId),
 			sprint: sprintAt(row.publishedAt),
-			text: devlogText(devlogWords(row)),
-			media: entries
-				.filter(
-					(entry) =>
-						entry.kind === CheckpointJournalKind.DevlogMedia &&
-						entry.devlogId === row.id,
-				)
-				.map((entry) => {
-					const output = entry.output as { shows?: string | null };
-					const read = entry.input as JournalRead | null;
-					return {
-						link: entry.link,
-						text: output.shows ?? null,
-						unread: read?.unread ?? null,
-						source: { input: entry.input, output: entry.output },
-					};
-				}),
+			text: devlogText(words.get(row.id) ?? ""),
+			media: (mediaOf.get(row.id) ?? []).map((entry) => {
+				const output = entry.output as { shows?: string | null };
+				const read = entry.input as JournalRead | null;
+				return {
+					link: entry.link,
+					text: output.shows ?? null,
+					unread: read?.unread ?? null,
+					source: { input: entry.input, output: entry.output },
+				};
+			}),
 		})),
 	};
 };

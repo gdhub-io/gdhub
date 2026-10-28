@@ -45,6 +45,7 @@ const read = {
 const VIEW: CuratorJournalViewDto = {
 	curator: { name: "Luna", avatar: null, ai: true },
 	startedAt: "2026-09-01T00:00:00.000Z",
+	looked: { links: 6, unread: 1, videoSeconds: 130 },
 	sprints: [1, 2, 3, 4].map((number) => ({
 		number,
 		from: `2026-09-${String(1 + (number - 1) * 7).padStart(2, "0")}T00:00:00.000Z`,

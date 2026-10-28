@@ -8,7 +8,6 @@ import type { Ref } from "react";
 import styles from "./style.module.scss";
 
 export const when = (at: string) => dayjs(at).format("D MMM, HH:mm");
-export const day = (at: string) => dayjs(at).format("D MMM");
 
 /** A line across the list where a sprint starts or the checkpoint ends, as the activity feed draws it. */
 export function Boundary({
@@ -34,11 +33,9 @@ export function Boundary({
 export function FoldOuts({
 	details = [],
 	source,
-	sourceLabel,
 }: {
 	details?: { label: string; value: string }[];
 	source: unknown;
-	sourceLabel?: string;
 }) {
 	const { t } = useTranslate();
 	const label = (key: string) =>
@@ -101,9 +98,7 @@ export function FoldOuts({
 					? [
 							{
 								key: "source",
-								label:
-									sourceLabel ??
-									t("admin.checkpoints.journal.source", "Source"),
+								label: t("admin.checkpoints.journal.source", "Source"),
 								children: (
 									<Typography.Paragraph type="secondary" className={styles.pre}>
 										{JSON.stringify(source, null, 2)}

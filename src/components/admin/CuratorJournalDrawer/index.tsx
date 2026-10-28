@@ -5,7 +5,6 @@ import { Descriptions, Drawer, Flex, Skeleton, Tabs, Typography } from "antd";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { formatMoneyCents } from "@/config/checkpoint-pricing";
 import { useCuratorJournal } from "@/hooks/admin-checkpoints";
-import type { JournalRead } from "@/repositories/evidence-seen";
 import type { AdminCheckpointRowDto } from "@/types/checkpoints";
 import { Conversation } from "./Conversation";
 import { ArtifactsTab, DevlogsTab, InputsTab, PlanTab } from "./Subjects";
@@ -22,11 +21,6 @@ export function CuratorJournalDrawer({
 	const { t } = useTranslate();
 	const journal = useCuratorJournal(checkpoint.id);
 	const view = journal.data;
-	const reads = (view?.messages ?? []).flatMap((message) =>
-		message.kind === "looked"
-			? [(message.source as { input: JournalRead }).input]
-			: [],
-	);
 
 	return (
 		<Drawer
@@ -70,9 +64,8 @@ export function CuratorJournalDrawer({
 									"admin.checkpoints.journal.lookedValue",
 									"{links} links · {unread} not read",
 									{
-										links: reads.length,
-										unread: reads.filter((read) => !read?.text && !read?.images)
-											.length,
+										links: view.looked.links,
+										unread: view.looked.unread,
 									},
 								),
 							},
@@ -83,12 +76,7 @@ export function CuratorJournalDrawer({
 									"admin.checkpoints.journal.seconds",
 									"{seconds} s",
 									{
-										seconds: Math.round(
-											reads.reduce(
-												(sum, read) => sum + (read?.videoSeconds ?? 0),
-												0,
-											),
-										),
+										seconds: Math.round(view.looked.videoSeconds),
 									},
 								),
 							},
