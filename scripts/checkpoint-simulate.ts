@@ -36,6 +36,7 @@ import {
 } from "@/repositories/checkpoint-review";
 import { moveFinishedToReview } from "@/repositories/checkpoint-verdict.repository";
 import { getJournalView } from "@/repositories/curator-journal-view";
+import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
 	remindDevlogsDue,
@@ -75,7 +76,6 @@ const project = await prisma.project.findUniqueOrThrow({
 	select: {
 		id: true,
 		authorId: true,
-		workflow: { select: { currentStep: { select: { id: true, name: true } } } },
 		team: {
 			select: { members: { where: CONFIRMED_MEMBERS, select: { userId: true } } },
 		},
@@ -85,11 +85,17 @@ const project = await prisma.project.findUniqueOrThrow({
 		},
 	},
 });
-const step = project.workflow?.currentStep;
-if (!step || project.checkpoints.length) {
-	console.error("The project needs a current stage and no checkpoint under way.");
+if (project.checkpoints.length) {
+	console.error("The project has a checkpoint under way.");
 	process.exit(1);
 }
+// As a drafted checkpoint does: never on Introduction, which has no work to measure.
+const step = await ensureCheckpointStage(project.id);
+if (!step) {
+	console.error("The project has no workflow stage to run a checkpoint on.");
+	process.exit(1);
+}
+console.info(`Stage: ${step.name}`);
 const author = project.authorId;
 const member =
 	project.team?.members.find((row) => row.userId !== author)?.userId ?? author;
