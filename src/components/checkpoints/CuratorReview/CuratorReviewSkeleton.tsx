@@ -3,10 +3,9 @@
 import { Skeleton } from "antd";
 import { CallLayout } from "@/components/checkpoints/CallRoom/CallParts";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
-import { InverseBand } from "@/components/ui";
 import styles from "./style.module.scss";
 
-/** Curator's Review while it loads, pro or ai alike: the page's own shape, empty. */
+/** Path to Checkpoint while it loads, pro or ai alike: the page's own shape, empty. */
 export function CuratorReviewSkeleton() {
 	return (
 		<CallLayout
@@ -27,14 +26,14 @@ export function CuratorReviewSkeleton() {
 				</div>
 			}
 			stage={
-				<InverseBand density="product" className={styles.message}>
+				<div className={callStyles.panel}>
 					<Skeleton
 						avatar={{ size: 48 }}
 						active
 						title
 						paragraph={{ rows: 3 }}
 					/>
-				</InverseBand>
+				</div>
 			}
 			aside={
 				<aside className={styles.skeletonAside}>
