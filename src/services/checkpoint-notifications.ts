@@ -215,7 +215,7 @@ export const notifyPlanApproved = async (checkpointId: string) => {
 	await notify(row.project.author, `cp-plan-approved-${checkpointId}`, {
 		title: `The plan of Checkpoint ${number} is approved`,
 		message: `It approved itself as it stood, ${AI_APPROVE_HOURS} hours after the curator's check. The goal and tasks are fixed until day 15, when they can change once more.`,
-		redirectUrl: reviewUrl(row.project.slug, number, 1, "sprint"),
+		redirectUrl: reviewUrl(row.project.slug, number, 1, "plan"),
 	});
 };
 

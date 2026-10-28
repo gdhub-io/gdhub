@@ -77,6 +77,13 @@
 	gap: var(--gd-space-6);
 }
 
+// Frame BURtg: outlined on the page, as the sidebar cards are once loaded.
+.skeletonWidget {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
 .previousHead {
 	display: flex;
 	align-items: center;

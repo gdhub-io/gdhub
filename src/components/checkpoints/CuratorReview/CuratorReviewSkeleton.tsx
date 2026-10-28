@@ -26,7 +26,7 @@ export function CuratorReviewSkeleton() {
 				</div>
 			}
 			stage={
-				<div className={callStyles.panel}>
+				<div className={styles.message}>
 					<Skeleton
 						avatar={{ size: 48 }}
 						active
@@ -38,7 +38,7 @@ export function CuratorReviewSkeleton() {
 			aside={
 				<aside className={styles.skeletonAside}>
 					{[5, 4, 6].map((rows) => (
-						<div key={rows} className={callStyles.panel}>
+						<div key={rows} className={styles.skeletonWidget}>
 							<Skeleton active title paragraph={{ rows }} />
 						</div>
 					))}
