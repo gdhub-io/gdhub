@@ -664,21 +664,18 @@
 }
 
 // Frame u2H4n: the session shown between its two arrows.
+// Frame mSnxr: the arrows on the panel's own ground, the session in a filled chip.
 .sessionSwitcher {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--gd-space-1);
-	padding: 2px;
-	border-radius: var(--gd-radius-control);
-	background: var(--gd-color-surface-sunken);
 }
 
 .sessionCurrent {
 	display: inline-flex;
 	align-items: baseline;
-	gap: var(--gd-space-2);
 	padding: var(--gd-space-1) var(--gd-space-3);
 	border-radius: var(--gd-radius-chip);
-	background: var(--gd-color-surface);
+	background: var(--gd-color-surface-sunken);
 	white-space: nowrap;
 }

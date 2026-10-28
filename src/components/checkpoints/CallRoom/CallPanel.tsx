@@ -5,6 +5,7 @@ import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
 import { type ReactNode, useState } from "react";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
+import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
@@ -147,17 +148,22 @@ export function PanelBlock({
 			aheadLabel={t("checkpoints.call.panel.ahead", "This call is still ahead")}
 			options={sessions.map((session) => {
 				const date = dayjs(session.scheduledAt);
+				const when = date.isSame(today, "day")
+					? t("checkpoints.call.panel.todayWord", "today")
+					: date.format("D MMM");
+				// Call N opens sprint N; the last one closes the checkpoint.
 				return {
 					value: session.index,
 					ahead: session.index > current,
-					label: date.isSame(today, "day")
-						? t("checkpoints.call.panel.today", "Call {index} · today", {
-								index: session.index,
-							})
-						: t("checkpoints.call.notes.option", "Call {index} · {date}", {
-								index: session.index,
-								date: date.format("D MMM"),
-							}),
+					label:
+						session.index === FINAL_SESSION
+							? t("checkpoints.review.option.verdict", "Verdict · {date}", {
+									date: when,
+								})
+							: t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
+									n: session.index,
+									date: when,
+								}),
 				};
 			})}
 		/>

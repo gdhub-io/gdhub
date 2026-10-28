@@ -43,12 +43,6 @@ export function SessionSwitcher({
 				<Typography.Text strong className={styles.small}>
 					{options[at]?.label}
 				</Typography.Text>
-				<Typography.Text type="secondary" className={styles.small}>
-					{t("checkpoints.switcher.position", "{n} of {total}", {
-						n: at + 1,
-						total: options.length,
-					})}
-				</Typography.Text>
 			</span>
 			<Tooltip title={next?.ahead ? aheadLabel : undefined}>
 				<Button
