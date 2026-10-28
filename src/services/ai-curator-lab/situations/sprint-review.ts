@@ -25,6 +25,17 @@ const TEXT = {
 			"Book the playtest with five players",
 		],
 		focusAfter3: ["Run the playtest with five players and write the notes up"],
+		diceSeen:
+			"A photo of colourful dice on a table; no palette or character sheets.",
+		paletteSeen: "A palette of six colours; no character sheets yet.",
+		trailer: "Teaser trailer",
+		trailerDevlog:
+			"Week 1: we cut a 30-second teaser from the concept art and posted it on X. The greybox is not started yet.",
+		boardDevlog:
+			"Week 2: the style board is on the task. The palette is settled; the hero sheets come next week.",
+		mobileDevlog:
+			"Week 2: instead of the playtest we made the island demo run on phones — most of our testers will play it there. Touch controls are in.",
+		mobileBuild: "Island demo 0.2 · mobile web",
 		verdict:
 			"All three tasks are delivered and the stage's devlog is out: ready for Preparing a demo version.",
 	},
@@ -38,6 +49,17 @@ const TEXT = {
 			"Назначить плейтест на пять игроков",
 		],
 		focusAfter3: ["Провести плейтест на пять игроков и записать заметки"],
+		diceSeen:
+			"Фото разноцветных кубиков на столе; ни палитры, ни листов персонажей.",
+		paletteSeen: "Палитра из шести цветов; листов персонажей пока нет.",
+		trailer: "Тизер-трейлер",
+		trailerDevlog:
+			"Неделя 1: смонтировали 30-секундный тизер из концепт-арта и выложили в X. Блокаут ещё не начат.",
+		boardDevlog:
+			"Неделя 2: доска стиля в задаче. Палитра готова, листы героев — на следующей неделе.",
+		mobileDevlog:
+			"Неделя 2: вместо плейтеста сделали так, чтобы демо острова шло на телефонах — большинство тестеров будут играть там. Сенсорное управление готово.",
+		mobileBuild: "Демо острова 0.2 · мобильный веб",
 		verdict:
 			"Все три задачи сданы, девлог стадии опубликован: можно переходить к Preparing a demo version.",
 	},
@@ -68,6 +90,10 @@ export const sprintReviewSituations = (
 		seen: { match: "Matches" as const, note },
 	});
 	const demoDone = done(demo, "ExecutableBuild", artifacts.demo, t.demoSeen);
+	const boardWith = (match: "Partly" | "DoesNotMatch", note: string) => ({
+		...done(board, "Image", artifacts.board, note),
+		seen: { match, note },
+	});
 
 	// Day 8: sprint 1 landed the greybox and its demo build.
 	const sprint1 = {
@@ -121,6 +147,86 @@ export const sprintReviewSituations = (
 				sprint: 2,
 				devlogs: [],
 				artifacts: [],
+				team: project.team("sprint2"),
+				focusLastReview: t.focusAfter1,
+				workflow: project.workflow("sprint2"),
+				picture: project.picture("sprint2"),
+			},
+		},
+		{
+			// Day 8: the sprint went into a trailer no task asked for.
+			id: "outside-plan",
+			label: say(
+				language,
+				"Work outside the plan, the tasks untouched",
+				"Работа вне плана, задачи не тронуты",
+			),
+			input: {
+				...sprint1,
+				tasks: [open(demo), open(board), open(playtest)],
+				devlogs: [t.trailerDevlog],
+				artifacts: [{ type: "Video", name: t.trailer }],
+			},
+		},
+		{
+			// Day 15: the last focus asked for the playtest; the team made the demo
+			// run on phones instead — another route that still serves the goal.
+			id: "own-route",
+			label: say(
+				language,
+				"Day 15, the team went its own way toward the goal",
+				"День 15, команда пошла своим путём к цели",
+			),
+			input: {
+				...sprint1,
+				sprint: 2,
+				tasks: [demoDone, open(board), open(playtest)],
+				devlogs: [t.mobileDevlog],
+				artifacts: [{ type: "ExecutableBuild", name: t.mobileBuild }],
+				team: project.team("sprint2"),
+				focusLastReview: t.focusAfter1,
+				workflow: project.workflow("sprint2"),
+				picture: project.picture("sprint2"),
+			},
+		},
+		{
+			// Day 15: the style board is ticked, but its image is not a style board.
+			id: "mismatch",
+			label: say(
+				language,
+				"Day 15, the evidence does not match its task",
+				"День 15, доказательство не совпадает с задачей",
+			),
+			input: {
+				...sprint1,
+				sprint: 2,
+				tasks: [
+					demoDone,
+					boardWith("DoesNotMatch", t.diceSeen),
+					open(playtest),
+				],
+				devlogs: [t.boardDevlog],
+				artifacts: [{ type: "Image", name: artifacts.board }],
+				team: project.team("sprint2"),
+				focusLastReview: t.focusAfter1,
+				workflow: project.workflow("sprint2"),
+				picture: project.picture("sprint2"),
+			},
+		},
+		{
+			// Day 15: half done and a big playtest ahead — where the advice and the focus used to disagree.
+			id: "midway-half",
+			label: say(
+				language,
+				"Day 15, half done, a big playtest ahead",
+				"День 15, половина сделана, впереди большой плейтест",
+			),
+			input: {
+				...sprint1,
+				sprint: 2,
+				tasks: [demoDone, boardWith("Partly", t.paletteSeen), open(playtest)],
+				devlogs: [t.boardDevlog],
+				artifacts: [{ type: "Image", name: artifacts.board }],
 				team: project.team("sprint2"),
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),

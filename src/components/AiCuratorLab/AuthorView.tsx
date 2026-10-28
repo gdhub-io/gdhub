@@ -236,7 +236,7 @@ const reviewOf = (
 				content: {
 					message: answer.message as string,
 					notes: answer.notes as CuratorReview["notes"],
-					advice: null,
+					advice: answer.advice as CuratorReview["advice"],
 				},
 				verdict,
 			}),
