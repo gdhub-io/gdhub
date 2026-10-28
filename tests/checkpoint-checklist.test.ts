@@ -153,10 +153,74 @@ describe("sprint checklist", () => {
 
 		expect(due).toEqual({
 			verdict: "2026-10-01T14:00:00.000Z",
+			plan: "2026-10-01T14:00:00.000Z",
 			priorities: "2026-10-01T14:00:00.000Z",
 			build: "2026-10-07T00:00:00.000Z",
 			devlog: "2026-10-07T00:00:00.000Z",
 			artifacts: "2026-10-07T00:00:00.000Z",
+		});
+	});
+
+	describe("the plan", () => {
+		const ai = (overrides: Partial<CheckpointDto> = {}) =>
+			checkpoint({
+				curatorKind: CheckpointCuratorKind.AI,
+				goalAgreedAt: null,
+				items: [],
+				...overrides,
+			});
+		const task = { kind: "Outcome", cut: false } as CheckpointDto["items"][number];
+		const planOf = (data: CheckpointDto, sprint = sprint1, now?: Date) =>
+			sprintChecklist(data, sprint, false, now).find((item) => item.key === "plan");
+
+		it("walks day 1 with the AI curator: write, send, approve, ready", () => {
+			expect(planOf(ai())?.step).toBe("write");
+			expect(planOf(ai({ items: [task] }))?.step).toBe("send");
+			expect(
+				planOf(ai({ items: [task], planCheckedAt: "2026-10-01T10:00:00.000Z" })),
+			).toMatchObject({ step: "approve", dueAt: "2026-10-01T22:00:00.000Z" });
+			expect(
+				planOf(ai({ goalAgreedAt: "2026-10-01T12:00:00.000Z" }))?.done,
+			).toBe(true);
+		});
+
+		it("is drafted for call 1 with a person", () => {
+			expect(planOf(checkpoint({ goalAgreedAt: null, items: [] }))).toMatchObject({
+				step: "write",
+				done: false,
+			});
+		});
+
+		it("waits on day 15 for the review, opens, then is fixed", () => {
+			const sprint3 = { ...sprint2, number: 3, firstDay: 15, lastDay: 21, devlogDay: 21 };
+			const written = ai({
+				sessions: [
+					{
+						index: 3,
+						scheduledAt: "2026-10-15T00:00:00.000Z",
+						endedAt: "2026-10-15T01:00:00.000Z",
+					} as NonNullable<CheckpointDto["sessions"]>[number],
+				],
+			});
+			expect(planOf(ai(), sprint3, new Date("2026-10-15T00:30:00Z"))?.step).toBe(
+				"waiting",
+			);
+			expect(planOf(written, sprint3, new Date("2026-10-15T12:00:00Z"))).toMatchObject({
+				step: "open",
+				dueAt: "2026-10-16T01:00:00.000Z",
+			});
+			expect(planOf(written, sprint3, new Date("2026-10-16T02:00:00Z"))?.done).toBe(true);
+			expect(
+				planOf(
+					{ ...written, scopeConfirmedAt: "2026-10-15T13:00:00.000Z" },
+					sprint3,
+					new Date("2026-10-15T14:00:00Z"),
+				)?.done,
+			).toBe(true);
+		});
+
+		it("is not a line in sprints 2 and 4", () => {
+			expect(planOf(ai(), sprint2)).toBeUndefined();
 		});
 	});
 });

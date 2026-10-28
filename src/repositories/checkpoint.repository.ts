@@ -111,6 +111,8 @@ export const checkpointSelect = {
 	startedAt: true,
 	dueAt: true,
 	goalAgreedAt: true,
+	planCheckedAt: true,
+	scopeConfirmedAt: true,
 	previousVerdictReadAt: true,
 	revisedAt: true,
 	revisedNote: true,

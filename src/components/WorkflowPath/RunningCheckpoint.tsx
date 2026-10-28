@@ -8,6 +8,7 @@ import {
 	IconDotsVertical,
 	IconFileText,
 	IconLayoutGridAdd,
+	IconListCheck,
 	IconLock,
 	IconNotebook,
 	IconPackage,
@@ -28,7 +29,11 @@ import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
 import { SectionHeading, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { AI_CURATOR_AVATAR, SESSION_MINUTES } from "@/config/checkpoint";
+import {
+	AI_CURATOR_AVATAR,
+	SCOPE_SESSION,
+	SESSION_MINUTES,
+} from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
@@ -66,6 +71,7 @@ const DevLogPostModal = dynamic(
 
 const ICON: Record<ChecklistKey, ReactNode> = {
 	verdict: <IconFileText size={20} />,
+	plan: <IconListCheck size={20} />,
 	priorities: <IconVideo size={20} />,
 	build: <IconPackage size={20} />,
 	devlog: <IconNotebook size={20} />,
@@ -140,6 +146,46 @@ export function RunningCheckpoint({
 	);
 	const finalSession = sessions.at(-1);
 
+	// Day 1's plan and day 15's change, each saying what it waits for.
+	const planLabel = (item: ChecklistItem) => {
+		if (current.number === 3) {
+			if (item.done)
+				return t(
+					"workflow.path.check.planFixed",
+					"The tasks are fixed until the verdict",
+				);
+			return item.step === "waiting"
+				? isAI
+					? t(
+							"workflow.path.check.planAfterReview",
+							"Revise the tasks after the curator's review",
+						)
+					: t("workflow.path.check.planOnCall", "Revise the tasks on the call")
+				: t(
+						"workflow.path.check.planRevise",
+						"Revise the tasks, then confirm them",
+					);
+		}
+		if (item.done)
+			return t("workflow.path.check.planReady", "The plan is ready");
+		if (!isAI)
+			return t(
+				"workflow.path.check.planDraft",
+				"Draft the tasks for the first call",
+			);
+		return {
+			write: t("workflow.path.check.planWrite", "Write the tasks"),
+			send: t(
+				"workflow.path.check.planSend",
+				"Send the tasks for the curator's check",
+			),
+			approve: t(
+				"workflow.path.check.planApprove",
+				"The tasks are checked: approve the plan",
+			),
+		}[item.step as "write" | "send" | "approve"];
+	};
+
 	const itemLabel = (item: ChecklistItem) =>
 		({
 			verdict: t(
@@ -147,6 +193,7 @@ export function RunningCheckpoint({
 				"Read the Checkpoint {number} verdict",
 				{ number: String(previous?.number) },
 			),
+			plan: planLabel(item),
 			priorities: t(
 				"workflow.path.check.priorities",
 				"Set sprint priorities with {name}",
@@ -195,6 +242,12 @@ export function RunningCheckpoint({
 		if (key === "verdict") {
 			setModal("results");
 			if (!checkpoint.previousVerdictReadAt) markRead.mutate();
+			return;
+		}
+		if (key === "plan") {
+			const index = current.number === 3 ? SCOPE_SESSION : 1;
+			const session = sessions.find((row) => row.index === index);
+			if (session) router.push(sessionHref(session));
 			return;
 		}
 		if (key === "priorities" && openingSession) {

@@ -165,6 +165,10 @@ export type CheckpointDto = {
 	startedAt: string | null;
 	dueAt: string | null;
 	goalAgreedAt: string | null;
+	/** The AI curator's one check of the day-1 tasks. */
+	planCheckedAt?: string | null;
+	/** The AI curator's day 15: the author confirmed the tasks. */
+	scopeConfirmedAt?: string | null;
 	revisedAt: string | null;
 	revisedNote: string | null;
 	midNote: string | null;
