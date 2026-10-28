@@ -335,7 +335,11 @@ const editUntil = (
 ) => {
 	if (edit === "goalAndTasks") return planCloses(checkpoint);
 	if (edit === "tasks") {
-		return scopeWindow(checkpoint.startedAt, checkpoint.sessions).closes;
+		return scopeWindow(
+			checkpoint.startedAt,
+			checkpoint.sessions,
+			checkpoint.curatorKind,
+		).closes;
 	}
 	return null;
 };

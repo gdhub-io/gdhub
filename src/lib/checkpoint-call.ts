@@ -155,7 +155,12 @@ export const planEdit = (
 	if (
 		checkpoint.startedAt &&
 		!checkpoint.scopeConfirmedAt &&
-		scopeState(checkpoint.startedAt, checkpoint.sessions, now) === "open"
+		scopeState(
+			checkpoint.startedAt,
+			checkpoint.sessions,
+			now,
+			checkpoint.curatorKind,
+		) === "open"
 	) {
 		return "tasks";
 	}

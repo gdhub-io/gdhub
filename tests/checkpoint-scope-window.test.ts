@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { CHECKPOINT_SCOPE_DAY, scopeState } from "@/lib/checkpoint-scope";
 
 const startedAt = "2026-09-01T00:00:00.000Z";
@@ -38,5 +39,19 @@ describe("scopeState", () => {
 
 		expect(scopeState(startedAt, sessions, at("2026-09-17T09:59:00.000Z"))).toBe("open");
 		expect(scopeState(startedAt, sessions, at("2026-09-17T10:00:00.000Z"))).toBe("closed");
+	});
+
+	it("with the AI curator, opens only once its review is written", () => {
+		const ai = CheckpointCuratorKind.AI;
+		const waiting = [
+			{ index: 3, scheduledAt: "2026-09-15T00:00:00.000Z", endedAt: null },
+		];
+		// Day 15 has come, the review has not: nothing to change the tasks on yet.
+		expect(scopeState(startedAt, waiting, at("2026-09-15T00:30:00.000Z"), ai)).toBe("early");
+
+		const written = [{ ...waiting[0], endedAt: "2026-09-15T01:00:00.000Z" }];
+		expect(scopeState(startedAt, written, at("2026-09-15T00:59:00.000Z"), ai)).toBe("early");
+		expect(scopeState(startedAt, written, at("2026-09-15T01:00:00.000Z"), ai)).toBe("open");
+		expect(scopeState(startedAt, written, at("2026-09-16T01:00:00.000Z"), ai)).toBe("closed");
 	});
 });

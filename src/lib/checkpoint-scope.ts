@@ -1,4 +1,5 @@
 import { SCOPE_ANSWER_HOURS, SCOPE_SESSION } from "@/config/checkpoint";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 
@@ -19,16 +20,30 @@ type SessionTimes = {
 	endedAt: Date | string | null;
 };
 
+// A window that has not opened yet: the AI curator's review is still being written.
+const NOT_YET = new Date(8.64e15);
+
 /**
  * When the scope may change: from the third session until a day after it ended.
  * A session not stored yet, or one that never ended, counts from its start —
- * at worst UTC midnight of day 15, which leaves the whole of that day.
+ * at worst UTC midnight of day 15, which leaves the whole of that day. With the
+ * AI curator the window opens once its review is written: a change without its
+ * advice has nothing to go on.
  */
 export const scopeWindow = (
 	startedAt: Date | string,
 	sessions: SessionTimes[] = [],
+	curatorKind?: CheckpointCuratorKind,
 ) => {
 	const third = sessions.find((session) => session.index === SCOPE_SESSION);
+	if (curatorKind === CheckpointCuratorKind.AI) {
+		if (!third?.endedAt) return { opens: NOT_YET, closes: NOT_YET };
+		const written = new Date(third.endedAt);
+		return {
+			opens: written,
+			closes: new Date(written.getTime() + SCOPE_ANSWER_MS),
+		};
+	}
 	const opens = new Date(
 		third?.scheduledAt ?? dateOfDay(startedAt, CHECKPOINT_SCOPE_DAY),
 	);
@@ -44,8 +59,9 @@ export const scopeState = (
 	startedAt: Date | string,
 	sessions: SessionTimes[] = [],
 	now = new Date(),
+	curatorKind?: CheckpointCuratorKind,
 ) => {
-	const { opens, closes } = scopeWindow(startedAt, sessions);
+	const { opens, closes } = scopeWindow(startedAt, sessions, curatorKind);
 
 	if (now < opens) return "early" as const;
 

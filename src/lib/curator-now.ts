@@ -124,7 +124,11 @@ export const curatorNow = (
 		return { ...base, state: "verdict", text: content.message, nextAt: null };
 	}
 	if (index === SCOPE_SESSION && !checkpoint.scopeConfirmedAt) {
-		const { closes } = scopeWindow(checkpoint.startedAt, sessions);
+		const { closes } = scopeWindow(
+			checkpoint.startedAt,
+			sessions,
+			CheckpointCuratorKind.AI,
+		);
 		if (now < closes) {
 			return {
 				...base,

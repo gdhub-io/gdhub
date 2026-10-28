@@ -73,7 +73,12 @@ export const sprintFactsOf = (
 		scopeOpen:
 			carriesScopeNote &&
 			!!checkpoint.startedAt &&
-			scopeState(checkpoint.startedAt, checkpoint.sessions) === "open",
+			scopeState(
+				checkpoint.startedAt,
+				checkpoint.sessions,
+				new Date(),
+				checkpoint.curatorKind,
+			) === "open",
 		marks: {
 			confirmed: confirmed.length,
 			asked: asked.length,

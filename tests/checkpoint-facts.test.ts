@@ -4,6 +4,7 @@ import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoint-facts";
 import type {
 	CheckpointDto,
 	CheckpointPulseRowDto,
+	CheckpointSessionDto,
 	CheckpointSprintDto,
 } from "@/types/checkpoints";
 
@@ -139,11 +140,19 @@ describe("sprintFactsOf", () => {
 		expect(facts.scopeOpen).toBe(false);
 	});
 
-	// The tasks change on call 3 itself, with or without a written note.
-	it("opens the scope ask in the call-3 window without a note", () => {
+	// The tasks change once the day-15 review is written, with or without a note.
+	it("opens the scope ask after the day-15 review, without a note", () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(new Date("2026-09-15T12:00:00.000Z"));
-		const facts = sprintFactsOf(checkpoint(), sprint(3, "current"));
+		const written = {
+			index: 3,
+			scheduledAt: "2026-09-15T00:00:00.000Z",
+			endedAt: "2026-09-15T01:00:00.000Z",
+		} as CheckpointSessionDto;
+		const facts = sprintFactsOf(
+			checkpoint({ sessions: [written] }),
+			sprint(3, "current"),
+		);
 		vi.useRealTimers();
 
 		expect(facts.scopeNote).toBeNull();
