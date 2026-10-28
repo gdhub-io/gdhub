@@ -51,7 +51,7 @@ const session = {
 		goal: "A greybox",
 		curator: person("curator"),
 		items: [
-			{ id: "t1", text: "Loop", cut: false, originalText: null, artifact: null },
+			{ id: "t1", text: "Loop", cut: false, originalText: null, evidence: [] },
 		],
 		sessions: [],
 		project: {

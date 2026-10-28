@@ -74,16 +74,16 @@ export const PlanChangeSchema = z.discriminatedUnion("op", [
 
 export type PlanChange = z.infer<typeof PlanChangeSchema>;
 
-/**
- * Binding an artifact to the outcomes it proves, or letting one go.
- *
- * A list rather than a field: one artifact commonly proves more than one line,
- * and the link lives on the line. Sent on its own rather than as part of the
- * goal card, because replacing the card would take the day-15 record with it.
- */
+/** An artifact added to the outcomes it proves; one artifact commonly proves more than one. */
 export const CheckpointEvidenceSchema = z.object({
-	artifactId: z.string().min(1).nullable(),
+	artifactId: z.string().min(1),
 	itemIds: z.array(z.string().min(1)).min(1).max(CHECKPOINT_MAX_ITEMS_PER_KIND),
+});
+
+/** One artifact let go from one task; the task keeps any others (GDHUB-115). */
+export const DetachEvidenceSchema = z.object({
+	artifactId: z.string().min(1),
+	itemId: z.string().min(1),
 });
 
 export const CheckpointListQuerySchema = z.object({

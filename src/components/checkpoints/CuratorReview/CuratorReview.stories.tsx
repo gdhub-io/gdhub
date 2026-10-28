@@ -53,17 +53,19 @@ const task = (id: string, text: string, extra: Partial<Task> = {}): Task => ({
 	text,
 	cut: false,
 	addedAt: null,
-	artifact: null,
+	artifacts: [],
 	...extra,
 });
 const onePager = task("t1", "Core loop one-pager", {
-	artifact: {
-		id: "a1",
-		name: "Core loop",
-		type: "GDD",
-		link: "https://example.com/core-loop",
-		checkStatus: null,
-	},
+	artifacts: [
+		{
+			id: "a1",
+			name: "Core loop",
+			type: "GDD",
+			link: "https://example.com/core-loop",
+			checkStatus: null,
+		},
+	],
 });
 const startTasks = [
 	task("t1", "Core loop one-pager"),
@@ -656,17 +658,19 @@ export const AiDay29: Story = {
 			review={aiReview(
 				5,
 				lateTasks.map((row) =>
-					row.cut || row.artifact
+					row.cut || row.artifacts.length
 						? row
 						: {
 								...row,
-								artifact: {
-									id: `a-${row.id}`,
-									name: row.text,
-									type: "GameplayVideo" as const,
-									link: "https://example.com",
-									checkStatus: "Readable" as const,
-								},
+								artifacts: [
+									{
+										id: `a-${row.id}`,
+										name: row.text,
+										type: "GameplayVideo" as const,
+										link: "https://example.com",
+										checkStatus: "Readable" as const,
+									},
+								],
 							},
 				),
 				{ edit: null, editUntil: null },

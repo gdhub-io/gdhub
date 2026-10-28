@@ -133,8 +133,11 @@ describe("createDraftCheckpoint", () => {
 		vi.mocked(prisma.projectCheckpoint.count).mockResolvedValue(0 as never);
 		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue({
 			items: [
-				{ text: "A playable slice", artifactId: "art-1" },
-				{ text: "Two tide states", artifactId: null },
+				{
+					text: "A playable slice",
+					evidence: [{ artifactId: "art-1" }, { artifactId: "art-2" }],
+				},
+				{ text: "Two tide states", evidence: [] },
 			],
 		} as never);
 		vi.mocked(prisma.projectCheckpoint.create).mockResolvedValue({} as never);
@@ -143,19 +146,27 @@ describe("createDraftCheckpoint", () => {
 
 		const { data } = vi.mocked(prisma.projectCheckpoint.create).mock
 			.calls[0][0] as never as {
-			data: { items: { create: { text: string; artifactId: string | null }[] } };
+			data: {
+				items: {
+					create: {
+						text: string;
+						evidence: { create: { artifactId: string }[] };
+					}[];
+				};
+			};
 		};
 
 		expect(data.items.create).toEqual([
 			expect.objectContaining({
 				order: 1,
 				text: "A playable slice",
-				artifactId: "art-1",
+				// Every artifact the outcome held, not only the first.
+				evidence: { create: [{ artifactId: "art-1" }, { artifactId: "art-2" }] },
 			}),
 			expect.objectContaining({
 				order: 2,
 				text: "Two tide states",
-				artifactId: null,
+				evidence: { create: [] },
 			}),
 		]);
 	});

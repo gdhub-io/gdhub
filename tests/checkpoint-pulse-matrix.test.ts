@@ -230,9 +230,9 @@ describe("evidence", () => {
 
 		const { evidence } = await load({
 			items: [
-				{ id: "i1", artifact: older },
-				{ id: "i2", artifact: made },
-				{ id: "i3", artifact: null },
+				{ id: "i1", evidence: [{ artifact: older }] },
+				{ id: "i2", evidence: [{ artifact: made }] },
+				{ id: "i3", evidence: [] },
 			],
 		});
 
@@ -262,13 +262,31 @@ describe("evidence", () => {
 
 		const { evidence } = await load({
 			items: [
-				{ id: "i1", artifact: made },
-				{ id: "i2", artifact: made },
+				{ id: "i1", evidence: [{ artifact: made }] },
+				{ id: "i2", evidence: [{ artifact: made }] },
 			],
 		});
 
 		expect(evidence).toHaveLength(1);
 		expect(evidence[0].itemIds).toEqual(["i1", "i2"]);
+	});
+
+	it("lists each of the artifacts one item holds, each pointing back at it", async () => {
+		const older = artifact("a-old", "2026-07-01T10:00:00.000Z");
+		const made = artifact("a-new", "2026-09-10T10:00:00.000Z");
+
+		const { evidence, items } = await load({
+			items: [{ id: "i1", evidence: [{ artifact: older }, { artifact: made }] }],
+		});
+
+		expect(evidence.map((row) => [row.artifact.id, row.itemIds])).toEqual([
+			["a-old", ["i1"]],
+			["a-new", ["i1"]],
+		]);
+		expect(items[0].evidence.map((piece) => piece.artifact.id)).toEqual([
+			"a-old",
+			"a-new",
+		]);
 	});
 });
 

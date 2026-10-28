@@ -19,7 +19,7 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 
 	// A cut line is shown but never counted as missing evidence.
 	const live = items.filter((item) => !item.cut);
-	const withEvidence = live.filter((item) => item.artifact).length;
+	const withEvidence = live.filter((item) => item.evidence.length).length;
 	const reworded = items.some((item) => item.originalText);
 	const cut = items.length > live.length;
 
@@ -49,10 +49,14 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 										? t("checkpoints.card.taskCut", "Cut on day {day}", {
 												day: CHECKPOINT_SCOPE_DAY,
 											})
-										: item.artifact
+										: item.evidence.length
 											? t("checkpoints.card.taskEvidence", "Evidence: {name}", {
-													name:
-														item.artifact.name ?? typeLabel(item.artifact.type),
+													name: item.evidence
+														.map(
+															({ artifact }) =>
+																artifact.name ?? typeLabel(artifact.type),
+														)
+														.join(", "),
 												})
 											: t("checkpoints.card.taskNoEvidence", "No evidence yet")}
 								</span>
@@ -65,13 +69,13 @@ export function TaskSquares({ items }: { items: CheckpointItemDto[] }) {
 								styles.square,
 								item.cut
 									? styles.squareCut
-									: item.artifact && styles.squareDone,
+									: item.evidence.length > 0 && styles.squareDone,
 							)}
 						>
 							{item.cut ? (
 								<IconMinus size={14} />
 							) : (
-								item.artifact && (
+								item.evidence.length > 0 && (
 									<IconCheck size={14} stroke={BOX_TICK_STROKE} />
 								)
 							)}

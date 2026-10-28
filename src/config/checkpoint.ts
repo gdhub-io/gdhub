@@ -112,6 +112,8 @@ export const VERDICT_NOTE_MAX = 1200;
 export const CHECKPOINT_GOAL_MAX = 500;
 export const CHECKPOINT_ITEM_TEXT_MAX = 200;
 export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
+/** Artifacts one task can hold as its evidence (GDHUB-115). */
+export const CHECKPOINT_MAX_EVIDENCE_PER_ITEM = 3;
 
 // Buying one
 

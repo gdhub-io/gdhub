@@ -43,7 +43,7 @@ const loadPlan = (checkpointId: string) =>
 					order: true,
 					text: true,
 					originalText: true,
-					artifactId: true,
+					_count: { select: { evidence: true } },
 				},
 			},
 		},
@@ -102,7 +102,7 @@ export const changePlan = async (
 	const item = checkpoint.items.find((row) => row.id === change.itemId);
 	if (!item) return "notFound";
 	// A task proven by an artifact is done: the plan keeps it as it was.
-	if (revising && item.artifactId) return "taskDone";
+	if (revising && item._count.evidence > 0) return "taskDone";
 
 	if (change.op === "edit") {
 		await prisma.$transaction([

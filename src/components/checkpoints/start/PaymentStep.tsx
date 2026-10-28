@@ -12,7 +12,7 @@ import { isAxiosError } from "axios";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
-import { EvidenceSlot } from "@/components/checkpoints/EvidenceSlot";
+import { EvidenceSlots } from "@/components/checkpoints/EvidenceSlot";
 import { entryProjectHref } from "@/components/checkpoints/entry/hrefs";
 import {
 	ClickwrapField,
@@ -356,7 +356,9 @@ export function PaymentStep() {
 									justify="space-between"
 								>
 									<Typography.Text>{item.text}</Typography.Text>
-									<EvidenceSlot artifact={item.artifact} />
+									<EvidenceSlots
+										artifacts={item.evidence.map((piece) => piece.artifact)}
+									/>
 								</Flex>
 							))}
 						</Flex>,

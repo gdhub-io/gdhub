@@ -103,7 +103,7 @@ const inputsFromProject = async (projectId: string) => {
 				kind: CheckpointItemKind.Input,
 				order: index + 1,
 				text: artifact.name ?? artifact.type,
-				artifactId: artifact.id,
+				evidence: { create: { artifactId: artifact.id } },
 			}))
 		: [
 				{

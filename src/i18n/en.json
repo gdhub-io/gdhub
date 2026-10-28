@@ -1717,9 +1717,12 @@
 			"attached": "Attached this sprint",
 			"change": "Pick another artifact",
 			"confirm": "Attach",
+			"detach": "Remove from this task",
+			"detachFailed": "The artifact could not be removed from the task",
 			"empty": "No evidence yet",
 			"emptyNote": "Attach what proves an outcome as it lands, rather than on the last day.",
 			"failed": "The evidence could not be attached",
+			"full": "already has {max} artifacts",
 			"landed": "Landed in this sprint",
 			"later": "Proof at the end",
 			"match": {
@@ -1729,6 +1732,7 @@
 				"partly": "Partly"
 			},
 			"multi": "One artifact can prove more than one outcome.",
+			"multiUpTo": "One artifact can prove several outcomes; an outcome holds up to {max}.",
 			"noArtifacts": "No artifacts yet",
 			"noArtifactsNote": "Evidence comes from the project's artifact store. Add the build, the video or the document and it appears here.",
 			"noMatch": "Nothing in the store matches that.",

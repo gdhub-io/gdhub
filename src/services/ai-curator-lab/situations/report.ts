@@ -76,16 +76,25 @@ const LINKS = {
 	notes: "https://docs.google.com/document/d/playtest",
 };
 
+type Piece = NonNullable<Item["evidence"]>[number];
+
 const outcome = (
 	task: { id: string; text: string },
-	over: Partial<Item> = {},
-): Item => ({ ...task, kind: "Outcome", artifact: null, ...over });
+	...evidence: Piece[]
+): Item => ({ ...task, kind: "Outcome", evidence });
+
+/** One artifact offered for a task, with what the AI saw in it. */
+const seen = (
+	artifact: Piece["artifact"],
+	match?: Piece["match"],
+	matchNote?: string,
+): Piece => ({ artifact, match, matchNote });
 
 const artifact = (
 	type: string,
 	name: string,
 	link: string,
-	over: Partial<NonNullable<Item["artifact"]>> = {},
+	over: Partial<Piece["artifact"]> = {},
 ) => ({
 	type,
 	name,
@@ -102,21 +111,21 @@ export const reportSituations = (
 	const project = hollowTide(language);
 	const { outcomes, artifacts, devlogs } = project;
 
-	const demo = outcome(outcomes.demo, {
-		evidenceMatch: "Matches",
-		evidenceMatchNote: t.demoSeen,
-		artifact: artifact("ExecutableBuild", artifacts.demo, LINKS.demo),
-	});
-	const board = outcome(outcomes.board, {
-		evidenceMatch: "Matches",
-		evidenceMatchNote: t.boardSeen,
-		artifact: artifact("Image", artifacts.board, LINKS.board),
-	});
-	const playtest = outcome(outcomes.playtest, {
-		evidenceMatch: "Matches",
-		evidenceMatchNote: t.notesSeen,
-		artifact: artifact("Document", artifacts.notes, LINKS.notes),
-	});
+	const demoBuild = artifact("ExecutableBuild", artifacts.demo, LINKS.demo);
+	const notes = artifact("Document", artifacts.notes, LINKS.notes);
+	const demo = outcome(outcomes.demo, seen(demoBuild, "Matches", t.demoSeen));
+	const board = outcome(
+		outcomes.board,
+		seen(
+			artifact("Image", artifacts.board, LINKS.board),
+			"Matches",
+			t.boardSeen,
+		),
+	);
+	const playtest = outcome(
+		outcomes.playtest,
+		seen(notes, "Matches", t.notesSeen),
+	);
 	const devlog = {
 		greybox: { publishedAt: "2026-10-05", content: devlogs.greybox },
 		board: { publishedAt: "2026-10-19", content: devlogs.styleBoard },
@@ -132,7 +141,7 @@ export const reportSituations = (
 		workflow: project.workflow("end"),
 		revision: null,
 		items: [
-			{ id: "i1", kind: "Input" as const, text: project.input, artifact: null },
+			{ id: "i1", kind: "Input" as const, text: project.input, evidence: [] },
 			demo,
 			board,
 			playtest,
@@ -164,12 +173,15 @@ export const reportSituations = (
 			input: {
 				...replacing(
 					"o2",
-					outcome(outcomes.board, {
-						artifact: artifact("Image", artifacts.board, LINKS.board, {
-							checkStatus: "Unreachable",
-							checkNote: "needsLogin",
-						}),
-					}),
+					outcome(
+						outcomes.board,
+						seen(
+							artifact("Image", artifacts.board, LINKS.board, {
+								checkStatus: "Unreachable",
+								checkNote: "needsLogin",
+							}),
+						),
+					),
 				),
 				devlogs: [devlog.greybox, devlog.boardPrivate, devlog.playtest],
 			},
@@ -177,32 +189,32 @@ export const reportSituations = (
 		{
 			id: "partly",
 			label: say(language, "Shown in part", "Показано частично"),
-			input: replacing("o3", {
-				...playtest,
-				evidenceMatch: "Partly",
-				evidenceMatchNote: t.partly,
-			}),
+			input: replacing(
+				"o3",
+				outcome(outcomes.playtest, seen(notes, "Partly", t.partly)),
+			),
 		},
 		{
 			id: "does-not-match",
 			label: say(language, "Not about the task", "Не про задачу"),
-			input: replacing("o3", {
-				...playtest,
-				evidenceMatch: "DoesNotMatch",
-				evidenceMatchNote: t.other,
-			}),
+			input: replacing(
+				"o3",
+				outcome(outcomes.playtest, seen(notes, "DoesNotMatch", t.other)),
+			),
 		},
 		{
 			id: "broken",
 			label: say(language, "Link doesn't open", "Ссылка не открывается"),
 			input: replacing(
 				"o1",
-				outcome(outcomes.demo, {
-					artifact: artifact("ExecutableBuild", artifacts.demo, LINKS.demo, {
+				outcome(
+					outcomes.demo,
+					seen({
+						...demoBuild,
 						checkStatus: "Unreachable",
 						checkNote: "notFound",
 					}),
-				}),
+				),
 			),
 		},
 		{
@@ -230,15 +242,11 @@ export const reportSituations = (
 					...t.refTasks.map((text, index) =>
 						outcome(
 							{ id: `r${index + 1}`, text },
-							{
-								evidenceMatch: "Matches",
-								evidenceMatchNote: t.refSeen[index],
-								artifact: artifact(
-									"Other",
-									text,
-									`https://example.com/ref-${index + 1}`,
-								),
-							},
+							seen(
+								artifact("Other", text, `https://example.com/ref-${index + 1}`),
+								"Matches",
+								t.refSeen[index],
+							),
 						),
 					),
 				],
@@ -255,11 +263,10 @@ export const reportSituations = (
 				"Свой путь команды дошёл до цели",
 			),
 			input: {
-				...replacing("o3", {
-					...playtest,
-					evidenceMatchNote: t.mobileSeen,
-					artifact: artifact("ExecutableBuild", artifacts.demo, LINKS.demo),
-				}),
+				...replacing(
+					"o3",
+					outcome(outcomes.playtest, seen(demoBuild, "Matches", t.mobileSeen)),
+				),
 				journal: t.ownRoute.map((text) => ({ day: 15, text })),
 				devlogs: [
 					devlog.greybox,
@@ -277,7 +284,7 @@ export const reportSituations = (
 				"Задачу вычеркнули на 15-й день",
 			),
 			input: {
-				...replacing("o3", outcome(outcomes.playtest, { cut: true })),
+				...replacing("o3", { ...outcome(outcomes.playtest), cut: true }),
 				revision: { revisedAt: "2026-10-15", note: t.cut },
 				devlogs: [devlog.greybox, devlog.board],
 				picture: withoutNotes,

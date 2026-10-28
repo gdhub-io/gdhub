@@ -90,7 +90,7 @@ beforeEach(() => {
 	vi.mocked(prisma.projectWorkflowTask.findMany).mockResolvedValue([] as never);
 });
 
-const outcome = (id: string, artifact: unknown = null) => ({
+const outcome = (id: string, artifact: object | null = null) => ({
 	id,
 	kind: CheckpointItemKind.Outcome,
 	text: `outcome ${id}`,
@@ -98,7 +98,7 @@ const outcome = (id: string, artifact: unknown = null) => ({
 	cut: false,
 	addedAt: null,
 	acceptedNote: null,
-	artifact,
+	evidence: artifact ? [{ match: null, matchNote: null, artifact }] : [],
 });
 
 const readable = {

@@ -33,8 +33,8 @@ const checkpoint = {
 	curator: null,
 	project: { authorId: "u-marta" },
 	items: [
-		{ id: "o1", kind: "Outcome", text: "Demo on itch.io", originalText: null, cut: false, addedAt: null, evidenceMatch: "Matches", evidenceMatchNote: null, artifact: { id: "a1", name: "Demo", type: "ExecutableBuild", link: "https://x.itch.io", createdAt: at("2026-09-05T18:40:00Z") } },
-		{ id: "i1", kind: "Input", text: "A paper map", originalText: null, cut: false, addedAt: null, evidenceMatch: null, evidenceMatchNote: null, artifact: null },
+		{ id: "o1", kind: "Outcome", text: "Demo on itch.io", originalText: null, cut: false, addedAt: null, evidence: [{ match: "Matches", matchNote: null, artifact: { id: "a1", name: "Demo", type: "ExecutableBuild", link: "https://x.itch.io", createdAt: at("2026-09-05T18:40:00Z") } }] },
+		{ id: "i1", kind: "Input", text: "A paper map", originalText: null, cut: false, addedAt: null, evidence: [] },
 	],
 	pulses: [
 		{ id: "p-mail", week: 2, confirmedAt: at("2026-09-14T09:00:00Z"), source: "email", teamMember: { userId: "u-tom" } },
@@ -92,13 +92,38 @@ describe("getJournalView", () => {
 	it("keeps the inputs apart from the tasks, with what the project made before", async () => {
 		const view = await getJournalView("cp1");
 		expect(view?.plan.tasks.map((task) => task.id)).toEqual(["o1"]);
-		expect(view?.plan.tasks[0]).toMatchObject({ doneIn: 1, match: "Matches" });
+		expect(view?.plan.tasks[0]).toMatchObject({
+			doneIn: 1,
+			evidence: [{ name: "Demo", link: "https://x.itch.io", match: "Matches", note: null }],
+		});
 		expect(view?.inputs.items.map((item) => item.id)).toEqual(["i1"]);
 		expect(view?.inputs.before.map((row) => row.id)).toEqual(["b1"]);
 		expect(view?.artifacts[0]).toMatchObject({
-			task: "Demo on itch.io",
+			tasks: ["Demo on itch.io"],
 			read: { match: "Matches", text: "A playable build." },
 		});
+	});
+
+	it("names every task an artifact proves, on its message and in the list", async () => {
+		const [demo] = checkpoint.items;
+		checkpointFind.mockResolvedValue({
+			...checkpoint,
+			items: [
+				demo,
+				{ ...demo, id: "o2", text: "Five playtesters", evidence: demo.evidence },
+			],
+		});
+
+		const view = await getJournalView("cp1");
+
+		expect(view?.artifacts[0].tasks).toEqual(["Demo on itch.io", "Five playtesters"]);
+		expect(
+			view?.messages.find((row) => row.id === "a1")?.details,
+		).toEqual([
+			{ label: "task", value: "Demo on itch.io" },
+			{ label: "task", value: "Five playtesters" },
+			{ label: "link", value: "https://x.itch.io" },
+		]);
 	});
 
 	it("is null for a checkpoint that does not exist", async () => {

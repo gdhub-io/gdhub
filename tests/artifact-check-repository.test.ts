@@ -77,15 +77,12 @@ describe("the cron's sweep", () => {
 		const { where } = vi.mocked(prisma.projectArtifact.findMany).mock
 			.calls[0][0] as { where: { OR: Record<string, unknown>[] } };
 		const unchecked = where.OR[1] as {
-			checkpointItems: {
-				some: { checkpoint: { status: { in: string[] } } };
+			checkpointEvidence: {
+				some: { item: { checkpoint: { status: { in: string[] } } } };
 			};
 		};
-		expect(unchecked.checkpointItems.some.checkpoint.status.in).not.toContain(
-			"Closed",
-		);
-		expect(unchecked.checkpointItems.some.checkpoint.status.in).toContain(
-			"Active",
-		);
+		const { status } = unchecked.checkpointEvidence.some.item.checkpoint;
+		expect(status.in).not.toContain("Closed");
+		expect(status.in).toContain("Active");
 	});
 });

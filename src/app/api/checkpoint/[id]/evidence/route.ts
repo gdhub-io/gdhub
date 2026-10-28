@@ -1,5 +1,7 @@
 import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { after } from "next/server";
+import type { z } from "zod";
+import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import {
 	apiError,
 	json,
@@ -18,80 +20,123 @@ import { checkAndLook } from "@/repositories/evidence-seen";
 import {
 	type CheckpointEvidenceBody,
 	CheckpointEvidenceSchema,
+	DetachEvidenceSchema,
 } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 
-/**
- * Binding an artifact to the outcomes it proves.
- *
- * Its own route rather than the goal card's `PUT`: that one replaces a whole
- * side of the card, which deletes and recreates the rows — taking the day-15
- * revision, the author's notes and the curator's `acceptedNote` with them. An
- * artifact landing in week three must not cost the checkpoint its history, so
- * this writes one column on the lines that were ticked and nothing else.
- */
-export const POST = pipe(
-	withAuth({ mode: "user" }),
-	withSpaceGuard({
-		permission: "project.checkpoints.manage",
-		idFrom: projectOfCheckpoint,
-	}),
-	withValidation(CheckpointEvidenceSchema),
-)(async (_req, ctx, { user, body }) => {
-	const currentUser = user as SessionUser | undefined;
-	if (!currentUser) return apiError.unauthorized();
-
-	const { id } = (await ctx.params) as { id: string };
-	const { artifactId, itemIds } = body as CheckpointEvidenceBody;
-
+/** The running checkpoint the evidence belongs to, or why it cannot take any. */
+const openCheckpoint = async (id: string) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
 		select: {
 			status: true,
 			projectId: true,
-			items: { select: { id: true, kind: true } },
+			items: {
+				select: {
+					id: true,
+					kind: true,
+					evidence: { select: { artifactId: true } },
+				},
+			},
 		},
 	});
-
-	if (!checkpoint) return apiError.notFound();
-
+	if (!checkpoint) return { refused: apiError.notFound() };
 	// Evidence is collected while the 28 days run; once the verdict is being
 	// written the card is the record the verdict is read from.
 	if (
 		checkpoint.status !== CheckpointStatus.Active &&
 		checkpoint.status !== CheckpointStatus.Draft
 	) {
-		return apiError.badRequest("checkpointClosed");
+		return { refused: apiError.badRequest("checkpointClosed") };
 	}
+	return { checkpoint };
+};
 
-	for (const itemId of itemIds) {
-		const item = checkpoint.items.find((row) => row.id === itemId);
-
-		if (!item) return apiError.badRequest("itemNotInCheckpoint");
-		// Inputs are what the project already had; they are not proven here.
-		if (item.kind !== CheckpointItemKind.Outcome) {
-			return apiError.badRequest("itemNotOutcome");
-		}
+const outcomeOf = (
+	items: { id: string; kind: CheckpointItemKind }[],
+	itemId: string,
+) => {
+	const item = items.find((row) => row.id === itemId);
+	if (!item) return apiError.badRequest("itemNotInCheckpoint");
+	// Inputs are what the project already had; they are not proven here.
+	if (item.kind !== CheckpointItemKind.Outcome) {
+		return apiError.badRequest("itemNotOutcome");
 	}
+	return null;
+};
 
-	if (artifactId) {
-		const artifact = await prisma.projectArtifact.findUnique({
-			where: { id: artifactId },
-			select: { projectId: true, checkStatus: true },
+const guard = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.checkpoints.manage",
+		idFrom: projectOfCheckpoint,
+	}),
+);
+
+/**
+ * Adds an artifact to the outcomes it proves (GDHUB-115): each keeps the
+ * artifacts it already has. Its own route rather than the goal card's `PUT`,
+ * which recreates the rows and would take the day-15 record with it.
+ */
+export const POST = guard(
+	withValidation(CheckpointEvidenceSchema)(
+		async (_req, ctx, { user, body }) => {
+			if (!(user as SessionUser | undefined)) return apiError.unauthorized();
+			const { id } = (await ctx.params) as { id: string };
+			const { artifactId, itemIds } = body as CheckpointEvidenceBody;
+
+			const { checkpoint, refused } = await openCheckpoint(id);
+			if (refused) return refused;
+			for (const itemId of itemIds) {
+				const wrong = outcomeOf(checkpoint.items, itemId);
+				if (wrong) return wrong;
+			}
+			const full = checkpoint.items.some(
+				(item) =>
+					itemIds.includes(item.id) &&
+					!item.evidence.some((piece) => piece.artifactId === artifactId) &&
+					item.evidence.length >= CHECKPOINT_MAX_EVIDENCE_PER_ITEM,
+			);
+			if (full) return apiError.badRequest("evidenceFull");
+
+			const artifact = await prisma.projectArtifact.findUnique({
+				where: { id: artifactId },
+				select: { projectId: true, checkStatus: true },
+			});
+			if (!artifact) return apiError.notFound();
+			if (artifact.projectId !== checkpoint.projectId) {
+				return apiError.badRequest("artifactNotInProject");
+			}
+
+			await prisma.checkpointItemEvidence.createMany({
+				data: itemIds.map((itemId) => ({ itemId, artifactId })),
+				skipDuplicates: true,
+			});
+			// Older than the check itself: it becomes evidence now, so it is checked now.
+			after(() =>
+				checkAndLook(artifactId, { checked: !!artifact.checkStatus }),
+			);
+
+			return json(withProgress(await getCheckpoint(id)));
+		},
+	),
+);
+
+/** Lets one artifact go from one outcome; the outcome keeps any others. */
+export const DELETE = guard(
+	withValidation(DetachEvidenceSchema)(async (_req, ctx, { user, body }) => {
+		if (!(user as SessionUser | undefined)) return apiError.unauthorized();
+		const { id } = (await ctx.params) as { id: string };
+		const { artifactId, itemId } = body as z.infer<typeof DetachEvidenceSchema>;
+
+		const { checkpoint, refused } = await openCheckpoint(id);
+		if (refused) return refused;
+		const wrong = outcomeOf(checkpoint.items, itemId);
+		if (wrong) return wrong;
+
+		await prisma.checkpointItemEvidence.deleteMany({
+			where: { itemId, artifactId },
 		});
-
-		if (!artifact) return apiError.notFound();
-		if (artifact.projectId !== checkpoint.projectId) {
-			return apiError.badRequest("artifactNotInProject");
-		}
-		// Older than the check itself: it becomes evidence now, so it is checked now.
-		after(() => checkAndLook(artifactId, { checked: !!artifact.checkStatus }));
-	}
-
-	await prisma.checkpointItem.updateMany({
-		where: { id: { in: itemIds }, checkpointId: id },
-		data: { artifactId },
-	});
-
-	return json(withProgress(await getCheckpoint(id)));
-});
+		return json(withProgress(await getCheckpoint(id)));
+	}),
+);

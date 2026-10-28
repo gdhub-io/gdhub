@@ -82,7 +82,8 @@ export type CheckpointCallDto = {
 			text: string;
 			cut: boolean;
 			addedAt: string | null;
-			artifact: CheckpointArtifactRef | null;
+			/** Every artifact offered for it (GDHUB-115). */
+			artifacts: CheckpointArtifactRef[];
 		}[];
 	};
 	/** The five calls for the notes switcher; `held` once a call is over. */
@@ -190,13 +191,18 @@ export const getCall = async (
 						text: true,
 						cut: true,
 						addedAt: true,
-						artifact: {
+						evidence: {
+							orderBy: { createdAt: "asc" },
 							select: {
-								id: true,
-								name: true,
-								type: true,
-								link: true,
-								checkStatus: true,
+								artifact: {
+									select: {
+										id: true,
+										name: true,
+										type: true,
+										link: true,
+										checkStatus: true,
+									},
+								},
 							},
 						},
 					},
@@ -241,7 +247,7 @@ export const getCall = async (
 				text: item.text,
 				cut: item.cut,
 				addedAt: item.addedAt?.toISOString() ?? null,
-				artifact: item.artifact ? toArtifactRef(item.artifact) : null,
+				artifacts: item.evidence.map(({ artifact }) => toArtifactRef(artifact)),
 			})),
 		},
 		sessions: plan.sessions.map((row) => ({

@@ -30,22 +30,20 @@ type Workflow = { currentStage: string; nextStage: string | null };
 const task = (
 	id: string,
 	text: string,
-	done?: { type: string; name: string | null } | null,
+	done: { type: string; name: string | null }[] = [],
 	cut = false,
 ): Task => ({
 	id,
 	text,
 	cut,
 	addedAt: null,
-	artifact: done
-		? {
-				id: `a-${id}`,
-				name: done.name,
-				type: done.type as ProjectArtifactType,
-				link: "#",
-				checkStatus: "Readable",
-			}
-		: null,
+	artifacts: done.map((piece, index) => ({
+		id: `a-${id}-${index}`,
+		name: piece.name,
+		type: piece.type as ProjectArtifactType,
+		link: "#",
+		checkStatus: "Readable",
+	})),
 });
 
 /** One Curator's Review, built from a lab run as the page would have it on that day. */
@@ -123,13 +121,13 @@ type Item = {
 	kind: string;
 	text: string;
 	cut?: boolean;
-	artifact: { type: string; name: string | null } | null;
+	evidence?: { artifact: { type: string; name: string | null } }[];
 };
 type PlanTask = {
 	id: string;
 	text: string;
 	cut: boolean;
-	done: { type: string; name: string | null } | null;
+	evidence: { type: string; name: string | null }[];
 };
 
 /** What the author would see on Curator's Review, or null where the call shows nowhere there. */
@@ -147,7 +145,7 @@ const reviewOf = (
 	const goal = (input.goal ?? (input.card as { goal: string })?.goal) as string;
 	const planTasks = () =>
 		(input.tasks as unknown as PlanTask[]).map((row) =>
-			task(row.id, row.text, row.done, row.cut),
+			task(row.id, row.text, row.evidence, row.cut),
 		);
 
 	if (call === "goalCheck") {
@@ -254,7 +252,12 @@ const reviewOf = (
 				goal,
 				workflow,
 				tasks: items.map((row) =>
-					task(row.id, row.text, row.artifact, row.cut),
+					task(
+						row.id,
+						row.text,
+						row.evidence?.map((piece) => piece.artifact),
+						row.cut,
+					),
 				),
 				content: {
 					message: answer.summary as string,

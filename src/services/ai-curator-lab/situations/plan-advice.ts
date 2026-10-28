@@ -25,10 +25,9 @@ const TEXT = {
 
 const open = (task: { id: string; text: string }) => ({
 	...task,
-	done: null,
 	cut: false,
 	firstWording: null,
-	seen: null,
+	evidence: [],
 });
 
 const written = (texts: string[], from: number) =>
@@ -105,8 +104,13 @@ export const planAdviceSituations = (
 				tasks: [
 					{
 						...open(demo),
-						done: { type: "ExecutableBuild", name: project.artifacts.demo },
-						seen: { match: "Matches", note: t.seen },
+						evidence: [
+							{
+								type: "ExecutableBuild",
+								name: project.artifacts.demo,
+								seen: { match: "Matches", note: t.seen },
+							},
+						],
 					},
 					open(board),
 					open(playtest),

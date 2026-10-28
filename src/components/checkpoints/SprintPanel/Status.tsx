@@ -289,7 +289,9 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 									{item.text}
 								</Typography.Text>
 								<Typography.Text className={styles.proof}>
-									{item.artifact?.name ?? item.artifact?.link}
+									{item.evidence
+										.map(({ artifact }) => artifact.name ?? artifact.link)
+										.join(", ")}
 								</Typography.Text>
 							</Flex>
 						))}

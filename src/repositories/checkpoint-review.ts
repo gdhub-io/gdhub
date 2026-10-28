@@ -120,7 +120,8 @@ export type CheckpointReviewDto = {
 			text: string;
 			cut: boolean;
 			addedAt: string | null;
-			artifact: CheckpointArtifactRef | null;
+			/** Every artifact offered for it (GDHUB-115). */
+			artifacts: CheckpointArtifactRef[];
 		}[];
 	};
 	sessions: {
@@ -145,15 +146,20 @@ const taskSelect = {
 		cut: true,
 		addedAt: true,
 		originalText: true,
-		evidenceMatch: true,
-		evidenceMatchNote: true,
-		artifact: {
+		evidence: {
+			orderBy: { createdAt: "asc" },
 			select: {
-				id: true,
-				name: true,
-				type: true,
-				link: true,
-				checkStatus: true,
+				match: true,
+				matchNote: true,
+				artifact: {
+					select: {
+						id: true,
+						name: true,
+						type: true,
+						link: true,
+						checkStatus: true,
+					},
+				},
 			},
 		},
 	},
@@ -162,7 +168,7 @@ const taskSelect = {
 type TaskRow = {
 	id: string;
 	cut: boolean;
-	artifact: unknown;
+	evidence: unknown[];
 };
 
 /** What a stored advice answers: everything the model is given. */
@@ -312,7 +318,7 @@ export const getReview = async (
 				text: item.text,
 				cut: item.cut,
 				addedAt: item.addedAt?.toISOString() ?? null,
-				artifact: item.artifact ? toArtifactRef(item.artifact) : null,
+				artifacts: item.evidence.map(({ artifact }) => toArtifactRef(artifact)),
 			})),
 		},
 		sessions: checkpoint.sessions.map((row) => ({
@@ -527,7 +533,9 @@ const adviceFor = async (
 	});
 	if (!written) return null;
 	const open = new Set(
-		items.filter((item) => !item.cut && !item.artifact).map((item) => item.id),
+		items
+			.filter((item) => !item.cut && !item.evidence.length)
+			.map((item) => item.id),
 	);
 	const advice: PlanAdvice = {
 		tasks: written.tasks.filter((row) => open.has(row.itemId)),
@@ -864,7 +872,9 @@ export const writeBriefFor = async (sessionId: string) => {
 			notes: knownOnly({ ...review, agreed: [] }, checkpoint.items),
 			// What the curator's card shows beside each task, so it never reads the input.
 			seen: input.tasks.flatMap((task) =>
-				task.seen ? [{ itemId: task.id, ...task.seen }] : [],
+				task.evidence.flatMap((piece) =>
+					piece.seen ? [{ itemId: task.id, ...piece.seen }] : [],
+				),
 			),
 		},
 	});

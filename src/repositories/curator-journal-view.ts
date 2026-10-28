@@ -80,9 +80,16 @@ export type JournalTaskDto = {
 	firstWording: string | null;
 	cut: boolean;
 	addedAt: string | null;
-	artifact: { name: string | null; type: string; link: string } | null;
-	/** The sprint the artifact that closes it was added in. */
+	/** Every artifact offered for it, with what the AI saw in each (GDHUB-115). */
+	evidence: JournalEvidenceDto[];
+	/** The sprint its first artifact was added in. */
 	doneIn: number | null;
+};
+
+export type JournalEvidenceDto = {
+	name: string | null;
+	type: string;
+	link: string;
 	match: EvidenceMatch | null;
 	note: string | null;
 };
@@ -95,8 +102,8 @@ export type JournalArtifactDto = {
 	addedAt: string;
 	addedBy: string | null;
 	sprint: number | null;
-	/** The task it proves; null when it sits beside the tasks. */
-	task: string | null;
+	/** The tasks it proves; empty when it sits beside the tasks. */
+	tasks: string[];
 	read: {
 		match: EvidenceMatch | null;
 		text: string | null;
@@ -143,9 +150,7 @@ export type CuratorJournalViewDto = {
 		items: {
 			id: string;
 			text: string;
-			artifact: { name: string | null; type: string; link: string } | null;
-			match: EvidenceMatch | null;
-			note: string | null;
+			evidence: JournalEvidenceDto[];
 		}[];
 		before: {
 			id: string;
@@ -236,15 +241,20 @@ export const getJournalView = async (
 					originalText: true,
 					cut: true,
 					addedAt: true,
-					evidenceMatch: true,
-					evidenceMatchNote: true,
-					artifact: {
+					evidence: {
+						orderBy: { createdAt: "asc" },
 						select: {
-							id: true,
-							name: true,
-							type: true,
-							link: true,
-							createdAt: true,
+							match: true,
+							matchNote: true,
+							artifact: {
+								select: {
+									id: true,
+									name: true,
+									type: true,
+									link: true,
+									createdAt: true,
+								},
+							},
 						},
 					},
 				},
@@ -381,9 +391,24 @@ export const getJournalView = async (
 	const author = nameOf(checkpoint.project.authorId);
 	const taskText = new Map(tasks.map((item) => [item.id, item.text]));
 	const taskName = (id: string | null) => (id && taskText.get(id)) || null;
-	const itemOfArtifact = new Map(
-		tasks.flatMap((item) => (item.artifact ? [[item.artifact.id, item]] : [])),
-	);
+	// An artifact may prove several tasks, and a task carry several artifacts (GDHUB-115).
+	const tasksOfArtifact = new Map<string, string[]>();
+	for (const item of tasks) {
+		for (const { artifact } of item.evidence) {
+			tasksOfArtifact.set(artifact.id, [
+				...(tasksOfArtifact.get(artifact.id) ?? []),
+				item.text,
+			]);
+		}
+	}
+	const evidenceLines = (item: (typeof checkpoint.items)[number]) =>
+		item.evidence.map(({ artifact, match, matchNote }) => ({
+			name: artifact.name,
+			type: artifact.type,
+			link: artifact.link,
+			match,
+			note: matchNote,
+		}));
 
 	const base = (
 		id: string,
@@ -582,14 +607,14 @@ export const getJournalView = async (
 		);
 	}
 	for (const row of artifacts) {
-		const item = itemOfArtifact.get(row.id);
+		const proves = tasksOfArtifact.get(row.id) ?? [];
 		messages.push({
 			...base(row.id, row.createdAt, "team", "artifact"),
 			who: nameOf(row.createdById),
 			title: row.name,
 			variant: row.type,
 			details: [
-				...(item ? [{ label: "task", value: item.text }] : []),
+				...proves.map((task) => ({ label: "task", value: task })),
 				{ label: "link", value: row.link },
 			],
 			source: row,
@@ -616,8 +641,8 @@ export const getJournalView = async (
 	const looked = { links: 0, unread: 0, videoSeconds: 0 };
 	for (const entry of entries) {
 		const read = entry.input as JournalRead | null;
-		if (entry.kind === CheckpointJournalKind.Evidence && entry.itemId) {
-			evidenceOf.set(entry.itemId, entry);
+		if (entry.kind === CheckpointJournalKind.Evidence && entry.link) {
+			evidenceOf.set(entry.link, entry);
 		} else if (entry.kind === CheckpointJournalKind.Artifact && entry.link) {
 			artifactLookOf.set(entry.link, entry);
 		} else if (
@@ -682,27 +707,17 @@ export const getJournalView = async (
 				firstWording: item.originalText,
 				cut: item.cut,
 				addedAt: item.addedAt?.toISOString() ?? null,
-				artifact: item.artifact && {
-					name: item.artifact.name,
-					type: item.artifact.type,
-					link: item.artifact.link,
-				},
-				doneIn: item.artifact ? sprintAt(item.artifact.createdAt) : null,
-				match: item.evidenceMatch,
-				note: item.evidenceMatchNote,
+				evidence: evidenceLines(item),
+				doneIn: item.evidence[0]
+					? sprintAt(item.evidence[0].artifact.createdAt)
+					: null,
 			})),
 		},
 		inputs: {
 			items: inputs.map((item) => ({
 				id: item.id,
 				text: item.text,
-				artifact: item.artifact && {
-					name: item.artifact.name,
-					type: item.artifact.type,
-					link: item.artifact.link,
-				},
-				match: item.evidenceMatch,
-				note: item.evidenceMatchNote,
+				evidence: evidenceLines(item),
 			})),
 			before: before.map((row) => ({
 				id: row.id,
@@ -713,9 +728,9 @@ export const getJournalView = async (
 			})),
 		},
 		artifacts: artifacts.map((row) => {
-			const item = itemOfArtifact.get(row.id);
-			const look = item
-				? evidenceOf.get(item.id)
+			const proves = tasksOfArtifact.get(row.id) ?? [];
+			const look = proves.length
+				? evidenceOf.get(row.link)
 				: artifactLookOf.get(row.link);
 			const output = look?.output as
 				| {
@@ -732,7 +747,7 @@ export const getJournalView = async (
 				addedAt: row.createdAt.toISOString(),
 				addedBy: nameOf(row.createdById),
 				sprint: sprintAt(row.createdAt),
-				task: item?.text ?? null,
+				tasks: proves,
 				read: look
 					? {
 							match: output?.match ?? null,

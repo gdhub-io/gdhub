@@ -11,10 +11,16 @@ import type { CallNotes } from "@/types/checkpoints";
 export type CuratorTask = {
 	id: string;
 	text: string;
-	done: { type: string; name: string | null } | null;
 	cut: boolean;
 	firstWording: string | null;
-	/** What the AI curator saw in the evidence, against the task (GDHUB-110). */
+	/** The artifacts offered for it (GDHUB-115): empty is not done. */
+	evidence: CuratorEvidence[];
+};
+
+export type CuratorEvidence = {
+	type: string;
+	name: string | null;
+	/** What the AI curator saw in it, against the task (GDHUB-110). */
 	seen: { match: EvidenceMatch; note: string | null } | null;
 };
 
@@ -23,18 +29,21 @@ export const toCuratorTask = (item: {
 	text: string;
 	cut: boolean;
 	originalText: string | null;
-	artifact: { type: string; name: string | null } | null;
-	evidenceMatch?: EvidenceMatch | null;
-	evidenceMatchNote?: string | null;
+	evidence: {
+		match?: EvidenceMatch | null;
+		matchNote?: string | null;
+		artifact: { type: string; name: string | null };
+	}[];
 }): CuratorTask => ({
 	id: item.id,
 	text: item.text,
-	done: item.artifact && { type: item.artifact.type, name: item.artifact.name },
 	cut: item.cut,
 	firstWording: item.originalText,
-	seen: item.evidenceMatch
-		? { match: item.evidenceMatch, note: item.evidenceMatchNote ?? null }
-		: null,
+	evidence: item.evidence.map(({ artifact, match, matchNote }) => ({
+		type: artifact.type,
+		name: artifact.name,
+		seen: match ? { match, note: matchNote ?? null } : null,
+	})),
 });
 
 export type CallNotesInput = {
@@ -89,11 +98,14 @@ export const taskLine = (task: CuratorTask) =>
 	[
 		`- [${task.id}] ${task.text}`,
 		task.firstWording && `(first worded: ${task.firstWording})`,
-		task.done &&
-			`— done: ${task.done.type}${task.done.name ? ` "${task.done.name}"` : ""}`,
+		task.evidence.length > 0 &&
+			`— done: ${task.evidence
+				.map(
+					(piece) =>
+						`${piece.type}${piece.name ? ` "${piece.name}"` : ""}${piece.seen ? ` (looked at: ${piece.seen.match}${piece.seen.note ? `, ${piece.seen.note}` : ""})` : ""}`,
+				)
+				.join("; ")}`,
 		task.cut && "— cut from the plan",
-		task.seen &&
-			`— evidence looked at: ${task.seen.match}${task.seen.note ? `, ${task.seen.note}` : ""}`,
 	]
 		.filter(Boolean)
 		.join(" ");

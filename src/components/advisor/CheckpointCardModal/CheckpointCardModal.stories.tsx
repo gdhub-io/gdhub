@@ -34,15 +34,21 @@ const item = (
 		addedAt: null,
 		note: null,
 		acceptedNote: null,
-		artifact: proven
-			? {
-					id: `art-${id}`,
-					name: "Tidewalker — build 0.4",
-					type: ProjectArtifactType.ExecutableBuild,
-					link: "https://example.com/build.zip",
-					checkStatus: ArtifactCheckStatus.Readable,
-				}
-			: null,
+		evidence: proven
+			? [
+					{
+						artifact: {
+							id: `art-${id}`,
+							name: "Tidewalker — build 0.4",
+							type: ProjectArtifactType.ExecutableBuild,
+							link: "https://example.com/build.zip",
+							checkStatus: ArtifactCheckStatus.Readable,
+						},
+						match: null,
+						matchNote: null,
+					},
+				]
+			: [],
 	}) as CheckpointItemDto;
 
 const CHECKPOINT = {

@@ -9,7 +9,7 @@ import {
 	IconVideo,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Divider } from "antd";
+import { Divider, Flex } from "antd";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
@@ -27,8 +27,12 @@ import {
 } from "@/config/prisma-enums";
 import { sessionHeld } from "@/lib/checkpoint-call";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
-import { standingOf } from "@/lib/checkpoint-verdict";
-import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
+import { standingOf, standingOfPiece } from "@/lib/checkpoint-verdict";
+import type {
+	CheckpointArtifactRef,
+	CheckpointDto,
+	CheckpointItemDto,
+} from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
 import { formatShort } from "./dates";
 import styles from "./style.module.scss";
@@ -175,11 +179,24 @@ function useEvidenceStanding(checkpoint: CheckpointDto) {
 
 	return (
 		item: CheckpointItemDto,
-	): { failed: boolean; status?: StatusDotProps } => {
-		if (!isAI) return { failed: !item.artifact };
-
-		const standing = standingOf(item);
-		return { failed: standing.is === "unproven", status: statusOf(standing) };
+	): {
+		failed: boolean;
+		pieces: { artifact: CheckpointArtifactRef; status?: StatusDotProps }[];
+	} => {
+		if (!isAI) {
+			return {
+				failed: !item.evidence.length,
+				pieces: item.evidence.map(({ artifact }) => ({ artifact })),
+			};
+		}
+		// The task counts by its best artifact; each one still says what it showed.
+		return {
+			failed: standingOf(item).is === "unproven",
+			pieces: item.evidence.map((piece) => ({
+				artifact: piece.artifact,
+				status: statusOf(standingOfPiece(piece)),
+			})),
+		};
 	};
 }
 
@@ -226,10 +243,10 @@ export function CheckpointResult({
 							})}
 						</span>
 					</div>
-					{rows.map(({ item, failed, status }) => {
+					{rows.map(({ item, failed, pieces }) => {
 						return (
 							<div key={item.id} className={styles.outcome}>
-								{!item.artifact ? (
+								{!pieces.length ? (
 									<IconCircle size={16} className={styles.taskIcon} />
 								) : failed ? (
 									<IconCircleX size={16} className={styles.taskIconFailed} />
@@ -237,13 +254,19 @@ export function CheckpointResult({
 									<IconCircleCheck size={16} className={styles.taskIconDone} />
 								)}
 								<span
-									className={`${styles.grow}${item.artifact ? "" : ` ${styles.secondary}`}`}
+									className={`${styles.grow}${pieces.length ? "" : ` ${styles.secondary}`}`}
 								>
 									{item.text}
 								</span>
-								{status && <StatusDot {...status} />}
-								{item.artifact ? (
-									<ArtifactLink artifact={item.artifact} />
+								{pieces.length ? (
+									<Flex vertical align="end" gap={4}>
+										{pieces.map(({ artifact, status }) => (
+											<Flex key={artifact.id} align="center" gap={8}>
+												{status && <StatusDot {...status} />}
+												<ArtifactLink artifact={artifact} />
+											</Flex>
+										))}
+									</Flex>
 								) : (
 									<span className={styles.tertiary}>
 										{t(

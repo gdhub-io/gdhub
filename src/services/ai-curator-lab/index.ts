@@ -304,8 +304,9 @@ const CALLS: LabCall[] = [
 						kind: CheckpointItemKind.Outcome,
 						text: task.task,
 						cut: false,
-						evidenceMatch: judged.match,
-						artifact: { checkStatus: "Readable" },
+						evidence: [
+							{ match: judged.match, artifact: { checkStatus: "Readable" } },
+						],
 					}),
 				},
 			};

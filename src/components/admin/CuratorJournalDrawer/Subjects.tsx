@@ -44,7 +44,7 @@ export function PlanTab({ plan }: { plan: CuratorJournalViewDto["plan"] }) {
 				tone="neutral"
 				label={t("admin.checkpoints.journal.plan.cut", "Cut")}
 			/>
-		) : task.artifact ? (
+		) : task.evidence.length ? (
 			<StatusDot
 				tone="success"
 				label={
@@ -117,15 +117,20 @@ export function PlanTab({ plan }: { plan: CuratorJournalViewDto["plan"] }) {
 						width: 220,
 						title: t("admin.checkpoints.journal.plan.evidence", "Evidence"),
 						render: (_, task) =>
-							task.artifact ? (
-								<Typography.Link
-									href={task.artifact.link}
-									target="_blank"
-									ellipsis
-								>
-									{task.artifact.name ??
-										typeLabel(task.artifact.type as ProjectArtifactType)}
-								</Typography.Link>
+							task.evidence.length ? (
+								<Flex vertical gap={4}>
+									{task.evidence.map((piece) => (
+										<Typography.Link
+											key={piece.link}
+											href={piece.link}
+											target="_blank"
+											ellipsis
+										>
+											{piece.name ??
+												typeLabel(piece.type as ProjectArtifactType)}
+										</Typography.Link>
+									))}
+								</Flex>
 							) : (
 								<Typography.Text type="secondary">—</Typography.Text>
 							),
@@ -134,11 +139,25 @@ export function PlanTab({ plan }: { plan: CuratorJournalViewDto["plan"] }) {
 						key: "read",
 						width: 160,
 						title: t("admin.checkpoints.journal.plan.read", "AI read"),
+						// One line per artifact, beside the evidence column's own.
 						render: (_, task) =>
-							task.match ? (
-								<Typography.Text title={task.note ?? undefined}>
-									<EvidenceMatchDot match={task.match} />
-								</Typography.Text>
+							task.evidence.length ? (
+								<Flex vertical gap={4}>
+									{task.evidence.map((piece) =>
+										piece.match ? (
+											<Typography.Text
+												key={piece.link}
+												title={piece.note ?? undefined}
+											>
+												<EvidenceMatchDot match={piece.match} />
+											</Typography.Text>
+										) : (
+											<Typography.Text key={piece.link} type="secondary">
+												—
+											</Typography.Text>
+										),
+									)}
+								</Flex>
 							) : (
 								<Typography.Text type="secondary">—</Typography.Text>
 							),
@@ -250,9 +269,9 @@ export function ArtifactsTab({
 											who: row.addedBy,
 										}),
 									day(row.addedAt),
-									row.task
+									row.tasks.length
 										? t("admin.checkpoints.journal.proves", "proves “{task}”", {
-												task: row.task,
+												task: row.tasks.join("”, “"),
 											})
 										: t("admin.checkpoints.journal.beside", "beside the tasks"),
 								]
@@ -372,17 +391,16 @@ export function InputsTab({
 					inputs.items.map((item) => (
 						<Flex key={item.id} vertical gap={8} className={styles.card}>
 							<Typography.Text>{item.text}</Typography.Text>
-							{item.artifact && (
-								<Typography.Link
-									href={item.artifact.link}
-									target="_blank"
-									ellipsis
-								>
-									{item.artifact.name ??
-										typeLabel(item.artifact.type as ProjectArtifactType)}
-								</Typography.Link>
-							)}
-							{item.match && <AiRead match={item.match} text={item.note} />}
+							{item.evidence.map((piece) => (
+								<Flex key={piece.link} vertical gap={4}>
+									<Typography.Link href={piece.link} target="_blank" ellipsis>
+										{piece.name ?? typeLabel(piece.type as ProjectArtifactType)}
+									</Typography.Link>
+									{piece.match && (
+										<AiRead match={piece.match} text={piece.note} />
+									)}
+								</Flex>
+							))}
 						</Flex>
 					))
 				) : (

@@ -58,11 +58,13 @@ export async function sweepArtifactChecks() {
 				},
 				{
 					checkStatus: null,
-					checkpointItems: {
+					checkpointEvidence: {
 						some: {
-							checkpoint: {
-								status: {
-									in: [CheckpointStatus.Draft, ...CHECKPOINT_OPEN_STATUSES],
+							item: {
+								checkpoint: {
+									status: {
+										in: [CheckpointStatus.Draft, ...CHECKPOINT_OPEN_STATUSES],
+									},
 								},
 							},
 						},
@@ -80,9 +82,9 @@ export async function sweepArtifactChecks() {
 
 /** Links rot and permissions change: everything on the card, again, before the verdict. */
 export async function recheckCheckpointArtifacts(checkpointId: string) {
-	const items = await prisma.checkpointItem.findMany({
+	const pieces = await prisma.checkpointItemEvidence.findMany({
 		where: {
-			checkpointId,
+			item: { checkpointId },
 			artifact: {
 				OR: [
 					{ checkedAt: null },
@@ -93,5 +95,5 @@ export async function recheckCheckpointArtifacts(checkpointId: string) {
 		select: { artifactId: true },
 	});
 
-	await checkAll([...new Set(items.flatMap((item) => item.artifactId ?? []))]);
+	await checkAll([...new Set(pieces.map((piece) => piece.artifactId))]);
 }

@@ -167,14 +167,16 @@ const VIEW: CuratorJournalViewDto = {
 				firstWording: null,
 				cut: false,
 				addedAt: null,
-				artifact: {
-					name: "Island demo 0.1",
-					type: "ExecutableBuild",
-					link: "https://hollowtide.itch.io/demo",
-				},
+				evidence: [
+					{
+						name: "Island demo 0.1",
+						type: "ExecutableBuild",
+						link: "https://hollowtide.itch.io/demo",
+						match: "Matches",
+						note: null,
+					},
+				],
 				doneIn: 1,
-				match: "Matches",
-				note: null,
 			},
 			{
 				id: "o2",
@@ -182,10 +184,8 @@ const VIEW: CuratorJournalViewDto = {
 				firstWording: "Art style board: palette and two hero sheets",
 				cut: false,
 				addedAt: null,
-				artifact: null,
+				evidence: [],
 				doneIn: null,
-				match: null,
-				note: null,
 			},
 			{
 				id: "o3",
@@ -193,10 +193,8 @@ const VIEW: CuratorJournalViewDto = {
 				firstWording: null,
 				cut: true,
 				addedAt: null,
-				artifact: null,
+				evidence: [],
 				doneIn: null,
-				match: null,
-				note: null,
 			},
 		],
 	},
@@ -205,13 +203,15 @@ const VIEW: CuratorJournalViewDto = {
 			{
 				id: "i1",
 				text: "Concept document and a paper map of the island",
-				artifact: {
-					name: "Concept document",
-					type: "Document",
-					link: "https://example.com/concept",
-				},
-				match: "Matches",
-				note: "A two-page concept with the tide mechanic.",
+				evidence: [
+					{
+						name: "Concept document",
+						type: "Document",
+						link: "https://example.com/concept",
+						match: "Matches",
+						note: "A two-page concept with the tide mechanic.",
+					},
+				],
 			},
 		],
 		before: [
@@ -233,7 +233,7 @@ const VIEW: CuratorJournalViewDto = {
 			addedAt: "2026-09-05T18:40:00.000Z",
 			addedBy: "Ivo",
 			sprint: 1,
-			task: "Playable island demo on itch.io",
+			tasks: ["Playable island demo on itch.io"],
 			read: {
 				match: "Matches",
 				text: "An itch.io page with a playable web build of the island.",

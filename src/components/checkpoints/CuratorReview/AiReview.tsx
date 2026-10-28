@@ -14,7 +14,10 @@ import { App, Button, Tabs, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { useEvidencePicker } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
+import {
+	type EvidenceActions,
+	useEvidencePicker,
+} from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
 import { GoalCard } from "@/components/checkpoints/CallRoom/CallGoal";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { CallLayout } from "@/components/checkpoints/CallRoom/CallParts";
@@ -163,7 +166,7 @@ export function AiReview({
 				onApprove={approvePlan}
 				approving={approve.isPending}
 				refreshKey={["checkpoint-review", checkpointId]}
-				onAttach={evidence.open}
+				evidence={evidence.actions}
 				sprintTab={(at) => (
 					<SprintTab
 						checkpointId={checkpointId}
@@ -201,8 +204,8 @@ export type AiReviewViewProps = {
 	refreshKey?: QueryKey;
 	/** The Sprint tab for a session; the lab and the stories go without it. */
 	sprintTab?: (index: number) => ReactNode;
-	/** Attach an artifact that proves a task, from the plan. */
-	onAttach?: () => void;
+	/** Add or let go of the artifacts that prove a task; absent for whoever may not. */
+	evidence?: EvidenceActions;
 	/** The tab a link asked for. */
 	initialTab?: PathTab;
 	/** Keeps the sprint and the tab in the address; the lab and the stories do not. */
@@ -222,7 +225,7 @@ export function AiReviewView({
 	aside,
 	refreshKey,
 	sprintTab,
-	onAttach,
+	evidence,
 	initialTab,
 	syncAddress,
 }: AiReviewViewProps) {
@@ -357,7 +360,7 @@ export function AiReviewView({
 												selected === editing ? plan : { ...plan, edit: null }
 											}
 											onChange={onChange}
-											onAttach={onAttach}
+											evidence={evidence}
 											advice={open?.advice}
 											suggestions={open?.suggestions}
 											hint={planHint(t, plan.edit)}

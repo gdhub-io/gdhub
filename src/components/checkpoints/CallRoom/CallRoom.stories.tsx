@@ -37,34 +37,36 @@ const plan: CheckpointCallDto["plan"] = {
 			text: "Core loop one-pager",
 			cut: false,
 			addedAt: null,
-			artifact: {
-				id: "a1",
-				name: "Core loop",
-				type: "GDD",
-				link: "https://example.com/core-loop",
-				checkStatus: null,
-			},
+			artifacts: [
+				{
+					id: "a1",
+					name: "Core loop",
+					type: "GDD",
+					link: "https://example.com/core-loop",
+					checkStatus: null,
+				},
+			],
 		},
 		{
 			id: "t2",
 			text: "Greybox build on itch.io, playable in the browser",
 			cut: false,
 			addedAt: null,
-			artifact: null,
+			artifacts: [],
 		},
 		{
 			id: "t3",
 			text: "Devlog — what the tide taught us",
 			cut: true,
 			addedAt: null,
-			artifact: null,
+			artifacts: [],
 		},
 		{
 			id: "t4",
 			text: "3 playtest recordings with strangers",
 			cut: false,
 			addedAt: "2026-10-15T12:30:00.000Z",
-			artifact: null,
+			artifacts: [],
 		},
 	],
 };
@@ -378,7 +380,7 @@ export const PanelPlanCallOne: Story = {
 					...task,
 					cut: false,
 					addedAt: null,
-					artifact: null,
+					artifacts: [],
 				})),
 			}}
 		/>

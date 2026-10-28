@@ -6,8 +6,9 @@ import type { CheckpointArtifactRef } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 /**
- * A done task's proof: what kind of artifact it is, opening the artifact itself.
- * `compact` is the icon alone, for the narrow aside; its name moves to a tooltip.
+ * A done task's proof by its name, its kind as the icon, opening the artifact
+ * itself; a task with several needs the names apart (GDHUB-115). `compact` is
+ * the icon alone, for the narrow aside; its name moves to a tooltip.
  */
 export function ArtifactLink({
 	artifact,
@@ -18,9 +19,9 @@ export function ArtifactLink({
 }) {
 	const typeLabel = useArtifactTypeLabel();
 	const TypeIcon = artifactIcon(artifact.type);
+	const name = artifact.name ?? typeLabel(artifact.type);
 
 	if (compact) {
-		const name = artifact.name ?? typeLabel(artifact.type);
 		return (
 			<Tooltip title={name}>
 				<Button
@@ -37,15 +38,17 @@ export function ArtifactLink({
 	}
 
 	return (
-		<Typography.Link
-			href={artifact.link}
-			target="_blank"
-			rel="noreferrer"
-			className={styles.link}
-		>
-			<TypeIcon size={14} />
-			{typeLabel(artifact.type)}
-			<IconArrowUpRight size={14} />
-		</Typography.Link>
+		<Tooltip title={typeLabel(artifact.type)}>
+			<Typography.Link
+				href={artifact.link}
+				target="_blank"
+				rel="noreferrer"
+				className={styles.link}
+			>
+				<TypeIcon size={14} />
+				{name}
+				<IconArrowUpRight size={14} />
+			</Typography.Link>
+		</Tooltip>
 	);
 }

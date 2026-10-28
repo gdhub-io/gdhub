@@ -16,7 +16,7 @@ const outcome = {
 	addedAt: null,
 	note: null,
 	acceptedNote: null,
-	artifact: null,
+	evidence: [],
 } satisfies CheckpointItemDto;
 
 const draft = (

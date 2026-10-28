@@ -138,19 +138,19 @@ type EvidenceItem = {
  * tasks (GDHUB-39). The checkpoints say so; the artifact itself does not know.
  */
 export const withEvidence = async <
-	T extends { checkpointItems: EvidenceItem[] },
+	T extends { checkpointEvidence: { item: EvidenceItem }[] },
 >(
 	artifacts: T[],
 ) => {
 	const numbers = await checkpointNumbers(
 		artifacts.flatMap((artifact) =>
-			artifact.checkpointItems.map((item) => item.checkpoint),
+			artifact.checkpointEvidence.map(({ item }) => item.checkpoint),
 		),
 	);
 
-	return artifacts.map(({ checkpointItems, ...artifact }) => {
+	return artifacts.map(({ checkpointEvidence, ...artifact }) => {
 		const byCheckpoint = new Map<number, string[]>();
-		for (const item of checkpointItems) {
+		for (const { item } of checkpointEvidence) {
 			const number = numbers.get(item.checkpoint.id) as number;
 			const tasks = byCheckpoint.get(number);
 			if (tasks) tasks.push(item.text);

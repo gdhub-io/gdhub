@@ -7,6 +7,7 @@ import {
 	ArtifactPicker,
 	type PickableArtifact,
 } from "@/components/checkpoints/ArtifactPicker";
+import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useAttachEvidence } from "@/hooks/checkpoints";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -16,6 +17,8 @@ export type AttachEvidenceModalProps = {
 	open: boolean;
 	/** The card the evidence is bound to — its outcomes are the checkboxes. */
 	checkpoint: CheckpointDto;
+	/** The tasks ticked when it opens: the one it was opened from. */
+	ticked?: string[];
 	onClose: () => void;
 };
 
@@ -27,13 +30,14 @@ export type AttachEvidenceModalProps = {
 export function AttachEvidenceModal({
 	open,
 	checkpoint,
+	ticked: initial = [],
 	onClose,
 }: AttachEvidenceModalProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 
 	const [artifact, setArtifact] = useState<PickableArtifact>();
-	const [ticked, setTicked] = useState<string[]>([]);
+	const [ticked, setTicked] = useState(initial);
 
 	const attach = useAttachEvidence(checkpoint.id);
 
@@ -41,6 +45,11 @@ export function AttachEvidenceModal({
 	const provable = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome && !item.cut,
 	);
+
+	// A task already holding the most it can takes nothing new; the artifact it has is still ticked.
+	const full = (line: (typeof provable)[number]) =>
+		line.evidence.length >= CHECKPOINT_MAX_EVIDENCE_PER_ITEM &&
+		!line.evidence.some((piece) => piece.artifact.id === artifact?.id);
 
 	const close = () => {
 		setArtifact(undefined);
@@ -72,8 +81,9 @@ export function AttachEvidenceModal({
 				<Flex align="center" justify="space-between" gap={12}>
 					<Typography.Text type="secondary" className={styles.footerNote}>
 						{t(
-							"checkpoints.evidence.multi",
-							"One artifact can prove more than one outcome.",
+							"checkpoints.evidence.multiUpTo",
+							"One artifact can prove several outcomes; an outcome holds up to {max}.",
+							{ max: CHECKPOINT_MAX_EVIDENCE_PER_ITEM },
 						)}
 					</Typography.Text>
 					<Flex gap={8}>
@@ -111,9 +121,20 @@ export function AttachEvidenceModal({
 							<Checkbox
 								key={line.id}
 								value={line.id}
+								disabled={full(line)}
 								className={styles.outcome}
 							>
 								{line.text}
+								{full(line) && (
+									<Typography.Text type="secondary">
+										{" · "}
+										{t(
+											"checkpoints.evidence.full",
+											"already has {max} artifacts",
+											{ max: CHECKPOINT_MAX_EVIDENCE_PER_ITEM },
+										)}
+									</Typography.Text>
+								)}
 							</Checkbox>
 						))}
 					</Checkbox.Group>

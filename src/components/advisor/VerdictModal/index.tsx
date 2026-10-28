@@ -312,7 +312,7 @@ function Aside({ children }: { children: ReactNode }) {
 function ArtifactLink({
 	artifact,
 }: {
-	artifact: NonNullable<CheckpointItemDto["artifact"]>;
+	artifact: CheckpointItemDto["evidence"][number]["artifact"];
 }) {
 	const { t } = useTranslate();
 
@@ -469,8 +469,12 @@ function GoalCard({ checkpoint }: { checkpoint: AdvisorCheckpointDto }) {
 								>
 									<IconPaperclip size={16} className={styles.muted} />
 									<Text className={styles.rowText}>{item.text}</Text>
-									{item.artifact ? (
-										<ArtifactLink artifact={item.artifact} />
+									{item.evidence.length ? (
+										<Flex vertical align="end" gap={4}>
+											{item.evidence.map(({ artifact }) => (
+												<ArtifactLink key={artifact.id} artifact={artifact} />
+											))}
+										</Flex>
 									) : (
 										<Text type="secondary" className={styles.small}>
 											{t("advisor.verdict.noArtifact", "No artifact")}
@@ -503,9 +507,13 @@ function OutcomeRow({ item }: { item: CheckpointItemDto }) {
 			</Text>
 			{item.cut ? (
 				<StatusDot tone="warning" label={t("advisor.verdict.cut", "Cut")} />
-			) : item.artifact ? (
+			) : item.evidence.length ? (
 				<Flex align="center" gap={8} className={styles.evidence}>
-					<ArtifactLink artifact={item.artifact} />
+					<Flex vertical gap={4}>
+						{item.evidence.map(({ artifact }) => (
+							<ArtifactLink key={artifact.id} artifact={artifact} />
+						))}
+					</Flex>
 					{proven && (
 						<Text className={clsx(styles.small, styles.success)}>
 							{t("advisor.verdict.proven", "· proven")}

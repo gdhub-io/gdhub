@@ -24,10 +24,9 @@ const input = {
 		{
 			id: "t1",
 			text: "Playtest with 5 players",
-			done: null,
 			cut: false,
 			firstWording: null,
-			seen: null,
+			evidence: [],
 		},
 	],
 	devlogs: [],

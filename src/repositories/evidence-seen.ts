@@ -106,18 +106,17 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 	// Read once, and only when something is about to be judged.
 	let devlogs: string[] | undefined;
 
-	const items = await prisma.checkpointItem.findMany({
+	// Every artifact offered for an open task, each judged on its own (GDHUB-115).
+	const pieces = await prisma.checkpointItemEvidence.findMany({
 		where: {
-			checkpointId,
-			kind: CheckpointItemKind.Outcome,
-			cut: false,
+			item: { checkpointId, kind: CheckpointItemKind.Outcome, cut: false },
 			artifact: { checkStatus: ArtifactCheckStatus.Readable },
 		},
-		orderBy: { order: "asc" },
+		orderBy: [{ item: { order: "asc" } }, { createdAt: "asc" }],
 		select: {
 			id: true,
-			text: true,
-			evidenceSeenLink: true,
+			seenLink: true,
+			item: { select: { id: true, text: true } },
 			artifact: {
 				select: { type: true, name: true, description: true, link: true },
 			},
@@ -127,12 +126,12 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 	let left =
 		SPRINT_VIDEO_SECONDS -
 		videoSecondsOf(await sprintLooks(checkpointId, sprint));
-	for (const item of items) {
-		const { artifact } = item;
-		if (!artifact || item.evidenceSeenLink === artifact.link) continue;
+	for (const piece of pieces) {
+		const { artifact, item } = piece;
+		if (piece.seenLink === artifact.link) continue;
 
 		const content = await readArtifact(artifact, left).catch((error) => {
-			console.error("[evidence] read failed", item.id, error);
+			console.error("[evidence] read failed", piece.id, error);
 			return null;
 		});
 		if (!content) continue;
@@ -155,22 +154,26 @@ export async function seeCheckpointEvidence(checkpointId: string) {
 			checkpointId,
 			purpose: "evidence",
 		}).catch((error) => {
-			console.error("[evidence] judge failed", item.id, error);
+			console.error("[evidence] judge failed", piece.id, error);
 			return null;
 		});
 		if (!judged) continue;
 
-		await prisma.checkpointItem.update({
-			where: { id: item.id },
+		await prisma.checkpointItemEvidence.update({
+			where: { id: piece.id },
 			data: {
-				evidenceMatch: judged.match,
-				evidenceMatchNote: judged.note,
-				evidenceSeenLink: artifact.link,
+				match: judged.match,
+				matchNote: judged.note,
+				seenLink: artifact.link,
 			},
 		});
+		// Another artifact that already shows the task leaves nothing to fix.
 		if (
-			judged.match === EvidenceMatch.DoesNotMatch ||
-			judged.match === EvidenceMatch.Partly
+			(judged.match === EvidenceMatch.DoesNotMatch ||
+				judged.match === EvidenceMatch.Partly) &&
+			!(await prisma.checkpointItemEvidence.count({
+				where: { itemId: item.id, match: EvidenceMatch.Matches },
+			}))
 		) {
 			const { notifyEvidenceMismatch } = await import(
 				"@/services/checkpoint-notifications"
@@ -203,15 +206,16 @@ export async function checkAndLook(
 	{ checked = false } = {},
 ) {
 	if (!checked) await checkArtifact(artifactId);
-	const uses = await prisma.checkpointItem.findMany({
+	const uses = await prisma.checkpointItemEvidence.findMany({
 		where: {
 			artifactId,
-			checkpoint: { status: { in: CHECKPOINT_RUNNING_STATUSES } },
+			item: { checkpoint: { status: { in: CHECKPOINT_RUNNING_STATUSES } } },
 		},
-		distinct: ["checkpointId"],
-		select: { checkpointId: true },
+		select: { item: { select: { checkpointId: true } } },
 	});
-	for (const { checkpointId } of uses) {
+	for (const checkpointId of new Set(
+		uses.map((use) => use.item.checkpointId),
+	)) {
 		await seeCheckpointEvidence(checkpointId);
 	}
 }
@@ -359,15 +363,16 @@ export async function seeSprintArtifacts(checkpointId: string, sprint: number) {
 		select: {
 			projectId: true,
 			startedAt: true,
-			items: {
-				where: { artifactId: { not: null } },
-				select: { artifactId: true },
-			},
+			items: { select: { evidence: { select: { artifactId: true } } } },
 		},
 	});
 	if (!checkpoint?.startedAt) return;
 	const range = sprintRange(checkpoint.startedAt, sprint);
-	const proving = new Set(checkpoint.items.map((item) => item.artifactId));
+	const proving = new Set(
+		checkpoint.items.flatMap((item) =>
+			item.evidence.map((piece) => piece.artifactId),
+		),
+	);
 
 	const looks = await sprintLooks(checkpointId, sprint);
 	const looked = looks.filter(
