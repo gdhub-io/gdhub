@@ -276,7 +276,7 @@ then fixed (`goalAgreedAt`).
 **With a human curator** the author drafts the tasks from the curator's yes until
 call 1 (`planEdit` = `plan`), and may ask the AI for advice on the draft. Call 1
 agrees the plan; goal and tasks stay open on the call and for a while after it
-(`PRO_PLAN_HOURS`), then are fixed.
+(`PRO_PLAN_AFTER_CALL_HOURS` after it ends), then are fixed.
 
 **With the AI curator** day 1 has three steps, each a letter on the plan page:
 

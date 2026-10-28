@@ -2,7 +2,7 @@ import {
 	AI_APPROVE_HOURS,
 	CALL_CLOSES_MINUTES,
 	CALL_OPENS_MINUTES,
-	PRO_PLAN_HOURS,
+	PRO_PLAN_AFTER_CALL_HOURS,
 	SCOPE_SESSION,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
@@ -93,13 +93,22 @@ type PlanTimes = {
 	scopeConfirmedAt?: Date | string | null;
 };
 
+type PlanSession = {
+	index: number;
+	scheduledAt: Date | string;
+	endedAt: Date | string | null;
+};
+
 /**
  * When day 1's goal and tasks close: with the AI curator, when the plan
  * approves itself after the check — null before the check, as it waits for
- * the tasks however long that takes; with a pro curator, 36 hours from the
- * start of call 1's day. Null before the checkpoint starts.
+ * the tasks however long that takes; with a pro curator,
+ * PRO_PLAN_AFTER_CALL_HOURS after call 1 ends, or after its room closes if
+ * nobody ended it. Null before the checkpoint starts.
  */
-export const planCloses = (checkpoint: PlanTimes) => {
+export const planCloses = (
+	checkpoint: PlanTimes & { sessions?: PlanSession[] },
+) => {
 	if (!checkpoint.startedAt) return null;
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
 		return checkpoint.planCheckedAt
@@ -109,18 +118,16 @@ export const planCloses = (checkpoint: PlanTimes) => {
 				)
 			: null;
 	}
-	const start = new Date(checkpoint.startedAt).getTime();
-	return new Date(start + PRO_PLAN_HOURS * MS_PER_HOUR);
+	const first = checkpoint.sessions?.find((session) => session.index === 1);
+	if (!first) return null;
+	const ended = first.endedAt
+		? new Date(first.endedAt)
+		: callWindow(new Date(first.scheduledAt)).closesAt;
+	return new Date(ended.getTime() + PRO_PLAN_AFTER_CALL_HOURS * MS_PER_HOUR);
 };
 
 export const planEdit = (
-	checkpoint: PlanTimes & {
-		sessions: {
-			index: number;
-			scheduledAt: Date | string;
-			endedAt: Date | string | null;
-		}[];
-	},
+	checkpoint: PlanTimes & { sessions: PlanSession[] },
 	now = new Date(),
 ): PlanEdit => {
 	const closes = planCloses(checkpoint);

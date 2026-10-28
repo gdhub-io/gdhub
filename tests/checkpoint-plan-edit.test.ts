@@ -81,15 +81,25 @@ describe("planEdit", () => {
 		expect(planEdit(checkpoint, duringCall3)).toBe("tasks");
 	});
 
-	it("keeps the goal and tasks open after call 1 until noon the next day (GDHUB-117)", () => {
+	it("keeps the goal and tasks open for 12 hours after call 1 ends", () => {
+		const ended = [
+			{ ...sessions[0], endedAt: new Date("2026-10-05T15:00:00Z") },
+			sessions[1],
+		];
+		const agreed = { curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions: ended };
+		expect(planEdit(agreed, new Date("2026-10-06T02:59:00Z"))).toBe(
+			"goalAndTasks",
+		);
+		expect(planEdit(agreed, new Date("2026-10-06T03:00:00Z"))).toBeNull();
+	});
+
+	it("counts the 12 hours from the room closing when nobody ended call 1", () => {
+		// The room closes three hours after the start: 17:00, so 05:00 the next day.
 		const agreed = { curatorKind: human, startedAt, goalAgreedAt: duringCall1, sessions };
-		expect(planEdit(agreed, new Date("2026-10-05T23:30:00Z"))).toBe(
+		expect(planEdit(agreed, new Date("2026-10-06T04:59:00Z"))).toBe(
 			"goalAndTasks",
 		);
-		expect(planEdit(agreed, new Date("2026-10-06T11:59:00Z"))).toBe(
-			"goalAndTasks",
-		);
-		expect(planEdit(agreed, new Date("2026-10-06T12:00:00Z"))).toBeNull();
+		expect(planEdit(agreed, new Date("2026-10-06T05:00:00Z"))).toBeNull();
 	});
 
 	describe("with the AI curator", () => {

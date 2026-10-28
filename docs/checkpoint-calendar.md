@@ -47,7 +47,7 @@ said otherwise). The engineering side is in [checkpoints.md](checkpoints.md).
 |---|---|---|---|
 | **before** | Accepts or declines within **`CURATOR_ANSWER_DAYS` (3)**. | No answer: the payment hold is released and the author told. | Call 1 is at least **`FIRST_CALL_MIN_DAYS` (3)** days after purchase. |
 | **0** — from the yes to call 1 | — | The checkpoint is `Active`. | Sees the welcome, the date of call 1 and how long until it; writes the tasks, with the AI's advice on the draft if wanted. |
-| **1** | **Call 1**: the plan is agreed on it. The room opens **`CALL_OPENS_MINUTES` (15)** before and closes **`CALL_CLOSES_MINUTES` (180)** after the start. | 1–2 h before a call, a reminder to the curator and the team. **`CALL_NOTES_DELAY_MINUTES` (30)** after a call ends, its notes are written from the transcript. | Goal and tasks stay open for **12 hours after call 1**, then are fixed. |
+| **1** | **Call 1**: the plan is agreed on it. The room opens **`CALL_OPENS_MINUTES` (15)** before and closes **`CALL_CLOSES_MINUTES` (180)** after the start. | 1–2 h before a call, a reminder to the curator and the team. **`CALL_NOTES_DELAY_MINUTES` (30)** after a call ends, its notes are written from the transcript. | Goal and tasks stay open for **`PRO_PLAN_AFTER_CALL_HOURS` (12)** after call 1 ends — or after its room closes, if nobody ended it — then are fixed. |
 | **7, 14, 21, 28** | — | Devlog reminder and pulse, as with the AI. The night before calls 2–5: the AI's brief of the sprint, for the curator alone. | **Sprint deadline**: devlog, build, artifacts. |
 | **8, 22** | **Calls 2 and 4**, with notes. From day 22 (`VERDICT_DRAFT_FROM_SPRINT`) the curator can keep a verdict draft. | Brief, reminder, notes. | Be on the call. |
 | **15** | **Call 3**: the last change to the tasks. | The change is open from the start of call 3 until 24 h after it ends. | Change the tasks within that window. |
@@ -69,9 +69,6 @@ an administrator.
 
 ## Where the code still differs from this calendar
 
-- **The plan with a human curator closes at 12:00 UTC on day 2** (`PRO_PLAN_HOURS`
-  = 36 from `startedAt`), not 12 hours after call 1 ends. A late call leaves less
-  than 12 hours; an early one, more.
 - **Day 0 shows the date of call 1, not a countdown** in days, hours and minutes.
 - **Call days follow the curator's time zone**, seven days apart there; in UTC a
   call can fall a day off days 1, 8, 15, 22 and 29.

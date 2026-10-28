@@ -72,8 +72,8 @@ export const AI_REMIND_LOCAL_HOUR = 10;
 export const SCOPE_REMIND_BEFORE_HOURS = 4;
 /** The day an author whose tasks still lack evidence is told, three days before the verdict. */
 export const EVIDENCE_REMIND_DAY = 26;
-/** With a pro curator: from the start of call 1's day, its 24 hours and 12 more, so a late call leaves time after it. */
-export const PRO_PLAN_HOURS = 36;
+/** With a pro curator: the goal and tasks stay open this long after call 1 ends, then are fixed. */
+export const PRO_PLAN_AFTER_CALL_HOURS = 12;
 
 /** The AI curator's face when it plays no character: the platform's robot (frame 12.19). */
 export const AI_CURATOR_AVATAR = "/curators/robot.webp";
