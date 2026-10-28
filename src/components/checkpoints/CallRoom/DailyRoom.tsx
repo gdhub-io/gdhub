@@ -40,14 +40,8 @@ import {
 } from "@/hooks/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import { CallHeader, type CallHeaderProps, callTime } from "./CallHeader";
-import {
-	CallLayout,
-	CallPersonRow,
-	CallStage,
-	CallTeamPanel,
-	LiveStage,
-	ParticipantTile,
-} from "./CallParts";
+import { CallLayout, CallStage, LiveStage, ParticipantTile } from "./CallParts";
+import { CallTeam } from "./CallTeam";
 import { type CallDevices, PreJoin } from "./PreJoin";
 import styles from "./style.module.scss";
 import { playTestTone } from "./tone";
@@ -154,7 +148,7 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 							projectId={teamProject(call)}
 							checkpointId={call.checkpointId}
 						>
-							<People call={call} />
+							<CallTeam call={call} />
 						</CuratorAside>
 					}
 					below={below}
@@ -178,7 +172,9 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 				<CuratorAside
 					projectId={teamProject(call)}
 					checkpointId={call.checkpointId}
-				/>
+				>
+					<CallTeam call={call} />
+				</CuratorAside>
 			}
 			below={below}
 		/>
@@ -421,34 +417,6 @@ function Tile({
 						className={styles.video}
 					/>
 				) : undefined
-			}
-		/>
-	);
-}
-
-function People({ call }: { call: CheckpointCallDto }) {
-	const ids = useParticipantIds({ sort: "joined_at" });
-
-	return (
-		<CallTeamPanel count={ids.length}>
-			{ids.map((id) => (
-				<PersonRow key={id} id={id} call={call} />
-			))}
-		</CallTeamPanel>
-	);
-}
-
-function PersonRow({ id, call }: { id: string; call: CheckpointCallDto }) {
-	const { t } = useTranslate();
-	const person = useParticipant(id, call);
-
-	return (
-		<CallPersonRow
-			name={person.name}
-			image={person.image}
-			role={
-				person.role ??
-				(person.local ? t("checkpoints.call.self", "You") : undefined)
 			}
 		/>
 	);

@@ -10,7 +10,7 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Input, Tooltip, Typography } from "antd";
+import { App, Button, Input, Tooltip, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { type ReactNode, useRef, useState } from "react";

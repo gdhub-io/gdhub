@@ -11,6 +11,7 @@ import {
 	type Busy,
 	callsOutside,
 	earliestFirstCall,
+	freeCallsBetween,
 	freeFirstCalls,
 	type MinuteRange,
 	seriesAt,
@@ -319,6 +320,37 @@ export const isFirstCallFree = async (
 	return !!seriesAt(availability, first, busy);
 };
 
+/**
+ * Hours a booked call of this checkpoint may move to: free single calls in the
+ * curator's hours, its own calls left out of what is busy. Pass the
+ * transaction to read under its lock.
+ */
+export const freeMoveSlots = async (
+	curatorId: string,
+	checkpointId: string,
+	window: { from: Date; to: Date; notBefore: Date },
+	db: Db = prisma,
+) => {
+	const availability = await loadAvailability(curatorId, db);
+	if (!availability) return { timeZone: null, slots: [] };
+
+	const busy = await busyOf(curatorId, db, checkpointId);
+	return {
+		timeZone: availability.timeZone,
+		slots: freeCallsBetween(
+			availability,
+			busy,
+			window.from,
+			window.to,
+			window.notBefore,
+		),
+	};
+};
+
+/** Takes the curator's hours for the rest of the caller's transaction. */
+export const lockCurator = (tx: Db, curatorId: string) =>
+	tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${curatorId}))`;
+
 export class SlotTakenError extends Error {
 	constructor() {
 		super("slotTaken");
@@ -344,7 +376,7 @@ export const bookSessions = async (tx: Db, checkpointId: string) => {
 		return;
 	if (!checkpoint.startedAt) throw new SlotTakenError();
 
-	await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${checkpoint.curatorId}))`;
+	await lockCurator(tx, checkpoint.curatorId);
 
 	const availability = await loadAvailability(checkpoint.curatorId, tx);
 	if (!availability) throw new SlotTakenError();

@@ -2,11 +2,16 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { CALL_WAIT_POLL_SECONDS } from "@/config/checkpoint";
+import {
+	CALL_PRESENCE_POLL_SECONDS,
+	CALL_WAIT_POLL_SECONDS,
+} from "@/config/checkpoint";
 import type {
 	CallNotesDto,
+	CallPresenceDto,
 	CheckpointCallDto,
 } from "@/repositories/checkpoint-call";
+import type { CallMoveOptionsDto } from "@/repositories/checkpoint-call-move";
 import type { PlanChange } from "@/schemas/checkpoint";
 
 /** An early room is asked again this often, so the page opens on time. */
@@ -40,6 +45,15 @@ export const useCheckpointCall = (
 				call.state === "open" && call.role === "team" && !call.curatorJoinedAt;
 			return waiting ? CALL_WAIT_POLL_SECONDS * 1000 : false;
 		},
+	});
+
+/** The call's people and who is in the room; asked again only while it is open. */
+export const useCallPresence = (id: string, index: number, open: boolean) =>
+	useQuery({
+		queryKey: ["checkpoint-call-presence", id, index],
+		queryFn: async () =>
+			(await axios.get<CallPresenceDto>(`${callUrl(id, index)}/presence`)).data,
+		refetchInterval: open ? CALL_PRESENCE_POLL_SECONDS * 1000 : false,
 	});
 
 /** Whether the token endpoint refused the join, rather than failing. */
@@ -96,3 +110,43 @@ export const useCallNotes = (id: string, index: number | null) =>
 			(await axios.get<CallNotesDto>(`${callUrl(id, index ?? 0)}/notes`)).data,
 		enabled: index !== null,
 	});
+
+const moveUrl = (id: string, index: number) => `${callUrl(id, index)}/move`;
+
+/** The free hours a call may move to; asked when the move modal opens. */
+export const useCallMoveOptions = (id: string, index: number, open: boolean) =>
+	useQuery({
+		queryKey: ["checkpoint-call-move", id, index],
+		queryFn: async () =>
+			(await axios.get<CallMoveOptionsDto>(moveUrl(id, index))).data,
+		enabled: open,
+		staleTime: 0,
+	});
+
+/** Ask, answer or take back a request to move a call; the call is read again after. */
+export const useCallMove = (id: string, index: number) => {
+	const queryClient = useQueryClient();
+	// The call page and the Workflow path both show the call's time.
+	const onSuccess = () =>
+		Promise.all([
+			queryClient.invalidateQueries({ queryKey: callKey(id, index) }),
+			queryClient.invalidateQueries({ queryKey: ["checkpoint", id] }),
+		]);
+
+	return {
+		ask: useMutation({
+			mutationFn: (moveTo: string) =>
+				axios.post(moveUrl(id, index), { moveTo }),
+			onSuccess,
+		}),
+		answer: useMutation({
+			mutationFn: (approve: boolean) =>
+				axios.patch(moveUrl(id, index), { approve }),
+			onSuccess,
+		}),
+		withdraw: useMutation({
+			mutationFn: () => axios.delete(moveUrl(id, index)),
+			onSuccess,
+		}),
+	};
+};

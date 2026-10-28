@@ -1,13 +1,16 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { ActivityFeed } from "@/components/WorkflowPath/ActivityFeed";
+import styles from "@/components/WorkflowPath/style.module.scss";
 import { WorkflowAside } from "@/components/WorkflowPath/WorkflowAside";
+import { useCheckpoint } from "@/hooks/checkpoints";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 
 /**
  * Path to Checkpoint keeps the Workflow sidebar, less the checkpoint it is.
- * It is the team's to read: a pro curator outside the project gets the people
- * in the call alone.
+ * A pro curator outside the project gets the people in the call and the
+ * project's activity, read through the checkpoint (12.08.10).
  */
 export function CuratorAside({
 	projectId,
@@ -18,7 +21,11 @@ export function CuratorAside({
 	checkpointId: string;
 	children?: ReactNode;
 }) {
-	if (!projectId) return children ? <aside>{children}</aside> : null;
+	if (!projectId) {
+		return (
+			<CuratorActivity checkpointId={checkpointId}>{children}</CuratorActivity>
+		);
+	}
 
 	return (
 		<WorkflowAside
@@ -28,6 +35,23 @@ export function CuratorAside({
 		>
 			{children}
 		</WorkflowAside>
+	);
+}
+
+function CuratorActivity({
+	checkpointId,
+	children,
+}: {
+	checkpointId: string;
+	children?: ReactNode;
+}) {
+	const { data: detail } = useCheckpoint(checkpointId);
+
+	return (
+		<aside className={styles.aside}>
+			{children}
+			<ActivityFeed source={{ checkpointId }} sprints={detail?.sprints} />
+		</aside>
 	);
 }
 

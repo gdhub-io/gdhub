@@ -83,6 +83,18 @@ export const callToken = async (input: {
 export const closeCallRoom = (name: string) =>
 	daily(`/rooms/${name}`, { method: "DELETE" });
 
+/** Who is in a room right now, by the user id their token carried; none when the room is not up. */
+export const roomPresence = async (room: string) => {
+	const response = await fetch(`${API}/rooms/${room}/presence`, {
+		headers: { Authorization: `Bearer ${env("DAILY_API_KEY")}` },
+	});
+	if (!response.ok) return [];
+	const { data } = (await response.json()) as {
+		data: { userId?: string | null }[];
+	};
+	return data.flatMap((person) => (person.userId ? [person.userId] : []));
+};
+
 /** Who was in a room's meetings, by the user id their token carried, and the minutes they spent. */
 export const roomParticipants = async (room: string) => {
 	const { data } = await daily<{

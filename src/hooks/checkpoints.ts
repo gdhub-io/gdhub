@@ -342,20 +342,24 @@ export const useMarkVerdictRead = (id?: string) => {
 	});
 };
 
+/** Whose activity: a project, or the project of a checkpoint its curator reads. */
+export type ActivitySource = { projectId: string } | { checkpointId: string };
+
 /** The project's activity, newest first, a page further back on each fetch. */
-export const useProjectActivity = (projectId?: string) =>
+export const useProjectActivity = (source: ActivitySource) =>
 	useInfiniteQuery({
-		queryKey: ["project-activity", projectId],
+		queryKey: ["project-activity", source],
 		queryFn: async ({ pageParam }) =>
 			(
 				await axios.get<{ events: ProjectActivity[]; next: string | null }>(
-					"/api/user/project/activity",
-					{ params: { projectId, before: pageParam ?? undefined } },
+					"projectId" in source
+						? "/api/user/project/activity"
+						: `/api/checkpoint/${source.checkpointId}/activity`,
+					{ params: { ...source, before: pageParam ?? undefined } },
 				)
 			).data,
 		initialPageParam: null as string | null,
 		getNextPageParam: (page) => page.next,
-		enabled: !!projectId,
 	});
 
 /** The pulse page's one button; the signed token stands in for a session. */

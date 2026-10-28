@@ -2,6 +2,7 @@
 
 import {
 	IconCalendarPlus,
+	IconCalendarTime,
 	IconFileText,
 	IconLock,
 	IconMessageCircle,
@@ -15,6 +16,8 @@ import { downloadIcs } from "@/lib/calendar";
 import { callWindow } from "@/lib/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import { firstName } from "./CallHeader";
+import { MoveCallModal } from "./MoveCallModal";
+import { MoveNotice } from "./MoveNotice";
 
 export type ClosedStageProps = {
 	call: CheckpointCallDto;
@@ -74,6 +77,11 @@ export function ClosedStage({
 	const lockedJoin = useLockedJoinLabel();
 	const scheduled = dayjs(call.scheduledAt);
 	const team = call.role === "team";
+	const [moving, setMoving] = useState(false);
+	// Who answers a request: the curator to the team, the team to the curator.
+	const otherSide = team
+		? firstName(call.curator.name)
+		: t("checkpoints.move.theTeam", "the team");
 
 	if (call.missed) {
 		const next = call.sessions.find(
@@ -176,60 +184,83 @@ export function ClosedStage({
 	const joinLabel = lockedJoin(call.scheduledAt, now);
 
 	return (
-		<CuratorMessage
-			curator={call.curator}
-			date={scheduled.format("D MMM, HH:mm")}
-			message={
-				team
-					? call.index === 1
-						? t(
-								"checkpoints.call.aheadFirst",
-								"Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
-								{
-									name: firstName(call.curator.name),
-									project: call.project.name,
-									...when,
-								},
-							)
+		<>
+			<CuratorMessage
+				curator={call.curator}
+				date={scheduled.format("D MMM, HH:mm")}
+				extra={<MoveNotice call={call} otherSide={otherSide} />}
+				message={
+					team
+						? call.index === 1
+							? t(
+									"checkpoints.call.aheadFirst",
+									"Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
+									{
+										name: firstName(call.curator.name),
+										project: call.project.name,
+										...when,
+									},
+								)
+							: t(
+									"checkpoints.call.aheadTeam",
+									"Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
+									when,
+								)
 						: t(
-								"checkpoints.call.aheadTeam",
-								"Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
-								when,
+								"checkpoints.call.aheadCurator",
+								"The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
+								{ project: call.project.name, ...when },
 							)
-					: t(
-							"checkpoints.call.aheadCurator",
-							"The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
-							{ project: call.project.name, ...when },
-						)
-			}
-			actions={[
-				{
-					key: "join",
-					label: joinLabel,
-					icon: <IconLock size={16} />,
-					primary: true,
-					disabled: true,
-				},
-				{
-					key: "calendar",
-					label: t("workflow.path.session.calendar", "Add to calendar"),
-					icon: <IconCalendarPlus size={16} />,
-					onClick: addToCalendar,
-				},
-				...(team
-					? [
-							{
-								key: "chat",
-								label: t("checkpoints.call.message", "Message {name}", {
-									name: firstName(call.curator.name),
-								}),
-								icon: <IconMessageCircle size={16} />,
-								loading: chatLoading,
-								onClick: onChat,
-							},
-						]
-					: []),
-			]}
-		/>
+				}
+				actions={[
+					{
+						key: "join",
+						label: joinLabel,
+						icon: <IconLock size={16} />,
+						primary: true,
+						disabled: true,
+					},
+					{
+						key: "calendar",
+						label: t("workflow.path.session.calendar", "Add to calendar"),
+						icon: <IconCalendarPlus size={16} />,
+						onClick: addToCalendar,
+					},
+					...(team
+						? [
+								{
+									key: "chat",
+									label: t("checkpoints.call.message", "Message {name}", {
+										name: firstName(call.curator.name),
+									}),
+									icon: <IconMessageCircle size={16} />,
+									loading: chatLoading,
+									onClick: onChat,
+								},
+							]
+						: []),
+					...(call.canMove && !call.move
+						? [
+								{
+									key: "move",
+									label: t("checkpoints.move.open", "Move the call"),
+									icon: <IconCalendarTime size={16} />,
+									onClick: () => setMoving(true),
+								},
+							]
+						: []),
+				]}
+			/>
+			{call.canMove && (
+				<MoveCallModal
+					checkpointId={call.checkpointId}
+					index={call.index}
+					otherSide={otherSide}
+					curatorName={firstName(call.curator.name)}
+					open={moving}
+					onClose={() => setMoving(false)}
+				/>
+			)}
+		</>
 	);
 }

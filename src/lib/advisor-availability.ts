@@ -222,6 +222,47 @@ export const freeFirstCalls = (
 	return starts.sort((a, b) => a.getTime() - b.getTime());
 };
 
+/**
+ * Single calls free between two instants, on the hour: inside hours open for
+ * checkpoints, after any away-until date, clear of everything booked, and not
+ * before `notBefore`. Where a booked call may be moved to.
+ */
+export const freeCallsBetween = (
+	availability: Availability,
+	busy: Busy[],
+	from: Date,
+	to: Date,
+	notBefore: Date,
+): Date[] => {
+	const starts: Date[] = [];
+	const zone = availability.timeZone;
+
+	for (
+		let day = dayjs(from).tz(zone).startOf("day");
+		day.isBefore(to);
+		day = day.add(1, "day")
+	) {
+		const date = day.format("YYYY-MM-DD");
+		for (const range of rangesOn(availability.rules, date, "checkpoints")) {
+			for (
+				let minute = Math.ceil(range.from / 60) * 60;
+				minute + SESSION_MINUTES <= range.to;
+				minute += 60
+			) {
+				const at = local(date, minute, zone);
+				if (at.isBefore(from) || !at.isBefore(to) || at.isBefore(notBefore))
+					continue;
+				if (availability.awayUntil && at.isBefore(availability.awayUntil))
+					continue;
+				if (overlaps(at, busy)) continue;
+				starts.push(at.toDate());
+			}
+		}
+	}
+
+	return starts.sort((a, b) => a.getTime() - b.getTime());
+};
+
 /** The first free series, looked for a fortnight at a time; null when there is none. */
 export const earliestFirstCall = (
 	availability: Availability,

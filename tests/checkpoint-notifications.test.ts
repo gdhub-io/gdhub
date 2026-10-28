@@ -107,7 +107,8 @@ describe("remindCallsSoon", () => {
 		expect(byUser.oleg.payload.redirectUrl).toMatch(
 			/\/user\/project\/hollow-tide\/workflow\/cp2\?sprint=2$/,
 		);
-		expect(byUser.oleg.transactionId).toBe("cp-call-s2-oleg");
+		// The time is in the key, so a moved call is announced again.
+	expect(byUser.oleg.transactionId).toBe("cp-call-s2-1792591200000-oleg");
 	});
 });
 

@@ -671,3 +671,15 @@
 	background: var(--gd-color-surface-sunken);
 	white-space: nowrap;
 }
+
+// Frames 12.08.12–13: an open request to move the call, inside the curator's card.
+.moveNotice {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-subtle);
+}
+
+.moveNoticeIcon {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}

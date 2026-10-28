@@ -300,7 +300,12 @@ export function CallTeamPanel({
 	);
 }
 
-export function CallPersonRow({ name, image, role }: CallPerson) {
+export function CallPersonRow({
+	name,
+	image,
+	role,
+	inCall = true,
+}: CallPerson & { inCall?: boolean }) {
 	const { t } = useTranslate();
 
 	return (
@@ -318,10 +323,14 @@ export function CallPersonRow({ name, image, role }: CallPerson) {
 					</Typography.Text>
 				)}
 			</div>
-			<StatusDot
-				tone="success"
-				label={t("checkpoints.call.inCall", "In the call")}
-			/>
+			{inCall ? (
+				<StatusDot
+					tone="success"
+					label={t("checkpoints.call.inCall", "In the call")}
+				/>
+			) : (
+				<StatusDot tone="neutral" label={t("checkpoints.call.away", "Away")} />
+			)}
 		</div>
 	);
 }

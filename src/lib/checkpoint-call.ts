@@ -1,12 +1,19 @@
 import {
 	AI_APPROVE_HOURS,
 	CALL_CLOSES_MINUTES,
+	CALL_MOVE_DAYS,
 	CALL_OPENS_MINUTES,
 	PRO_PLAN_AFTER_CALL_HOURS,
 	SCOPE_SESSION,
+	SPRINT_DAYS,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { MS_PER_HOUR, MS_PER_MINUTE } from "@/lib/checkpoint-days";
+import {
+	MS_PER_DAY,
+	MS_PER_HOUR,
+	MS_PER_MINUTE,
+	utcStartOfDay,
+} from "@/lib/checkpoint-days";
 import { scopeState } from "@/lib/checkpoint-scope";
 
 export type CallState = "early" | "open" | "over";
@@ -19,6 +26,17 @@ export const callWindow = (scheduledAt: Date) => ({
 });
 
 /** Ended by the curator, or past its window: over either way. */
+/**
+ * Where call `index` may be moved: the first `CALL_MOVE_DAYS` days of the
+ * sprint it opens — days 1–3, 8–10 … and 29–31 for the final call.
+ */
+export const callMoveWindow = (startedAt: Date, index: number) => {
+	const from = new Date(
+		utcStartOfDay(startedAt).getTime() + (index - 1) * SPRINT_DAYS * MS_PER_DAY,
+	);
+	return { from, to: new Date(from.getTime() + CALL_MOVE_DAYS * MS_PER_DAY) };
+};
+
 export const callState = (
 	scheduledAt: Date,
 	endedAt: Date | null,

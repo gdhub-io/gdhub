@@ -70,7 +70,7 @@ export function WorkflowAside({
 					stageName={current.name ?? undefined}
 				/>
 			)}
-			<ActivityFeed projectId={projectId} sprints={detail?.sprints} />
+			<ActivityFeed source={{ projectId }} sprints={detail?.sprints} />
 		</aside>
 	);
 }

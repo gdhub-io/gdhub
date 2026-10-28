@@ -599,7 +599,9 @@ export const remindCallsSoon = async (now = new Date()) => {
 		const title = `Your call on ${checkpoint.project.name} starts in an hour`;
 
 		const curatorZone = curator.advisorAvailability?.timeZone ?? "UTC";
-		await notify(curator, `cp-call-${session.id}-${curator.id}`, {
+		// The time is in the key: a moved call is announced again.
+		const key = `cp-call-${session.id}-${session.scheduledAt.getTime()}`;
+		await notify(curator, `${key}-${curator.id}`, {
 			checkpointId: session.checkpointId,
 			title,
 			message: `Call ${session.index} of Checkpoint ${number}, at ${at(curatorZone)}. The team is let in once you join.`,
@@ -617,7 +619,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 		team.delete(curator.id);
 
 		for (const person of team.values()) {
-			await notify(person, `cp-call-${session.id}-${person.id}`, {
+			await notify(person, `${key}-${person.id}`, {
 				checkpointId: session.checkpointId,
 				title,
 				message: `Call ${session.index} of Checkpoint ${number}, at ${at(person.profile?.timezone ?? "UTC")}. You can join once your curator opens the room.`,
@@ -680,4 +682,81 @@ export const remindDevlogsDue = async (now = new Date()) => {
 		sent += 1;
 	}
 	return sent;
+};
+
+/**
+ * A request to move a call, and its answer (GDHUB-90): told to the side that
+ * has to act on it, times in their own zone.
+ */
+export const notifyCallMove = async (
+	sessionId: string,
+	to: "curator" | "author",
+	{ event, moveTo }: { event: "asked" | "approved" | "declined"; moveTo: Date },
+) => {
+	const session = await prisma.checkpointSession.findUnique({
+		where: { id: sessionId },
+		select: {
+			index: true,
+			scheduledAt: true,
+			checkpointId: true,
+			checkpoint: {
+				select: {
+					projectId: true,
+					createdAt: true,
+					curator: {
+						select: {
+							id: true,
+							email: true,
+							name: true,
+							advisorAvailability: { select: { timeZone: true } },
+						},
+					},
+					project: { select: { name: true, slug: true, author: inZone } },
+				},
+			},
+		},
+	});
+	const curator = session?.checkpoint.curator;
+	if (!session || !curator) return;
+	const { checkpoint, index, checkpointId } = session;
+
+	const number = await checkpointNumber(checkpoint);
+	const person =
+		to === "curator"
+			? {
+					...curator,
+					zone: curator.advisorAvailability?.timeZone ?? "UTC",
+					url: `${appUrl()}/advisor/checkpoints/${checkpointId}/review/${index}`,
+				}
+			: {
+					...checkpoint.project.author,
+					zone: checkpoint.project.author.profile?.timezone ?? "UTC",
+					url: reviewUrl(checkpoint.project.slug, number, index),
+				};
+	const at = (date: Date) =>
+		`${dayjs(date).tz(person.zone).format("ddd D MMM, HH:mm")} (${person.zone})`;
+	const other =
+		to === "curator" ? "The team" : (curator.name ?? "Your curator");
+	const call = `call ${index} on ${checkpoint.project.name}`;
+
+	const letters = {
+		asked: {
+			title: `${other} asks to move ${call}`,
+			message: `To ${at(moveTo)}. Until you answer, it stays on ${at(session.scheduledAt)}.`,
+		},
+		approved: {
+			title: `Call ${index} on ${checkpoint.project.name} is moved`,
+			message: `It is now on ${at(moveTo)}. The other calls keep their days.`,
+		},
+		declined: {
+			title: `Call ${index} on ${checkpoint.project.name} keeps its time`,
+			message: `${other} kept ${at(session.scheduledAt)} rather than ${at(moveTo)}.`,
+		},
+	};
+
+	await notify(
+		person,
+		`cp-move-${event}-${sessionId}-${moveTo.getTime()}-${person.id}`,
+		{ checkpointId, ...letters[event], redirectUrl: person.url },
+	);
 };

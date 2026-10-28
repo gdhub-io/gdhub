@@ -100,6 +100,8 @@ const call: CheckpointCallDto = {
 	state: "open",
 	missed: false,
 	curatorJoinedAt: null,
+	canMove: false,
+	move: null,
 	role: "team",
 	current: 2,
 	briefs: [],

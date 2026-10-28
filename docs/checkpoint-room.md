@@ -79,7 +79,9 @@ with text.
   controls, which would replace this design. Recording and transcription are
   billed by Daily separately from call minutes — price them before turning
   them on for every call.
-- **Presence** — Matrix presence, Online / Offline only.
+- **Presence** — the Team block: the curator and the confirmed team, each "In
+  the call" or "Away", from Daily's room presence while the room is open
+  (GDHUB-90).
 - **Chat** — Matrix.
 - **Summary** — ours, generated from the Daily transcript after the call.
 - **Tasks and artifacts** — `CheckpointItem` (Outcome) and its `artifact`.

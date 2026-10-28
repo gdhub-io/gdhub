@@ -130,6 +130,8 @@ const proCall = (
 	state,
 	missed: false,
 	curatorJoinedAt: state === "open" ? `${DAYS[index - 1]}T11:58:00.000Z` : null,
+	canMove: false,
+	move: null,
 	role: "team",
 	current: index,
 	briefs: [],
