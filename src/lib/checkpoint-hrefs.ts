@@ -13,7 +13,7 @@ export const sessionOfSprintParam = (value: string | undefined) => {
 		: undefined;
 };
 
-/** The tabs a link can open on; a call's notes are its review. */
+/** The tabs a link can open on. */
 export const PATH_TABS = [
 	"sprint",
 	"review",
@@ -42,11 +42,4 @@ export const checkpointPathHref = (
 	if (tab) query.set("tab", tab);
 	const search = query.toString();
 	return `/user/project/${slug}/workflow/cp${number}${search ? `?${search}` : ""}`;
-};
-
-/** Keeps the page's sprint or tab in the address, for a reload or a link, without a navigation. */
-export const rememberInAddress = (key: "sprint" | "tab", value: string) => {
-	const url = new URL(window.location.href);
-	url.searchParams.set(key, value);
-	window.history.replaceState(null, "", url);
 };

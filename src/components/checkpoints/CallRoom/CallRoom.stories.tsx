@@ -2,13 +2,14 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
 import { CuratorMessage } from "@/components/checkpoints/CuratorReview/CuratorMessage";
 import { CuratorReviewSkeleton } from "@/components/checkpoints/CuratorReview/CuratorReviewSkeleton";
+import type { PathTab } from "@/lib/checkpoint-hrefs";
 import type {
 	CallNotesDto,
 	CheckpointCallDto,
 } from "@/repositories/checkpoint-call";
 import { GoalCard } from "./CallGoal";
 import { CallHeader, type CallHeaderProps } from "./CallHeader";
-import { PanelBlock, type PanelTab } from "./CallPanel";
+import { PanelBlock } from "./CallPanel";
 import {
 	CallLayout,
 	CallPersonRow,
@@ -98,6 +99,7 @@ const call: CheckpointCallDto = {
 	missed: false,
 	curatorJoinedAt: null,
 	role: "team",
+	current: 2,
 	briefs: [],
 	plan,
 	sessions: sessionsHeld(1),
@@ -215,7 +217,7 @@ export const Over: Story = {
 				message="The call is over. The plan is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready."
 				actions={[
 					{
-						key: "notes",
+						key: "review",
 						label: "Open the notes",
 						primary: true,
 						onClick: noop,
@@ -321,7 +323,7 @@ function PanelStory({
 }: {
 	current: number;
 	held: number;
-	tab: PanelTab;
+	tab: PathTab;
 	panelPlan?: CheckpointCallDto["plan"];
 	notes?: CallNotesDto;
 	briefs?: CheckpointCallDto["briefs"];
@@ -389,7 +391,7 @@ export const PanelPlanReadOnly: Story = {
 
 export const PanelNotesReady: Story = {
 	render: () => (
-		<PanelStory current={3} held={2} tab="notes" notes={notesReady} />
+		<PanelStory current={3} held={2} tab="review" notes={notesReady} />
 	),
 };
 
@@ -398,7 +400,7 @@ export const PanelNotesEmptySections: Story = {
 		<PanelStory
 			current={3}
 			held={2}
-			tab="notes"
+			tab="review"
 			notes={{
 				...notesReady,
 				content: notesReady.content && {
@@ -416,7 +418,7 @@ export const PanelNotesPending: Story = {
 		<PanelStory
 			current={3}
 			held={3}
-			tab="notes"
+			tab="review"
 			notes={{ contentStatus: "Pending", content: null, transcript: null }}
 		/>
 	),

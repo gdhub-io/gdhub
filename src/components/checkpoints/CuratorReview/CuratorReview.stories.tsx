@@ -2,16 +2,14 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
 import { GoalCard } from "@/components/checkpoints/CallRoom/CallGoal";
 import { CallHeader } from "@/components/checkpoints/CallRoom/CallHeader";
-import {
-	PanelBlock,
-	type PanelTab,
-} from "@/components/checkpoints/CallRoom/CallPanel";
+import { PanelBlock } from "@/components/checkpoints/CallRoom/CallPanel";
 import {
 	CallLayout,
 	LiveStage,
 	ParticipantTile,
 } from "@/components/checkpoints/CallRoom/CallParts";
 import { ClosedStage } from "@/components/checkpoints/CallRoom/ClosedStage";
+import type { PathTab } from "@/lib/checkpoint-hrefs";
 import { curatorNow } from "@/lib/curator-now";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
@@ -131,6 +129,7 @@ const proCall = (
 	missed: false,
 	curatorJoinedAt: state === "open" ? `${DAYS[index - 1]}T11:58:00.000Z` : null,
 	role: "team",
+	current: index,
 	briefs: [],
 	plan: {
 		goal: GOAL,
@@ -159,7 +158,7 @@ function ProPage({
 	now: string;
 	/** The call the panel opens on. */
 	shown: number;
-	tab: PanelTab;
+	tab: PathTab;
 	live?: boolean;
 }) {
 	const [selected, setSelected] = useState(shown);
@@ -206,7 +205,7 @@ function ProPage({
 						call={call}
 						notesReady={call.sessions[call.index - 1].contentStatus === "Ready"}
 						onChat={noop}
-						onOpenReview={() => setTab("notes")}
+						onOpenReview={() => setTab("review")}
 						now={new Date(now)}
 					/>
 				)
@@ -481,7 +480,7 @@ export const ProDay1AfterCall: Story = {
 				call={call}
 				now="2026-10-01T13:10:00.000Z"
 				shown={1}
-				tab="notes"
+				tab="review"
 			/>
 		);
 	},
@@ -495,7 +494,7 @@ export const ProSprint1: Story = {
 			call={proCall(1, "over", 1, startTasks)}
 			now="2026-10-03T10:00:00.000Z"
 			shown={1}
-			tab="notes"
+			tab="review"
 		/>
 	),
 };
@@ -535,7 +534,7 @@ export const ProLastDay: Story = {
 			call={proCall(5, "early", 4, lateTasks)}
 			now="2026-10-28T10:00:00.000Z"
 			shown={4}
-			tab="notes"
+			tab="review"
 		/>
 	),
 };
@@ -548,7 +547,7 @@ export const ProDay29: Story = {
 			call={proCall(5, "over", 5, lateTasks)}
 			now="2026-10-29T15:00:00.000Z"
 			shown={5}
-			tab="notes"
+			tab="review"
 		/>
 	),
 };

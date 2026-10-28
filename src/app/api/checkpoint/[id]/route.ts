@@ -33,6 +33,7 @@ import {
 	pendingCheckout,
 	reconcileCheckout,
 } from "@/repositories/checkpoint-payment";
+import { checkpointViewer } from "@/repositories/checkpoint-viewer";
 import {
 	type UpdateCheckpointBody,
 	UpdateCheckpointSchema,
@@ -73,19 +74,17 @@ const readInSpace = pipe(
 });
 
 /**
- * The project's team reads through its space; the checkpoint's own curator,
- * who is no member of it, reads this one checkpoint (GDHUB-117: the Sprint tab
- * on Path to Checkpoint).
+ * Its curator, author and team read it as the checkpoint's own; anyone else —
+ * a hub admin, a custom role — through the project's space.
  */
 export const GET = withAuth({ mode: "user" })(async (req, ctx, locals) => {
 	const user = locals.user as SessionUser | undefined;
 	if (!user) return apiError.unauthorized();
 
 	const { id } = (await ctx.params) as { id: string };
-	const curated = await prisma.projectCheckpoint.count({
-		where: { id, curatorId: user.id },
-	});
-	return curated ? readCheckpoint(id) : readInSpace(req, ctx, locals);
+	return (await checkpointViewer(id, user.id))
+		? readCheckpoint(id)
+		: readInSpace(req, ctx, locals);
 });
 
 /**

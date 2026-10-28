@@ -139,7 +139,7 @@ export function ClosedStage({
 					notesReady
 						? [
 								{
-									key: "notes",
+									key: "review",
 									label: t("checkpoints.call.openReview", "Open the review"),
 									icon: <IconFileText size={16} />,
 									primary: true,

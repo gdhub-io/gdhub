@@ -1,7 +1,7 @@
 import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { callMissed } from "@/lib/checkpoint-call";
-import { sessionDay } from "@/lib/checkpoint-days";
+import { MS_PER_DAY, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { CheckpointSessionDto } from "@/types/checkpoints";
 
@@ -13,6 +13,24 @@ type SessionRow = {
 	endedAt: Date | null;
 	contentStatus: CheckpointSessionDto["contentStatus"];
 	attendeeIds?: string[];
+};
+
+/**
+ * The session under way: the last whose day has come, a call later today
+ * included; the first before any. Every page that opens "now" asks this.
+ */
+export const currentSessionOf = (
+	sessions: { index: number; scheduledAt: Date | string }[],
+	now = new Date(),
+) => {
+	const endOfToday = utcStartOfDay(now).getTime() + MS_PER_DAY;
+	return sessions.reduce(
+		(current, session) =>
+			new Date(session.scheduledAt).getTime() < endOfToday
+				? Math.max(current, session.index)
+				: current,
+		1,
+	);
 };
 
 /**

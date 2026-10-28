@@ -19,8 +19,9 @@ import {
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
-import { MS_PER_DAY, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
+import { MS_PER_DAY, sessionDay } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
+import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
 import { lettersSoFar } from "@/lib/curator-letters";
 import { type CuratorNow, curatorNow } from "@/lib/curator-now";
@@ -37,7 +38,11 @@ import {
 	checkpointNumber,
 	previousVerdict,
 } from "@/repositories/checkpoint-number";
-import { canEditPlan } from "@/repositories/checkpoint-plan-edit";
+import {
+	canEditPlan,
+	viewerOf,
+	viewerSelect,
+} from "@/repositories/checkpoint-viewer";
 import {
 	curatorTeam,
 	projectPicture,
@@ -174,22 +179,18 @@ export const curatorKindOf = async (checkpointId: string) =>
 		})
 	)?.curatorKind ?? null;
 
-/**
- * The session Path to Checkpoint opens on without a sprint asked for: the last
- * whose day has come, a call later today included — the one the team is in.
- */
+/** The session Path to Checkpoint opens on without a sprint asked for. */
 export const currentSessionIndex = async (
 	checkpointId: string,
 	now = new Date(),
-) => {
-	const endOfToday = new Date(utcStartOfDay(now).getTime() + MS_PER_DAY);
-	const latest = await prisma.checkpointSession.findFirst({
-		where: { checkpointId, scheduledAt: { lt: endOfToday } },
-		orderBy: { index: "desc" },
-		select: { index: true },
-	});
-	return latest?.index ?? 1;
-};
+) =>
+	currentSessionOf(
+		await prisma.checkpointSession.findMany({
+			where: { checkpointId },
+			select: { index: true, scheduledAt: true },
+		}),
+		now,
+	);
 
 /**
  * An AI checkpoint's Curator's Review, all five sessions, for its team. Anyone
@@ -221,18 +222,10 @@ export const getReview = async (
 			verdictNote: true,
 			project: {
 				select: {
+					...viewerSelect(userId).project.select,
 					name: true,
 					slug: true,
-					authorId: true,
 					workflow: { select: { currentStepId: true } },
-					team: {
-						select: {
-							members: {
-								where: { ...CONFIRMED_MEMBERS, userId },
-								select: { id: true },
-							},
-						},
-					},
 				},
 			},
 			step: {
@@ -263,10 +256,8 @@ export const getReview = async (
 		return null;
 	}
 	const { project } = checkpoint;
-	if (project.authorId !== userId && !project.team?.members.length) return null;
-	const current =
-		checkpoint.sessions.filter((row) => row.scheduledAt <= now).at(-1)?.index ??
-		1;
+	if (!viewerOf(checkpoint, userId)) return null;
+	const current = currentSessionOf(checkpoint.sessions, now);
 
 	const edit = canEditPlan({ ...checkpoint, project }, userId)
 		? planEdit(checkpoint, now)

@@ -47,12 +47,9 @@ import {
 	useApprovePlan,
 	useCheckpointReview,
 } from "@/hooks/checkpoint-review";
+import { useAddressPick } from "@/hooks/useAddressPick";
 import { type PlanEdit, planSession } from "@/lib/checkpoint-call";
-import {
-	type PathTab,
-	rememberInAddress,
-	sprintParam,
-} from "@/lib/checkpoint-hrefs";
+import { type PathTab, sprintParam } from "@/lib/checkpoint-hrefs";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { PlanChange } from "@/schemas/checkpoint";
 import { CuratorAside } from "./CuratorAside";
@@ -72,6 +69,7 @@ export type AiReviewProps = {
 	index: number;
 	backHref: string;
 	tab?: PathTab;
+	pinned?: boolean;
 };
 
 /**
@@ -86,6 +84,7 @@ export function AiReview({
 	index,
 	backHref,
 	tab,
+	pinned,
 }: AiReviewProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
@@ -158,6 +157,7 @@ export function AiReview({
 				review={review}
 				index={index}
 				initialTab={tab}
+				pinned={pinned}
 				syncAddress
 				backHref={backHref}
 				onChange={onChange}
@@ -210,6 +210,8 @@ export type AiReviewViewProps = {
 	initialTab?: PathTab;
 	/** Keeps the sprint and the tab in the address; the lab and the stories do not. */
 	syncAddress?: boolean;
+	/** `index` came from the address: it wins over the open plan. */
+	pinned?: boolean;
 };
 
 /** The page itself, from its data: what the stories render, moment by moment. */
@@ -228,23 +230,29 @@ export function AiReviewView({
 	onAttach,
 	initialTab,
 	syncAddress,
+	pinned,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
-	const [picked, setPicked] = useState<number | null>(null);
-	const [pickedTab, setPickedTab] = useState<AiTab | null>(
+	const [picked, setPicked] = useAddressPick<number>(
+		"sprint",
+		pinned ? index : null,
+		{
+			toParam: sprintParam,
+			sync: syncAddress,
+		},
+	);
+	const [pickedTab, setTab] = useAddressPick<AiTab>(
+		"tab",
 		initialTab === "sprint" || initialTab === "review" || initialTab === "plan"
 			? initialTab
 			: null,
+		{ sync: syncAddress },
 	);
-	const setTab = (key: AiTab) => {
-		setPickedTab(key);
-		if (syncAddress) rememberInAddress("tab", key);
-	};
 	const { plan, current } = review;
 	const editing = planSession(plan.edit);
 	const open = editing ? sessionOf(review, editing)?.content : null;
-	// The open plan first; a session still ahead never, whatever the link asked for.
-	const selected = picked ?? editing ?? Math.min(index, current);
+	// A sprint picked or named in the address, else the open plan; a session still ahead never.
+	const selected = Math.min(picked ?? editing ?? index, current);
 	// Review by default; the start and sprint 2's review are where the plan is changed.
 	const asked =
 		pickedTab ??
@@ -320,11 +328,7 @@ export function AiReviewView({
 									<ReviewSwitcher
 										review={review}
 										selected={selected}
-										onSelect={(at) => {
-											setPicked(at);
-											if (syncAddress)
-												rememberInAddress("sprint", sprintParam(at));
-										}}
+										onSelect={setPicked}
 									/>
 								),
 							}}

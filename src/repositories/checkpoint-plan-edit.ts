@@ -10,6 +10,7 @@ import {
 } from "@/config/prisma-enums";
 import { planEdit } from "@/lib/checkpoint-call";
 import { MS_PER_HOUR } from "@/lib/checkpoint-days";
+import { canEditPlan } from "@/repositories/checkpoint-viewer";
 import type { PlanChange } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 
@@ -47,12 +48,6 @@ const loadPlan = (checkpointId: string) =>
 			},
 		},
 	});
-
-/** The plan's editors: its curator and the project's author, nobody else on the team. */
-export const canEditPlan = (
-	checkpoint: { curatorId: string | null; project: { authorId: string } },
-	userId: string,
-) => checkpoint.curatorId === userId || checkpoint.project.authorId === userId;
 
 /**
  * One change to the plan, made on a call or, with the AI curator, on its

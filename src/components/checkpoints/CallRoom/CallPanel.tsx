@@ -10,7 +10,7 @@ import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
-import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
+import { checkpointPathHref, type PathTab } from "@/lib/checkpoint-hrefs";
 import type {
 	CallNotesDto,
 	CheckpointCallDto,
@@ -29,14 +29,13 @@ import { SessionSwitcher, useSprintLabel } from "./SessionSwitcher";
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
-export type PanelTab = "plan" | "notes" | "sprint" | "brief" | "transcript";
 
 // The transcript tab is built but not shown yet.
 const SHOW_TRANSCRIPT = false;
 
 /**
- * The plan and the notes under the stage, for whichever call is picked. The
- * tab is the room's, so the curator's message can open the notes.
+ * The plan and the review under the stage, for whichever call is picked. The
+ * tab is the room's, so the curator's message can open the review.
  */
 export function CallPanel({
 	call,
@@ -44,8 +43,8 @@ export function CallPanel({
 	onPick,
 }: {
 	call: CheckpointCallDto;
-	picked: PanelTab | null;
-	onPick: (tab: PanelTab) => void;
+	picked: PathTab | null;
+	onPick: (tab: PathTab) => void;
 }) {
 	const [pickedCall, setPickedCall] = useState(call.index);
 	// The team's sprint is the page's own, named in its address; a curator's
@@ -71,25 +70,23 @@ export function CallPanel({
 			<PanelBlock
 				sessions={call.sessions}
 				current={call.index}
-				reached={Math.max(
-					call.index,
-					...call.sessions
-						.filter((session) =>
-							dayjs(session.scheduledAt).isBefore(dayjs().endOf("day")),
-						)
-						.map((session) => session.index),
-				)}
+				reached={Math.max(call.index, call.current)}
 				selected={selected}
 				// The team's page is the whole sprint: picking one opens its call.
 				onSelect={
 					call.role === "team"
 						? (at) =>
 								router.push(
-									checkpointPathHref(call.project.slug, call.number, at),
+									checkpointPathHref(
+										call.project.slug,
+										call.number,
+										at,
+										picked ?? undefined,
+									),
 								)
 						: setPickedCall
 				}
-				tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
+				tab={picked ?? (ownReady ? "review" : ownBrief ? "brief" : "plan")}
 				onTab={onPick}
 				plan={call.plan}
 				onChange={onChange}
@@ -123,8 +120,8 @@ export type PanelBlockProps = {
 	reached?: number;
 	selected: number;
 	onSelect: (index: number) => void;
-	tab: PanelTab;
-	onTab: (tab: PanelTab) => void;
+	tab: PathTab;
+	onTab: (tab: PathTab) => void;
 	plan: PlanBodyProps["plan"];
 	onChange: PlanBodyProps["onChange"];
 	notes?: CallNotesDto;
@@ -191,7 +188,7 @@ export function PanelBlock({
 	);
 
 	// What this sprint asks, then what happened (the brief, the call), the whole plan.
-	const items: { key: PanelTab; label: string; children: ReactNode }[] = [];
+	const items: { key: PathTab; label: string; children: ReactNode }[] = [];
 	if (sprintTab) {
 		items.push({
 			key: "sprint",
@@ -217,7 +214,7 @@ export function PanelBlock({
 		});
 	}
 	items.push({
-		key: "notes",
+		key: "review",
 		label: t("checkpoints.call.panel.review", "Review"),
 		children: (
 			<NotesBody
@@ -268,7 +265,7 @@ export function PanelBlock({
 		<section className={styles.panel}>
 			<Tabs
 				activeKey={tab}
-				onChange={(key) => onTab(key as PanelTab)}
+				onChange={(key) => onTab(key as PathTab)}
 				tabBarExtraContent={{ right: switcher }}
 				items={items}
 				size="large"

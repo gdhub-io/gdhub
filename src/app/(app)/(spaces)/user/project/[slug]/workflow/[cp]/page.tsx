@@ -45,6 +45,7 @@ export default async function CheckpointPathPage({
 				checkpointId={checkpointId}
 				index={index ?? current ?? 1}
 				tab={pathTabOf(tab)}
+				pinned={!!index}
 				backHref={`/user/project/${slug}/workflow`}
 			/>
 		</ProjectSpace>

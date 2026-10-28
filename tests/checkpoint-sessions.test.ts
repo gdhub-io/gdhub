@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { sessionDay } from "@/lib/checkpoint-days";
-import { buildSessions } from "@/lib/checkpoint-sessions";
+import { buildSessions, currentSessionOf } from "@/lib/checkpoint-sessions";
 
 const startedAt = new Date("2026-10-01T15:30:00Z");
 
@@ -117,5 +117,34 @@ describe("checkpoint sessions", () => {
 		it("does not say before the call has ended", () => {
 			expect(second([], null).teamJoined).toBeNull();
 		});
+	});
+});
+
+describe("currentSessionOf", () => {
+	const sessions = [
+		{ index: 1, scheduledAt: new Date("2026-10-01T12:00:00Z") },
+		{ index: 2, scheduledAt: new Date("2026-10-08T15:00:00Z") },
+		{ index: 3, scheduledAt: new Date("2026-10-15T00:00:00Z") },
+	];
+
+	it("is the first before any session's day", () => {
+		expect(currentSessionOf(sessions, new Date("2026-09-30T23:00:00Z"))).toBe(
+			1,
+		);
+	});
+
+	it("counts a call later today as under way", () => {
+		expect(currentSessionOf(sessions, new Date("2026-10-08T09:00:00Z"))).toBe(
+			2,
+		);
+	});
+
+	it("stays on the last one reached until the next one's day", () => {
+		expect(currentSessionOf(sessions, new Date("2026-10-14T23:59:00Z"))).toBe(
+			2,
+		);
+		expect(currentSessionOf(sessions, new Date("2026-10-15T00:00:00Z"))).toBe(
+			3,
+		);
 	});
 });
