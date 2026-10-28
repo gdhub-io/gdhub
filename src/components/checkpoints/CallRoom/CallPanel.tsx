@@ -48,7 +48,10 @@ export function CallPanel({
 	picked: PanelTab | null;
 	onPick: (tab: PanelTab) => void;
 }) {
-	const [selected, setSelected] = useState(call.index);
+	const [pickedCall, setPickedCall] = useState(call.index);
+	// The team's sprint is the page's own, named in its address; a curator's
+	// panel picks among the calls in place.
+	const selected = call.role === "team" ? call.index : pickedCall;
 	const router = useRouter();
 	const evidence = useEvidencePicker(call.checkpointId);
 	const onChange = usePlanChange(call.checkpointId);
@@ -85,7 +88,7 @@ export function CallPanel({
 								router.push(
 									checkpointPathHref(call.project.slug, call.number, at),
 								)
-						: setSelected
+						: setPickedCall
 				}
 				tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
 				onTab={onPick}
