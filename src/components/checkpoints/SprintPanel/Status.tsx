@@ -14,6 +14,7 @@ import { SCOPE_SESSION } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useCurrentProject } from "@/hooks/project";
 import type { SprintFacts } from "@/lib/checkpoint-facts";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { devlogDayOf } from "@/lib/checkpoint-sprints";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { AskPanel, type AskRow } from "../AskPanel";
@@ -82,7 +83,7 @@ export function Status({ checkpoint, facts, onGo }: StatusProps) {
 	if (facts.scopeOpen) {
 		// The tasks change on call 3 itself, with the curator; the row leads there.
 		const callHref = project?.slug
-			? `/user/project/${project.slug}/workflow/cp${checkpoint.number ?? 1}/review/${SCOPE_SESSION}`
+			? checkpointPathHref(project.slug, checkpoint.number ?? 1, SCOPE_SESSION)
 			: `/advisor/checkpoints/${checkpoint.id}/review/${SCOPE_SESSION}`;
 		open.push({
 			key: "scope",

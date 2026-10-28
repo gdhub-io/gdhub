@@ -25,6 +25,7 @@ import {
 	MS_PER_HOUR,
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
 import {
@@ -73,9 +74,9 @@ const workflowUrl = (slug: string) =>
 
 export const recipient = { select: { id: true, email: true } } as const;
 
-/** Curator's Review for the team: one session of one checkpoint. */
+/** Path to Checkpoint for the team, opened on the sprint a session opens. */
 export const reviewUrl = (slug: string, number: number, index: number) =>
-	`${workflowUrl(slug)}/cp${number}/review/${index}`;
+	`${appUrl()}${checkpointPathHref(slug, number, index)}`;
 
 /** A paid checkpoint waits for its human curator's answer. */
 export const notifyCuratorAsked = async (checkpointId: string) => {

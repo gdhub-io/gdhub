@@ -101,7 +101,7 @@ describe("remindCallsSoon", () => {
 		expect(byUser.author.payload.message).toContain("18:00 (Asia/Tbilisi)");
 		expect(byUser.oleg.payload.message).toContain("14:00 (UTC)");
 		expect(byUser.oleg.payload.redirectUrl).toMatch(
-			/\/user\/project\/hollow-tide\/workflow\/cp2\/review\/2$/,
+			/\/user\/project\/hollow-tide\/workflow\/cp2\?sprint=2$/,
 		);
 		expect(byUser.oleg.transactionId).toBe("cp-call-s2-oleg");
 	});

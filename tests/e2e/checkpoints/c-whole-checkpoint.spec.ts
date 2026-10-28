@@ -148,7 +148,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 	});
 
 	test("day 1: the curator's advice, four tasks, three proven", async () => {
-		await page.goto(`/user/project/${project.slug}/workflow/cp1/review/1`);
+		await page.goto(`/user/project/${project.slug}/workflow/cp1?sprint=1`);
 		await expect
 			.poll(async () => (await session(1)).contentStatus, { timeout: 120_000 })
 			.toBe(CheckpointSessionContentStatus.Ready);
@@ -179,7 +179,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 		const day8 = await nightOf(8);
 		expect(day8.reviews).toBeGreaterThanOrEqual(1);
 		expect((await session(2)).contentStatus).toBe(CheckpointSessionContentStatus.Ready);
-		await page.goto(`/user/project/${project.slug}/workflow/cp1/review/2`);
+		await page.goto(`/user/project/${project.slug}/workflow/cp1?sprint=2`);
 		await expect(page.getByText(/Sprint 1/).first()).toBeVisible();
 		log.step("The sprint 1 review is ready and readable");
 	});

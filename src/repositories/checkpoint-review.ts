@@ -19,7 +19,7 @@ import {
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
-import { MS_PER_DAY } from "@/lib/checkpoint-days";
+import { MS_PER_DAY, utcStartOfDay } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
 import { sessionDay } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
@@ -174,6 +174,23 @@ export const curatorKindOf = async (checkpointId: string) =>
 			select: { curatorKind: true },
 		})
 	)?.curatorKind ?? null;
+
+/**
+ * The session Path to Checkpoint opens on without a sprint asked for: the last
+ * whose day has come, a call later today included — the one the team is in.
+ */
+export const currentSessionIndex = async (
+	checkpointId: string,
+	now = new Date(),
+) => {
+	const endOfToday = new Date(utcStartOfDay(now).getTime() + MS_PER_DAY);
+	const latest = await prisma.checkpointSession.findFirst({
+		where: { checkpointId, scheduledAt: { lt: endOfToday } },
+		orderBy: { index: "desc" },
+		select: { index: true },
+	});
+	return latest?.index ?? 1;
+};
 
 /**
  * An AI checkpoint's Curator's Review, all five sessions, for its team. Anyone

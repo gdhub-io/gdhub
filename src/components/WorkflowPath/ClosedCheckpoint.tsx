@@ -26,6 +26,7 @@ import {
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import { sessionHeld } from "@/lib/checkpoint-call";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { standingOf } from "@/lib/checkpoint-verdict";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
@@ -86,9 +87,7 @@ export function ClosedCheckpoint({
 						sessions={
 							<HeldSessions
 								checkpoint={checkpoint}
-								href={(index) =>
-									`/user/project/${projectSlug}/workflow/cp${number}/review/${index}`
-								}
+								href={(index) => checkpointPathHref(projectSlug, number, index)}
 							/>
 						}
 					/>

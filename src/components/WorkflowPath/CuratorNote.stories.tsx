@@ -63,7 +63,7 @@ const meta: Meta<typeof CuratorNote> = {
 	component: CuratorNote,
 	args: {
 		reviewHref: (index: number) =>
-			`/user/project/hollow-tide/workflow/cp3/review/${index}`,
+			`/user/project/hollow-tide/workflow/cp3?sprint=${index}`,
 		onChat: () => {},
 		chatLoading: false,
 		now,

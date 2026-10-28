@@ -13,6 +13,7 @@ import {
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import { useCheckpointChat } from "@/hooks/checkpoints";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import type { CheckpointArtifactRef, CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
 import { AsideHead } from "./AsideHead";
@@ -74,7 +75,7 @@ export function CheckpointAside({
 				<CuratorNote
 					checkpoint={checkpoint}
 					reviewHref={(index) =>
-						`/user/project/${slug}/workflow/cp${checkpoint.number ?? 1}/review/${index}`
+						checkpointPathHref(slug, checkpoint.number ?? 1, index)
 					}
 					onChat={chat}
 					chatLoading={openChat.isPending}

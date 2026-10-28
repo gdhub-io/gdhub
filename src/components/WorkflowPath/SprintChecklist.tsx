@@ -28,6 +28,7 @@ import {
 	type ChecklistKey,
 	sprintChecklist,
 } from "@/lib/checkpoint-checklist";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import type { CheckpointDto, CheckpointSprintDto } from "@/types/checkpoints";
 import { CheckpointResult } from "./ClosedCheckpoint";
 import { daysUntil, formatShort } from "./dates";
@@ -96,11 +97,10 @@ export function SprintChecklist({
 	const curatorName = checkpoint.curator?.name?.split(" ")[0] ?? "";
 	// Only the sprint under way takes actions; one behind is a record.
 	const running = sprint.state === "current";
-	const base = `/user/project/${project.slug}/workflow/cp${checkpoint.number ?? 1}`;
-	const openSession = (index: number) => {
-		const session = sessions.find((row) => row.index === index);
-		if (session) router.push(`${base}/review/${session.index}`);
-	};
+	const openSession = (index: number) =>
+		router.push(
+			checkpointPathHref(project.slug, checkpoint.number ?? 1, index),
+		);
 	const refresh = () =>
 		queryClient.invalidateQueries({ queryKey: ["checkpoint", checkpoint.id] });
 

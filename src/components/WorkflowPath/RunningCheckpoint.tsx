@@ -29,6 +29,7 @@ import {
 } from "@/config/prisma-enums";
 import { downloadIcs } from "@/lib/calendar";
 import { sessionHeld } from "@/lib/checkpoint-call";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
 import type {
 	CheckpointDto,
@@ -79,9 +80,8 @@ export function RunningCheckpoint({
 		name: curatorName,
 	});
 	const number = checkpoint.number ?? 1;
-	const base = `/user/project/${project.slug}/workflow/cp${number}`;
 	const sessionHref = (session: CheckpointSessionDto) =>
-		`${base}/review/${session.index}`;
+		checkpointPathHref(project.slug, number, session.index);
 
 	if (!current) return null;
 
