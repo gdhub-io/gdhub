@@ -477706,44 +477706,6 @@
                                   "fill": "$text-invert"
                                 }
                               ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "wXWul",
-                              "name": "Btn Download .ics",
-                              "fill": "#00000000",
-                              "cornerRadius": "$radius-md",
-                              "stroke": "$border-strong",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "gap": 8,
-                              "padding": [
-                                8,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "qXVGJ",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "download",
-                                  "library": "lucide",
-                                  "fill": "$text-primary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Bhl4P",
-                                  "name": "T",
-                                  "fill": "$text-primary",
-                                  "content": "Download .ics",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "500"
-                                }
-                              ]
                             }
                           ]
                         },
@@ -483549,44 +483511,6 @@
                                   "icon": "chevron-down",
                                   "library": "lucide",
                                   "fill": "$text-invert"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "p0weF3",
-                              "name": "Btn Download .ics",
-                              "fill": "#00000000",
-                              "cornerRadius": "$radius-md",
-                              "stroke": "$border-strong",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "gap": 8,
-                              "padding": [
-                                8,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "tyWNH",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "download",
-                                  "library": "lucide",
-                                  "fill": "$text-primary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "UJFK5",
-                                  "name": "T",
-                                  "fill": "$text-primary",
-                                  "content": "Download .ics",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "500"
                                 }
                               ]
                             }
@@ -489801,44 +489725,6 @@
                                   "icon": "chevron-down",
                                   "library": "lucide",
                                   "fill": "$text-invert"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "i5jSOH",
-                              "name": "Btn Download .ics",
-                              "fill": "#00000000",
-                              "cornerRadius": "$radius-md",
-                              "stroke": "$border-strong",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "gap": 8,
-                              "padding": [
-                                8,
-                                16
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "ap7wM",
-                                  "name": "Ic",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "download",
-                                  "library": "lucide",
-                                  "fill": "$text-primary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "I9psg",
-                                  "name": "T",
-                                  "fill": "$text-primary",
-                                  "content": "Download .ics",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "500"
                                 }
                               ]
                             }
