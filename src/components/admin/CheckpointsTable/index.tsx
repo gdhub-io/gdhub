@@ -385,7 +385,12 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 			align: "right",
 			render: (_, row) =>
 				row.paid === null ? (
-					<span className={styles.none}>—</span>
+					// A draft is not paid yet; anything past it ran without a payment.
+					<span className={styles.none}>
+						{row.status === CheckpointStatus.Draft
+							? "—"
+							: t("admin.checkpoints.list.free", "Free")}
+					</span>
 				) : (
 					<span className={styles.number}>
 						{formatCheckpointMoney(row.paid)}
@@ -458,20 +463,26 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 		},
 		{
 			key: "action",
-			width: 56,
+			width: 88,
 			align: "right",
 			render: (_, row) => {
-				const journal =
-					row.status !== CheckpointStatus.Draft
-						? [
-								{
-									key: "journal",
-									icon: <IconNotebook size={14} />,
-									label: t("admin.checkpoints.menu.journal", "Curator journal"),
-									onClick: () => setReading(row),
-								},
-							]
-						: [];
+				// Read often: always in the row, beside the menu.
+				const journal = row.status !== CheckpointStatus.Draft && (
+					<Tooltip
+						title={t("admin.checkpoints.menu.journal", "Curator journal")}
+					>
+						<Button
+							type="text"
+							size="small"
+							icon={<IconNotebook size={16} />}
+							aria-label={t(
+								"admin.checkpoints.menu.journal",
+								"Curator journal",
+							)}
+							onClick={() => setReading(row)}
+						/>
+					</Tooltip>
+				);
 				const curating = !canManage
 					? []
 					: [
@@ -505,28 +516,32 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 								},
 							]
 						: [];
-				const top = [...curating, ...journal];
 				const items = [
-					...top,
-					...(top.length && money.length ? [{ type: "divider" as const }] : []),
+					...curating,
+					...(curating.length && money.length
+						? [{ type: "divider" as const }]
+						: []),
 					...money,
 				];
 
 				return (
-					items.length > 0 && (
-						<Dropdown
-							trigger={["click"]}
-							placement="bottomRight"
-							menu={{ items }}
-						>
-							<Button
-								type="text"
-								size="small"
-								icon={<IconDotsVertical size={16} />}
-								aria-label={t("admin.checkpoints.list.actions", "Actions")}
-							/>
-						</Dropdown>
-					)
+					<Flex gap={4} justify="end">
+						{journal}
+						{items.length > 0 && (
+							<Dropdown
+								trigger={["click"]}
+								placement="bottomRight"
+								menu={{ items }}
+							>
+								<Button
+									type="text"
+									size="small"
+									icon={<IconDotsVertical size={16} />}
+									aria-label={t("admin.checkpoints.list.actions", "Actions")}
+								/>
+							</Dropdown>
+						)}
+					</Flex>
 				);
 			},
 		},

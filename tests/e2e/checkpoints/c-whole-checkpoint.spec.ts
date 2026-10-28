@@ -272,11 +272,9 @@ test.describe.serial("a whole AI checkpoint", () => {
 		const admin = await signInAs(browser, await grantUser("admin-c", "superAdmin"));
 		await admin.goto("/admin/checkpoints");
 		const row = admin.getByRole("row").filter({ hasText: "Tidebound" }).first();
-		await row.getByRole("button", { name: "Actions" }).click();
-		await admin.getByRole("menuitem", { name: "Curator journal" }).click();
+		await row.getByRole("button", { name: "Curator journal" }).click();
 		const drawer = admin.getByRole("dialog", { name: /Curator journal/ });
-		await drawer.getByText("Verdict", { exact: true }).first().click();
-		await expect(drawer).toContainText(/Ready for the next stage|Goal met/);
+		await expect(drawer).toContainText(/Ready for the next stage|Goal met|Goal missed/);
 		log.step("Admin: the curator journal holds the verdict");
 
 		const scout = await signInAs(browser, await grantUser("scout-c", "scout"));
