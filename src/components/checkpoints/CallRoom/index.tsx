@@ -16,10 +16,11 @@ import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
-import { type PathTab, rememberInAddress } from "@/lib/checkpoint-hrefs";
+import { useAddressPick } from "@/hooks/useAddressPick";
+import type { PathTab } from "@/lib/checkpoint-hrefs";
 import { CallGoal } from "./CallGoal";
 import { CallHeader } from "./CallHeader";
-import { CallPanel, type PanelTab } from "./CallPanel";
+import { CallPanel } from "./CallPanel";
 import { CallLayout } from "./CallParts";
 import { ClosedStage } from "./ClosedStage";
 
@@ -33,7 +34,6 @@ export type CallRoomProps = {
 	checkpointId: string;
 	index: number;
 	backHref: string;
-	/** The tab a link asked for; a call's review is its notes. */
 	tab?: PathTab;
 };
 
@@ -50,13 +50,7 @@ export function CallRoom({
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const [joined, setJoined] = useState(false);
-	const [tab, setPickedTab] = useState<PanelTab | null>(
-		asked === "review" ? "notes" : (asked ?? null),
-	);
-	const setTab = (key: PanelTab) => {
-		setPickedTab(key);
-		rememberInAddress("tab", key === "notes" ? "review" : key);
-	};
+	const [tab, setTab] = useAddressPick<PathTab>("tab", asked ?? null);
 	const {
 		data: call,
 		isPending,
@@ -147,7 +141,7 @@ export function CallRoom({
 					notesReady={notesReady}
 					onChat={chat}
 					chatLoading={openChat.isPending}
-					onOpenReview={() => setTab("notes")}
+					onOpenReview={() => setTab("review")}
 				/>
 			}
 			aside={

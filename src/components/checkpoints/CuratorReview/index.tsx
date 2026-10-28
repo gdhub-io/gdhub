@@ -5,10 +5,10 @@ import { AiReview } from "./AiReview";
 
 export type CuratorReviewProps = {
 	checkpointId: string;
-	index: number;
+	/** The session the address names. A pro's page always has one: it is the call. */
+	index?: number;
 	backHref: string;
 	kind: CheckpointCuratorKind;
-	/** The tab a link asked for. */
 	tab?: PathTab;
 };
 
@@ -16,10 +16,10 @@ export type CuratorReviewProps = {
  * Curator's Review: one page for both curators. A pro holds calls, so its
  * page is the call room; the AI writes, so its page is the review.
  */
-export function CuratorReview({ kind, ...props }: CuratorReviewProps) {
+export function CuratorReview({ kind, index, ...props }: CuratorReviewProps) {
 	return kind === CheckpointCuratorKind.AI ? (
-		<AiReview {...props} />
+		<AiReview {...props} index={index} />
 	) : (
-		<CallRoom {...props} />
+		<CallRoom {...props} index={index ?? 1} />
 	);
 }

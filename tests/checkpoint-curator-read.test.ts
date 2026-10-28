@@ -2,12 +2,12 @@ import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const authMock = vi.fn();
-const checkpointCount = vi.fn();
+const findCheckpoint = vi.fn();
 const getCheckpoint = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
-// The space refuses everyone here: whoever reads, reads as the curator.
+// The space refuses everyone here: whoever reads, reads as the checkpoint's own.
 vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => () => async () =>
 		new Response(JSON.stringify({ error: "Not found" }), { status: 404 }),
@@ -22,7 +22,7 @@ vi.mock("@/repositories/checkpoint.repository", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		projectCheckpoint: {
-			count: (...args: unknown[]) => checkpointCount(...args),
+			findUnique: (...args: unknown[]) => findCheckpoint(...args),
 		},
 	},
 }));
@@ -40,21 +40,26 @@ beforeEach(() => {
 	getCheckpoint.mockResolvedValue({ id: "cp1", status: "Active" });
 });
 
-describe("reading a checkpoint", () => {
-	it("lets its own curator read it without a seat in the project", async () => {
-		authMock.mockResolvedValue({ user: { id: "curator", roles: ["Member"] } });
-		checkpointCount.mockResolvedValue(1);
+const row = (members: unknown[] = []) => ({
+	curatorId: "curator",
+	project: { authorId: "author", team: { members } },
+});
 
-		const response = await read();
-		expect(response.status).toBe(200);
-		expect(checkpointCount).toHaveBeenCalledWith({
-			where: { id: "cp1", curatorId: "curator" },
-		});
+describe("reading a checkpoint", () => {
+	it.each([
+		["its curator, without a seat in the project", "curator", row()],
+		["its author", "author", row()],
+		["someone confirmed on the team", "member", row([{ id: "tm1" }])],
+	])("lets %s read it", async (_, id, found) => {
+		authMock.mockResolvedValue({ user: { id, roles: ["Member"] } });
+		findCheckpoint.mockResolvedValue(found);
+
+		expect((await read()).status).toBe(200);
 	});
 
 	it("sends anyone else through the project's space", async () => {
 		authMock.mockResolvedValue({ user: { id: "stranger", roles: ["Member"] } });
-		checkpointCount.mockResolvedValue(0);
+		findCheckpoint.mockResolvedValue(row());
 
 		expect((await read()).status).toBe(404);
 		expect(getCheckpoint).not.toHaveBeenCalled();

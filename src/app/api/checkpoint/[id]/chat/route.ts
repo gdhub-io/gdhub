@@ -1,6 +1,6 @@
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { viewerOf, viewerSelect } from "@/repositories/checkpoint-viewer";
 import { checkpointRoomFor } from "@/services/chat/checkpoint-room";
 import { prisma } from "@/services/prisma";
 
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 /**
  * The checkpoint's chat for whoever opens it: the curator or someone on the
  * team. Not behind the space guard — the curator has no role in the project,
- * so the right comes from being on the team or named on the checkpoint.
+ * so the right comes from the checkpoint.
  */
 export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const caller = user as SessionUser | undefined;
@@ -19,22 +19,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id },
-		select: {
-			status: true,
-			curatorId: true,
-			project: {
-				select: {
-					team: {
-						select: {
-							members: {
-								where: { ...CONFIRMED_MEMBERS, userId: caller.id },
-								select: { id: true },
-							},
-						},
-					},
-				},
-			},
-		},
+		select: { status: true, ...viewerSelect(caller.id) },
 	});
 	if (!checkpoint?.curatorId) return apiError.notFound();
 
@@ -45,10 +30,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		checkpoint.status === CheckpointStatus.Closed;
 	if (!started) return apiError.badRequest("notStarted");
 
-	const onTeam = (checkpoint.project.team?.members.length ?? 0) > 0;
-	if (!onTeam && checkpoint.curatorId !== caller.id) {
-		return apiError.forbidden();
-	}
+	if (!viewerOf(checkpoint, caller.id)) return apiError.forbidden();
 
 	const roomId = await checkpointRoomFor(id, caller.id);
 	return roomId ? json({ roomId }) : apiError.notFound();

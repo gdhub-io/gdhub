@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { AdvisorSpace } from "@/components/spaces/AdvisorSpace";
 import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { pathTabOf } from "@/lib/checkpoint-hrefs";
 import { curatorKindOf } from "@/repositories/checkpoint-review";
 
 export const metadata: Metadata = {
@@ -12,10 +13,12 @@ export const metadata: Metadata = {
 
 export default async function AdvisorReviewPage({
 	params,
+	searchParams,
 }: {
 	params: Promise<{ id: string; index: string }>;
+	searchParams: Promise<{ tab?: string }>;
 }) {
-	const { id, index } = await params;
+	const [{ id, index }, { tab }] = await Promise.all([params, searchParams]);
 	const session = Number(index);
 	if (
 		!Number.isInteger(session) ||
@@ -33,6 +36,7 @@ export default async function AdvisorReviewPage({
 				kind={kind}
 				checkpointId={id}
 				index={session}
+				tab={pathTabOf(tab)}
 				backHref="/advisor/calendar"
 			/>
 		</AdvisorSpace>

@@ -105,7 +105,9 @@ const row = (overrides: {
 		stageName: "Concepting",
 		status: overrides.status ?? CheckpointStatus.Active,
 		curator: { id: "curator", name: "Patrick Novak", image: null },
+		curatorId: "curator",
 		project: {
+			authorId: "author",
 			name: "Tide",
 			slug: "tide",
 			team: { members: overrides.onTeam ? [{ id: "m1" }] : [] },

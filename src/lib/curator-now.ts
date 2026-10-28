@@ -3,6 +3,7 @@ import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { planCloses } from "@/lib/checkpoint-call";
 import { MS_PER_MINUTE } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
+import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import type { CuratorReview } from "@/types/checkpoints";
 
 /**
@@ -67,10 +68,8 @@ export const curatorNow = (
 	now = new Date(),
 ): CuratorNow => {
 	const sessions = [...checkpoint.sessions].sort((a, b) => a.index - b.index);
-	const current =
-		sessions.filter((session) => new Date(session.scheduledAt) <= now).at(-1) ??
-		sessions[0];
-	const index = current?.index ?? 1;
+	const index = currentSessionOf(sessions, now);
+	const current = sessions.find((session) => session.index === index);
 	const content = (current?.content ?? null) as CuratorReview | null;
 	const next = sessions.find((session) => session.index === index + 1);
 	const whenWritten = (session?: { scheduledAt: Date | string }) => {

@@ -13,14 +13,19 @@ import {
 	parseCallRoomName,
 	planEdit,
 } from "@/lib/checkpoint-call";
+import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import {
 	checkpointNumber,
 	previousVerdict,
 } from "@/repositories/checkpoint-number";
-import { agreeGoal, canEditPlan } from "@/repositories/checkpoint-plan-edit";
+import { agreeGoal } from "@/repositories/checkpoint-plan-edit";
+import {
+	canEditPlan,
+	viewerOf,
+	viewerSelect,
+} from "@/repositories/checkpoint-viewer";
 import { type CallBrief, getCallBriefs } from "@/repositories/curator-journal";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
 	callRoom,
 	callToken,
@@ -61,6 +66,8 @@ export type CheckpointCallDto = {
 	missed: boolean;
 	curatorJoinedAt: string | null;
 	role: CallRole;
+	/** The session under way, whichever this call is. */
+	current: number;
 	/** The curator's only: the AI's read of the sprint behind each call (GDHUB-114). */
 	briefs: CallBrief[];
 	plan: {
@@ -91,7 +98,8 @@ export type CheckpointCallDto = {
 const user = { select: { id: true, name: true, image: true } };
 
 /**
- * The call and who is asking: its curator or someone confirmed on the team.
+ * The call and who is asking: its curator, or the author or someone confirmed
+ * on the team.
  * Anyone else, and a checkpoint not running, gets null.
  */
 const loadCall = async (
@@ -113,18 +121,12 @@ const loadCall = async (
 					stageName: true,
 					status: true,
 					curator: user,
+					curatorId: true,
 					project: {
 						select: {
+							...viewerSelect(userId).project.select,
 							name: true,
 							slug: true,
-							team: {
-								select: {
-									members: {
-										where: { ...CONFIRMED_MEMBERS, userId },
-										select: { id: true },
-									},
-								},
-							},
 						},
 					},
 				},
@@ -140,14 +142,10 @@ const loadCall = async (
 		return null;
 	}
 
-	const curator = checkpoint.curator;
-	if (curator.id === userId) {
-		return { session, checkpoint, curator, role: "curator" as const };
-	}
-	if (checkpoint.project.team?.members.length) {
-		return { session, checkpoint, curator, role: "team" as const };
-	}
-	return null;
+	const viewer = viewerOf(checkpoint, userId);
+	if (!viewer) return null;
+	const role: CallRole = viewer === "curator" ? "curator" : "team";
+	return { session, checkpoint, curator: checkpoint.curator, role };
 };
 
 export const getCall = async (
@@ -231,6 +229,7 @@ export const getCall = async (
 		missed: callMissed(session, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
 		role: call.role,
+		current: currentSessionOf(plan.sessions, now),
 		briefs,
 		plan: {
 			goal: plan.goal,
