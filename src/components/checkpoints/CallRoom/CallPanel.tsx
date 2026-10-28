@@ -3,7 +3,8 @@
 import { useTranslate } from "@tolgee/react";
 import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
+import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
@@ -25,7 +26,7 @@ import { SessionSwitcher } from "./SessionSwitcher";
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
-export type PanelTab = "plan" | "notes" | "brief" | "transcript";
+export type PanelTab = "plan" | "notes" | "sprint" | "brief" | "transcript";
 
 // The transcript tab is built but not shown yet.
 const SHOW_TRANSCRIPT = false;
@@ -75,6 +76,18 @@ export function CallPanel({
 			notes={notes.data}
 			notesLoading={held && notes.isPending}
 			briefs={call.role === "curator" ? call.briefs : undefined}
+			// The team's to act on; a curator reads the sprint in the brief.
+			sprintTab={
+				call.role === "team"
+					? (at) => (
+							<SprintTab
+								checkpointId={call.checkpointId}
+								index={at}
+								project={call.project}
+							/>
+						)
+					: undefined
+			}
 		/>
 	);
 }
@@ -99,6 +112,8 @@ export type PanelBlockProps = {
 	};
 	/** The curator's only: the AI's briefs, by call; undefined hides the tab. */
 	briefs?: CallBriefData[];
+	/** The Sprint tab for a call; the stories go without it. */
+	sprintTab?: (index: number) => ReactNode;
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -117,6 +132,7 @@ export function PanelBlock({
 	notesLoading,
 	advise,
 	briefs,
+	sprintTab,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -188,6 +204,13 @@ export function PanelBlock({
 			),
 		},
 	];
+	if (sprintTab) {
+		items.push({
+			key: "sprint",
+			label: t("checkpoints.call.panel.sprint", "Sprint"),
+			children: <>{sprintTab(selected)}</>,
+		});
+	}
 	if (briefs) {
 		const brief = briefs.find((row) => row.index === selected);
 		items.push({

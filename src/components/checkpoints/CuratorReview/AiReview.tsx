@@ -25,6 +25,7 @@ import { SessionSwitcher } from "@/components/checkpoints/CallRoom/SessionSwitch
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState } from "@/components/ui";
+import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import {
 	AI_APPROVE_HOURS,
 	FINAL_SESSION,
@@ -54,7 +55,7 @@ import { useCuratorNow } from "./useCuratorNow";
 /** Where "Review the tasks" takes the author. */
 const PLAN_ANCHOR = "curator-plan";
 
-type AiTab = "plan" | "review";
+type AiTab = "plan" | "review" | "sprint";
 
 export type AiReviewProps = {
 	checkpointId: string;
@@ -145,6 +146,13 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 			onApprove={approvePlan}
 			approving={approve.isPending}
 			refreshKey={["checkpoint-review", checkpointId]}
+			sprintTab={(at) => (
+				<SprintTab
+					checkpointId={checkpointId}
+					index={at}
+					project={review.project}
+				/>
+			)}
 			aside={
 				<CuratorAside
 					projectId={review.project.id}
@@ -171,6 +179,8 @@ export type AiReviewViewProps = {
 	aside?: ReactNode;
 	/** The query the curator's message is read from, asked again when it is due to change. */
 	refreshKey?: QueryKey;
+	/** The Sprint tab for a session; the lab and the stories go without it. */
+	sprintTab?: (index: number) => ReactNode;
 };
 
 /** The page itself, from its data: what the stories render, moment by moment. */
@@ -185,6 +195,7 @@ export function AiReviewView({
 	approving,
 	aside,
 	refreshKey,
+	sprintTab,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
 	const [picked, setPicked] = useState<number | null>(null);
@@ -305,6 +316,15 @@ export function AiReviewView({
 									label: t("checkpoints.call.panel.review", "Review"),
 									children: <ReviewBody review={review} index={selected} />,
 								},
+								...(sprintTab
+									? [
+											{
+												key: "sprint",
+												label: t("checkpoints.call.panel.sprint", "Sprint"),
+												children: sprintTab(selected),
+											},
+										]
+									: []),
 							]}
 						/>
 					</section>
