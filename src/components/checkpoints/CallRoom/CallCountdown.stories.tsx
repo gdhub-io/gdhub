@@ -12,10 +12,10 @@ type Story = StoryObj<typeof CallCountdown>;
 const inMinutes = (minutes: number) =>
 	new Date(Date.now() + minutes * 60_000).toISOString();
 
-/** Day 0: call 1 is days away. */
+/** Day 0: call 1 is days away, so its date. */
 export const DaysAway: Story = { args: { at: inMinutes(3 * 24 * 60 + 125) } };
 
-/** The call is today. */
+/** Under a day away: the countdown. */
 export const HoursAway: Story = { args: { at: inMinutes(5 * 60 + 12) } };
 
 /** Minutes before the room opens. */
