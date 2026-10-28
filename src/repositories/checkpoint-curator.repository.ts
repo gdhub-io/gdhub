@@ -245,7 +245,8 @@ export const runGoalCheck = async (
 			genre: checkpoint.project.genre?.trim() || null,
 		},
 		author: founder ? briefAuthor(founder) : null,
-		team: await curatorTeam(checkpointId, checkpoint.projectId),
+		// Before the start nobody has joined during it.
+		team: await curatorTeam(checkpointId, checkpoint.projectId, null),
 		character: checkpoint.curatorCharacter,
 		previous,
 		picture: await projectPicture(checkpointId),
@@ -461,7 +462,11 @@ const reportInputFor = async (checkpointId: string) => {
 				}
 			: null,
 		devlogs: checkpoint.reports.map(toDevlog),
-		team: await curatorTeam(checkpointId, checkpoint.projectId),
+		team: await curatorTeam(
+			checkpointId,
+			checkpoint.projectId,
+			checkpoint.startedAt,
+		),
 		character: checkpoint.curatorCharacter,
 		journal: lettersSoFar(checkpoint.sessions),
 		calls:

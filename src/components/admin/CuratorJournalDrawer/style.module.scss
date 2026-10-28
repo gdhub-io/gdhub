@@ -17,6 +17,11 @@
 	scrollbar-color: var(--gd-color-border-strong) transparent;
 }
 
+// As wide as its options, not the drawer.
+.switcher {
+	align-self: flex-start;
+}
+
 .side {
 	min-width: 0;
 	max-width: 600px;

@@ -78,10 +78,23 @@ export type CuratorMember = {
 	hoursPerWeek: CuratorHours | null;
 	/** The weeks already behind, in order: confirmed working or not. */
 	weeks: boolean[];
+	/** The day they joined, when it was during the checkpoint; null for the team it started with. */
+	joinedOn: string | null;
+};
+
+/** A position the project has open now: what the curator may point to before suggesting another. */
+export type CuratorOpening = {
+	role: string;
+	postedOn: string;
+	/** How many applied so far. */
+	applied: number;
 };
 
 /** The team, in one place for every call: who is on it, their hours and pulse, and the sums. */
-export type CuratorTeam = TeamCapacity & { people: CuratorMember[] };
+export type CuratorTeam = TeamCapacity & {
+	people: CuratorMember[];
+	openings: CuratorOpening[];
+};
 
 /** What the game is, as its page says. */
 export type CuratorProject = {

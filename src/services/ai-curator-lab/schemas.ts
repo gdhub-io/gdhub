@@ -62,6 +62,14 @@ const team = z.object({
 			level: z.string().nullable(),
 			hoursPerWeek: hours,
 			weeks: z.array(z.boolean()),
+			joinedOn: z.string().nullable(),
+		}),
+	),
+	openings: z.array(
+		z.object({
+			role: z.string(),
+			postedOn: z.string(),
+			applied: z.number().int(),
 		}),
 	),
 });

@@ -1,4 +1,5 @@
 import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
+import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoint-capacity";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoint-days";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
@@ -74,12 +75,15 @@ export const memberRole = (member: {
 export async function curatorTeam(
 	checkpointId: string,
 	projectId: string,
+	/** Who joined after it is told apart; null before the checkpoint starts. */
+	startedAt: Date | null,
 ): Promise<CuratorTeam> {
-	const [members, pulses] = await Promise.all([
+	const [members, pulses, vacancies] = await Promise.all([
 		prisma.teamMember.findMany({
 			where: { team: { projectId }, ...CONFIRMED_MEMBERS },
 			select: {
 				id: true,
+				startedAt: true,
 				position: true,
 				speciality: { select: { name: true, level: true } },
 				user: {
@@ -90,6 +94,23 @@ export async function curatorTeam(
 		prisma.checkpointPulse.findMany({
 			where: { checkpointId },
 			select: { teamMemberId: true, week: true, confirmedAt: true },
+		}),
+		prisma.teamVacancy.findMany({
+			where: {
+				team: { projectId },
+				status: TeamVacancyStatus.Published,
+			},
+			orderBy: { publishedAt: "asc" },
+			select: {
+				title: true,
+				publishedAt: true,
+				createdAt: true,
+				_count: {
+					select: {
+						applicants: { where: { status: TeamMemberStatus.Applicant } },
+					},
+				},
+			},
 		}),
 	]);
 
@@ -108,6 +129,15 @@ export async function curatorTeam(
 				.filter((pulse) => pulse.teamMemberId === member.id)
 				.sort((a, b) => a.week - b.week)
 				.map((pulse) => !!pulse.confirmedAt),
+			joinedOn:
+				startedAt && member.startedAt > startedAt
+					? day(member.startedAt)
+					: null,
+		})),
+		openings: vacancies.map((vacancy) => ({
+			role: vacancy.title,
+			postedOn: day(vacancy.publishedAt ?? vacancy.createdAt),
+			applied: vacancy._count.applicants,
 		})),
 	};
 }
