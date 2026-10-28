@@ -6,8 +6,13 @@ import {
 	EvidenceMatch,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
+import { dateOfDay } from "@/lib/checkpoint-plan";
 import { isRunning } from "@/lib/checkpoint-refund";
-import { currentSprint, sprintOfDate } from "@/lib/checkpoint-sprints";
+import {
+	currentSprint,
+	sprintOfDate,
+	sprintRange,
+} from "@/lib/checkpoint-sprints";
 import { capped } from "@/lib/curator-text";
 import { checkArtifact } from "@/repositories/artifact-check";
 import {
@@ -29,6 +34,8 @@ import { prisma } from "@/services/prisma";
 export const SPRINT_VIDEO_SECONDS = 10 * 60;
 /** Devlog images and videos looked at per sprint. */
 const DEVLOG_MEDIA_PER_SPRINT = 6;
+/** Artifacts that prove no task, looked at per sprint. */
+const ARTIFACTS_PER_SPRINT = 6;
 /** What the journal keeps of a document's text. */
 const JOURNAL_TEXT_CHARS = 2000;
 
@@ -45,6 +52,7 @@ const whatWasRead = (link: string, content: EvidenceContent) => ({
 export type JournalRead = ReturnType<typeof whatWasRead> & {
 	task?: string;
 	artifactName?: string | null;
+	artifactType?: string;
 	devlog?: string;
 };
 
@@ -339,3 +347,88 @@ export const mediaLine = (
 	shows
 		? `- ${link}: ${shows}${unread ? ` (${unread})` : ""}`
 		: `- ${link}: not read — ${unread ?? "nothing readable"}`;
+
+/**
+ * A sprint's artifacts that prove no task — its build video, a document, an
+ * image — looked at once each, inside the sprint's video budget, so the review
+ * reads what the team showed beside its tasks.
+ */
+export async function seeSprintArtifacts(checkpointId: string, sprint: number) {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			projectId: true,
+			startedAt: true,
+			items: {
+				where: { artifactId: { not: null } },
+				select: { artifactId: true },
+			},
+		},
+	});
+	if (!checkpoint?.startedAt) return;
+	const range = sprintRange(checkpoint.startedAt, sprint);
+	const proving = new Set(checkpoint.items.map((item) => item.artifactId));
+
+	const looks = await sprintLooks(checkpointId, sprint);
+	const looked = looks.filter(
+		(look) => look.kind === CheckpointJournalKind.Artifact,
+	);
+	const seen = new Set(looked.map((look) => look.link));
+	const artifacts = (
+		await prisma.projectArtifact.findMany({
+			where: {
+				projectId: checkpoint.projectId,
+				createdAt: { gte: range.from, lt: dateOfDay(range.to, 2) },
+			},
+			orderBy: { createdAt: "asc" },
+			select: { id: true, link: true, type: true, name: true },
+		})
+	)
+		.filter((artifact) => !proving.has(artifact.id) && !seen.has(artifact.link))
+		.slice(0, Math.max(0, ARTIFACTS_PER_SPRINT - looked.length));
+
+	let left = SPRINT_VIDEO_SECONDS - videoSecondsOf(looks);
+	for (const artifact of artifacts) {
+		const content = await readArtifact(artifact, left).catch(() => null);
+		if (!content) continue;
+		left -= content.videoSeconds;
+
+		const shows = await describeRead(content, {
+			checkpointId,
+			purpose: "evidence",
+		}).catch(() => null);
+		await journal({
+			checkpointId,
+			kind: CheckpointJournalKind.Artifact,
+			sprint,
+			link: artifact.link,
+			input: {
+				artifactName: artifact.name,
+				artifactType: artifact.type,
+				...whatWasRead(artifact.link, content),
+			},
+			output: { shows },
+		});
+	}
+}
+
+/** What a sprint's other artifacts show, one line each, for its review. */
+export async function sprintArtifactLines(
+	checkpointId: string,
+	sprint: number,
+) {
+	await seeSprintArtifacts(checkpointId, sprint);
+	const looked = await prisma.checkpointJournalEntry.findMany({
+		where: { checkpointId, sprint, kind: CheckpointJournalKind.Artifact },
+		orderBy: { createdAt: "asc" },
+		select: { link: true, input: true, output: true },
+	});
+	return looked.map(({ link, input, output }) => {
+		const read = input as JournalRead;
+		return `${read.artifactType ?? "Artifact"} "${read.artifactName ?? ""}" ${mediaLine(
+			link,
+			(output as { shows: string | null }).shows,
+			read.unread,
+		).slice(2)}`;
+	});
+}

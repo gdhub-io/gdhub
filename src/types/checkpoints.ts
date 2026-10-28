@@ -206,6 +206,8 @@ export type CheckpointDto = {
 	 * is a separate step. Detail only.
 	 */
 	builds?: { id: string; addedAt: string; sprint: number }[];
+	/** Every artifact added inside the 28 days, by sprint: what "attach artifacts" counts. Detail only. */
+	sprintArtifacts?: { id: string; addedAt: string; sprint: number }[];
 	/** Counted through the project, not the stage: the third checkpoint is 3. Detail only. */
 	number?: number;
 	/** When the team first opened the previous checkpoint's verdict. */

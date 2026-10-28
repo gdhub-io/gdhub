@@ -49,6 +49,9 @@ vi.mock("@/services/prisma", () => ({
 vi.mock("@/repositories/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
+	sprintArtifactLines: vi.fn(async () => [
+		'GameplayVideo "Sprint 1 build" https://x.test/v: one tide loop played through',
+	]),
 }));
 vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
 vi.mock("@/repositories/curator-context", async (actual) => ({
@@ -253,6 +256,10 @@ describe("writeDueReviews", () => {
 
 		const input = writeSprintReview.mock.calls[0][0];
 		expect(input.sprint).toBe(1);
+		// The sprint's build video and other artifacts beside its tasks.
+		expect(input.artifactsSeen).toEqual([
+			'GameplayVideo "Sprint 1 build" https://x.test/v: one tide loop played through',
+		]);
 		// The team in one block, with each member's weeks: the sprint's pulse is read from it.
 		expect(input.team.people.map((person: { role: string }) => person.role)).toEqual([
 			"Game designer",

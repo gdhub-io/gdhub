@@ -49,6 +49,7 @@ import { journal } from "@/repositories/curator-journal";
 import {
 	devlogMediaLines,
 	seeCheckpointEvidence,
+	sprintArtifactLines,
 } from "@/repositories/evidence-seen";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { toCuratorTask } from "@/services/call-notes";
@@ -620,7 +621,10 @@ const sprintReviewInput = async (
 			stageWorkflow(checkpoint.stepId, checkpoint.stageName),
 			curatorTeam(checkpoint.id, checkpoint.projectId),
 		]);
-	const devlogMedia = await devlogMediaLines(posts.map((post) => post.id));
+	const [devlogMedia, artifactsSeen] = await Promise.all([
+		devlogMediaLines(posts.map((post) => post.id)),
+		sprintArtifactLines(checkpoint.id, sprint),
+	]);
 	// An AI review keeps its notes under `notes`; a human call's notes are the content.
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === sessionIndex - 1,
@@ -639,6 +643,7 @@ const sprintReviewInput = async (
 		tasks: checkpoint.items.map(toCuratorTask),
 		devlogs,
 		devlogMedia,
+		artifactsSeen,
 		artifacts,
 		team,
 		focusLastReview: agreed.map((line) => line.text),

@@ -67,6 +67,8 @@ export type SprintReviewInput = {
 	devlogs: string[];
 	/** What the images and videos in those devlogs show, one line each. */
 	devlogMedia: string[];
+	/** What the sprint's artifacts that prove no task show: its build video, a document. */
+	artifactsSeen?: string[];
 	artifacts: { type: string; name: string | null }[];
 	/** The team, with each member's weeks: the sprint's pulse is its last one. */
 	team: CuratorTeam;
@@ -282,6 +284,8 @@ export const writeSprintReview = async (
 			${input.devlogMedia.length ? `What the devlogs' images and videos show:\n${input.devlogMedia.join("\n")}` : ""}
 
 			${artifactLines(input.artifacts) || "No artifacts added in the sprint."}
+
+			${input.artifactsSeen?.length ? `What the sprint's artifacts beside its tasks show — its build video among them:\n${input.artifactsSeen.join("\n")}` : ""}
 
 			${renderTeam(input.team)}
 			${renderPulse(input.team, input.sprint)}

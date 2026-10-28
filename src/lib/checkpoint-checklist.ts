@@ -90,12 +90,17 @@ export const sprintChecklist = (
 		dueAt: devlogDueAt,
 	});
 
-	const proved = checkpoint.evidence?.find(
+	// Evidence for a task, or anything else the sprint added beside its build.
+	const proved = checkpoint.evidence?.some(
 		(item) => item.sprint === sprint.number && item.itemIds.length > 0,
+	);
+	const shown = (checkpoint.sprintArtifacts ?? []).some(
+		(artifact) =>
+			artifact.sprint === sprint.number && artifact.id !== build?.id,
 	);
 	items.push({
 		key: "artifacts",
-		done: !!proved,
+		done: !!proved || shown,
 		dueAt: devlogDueAt,
 	});
 

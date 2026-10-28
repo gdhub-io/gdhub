@@ -226423,7 +226423,7 @@
                       "clip": true,
                       "width": "fill_container",
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "layout": "vertical",
                       "children": [
@@ -226432,8 +226432,29 @@
                           "id": "xZ32D",
                           "name": "Curator",
                           "width": "fill_container",
-                          "fill": "$inv-bg",
-                          "stroke": "$inv-border",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 118,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "$accent-subtle",
+                                "position": 0
+                              },
+                              {
+                                "color": "$warning-tint",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "stroke": "$border",
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 12,
@@ -226476,7 +226497,7 @@
                                       "type": "text",
                                       "id": "q2jTz",
                                       "name": "Name",
-                                      "fill": "$inv-text",
+                                      "fill": "$text-primary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
                                       "content": "Patrick Novak",
@@ -226488,10 +226509,10 @@
                                       "type": "text",
                                       "id": "RW9sO",
                                       "name": "Role",
-                                      "fill": "$inv-text-tertiary",
+                                      "fill": "$text-tertiary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
-                                      "content": "Curator · 1 Oct",
+                                      "content": "Curator · 8 Oct",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
@@ -226504,8 +226525,9 @@
                                   "name": "Button — Chat",
                                   "width": 32,
                                   "height": 32,
+                                  "fill": "$surface",
                                   "cornerRadius": "$radius-md",
-                                  "stroke": "$inv-border",
+                                  "stroke": "$border-strong",
                                   "strokeWidth": 1,
                                   "justifyContent": "center",
                                   "alignItems": "center",
@@ -226518,7 +226540,7 @@
                                       "height": 16,
                                       "icon": "message-circle",
                                       "library": "lucide",
-                                      "fill": "$inv-text"
+                                      "fill": "$text-primary"
                                     }
                                   ]
                                 }
@@ -226528,7 +226550,7 @@
                               "type": "text",
                               "id": "NujLt",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "The plan is agreed. Attach the greybox build when it is up — that closes the second task, and we will play it on Wednesday's call.",
@@ -226552,7 +226574,7 @@
                                   "name": "Btn Attach the build",
                                   "width": "fill_container",
                                   "height": 40,
-                                  "fill": "$inv-text",
+                                  "fill": "$ink",
                                   "cornerRadius": "$radius-md",
                                   "gap": 8,
                                   "padding": [
@@ -226570,13 +226592,13 @@
                                       "height": 16,
                                       "icon": "paperclip",
                                       "library": "lucide",
-                                      "fill": "$ink"
+                                      "fill": "$text-invert"
                                     },
                                     {
                                       "type": "text",
                                       "id": "tdktJ",
                                       "name": "L",
-                                      "fill": "$ink",
+                                      "fill": "$text-invert",
                                       "content": "Attach the build",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -226591,7 +226613,7 @@
                                   "width": "fill_container",
                                   "height": 40,
                                   "cornerRadius": "$radius-md",
-                                  "stroke": "$inv-border-strong",
+                                  "stroke": "$border-strong",
                                   "strokeWidth": 1,
                                   "strokeAlignment": "inner",
                                   "gap": 8,
@@ -226608,16 +226630,16 @@
                                       "name": "Ic",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "video",
+                                      "icon": "lock",
                                       "library": "lucide",
-                                      "fill": "$inv-text"
+                                      "fill": "$text-secondary"
                                     },
                                     {
                                       "type": "text",
                                       "id": "QMr9t",
                                       "name": "L",
-                                      "fill": "$inv-text",
-                                      "content": "Join session",
+                                      "fill": "$text-secondary",
+                                      "content": "Join on 8 Oct, 14:00",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
                                       "fontWeight": "500"
@@ -226635,7 +226657,12 @@
                           "width": "fill_container",
                           "layout": "vertical",
                           "gap": 24,
-                          "padding": 24,
+                          "padding": [
+                            24,
+                            0,
+                            0,
+                            0
+                          ],
                           "children": [
                             {
                               "type": "frame",
@@ -226644,6 +226671,10 @@
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 4,
+                              "padding": [
+                                0,
+                                24
+                              ],
                               "children": [
                                 {
                                   "type": "frame",
@@ -226688,18 +226719,18 @@
                                           "fontWeight": "normal"
                                         }
                                       ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "izR0U",
+                                      "name": "Dates",
+                                      "fill": "$text-secondary",
+                                      "content": "1 – 28 Oct",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "izR0U",
-                                  "name": "Dates",
-                                  "fill": "$text-secondary",
-                                  "content": "1 – 28 Oct",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -226710,6 +226741,10 @@
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 8,
+                              "padding": [
+                                0,
+                                24
+                              ],
                               "children": [
                                 {
                                   "type": "text",
@@ -226742,13 +226777,18 @@
                               "name": "Expected outcomes",
                               "width": "fill_container",
                               "layout": "vertical",
-                              "gap": 12,
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "x5MZ8",
                                   "name": "Head",
                                   "width": "fill_container",
+                                  "padding": [
+                                    0,
+                                    24,
+                                    8,
+                                    24
+                                  ],
                                   "justifyContent": "space_between",
                                   "children": [
                                     {
@@ -226768,19 +226808,41 @@
                                   "id": "TyCT2",
                                   "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "QfD6d",
-                                      "name": "Icon circle-check",
+                                      "type": "frame",
+                                      "id": "BTRTa",
+                                      "name": "Done",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
-                                      "library": "lucide",
-                                      "fill": "$success"
+                                      "fill": "$success",
+                                      "cornerRadius": 999,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "hvsPe",
+                                          "name": "Check",
+                                          "width": 12,
+                                          "height": 12,
+                                          "icon": "check",
+                                          "library": "lucide",
+                                          "fill": "$text-invert"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "text",
@@ -226827,10 +226889,20 @@
                                 {
                                   "type": "frame",
                                   "id": "EGYaw",
-                                  "name": "Outcome",
+                                  "name": "Outcome — hover",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "fill": "$surface-sunken",
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -226889,8 +226961,17 @@
                                   "id": "HYxlp",
                                   "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -240305,7 +240386,7 @@
                       "clip": true,
                       "width": "fill_container",
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "layout": "vertical",
                       "children": [
@@ -240314,8 +240395,29 @@
                           "id": "BixZr",
                           "name": "Curator",
                           "width": "fill_container",
-                          "fill": "$inv-bg",
-                          "stroke": "$inv-border",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 118,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "$accent-subtle",
+                                "position": 0
+                              },
+                              {
+                                "color": "$warning-tint",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "stroke": "$border",
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 12,
@@ -240358,7 +240460,7 @@
                                       "type": "text",
                                       "id": "eQQlA",
                                       "name": "Name",
-                                      "fill": "$inv-text",
+                                      "fill": "$text-primary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
                                       "content": "Patrick Novak",
@@ -240370,7 +240472,7 @@
                                       "type": "text",
                                       "id": "W1uFIL",
                                       "name": "Role",
-                                      "fill": "$inv-text-tertiary",
+                                      "fill": "$text-tertiary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
                                       "content": "Curator · today",
@@ -240386,8 +240488,9 @@
                                   "name": "Button — Chat",
                                   "width": 32,
                                   "height": 32,
+                                  "fill": "$surface",
                                   "cornerRadius": "$radius-md",
-                                  "stroke": "$inv-border",
+                                  "stroke": "$border-strong",
                                   "strokeWidth": 1,
                                   "justifyContent": "center",
                                   "alignItems": "center",
@@ -240400,7 +240503,7 @@
                                       "height": 16,
                                       "icon": "message-circle",
                                       "library": "lucide",
-                                      "fill": "$inv-text"
+                                      "fill": "$text-primary"
                                     }
                                   ]
                                 }
@@ -240410,7 +240513,7 @@
                               "type": "text",
                               "id": "A8VSnE",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "Our call is today at 14:00. Bring the greybox — we will play it together and settle the last two tasks.",
@@ -240433,7 +240536,7 @@
                                   "name": "Btn Join session",
                                   "width": "fill_container",
                                   "height": 40,
-                                  "fill": "$inv-text",
+                                  "fill": "$ink",
                                   "cornerRadius": "$radius-md",
                                   "gap": 8,
                                   "padding": [
@@ -240451,13 +240554,13 @@
                                       "height": 16,
                                       "icon": "video",
                                       "library": "lucide",
-                                      "fill": "$ink"
+                                      "fill": "$text-invert"
                                     },
                                     {
                                       "type": "text",
                                       "id": "XU42e",
                                       "name": "L",
-                                      "fill": "$ink",
+                                      "fill": "$text-invert",
                                       "content": "Join session",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -240476,7 +240579,12 @@
                           "width": "fill_container",
                           "layout": "vertical",
                           "gap": 24,
-                          "padding": 24,
+                          "padding": [
+                            24,
+                            0,
+                            0,
+                            0
+                          ],
                           "children": [
                             {
                               "type": "frame",
@@ -240485,6 +240593,10 @@
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 4,
+                              "padding": [
+                                0,
+                                24
+                              ],
                               "children": [
                                 {
                                   "type": "frame",
@@ -240529,18 +240641,18 @@
                                           "fontWeight": "normal"
                                         }
                                       ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "D0rtZd",
+                                      "name": "Dates",
+                                      "fill": "$text-secondary",
+                                      "content": "1 – 28 Oct",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "D0rtZd",
-                                  "name": "Dates",
-                                  "fill": "$text-secondary",
-                                  "content": "1 – 28 Oct",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -240551,6 +240663,10 @@
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 8,
+                              "padding": [
+                                0,
+                                24
+                              ],
                               "children": [
                                 {
                                   "type": "text",
@@ -240583,13 +240699,18 @@
                               "name": "Expected outcomes",
                               "width": "fill_container",
                               "layout": "vertical",
-                              "gap": 12,
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "vOVnZ",
                                   "name": "Head",
                                   "width": "fill_container",
+                                  "padding": [
+                                    0,
+                                    24,
+                                    8,
+                                    24
+                                  ],
                                   "justifyContent": "space_between",
                                   "children": [
                                     {
@@ -240609,19 +240730,41 @@
                                   "id": "TR1Rx",
                                   "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "TAGvz",
-                                      "name": "Icon circle-check",
+                                      "type": "frame",
+                                      "id": "h8TIhW",
+                                      "name": "Done",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
-                                      "library": "lucide",
-                                      "fill": "$success"
+                                      "fill": "$success",
+                                      "cornerRadius": 999,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "PfA4p",
+                                          "name": "Check",
+                                          "width": 12,
+                                          "height": 12,
+                                          "icon": "check",
+                                          "library": "lucide",
+                                          "fill": "$text-invert"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "text",
@@ -240668,10 +240811,20 @@
                                 {
                                   "type": "frame",
                                   "id": "wjgGb",
-                                  "name": "Outcome",
+                                  "name": "Outcome — hover",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "fill": "$surface-sunken",
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -240730,8 +240883,17 @@
                                   "id": "miy0H",
                                   "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -283852,7 +284014,7 @@
                       "clip": true,
                       "width": "fill_container",
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "layout": "vertical",
                       "children": [
@@ -283861,8 +284023,29 @@
                           "id": "ErNgO",
                           "name": "Curator",
                           "width": "fill_container",
-                          "fill": "$inv-bg",
-                          "stroke": "$inv-border",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 118,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "$accent-subtle",
+                                "position": 0
+                              },
+                              {
+                                "color": "$warning-tint",
+                                "position": 1
+                              }
+                            ]
+                          },
+                          "stroke": "$border",
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 12,
@@ -283922,7 +284105,7 @@
                                       "type": "text",
                                       "id": "Q2Rjnm",
                                       "name": "Name",
-                                      "fill": "$inv-text",
+                                      "fill": "$text-primary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
                                       "content": "AI curator",
@@ -283934,7 +284117,7 @@
                                       "type": "text",
                                       "id": "NY0Ap",
                                       "name": "Role",
-                                      "fill": "$inv-text-tertiary",
+                                      "fill": "$text-tertiary",
                                       "textGrowth": "fixed-width",
                                       "width": "fill_container",
                                       "content": "8 Oct",
@@ -283953,8 +284136,9 @@
                                   "enabled": false,
                                   "width": 32,
                                   "height": 32,
+                                  "fill": "$surface",
                                   "cornerRadius": "$radius-md",
-                                  "stroke": "$inv-border",
+                                  "stroke": "$border-strong",
                                   "strokeWidth": 1,
                                   "justifyContent": "center",
                                   "alignItems": "center",
@@ -283967,7 +284151,7 @@
                                       "height": 16,
                                       "icon": "message-circle",
                                       "library": "lucide",
-                                      "fill": "$inv-text"
+                                      "fill": "$text-primary"
                                     }
                                   ]
                                 }
@@ -283977,7 +284161,7 @@
                               "type": "text",
                               "id": "QCHaQ",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "Day 8: the first harbour is reached — the island build is on itch.io. Now run the playtest with five players before the island grows.",
@@ -284000,7 +284184,7 @@
                                   "name": "Btn Read the review",
                                   "width": "fill_container",
                                   "height": 40,
-                                  "fill": "$inv-text",
+                                  "fill": "$ink",
                                   "cornerRadius": "$radius-md",
                                   "gap": 8,
                                   "padding": [
@@ -284018,13 +284202,13 @@
                                       "height": 16,
                                       "icon": "file-text",
                                       "library": "lucide",
-                                      "fill": "$ink"
+                                      "fill": "$text-invert"
                                     },
                                     {
                                       "type": "text",
                                       "id": "rzi5X",
                                       "name": "L",
-                                      "fill": "$ink",
+                                      "fill": "$text-invert",
                                       "content": "Read the review",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -284043,7 +284227,12 @@
                           "width": "fill_container",
                           "layout": "vertical",
                           "gap": 24,
-                          "padding": 24,
+                          "padding": [
+                            24,
+                            0,
+                            0,
+                            0
+                          ],
                           "children": [
                             {
                               "type": "frame",
@@ -284052,6 +284241,10 @@
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 4,
+                              "padding": [
+                                0,
+                                24
+                              ],
                               "children": [
                                 {
                                   "type": "frame",
@@ -284096,18 +284289,18 @@
                                           "fontWeight": "normal"
                                         }
                                       ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "TsmIZ",
+                                      "name": "Dates",
+                                      "fill": "$text-secondary",
+                                      "content": "1 – 28 Oct",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "TsmIZ",
-                                  "name": "Dates",
-                                  "fill": "$text-secondary",
-                                  "content": "1 – 28 Oct",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -284118,6 +284311,10 @@
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 8,
+                              "padding": [
+                                0,
+                                24
+                              ],
                               "children": [
                                 {
                                   "type": "text",
@@ -284150,13 +284347,18 @@
                               "name": "Expected outcomes",
                               "width": "fill_container",
                               "layout": "vertical",
-                              "gap": 12,
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "h2cZ7",
                                   "name": "Head",
                                   "width": "fill_container",
+                                  "padding": [
+                                    0,
+                                    24,
+                                    8,
+                                    24
+                                  ],
                                   "justifyContent": "space_between",
                                   "children": [
                                     {
@@ -284176,19 +284378,41 @@
                                   "id": "n93C5",
                                   "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 28,
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "UttaM",
-                                      "name": "Icon circle-check",
+                                      "type": "frame",
+                                      "id": "uM9cG",
+                                      "name": "Done",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "circle-check",
-                                      "library": "lucide",
-                                      "fill": "$success"
+                                      "fill": "$success",
+                                      "cornerRadius": 999,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "A5dq1g",
+                                          "name": "Check",
+                                          "width": 12,
+                                          "height": 12,
+                                          "icon": "check",
+                                          "library": "lucide",
+                                          "fill": "$text-invert"
+                                        }
+                                      ]
                                     },
                                     {
                                       "type": "text",
@@ -284251,10 +284475,20 @@
                                 {
                                   "type": "frame",
                                   "id": "rdSeA",
-                                  "name": "Outcome",
+                                  "name": "Outcome — hover",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "fill": "$surface-sunken",
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -284313,8 +284547,17 @@
                                   "id": "UaWrD",
                                   "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 32,
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 12,
+                                  "padding": [
+                                    0,
+                                    24
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -284372,12 +284615,16 @@
                                   "type": "frame",
                                   "id": "OO5oK",
                                   "name": "ViewAllLink — All artifacts",
+                                  "height": 44,
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "top": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "gap": 4,
                                   "padding": [
-                                    4,
                                     0,
-                                    0,
-                                    0
+                                    24
                                   ],
                                   "alignItems": "center",
                                   "children": [
@@ -286726,9 +286973,27 @@
                       "id": "wVnbo",
                       "name": "Curator message",
                       "width": "fill_container",
-                      "fill": "$inv-bg",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 118,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "$accent-subtle",
+                            "position": 0
+                          },
+                          {
+                            "color": "$warning-tint",
+                            "position": 1
+                          }
+                        ]
+                      },
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$inv-border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 16,
@@ -286740,22 +287005,16 @@
                           "name": "AI avatar",
                           "width": 48,
                           "height": 48,
-                          "fill": "$inv-surface",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "generated-17.png",
+                            "mode": "cover"
+                          },
                           "cornerRadius": 999,
+                          "stroke": "#00000000",
                           "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "rKrfa",
-                              "name": "Ic",
-                              "width": 24,
-                              "height": 24,
-                              "icon": "sparkles",
-                              "library": "lucide",
-                              "fill": "$inv-text"
-                            }
-                          ]
+                          "alignItems": "center"
                         },
                         {
                           "type": "frame",
@@ -286776,7 +287035,7 @@
                                   "type": "text",
                                   "id": "eTHqQ",
                                   "name": "Name",
-                                  "fill": "$inv-text",
+                                  "fill": "$text-primary",
                                   "content": "AI curator",
                                   "fontFamily": "$font",
                                   "fontSize": 15,
@@ -286786,7 +287045,7 @@
                                   "type": "text",
                                   "id": "vbttt",
                                   "name": "When",
-                                  "fill": "$inv-text-tertiary",
+                                  "fill": "$text-tertiary",
                                   "content": "8 Oct",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -286798,7 +287057,7 @@
                               "type": "text",
                               "id": "lORhm",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "Good start, Marta and team. The one-pager is done and the first island is blocked out — that's the hard part of week one. My worry is scope: three islands won't fit in 28 days, and nobody outside the team has played yet. For sprint 2 I'd put one island in front of strangers before building the next.",
@@ -290678,9 +290937,27 @@
                       "id": "D5IWOU",
                       "name": "Curator message",
                       "width": "fill_container",
-                      "fill": "$inv-bg",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 118,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "$accent-subtle",
+                            "position": 0
+                          },
+                          {
+                            "color": "$warning-tint",
+                            "position": 1
+                          }
+                        ]
+                      },
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$inv-border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 16,
@@ -290692,22 +290969,16 @@
                           "name": "AI avatar",
                           "width": 48,
                           "height": 48,
-                          "fill": "$inv-surface",
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "generated-17.png",
+                            "mode": "cover"
+                          },
                           "cornerRadius": 999,
+                          "stroke": "#00000000",
                           "justifyContent": "center",
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "icon",
-                              "id": "ti68N",
-                              "name": "Ic",
-                              "width": 24,
-                              "height": 24,
-                              "icon": "sparkles",
-                              "library": "lucide",
-                              "fill": "$inv-text"
-                            }
-                          ]
+                          "alignItems": "center"
                         },
                         {
                           "type": "frame",
@@ -290728,7 +290999,7 @@
                                   "type": "text",
                                   "id": "HAvSf",
                                   "name": "Name",
-                                  "fill": "$inv-text",
+                                  "fill": "$text-primary",
                                   "content": "AI curator",
                                   "fontFamily": "$font",
                                   "fontSize": 15,
@@ -290738,7 +291009,7 @@
                                   "type": "text",
                                   "id": "Nns34",
                                   "name": "When",
-                                  "fill": "$inv-text-tertiary",
+                                  "fill": "$text-tertiary",
                                   "content": "8 Oct",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -290750,7 +291021,7 @@
                               "type": "text",
                               "id": "wBh4Q",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "Sprint 1 is over. I'm reading the devlog, the two new artifacts and the team's pulse now. The review will be here by tomorrow, 9 Oct — you'll get a letter when it's ready.",
@@ -351081,9 +351352,27 @@
           "id": "hPKHv",
           "name": "Curator message",
           "width": "fill_container",
-          "fill": "$inv-bg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 118,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "$accent-subtle",
+                "position": 0
+              },
+              {
+                "color": "$warning-tint",
+                "position": 1
+              }
+            ]
+          },
           "cornerRadius": "$radius-xl",
-          "stroke": "$inv-border",
+          "stroke": "$brand-primary",
           "strokeWidth": 1,
           "strokeAlignment": "inner",
           "gap": 16,
@@ -351095,22 +351384,16 @@
               "name": "AI avatar",
               "width": 48,
               "height": 48,
-              "fill": "$inv-surface",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-17.png",
+                "mode": "cover"
+              },
               "cornerRadius": 999,
+              "stroke": "#00000000",
               "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "sAFtq",
-                  "name": "Ic",
-                  "width": 24,
-                  "height": 24,
-                  "icon": "sparkles",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                }
-              ]
+              "alignItems": "center"
             },
             {
               "type": "frame",
@@ -351131,7 +351414,7 @@
                       "type": "text",
                       "id": "FFPLN",
                       "name": "Name",
-                      "fill": "$inv-text",
+                      "fill": "$text-primary",
                       "content": "AI curator",
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -351141,7 +351424,7 @@
                       "type": "text",
                       "id": "BdSmh",
                       "name": "When",
-                      "fill": "$inv-text-tertiary",
+                      "fill": "$text-tertiary",
                       "content": "15 Oct",
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -351153,7 +351436,7 @@
                   "type": "text",
                   "id": "CVT7n",
                   "name": "Message",
-                  "fill": "$inv-text",
+                  "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Halfway. Today is the day to look at the tasks again: if the path needs a correction, change it now — this is the last chance in this checkpoint, until Fri 16 Oct, 14:00. My advice: shorten the greybox to one island, drop the trailer, and add three playtests with strangers. The details and the reasons are below; accept what you agree with, or edit the tasks yourself.",
@@ -351179,7 +351462,7 @@
                       "type": "frame",
                       "id": "XYxEj",
                       "name": "Btn Review the tasks",
-                      "fill": "$inv-text",
+                      "fill": "$ink",
                       "cornerRadius": "$radius-md",
                       "gap": 8,
                       "padding": [
@@ -351196,13 +351479,13 @@
                           "height": 14,
                           "icon": "arrow-down",
                           "library": "lucide",
-                          "fill": "$ink"
+                          "fill": "$text-invert"
                         },
                         {
                           "type": "text",
                           "id": "V2W4ke",
                           "name": "L",
-                          "fill": "$ink",
+                          "fill": "$text-invert",
                           "content": "Review the tasks",
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -352123,9 +352406,27 @@
           "id": "vaC3F",
           "name": "Curator message",
           "width": "fill_container",
-          "fill": "$inv-bg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 118,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "$accent-subtle",
+                "position": 0
+              },
+              {
+                "color": "$warning-tint",
+                "position": 1
+              }
+            ]
+          },
           "cornerRadius": "$radius-xl",
-          "stroke": "$inv-border",
+          "stroke": "$brand-primary",
           "strokeWidth": 1,
           "strokeAlignment": "inner",
           "gap": 16,
@@ -352137,22 +352438,16 @@
               "name": "AI avatar",
               "width": 48,
               "height": 48,
-              "fill": "$inv-surface",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-17.png",
+                "mode": "cover"
+              },
               "cornerRadius": 999,
+              "stroke": "#00000000",
               "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "DEegH",
-                  "name": "Ic",
-                  "width": 24,
-                  "height": 24,
-                  "icon": "sparkles",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                }
-              ]
+              "alignItems": "center"
             },
             {
               "type": "frame",
@@ -352173,7 +352468,7 @@
                       "type": "text",
                       "id": "i7FNof",
                       "name": "Name",
-                      "fill": "$inv-text",
+                      "fill": "$text-primary",
                       "content": "AI curator",
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -352183,7 +352478,7 @@
                       "type": "text",
                       "id": "nM1zc",
                       "name": "When",
-                      "fill": "$inv-text-tertiary",
+                      "fill": "$text-tertiary",
                       "content": "1 Oct",
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -352195,7 +352490,7 @@
                   "type": "text",
                   "id": "R2wlk1",
                   "name": "Message",
-                  "fill": "$inv-text",
+                  "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Hi, I'm your curator for the next four weeks, and I'll help you get to the goal you set. For that, write 1 to 5 tasks that will show the goal is reached. I've prepared a few suggestions below — take them or write your own.",
@@ -352221,7 +352516,7 @@
                       "type": "frame",
                       "id": "EfaG6",
                       "name": "Btn Review the tasks",
-                      "fill": "$inv-text",
+                      "fill": "$ink",
                       "cornerRadius": "$radius-md",
                       "gap": 8,
                       "padding": [
@@ -352238,13 +352533,13 @@
                           "height": 14,
                           "icon": "arrow-down",
                           "library": "lucide",
-                          "fill": "$ink"
+                          "fill": "$text-invert"
                         },
                         {
                           "type": "text",
                           "id": "RDJit",
                           "name": "L",
-                          "fill": "$ink",
+                          "fill": "$text-invert",
                           "content": "Set the tasks",
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -353386,9 +353681,27 @@
           "id": "shP5F",
           "name": "Curator message",
           "width": "fill_container",
-          "fill": "$inv-bg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 118,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "$accent-subtle",
+                "position": 0
+              },
+              {
+                "color": "$warning-tint",
+                "position": 1
+              }
+            ]
+          },
           "cornerRadius": "$radius-xl",
-          "stroke": "$inv-border",
+          "stroke": "$brand-primary",
           "strokeWidth": 1,
           "strokeAlignment": "inner",
           "gap": 16,
@@ -353400,22 +353713,16 @@
               "name": "AI avatar",
               "width": 48,
               "height": 48,
-              "fill": "$inv-surface",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-17.png",
+                "mode": "cover"
+              },
               "cornerRadius": 999,
+              "stroke": "#00000000",
               "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "QNBJf",
-                  "name": "Ic",
-                  "width": 24,
-                  "height": 24,
-                  "icon": "sparkles",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                }
-              ]
+              "alignItems": "center"
             },
             {
               "type": "frame",
@@ -353436,7 +353743,7 @@
                       "type": "text",
                       "id": "v2wnG",
                       "name": "Name",
-                      "fill": "$inv-text",
+                      "fill": "$text-primary",
                       "content": "AI curator",
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -353446,7 +353753,7 @@
                       "type": "text",
                       "id": "eREgv",
                       "name": "When",
-                      "fill": "$inv-text-tertiary",
+                      "fill": "$text-tertiary",
                       "content": "1 Oct",
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -353458,7 +353765,7 @@
                   "type": "text",
                   "id": "PoGJT",
                   "name": "Message",
-                  "fill": "$inv-text",
+                  "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "I've read your goal and tasks. Two tasks are solid; one is too vague to check — I suggested a wording you can show. Adjust what you agree with, then approve the plan.",
@@ -353484,7 +353791,7 @@
                       "type": "frame",
                       "id": "tZZNx",
                       "name": "Btn Review the tasks",
-                      "fill": "$inv-text",
+                      "fill": "$ink",
                       "cornerRadius": "$radius-md",
                       "gap": 8,
                       "padding": [
@@ -353501,13 +353808,13 @@
                           "height": 14,
                           "icon": "arrow-down",
                           "library": "lucide",
-                          "fill": "$ink"
+                          "fill": "$text-invert"
                         },
                         {
                           "type": "text",
                           "id": "KlaOL",
                           "name": "L",
-                          "fill": "$ink",
+                          "fill": "$text-invert",
                           "content": "Review the tasks",
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -354353,9 +354660,27 @@
           "id": "fcMYF",
           "name": "Curator message",
           "width": "fill_container",
-          "fill": "$inv-bg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 118,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "$accent-subtle",
+                "position": 0
+              },
+              {
+                "color": "$warning-tint",
+                "position": 1
+              }
+            ]
+          },
           "cornerRadius": "$radius-xl",
-          "stroke": "$inv-border",
+          "stroke": "$brand-primary",
           "strokeWidth": 1,
           "strokeAlignment": "inner",
           "gap": 16,
@@ -354367,22 +354692,16 @@
               "name": "AI avatar",
               "width": 48,
               "height": 48,
-              "fill": "$inv-surface",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-17.png",
+                "mode": "cover"
+              },
               "cornerRadius": 999,
+              "stroke": "#00000000",
               "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "uFJIB",
-                  "name": "Ic",
-                  "width": 24,
-                  "height": 24,
-                  "icon": "sparkles",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                }
-              ]
+              "alignItems": "center"
             },
             {
               "type": "frame",
@@ -354403,7 +354722,7 @@
                       "type": "text",
                       "id": "isquF",
                       "name": "Name",
-                      "fill": "$inv-text",
+                      "fill": "$text-primary",
                       "content": "AI curator",
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -354413,7 +354732,7 @@
                       "type": "text",
                       "id": "ZndHx",
                       "name": "When",
-                      "fill": "$inv-text-tertiary",
+                      "fill": "$text-tertiary",
                       "content": "29 Oct",
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -354436,7 +354755,7 @@
                       "type": "text",
                       "id": "cXovb",
                       "name": "Label",
-                      "fill": "$inv-text-tertiary",
+                      "fill": "$text-tertiary",
                       "content": "Verdict",
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -354454,7 +354773,7 @@
                       "type": "text",
                       "id": "sJU0f",
                       "name": "Value",
-                      "fill": "$inv-text",
+                      "fill": "$text-primary",
                       "content": "Ready for the next stage",
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -354466,7 +354785,7 @@
                   "type": "text",
                   "id": "GXIa1",
                   "name": "Message",
-                  "fill": "$inv-text",
+                  "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Four weeks, and the goal is reached: every task has something anyone can open, and a stranger finished the greybox in under five minutes. You cut the trailer and shortened the build at the right moment — that's what made it fit. Take the open questions below into the next checkpoint.",
@@ -354492,7 +354811,7 @@
                       "type": "frame",
                       "id": "ai9bh",
                       "name": "Btn Start the next checkpoint",
-                      "fill": "$inv-text",
+                      "fill": "$ink",
                       "cornerRadius": "$radius-md",
                       "gap": 8,
                       "padding": [
@@ -354509,13 +354828,13 @@
                           "height": 14,
                           "icon": "arrow-right",
                           "library": "lucide",
-                          "fill": "$ink"
+                          "fill": "$text-invert"
                         },
                         {
                           "type": "text",
                           "id": "RmllK",
                           "name": "L",
-                          "fill": "$ink",
+                          "fill": "$text-invert",
                           "content": "Move to Prototyping",
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -354529,7 +354848,7 @@
                       "name": "Btn Plan Checkpoint 4",
                       "fill": "#00000000",
                       "cornerRadius": "$radius-md",
-                      "stroke": "$inv-border-strong",
+                      "stroke": "$border-strong",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 8,
@@ -354547,13 +354866,13 @@
                           "height": 14,
                           "icon": "calendar-plus",
                           "library": "lucide",
-                          "fill": "$inv-text"
+                          "fill": "$text-primary"
                         },
                         {
                           "type": "text",
                           "id": "yaZrn",
                           "name": "L",
-                          "fill": "$inv-text",
+                          "fill": "$text-primary",
                           "content": "Plan Checkpoint 4",
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -354567,7 +354886,7 @@
                       "name": "Btn Share the result",
                       "fill": "#00000000",
                       "cornerRadius": "$radius-md",
-                      "stroke": "$inv-border-strong",
+                      "stroke": "$border-strong",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 8,
@@ -354585,13 +354904,13 @@
                           "height": 14,
                           "icon": "share",
                           "library": "lucide",
-                          "fill": "$inv-text"
+                          "fill": "$text-primary"
                         },
                         {
                           "type": "text",
                           "id": "g34sMy",
                           "name": "L",
-                          "fill": "$inv-text",
+                          "fill": "$text-primary",
                           "content": "Share the result",
                           "fontFamily": "$font",
                           "fontSize": 14,
@@ -357569,9 +357888,27 @@
                       "id": "UiwLF",
                       "name": "Curator message",
                       "width": "fill_container",
-                      "fill": "$inv-bg",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 118,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "$accent-subtle",
+                            "position": 0
+                          },
+                          {
+                            "color": "$warning-tint",
+                            "position": 1
+                          }
+                        ]
+                      },
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$inv-border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 16,
@@ -357619,7 +357956,7 @@
                                   "type": "text",
                                   "id": "bEuJc",
                                   "name": "Name",
-                                  "fill": "$inv-text",
+                                  "fill": "$text-primary",
                                   "content": "Patrick Novak · curator",
                                   "fontFamily": "$font",
                                   "fontSize": 15,
@@ -357629,7 +357966,7 @@
                                   "type": "text",
                                   "id": "GsyjC",
                                   "name": "When",
-                                  "fill": "$inv-text-tertiary",
+                                  "fill": "$text-tertiary",
                                   "content": "1 Oct · ended 14:52",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -357641,7 +357978,7 @@
                               "type": "text",
                               "id": "SmlkP",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "The call is over. The plan you agreed is below, and the notes from the call will be here within the hour — everyone gets a letter when they're ready.",
@@ -357667,7 +358004,7 @@
                                   "type": "frame",
                                   "id": "HLsIC",
                                   "name": "Btn Open the review",
-                                  "fill": "$inv-text",
+                                  "fill": "$ink",
                                   "cornerRadius": "$radius-md",
                                   "gap": 8,
                                   "padding": [
@@ -357684,13 +358021,13 @@
                                       "height": 14,
                                       "icon": "file-text",
                                       "library": "lucide",
-                                      "fill": "$ink"
+                                      "fill": "$text-invert"
                                     },
                                     {
                                       "type": "text",
                                       "id": "zJoEE",
                                       "name": "L",
-                                      "fill": "$ink",
+                                      "fill": "$text-invert",
                                       "content": "Open the review",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -361063,9 +361400,27 @@
                       "id": "wfEgp",
                       "name": "Curator message",
                       "width": "fill_container",
-                      "fill": "$inv-bg",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 118,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "$accent-subtle",
+                            "position": 0
+                          },
+                          {
+                            "color": "$warning-tint",
+                            "position": 1
+                          }
+                        ]
+                      },
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$inv-border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 16,
@@ -361113,7 +361468,7 @@
                                   "type": "text",
                                   "id": "u5m68",
                                   "name": "Name",
-                                  "fill": "$inv-text",
+                                  "fill": "$text-primary",
                                   "content": "Patrick Novak · curator",
                                   "fontFamily": "$font",
                                   "fontSize": 15,
@@ -361123,7 +361478,7 @@
                                   "type": "text",
                                   "id": "V7JVAZ",
                                   "name": "When",
-                                  "fill": "$inv-text-tertiary",
+                                  "fill": "$text-tertiary",
                                   "content": "8 Oct, 14:00",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -361135,7 +361490,7 @@
                               "type": "text",
                               "id": "Q33mp5",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "Our next call is on Thursday 8 Oct at 14:00 (Europe/Minsk). The room opens 15 minutes before; you'll be let in as soon as I join. Bring the sprint 1 devlog — we'll start from it.",
@@ -361161,7 +361516,7 @@
                                   "type": "frame",
                                   "id": "Xe4ND",
                                   "name": "Btn Add to calendar",
-                                  "fill": "$inv-text",
+                                  "fill": "$ink",
                                   "cornerRadius": "$radius-md",
                                   "gap": 8,
                                   "padding": [
@@ -361178,13 +361533,13 @@
                                       "height": 14,
                                       "icon": "calendar-plus",
                                       "library": "lucide",
-                                      "fill": "$ink"
+                                      "fill": "$text-invert"
                                     },
                                     {
                                       "type": "text",
                                       "id": "v4EwpJ",
                                       "name": "L",
-                                      "fill": "$ink",
+                                      "fill": "$text-invert",
                                       "content": "Add to calendar",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -361198,7 +361553,7 @@
                                   "name": "Btn Message Patrick",
                                   "fill": "#00000000",
                                   "cornerRadius": "$radius-md",
-                                  "stroke": "$inv-border-strong",
+                                  "stroke": "$border-strong",
                                   "strokeWidth": 1,
                                   "strokeAlignment": "inner",
                                   "gap": 8,
@@ -361216,13 +361571,13 @@
                                       "height": 14,
                                       "icon": "message-circle",
                                       "library": "lucide",
-                                      "fill": "$inv-text"
+                                      "fill": "$text-primary"
                                     },
                                     {
                                       "type": "text",
                                       "id": "tkvS3",
                                       "name": "L",
-                                      "fill": "$inv-text",
+                                      "fill": "$text-primary",
                                       "content": "Message Patrick",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -364522,8 +364877,28 @@
                       "id": "wuqr8",
                       "name": "Curator message",
                       "width": "fill_container",
-                      "fill": "$inv-bg",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 118,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "$accent-subtle",
+                            "position": 0
+                          },
+                          {
+                            "color": "$warning-tint",
+                            "position": 1
+                          }
+                        ]
+                      },
                       "cornerRadius": "$radius-xl",
+                      "stroke": "$brand-primary",
+                      "strokeWidth": 1,
                       "gap": 16,
                       "padding": 24,
                       "children": [
@@ -364533,7 +364908,7 @@
                           "name": "Avatar",
                           "width": 48,
                           "height": 48,
-                          "fill": "$inv-surface",
+                          "fill": "$surface",
                           "cornerRadius": 999
                         },
                         {
@@ -364550,7 +364925,7 @@
                               "name": "Bar",
                               "width": 160,
                               "height": 12,
-                              "fill": "$inv-surface",
+                              "fill": "$surface",
                               "cornerRadius": 6
                             },
                             {
@@ -364559,7 +364934,7 @@
                               "name": "Bar",
                               "width": "fill_container",
                               "height": 12,
-                              "fill": "$inv-surface",
+                              "fill": "$surface",
                               "cornerRadius": 6
                             },
                             {
@@ -364568,7 +364943,7 @@
                               "name": "Bar",
                               "width": "fill_container",
                               "height": 12,
-                              "fill": "$inv-surface",
+                              "fill": "$surface",
                               "cornerRadius": 6
                             },
                             {
@@ -364577,7 +364952,7 @@
                               "name": "Bar",
                               "width": 420,
                               "height": 12,
-                              "fill": "$inv-surface",
+                              "fill": "$surface",
                               "cornerRadius": 6
                             }
                           ]
@@ -448616,9 +448991,27 @@
                       "id": "at8F5",
                       "name": "Curator message",
                       "width": "fill_container",
-                      "fill": "$inv-bg",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 118,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "$accent-subtle",
+                            "position": 0
+                          },
+                          {
+                            "color": "$warning-tint",
+                            "position": 1
+                          }
+                        ]
+                      },
                       "cornerRadius": "$radius-xl",
-                      "stroke": "$inv-border",
+                      "stroke": "$brand-primary",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "gap": 16,
@@ -448666,7 +449059,7 @@
                                   "type": "text",
                                   "id": "E83Yx",
                                   "name": "Name",
-                                  "fill": "$inv-text",
+                                  "fill": "$text-primary",
                                   "content": "Patrick Novak · curator",
                                   "fontFamily": "$font",
                                   "fontSize": 15,
@@ -448676,7 +449069,7 @@
                                   "type": "text",
                                   "id": "eCGFn",
                                   "name": "When",
-                                  "fill": "$inv-text-tertiary",
+                                  "fill": "$text-tertiary",
                                   "content": "8 Oct, 14:00",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -448688,7 +449081,7 @@
                               "type": "text",
                               "id": "oayIG",
                               "name": "Message",
-                              "fill": "$inv-text",
+                              "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
                               "content": "Our next call is on Thursday 8 Oct at 14:00 (Europe/Minsk). The room opens 15 minutes before; you'll be let in as soon as I join. Bring the sprint 1 devlog — we'll start from it.",
@@ -448714,7 +449107,7 @@
                                   "type": "frame",
                                   "id": "agZV8",
                                   "name": "Btn Add to calendar",
-                                  "fill": "$inv-text",
+                                  "fill": "$ink",
                                   "cornerRadius": "$radius-md",
                                   "gap": 8,
                                   "padding": [
@@ -448731,13 +449124,13 @@
                                       "height": 14,
                                       "icon": "calendar-plus",
                                       "library": "lucide",
-                                      "fill": "$ink"
+                                      "fill": "$text-invert"
                                     },
                                     {
                                       "type": "text",
                                       "id": "NnwVb",
                                       "name": "L",
-                                      "fill": "$ink",
+                                      "fill": "$text-invert",
                                       "content": "Add to calendar",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -448751,7 +449144,7 @@
                                   "name": "Btn Message Patrick",
                                   "fill": "#00000000",
                                   "cornerRadius": "$radius-md",
-                                  "stroke": "$inv-border-strong",
+                                  "stroke": "$border-strong",
                                   "strokeWidth": 1,
                                   "strokeAlignment": "inner",
                                   "gap": 8,
@@ -448769,13 +449162,13 @@
                                       "height": 14,
                                       "icon": "message-circle",
                                       "library": "lucide",
-                                      "fill": "$inv-text"
+                                      "fill": "$text-primary"
                                     },
                                     {
                                       "type": "text",
                                       "id": "a5JlS",
                                       "name": "L",
-                                      "fill": "$inv-text",
+                                      "fill": "$text-primary",
                                       "content": "Message Patrick",
                                       "fontFamily": "$font",
                                       "fontSize": 14,
@@ -454736,9 +455129,27 @@
                           "id": "qZkW9",
                           "name": "Curator message, as on Curator's Review",
                           "width": "fill_container",
-                          "fill": "$inv-bg",
+                          "fill": {
+                            "type": "gradient",
+                            "gradientType": "linear",
+                            "enabled": true,
+                            "rotation": 118,
+                            "size": {
+                              "height": 1
+                            },
+                            "colors": [
+                              {
+                                "color": "$accent-subtle",
+                                "position": 0
+                              },
+                              {
+                                "color": "$warning-tint",
+                                "position": 1
+                              }
+                            ]
+                          },
                           "cornerRadius": "$radius-xl",
-                          "stroke": "$inv-border",
+                          "stroke": "$brand-primary",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "gap": 16,
@@ -454750,22 +455161,16 @@
                               "name": "AI avatar",
                               "width": 48,
                               "height": 48,
-                              "fill": "$inv-surface",
+                              "fill": {
+                                "type": "image",
+                                "enabled": true,
+                                "url": "generated-17.png",
+                                "mode": "cover"
+                              },
                               "cornerRadius": 999,
+                              "stroke": "#00000000",
                               "justifyContent": "center",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "C3jbl",
-                                  "name": "Ic",
-                                  "width": 24,
-                                  "height": 24,
-                                  "icon": "sparkles",
-                                  "library": "lucide",
-                                  "fill": "$inv-text"
-                                }
-                              ]
+                              "alignItems": "center"
                             },
                             {
                               "type": "frame",
@@ -454786,7 +455191,7 @@
                                       "type": "text",
                                       "id": "Q3IYV",
                                       "name": "Name",
-                                      "fill": "$inv-text",
+                                      "fill": "$text-primary",
                                       "content": "AI curator",
                                       "fontFamily": "$font",
                                       "fontSize": 15,
@@ -454796,7 +455201,7 @@
                                       "type": "text",
                                       "id": "AfsYu",
                                       "name": "When",
-                                      "fill": "$inv-text-tertiary",
+                                      "fill": "$text-tertiary",
                                       "content": "1 Oct",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
@@ -454808,7 +455213,7 @@
                                   "type": "text",
                                   "id": "pPu8Q",
                                   "name": "Message",
-                                  "fill": "$inv-text",
+                                  "fill": "$text-primary",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Hi, I'm your curator for the next four weeks. Your goal fits the 120–160 hours you stated, but the demo, the style board and the playtest leave little slack. Today, narrow the demo to the tide mechanic on one part of the island. See you at the start of the next sprint — until then I look forward to your new devlogs, artifacts and other activity ;)",
@@ -454834,7 +455239,7 @@
                                       "type": "frame",
                                       "id": "e2PWbO",
                                       "name": "Btn Review the tasks",
-                                      "fill": "$inv-text",
+                                      "fill": "$ink",
                                       "cornerRadius": "$radius-md",
                                       "gap": 8,
                                       "padding": [
@@ -454851,13 +455256,13 @@
                                           "height": 14,
                                           "icon": "arrow-down",
                                           "library": "lucide",
-                                          "fill": "$ink"
+                                          "fill": "$text-invert"
                                         },
                                         {
                                           "type": "text",
                                           "id": "H2VrS2",
                                           "name": "L",
-                                          "fill": "$ink",
+                                          "fill": "$text-invert",
                                           "content": "Review the tasks",
                                           "fontFamily": "$font",
                                           "fontSize": 14,
@@ -455764,9 +456169,27 @@
           "id": "mWWSR",
           "name": "Curator message",
           "width": "fill_container",
-          "fill": "$inv-bg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 118,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "$accent-subtle",
+                "position": 0
+              },
+              {
+                "color": "$warning-tint",
+                "position": 1
+              }
+            ]
+          },
           "cornerRadius": "$radius-xl",
-          "stroke": "$inv-border",
+          "stroke": "$brand-primary",
           "strokeWidth": 1,
           "strokeAlignment": "inner",
           "gap": 16,
@@ -455778,22 +456201,16 @@
               "name": "AI avatar",
               "width": 48,
               "height": 48,
-              "fill": "$inv-surface",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-17.png",
+                "mode": "cover"
+              },
               "cornerRadius": 999,
+              "stroke": "#00000000",
               "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "FgPTu",
-                  "name": "Ic",
-                  "width": 24,
-                  "height": 24,
-                  "icon": "sparkles",
-                  "library": "lucide",
-                  "fill": "$inv-text"
-                }
-              ]
+              "alignItems": "center"
             },
             {
               "type": "frame",
@@ -455814,7 +456231,7 @@
                       "type": "text",
                       "id": "s8RV9z",
                       "name": "Name",
-                      "fill": "$inv-text",
+                      "fill": "$text-primary",
                       "content": "AI curator",
                       "fontFamily": "$font",
                       "fontSize": 15,
@@ -455824,7 +456241,7 @@
                       "type": "text",
                       "id": "fmulm",
                       "name": "When",
-                      "fill": "$inv-text-tertiary",
+                      "fill": "$text-tertiary",
                       "content": "1 Oct",
                       "fontFamily": "$font",
                       "fontSize": 13,
@@ -455836,7 +456253,7 @@
                   "type": "text",
                   "id": "z7NDI",
                   "name": "Message",
-                  "fill": "$inv-text",
+                  "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
                   "content": "Well done with the tasks — now you know what to do. I look forward to your new devlog posts, artifacts and other activity, to see how the team is getting on with them ;)",
@@ -455862,7 +456279,7 @@
                       "type": "frame",
                       "id": "kr8ev",
                       "name": "Btn Review the tasks",
-                      "fill": "$inv-text",
+                      "fill": "$ink",
                       "cornerRadius": "$radius-md",
                       "gap": 8,
                       "padding": [
@@ -455879,13 +456296,13 @@
                           "height": 14,
                           "icon": "arrow-down",
                           "library": "lucide",
-                          "fill": "$ink"
+                          "fill": "$text-invert"
                         },
                         {
                           "type": "text",
                           "id": "r6bpbC",
                           "name": "L",
-                          "fill": "$ink",
+                          "fill": "$text-invert",
                           "content": "See the plan",
                           "fontFamily": "$font",
                           "fontSize": 14,

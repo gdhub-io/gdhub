@@ -5,6 +5,7 @@ import {
 	IconFileCheck,
 	IconGavel,
 	IconMessage,
+	IconPackage,
 	IconPhoto,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
@@ -53,13 +54,15 @@ type Filter = "all" | CheckpointJournalKind;
 const ICON: Record<CheckpointJournalKind, Icon> = {
 	[CheckpointJournalKind.Evidence]: IconFileCheck,
 	[CheckpointJournalKind.DevlogMedia]: IconPhoto,
+	[CheckpointJournalKind.Artifact]: IconPackage,
 	[CheckpointJournalKind.Review]: IconMessage,
 	[CheckpointJournalKind.Verdict]: IconGavel,
 };
 
 const looked = (entry: CuratorJournalEntryDto) =>
 	entry.kind === CheckpointJournalKind.Evidence ||
-	entry.kind === CheckpointJournalKind.DevlogMedia;
+	entry.kind === CheckpointJournalKind.DevlogMedia ||
+	entry.kind === CheckpointJournalKind.Artifact;
 
 const unreadOf = (read: Read) => !read.text && !read.images;
 
@@ -295,6 +298,21 @@ function JournalEntry({ entry }: { entry: CuratorJournalEntryDto }) {
 						{
 							devlog: read.devlog,
 						},
+					),
+					body:
+						shows ??
+						t("admin.checkpoints.journal.unread", "Not read — {why}", {
+							why: read.unread,
+						}),
+				};
+			}
+			case CheckpointJournalKind.Artifact: {
+				const { shows } = entry.output as { shows: string | null };
+				return {
+					title: t(
+						"admin.checkpoints.journal.sprintArtifact",
+						"Sprint artifact · {name}",
+						{ name: read.artifactName ?? read.artifactType ?? "" },
 					),
 					body:
 						shows ??

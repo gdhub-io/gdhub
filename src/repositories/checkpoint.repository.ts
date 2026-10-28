@@ -491,11 +491,10 @@ const toCheckpointDetail = (row: DetailRow) => {
 	};
 };
 
-/** The project's builds uploaded inside the 28 days, each filed in its sprint. */
-const buildsDuring = async (row: {
+/** Every artifact the project added inside the 28 days, each filed in its sprint. */
+const artifactsDuring = async (row: {
 	projectId: string;
 	startedAt: Date | null;
-	curatorKind: CheckpointCuratorKind;
 }) => {
 	const { startedAt } = row;
 	if (!startedAt) return [];
@@ -503,13 +502,13 @@ const buildsDuring = async (row: {
 	const artifacts = await prisma.projectArtifact.findMany({
 		where: {
 			projectId: row.projectId,
-			type: { in: SPRINT_BUILD_TYPES[row.curatorKind] },
 			createdAt: {
 				gte: utcStartOfDay(startedAt),
 				lt: dateOfDay(startedAt, CHECKPOINT_DAYS + 1),
 			},
 		},
-		select: { id: true, createdAt: true },
+		select: { id: true, createdAt: true, type: true },
+		orderBy: { createdAt: "asc" },
 	});
 
 	return artifacts.flatMap((artifact) => {
@@ -521,6 +520,7 @@ const buildsDuring = async (row: {
 					{
 						id: artifact.id,
 						addedAt: artifact.createdAt.toISOString(),
+						type: artifact.type,
 						sprint,
 					},
 				];
@@ -536,11 +536,11 @@ export const getCheckpoint = async (id: string) => {
 	if (!row) return null;
 
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
-	const [held, lineage, builds, now] = await Promise.all([
+	const [held, lineage, added, now] = await Promise.all([
 		row.paymentId ? heldAmount(id) : null,
 		checkpointLineage(row),
 		// A draft has no sprints to file builds in.
-		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
+		row.status === CheckpointStatus.Draft ? [] : artifactsDuring(row),
 		row.curatorKind === CheckpointCuratorKind.AI ? nowOfCurator(id) : null,
 	]);
 
@@ -548,7 +548,10 @@ export const getCheckpoint = async (id: string) => {
 		...toCheckpointDetail(row),
 		// A draft has no number yet.
 		number: row.status === CheckpointStatus.Draft ? undefined : lineage.number,
-		builds,
+		builds: added.filter((artifact) =>
+			SPRINT_BUILD_TYPES[row.curatorKind].includes(artifact.type),
+		),
+		sprintArtifacts: added,
 		curatorNow: now,
 		previousCuratorKind: lineage.previousCuratorKind,
 		heldPrice: held === null ? null : toWholePrice(held),
