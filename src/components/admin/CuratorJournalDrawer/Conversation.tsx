@@ -108,6 +108,7 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 	return (
 		<Flex vertical gap={16}>
 			<Segmented
+				className={styles.switcher}
 				// The list opens on the newest, so the switcher does too.
 				value={picked ?? [...reached].at(-1)}
 				onChange={(key) => {
