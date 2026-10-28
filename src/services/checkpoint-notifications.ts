@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import {
+	AI_APPROVE_HOURS,
 	AI_REMIND_HOURS,
 	CURATOR_ANSWER_DAYS,
 	EVIDENCE_REMIND_DAY,
@@ -17,7 +18,12 @@ import {
 	CheckpointStatus,
 	SpaceRole,
 } from "@/config/prisma-enums";
-import { dayNumberOn, MS_PER_DAY, utcStartOfDay } from "@/lib/checkpoint-days";
+import {
+	dayNumberOn,
+	MS_PER_DAY,
+	MS_PER_HOUR,
+	utcStartOfDay,
+} from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
 import {
@@ -137,7 +143,7 @@ export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
  * one hour that mark falls in, and the transaction id covers a second run.
  */
 export const remindPlansUnsent = async (now = new Date()) => {
-	const hour = Math.floor(now.getTime() / HOUR) * HOUR;
+	const hour = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
 	let sent = 0;
 	for (const after of AI_REMIND_HOURS) {
 		const sessions = await prisma.checkpointSession.findMany({
@@ -145,8 +151,8 @@ export const remindPlansUnsent = async (now = new Date()) => {
 				index: 1,
 				// Written at payment, with the rest of the checkpoint's sessions.
 				createdAt: {
-					gte: new Date(hour - (after + 1) * HOUR),
-					lt: new Date(hour - after * HOUR),
+					gte: new Date(hour - (after + 1) * MS_PER_HOUR),
+					lt: new Date(hour - after * MS_PER_HOUR),
 				},
 				checkpoint: {
 					curatorKind: CheckpointCuratorKind.AI,
@@ -197,8 +203,7 @@ export const notifyPlanApproved = async (checkpointId: string) => {
 	const number = await checkpointNumber(row);
 	await notify(row.project.author, `cp-plan-approved-${checkpointId}`, {
 		title: `The plan of Checkpoint ${number} is approved`,
-		message:
-			"It approved itself as it stood, 12 hours after the curator's check. The goal and tasks are fixed until day 15, when they can change once more.",
+		message: `It approved itself as it stood, ${AI_APPROVE_HOURS} hours after the curator's check. The goal and tasks are fixed until day 15, when they can change once more.`,
 		redirectUrl: reviewUrl(row.project.slug, number, 1),
 	});
 };
@@ -208,15 +213,15 @@ export const notifyPlanApproved = async (checkpointId: string) => {
  * in SCOPE_REMIND_BEFORE_HOURS and the author has not confirmed it.
  */
 export const remindScopeClosing = async (now = new Date()) => {
-	const hour = Math.floor(now.getTime() / HOUR) * HOUR;
+	const hour = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
 	// The change closes SCOPE_ANSWER_HOURS after the review ended.
 	const endedBefore = SCOPE_ANSWER_HOURS - SCOPE_REMIND_BEFORE_HOURS;
 	const sessions = await prisma.checkpointSession.findMany({
 		where: {
 			index: SCOPE_SESSION,
 			endedAt: {
-				gte: new Date(hour - (endedBefore + 1) * HOUR),
-				lt: new Date(hour - endedBefore * HOUR),
+				gte: new Date(hour - (endedBefore + 1) * MS_PER_HOUR),
+				lt: new Date(hour - endedBefore * MS_PER_HOUR),
 			},
 			checkpoint: {
 				curatorKind: CheckpointCuratorKind.AI,
@@ -477,8 +482,6 @@ export const remindVerdictsDue = async (now = new Date()) => {
 	return { dueTomorrow: dueTomorrow.length, overdue: lateToday.length };
 };
 
-const HOUR = 60 * 60 * 1000;
-
 /** A team member, with the time zone their reminders are written in. */
 const inZone = {
 	select: { id: true, email: true, profile: { select: { timezone: true } } },
@@ -492,12 +495,12 @@ const inZone = {
 export const remindCallsSoon = async (now = new Date()) => {
 	// From the top of the hour: a run a few seconds late must not skip a call
 	// on the hour.
-	const hour = Math.floor(now.getTime() / HOUR) * HOUR;
+	const hour = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
 	const sessions = await prisma.checkpointSession.findMany({
 		where: {
 			scheduledAt: {
-				gte: new Date(hour + HOUR),
-				lt: new Date(hour + 2 * HOUR),
+				gte: new Date(hour + MS_PER_HOUR),
+				lt: new Date(hour + 2 * MS_PER_HOUR),
 			},
 			endedAt: null,
 			checkpoint: {

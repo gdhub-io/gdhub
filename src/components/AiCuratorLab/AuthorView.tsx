@@ -3,10 +3,12 @@
 import { Flex, Timeline, Typography } from "antd";
 import { AiReviewView } from "@/components/checkpoints/CuratorReview/AiReview";
 import { StatusDot } from "@/components/ui";
+import { AI_APPROVE_HOURS } from "@/config/checkpoint";
 import type {
 	CheckpointVerdict,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
+import { MS_PER_HOUR } from "@/lib/checkpoint-days";
 import type { Standing } from "@/lib/checkpoint-verdict";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { LabSettled } from "@/services/ai-curator-lab";
@@ -76,7 +78,7 @@ const review = ({
 		goal,
 		edit,
 		editUntil: edit
-			? new Date(Date.now() + 12 * 3600 * 1000).toISOString()
+			? new Date(Date.now() + AI_APPROVE_HOURS * MS_PER_HOUR).toISOString()
 			: null,
 		approved: false,
 		tasks,

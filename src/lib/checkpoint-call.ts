@@ -6,6 +6,7 @@ import {
 	SCOPE_SESSION,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { MS_PER_HOUR } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { scopeState } from "@/lib/checkpoint-scope";
 
@@ -90,8 +91,6 @@ type PlanTimes = {
 	checkedAt?: Date | string | null;
 };
 
-const HOUR_MS = 60 * 60 * 1000;
-
 /**
  * When day 1's goal and tasks close: with the AI curator, when the plan
  * approves itself after the check — null before the check, as it waits for
@@ -103,12 +102,13 @@ export const planCloses = (checkpoint: PlanTimes) => {
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
 		return checkpoint.checkedAt
 			? new Date(
-					new Date(checkpoint.checkedAt).getTime() + AI_APPROVE_HOURS * HOUR_MS,
+					new Date(checkpoint.checkedAt).getTime() +
+						AI_APPROVE_HOURS * MS_PER_HOUR,
 				)
 			: null;
 	}
 	const start = new Date(checkpoint.startedAt).getTime();
-	return new Date(start + PRO_PLAN_HOURS * HOUR_MS);
+	return new Date(start + PRO_PLAN_HOURS * MS_PER_HOUR);
 };
 
 export const planEdit = (

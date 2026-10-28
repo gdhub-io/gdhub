@@ -21,7 +21,10 @@ import {
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoint-curator";
 import { createCharacter } from "@/services/checkpoint-curator/character";
-import { characterFace } from "@/services/checkpoint-curator/prompts/card";
+import {
+	characterFace,
+	type JournalEntry,
+} from "@/services/checkpoint-curator/prompts/card";
 import { writePlanAdvice, writeSprintReview } from "@/services/curator-review";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { LAB_PERSONAS } from "./personas";
@@ -399,7 +402,7 @@ CALLS.push(
 		],
 		run: async ({ character }, locale) => {
 			const letters: Letter[] = [];
-			const journal: { day: number; text: string }[] = [];
+			const journal: JournalEntry[] = [];
 			for (const step of ROAD) {
 				const found = CALLS.find((each) => each.id === step.call);
 				const situation = found

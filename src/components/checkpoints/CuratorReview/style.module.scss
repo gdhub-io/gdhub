@@ -10,19 +10,6 @@
 	border-radius: var(--gd-radius-panel);
 }
 
-.avatar {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex: none;
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	corner-shape: round;
-	background: var(--gd-color-surface);
-	color: var(--gd-color-text);
-}
-
 .body {
 	display: flex;
 	flex-direction: column;

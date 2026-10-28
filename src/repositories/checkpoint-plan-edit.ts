@@ -9,6 +9,7 @@ import {
 	CheckpointStatus,
 } from "@/config/prisma-enums";
 import { planEdit } from "@/lib/checkpoint-call";
+import { MS_PER_HOUR } from "@/lib/checkpoint-days";
 import type { PlanChange } from "@/schemas/checkpoint";
 import { prisma } from "@/services/prisma";
 
@@ -254,7 +255,7 @@ export const approveCheckedPlans = async (now = new Date()) => {
 					index: 1,
 					content: CHECKED,
 					updatedAt: {
-						lte: new Date(now.getTime() - AI_APPROVE_HOURS * 60 * 60 * 1000),
+						lte: new Date(now.getTime() - AI_APPROVE_HOURS * MS_PER_HOUR),
 					},
 				},
 			},

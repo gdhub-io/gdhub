@@ -11,6 +11,7 @@ import { Button, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { firstName } from "@/components/checkpoints/CallRoom/CallHeader";
 import { useLockedJoinLabel } from "@/components/checkpoints/CallRoom/ClosedStage";
 import { InverseBand } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -21,12 +22,14 @@ import {
 } from "@/config/prisma-enums";
 import { callMissed, callState } from "@/lib/checkpoint-call";
 import type { CheckpointDto } from "@/types/checkpoints";
+import { formatShort } from "./dates";
 import styles from "./style.module.scss";
 
 const { Text, Paragraph } = Typography;
 
-type Action = { key: string; label: string; icon: ReactNode; href: string };
-type Join = Action & { primary: boolean; locked: boolean };
+type Action = { label: string; icon: ReactNode; href: string };
+/** No href while the room is still closed. */
+type Join = Omit<Action, "href"> & { href: string | null };
 
 /**
  * Frames 12.07, 12.08 and 12.10 (`xZ32D`, `BixZr`, `ErNgO`): the curator on
@@ -60,7 +63,7 @@ export function CuratorNote({
 	if (isAI) {
 		const { letter } = checkpoint;
 		const index = letter?.index ?? 1;
-		date = letter ? dayjs(letter.at).format("D MMM") : null;
+		date = letter ? formatShort(letter.at) : null;
 		message =
 			letter?.text ??
 			t(
@@ -70,7 +73,6 @@ export function CuratorNote({
 		// Day 1 asks for the tasks until the plan is approved.
 		const planOpen = index === 1 && !checkpoint.goalAgreedAt;
 		action = {
-			key: "review",
 			label: planOpen
 				? t("workflow.aside.setTasks", "Set the tasks")
 				: t("workflow.aside.readReview", "Read the review"),
@@ -106,7 +108,7 @@ export function CuratorNote({
 				"Our call is on now — the room is open, come in.",
 			);
 		} else if (held && callMissed(held, now)) {
-			const name = curator?.name?.split(" ")[0] ?? "";
+			const name = firstName(curator?.name ?? "");
 			const missed = dayjs(held.scheduledAt).format("D MMM");
 			const at = next && dayjs(next.scheduledAt);
 			date = at ? at.format("D MMM") : missed;
@@ -124,10 +126,7 @@ export function CuratorNote({
 				: t(
 						"workflow.aside.missed",
 						"{name} didn't join the call on {missed}.",
-						{
-							name,
-							missed,
-						},
+						{ name, missed },
 					);
 		} else if (next) {
 			const at = dayjs(next.scheduledAt);
@@ -155,7 +154,6 @@ export function CuratorNote({
 		}
 		if (reviewed && !live) {
 			action = {
-				key: "review",
 				label: t("checkpoints.call.openReview", "Open the review"),
 				icon: <IconFileText size={16} />,
 				href: reviewHref(reviewed.index),
@@ -163,22 +161,16 @@ export function CuratorNote({
 		}
 		if (live) {
 			join = {
-				key: "join",
 				label: t("workflow.aside.join", "Join session"),
 				icon: <IconVideo size={16} />,
 				href: reviewHref(live.index),
-				primary: true,
-				locked: false,
 			};
 		} else if (next) {
 			// Until the room opens the button says when it will.
 			join = {
-				key: "join",
 				label: lockedJoin(next.scheduledAt, now),
 				icon: <IconLock size={16} />,
-				href: reviewHref(next.index),
-				primary: false,
-				locked: true,
+				href: null,
 			};
 		}
 	}
@@ -242,20 +234,16 @@ export function CuratorNote({
 						</Link>
 					)}
 					{join &&
-						(join.locked ? (
-							<Button block disabled icon={join.icon}>
-								{join.label}
-							</Button>
-						) : (
+						(join.href ? (
 							<Link href={join.href}>
-								<Button
-									type={join.primary ? "primary" : "default"}
-									block
-									icon={join.icon}
-								>
+								<Button type="primary" block icon={join.icon}>
 									{join.label}
 								</Button>
 							</Link>
+						) : (
+							<Button block disabled icon={join.icon}>
+								{join.label}
+							</Button>
 						))}
 				</div>
 			)}

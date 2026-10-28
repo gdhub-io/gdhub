@@ -214,8 +214,7 @@ const checkpointDetailSelect = {
 			source: true,
 		},
 	},
-	// The detail reads the AI curator's last letter from its session too.
-	sessions: { select: { ...sessionRowSelect.select, content: true } },
+	sessions: sessionRowSelect,
 	curatorCharacter: true,
 	project: {
 		select: {
@@ -423,14 +422,15 @@ const buildEvidence = (
 export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
 /** The AI curator's latest letter the team can read, and the session it is on. */
-const lastLetter = (
-	sessions: { index: number; scheduledAt: Date; content: unknown }[],
-	now = new Date(),
-) => {
-	const latest = sessions
-		.filter((session) => session.scheduledAt <= now)
-		.sort((a, b) => b.index - a.index)
-		.find((session) => (session.content as CuratorReview | null)?.message);
+const lastLetter = async (checkpointId: string, now = new Date()) => {
+	const sessions = await prisma.checkpointSession.findMany({
+		where: { checkpointId, scheduledAt: { lte: now } },
+		orderBy: { index: "desc" },
+		select: { index: true, scheduledAt: true, content: true },
+	});
+	const latest = sessions.find(
+		(session) => (session.content as CuratorReview | null)?.message,
+	);
 	return latest
 		? {
 				index: latest.index,
@@ -467,7 +467,6 @@ const toCheckpointDetail = (row: DetailRow) => {
 		})),
 		sprints: buildSprints(startedAt),
 		sessions: buildSessions(startedAt, sessions),
-		letter: lastLetter(sessions),
 		character: characterFace(curatorCharacter),
 		pulses: buildPulseRows(
 			project.team?.members ?? [],
@@ -526,11 +525,13 @@ export const getCheckpoint = async (id: string) => {
 	if (!row) return null;
 
 	// Only a checkpoint carrying a payment can hold money a replacement must match.
-	const [held, lineage, builds] = await Promise.all([
+	const [held, lineage, builds, letter] = await Promise.all([
 		row.paymentId ? heldAmount(id) : null,
 		checkpointLineage(row),
 		// A draft has no sprints to file builds in.
 		row.status === CheckpointStatus.Draft ? [] : buildsDuring(row),
+		// Only the AI curator writes letters; a pro's call notes stay on their page.
+		row.curatorKind === CheckpointCuratorKind.AI ? lastLetter(id) : null,
 	]);
 
 	return {
@@ -538,6 +539,7 @@ export const getCheckpoint = async (id: string) => {
 		// A draft has no number yet.
 		number: row.status === CheckpointStatus.Draft ? undefined : lineage.number,
 		builds,
+		letter,
 		previousCuratorKind: lineage.previousCuratorKind,
 		heldPrice: held === null ? null : toWholePrice(held),
 	};

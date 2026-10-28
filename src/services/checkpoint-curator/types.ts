@@ -5,14 +5,10 @@ import type {
 	UnprovenOutcome,
 } from "@/lib/checkpoint-verdict";
 import type { AiPurpose } from "@/services/ai-usage";
-import type {
-	GoalAdvice,
-	TaskAdvice,
-	TaskSuggestion,
-} from "@/types/checkpoints";
+import type { GoalAdvice, TaskSuggestion } from "@/types/checkpoints";
 
 /**
- * Inputs and results for the AI curator's four calls.
+ * Inputs and results for the AI curator's calls.
  *
  * Provider agnostic and free of server-only imports, so the checkpoint page can
  * import the result types to render what the curator wrote. Everything the model
@@ -102,7 +98,6 @@ export type CuratorAuthor = {
 	experience: string | null;
 };
 
-/** Day 1: is this reachable in 28 days, and what is missing from the list. */
 /** What the author's profile says they like: the AI curator's character takes its colour from it. */
 export type CuratorPersona = {
 	genres: string[];
@@ -126,13 +121,6 @@ export type GoalCheckInput = {
 	/** What happened on the project in the two weeks leading in. */
 	picture: string;
 };
-
-/**
- * What the curator has to say about one task, in the plan advice's shape so
- * the review page shows it under the task (GDHUB-117): what to do with it, why,
- * and for a vague or oversized task a wording ready to use.
- */
-export type ItemNote = TaskAdvice;
 
 /**
  * Day 1, right after payment (GDHUB-117): the goal is read before any task is

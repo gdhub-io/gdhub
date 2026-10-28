@@ -16,7 +16,8 @@ export const dueDateFrom = (startedAt: Date) => {
 	return due;
 };
 
-export const MS_PER_DAY = 24 * 60 * 60 * 1000;
+export const MS_PER_HOUR = 60 * 60 * 1000;
+export const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 const utcMidnight = (date: Date) =>
 	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());

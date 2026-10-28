@@ -38,10 +38,9 @@ export const LAB_PERSONAS: {
 	},
 	{
 		id: "pirate",
-		// Like Tri, the GDHub assistant: a witty pirate indie developer.
 		label: {
-			en: "Adventures → Captain Flint, a pirate like Tri",
-			ru: "Приключения → капитан Флинт, пират как Tri",
+			en: "Adventures → Captain Flint, a pirate",
+			ru: "Приключения → капитан Флинт, пират",
 		},
 		persona: { genres: ["adventure"], settings: [], levels: ["casual"] },
 	},
