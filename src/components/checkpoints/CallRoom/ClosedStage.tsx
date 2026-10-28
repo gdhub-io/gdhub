@@ -13,6 +13,7 @@ import { SESSION_MINUTES } from "@/config/checkpoint";
 import { downloadIcs } from "@/lib/calendar";
 import { callWindow } from "@/lib/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import { CallCountdown } from "./CallCountdown";
 import { firstName } from "./CallHeader";
 
 export type ClosedStageProps = {
@@ -169,6 +170,7 @@ export function ClosedStage({
 		<CuratorMessage
 			curator={call.curator}
 			date={scheduled.format("D MMM, HH:mm")}
+			extra={<CallCountdown at={call.scheduledAt} />}
 			message={
 				team
 					? call.index === 1

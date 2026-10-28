@@ -11,6 +11,7 @@ import { Button, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CallCountdown } from "@/components/checkpoints/CallRoom/CallCountdown";
 import { firstName } from "@/components/checkpoints/CallRoom/CallHeader";
 import { useLockedJoinLabel } from "@/components/checkpoints/CallRoom/ClosedStage";
 import { InverseBand } from "@/components/ui";
@@ -59,6 +60,7 @@ export function CuratorNote({
 	let message: string;
 	let action: Action | null = null;
 	let join: Join | null = null;
+	let countdown: string | null = null;
 
 	if (isAI) {
 		const { letter } = checkpoint;
@@ -166,6 +168,7 @@ export function CuratorNote({
 				href: reviewHref(live.index),
 			};
 		} else if (next) {
+			countdown = next.scheduledAt;
 			// Until the room opens the button says when it will.
 			join = {
 				label: lockedJoin(next.scheduledAt, now),
@@ -224,6 +227,7 @@ export function CuratorNote({
 			<Paragraph ellipsis={{ rows: 5 }} className={styles.curatorText}>
 				{message}
 			</Paragraph>
+			{countdown && <CallCountdown at={countdown} />}
 			{(action || join) && (
 				<div className={styles.curatorActions}>
 					{action && (

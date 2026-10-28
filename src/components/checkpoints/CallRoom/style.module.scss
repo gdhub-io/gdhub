@@ -682,3 +682,20 @@
 	background: var(--gd-color-surface);
 	white-space: nowrap;
 }
+
+.countdown {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+}
+
+.countdownTitle.countdownTitle {
+	margin: 0;
+	padding: 0;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.countdownValue.countdownValue {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}

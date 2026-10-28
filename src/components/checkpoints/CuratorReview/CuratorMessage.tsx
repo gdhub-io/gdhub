@@ -33,6 +33,8 @@ export type CuratorMessageProps = {
 	date: string;
 	message: string;
 	verdict?: CheckpointVerdict | null;
+	/** Under the message: the countdown to a call. */
+	extra?: ReactNode;
 	actions?: CuratorAction[];
 };
 
@@ -47,6 +49,7 @@ export function CuratorMessage({
 	date,
 	message,
 	verdict,
+	extra,
 	actions = [],
 }: CuratorMessageProps) {
 	const { t } = useTranslate();
@@ -89,6 +92,7 @@ export function CuratorMessage({
 				<Typography.Paragraph className={styles.text}>
 					{message}
 				</Typography.Paragraph>
+				{extra}
 				{actions.length > 0 && (
 					<div className={styles.actions}>
 						{actions.map((action) => (
