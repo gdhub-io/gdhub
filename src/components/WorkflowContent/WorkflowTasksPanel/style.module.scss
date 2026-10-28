@@ -12,24 +12,9 @@
 	overflow: hidden;
 }
 
-.header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: var(--gd-space-3) var(--gd-space-4);
-	border-bottom: 1px solid var(--gd-color-border);
-}
-
-.title {
-	font-size: var(--gd-font-size-body-lg);
-	font-weight: 600;
-	color: var(--gd-color-text);
-}
-
-.progress {
-	font-size: var(--gd-font-size-body-sm);
-	font-weight: 500;
-	color: var(--gd-color-text-secondary);
+// The rows under the head's rule, as in the checkpoint card above.
+.rows {
+	border-top: 1px solid var(--gd-color-border);
 }
 
 .hint {

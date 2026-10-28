@@ -9,9 +9,10 @@
 		border-bottom: none;
 	}
 
-	// As a table row: the sunken fill on hover.
+	// As a table row; one step past the sunken fill, which is the page under
+	// these outlined cards (ui-guidelines 1).
 	&:hover {
-		background: var(--gd-color-surface-sunken);
+		background: var(--gd-neutral-100);
 	}
 }
 
@@ -42,7 +43,7 @@
 
 .label {
 	font-size: var(--gd-font-size-body);
-	font-weight: 500;
+	font-weight: 400;
 	line-height: 1.45;
 	color: var(--gd-color-text);
 

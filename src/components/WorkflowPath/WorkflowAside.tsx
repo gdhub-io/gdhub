@@ -68,6 +68,7 @@ export function WorkflowAside({
 						done: task.done,
 					}))}
 					showHint={false}
+					stageName={current.name ?? undefined}
 				/>
 			)}
 			<ActivityFeed projectId={projectId} sprints={detail?.sprints} />

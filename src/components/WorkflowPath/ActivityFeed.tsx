@@ -24,6 +24,7 @@ import type {
 	ProjectActivityKind,
 } from "@/repositories/project-activity.repository";
 import type { CheckpointSprintDto } from "@/types/checkpoints";
+import { AsideHead } from "./AsideHead";
 import { formatDay, formatShort } from "./dates";
 import styles from "./style.module.scss";
 
@@ -233,11 +234,7 @@ export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
 
 	return (
 		<section className={styles.asideCard}>
-			<div className={styles.asideHead}>
-				<Text strong className={styles.asideTitle}>
-					{t("workflow.activity.title", "Activity")}
-				</Text>
-			</div>
+			<AsideHead title={t("workflow.activity.title", "Activity")} />
 			<div className={styles.asideBody}>
 				{isPending ? (
 					<Spin size="small" />

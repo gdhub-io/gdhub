@@ -2,7 +2,7 @@
 
 import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Flex, Tag, Tooltip, Typography } from "antd";
+import { App, Button, Tag, Tooltip, Typography } from "antd";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
@@ -15,6 +15,7 @@ import {
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import type { CheckpointArtifactRef, CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
+import { AsideHead } from "./AsideHead";
 import { CuratorNote } from "./CuratorNote";
 import { formatDayRange } from "./dates";
 import styles from "./style.module.scss";
@@ -79,23 +80,21 @@ export function CheckpointAside({
 					chatLoading={openChat.isPending}
 				/>
 			)}
-			<div className={`${styles.asideHead} ${styles.asideRow}`}>
-				<Flex align="center" gap="small">
-					<Text strong className={styles.asideTitle}>
-						{t("workflow.aside.checkpoint", "Checkpoint {number}", {
-							number: String(checkpoint.number ?? 1),
-						})}
-					</Text>
-					{isAI && (
+			<AsideHead
+				title={t("workflow.aside.checkpoint", "Checkpoint {number}", {
+					number: String(checkpoint.number ?? 1),
+				})}
+				badge={
+					isAI && (
 						<Tag className="gd-tag-on-page">{t("workflow.aside.ai", "AI")}</Tag>
-					)}
-				</Flex>
-				{checkpoint.startedAt && checkpoint.dueAt && (
-					<Text type="secondary" className={styles.asideMeta}>
-						{formatDayRange(checkpoint.startedAt, checkpoint.dueAt)}
-					</Text>
-				)}
-			</div>
+					)
+				}
+				extra={
+					checkpoint.startedAt &&
+					checkpoint.dueAt &&
+					formatDayRange(checkpoint.startedAt, checkpoint.dueAt)
+				}
+			/>
 
 			<div className={styles.asideBody}>
 				<div className={styles.asideBlock}>
