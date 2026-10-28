@@ -16,6 +16,75 @@ import { prisma } from "@/services/prisma";
 import type { CheckpointPulseCellDto } from "@/types/checkpoints";
 
 /**
+ * Who of `userIds` changed anything of the project in the window — a task
+ * ticked, a vacancy posted, an invitation sent, the plan edited: every write
+ * the audit log keeps, traced back to the project through what it touched.
+ */
+const activeOnProject = async (
+	projectId: string,
+	userIds: string[],
+	window: { gte: Date; lt: Date },
+) => {
+	if (!userIds.length) return new Set<string>();
+	const project = await prisma.project.findUnique({
+		where: { id: projectId },
+		select: {
+			team: {
+				select: {
+					id: true,
+					members: { select: { id: true } },
+					vacancies: { select: { id: true } },
+					invitations: { select: { id: true } },
+				},
+			},
+			workflow: {
+				select: {
+					id: true,
+					steps: { select: { id: true, tasks: { select: { id: true } } } },
+				},
+			},
+			reports: { select: { id: true } },
+			artifacts: { select: { id: true } },
+			checkpoints: { select: { id: true } },
+		},
+	});
+	if (!project) return new Set<string>();
+	const ids = (rows: { id: string }[] = []) => rows.map((row) => row.id);
+	const { team, workflow } = project;
+	const owned: Record<string, string[]> = {
+		Project: [projectId],
+		Team: team ? [team.id] : [],
+		TeamMember: ids(team?.members),
+		TeamVacancy: ids(team?.vacancies),
+		TeamInvitation: ids(team?.invitations),
+		ProjectWorkflow: workflow ? [workflow.id] : [],
+		ProjectWorkflowStep: ids(workflow?.steps),
+		ProjectWorkflowTask:
+			workflow?.steps.flatMap((step) => ids(step.tasks)) ?? [],
+		ProjectReport: ids(project.reports),
+		ProjectArtifact: ids(project.artifacts),
+		ProjectCheckpoint: ids(project.checkpoints),
+	};
+	const rows = await prisma.auditLog.findMany({
+		where: {
+			actorUserId: { in: userIds },
+			createdAt: window,
+			OR: Object.entries(owned)
+				.filter(([, entityIds]) => entityIds.length)
+				.map(([entity, entityIds]) => ({
+					entity,
+					entityId: { in: entityIds },
+				})),
+		},
+		distinct: ["actorUserId"],
+		select: { actorUserId: true },
+	});
+	return new Set(
+		rows.map((row) => row.actorUserId).filter((id) => id !== null),
+	);
+};
+
+/**
  * The daily run, on a sprint's last day: everyone on the team is either shown
  * working already — a devlog or an artifact of theirs landed in the sprint —
  * or asked once, by a letter whose link answers without signing in.
@@ -61,7 +130,7 @@ export const requestPulses = async (now = new Date()) => {
 			gte: from,
 			lt: dateOfDay(checkpoint.startedAt, day + 1),
 		};
-		const [devlogs, artifacts, pulses] = await Promise.all([
+		const [devlogs, artifacts, pulses, busy] = await Promise.all([
 			prisma.projectReport.findMany({
 				where: { projectId: checkpoint.projectId, publishedAt: inSprint },
 				select: { authorId: true },
@@ -74,6 +143,13 @@ export const requestPulses = async (now = new Date()) => {
 				where: { checkpointId: checkpoint.id, week: sprint },
 				select: { teamMemberId: true },
 			}),
+			activeOnProject(
+				checkpoint.projectId,
+				(checkpoint.project.team?.members ?? []).map(
+					(member) => member.user.id,
+				),
+				inSprint,
+			),
 		]);
 		const wrote = new Set(devlogs.map((row) => row.authorId));
 		const made = new Set(artifacts.map((row) => row.createdById));
@@ -88,9 +164,10 @@ export const requestPulses = async (now = new Date()) => {
 				teamMemberId: member.id,
 				week: sprint,
 			};
-			let source: "devlog" | "artifact" | null = null;
+			let source: "devlog" | "artifact" | "activity" | null = null;
 			if (wrote.has(member.user.id)) source = "devlog";
 			else if (made.has(member.user.id)) source = "artifact";
+			else if (busy.has(member.user.id)) source = "activity";
 			if (source) {
 				await prisma.checkpointPulse.create({
 					data: { ...key, requestedAt: now, confirmedAt: now, source },

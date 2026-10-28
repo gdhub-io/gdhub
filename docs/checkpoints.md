@@ -234,9 +234,12 @@ mail and one on the page.
 The same action sits on the in-app notification, where the session already
 identifies the user and no token is needed.
 
-**Work already done counts as the pulse.** Anyone who authored a devlog that
-week is confirmed for that week automatically, `source: "devlog"`; so is anyone
-who attached an artifact, `source: "artifact"`. They are never asked. Nobody is
+**Work already done counts as the pulse.** Anyone who authored a devlog in the
+sprint is confirmed for it automatically, `source: "devlog"`; so is anyone who
+added an artifact, `source: "artifact"`; so is anyone who changed anything else of
+the project — ticked a task, posted a vacancy, sent an invitation, edited the
+plan — `source: "activity"`, read from the audit log through what the write
+touched. The author is a member like the rest. They are never asked. Nobody is
 made to press a button to say they did the thing they visibly just did.
 
 That is why the request goes out at the end of the week rather than the start:
