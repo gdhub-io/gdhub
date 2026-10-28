@@ -9,13 +9,13 @@ import {
 	callRoomName,
 	callState,
 	callWindow,
+	isMovable,
 	type PlanEdit,
 	parseCallRoomName,
 	planEdit,
 } from "@/lib/checkpoint-call";
 import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
-import { isMovable, sideOf } from "@/repositories/checkpoint-call-move";
 import {
 	checkpointNumber,
 	previousVerdict,
@@ -26,6 +26,7 @@ import {
 	viewerOf,
 	viewerSelect,
 } from "@/repositories/checkpoint-viewer";
+import { memberRole } from "@/repositories/curator-context";
 import { type CallBrief, getCallBriefs } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
@@ -110,7 +111,7 @@ export type CallPresenceDto = {
 		name: string;
 		image: string | null;
 		/** "curator" and "author" are named by the page; anyone else by their role on the team. */
-		role: "curator" | "author" | string | null;
+		role: string | null;
 		inCall: boolean;
 	}[];
 };
@@ -139,7 +140,7 @@ export const getCallPresence = async (
 			select: {
 				position: true,
 				speciality: { select: { name: true } },
-				user: { select: { id: true, name: true, image: true } },
+				user,
 			},
 		}),
 		callState(session.scheduledAt, session.endedAt, now) === "open"
@@ -166,7 +167,7 @@ export const getCallPresence = async (
 					member.user,
 					member.user.id === checkpoint.project.authorId
 						? "author"
-						: member.position || member.speciality?.name || null,
+						: memberRole(member, "") || null,
 				),
 			),
 		],
@@ -292,7 +293,7 @@ export const getCall = async (
 
 	const edit = canEditPlan(plan, userId) ? planEdit(plan, now) : null;
 	// Past its room's opening a call no longer moves, and a request lapses.
-	const movable = isMovable({ ...session, checkpoint }, now);
+	const movable = isMovable(session, checkpoint, now);
 	// The draft advice lives on session 1 until call 1's notes replace it.
 	const draft =
 		edit === "plan" && !plan.sessions[0]?.contentStatus
@@ -315,7 +316,7 @@ export const getCall = async (
 		state: callState(session.scheduledAt, session.endedAt, now),
 		missed: callMissed(session, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
-		canMove: movable && !!sideOf(checkpoint, userId),
+		canMove: movable && canEditPlan(checkpoint, userId),
 		move:
 			movable && session.moveTo && session.moveAskedById
 				? {

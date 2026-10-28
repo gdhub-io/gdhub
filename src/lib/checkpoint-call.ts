@@ -7,7 +7,7 @@ import {
 	SCOPE_SESSION,
 	SPRINT_DAYS,
 } from "@/config/checkpoint";
-import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import {
 	MS_PER_DAY,
 	MS_PER_HOUR,
@@ -25,7 +25,6 @@ export const callWindow = (scheduledAt: Date) => ({
 	),
 });
 
-/** Ended by the curator, or past its window: over either way. */
 /**
  * Where call `index` may be moved: the first `CALL_MOVE_DAYS` days of the
  * sprint it opens — days 1–3, 8–10 … and 29–31 for the final call.
@@ -37,6 +36,7 @@ export const callMoveWindow = (startedAt: Date, index: number) => {
 	return { from, to: new Date(from.getTime() + CALL_MOVE_DAYS * MS_PER_DAY) };
 };
 
+/** Ended by the curator, or past its window: over either way. */
 export const callState = (
 	scheduledAt: Date,
 	endedAt: Date | null,
@@ -47,6 +47,21 @@ export const callState = (
 	if (now < opensAt) return "early";
 	return now < closesAt ? "open" : "over";
 };
+
+/** Whether a call can be moved now: a running checkpoint with a person, its room not yet open. */
+export const isMovable = (
+	session: { scheduledAt: Date; endedAt: Date | null },
+	checkpoint: {
+		status: CheckpointStatus;
+		curatorKind: CheckpointCuratorKind | null;
+		startedAt: Date | string | null;
+	},
+	now: Date,
+) =>
+	checkpoint.status === CheckpointStatus.Active &&
+	checkpoint.curatorKind === CheckpointCuratorKind.Human &&
+	!!checkpoint.startedAt &&
+	callState(session.scheduledAt, session.endedAt, now) === "early";
 
 /** Its window is past and the curator never came in. */
 export const callMissed = (

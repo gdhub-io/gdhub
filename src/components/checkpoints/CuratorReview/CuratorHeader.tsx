@@ -16,7 +16,7 @@ export type CuratorHeaderProps = {
 	/** Who curates: a tag beside the title, on its own colour. */
 	kind: CheckpointCuratorKind;
 	subtitle: string;
-	status?: { tone: StatusTone; label: string };
+	status?: { tone: StatusTone; label: ReactNode };
 	actions?: ReactNode;
 };
 

@@ -34,6 +34,8 @@ const free = new Date("2026-10-09T14:00:00Z");
 
 const session = (over: Record<string, unknown> = {}) => ({
 	id: "s2",
+	checkpointId: "cp",
+	index: 2,
 	scheduledAt,
 	endedAt: null,
 	moveTo: null,
@@ -51,10 +53,7 @@ const session = (over: Record<string, unknown> = {}) => ({
 beforeEach(() => {
 	vi.clearAllMocks();
 	sessionFind.mockResolvedValue(session());
-	freeMoveSlots.mockResolvedValue({
-		timeZone: "Europe/Lisbon",
-		slots: [scheduledAt, free],
-	});
+	freeMoveSlots.mockResolvedValue([scheduledAt, free]);
 });
 
 describe("callMoveOptions", () => {
@@ -63,9 +62,11 @@ describe("callMoveOptions", () => {
 		expect(result).toMatchObject({
 			ok: true,
 			options: {
-				from: "2026-10-08T00:00:00.000Z",
-				to: "2026-10-11T00:00:00.000Z",
-				slots: [free.toISOString()],
+				days: [
+					{ date: "2026-10-08", sprintDay: 1, slots: [] },
+					{ date: "2026-10-09", sprintDay: 2, slots: [free.toISOString()] },
+					{ date: "2026-10-10", sprintDay: 3, slots: [] },
+				],
 			},
 		});
 	});
@@ -156,7 +157,7 @@ describe("answerCallMove", () => {
 
 	it("drops the request and keeps the time when the hour was taken since", async () => {
 		asked();
-		freeMoveSlots.mockResolvedValue({ timeZone: "UTC", slots: [] });
+		freeMoveSlots.mockResolvedValue([]);
 		await expect(answerCallMove("cp", 2, "curator", true, now)).resolves.toEqual(
 			{ ok: false, error: "slotTaken" },
 		);

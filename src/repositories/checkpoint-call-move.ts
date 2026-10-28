@@ -1,11 +1,15 @@
-import { CALL_OPENS_MINUTES } from "@/config/checkpoint";
-import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import { callMoveWindow, callState } from "@/lib/checkpoint-call";
-import { MS_PER_MINUTE } from "@/lib/checkpoint-days";
+import { CALL_MOVE_DAYS, CALL_OPENS_MINUTES } from "@/config/checkpoint";
+import { callMoveWindow, isMovable } from "@/lib/checkpoint-call";
+import { MS_PER_DAY, MS_PER_MINUTE } from "@/lib/checkpoint-days";
 import {
+	type Db,
 	freeMoveSlots,
 	lockCurator,
 } from "@/repositories/advisor-availability";
+import {
+	type CheckpointEditor,
+	editorOf,
+} from "@/repositories/checkpoint-viewer";
 import { notifyCallMove } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 
@@ -16,59 +20,33 @@ import { prisma } from "@/services/prisma";
  * room has not opened — at that point an open request lapses.
  */
 
-export type MoveSide = "curator" | "author";
-
-const sessionSelect = {
-	id: true,
-	scheduledAt: true,
-	endedAt: true,
-	moveTo: true,
-	moveAskedById: true,
-	checkpoint: {
-		select: {
-			status: true,
-			curatorKind: true,
-			curatorId: true,
-			startedAt: true,
-			project: { select: { authorId: true } },
-		},
-	},
-} as const;
-
-type MoveRow = NonNullable<Awaited<ReturnType<typeof loadSession>>>;
-
 const loadSession = (checkpointId: string, index: number) =>
 	prisma.checkpointSession.findUnique({
 		where: { checkpointId_index: { checkpointId, index } },
-		select: sessionSelect,
+		select: {
+			id: true,
+			checkpointId: true,
+			index: true,
+			scheduledAt: true,
+			endedAt: true,
+			moveTo: true,
+			moveAskedById: true,
+			checkpoint: {
+				select: {
+					status: true,
+					curatorKind: true,
+					curatorId: true,
+					startedAt: true,
+					project: { select: { authorId: true } },
+				},
+			},
+		},
 	});
 
-export const sideOf = (
-	row: { curatorId: string | null; project: { authorId: string } },
-	userId: string,
-): MoveSide | null => {
-	if (row.curatorId === userId) return "curator";
-	if (row.project.authorId === userId) return "author";
-	return null;
-};
+type MoveRow = NonNullable<Awaited<ReturnType<typeof loadSession>>>;
 
-/** Whether this call can be moved now: a running checkpoint with a person, its room not yet open. */
-export const isMovable = (
-	session: {
-		scheduledAt: Date;
-		endedAt: Date | null;
-		checkpoint: {
-			status: CheckpointStatus;
-			curatorKind: CheckpointCuratorKind | null;
-			startedAt: Date | null;
-		};
-	},
-	now: Date,
-) =>
-	session.checkpoint.status === CheckpointStatus.Active &&
-	session.checkpoint.curatorKind === CheckpointCuratorKind.Human &&
-	!!session.checkpoint.startedAt &&
-	callState(session.scheduledAt, session.endedAt, now) === "early";
+const otherSide = (side: CheckpointEditor): CheckpointEditor =>
+	side === "curator" ? "author" : "curator";
 
 type Refusal =
 	| "notFound"
@@ -89,48 +67,53 @@ const movable = async (
 ) => {
 	const session = await loadSession(checkpointId, index);
 	if (!session) return { refused: refuse("notFound") };
-	const side = sideOf(session.checkpoint, userId);
+	const side = editorOf(session.checkpoint, userId);
 	if (!side) return { refused: refuse("notAllowed") };
-	if (!isMovable(session, now) || !session.checkpoint.curatorId) {
+	const { curatorId, startedAt } = session.checkpoint;
+	if (
+		!isMovable(session, session.checkpoint, now) ||
+		!curatorId ||
+		!startedAt
+	) {
 		return { refused: refuse("notMovable") };
 	}
-	return { session, side, curatorId: session.checkpoint.curatorId };
+	return { session, side, curatorId, startedAt };
 };
 
-/** Free hours in the call's window, never the hour it already has. */
+/**
+ * Free hours in the call's window, never the hour it already has, and none so
+ * soon that the room would already be open.
+ */
 const slotsFor = async (
 	session: MoveRow,
 	curatorId: string,
-	checkpointId: string,
-	index: number,
+	startedAt: Date,
 	now: Date,
-	db?: Parameters<typeof freeMoveSlots>[3],
+	db?: Db,
 ) => {
-	const window = callMoveWindow(session.checkpoint.startedAt as Date, index);
-	const notBefore = new Date(
-		now.getTime() + CALL_OPENS_MINUTES * MS_PER_MINUTE,
-	);
-	const free = await freeMoveSlots(
+	const window = callMoveWindow(startedAt, session.index);
+	const soonest = now.getTime() + CALL_OPENS_MINUTES * MS_PER_MINUTE;
+	const slots = await freeMoveSlots(
 		curatorId,
-		checkpointId,
-		{ ...window, notBefore },
+		session.checkpointId,
+		{ from: new Date(Math.max(window.from.getTime(), soonest)), to: window.to },
 		db,
 	);
 	return {
-		...window,
-		timeZone: free.timeZone,
-		slots: free.slots.filter(
+		window,
+		slots: slots.filter(
 			(slot) => slot.getTime() !== session.scheduledAt.getTime(),
 		),
 	};
 };
 
+const isOneOf = (slots: Date[], at: Date) =>
+	slots.some((slot) => slot.getTime() === at.getTime());
+
 export type CallMoveOptionsDto = {
 	scheduledAt: string;
-	from: string;
-	to: string;
-	timeZone: string | null;
-	slots: string[];
+	/** The sprint's first days, its own dates (UTC), each with the free hours on it. */
+	days: { date: string; sprintDay: number; slots: string[] }[];
 };
 
 /** Where this call may move to, for the move modal (12.08.11). */
@@ -140,7 +123,7 @@ export const callMoveOptions = async (
 	userId: string,
 	now = new Date(),
 ) => {
-	const { session, curatorId, refused } = await movable(
+	const { session, curatorId, startedAt, refused } = await movable(
 		checkpointId,
 		index,
 		userId,
@@ -148,15 +131,25 @@ export const callMoveOptions = async (
 	);
 	if (refused) return refused;
 
-	const options = await slotsFor(session, curatorId, checkpointId, index, now);
+	const { window, slots } = await slotsFor(session, curatorId, startedAt, now);
+	const days = Array.from({ length: CALL_MOVE_DAYS }, (_, offset) => {
+		const start = window.from.getTime() + offset * MS_PER_DAY;
+		return {
+			date: new Date(start).toISOString().slice(0, 10),
+			sprintDay: offset + 1,
+			slots: slots
+				.filter(
+					(slot) =>
+						slot.getTime() >= start && slot.getTime() < start + MS_PER_DAY,
+				)
+				.map((slot) => slot.toISOString()),
+		};
+	});
 	return {
 		ok: true as const,
 		options: {
 			scheduledAt: session.scheduledAt.toISOString(),
-			from: options.from.toISOString(),
-			to: options.to.toISOString(),
-			timeZone: options.timeZone,
-			slots: options.slots.map((slot) => slot.toISOString()),
+			days,
 		} satisfies CallMoveOptionsDto,
 	};
 };
@@ -171,7 +164,7 @@ export const askCallMove = async (
 	moveTo: Date,
 	now = new Date(),
 ) => {
-	const { session, side, curatorId, refused } = await movable(
+	const { session, side, curatorId, startedAt, refused } = await movable(
 		checkpointId,
 		index,
 		userId,
@@ -182,22 +175,14 @@ export const askCallMove = async (
 		return refuse("pendingFromOther");
 	}
 
-	const { slots } = await slotsFor(
-		session,
-		curatorId,
-		checkpointId,
-		index,
-		now,
-	);
-	if (!slots.some((slot) => slot.getTime() === moveTo.getTime())) {
-		return refuse("slotTaken");
-	}
+	const { slots } = await slotsFor(session, curatorId, startedAt, now);
+	if (!isOneOf(slots, moveTo)) return refuse("slotTaken");
 
 	await prisma.checkpointSession.update({
 		where: { id: session.id },
 		data: { moveTo, moveAskedById: userId, moveAskedAt: now },
 	});
-	await notifyCallMove(session.id, side === "curator" ? "author" : "curator", {
+	await notifyCallMove(session.id, otherSide(side), {
 		event: "asked",
 		moveTo,
 	});
@@ -215,7 +200,7 @@ export const answerCallMove = async (
 	approve: boolean,
 	now = new Date(),
 ) => {
-	const { session, side, curatorId, refused } = await movable(
+	const { session, side, curatorId, startedAt, refused } = await movable(
 		checkpointId,
 		index,
 		userId,
@@ -225,7 +210,7 @@ export const answerCallMove = async (
 	const { moveTo, moveAskedById } = session;
 	if (!moveTo || !moveAskedById) return refuse("nothingAsked");
 	if (moveAskedById === userId) return refuse("notAllowed");
-	const asker: MoveSide = side === "curator" ? "author" : "curator";
+	const asker = otherSide(side);
 
 	if (!approve) {
 		await prisma.checkpointSession.update({
@@ -238,15 +223,8 @@ export const answerCallMove = async (
 
 	const moved = await prisma.$transaction(async (tx) => {
 		await lockCurator(tx, curatorId);
-		const { slots } = await slotsFor(
-			session,
-			curatorId,
-			checkpointId,
-			index,
-			now,
-			tx,
-		);
-		const free = slots.some((slot) => slot.getTime() === moveTo.getTime());
+		const { slots } = await slotsFor(session, curatorId, startedAt, now, tx);
+		const free = isOneOf(slots, moveTo);
 		await tx.checkpointSession.update({
 			where: { id: session.id },
 			data: free

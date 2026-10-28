@@ -6,9 +6,8 @@ import { App, Button, Flex, Modal, Skeleton, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import styles from "@/components/checkpoints/start/FirstCallPicker.module.scss";
-import { CALL_MOVE_DAYS } from "@/config/checkpoint";
 import { useCallMove, useCallMoveOptions } from "@/hooks/checkpoint-call";
 
 dayjs.extend(utc);
@@ -39,43 +38,22 @@ export function MoveCallModal({
 }: MoveCallModalProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
-	const zone = useMemo(
-		() => Intl.DateTimeFormat().resolvedOptions().timeZone,
-		[],
-	);
+	const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	const { data, isLoading } = useCallMoveOptions(checkpointId, index, open);
 	const { ask } = useCallMove(checkpointId, index);
 	const [picked, setPicked] = useState<string | null>(null);
 	const [day, setDay] = useState<string | null>(null);
 
-	// Sprint days are UTC days, as the Workflow path shows them; the hours are the viewer's own.
-	const days = data
-		? Array.from({ length: CALL_MOVE_DAYS }, (_, offset) =>
-				dayjs.utc(data.from).add(offset, "day"),
-			)
-		: [];
-	const byDay = new Map<string, string[]>();
-	for (const slot of data?.slots ?? []) {
-		const key = dayjs.utc(slot).format("YYYY-MM-DD");
-		byDay.set(key, [...(byDay.get(key) ?? []), slot]);
-	}
+	const days = data?.days ?? [];
 	const shown =
-		day ??
-		days
-			.find((date) => byDay.has(date.format("YYYY-MM-DD")))
-			?.format("YYYY-MM-DD");
-	const times = shown ? (byDay.get(shown) ?? []) : [];
-
-	const close = () => {
-		setPicked(null);
-		setDay(null);
-		onClose();
-	};
+		days.find((each) => each.date === day) ??
+		days.find((each) => each.slots.length > 0);
+	const pickedDay = days.find((each) => each.slots.includes(picked ?? ""));
 
 	const send = () => {
 		if (!picked) return;
 		ask.mutate(picked, {
-			onSuccess: close,
+			onSuccess: onClose,
 			onError: (error) =>
 				message.error(
 					axios.isAxiosError(error) &&
@@ -90,17 +68,20 @@ export function MoveCallModal({
 	};
 
 	const scheduled = data ? dayjs(data.scheduledAt) : null;
+	// Sprint days are their own dates (UTC), as the Workflow path shows them.
+	const dateOf = (date: string) => dayjs.utc(date);
 
 	return (
 		<Modal
 			open={open}
 			centered
+			destroyOnHidden
 			width={680}
-			onCancel={close}
+			onCancel={onClose}
 			title={t("checkpoints.move.title", "Move call {index}", { index })}
 			footer={
 				<Flex justify="end" gap={8}>
-					<Button onClick={close}>{t("common.cancel", "Cancel")}</Button>
+					<Button onClick={onClose}>{t("common.cancel", "Cancel")}</Button>
 					<Button
 						type="primary"
 						disabled={!picked}
@@ -122,9 +103,9 @@ export function MoveCallModal({
 							"Now {when}. A call opens its sprint, so it can be any time in the sprint's first {count} days: {from} – {to}.",
 							{
 								when: scheduled.format("dddd D MMM, HH:mm"),
-								count: CALL_MOVE_DAYS,
-								from: days[0].format("D MMM"),
-								to: days[days.length - 1].format("D MMM"),
+								count: days.length,
+								from: dateOf(days[0].date).format("D MMM"),
+								to: dateOf(days[days.length - 1].date).format("D MMM"),
 							},
 						)}
 					</Typography.Text>
@@ -149,16 +130,16 @@ export function MoveCallModal({
 					) : (
 						<>
 							<Flex gap={8}>
-								{days.map((date) => {
-									const key = date.format("YYYY-MM-DD");
-									const count = byDay.get(key)?.length ?? 0;
+								{days.map((each) => {
+									const date = dateOf(each.date);
+									const count = each.slots.length;
 									return (
 										<Button
-											key={key}
+											key={each.date}
 											className={styles.day}
-											type={key === shown ? "primary" : "default"}
+											type={each === shown ? "primary" : "default"}
 											disabled={!count}
-											onClick={() => setDay(key)}
+											onClick={() => setDay(each.date)}
 										>
 											<span className={styles.weekday}>
 												{date.format("ddd")}
@@ -178,9 +159,9 @@ export function MoveCallModal({
 								})}
 							</Flex>
 
-							{times.length > 0 ? (
+							{shown ? (
 								<Flex gap={8} wrap>
-									{times.map((slot) => (
+									{shown.slots.map((slot) => (
 										<Button
 											key={slot}
 											type={slot === picked ? "primary" : "default"}
@@ -200,7 +181,7 @@ export function MoveCallModal({
 								</Typography.Text>
 							)}
 
-							{picked && data && (
+							{picked && pickedDay && (
 								<Flex gap={12} align="center" className={styles.summary}>
 									<IconCalendarEvent size={16} className={styles.summaryIcon} />
 									<Flex vertical gap={4}>
@@ -210,11 +191,7 @@ export function MoveCallModal({
 												"{when} — day {day} of the sprint",
 												{
 													when: dayjs(picked).format("dddd D MMM, HH:mm"),
-													day:
-														dayjs
-															.utc(picked)
-															.startOf("day")
-															.diff(dayjs.utc(data.from), "day") + 1,
+													day: pickedDay.sprintDay,
 												},
 											)}
 										</Typography.Text>

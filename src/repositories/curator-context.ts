@@ -62,11 +62,11 @@ export async function stageWorkflow(
 	};
 }
 
-/** A member's role on the project, as the AI curator names them: no name. */
-export const memberRole = (member: {
-	position: string | null;
-	speciality: { name: string } | null;
-}) => member.position || member.speciality?.name || "no role set";
+/** A member's role on the project: what they set, else their speciality. */
+export const memberRole = (
+	member: { position: string | null; speciality: { name: string } | null },
+	fallback = "no role set",
+) => member.position || member.speciality?.name || fallback;
 
 /**
  * The team as it stands, for every call in one place: each member's role,

@@ -126,12 +126,8 @@ export const useCallMoveOptions = (id: string, index: number, open: boolean) =>
 /** Ask, answer or take back a request to move a call; the call is read again after. */
 export const useCallMove = (id: string, index: number) => {
 	const queryClient = useQueryClient();
-	// The call page and the Workflow path both show the call's time.
 	const onSuccess = () =>
-		Promise.all([
-			queryClient.invalidateQueries({ queryKey: callKey(id, index) }),
-			queryClient.invalidateQueries({ queryKey: ["checkpoint", id] }),
-		]);
+		queryClient.invalidateQueries({ queryKey: callKey(id, index) });
 
 	return {
 		ask: useMutation({
@@ -142,7 +138,13 @@ export const useCallMove = (id: string, index: number) => {
 		answer: useMutation({
 			mutationFn: (approve: boolean) =>
 				axios.patch(moveUrl(id, index), { approve }),
-			onSuccess,
+			// A yes changes the time, which the Workflow path shows too.
+			onSuccess: (_data, approve) =>
+				Promise.all([
+					onSuccess(),
+					approve &&
+						queryClient.invalidateQueries({ queryKey: ["checkpoint", id] }),
+				]),
 		}),
 		withdraw: useMutation({
 			mutationFn: () => axios.delete(moveUrl(id, index)),

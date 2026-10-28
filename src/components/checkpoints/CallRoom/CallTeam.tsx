@@ -8,14 +8,17 @@ import { CallPersonRow, CallTeamPanel } from "./CallParts";
 /** Frame 12.08.3: the call's people, who is in the room and who is away. */
 export function CallTeam({
 	call,
+	inRoom,
 }: {
 	call: Pick<CheckpointCallDto, "checkpointId" | "index" | "state">;
+	/** Who is in the room, by user id, when the viewer is in it too. */
+	inRoom?: string[];
 }) {
 	const { t } = useTranslate();
 	const { data } = useCallPresence(
 		call.checkpointId,
 		call.index,
-		call.state === "open",
+		call.state === "open" && !inRoom,
 	);
 	if (!data) return null;
 
@@ -25,9 +28,14 @@ export function CallTeam({
 		return role ?? undefined;
 	};
 
+	const people = data.people.map((person) => ({
+		...person,
+		inCall: inRoom ? inRoom.includes(person.id) : person.inCall,
+	}));
+
 	return (
-		<CallTeamPanel count={data.people.filter((person) => person.inCall).length}>
-			{data.people.map((person) => (
+		<CallTeamPanel count={people.filter((person) => person.inCall).length}>
+			{people.map((person) => (
 				<CallPersonRow
 					key={person.id}
 					name={person.name}

@@ -29,7 +29,7 @@ import {
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
 import { downloadIcs } from "@/lib/calendar";
-import { callWindow, sessionHeld } from "@/lib/checkpoint-call";
+import { isMovable, sessionHeld } from "@/lib/checkpoint-call";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
 import type {
@@ -469,10 +469,19 @@ export function RunningCheckpoint({
 							placement="bottomRight"
 							menu={{
 								items: [
-									// Until its room opens; the server checks the rest.
+									// The server's rule; it checks again who is asking.
 									...(canManage &&
 									session.timeKnown &&
-									new Date() < callWindow(new Date(session.scheduledAt)).opensAt
+									isMovable(
+										{
+											scheduledAt: new Date(session.scheduledAt),
+											endedAt: session.endedAt
+												? new Date(session.endedAt)
+												: null,
+										},
+										checkpoint,
+										new Date(),
+									)
 										? [
 												{
 													key: "move",

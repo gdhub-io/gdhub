@@ -20,7 +20,7 @@ import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
 import { prisma } from "@/services/prisma";
 
 /** The client, or the one an interactive transaction hands its callback. */
-type Db = Omit<
+export type Db = Omit<
 	typeof prisma,
 	"$connect" | "$disconnect" | "$on" | "$transaction" | "$extends"
 >;
@@ -328,23 +328,16 @@ export const isFirstCallFree = async (
 export const freeMoveSlots = async (
 	curatorId: string,
 	checkpointId: string,
-	window: { from: Date; to: Date; notBefore: Date },
+	window: { from: Date; to: Date },
 	db: Db = prisma,
 ) => {
-	const availability = await loadAvailability(curatorId, db);
-	if (!availability) return { timeZone: null, slots: [] };
-
-	const busy = await busyOf(curatorId, db, checkpointId);
-	return {
-		timeZone: availability.timeZone,
-		slots: freeCallsBetween(
-			availability,
-			busy,
-			window.from,
-			window.to,
-			window.notBefore,
-		),
-	};
+	const [availability, busy] = await Promise.all([
+		loadAvailability(curatorId, db),
+		busyOf(curatorId, db, checkpointId),
+	]);
+	return availability
+		? freeCallsBetween(availability, busy, window.from, window.to)
+		: [];
 };
 
 /** Takes the curator's hours for the rest of the caller's transaction. */

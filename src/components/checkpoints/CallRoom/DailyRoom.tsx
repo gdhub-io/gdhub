@@ -148,7 +148,7 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 							projectId={teamProject(call)}
 							checkpointId={call.checkpointId}
 						>
-							<CallTeam call={call} />
+							<RoomTeam call={call} />
 						</CuratorAside>
 					}
 					below={below}
@@ -420,4 +420,16 @@ function Tile({
 			}
 		/>
 	);
+}
+
+/** In the room, Daily already knows who is in it, live; the server is not asked. */
+function RoomTeam({ call }: { call: CheckpointCallDto }) {
+	const daily = useDaily();
+	// Subscribes to joins and leaves; the user ids are read from Daily as they stand.
+	useParticipantIds();
+	const inRoom = Object.values(daily?.participants() ?? {}).flatMap(
+		(participant) => (participant.user_id ? [participant.user_id] : []),
+	);
+
+	return <CallTeam call={call} inRoom={inRoom} />;
 }

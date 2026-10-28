@@ -242,7 +242,7 @@ describe("freeCallsBetween", () => {
 	const from = new Date("2026-10-14T00:00:00Z");
 	const to = new Date("2026-10-16T00:00:00Z");
 
-	it("offers each free hour in the window, clear of booked calls and not before the floor", () => {
+	it("offers each free hour in the window, clear of booked calls", () => {
 		const busy = [
 			{
 				start: new Date("2026-10-14T09:00:00Z"),
@@ -251,13 +251,7 @@ describe("freeCallsBetween", () => {
 		];
 		expect(
 			iso(
-				freeCallsBetween(
-					open,
-					busy,
-					from,
-					to,
-					new Date("2026-10-14T08:30:00Z"),
-				),
+				freeCallsBetween(open, busy, new Date("2026-10-14T08:30:00Z"), to),
 			),
 		).toEqual([
 			"2026-10-14T10:00:00.000Z",
@@ -269,7 +263,7 @@ describe("freeCallsBetween", () => {
 
 	it("offers nothing past the window's end or while the advisor is away", () => {
 		expect(
-			freeCallsBetween(open, [], from, new Date("2026-10-14T00:00:00Z"), from),
+			freeCallsBetween(open, [], from, new Date("2026-10-14T00:00:00Z")),
 		).toEqual([]);
 		expect(
 			freeCallsBetween(
@@ -277,7 +271,6 @@ describe("freeCallsBetween", () => {
 				[],
 				from,
 				to,
-				from,
 			),
 		).toEqual([]);
 	});

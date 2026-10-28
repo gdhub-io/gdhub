@@ -4,7 +4,7 @@ import { IconLink, IconMessageCircle, IconPhoneOff } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Popconfirm } from "antd";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { CuratorHeader } from "@/components/checkpoints/CuratorReview/CuratorHeader";
 import type { StatusTone } from "@/components/ui";
 import { FINAL_SESSION } from "@/config/checkpoint";
@@ -39,21 +39,25 @@ export type CallHeaderProps = {
 	now?: Date;
 };
 
-/** How long the call has run since the curator joined, ticking each second: "24:18". */
-const useLiveFor = (since: string | null) => {
+/**
+ * "Live · 24:18": how long the call has run since the curator joined, ticking
+ * each second on its own so the rest of the header stays still.
+ */
+function LiveFor({ since }: { since: string }) {
+	const { t } = useTranslate();
 	const [now, setNow] = useState(() => Date.now());
 	useEffect(() => {
-		if (!since) return;
 		const timer = setInterval(() => setNow(Date.now()), 1000);
 		return () => clearInterval(timer);
-	}, [since]);
-	if (!since) return null;
+	}, []);
 	const seconds = Math.max(0, Math.floor((now - Date.parse(since)) / 1000));
 	const pad = (n: number) => String(n).padStart(2, "0");
 	const hours = Math.floor(seconds / 3600);
 	const clock = `${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`;
-	return hours ? `${hours}:${clock}` : clock;
-};
+	return t("checkpoints.call.status.liveFor", "Live · {time}", {
+		time: hours ? `${hours}:${clock}` : clock,
+	});
+}
 
 export const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? "";
 
@@ -79,7 +83,6 @@ export function CallHeader({
 	now = new Date(),
 }: CallHeaderProps) {
 	const { t } = useTranslate();
-	const liveFor = useLiveFor(joined ? call.curatorJoinedAt : null);
 	const scheduled = dayjs(call.scheduledAt);
 
 	let purpose: string;
@@ -93,7 +96,7 @@ export function CallHeader({
 		});
 	}
 
-	let status: { tone: StatusTone; label: string };
+	let status: { tone: StatusTone; label: ReactNode };
 	if (call.missed) {
 		status = {
 			tone: "danger",
@@ -107,11 +110,11 @@ export function CallHeader({
 	} else if (joined) {
 		status = {
 			tone: "danger",
-			label: liveFor
-				? t("checkpoints.call.status.liveFor", "Live · {time}", {
-						time: liveFor,
-					})
-				: t("checkpoints.call.status.live", "Live"),
+			label: call.curatorJoinedAt ? (
+				<LiveFor since={call.curatorJoinedAt} />
+			) : (
+				t("checkpoints.call.status.live", "Live")
+			),
 		};
 	} else {
 		status = {

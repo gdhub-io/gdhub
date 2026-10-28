@@ -85,13 +85,9 @@ export const closeCallRoom = (name: string) =>
 
 /** Who is in a room right now, by the user id their token carried; none when the room is not up. */
 export const roomPresence = async (room: string) => {
-	const response = await fetch(`${API}/rooms/${room}/presence`, {
-		headers: { Authorization: `Bearer ${env("DAILY_API_KEY")}` },
-	});
-	if (!response.ok) return [];
-	const { data } = (await response.json()) as {
-		data: { userId?: string | null }[];
-	};
+	const { data } = await daily<{ data: { userId?: string | null }[] }>(
+		`/rooms/${room}/presence`,
+	).catch(() => ({ data: [] }));
 	return data.flatMap((person) => (person.userId ? [person.userId] : []));
 };
 
