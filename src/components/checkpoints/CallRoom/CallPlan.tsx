@@ -4,6 +4,7 @@ import {
 	IconCheck,
 	IconCircle,
 	IconCircleCheck,
+	IconPaperclip,
 	IconPlus,
 	IconSparkles,
 	IconX,
@@ -86,6 +87,8 @@ export type PlanBodyProps = {
 	listAction?: ReactNode;
 	/** An empty task field always open above "Add task" (frame kezVq). */
 	blank?: boolean;
+	/** Attach an artifact that proves a task; absent for whoever may not. */
+	onAttach?: () => void;
 };
 
 /**
@@ -101,6 +104,7 @@ export function PlanBody({
 	footer,
 	listAction,
 	blank,
+	onAttach,
 }: PlanBodyProps) {
 	const { t } = useTranslate();
 	const { edit } = plan;
@@ -133,7 +137,7 @@ export function PlanBody({
 					blank={blank}
 				/>
 			) : (
-				<PlanView plan={plan} />
+				<PlanView plan={plan} onAttach={onAttach} />
 			)}
 			{edit &&
 				(footer ?? (
@@ -263,7 +267,7 @@ function Field({
 }
 
 /** Read-only: another call than this one, and anyone on the team but the author. */
-function PlanView({ plan }: { plan: Plan }) {
+function PlanView({ plan, onAttach }: { plan: Plan; onAttach?: () => void }) {
 	const { t } = useTranslate();
 	const kept = plan.tasks.filter((task) => !task.cut);
 	const done = kept.filter((task) => task.artifact).length;
@@ -292,7 +296,27 @@ function PlanView({ plan }: { plan: Plan }) {
 							>
 								{task.text}
 							</Typography.Text>
-							{task.artifact && <ArtifactLink artifact={task.artifact} />}
+							{task.artifact ? (
+								<ArtifactLink artifact={task.artifact} />
+							) : (
+								onAttach &&
+								!task.cut && (
+									<Tooltip
+										title={t("workflow.aside.attach", "Attach an artifact")}
+									>
+										<Button
+											type="text"
+											size="small"
+											icon={<IconPaperclip size={16} />}
+											aria-label={t(
+												"workflow.aside.attach",
+												"Attach an artifact",
+											)}
+											onClick={onAttach}
+										/>
+									</Tooltip>
+								)
+							)}
 						</div>
 					))}
 				</div>

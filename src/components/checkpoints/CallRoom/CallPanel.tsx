@@ -5,6 +5,7 @@ import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import { useEvidencePicker } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
@@ -49,6 +50,7 @@ export function CallPanel({
 }) {
 	const [selected, setSelected] = useState(call.index);
 	const router = useRouter();
+	const evidence = useEvidencePicker(call.checkpointId);
 	const onChange = usePlanChange(call.checkpointId);
 	const advise = useAdvisePlan(call.checkpointId);
 	const held =
@@ -63,52 +65,51 @@ export function CallPanel({
 			?.contentStatus === CheckpointSessionContentStatus.Ready;
 
 	return (
-		<PanelBlock
-			sessions={call.sessions}
-			current={call.index}
-			reached={Math.max(
-				call.index,
-				...call.sessions
-					.filter((session) =>
-						dayjs(session.scheduledAt).isBefore(dayjs().endOf("day")),
-					)
-					.map((session) => session.index),
-			)}
-			selected={selected}
-			// The team's page is the whole sprint: picking one opens its call.
-			onSelect={
-				call.role === "team"
-					? (at) =>
-							router.push(
-								checkpointPathHref(call.project.slug, call.number, at),
-							)
-					: setSelected
-			}
-			tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
-			onTab={onPick}
-			plan={call.plan}
-			onChange={onChange}
-			advise={{
-				advice: call.plan.advice,
-				loading: advise.isPending,
-				onAdvise: () => advise.mutate(),
-			}}
-			notes={notes.data}
-			notesLoading={held && notes.isPending}
-			briefs={call.role === "curator" ? call.briefs : undefined}
-			// The team's to act on; a curator reads the sprint in the brief.
-			sprintTab={
-				call.role === "team"
-					? (at) => (
-							<SprintTab
-								checkpointId={call.checkpointId}
-								index={at}
-								project={call.project}
-							/>
+		<>
+			<PanelBlock
+				sessions={call.sessions}
+				current={call.index}
+				reached={Math.max(
+					call.index,
+					...call.sessions
+						.filter((session) =>
+							dayjs(session.scheduledAt).isBefore(dayjs().endOf("day")),
 						)
-					: undefined
-			}
-		/>
+						.map((session) => session.index),
+				)}
+				selected={selected}
+				// The team's page is the whole sprint: picking one opens its call.
+				onSelect={
+					call.role === "team"
+						? (at) =>
+								router.push(
+									checkpointPathHref(call.project.slug, call.number, at),
+								)
+						: setSelected
+				}
+				tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
+				onTab={onPick}
+				plan={call.plan}
+				onChange={onChange}
+				advise={{
+					advice: call.plan.advice,
+					loading: advise.isPending,
+					onAdvise: () => advise.mutate(),
+				}}
+				notes={notes.data}
+				notesLoading={held && notes.isPending}
+				briefs={call.role === "curator" ? call.briefs : undefined}
+				sprintTab={(at) => (
+					<SprintTab
+						checkpointId={call.checkpointId}
+						index={at}
+						project={call.project}
+					/>
+				)}
+				onAttach={evidence.open}
+			/>
+			{evidence.modal}
+		</>
 	);
 }
 
@@ -136,6 +137,8 @@ export type PanelBlockProps = {
 	briefs?: CallBriefData[];
 	/** The Sprint tab for a call; the stories go without it. */
 	sprintTab?: (index: number) => ReactNode;
+	/** Attach an artifact that proves a task, from the plan. */
+	onAttach?: () => void;
 	/** For stories: what "today" is. */
 	now?: Date;
 };
@@ -156,6 +159,7 @@ export function PanelBlock({
 	advise,
 	briefs,
 	sprintTab,
+	onAttach,
 	now,
 }: PanelBlockProps) {
 	const { t } = useTranslate();
@@ -238,6 +242,7 @@ export function PanelBlock({
 				// One plan for every call; only the page's own call may change it.
 				plan={selected === current ? plan : { ...plan, edit: null }}
 				onChange={onChange}
+				onAttach={onAttach}
 				// Before call 1 the AI reads the author's draft.
 				{...(advise &&
 					selected === current &&

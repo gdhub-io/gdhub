@@ -637,11 +637,6 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
-// On call 1 the goal is edited in place: no field outline, the text where it reads.
-.goalInput.goalInput {
-	padding: 0;
-}
-
 .brief {
 	padding-top: var(--gd-space-4);
 	min-width: 0;

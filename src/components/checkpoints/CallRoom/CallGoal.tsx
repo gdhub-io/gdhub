@@ -1,8 +1,8 @@
 "use client";
 
-import { IconSparkles, IconTarget } from "@tabler/icons-react";
+import { IconPencil, IconSparkles, IconTarget } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Alert, Input, Typography } from "antd";
+import { Alert, Button, Flex, Input, Tooltip, Typography } from "antd";
 import { type ReactNode, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
@@ -34,13 +34,21 @@ export type GoalCardProps = {
 	advice?: GoalAdvice | null;
 };
 
-/** Frame CUPxr: read the same on every call and every AI review; on call 1 the text itself is editable. */
+/** Frame CUPxr: read the same on every sprint; while the goal may change, a pencil opens it in place. */
 export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 	const { t } = useTranslate();
+	const [editing, setEditing] = useState(false);
+	const canEdit = editable && !!onSave;
 
 	let value: ReactNode;
-	if (editable && onSave) {
-		value = <GoalInput key={goal} goal={goal} onSave={onSave} />;
+	if (editing && onSave) {
+		value = (
+			<GoalEditor
+				goal={goal}
+				onSave={(next) => onSave(next).then(() => setEditing(false))}
+				onCancel={() => setEditing(false)}
+			/>
+		);
 	} else if (goal) {
 		value = (
 			<Typography.Text className={styles.goalValue}>{goal}</Typography.Text>
@@ -71,43 +79,61 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 					/>
 				)}
 			</div>
+			{canEdit && !editing && (
+				<Tooltip title={t("checkpoints.call.goal.edit", "Edit the goal")}>
+					<Button
+						icon={<IconPencil size={16} />}
+						aria-label={t("checkpoints.call.goal.edit", "Edit the goal")}
+						onClick={() => setEditing(true)}
+					/>
+				</Tooltip>
+			)}
 		</section>
 	);
 }
 
-/** Saved on blur or Enter; an emptied or refused goal goes back to what was saved. */
-function GoalInput({
+/** Frame CUPxr on day 1: the goal reworded in place, kept only on Save. */
+function GoalEditor({
 	goal,
 	onSave,
+	onCancel,
 }: {
 	goal: string;
 	onSave: (goal: string) => Promise<void>;
+	onCancel: () => void;
 }) {
+	const { t } = useTranslate();
 	const [value, setValue] = useState(goal);
+	const [saving, setSaving] = useState(false);
+	const next = value.trim();
 
-	const commit = () => {
-		const next = value.trim();
-		if (!next || next === goal) {
-			setValue(goal);
-			return;
-		}
-		onSave(next).catch(() => setValue(goal));
+	const save = () => {
+		setSaving(true);
+		onSave(next).catch(() => setSaving(false));
 	};
 
 	return (
-		<Input.TextArea
-			variant="borderless"
-			className={`${styles.goalValue} ${styles.goalInput}`}
-			value={value}
-			autoSize={{ minRows: 1 }}
-			maxLength={CHECKPOINT_GOAL_MAX}
-			onChange={(event) => setValue(event.target.value)}
-			onBlur={commit}
-			onPressEnter={(event) => {
-				if (event.shiftKey) return;
-				event.preventDefault();
-				event.currentTarget.blur();
-			}}
-		/>
+		<Flex vertical gap="small">
+			<Input.TextArea
+				autoFocus
+				value={value}
+				autoSize={{ minRows: 2 }}
+				maxLength={CHECKPOINT_GOAL_MAX}
+				onChange={(event) => setValue(event.target.value)}
+			/>
+			<Flex gap="small">
+				<Button
+					type="primary"
+					loading={saving}
+					disabled={!next || next === goal}
+					onClick={save}
+				>
+					{t("checkpoints.call.goal.save", "Save")}
+				</Button>
+				<Button onClick={onCancel}>
+					{t("checkpoints.call.goal.cancel", "Cancel")}
+				</Button>
+			</Flex>
+		</Flex>
 	);
 }

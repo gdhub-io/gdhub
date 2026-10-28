@@ -14,6 +14,7 @@ import { App, Button, Tabs, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useEvidencePicker } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
 import { GoalCard } from "@/components/checkpoints/CallRoom/CallGoal";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { CallLayout } from "@/components/checkpoints/CallRoom/CallParts";
@@ -78,6 +79,7 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 	const onChange = usePlanChange(checkpointId);
 	const advise = useAdvisePlan(checkpointId);
 	const approve = useApprovePlan(checkpointId);
+	const evidence = useEvidencePicker(checkpointId);
 
 	const askAdvice = () =>
 		advise.mutate(undefined, {
@@ -137,30 +139,34 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 	}
 
 	return (
-		<AiReviewView
-			review={review}
-			index={index}
-			backHref={backHref}
-			onChange={onChange}
-			onAdvise={askAdvice}
-			advising={advise.isPending}
-			onApprove={approvePlan}
-			approving={approve.isPending}
-			refreshKey={["checkpoint-review", checkpointId]}
-			sprintTab={(at) => (
-				<SprintTab
-					checkpointId={checkpointId}
-					index={at}
-					project={review.project}
-				/>
-			)}
-			aside={
-				<CuratorAside
-					projectId={review.project.id}
-					checkpointId={checkpointId}
-				/>
-			}
-		/>
+		<>
+			<AiReviewView
+				review={review}
+				index={index}
+				backHref={backHref}
+				onChange={onChange}
+				onAdvise={askAdvice}
+				advising={advise.isPending}
+				onApprove={approvePlan}
+				approving={approve.isPending}
+				refreshKey={["checkpoint-review", checkpointId]}
+				onAttach={evidence.open}
+				sprintTab={(at) => (
+					<SprintTab
+						checkpointId={checkpointId}
+						index={at}
+						project={review.project}
+					/>
+				)}
+				aside={
+					<CuratorAside
+						projectId={review.project.id}
+						checkpointId={checkpointId}
+					/>
+				}
+			/>
+			{evidence.modal}
+		</>
 	);
 }
 
@@ -182,6 +188,8 @@ export type AiReviewViewProps = {
 	refreshKey?: QueryKey;
 	/** The Sprint tab for a session; the lab and the stories go without it. */
 	sprintTab?: (index: number) => ReactNode;
+	/** Attach an artifact that proves a task, from the plan. */
+	onAttach?: () => void;
 };
 
 /** The page itself, from its data: what the stories render, moment by moment. */
@@ -197,6 +205,7 @@ export function AiReviewView({
 	aside,
 	refreshKey,
 	sprintTab,
+	onAttach,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
 	const [picked, setPicked] = useState<number | null>(null);
@@ -328,6 +337,7 @@ export function AiReviewView({
 												selected === editing ? plan : { ...plan, edit: null }
 											}
 											onChange={onChange}
+											onAttach={onAttach}
 											advice={open?.advice}
 											suggestions={open?.suggestions}
 											hint={planHint(t, plan.edit)}
