@@ -19,7 +19,11 @@ const DEFAULT_WORKFLOW_SCHEMA = "default";
 export const DEFAULT_PROJECT_STAGE = "Ideation";
 
 /** Stages a new project cannot be placed on: the entry one and the two after release. */
-const UNSELECTABLE_STAGES = ["Introduction", "Support", "Project Completion"];
+export const UNSELECTABLE_STAGES = [
+	"Introduction",
+	"Support",
+	"Project Completion",
+];
 
 /** The extended client's own transaction type, as the admin workflow route types it. */
 export type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
