@@ -48,6 +48,7 @@ const { TEAM } = vi.hoisted(() => ({
 		hoursPerWeek: { from: 10, to: 20 },
 		hoursPerRun: { from: 40, to: 80 },
 		people: [],
+		openings: [],
 	},
 }));
 
@@ -683,7 +684,7 @@ describe("goal check schema", () => {
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
 			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
-			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [] },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [], openings: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
 			author: {
@@ -706,7 +707,7 @@ describe("the goal check's stored read", () => {
 		const input = {
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
 			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
-			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [] },
+			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [], openings: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
 			author: null,

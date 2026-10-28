@@ -68,10 +68,29 @@ export const renderTeam = (team: CuratorTeam) => {
 			(worked, index) =>
 				`week ${index + 1} ${worked ? "worked" : "not confirmed"}`,
 		);
-		return `- ${person.name}: ${person.role}${person.level ? `, ${person.level}` : ""}, ${hours}${weeks.length ? `; ${weeks.join(", ")}` : ""}`;
+		return `- ${person.name}: ${person.role}${person.level ? `, ${person.level}` : ""}, ${hours}${person.joinedOn ? `, joined on ${person.joinedOn}` : ""}${weeks.length ? `; ${weeks.join(", ")}` : ""}`;
 	});
-	return [sums, ...lines].join("\n");
+	const openings = team.openings.length
+		? `Open positions now:\n${team.openings.map((opening) => `- ${opening.role}, posted ${opening.postedOn}, ${opening.applied} applied`).join("\n")}`
+		: "No open positions.";
+	return [sums, ...lines, openings].join("\n");
 };
+
+/**
+ * When a role is worth suggesting (GDHUB-121). Hiring is rarely the answer and
+ * never a reflex: only when the plan plainly cannot be done by this team.
+ */
+export const HIRING = stripIndents`
+	The people change the plan. When someone joined during the checkpoint,
+	someone stopped confirming work, or a position is open, say in one
+	sentence what it changes for the tasks — never pass over it.
+	A new person is rarely the answer. Suggest finding one only when the plan
+	plainly cannot be done by this team — a task needs a skill nobody on the
+	team has, or the hours they stated cannot hold it — and say it once, as
+	one option beside cutting the task, naming the role. If a position for it
+	is already open, point to that one and what it would unlock instead of
+	asking for another. Otherwise say nothing about hiring.
+`;
 
 /** Who confirmed working in one week, by role: a missing artist explains a missing board. */
 export const renderPulse = (team: CuratorTeam, week: number) => {

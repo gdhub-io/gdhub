@@ -170,7 +170,9 @@ const teamAt = (moment: Moment) => ({
 	people: MEMBERS.map((member) => ({
 		...member,
 		weeks: PULSE[member.name].slice(0, MOMENTS[moment].weeks),
+		joinedOn: null as string | null,
 	})),
+	openings: [] as { role: string; postedOn: string; applied: number }[],
 });
 
 export const hollowTide = (language: LabLanguage) => {

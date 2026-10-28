@@ -36,6 +36,11 @@ const TEXT = {
 		mobileDevlog:
 			"Week 2: instead of the playtest we made the island demo run on phones — most of our testers will play it there. Touch controls are in.",
 		mobileBuild: "Island demo 0.2 · mobile web",
+		noArtistDevlog:
+			"Week 2: Tom, our only artist, left the team for another job. Nobody draws now, so the style board did not move. Marta and Ivo kept polishing the island.",
+		newArtistDevlog:
+			"Week 2: Lena joined us as a 2D artist on Friday and started the hero sheets; the palette is on the board.",
+		artistRole: "2D artist",
 		verdict:
 			"All three tasks are delivered and the stage's devlog is out: ready for Preparing a demo version.",
 	},
@@ -60,6 +65,11 @@ const TEXT = {
 		mobileDevlog:
 			"Неделя 2: вместо плейтеста сделали так, чтобы демо острова шло на телефонах — большинство тестеров будут играть там. Сенсорное управление готово.",
 		mobileBuild: "Демо острова 0.2 · мобильный веб",
+		noArtistDevlog:
+			"Неделя 2: Том, наш единственный художник, ушёл на другую работу. Рисовать больше некому, доска стиля не сдвинулась. Марта и Иво доводили остров.",
+		newArtistDevlog:
+			"Неделя 2: в пятницу к нам пришла Лена, 2D-художник, и начала листы героев; палитра на доске.",
+		artistRole: "2D-художник",
 		verdict:
 			"Все три задачи сданы, девлог стадии опубликован: можно переходить к Preparing a demo version.",
 	},
@@ -90,6 +100,31 @@ export const sprintReviewSituations = (
 		seen: { match: "Matches" as const, note },
 	});
 	const demoDone = done(demo, "ExecutableBuild", artifacts.demo, t.demoSeen);
+	/** Day 15 without the artist: Tom left in sprint 2, nobody on the team draws, and the board never moved. */
+	const shortOfArt = (
+		openings: { role: string; postedOn: string; applied: number }[],
+	) => {
+		const team = project.team("sprint2");
+		return {
+			goal: project.goal,
+			workflow: project.workflow("sprint2"),
+			sprint: 2,
+			tasks: [demoDone, open(board), open(playtest)],
+			devlogs: [t.noArtistDevlog],
+			media: [],
+			artifacts: [],
+			team: {
+				...team,
+				members: team.members - 1,
+				stated: team.stated - 1,
+				people: team.people.filter((person) => person.name !== "Tom"),
+				openings,
+			},
+			focusLastReview: t.focusAfter1,
+			verdict: null,
+			picture: project.picture("sprint2"),
+		};
+	};
 	const boardWith = (match: "Partly" | "DoesNotMatch", note: string) => ({
 		...done(board, "Image", artifacts.board, note),
 		seen: { match, note },
@@ -184,6 +219,62 @@ export const sprintReviewSituations = (
 				devlogs: [t.mobileDevlog],
 				artifacts: [{ type: "ExecutableBuild", name: t.mobileBuild }],
 				team: project.team("sprint2"),
+				focusLastReview: t.focusAfter1,
+				workflow: project.workflow("sprint2"),
+				picture: project.picture("sprint2"),
+			},
+		},
+		{
+			// Day 15: the only artist dropped out and the art task stalled; nobody is being sought.
+			id: "short-artist",
+			label: say(
+				language,
+				"Day 15, no artist and no open position",
+				"День 15, художника нет и вакансии нет",
+			),
+			input: shortOfArt([]),
+		},
+		{
+			// The same, with a position for an artist already open.
+			id: "short-artist-open",
+			label: say(
+				language,
+				"Day 15, no artist, a position already open",
+				"День 15, художника нет, вакансия уже открыта",
+			),
+			input: shortOfArt([
+				{ role: t.artistRole, postedOn: "2026-10-09", applied: 2 },
+			]),
+		},
+		{
+			// A 2D artist joined mid-sprint and the board moved.
+			id: "new-member",
+			label: say(
+				language,
+				"Day 15, a new artist joined mid-sprint",
+				"День 15, в середине спринта пришёл художник",
+			),
+			input: {
+				...sprint1,
+				sprint: 2,
+				tasks: [demoDone, boardWith("Partly", t.paletteSeen), open(playtest)],
+				devlogs: [t.newArtistDevlog],
+				artifacts: [{ type: "Image", name: artifacts.board }],
+				team: {
+					...project.team("sprint2"),
+					members: 4,
+					people: [
+						...project.team("sprint2").people,
+						{
+							name: "Lena",
+							role: t.artistRole,
+							level: "Middle",
+							hoursPerWeek: { from: 15, to: 20 },
+							weeks: [false, true],
+							joinedOn: "2026-10-10",
+						},
+					],
+				},
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),

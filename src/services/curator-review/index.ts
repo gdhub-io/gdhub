@@ -14,6 +14,7 @@ import {
 } from "@/services/call-notes";
 import {
 	AUTHOR_VOICE,
+	HIRING,
 	type JournalEntry,
 	legOfSprint,
 	localeLine,
@@ -190,6 +191,7 @@ export const writePlanAdvice = async (
 					? "This is day 1: four weeks lie ahead. The author wrote these tasks after your first letter and sent them to you; this is your one check of them, and next they approve the plan. Do not greet again. Say whether the goal and the tasks hold together, and what to change before approving."
 					: "This is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding."
 			}
+			${HIRING}
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
@@ -262,6 +264,7 @@ export const writeSprintReview = async (
 			The focus set for this sprint was advice, not the measure: work the
 			team chose instead that still moves the goal or a task counts — say
 			what it moved. Name a gap only where nothing moves the goal.
+			${HIRING}
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
 
 			${AUTHOR_VOICE}

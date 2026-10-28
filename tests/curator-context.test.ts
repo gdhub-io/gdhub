@@ -14,7 +14,8 @@ vi.mock("@/repositories/project-activity.repository", () => ({
 }));
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { findUniqueOrThrow: vi.fn() },
+		projectCheckpoint: { findUniqueOrThrow: vi.fn(), findUnique: vi.fn() },
+		teamVacancy: { findMany: vi.fn() },
 		projectWorkflowStep: { findUnique: vi.fn(), findFirst: vi.fn() },
 		teamMember: { findMany: vi.fn() },
 		checkpointPulse: { findMany: vi.fn() },
@@ -53,11 +54,16 @@ beforeEach(() => {
 	vi.mocked(prisma.teamMember.findMany).mockResolvedValue([
 		{
 			id: "m1",
+			startedAt: new Date("2026-09-01T00:00:00Z"),
 			position: "Programmer",
 			speciality: { name: "Developer", level: "Middle" },
 			user: { name: "Marta", profile: { timeForWork: [5, 10] } },
 		},
 	] as never);
+	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
+		startedAt: new Date("2026-10-01T00:00:00Z"),
+	} as never);
+	vi.mocked(prisma.teamVacancy.findMany).mockResolvedValue([]);
 	vi.mocked(prisma.checkpointPulse.findMany).mockResolvedValue([
 		{ teamMemberId: "m1", week: 2, confirmedAt: null },
 		{ teamMemberId: "m1", week: 1, confirmedAt: new Date() },
@@ -116,8 +122,40 @@ describe("the project picture the AI curator reads", () => {
 					level: "Middle",
 					hoursPerWeek: { from: 5, to: 10 },
 					weeks: [true, false],
+					joinedOn: null,
 				},
 			],
+			openings: [],
+		});
+	});
+
+	it("marks who joined during the checkpoint, and lists the positions open now", async () => {
+		vi.mocked(prisma.teamMember.findMany).mockResolvedValue([
+			{
+				id: "m2",
+				startedAt: new Date("2026-10-10T09:00:00Z"),
+				position: "2D artist",
+				speciality: null,
+				user: { name: "Lena", profile: null },
+			},
+		] as never);
+		vi.mocked(prisma.checkpointPulse.findMany).mockResolvedValue([]);
+		vi.mocked(prisma.teamVacancy.findMany).mockResolvedValue([
+			{
+				title: "Sound designer",
+				publishedAt: new Date("2026-10-12T00:00:00Z"),
+				createdAt: new Date("2026-10-11T00:00:00Z"),
+				_count: { applicants: 3 },
+			},
+		] as never);
+
+		await expect(curatorTeam("cp1", "p1")).resolves.toMatchObject({
+			people: [{ name: "Lena", joinedOn: "2026-10-10" }],
+			openings: [{ role: "Sound designer", postedOn: "2026-10-12", applied: 3 }],
+		});
+		expect(vi.mocked(prisma.teamVacancy.findMany).mock.calls[0][0]?.where).toMatchObject({
+			status: "Published",
+			closedAt: null,
 		});
 	});
 
@@ -125,6 +163,7 @@ describe("the project picture the AI curator reads", () => {
 		vi.mocked(prisma.teamMember.findMany).mockResolvedValue([
 			{
 				id: "m1",
+				startedAt: new Date("2026-09-01T00:00:00Z"),
 				position: null,
 				speciality: { name: "Artist", level: null },
 				user: { name: "Tom", profile: { timeForWork: [] } },
