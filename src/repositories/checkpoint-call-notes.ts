@@ -205,6 +205,7 @@ const writeNotesFor = async (sessionId: string) => {
 	const curatorUrl = `${appUrl()}/advisor/checkpoints/${checkpoint.id}/review/${session.index}`;
 	for (const person of people.values()) {
 		await notify(person, `cp-notes-${sessionId}-${person.id}`, {
+			checkpointId: checkpoint.id,
 			title: `Notes from call ${session.index} on ${checkpoint.project.name} are ready`,
 			message:
 				"What was discussed, what was agreed for the next call, and the open questions.",

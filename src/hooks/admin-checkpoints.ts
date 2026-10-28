@@ -14,12 +14,12 @@ import type {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
+import type { CuratorJournalViewDto } from "@/repositories/curator-journal-view";
 import type {
 	AdminCheckpointsPageDto,
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
 	CheckpointRefundQuoteDto,
-	CuratorJournalEntryDto,
 	VerdictContextDto,
 } from "@/types/checkpoints";
 
@@ -50,11 +50,8 @@ export const useCuratorJournal = (checkpointId: string) =>
 	useQuery({
 		queryKey: [...ROOT, "journal", checkpointId],
 		queryFn: async () =>
-			(
-				await axios.get<CuratorJournalEntryDto[]>(
-					`${URL}/${checkpointId}/journal`,
-				)
-			).data,
+			(await axios.get<CuratorJournalViewDto>(`${URL}/${checkpointId}/journal`))
+				.data,
 	});
 
 export const useRefundQuote = (checkpointId?: string) =>

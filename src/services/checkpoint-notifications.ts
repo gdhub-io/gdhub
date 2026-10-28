@@ -16,6 +16,7 @@ import {
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
+	CheckpointJournalKind,
 	CheckpointStatus,
 	SpaceRole,
 } from "@/config/prisma-enums";
@@ -34,6 +35,7 @@ import {
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
+import { journal } from "@/repositories/curator-journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { NovuService } from "./novu";
 import { prisma } from "./prisma";
@@ -51,11 +53,21 @@ export const appUrl = () => process.env.NEXT_PUBLIC_APP_URL ?? "";
 
 type Recipient = { id: string; email: string | null };
 
+/** A letter to one person; one about a checkpoint goes into its journal as the platform's step. */
 export const notify = async (
 	to: Recipient,
 	transactionId: string,
-	payload: { title: string; message: string; redirectUrl: string },
+	{
+		checkpointId,
+		...payload
+	}: {
+		title: string;
+		message: string;
+		redirectUrl: string;
+		checkpointId?: string;
+	},
 ) => {
+	let sent = true;
 	try {
 		await NovuService.send({
 			template: "default-message",
@@ -64,7 +76,16 @@ export const notify = async (
 			transactionId,
 		});
 	} catch (error) {
+		sent = false;
 		console.error("[checkpoint] notification failed", transactionId, error);
+	}
+	if (checkpointId) {
+		await journal({
+			checkpointId,
+			kind: CheckpointJournalKind.Platform,
+			input: { to: to.id, transactionId, redirectUrl: payload.redirectUrl },
+			output: { title: payload.title, message: payload.message, sent },
+		});
 	}
 };
 
@@ -94,6 +115,7 @@ export const notifyCuratorAsked = async (checkpointId: string) => {
 
 	const answerBy = dayjs().add(CURATOR_ANSWER_DAYS, "day").format("D MMM");
 	await notify(row.curator, `cp-asked-${checkpointId}-${row.curator.id}`, {
+		checkpointId: checkpointId,
 		title: `A new checkpoint for ${row.project.name} waits for your answer`,
 		message: `The team has paid and booked your hours. Accept or decline by ${answerBy}; the money is only held until you do.`,
 		redirectUrl: `${appUrl()}/advisor/requests`,
@@ -123,6 +145,7 @@ export const notifyDayOne = async (checkpointId: string, read: boolean) => {
 
 	const number = await checkpointNumber(row);
 	await notify(row.project.author, `cp-day-one-${checkpointId}`, {
+		checkpointId: checkpointId,
 		title: read
 			? `Your AI curator has read the goal of Checkpoint ${number}`
 			: `Checkpoint ${number} has started`,
@@ -139,6 +162,7 @@ export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
 
 	const number = await checkpointNumber(row);
 	await notify(row.project.author, `cp-plan-checked-${checkpointId}`, {
+		checkpointId: checkpointId,
 		title: `Your AI curator has checked the plan of Checkpoint ${number}`,
 		message: `Read the advice, change what you want and approve the plan. If you don't, it approves itself as it stands on ${dayjs.utc(closes).format("D MMM, HH:mm [UTC]")}.`,
 		redirectUrl: reviewUrl(row.project.slug, number, 1, "plan"),
@@ -195,6 +219,7 @@ export const remindPlansUnsent = async (now = new Date()) => {
 
 		const number = await checkpointNumber(checkpoint);
 		await notify(author, `cp-plan-remind-${checkpointId}-${after}`, {
+			checkpointId: checkpointId,
 			title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
 			message:
 				"Write one to five tasks and send them for a check. Without tasks the checkpoint has nothing to measure at the end.",
@@ -212,6 +237,7 @@ export const notifyPlanApproved = async (checkpointId: string) => {
 
 	const number = await checkpointNumber(row);
 	await notify(row.project.author, `cp-plan-approved-${checkpointId}`, {
+		checkpointId: checkpointId,
 		title: `The plan of Checkpoint ${number} is approved`,
 		message: `It approved itself as it stood, ${AI_APPROVE_HOURS} hours after the curator's check. The goal and tasks are fixed until day 15, when they can change once more.`,
 		redirectUrl: reviewUrl(row.project.slug, number, 1, "plan"),
@@ -248,6 +274,7 @@ export const remindScopeClosing = async (now = new Date()) => {
 	for (const { id, checkpoint } of sessions) {
 		const number = await checkpointNumber(checkpoint);
 		await notify(checkpoint.project.author, `cp-scope-closing-${id}`, {
+			checkpointId: id,
 			title: `The tasks of Checkpoint ${number} can change for ${SCOPE_REMIND_BEFORE_HOURS} more hours`,
 			message:
 				"Take the curator's advice or keep them as they are, and press Confirm the tasks. After that they stay as they are until the verdict.",
@@ -303,6 +330,7 @@ export const remindEvidenceDue = async (now = new Date()) => {
 			checkpoint.project.author,
 			`cp-evidence-due-${checkpoint.id}`,
 			{
+				checkpointId: checkpoint.id,
 				title: `${checkpoint.items.length} tasks of Checkpoint ${number} have no evidence yet`,
 				message: `The verdict is in three days and counts only what is attached: ${tasks}. Attach a link to each — a build, a document, a video.`,
 				redirectUrl: workflowUrl(checkpoint.project.slug),
@@ -325,6 +353,7 @@ export const notifyEvidenceMismatch = async (
 
 	const linkKey = createHash("sha256").update(link).digest("hex").slice(0, 12);
 	await notify(row.project.author, `cp-evidence-${item.id}-${linkKey}`, {
+		checkpointId: checkpointId,
 		title: `The evidence for "${item.text}" does not show it yet`,
 		message: `${note} Attach something that shows it before the verdict.`,
 		redirectUrl: workflowUrl(row.project.slug),
@@ -376,6 +405,7 @@ export const notifyAuthorOfAnswer = async (
 	} satisfies Record<CuratorAnswer, { title: string; message: string }>;
 
 	await notify(row.project.author, transactionId, {
+		checkpointId: checkpointId,
 		...letters[answer],
 		redirectUrl: workflowUrl(row.project.slug),
 	});
@@ -406,6 +436,7 @@ export const notifyAuthorOfRefund = async (
 	}[reason];
 
 	await notify(row.project.author, `cp-refund-${checkpointId}`, {
+		checkpointId: checkpointId,
 		title: `Checkpoint ${number} is closed and ${amount} is on its way back`,
 		message: `${why} The refund reaches your card in 5–10 business days. It covers everything that was not delivered.`,
 		redirectUrl: workflowUrl(row.project.slug),
@@ -469,6 +500,7 @@ export const remindVerdictsDue = async (now = new Date()) => {
 			row.curator
 				? [
 						notify(row.curator, `cp-verdict-due-${row.id}`, {
+							checkpointId: row.id,
 							title: `Your verdict on ${row.project.name} is due tomorrow`,
 							message:
 								"Send it before the day ends. After that an administrator closes the checkpoint.",
@@ -480,6 +512,7 @@ export const remindVerdictsDue = async (now = new Date()) => {
 		...lateToday.flatMap((row) =>
 			admins.map((admin) =>
 				notify(admin, `cp-verdict-overdue-${row.id}-${admin.id}`, {
+					checkpointId: row.id,
 					title: `The verdict on ${row.project.name} is overdue`,
 					message:
 						"Its curator did not send it by day 31. Write it or refund the checkpoint from the admin list.",
@@ -567,6 +600,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 
 		const curatorZone = curator.advisorAvailability?.timeZone ?? "UTC";
 		await notify(curator, `cp-call-${session.id}-${curator.id}`, {
+			checkpointId: session.checkpointId,
 			title,
 			message: `Call ${session.index} of Checkpoint ${number}, at ${at(curatorZone)}. The team is let in once you join.`,
 			redirectUrl: `${appUrl()}/advisor/checkpoints/${session.checkpointId}/review/${session.index}`,
@@ -584,6 +618,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 
 		for (const person of team.values()) {
 			await notify(person, `cp-call-${session.id}-${person.id}`, {
+				checkpointId: session.checkpointId,
 				title,
 				message: `Call ${session.index} of Checkpoint ${number}, at ${at(person.profile?.timezone ?? "UTC")}. You can join once your curator opens the room.`,
 				redirectUrl: reviewUrl(checkpoint.project.slug, number, session.index),
@@ -633,6 +668,7 @@ export const remindDevlogsDue = async (now = new Date()) => {
 			checkpoint.project.author,
 			`cp-devlog-${checkpoint.id}-${sprint}`,
 			{
+				checkpointId: checkpoint.id,
 				title: `The devlog for Sprint ${sprint} of ${checkpoint.project.name} is due today`,
 				message:
 					checkpoint.curatorKind === CheckpointCuratorKind.AI

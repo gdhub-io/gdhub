@@ -186,6 +186,7 @@ export const requestPulses = async (now = new Date()) => {
 				data: { ...key, requestedAt: now },
 			});
 			await notify(member.user, `cp-pulse-${pulse.id}`, {
+				checkpointId: checkpoint.id,
 				title: `Were you working on ${checkpoint.project.name} this sprint?`,
 				message: `Answer in one click — your curator reads the team's pulse ${checkpoint.curatorKind === CheckpointCuratorKind.AI ? "for the sprint review" : "at the next call"}. If you weren't working on it this sprint, ignore this email.`,
 				redirectUrl: `${appUrl()}/pulse/${pulseToken(pulse.id)}`,
