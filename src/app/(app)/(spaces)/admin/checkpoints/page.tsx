@@ -10,6 +10,7 @@ import {
 	type CuratorsSegment,
 	CuratorsTable,
 } from "@/components/admin/CuratorsTable";
+import { FreeCheckpointModal } from "@/components/admin/FreeCheckpointModal";
 import { NewPromoCodeModal } from "@/components/admin/NewPromoCodeModal";
 import { PromoCodesTable } from "@/components/admin/PromoCodesTable";
 import { WaitlistTable } from "@/components/admin/WaitlistTable";
@@ -42,6 +43,7 @@ function AdminCheckpoints() {
 	const canManage = can("admin.checkpoints.manage");
 	const canViewCurators = can("admin.curators.view");
 	const [creating, setCreating] = useState(false);
+	const [giving, setGiving] = useState(false);
 
 	const [tab, open] = useUrlTab(
 		"tab",
@@ -59,7 +61,7 @@ function AdminCheckpoints() {
 					title={t("admin.checkpoints.title", "Checkpoints")}
 					extra={
 						canManage &&
-						tab === "promo-codes" && (
+						(tab === "promo-codes" ? (
 							<Button
 								type="primary"
 								icon={<IconPlus size={16} />}
@@ -67,7 +69,16 @@ function AdminCheckpoints() {
 							>
 								{t("admin.checkpoints.promoCodes.new", "New code")}
 							</Button>
-						)
+						) : (
+							tab === "checkpoints" && (
+								<Button
+									icon={<IconPlus size={16} />}
+									onClick={() => setGiving(true)}
+								>
+									{t("admin.checkpoints.free.add", "Add a free checkpoint")}
+								</Button>
+							)
+						))
 					}
 				/>
 
@@ -116,6 +127,7 @@ function AdminCheckpoints() {
 					onClose={() => setCreating(false)}
 					firstPurchase={promoCodes.data?.firstPurchase ?? false}
 				/>
+				{giving && <FreeCheckpointModal onClose={() => setGiving(false)} />}
 			</div>
 		</AdminSpace>
 	);

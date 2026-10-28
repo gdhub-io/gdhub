@@ -14,6 +14,7 @@ import type {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
+import type { FreeCheckpointProjectDto } from "@/repositories/checkpoint-free";
 import type { CuratorJournalViewDto } from "@/repositories/curator-journal-view";
 import type {
 	AdminCheckpointsPageDto,
@@ -174,6 +175,34 @@ export const useAssignCurator = (checkpointId: string) => {
 			userId?: string;
 			reason: string;
 		}) => (await axios.post(`${URL}/${checkpointId}/curator`, body)).data,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: LIST_KEY }),
+	});
+};
+
+/** Frame 12.11.12: projects a free checkpoint can start on. */
+export const useFreeCheckpointProjects = (query: string) =>
+	useQuery({
+		queryKey: [...ROOT, "free-projects", query],
+		queryFn: async () =>
+			(
+				await axios.get<FreeCheckpointProjectDto[]>(`${URL}/free`, {
+					params: { q: query },
+				})
+			).data,
+		placeholderData: keepPreviousData,
+	});
+
+export const useStartFreeCheckpoint = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: {
+			projectId: string;
+			kind: CheckpointCuratorKind;
+			userId?: string;
+			firstCall?: string;
+			reason: string;
+		}) => (await axios.post(`${URL}/free`, body)).data,
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: LIST_KEY }),
 	});
 };
