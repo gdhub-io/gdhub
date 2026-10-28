@@ -44,7 +44,11 @@ import {
 	useCheckpointReview,
 } from "@/hooks/checkpoint-review";
 import { type PlanEdit, planSession } from "@/lib/checkpoint-call";
-import { sprintParam } from "@/lib/checkpoint-hrefs";
+import {
+	type PathTab,
+	rememberInAddress,
+	sprintParam,
+} from "@/lib/checkpoint-hrefs";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { PlanChange } from "@/schemas/checkpoint";
 import { CuratorAside } from "./CuratorAside";
@@ -63,6 +67,7 @@ export type AiReviewProps = {
 	checkpointId: string;
 	index: number;
 	backHref: string;
+	tab?: PathTab;
 };
 
 /**
@@ -72,7 +77,12 @@ export type AiReviewProps = {
  * start, the three sprint reviews, the verdict. `index` picks what the panel
  * opens on, as a letter's link does.
  */
-export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
+export function AiReview({
+	checkpointId,
+	index,
+	backHref,
+	tab,
+}: AiReviewProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const { data: review, isPending } = useCheckpointReview(checkpointId);
@@ -143,6 +153,8 @@ export function AiReview({ checkpointId, index, backHref }: AiReviewProps) {
 			<AiReviewView
 				review={review}
 				index={index}
+				initialTab={tab}
+				syncAddress
 				backHref={backHref}
 				onChange={onChange}
 				onAdvise={askAdvice}
@@ -190,6 +202,10 @@ export type AiReviewViewProps = {
 	sprintTab?: (index: number) => ReactNode;
 	/** Attach an artifact that proves a task, from the plan. */
 	onAttach?: () => void;
+	/** The tab a link asked for. */
+	initialTab?: PathTab;
+	/** Keeps the sprint and the tab in the address; the lab and the stories do not. */
+	syncAddress?: boolean;
 };
 
 /** The page itself, from its data: what the stories render, moment by moment. */
@@ -206,10 +222,20 @@ export function AiReviewView({
 	refreshKey,
 	sprintTab,
 	onAttach,
+	initialTab,
+	syncAddress,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
 	const [picked, setPicked] = useState<number | null>(null);
-	const [pickedTab, setTab] = useState<AiTab | null>(null);
+	const [pickedTab, setPickedTab] = useState<AiTab | null>(
+		initialTab === "sprint" || initialTab === "review" || initialTab === "plan"
+			? initialTab
+			: null,
+	);
+	const setTab = (key: AiTab) => {
+		setPickedTab(key);
+		if (syncAddress) rememberInAddress("tab", key);
+	};
 	const { plan, current } = review;
 	const editing = planSession(plan.edit);
 	const open = editing ? sessionOf(review, editing)?.content : null;
@@ -292,12 +318,8 @@ export function AiReviewView({
 										selected={selected}
 										onSelect={(at) => {
 											setPicked(at);
-											// The address names the sprint, for a reload or a link.
-											window.history.replaceState(
-												null,
-												"",
-												`?sprint=${sprintParam(at)}`,
-											);
+											if (syncAddress)
+												rememberInAddress("sprint", sprintParam(at));
 										}}
 									/>
 								),

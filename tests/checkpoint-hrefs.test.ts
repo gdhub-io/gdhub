@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	checkpointPathHref,
+	pathTabOf,
 	sessionOfSprintParam,
 	sprintParam,
 } from "@/lib/checkpoint-hrefs";
@@ -22,5 +23,16 @@ describe("Path to Checkpoint links", () => {
 		expect(sessionOfSprintParam("5")).toBeUndefined();
 		expect(sessionOfSprintParam("x")).toBeUndefined();
 		expect(sessionOfSprintParam(undefined)).toBeUndefined();
+	});
+
+	it("adds the tab, alone or after the sprint", () => {
+		expect(checkpointPathHref("hollow-tide", 3, 2, "review")).toBe(
+			"/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
+		);
+		expect(checkpointPathHref("hollow-tide", 3, undefined, "plan")).toBe(
+			"/user/project/hollow-tide/workflow/cp3?tab=plan",
+		);
+		expect(pathTabOf("review")).toBe("review");
+		expect(pathTabOf("notes")).toBeUndefined();
 	});
 });

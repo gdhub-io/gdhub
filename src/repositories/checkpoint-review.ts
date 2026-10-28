@@ -785,7 +785,12 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 					session.index === SCOPE_SESSION
 						? "What the sprint showed, the focus for the next one, and the curator's advice on the tasks. This is the last change to them: adjust them if needed and press Confirm the tasks by this time tomorrow."
 						: "What the sprint showed and the focus for the next one.",
-				redirectUrl: reviewUrl(checkpoint.project.slug, number, session.index),
+				redirectUrl: reviewUrl(
+					checkpoint.project.slug,
+					number,
+					session.index,
+					"review",
+				),
 			}),
 		),
 	);

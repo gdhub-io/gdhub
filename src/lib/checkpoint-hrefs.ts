@@ -13,13 +13,40 @@ export const sessionOfSprintParam = (value: string | undefined) => {
 		: undefined;
 };
 
+/** The tabs a link can open on; a call's notes are its review. */
+export const PATH_TABS = [
+	"sprint",
+	"review",
+	"plan",
+	"brief",
+	"transcript",
+] as const;
+export type PathTab = (typeof PATH_TABS)[number];
+
+export const pathTabOf = (value: string | undefined): PathTab | undefined =>
+	PATH_TABS.find((tab) => tab === value);
+
 /**
  * Path to Checkpoint N (GDHUB-117): everything of one checkpoint's work on one
- * page, opened on a sprint — or, without one, on the sprint under way.
+ * page, opened on a sprint — or, without one, on the sprint under way — and,
+ * when asked, on a tab.
  */
 export const checkpointPathHref = (
 	slug: string,
 	number: number,
 	index?: number,
-) =>
-	`/user/project/${slug}/workflow/cp${number}${index ? `?sprint=${sprintParam(index)}` : ""}`;
+	tab?: PathTab,
+) => {
+	const query = new URLSearchParams();
+	if (index) query.set("sprint", sprintParam(index));
+	if (tab) query.set("tab", tab);
+	const search = query.toString();
+	return `/user/project/${slug}/workflow/cp${number}${search ? `?${search}` : ""}`;
+};
+
+/** Keeps the page's sprint or tab in the address, for a reload or a link, without a navigation. */
+export const rememberInAddress = (key: "sprint" | "tab", value: string) => {
+	const url = new URL(window.location.href);
+	url.searchParams.set(key, value);
+	window.history.replaceState(null, "", url);
+};

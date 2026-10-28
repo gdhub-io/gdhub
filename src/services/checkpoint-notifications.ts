@@ -25,7 +25,7 @@ import {
 	MS_PER_HOUR,
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
-import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
+import { checkpointPathHref, type PathTab } from "@/lib/checkpoint-hrefs";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
 import {
@@ -75,8 +75,12 @@ const workflowUrl = (slug: string) =>
 export const recipient = { select: { id: true, email: true } } as const;
 
 /** Path to Checkpoint for the team, opened on the sprint a session opens. */
-export const reviewUrl = (slug: string, number: number, index: number) =>
-	`${appUrl()}${checkpointPathHref(slug, number, index)}`;
+export const reviewUrl = (
+	slug: string,
+	number: number,
+	index: number,
+	tab?: PathTab,
+) => `${appUrl()}${checkpointPathHref(slug, number, index, tab)}`;
 
 /** A paid checkpoint waits for its human curator's answer. */
 export const notifyCuratorAsked = async (checkpointId: string) => {
@@ -125,7 +129,7 @@ export const notifyDayOne = async (checkpointId: string, read: boolean) => {
 			: `Checkpoint ${number} has started`,
 		message:
 			"Write one to five tasks that will show the goal is reached — your own or the curator's suggestions — and send them for a check.",
-		redirectUrl: reviewUrl(row.project.slug, number, 1),
+		redirectUrl: reviewUrl(row.project.slug, number, 1, "plan"),
 	});
 };
 
@@ -138,7 +142,7 @@ export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
 	await notify(row.project.author, `cp-plan-checked-${checkpointId}`, {
 		title: `Your AI curator has checked the plan of Checkpoint ${number}`,
 		message: `Read the advice, change what you want and approve the plan. If you don't, it approves itself as it stands on ${dayjs.utc(closes).format("D MMM, HH:mm [UTC]")}.`,
-		redirectUrl: reviewUrl(row.project.slug, number, 1),
+		redirectUrl: reviewUrl(row.project.slug, number, 1, "plan"),
 	});
 };
 
@@ -195,7 +199,7 @@ export const remindPlansUnsent = async (now = new Date()) => {
 			title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
 			message:
 				"Write one to five tasks and send them for a check. Without tasks the checkpoint has nothing to measure at the end.",
-			redirectUrl: reviewUrl(checkpoint.project.slug, number, 1),
+			redirectUrl: reviewUrl(checkpoint.project.slug, number, 1, "plan"),
 		});
 		sent += 1;
 	}
@@ -211,7 +215,7 @@ export const notifyPlanApproved = async (checkpointId: string) => {
 	await notify(row.project.author, `cp-plan-approved-${checkpointId}`, {
 		title: `The plan of Checkpoint ${number} is approved`,
 		message: `It approved itself as it stood, ${AI_APPROVE_HOURS} hours after the curator's check. The goal and tasks are fixed until day 15, when they can change once more.`,
-		redirectUrl: reviewUrl(row.project.slug, number, 1),
+		redirectUrl: reviewUrl(row.project.slug, number, 1, "sprint"),
 	});
 };
 
@@ -248,7 +252,12 @@ export const remindScopeClosing = async (now = new Date()) => {
 			title: `The tasks of Checkpoint ${number} can change for ${SCOPE_REMIND_BEFORE_HOURS} more hours`,
 			message:
 				"Take the curator's advice or keep them as they are, and press Confirm the tasks. After that they stay as they are until the verdict.",
-			redirectUrl: reviewUrl(checkpoint.project.slug, number, SCOPE_SESSION),
+			redirectUrl: reviewUrl(
+				checkpoint.project.slug,
+				number,
+				SCOPE_SESSION,
+				"plan",
+			),
 		});
 	}
 	return sessions.length;

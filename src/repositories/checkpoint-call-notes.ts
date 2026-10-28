@@ -196,7 +196,12 @@ const writeNotesFor = async (sessionId: string) => {
 		]),
 	);
 	if (checkpoint.curator) people.set(checkpoint.curator.id, checkpoint.curator);
-	const teamUrl = reviewUrl(checkpoint.project.slug, number, session.index);
+	const teamUrl = reviewUrl(
+		checkpoint.project.slug,
+		number,
+		session.index,
+		"review",
+	);
 	const curatorUrl = `${appUrl()}/advisor/checkpoints/${checkpoint.id}/review/${session.index}`;
 	for (const person of people.values()) {
 		await notify(person, `cp-notes-${sessionId}-${person.id}`, {

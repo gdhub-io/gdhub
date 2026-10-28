@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
-import { sessionOfSprintParam } from "@/lib/checkpoint-hrefs";
+import { pathTabOf, sessionOfSprintParam } from "@/lib/checkpoint-hrefs";
 import { checkpointIdByNumber } from "@/repositories/checkpoint-number";
 import {
 	curatorKindOf,
@@ -20,9 +20,12 @@ export default async function CheckpointPathPage({
 	searchParams,
 }: {
 	params: Promise<{ slug: string; cp: string }>;
-	searchParams: Promise<{ sprint?: string }>;
+	searchParams: Promise<{ sprint?: string; tab?: string }>;
 }) {
-	const [{ slug, cp }, { sprint }] = await Promise.all([params, searchParams]);
+	const [{ slug, cp }, { sprint, tab }] = await Promise.all([
+		params,
+		searchParams,
+	]);
 	const number = Number(/^cp(\d+)$/.exec(cp)?.[1]);
 	if (!Number.isInteger(number) || number < 1) notFound();
 
@@ -39,6 +42,7 @@ export default async function CheckpointPathPage({
 				kind={kind}
 				checkpointId={checkpointId}
 				index={index}
+				tab={pathTabOf(tab)}
 				backHref={`/user/project/${slug}/workflow`}
 			/>
 		</ProjectSpace>
