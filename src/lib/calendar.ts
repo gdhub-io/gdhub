@@ -19,7 +19,8 @@ export type CalendarEvent = {
 
 // Zero-width marks (Tolgee tags translated strings with them in development)
 // would travel into the calendar's title.
-const clean = (text: string) => text.replace(/[​-‍⁠﻿]/g, "");
+const clean = (text: string) =>
+	text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
 const dateOf = (date: Date): DateArray => [
 	date.getUTCFullYear(),

@@ -107,9 +107,17 @@
 	color: var(--gd-color-text);
 }
 
-.chip[data-tone="dark"] {
+.chip {
 	cursor: pointer;
+}
+
+.chip[data-tone="dark"] {
 	font-weight: 600;
+}
+
+// A day of the checkpoint answers the pointer; the days past the verdict do not.
+.day:not(.outside):hover {
+	background: var(--gd-fill-subtle);
 }
 
 .chip[data-tone="dark"],
@@ -139,10 +147,28 @@
 
 .swatch {
 	display: inline-block;
-	background: var(--gd-fill-subtle);
-	width: 10px;
-	height: 10px;
+	width: 12px;
+	height: 12px;
 	margin-right: var(--gd-space-2);
+	border: 1px solid var(--gd-color-text-tertiary);
 	border-radius: 3px;
 	vertical-align: middle;
+	background: var(--gd-fill-subtle);
+}
+
+// On white the tints alone are too faint to name a colour; the edge carries it.
+.swatch[data-tone="dark"] {
+	border-color: var(--gd-neutral-900);
+}
+
+.swatch[data-tone="deadline"] {
+	border-color: var(--gd-warning-solid);
+}
+
+.swatch[data-tone="verdict"] {
+	border-color: var(--gd-success-solid);
+}
+
+.tipWhen {
+	opacity: 0.7;
 }

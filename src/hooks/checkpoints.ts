@@ -371,11 +371,10 @@ export const useConfirmPulse = (token: string) =>
 	});
 
 /** Every date of the checkpoint, for its Calendar tab. */
-export const useCheckpointCalendar = (id: string, enabled = true) =>
+export const useCheckpointCalendar = (id: string) =>
 	useQuery({
 		queryKey: ["checkpoint-calendar", id],
 		queryFn: async () =>
 			(await axios.get<CheckpointCalendarDto>(`/api/checkpoint/${id}/calendar`))
 				.data,
-		enabled,
 	});

@@ -110,25 +110,7 @@ export function CallPanel({
 					/>
 				)}
 				evidence={evidence.actions}
-				calendar={
-					<CheckpointCalendar
-						checkpointId={call.checkpointId}
-						onOpen={(at) => {
-							onPick("sprint");
-							(call.role === "team"
-								? (n: number) =>
-										router.push(
-											checkpointPathHref(
-												call.project.slug,
-												call.number,
-												n,
-												"sprint",
-											),
-										)
-								: setPickedCall)(at);
-						}}
-					/>
-				}
+				calendar={<CheckpointCalendar checkpointId={call.checkpointId} />}
 			/>
 			{evidence.modal}
 		</>

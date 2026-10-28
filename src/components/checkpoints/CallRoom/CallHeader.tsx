@@ -9,6 +9,7 @@ import { CuratorHeader } from "@/components/checkpoints/CuratorReview/CuratorHea
 import type { StatusTone } from "@/components/ui";
 import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { firstName } from "@/helpers/format";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
 
 export type CallHeaderProps = {
@@ -59,7 +60,7 @@ function LiveFor({ since }: { since: string }) {
 	});
 }
 
-export const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? "";
+export { firstName };
 
 /** "14:00" today, "8 Oct, 14:00" on any other day. */
 export const callTime = (at: string, now = new Date()) => {

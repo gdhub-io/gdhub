@@ -66,7 +66,8 @@ import { useCuratorNow } from "./useCuratorNow";
 /** Where "Review the tasks" takes the author. */
 const PLAN_ANCHOR = "curator-plan";
 
-type AiTab = "plan" | "review" | "sprint" | "calendar";
+const AI_TABS = ["plan", "review", "sprint", "calendar"] as const;
+type AiTab = (typeof AI_TABS)[number];
 
 export type AiReviewProps = {
 	checkpointId: string;
@@ -241,12 +242,7 @@ export function AiReviewView({
 	});
 	const [pickedTab, setTab] = useAddressPick<AiTab>(
 		"tab",
-		initialTab === "sprint" ||
-			initialTab === "review" ||
-			initialTab === "plan" ||
-			initialTab === "calendar"
-			? initialTab
-			: null,
+		AI_TABS.includes(initialTab as AiTab) ? (initialTab as AiTab) : null,
 		{ sync: syncAddress },
 	);
 	const { plan, current } = review;
@@ -393,13 +389,7 @@ export function AiReviewView({
 												key: "calendar",
 												label: t("checkpoints.calendar.tab", "Calendar"),
 												children: (
-													<CheckpointCalendar
-														checkpointId={checkpointId}
-														onOpen={(at) => {
-															setPicked(at);
-															setTab(at > 1 ? "review" : "plan");
-														}}
-													/>
+													<CheckpointCalendar checkpointId={checkpointId} />
 												),
 											},
 										]

@@ -1,4 +1,5 @@
 import { FINAL_SESSION } from "@/config/checkpoint";
+import { firstName } from "@/helpers/format";
 import { buildIcs } from "@/lib/calendar";
 import {
 	type CalendarViewer,
@@ -40,16 +41,15 @@ const loadCalendar = async (checkpointId: string, userId: string) => {
 		},
 	});
 	const viewer = checkpoint && viewerOf(checkpoint, userId);
-	if (!checkpoint?.startedAt || !viewer) return null;
+	const startedAt = checkpoint?.startedAt;
+	if (!startedAt || !viewer) return null;
 
 	const as: CalendarViewer = viewer === "curator" ? "curator" : "team";
 	return {
 		checkpoint,
+		startedAt,
 		as,
-		events: checkpointCalendar(
-			{ ...checkpoint, startedAt: checkpoint.startedAt },
-			as,
-		),
+		events: checkpointCalendar({ ...checkpoint, startedAt }, as),
 	};
 };
 
@@ -60,6 +60,9 @@ export type CheckpointCalendarDto = {
 	startedAt: string;
 	/** Labels follow who reads: the curator, or the author and the team. */
 	as: CalendarViewer;
+	/** The curator's first name; null with the AI. */
+	curatorName: string | null;
+	projectName: string;
 	events: (Omit<CheckpointCalendarEvent, "start"> & { start: string })[];
 	/** The personal subscription link (12.08.16). */
 	feedUrl: string;
@@ -74,8 +77,10 @@ export const getCheckpointCalendar = async (
 	if (!calendar) return null;
 
 	return {
-		startedAt: (calendar.checkpoint.startedAt as Date).toISOString(),
+		startedAt: calendar.startedAt.toISOString(),
 		as: calendar.as,
+		curatorName: firstName(calendar.checkpoint.curator?.name ?? "") || null,
+		projectName: calendar.checkpoint.project.name,
 		events: calendar.events.map((event) => ({
 			...event,
 			start: event.start.toISOString(),
@@ -83,8 +88,6 @@ export const getCheckpointCalendar = async (
 		feedUrl: feedUrl(userId, checkpointId),
 	};
 };
-
-const firstName = (name: string | null) => name?.trim().split(/\s+/)[0] ?? "";
 
 /** What each date is called in the person's own calendar app. */
 const titleOf = (
@@ -136,7 +139,7 @@ export const calendarFeed = async (token: string) => {
 
 	const number = await checkpointNumber(checkpoint);
 	const names = {
-		curator: firstName(checkpoint.curator?.name ?? null) || "the AI curator",
+		curator: firstName(checkpoint.curator?.name ?? "") || "the AI curator",
 		project: checkpoint.project.name,
 	};
 	const url = `${appUrl()}${checkpointPathHref(checkpoint.project.slug, number)}`;
