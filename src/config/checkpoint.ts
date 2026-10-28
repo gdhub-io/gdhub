@@ -66,6 +66,8 @@ export const SCOPE_ANSWER_HOURS = 24;
 export const AI_APPROVE_HOURS = 12;
 /** Hours after payment at which an author who has not sent the tasks is reminded; the plan stays open. */
 export const AI_REMIND_HOURS = [24, 72] as const;
+/** The author's local hour those reminders go out at: the first such morning after each mark. */
+export const AI_REMIND_LOCAL_HOUR = 10;
 /** Day 15 with the AI curator: hours before the change closes that an author who has not confirmed is reminded. */
 export const SCOPE_REMIND_BEFORE_HOURS = 4;
 /** The day an author whose tasks still lack evidence is told, three days before the verdict. */

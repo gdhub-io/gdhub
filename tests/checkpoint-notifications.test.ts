@@ -219,40 +219,31 @@ describe("remindVerdictsDue", () => {
 
 describe("remindPlansUnsent", () => {
 	const firstSession = (
-		content: unknown,
 		createdAt: string,
 		checkpointId = "cp",
+		timezone: string | null = null,
 	) => ({
 		checkpointId,
 		createdAt: new Date(createdAt),
-		content,
 		checkpoint: {
 			projectId: "p",
 			createdAt: new Date(),
-			project: { slug: "hollow-tide", author: person("author") },
+			project: {
+				slug: "hollow-tide",
+				author: { ...person("author"), profile: { timezone } },
+			},
 		},
 	});
 
-	it("looks at checkpoints paid 24 and 72 hours ago, still unapproved, in one query", async () => {
+	it("asks for unchecked plans paid one to four days ago", async () => {
 		sessionFindMany.mockResolvedValue([]);
-		await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"));
-		expect(sessionFindMany).toHaveBeenCalledTimes(1);
+		await remindPlansUnsent(new Date("2026-10-06T10:00:00Z"));
 		expect(sessionFindMany.mock.calls[0][0].where).toMatchObject({
 			index: 1,
-			OR: [
-				{
-					createdAt: {
-						gte: new Date("2026-10-05T09:00:00Z"),
-						lt: new Date("2026-10-05T10:00:00Z"),
-					},
-				},
-				{
-					createdAt: {
-						gte: new Date("2026-10-03T09:00:00Z"),
-						lt: new Date("2026-10-03T10:00:00Z"),
-					},
-				},
-			],
+			createdAt: {
+				gt: new Date("2026-10-02T10:00:00Z"),
+				lte: new Date("2026-10-05T10:00:00Z"),
+			},
 			checkpoint: {
 				goalAgreedAt: null,
 				planCheckedAt: null,
@@ -261,16 +252,27 @@ describe("remindPlansUnsent", () => {
 		});
 	});
 
-	it("reminds once at each mark", async () => {
-		sessionFindMany.mockResolvedValueOnce([
-			firstSession(null, "2026-10-05T09:30:00Z"),
-			firstSession(null, "2026-10-03T09:10:00Z", "late"),
+	it("reminds on the first 10:00 past each mark, in the author's zone", async () => {
+		sessionFindMany.mockResolvedValue([
+			// Paid 30 hours ago: past the 24-hour mark.
+			firstSession("2026-10-05T04:00:00Z"),
+			// Paid 75 hours ago: past the 72-hour mark.
+			firstSession("2026-10-03T07:00:00Z", "late"),
+			// Paid 30 hours ago, but it is 13:00 in Moscow.
+			firstSession("2026-10-05T04:00:00Z", "msk", "Europe/Moscow"),
 		]);
-		expect(await remindPlansUnsent(new Date("2026-10-06T10:20:00Z"))).toBe(2);
+		expect(await remindPlansUnsent(new Date("2026-10-06T10:00:00Z"))).toBe(2);
 		expect(send.mock.calls.map(([call]) => call.transactionId)).toEqual([
 			"cp-plan-remind-cp-24",
 			"cp-plan-remind-late-72",
 		]);
+	});
+
+	it("stays quiet between the marks", async () => {
+		// Paid 50 hours ago: the first reminder's day is over, the second not due.
+		sessionFindMany.mockResolvedValue([firstSession("2026-10-04T08:00:00Z")]);
+		expect(await remindPlansUnsent(new Date("2026-10-06T10:00:00Z"))).toBe(0);
+		expect(send).not.toHaveBeenCalled();
 	});
 });
 

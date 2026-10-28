@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import {
 	AI_APPROVE_HOURS,
 	AI_REMIND_HOURS,
+	AI_REMIND_LOCAL_HOUR,
 	CURATOR_ANSWER_DAYS,
 	EVIDENCE_REMIND_DAY,
 	SCOPE_ANSWER_HOURS,
@@ -141,22 +142,23 @@ export const notifyPlanChecked = async (checkpointId: string, closes: Date) => {
 };
 
 /**
- * The hourly run: an AI checkpoint whose tasks were not sent is reminded at
- * each of AI_REMIND_HOURS after payment — once each, as it goes out in the
- * one hour that mark falls in, and the transaction id covers a second run.
+ * The hourly run: an AI checkpoint whose tasks were not sent is reminded once
+ * after each of AI_REMIND_HOURS from payment, on the first morning past it in
+ * the author's zone — never at night; the transaction id covers a second run.
  */
 export const remindPlansUnsent = async (now = new Date()) => {
-	const hour = Math.floor(now.getTime() / MS_PER_HOUR) * MS_PER_HOUR;
-	const windows = AI_REMIND_HOURS.map((after) => ({
-		after,
-		gte: new Date(hour - (after + 1) * MS_PER_HOUR),
-		lt: new Date(hour - after * MS_PER_HOUR),
-	}));
 	const sessions = await prisma.checkpointSession.findMany({
 		where: {
 			index: 1,
-			// Written at payment, with the rest of the checkpoint's sessions.
-			OR: windows.map(({ gte, lt }) => ({ createdAt: { gte, lt } })),
+			// Written at payment; each reminder is due within a day of its mark.
+			createdAt: {
+				gt: new Date(
+					now.getTime() - (Math.max(...AI_REMIND_HOURS) + 24) * MS_PER_HOUR,
+				),
+				lte: new Date(
+					now.getTime() - Math.min(...AI_REMIND_HOURS) * MS_PER_HOUR,
+				),
+			},
 			checkpoint: {
 				curatorKind: CheckpointCuratorKind.AI,
 				status: CheckpointStatus.Active,
@@ -167,27 +169,36 @@ export const remindPlansUnsent = async (now = new Date()) => {
 		select: {
 			checkpointId: true,
 			createdAt: true,
-			checkpoint: { select: authorRowSelect },
+			checkpoint: {
+				select: {
+					...authorRowSelect,
+					project: { select: { slug: true, author: inZone } },
+				},
+			},
 		},
 	});
 
+	let sent = 0;
 	for (const { checkpointId, createdAt, checkpoint } of sessions) {
-		const after = windows.find(
-			({ gte, lt }) => createdAt >= gte && createdAt < lt,
-		)?.after;
+		const { author } = checkpoint.project;
+		const zone = author.profile?.timezone ?? "UTC";
+		if (dayjs(now).tz(zone).hour() !== AI_REMIND_LOCAL_HOUR) continue;
+		const hours = (now.getTime() - createdAt.getTime()) / MS_PER_HOUR;
+		const after = AI_REMIND_HOURS.filter(
+			(mark) => hours >= mark && hours < mark + 24,
+		).at(-1);
+		if (after === undefined) continue;
+
 		const number = await checkpointNumber(checkpoint);
-		await notify(
-			checkpoint.project.author,
-			`cp-plan-remind-${checkpointId}-${after}`,
-			{
-				title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
-				message:
-					"Write one to five tasks and send them for a check. Without tasks the checkpoint has nothing to measure at the end.",
-				redirectUrl: reviewUrl(checkpoint.project.slug, number, 1),
-			},
-		);
+		await notify(author, `cp-plan-remind-${checkpointId}-${after}`, {
+			title: `Your AI curator is waiting for the tasks of Checkpoint ${number}`,
+			message:
+				"Write one to five tasks and send them for a check. Without tasks the checkpoint has nothing to measure at the end.",
+			redirectUrl: reviewUrl(checkpoint.project.slug, number, 1),
+		});
+		sent += 1;
 	}
-	return sessions.length;
+	return sent;
 };
 
 /** Day 1: nobody approved the checked plan, so it approved itself as it stood. */
