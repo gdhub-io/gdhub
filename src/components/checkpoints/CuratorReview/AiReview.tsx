@@ -304,8 +304,17 @@ export function AiReviewView({
 							}}
 							size="large"
 							className={callStyles.panelTabs}
-							// What the last sprint was, what this one asks, the whole plan.
+							// What this sprint asks, how the last one went, the whole plan.
 							items={[
+								...(sprintTab
+									? [
+											{
+												key: "sprint",
+												label: t("checkpoints.call.panel.sprint", "Sprint"),
+												children: sprintTab(selected),
+											},
+										]
+									: []),
 								// The first sprint has nothing behind it to review.
 								...(selected > 1
 									? [
@@ -315,15 +324,6 @@ export function AiReviewView({
 												children: (
 													<ReviewBody review={review} index={selected} />
 												),
-											},
-										]
-									: []),
-								...(sprintTab
-									? [
-											{
-												key: "sprint",
-												label: t("checkpoints.call.panel.sprint", "Sprint"),
-												children: sprintTab(selected),
 											},
 										]
 									: []),

@@ -195,8 +195,15 @@ export function PanelBlock({
 		/>
 	);
 
-	// What happened (the brief, the call), what the sprint does, the whole plan.
+	// What this sprint asks, then what happened (the brief, the call), the whole plan.
 	const items: { key: PanelTab; label: string; children: ReactNode }[] = [];
+	if (sprintTab) {
+		items.push({
+			key: "sprint",
+			label: t("checkpoints.call.panel.sprint", "Sprint"),
+			children: <>{sprintTab(selected)}</>,
+		});
+	}
 	if (briefs) {
 		const brief = briefs.find((row) => row.index === selected);
 		items.push({
@@ -227,13 +234,6 @@ export function PanelBlock({
 			/>
 		),
 	});
-	if (sprintTab) {
-		items.push({
-			key: "sprint",
-			label: t("checkpoints.call.panel.sprint", "Sprint"),
-			children: <>{sprintTab(selected)}</>,
-		});
-	}
 	items.push({
 		key: "plan",
 		label: t("checkpoints.call.panel.plan", "Plan"),
