@@ -77,6 +77,16 @@ again under the curator's lock. A request lapses once the room opens at the old
 time, and only that call moves. The "an hour before" reminder is keyed by the
 call's time, so a moved call is announced again.
 
+## The Calendar tab and the subscription (GDHUB-124)
+
+Every date above is also on the Calendar tab of Path to Checkpoint — a grid, a
+sprint a row — built by `checkpointCalendar` (`src/lib/checkpoint-calendar.ts`)
+from the start day, the calls as booked and these rules; the curator also sees
+the AI's briefs. "Subscribe" gives a personal link (`/api/calendar/<signed
+token>.ics`) that Google, Apple and Outlook keep in sync: it is built anew on
+every fetch, so a moved call moves there too, on the app's next refresh. The
+link opens without signing in and carries only dates and titles.
+
 ## Money in the calendar
 
 - Withdrawal within **`WITHDRAWAL_DAYS` (14)** of payment.

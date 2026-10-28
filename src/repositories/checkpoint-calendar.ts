@@ -1,0 +1,155 @@
+import { FINAL_SESSION } from "@/config/checkpoint";
+import { buildIcs } from "@/lib/calendar";
+import {
+	type CalendarViewer,
+	type CheckpointCalendarEvent,
+	checkpointCalendar,
+} from "@/lib/checkpoint-calendar";
+import {
+	calendarToken,
+	calendarTokenOf,
+} from "@/lib/checkpoint-calendar-token";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
+import { checkpointNumber } from "@/repositories/checkpoint-number";
+import { viewerOf, viewerSelect } from "@/repositories/checkpoint-viewer";
+import { appUrl } from "@/services/checkpoint-notifications";
+import { prisma } from "@/services/prisma";
+
+/** The checkpoint as one of its people sees its dates; null for anyone else, or before it starts. */
+const loadCalendar = async (checkpointId: string, userId: string) => {
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			id: true,
+			projectId: true,
+			createdAt: true,
+			startedAt: true,
+			curatorKind: true,
+			curator: { select: { name: true } },
+			project: {
+				select: {
+					...viewerSelect(userId).project.select,
+					name: true,
+					slug: true,
+				},
+			},
+			curatorId: true,
+			sessions: {
+				select: { index: true, scheduledAt: true, endedAt: true },
+			},
+		},
+	});
+	const viewer = checkpoint && viewerOf(checkpoint, userId);
+	if (!checkpoint?.startedAt || !viewer) return null;
+
+	const as: CalendarViewer = viewer === "curator" ? "curator" : "team";
+	return {
+		checkpoint,
+		as,
+		events: checkpointCalendar(
+			{ ...checkpoint, startedAt: checkpoint.startedAt },
+			as,
+		),
+	};
+};
+
+const feedUrl = (userId: string, checkpointId: string) =>
+	`${appUrl()}/api/calendar/${calendarToken(userId, checkpointId)}.ics`;
+
+export type CheckpointCalendarDto = {
+	startedAt: string;
+	/** Labels follow who reads: the curator, or the author and the team. */
+	as: CalendarViewer;
+	events: (Omit<CheckpointCalendarEvent, "start"> & { start: string })[];
+	/** The personal subscription link (12.08.16). */
+	feedUrl: string;
+};
+
+/** The Calendar tab (12.08.14–15, 12.10.5). */
+export const getCheckpointCalendar = async (
+	checkpointId: string,
+	userId: string,
+): Promise<CheckpointCalendarDto | null> => {
+	const calendar = await loadCalendar(checkpointId, userId);
+	if (!calendar) return null;
+
+	return {
+		startedAt: (calendar.checkpoint.startedAt as Date).toISOString(),
+		as: calendar.as,
+		events: calendar.events.map((event) => ({
+			...event,
+			start: event.start.toISOString(),
+		})),
+		feedUrl: feedUrl(userId, checkpointId),
+	};
+};
+
+const firstName = (name: string | null) => name?.trim().split(/\s+/)[0] ?? "";
+
+/** What each date is called in the person's own calendar app. */
+const titleOf = (
+	event: CheckpointCalendarEvent,
+	as: CalendarViewer,
+	names: { curator: string; project: string },
+) => {
+	const team = as === "team";
+	const final = event.index === FINAL_SESSION;
+	switch (event.kind) {
+		case "call":
+			return `Call ${event.index} with ${team ? names.curator : names.project}${final ? " — the final one" : ""}`;
+		case "plan":
+			return "The AI curator checks your plan";
+		case "review":
+			return final
+				? "The final review and the verdict"
+				: `The AI curator's review of sprint ${(event.index ?? 1) - 1}`;
+		case "brief":
+			return `The AI's brief of sprint ${event.index}`;
+		case "deadline":
+			return team
+				? `Sprint ${event.index} due: devlog, build, artifacts`
+				: `${names.project}: sprint ${event.index} due`;
+		case "change":
+			return team
+				? "The tasks can change"
+				: `${names.project} may change the tasks`;
+		case "evidence":
+			return team
+				? "Attach evidence to every task"
+				: `${names.project} is reminded of missing evidence`;
+		case "verdict":
+			return team ? `${names.curator}'s verdict` : "Send your verdict";
+	}
+};
+
+/**
+ * The subscription and the download: the person's dates as iCalendar, built
+ * anew on every fetch so a moved call moves in their calendar too. Dates and
+ * titles only — the link opens without signing in.
+ */
+export const calendarFeed = async (token: string) => {
+	const named = calendarTokenOf(token);
+	if (!named) return null;
+	const calendar = await loadCalendar(named.checkpointId, named.userId);
+	if (!calendar) return null;
+	const { checkpoint, as, events } = calendar;
+
+	const number = await checkpointNumber(checkpoint);
+	const names = {
+		curator: firstName(checkpoint.curator?.name ?? null) || "the AI curator",
+		project: checkpoint.project.name,
+	};
+	const url = `${appUrl()}${checkpointPathHref(checkpoint.project.slug, number)}`;
+
+	return buildIcs(
+		events.map((event) => ({
+			uid: event.uid,
+			title: titleOf(event, as, names),
+			start: event.start,
+			minutes: event.minutes,
+			allDay: event.allDay,
+			url,
+		})),
+		`${checkpoint.project.name} · Checkpoint ${number}`,
+	);
+};

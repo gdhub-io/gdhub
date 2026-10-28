@@ -30,6 +30,7 @@ import {
 	useSprintLabel,
 } from "@/components/checkpoints/CallRoom/SessionSwitcher";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
+import { CheckpointCalendar } from "@/components/checkpoints/CheckpointCalendar";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState } from "@/components/ui";
 import { formatShort } from "@/components/WorkflowPath/dates";
@@ -65,7 +66,7 @@ import { useCuratorNow } from "./useCuratorNow";
 /** Where "Review the tasks" takes the author. */
 const PLAN_ANCHOR = "curator-plan";
 
-type AiTab = "plan" | "review" | "sprint";
+type AiTab = "plan" | "review" | "sprint" | "calendar";
 
 export type AiReviewProps = {
 	checkpointId: string;
@@ -155,6 +156,7 @@ export function AiReview({
 	return (
 		<>
 			<AiReviewView
+				checkpointId={checkpointId}
 				review={review}
 				index={index}
 				initialTab={tab}
@@ -187,6 +189,8 @@ export function AiReview({
 }
 
 export type AiReviewViewProps = {
+	/** The page's own checkpoint: its Calendar tab. The lab and the stories go without. */
+	checkpointId?: string;
 	review: CheckpointReviewDto;
 	/** The session the panel opens on, when the address names one. */
 	index?: number;
@@ -228,6 +232,7 @@ export function AiReviewView({
 	evidence,
 	initialTab,
 	syncAddress,
+	checkpointId,
 }: AiReviewViewProps) {
 	const { t } = useTranslate();
 	const [picked, setPicked] = useAddressPick<number>("sprint", index ?? null, {
@@ -236,7 +241,10 @@ export function AiReviewView({
 	});
 	const [pickedTab, setTab] = useAddressPick<AiTab>(
 		"tab",
-		initialTab === "sprint" || initialTab === "review" || initialTab === "plan"
+		initialTab === "sprint" ||
+			initialTab === "review" ||
+			initialTab === "plan" ||
+			initialTab === "calendar"
 			? initialTab
 			: null,
 		{ sync: syncAddress },
@@ -316,8 +324,9 @@ export function AiReviewView({
 						<Tabs
 							activeKey={tab}
 							onChange={(key) => setTab(key as AiTab)}
+							// The calendar is the whole checkpoint, not one sprint.
 							tabBarExtraContent={{
-								right: (
+								right: tab !== "calendar" && (
 									<ReviewSwitcher
 										review={review}
 										selected={selected}
@@ -378,6 +387,23 @@ export function AiReviewView({
 										/>
 									),
 								},
+								...(checkpointId
+									? [
+											{
+												key: "calendar",
+												label: t("checkpoints.calendar.tab", "Calendar"),
+												children: (
+													<CheckpointCalendar
+														checkpointId={checkpointId}
+														onOpen={(at) => {
+															setPicked(at);
+															setTab(at > 1 ? "review" : "plan");
+														}}
+													/>
+												),
+											},
+										]
+									: []),
 							]}
 						/>
 					</section>
