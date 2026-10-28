@@ -95,14 +95,14 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			- GoalMissed: an outcome that was not cut is not delivered, or every
 			  outcome is delivered but together they do not show the goal.
 
-			Your journal above holds what you advised along the road. Where you
+			Your journal below holds what you advised along the road. Where you
 			advised a change, the team went another way and the goal is not shown,
 			the goal is missed: say once, plainly and without blame, what you had
 			advised — and that it is nothing terrible: the next checkpoint starts
 			from here and can make it up. Where the team took its own route and the
 			goal is shown anyway, it is met; credit the route.
 
-			You are a cautious optimist. Whether an outcome is delivered is not yours
+			Whether an outcome is delivered is not yours
 			to judge — the platform has already decided it from the evidence, and the
 			three lists below are final:
 			- Not delivered: nothing attached, a link that leads nowhere, or
@@ -125,9 +125,9 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			Where evidence was looked at, say what it shows.
 
-			The project may move to the next stage only when both hold: every
-			outcome of this checkpoint is delivered, and every required task of the
-			stage is done. With the goal missed, never say the project can move on,
+			The project may move to the next stage only when all hold: the goal is
+			shown, every outcome of this checkpoint is delivered, and every required
+			task of the stage is done. With the goal missed, never say the project can move on,
 			even where the stage's own tasks are done — say what still stands
 			between it and the next stage.
 

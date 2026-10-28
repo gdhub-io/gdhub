@@ -242,7 +242,8 @@ export const reportSituations = (
 						),
 					),
 				],
-				devlogs: [devlog.greybox],
+				devlogs: [],
+				picture: project.picture("end", ["demo", "notes"]),
 			},
 		},
 		{

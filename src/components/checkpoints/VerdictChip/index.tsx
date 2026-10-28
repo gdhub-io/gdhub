@@ -57,12 +57,12 @@ export function useVerdictCopy() {
 						"Goal met. The project may move to the next stage.",
 					),
 			[CheckpointVerdict.GoalMet]: t(
-				"checkpoints.verdict.goalMetMeaning",
-				"Outcomes are complete. The project stays on this stage; continue with a new checkpoint.",
+				"checkpoints.verdict.goalMetShownMeaning",
+				"The goal is reached. The project stays on this stage; continue with a new checkpoint.",
 			),
 			[CheckpointVerdict.GoalMissed]: t(
-				"checkpoints.verdict.goalMissedMeaning",
-				"Outcomes are incomplete. Continue with a new checkpoint.",
+				"checkpoints.verdict.goalNotShownMeaning",
+				"The goal isn't shown yet. Continue with a new checkpoint.",
 			),
 		})[verdict];
 
