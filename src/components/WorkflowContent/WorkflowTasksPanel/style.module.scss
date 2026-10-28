@@ -7,8 +7,8 @@
 // Outlined, not filled: the checkpoint widget above it is the one white block.
 .panel {
 	background-color: transparent;
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-card);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
 }
 

@@ -338,9 +338,8 @@
 	align-items: flex-start;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-4) var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
 	min-width: 0;
 }
 
@@ -361,9 +360,8 @@
 // Call panel `gP5gH` / `Ovz5i`: the tabs on the left, the call switcher on the right.
 .panel {
 	padding: var(--gd-space-2) var(--gd-space-6) var(--gd-space-6);
-	border: 1px solid var(--gd-color-border);
+	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
-	background: var(--gd-color-surface);
 	min-width: 0;
 }
 

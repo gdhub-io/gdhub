@@ -44,13 +44,13 @@
 	gap: var(--gd-space-6);
 }
 
-// Frame 08 `RV1gV`: outlined like the stage's Tasks panel beside it, with the
-// same ruled header.
+// The hub's sidebar card (`sectionCardSidebar`): transparent, the stronger
+// stroke, the panel radius — one look for every card in a right column.
 .asideCard {
 	display: flex;
 	flex-direction: column;
-	border: 1px solid var(--gd-color-border);
-	border-radius: var(--gd-radius-card);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
 }
 
@@ -63,7 +63,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-1);
-	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6) var(--gd-space-3);
 }
 
 .asideHead + .asideBody {
@@ -74,7 +74,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-6);
-	padding: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-6);
 }
 
 .asideBlock {
@@ -91,7 +91,7 @@
 }
 
 .asideTitle {
-	font-size: var(--gd-font-size-body-lg);
+	font-size: var(--gd-font-size-h4);
 	font-weight: 600;
 }
 
@@ -102,7 +102,7 @@
 
 // The stage's task rows, edge to edge of the card, the last on its bottom.
 .asideTasks {
-	margin: 0 calc(-1 * var(--gd-space-4)) calc(-1 * var(--gd-space-4));
+	margin: 0 calc(-1 * var(--gd-space-6)) calc(-1 * var(--gd-space-4));
 	border-top: 1px solid var(--gd-color-border);
 }
 
@@ -115,7 +115,7 @@
 	overflow-y: auto;
 	// Runs to the card's edges under a rule, as the task lists do, so rows scroll
 	// under it rather than vanish short of it; the rows keep the card's inset.
-	margin: 0 calc(-1 * var(--gd-space-4)) calc(-1 * var(--gd-space-4));
+	margin: 0 calc(-1 * var(--gd-space-6)) calc(-1 * var(--gd-space-4));
 	padding: var(--gd-space-4) 0;
 	border-top: 1px solid var(--gd-color-border);
 
@@ -143,7 +143,7 @@
 .activityEvent,
 .activityBoundary,
 .activityMore {
-	padding: 0 var(--gd-space-4);
+	padding: 0 var(--gd-space-6);
 }
 
 .activityEvent {
@@ -1338,7 +1338,7 @@ button.checklistItem {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-3);
-	padding: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-6);
 	border-bottom: 1px solid var(--gd-color-border);
 	background: linear-gradient(
 		118deg,
