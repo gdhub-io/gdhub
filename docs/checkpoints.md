@@ -400,12 +400,21 @@ Three values, and every one of them ends the checkpoint:
 
 | Verdict | Means | Next |
 |---|---|---|
-| `StageClosed` ("Ready for the next stage") | Outcomes delivered and the stage's requirements met | Next unlocks; the author moves on when ready |
-| `GoalMet` | Outcomes delivered, stage needs more | New checkpoint on the same stage |
-| `GoalMissed` | Outcomes not delivered | New checkpoint, inputs recomputed from what exists |
+| `StageClosed` ("Ready for the next stage") | The goal shown, outcomes delivered and the stage's requirements met | Next unlocks; the author moves on when ready |
+| `GoalMet` | The goal shown and outcomes delivered, stage needs more | New checkpoint on the same stage |
+| `GoalMissed` | An outcome not delivered — or all delivered without showing the goal | New checkpoint, inputs recomputed from what exists |
 
 "Delivered" is not a judgement call: every outcome that was not cut on day 15
 carries a readable artifact. Missing one, the verdict is `GoalMissed`.
+
+**The plan done is not the goal reached** (GDHUB-122). A checkpoint is judged
+from the outside in: the stage's expectation (Ideation: an idea found; a demo
+stage: the demo), the goal inside it, the plan inside the goal — and ahead,
+whether the project is ready for the next stage. Every outcome delivered still
+leaves the goal to the curator's judgement. Where the AI curator advised a
+change, the team went its own way and the goal is not shown, the goal is
+missed, and the note says what was advised and that the next checkpoint can
+make it up. The team's own route that does show the goal is met.
 
 **A human curator may count an outcome the artifact does not cover, and has to
 say why.** Playtest notes on paper, a conversation with a publisher, a fix only
@@ -848,8 +857,8 @@ feature that ships on manual checks.
 - `checkpoint_verdict` condition: a `GoalMet` verdict must not open the stage.
 - The guardrail: an outcome that was not cut and has no readable artifact cannot
   produce `StageClosed` or `GoalMet`, whatever the model returned.
-- A cut outcome is not counted as missing evidence, and a `GoalMissed` checkpoint
-  where every remaining outcome is proven cannot happen.
+- A cut outcome is not counted as missing evidence; a `GoalMissed` proposed
+  with every remaining outcome proven stands — the goal is the curator's call.
 - Deleting an artifact from the Artifacts tab leaves its items unproven rather
   than pointing at a row that is gone.
 - One artifact attached to two outcomes proves both, and is counted once in the

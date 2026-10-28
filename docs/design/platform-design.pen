@@ -389724,9 +389724,9 @@
                   "type": "frame",
                   "id": "AKciR",
                   "name": "td-action",
-                  "width": 56,
+                  "width": 100,
                   "height": "fill_container",
-                  "gap": 8,
+                  "gap": 4,
                   "padding": [
                     0,
                     16
@@ -389734,6 +389734,28 @@
                   "justifyContent": "end",
                   "alignItems": "center",
                   "children": [
+                    {
+                      "type": "frame",
+                      "id": "P0IfS",
+                      "name": "Button text · Curator journal",
+                      "width": 32,
+                      "height": 32,
+                      "cornerRadius": "$radius-sm",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "dIfE9",
+                          "name": "IconNotebook",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "notebook-text",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
                     {
                       "type": "frame",
                       "id": "oKDYZ",
@@ -389975,9 +389997,9 @@
                   "type": "frame",
                   "id": "o1ICCa",
                   "name": "td-action",
-                  "width": 56,
+                  "width": 100,
                   "height": "fill_container",
-                  "gap": 8,
+                  "gap": 4,
                   "padding": [
                     0,
                     16
@@ -389985,6 +390007,28 @@
                   "justifyContent": "end",
                   "alignItems": "center",
                   "children": [
+                    {
+                      "type": "frame",
+                      "id": "I87JJt",
+                      "name": "Button text · Curator journal",
+                      "width": 32,
+                      "height": 32,
+                      "cornerRadius": "$radius-sm",
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Vb3aj",
+                          "name": "IconNotebook",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "notebook-text",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        }
+                      ]
+                    },
                     {
                       "type": "frame",
                       "id": "uHQ3C",
@@ -390099,41 +390143,6 @@
                   "name": "L",
                   "fill": "$text-primary",
                   "content": "Assign a curator",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "tnX8y",
-              "name": "Item — Curator journal (AI curator only)",
-              "width": "fill_container",
-              "cornerRadius": "$radius-sm",
-              "gap": 12,
-              "padding": [
-                8,
-                12
-              ],
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "AYDMd",
-                  "name": "Icon",
-                  "width": 16,
-                  "height": 16,
-                  "icon": "notebook-text",
-                  "library": "lucide",
-                  "fill": "$text-primary"
-                },
-                {
-                  "type": "text",
-                  "id": "o6HVnQ",
-                  "name": "L",
-                  "fill": "$text-primary",
-                  "content": "Curator journal",
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "normal"
@@ -446402,6 +446411,42 @@
         },
         {
           "type": "frame",
+          "id": "t0XkWW",
+          "name": "Goal",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            16,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "BO66A",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Goal",
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "xCJeq",
+              "name": "Goal text",
+              "fill": "$text-primary",
+              "content": "A playable vertical slice of the first island",
+              "fontFamily": "$font",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
           "id": "f16Xm5",
           "name": "Tabs (antd Tabs)",
           "width": "fill_container",
@@ -446439,6 +446484,32 @@
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RFWAN",
+              "name": "Tab — Inputs",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yPcsS",
+                  "name": "Conversation",
+                  "fill": "$text-secondary",
+                  "content": "Inputs",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -446548,29 +446619,6 @@
               "gap": 2,
               "padding": 2,
               "children": [
-                {
-                  "type": "frame",
-                  "id": "RGTfb",
-                  "name": "Day 1",
-                  "fill": "#00000000",
-                  "cornerRadius": "$radius-sm",
-                  "padding": [
-                    4,
-                    12
-                  ],
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "RyvHW",
-                      "name": "Day 1",
-                      "fill": "$text-secondary",
-                      "content": "Day 1",
-                      "fontFamily": "$font",
-                      "fontSize": 13,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
                 {
                   "type": "frame",
                   "id": "dmbo4",
@@ -447248,23 +447296,27 @@
                             },
                             {
                               "type": "frame",
-                              "id": "M61Jhi",
-                              "name": "Tag",
-                              "fill": "$success-tint",
-                              "cornerRadius": "$radius-sm",
-                              "padding": [
-                                1,
-                                8
-                              ],
+                              "id": "MG8E5",
+                              "name": "Status — Matches",
+                              "gap": 8,
+                              "alignItems": "center",
                               "children": [
                                 {
+                                  "type": "ellipse",
+                                  "id": "WsAnB",
+                                  "name": "Dot",
+                                  "fill": "$success",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
                                   "type": "text",
-                                  "id": "nabcl",
-                                  "name": "Matches",
-                                  "fill": "$success-on-tint",
+                                  "id": "sz3A0",
+                                  "name": "Word",
+                                  "fill": "$text-primary",
                                   "content": "Matches",
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 13,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -447828,23 +447880,27 @@
                             },
                             {
                               "type": "frame",
-                              "id": "oYOlb",
-                              "name": "Tag",
-                              "fill": "$success-tint",
-                              "cornerRadius": "$radius-sm",
-                              "padding": [
-                                1,
-                                8
-                              ],
+                              "id": "Hm83S",
+                              "name": "Status — Stage closed",
+                              "gap": 8,
+                              "alignItems": "center",
                               "children": [
                                 {
+                                  "type": "ellipse",
+                                  "id": "TnztC",
+                                  "name": "Dot",
+                                  "fill": "$success",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
                                   "type": "text",
-                                  "id": "g28iSY",
-                                  "name": "Stage closed",
-                                  "fill": "$success-on-tint",
+                                  "id": "la017",
+                                  "name": "Word",
+                                  "fill": "$text-primary",
                                   "content": "Stage closed",
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 13,
                                   "fontWeight": "normal"
                                 }
                               ]
@@ -462270,6 +462326,42 @@
         },
         {
           "type": "frame",
+          "id": "M9OSGJ",
+          "name": "Goal",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            16,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "HFbwe",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Goal",
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "xUrIj",
+              "name": "Goal text",
+              "fill": "$text-primary",
+              "content": "A playable vertical slice of the first island",
+              "fontFamily": "$font",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
           "id": "lQ6x8",
           "name": "Tabs (antd Tabs)",
           "width": "fill_container",
@@ -462304,6 +462396,32 @@
                   "name": "Conversation",
                   "fill": "$text-secondary",
                   "content": "Conversation",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ghbZh",
+              "name": "Tab — Inputs",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rG34U",
+                  "name": "Conversation",
+                  "fill": "$text-secondary",
+                  "content": "Inputs",
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "normal"
@@ -462407,26 +462525,6 @@
               "layout": "vertical",
               "gap": 4,
               "children": [
-                {
-                  "type": "text",
-                  "id": "daE4m",
-                  "name": "Goal",
-                  "fill": "$text-tertiary",
-                  "content": "Goal",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "500"
-                },
-                {
-                  "type": "text",
-                  "id": "X18qa7",
-                  "name": "A playable vertical slic",
-                  "fill": "$text-primary",
-                  "content": "A playable vertical slice of the first island",
-                  "fontFamily": "$font",
-                  "fontSize": 15,
-                  "fontWeight": "600"
-                },
                 {
                   "type": "frame",
                   "id": "zcmUe",
@@ -462626,23 +462724,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Uh6pO",
-                          "name": "Tag Done · sprint 1",
-                          "fill": "$success-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "Lx7n0",
+                          "name": "Status — Done · sprint 1",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "bq3eL",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "m6hAX",
-                              "name": "Done · sprint 1",
-                              "fill": "$success-on-tint",
+                              "id": "E29XU",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Done · sprint 1",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -462675,23 +462777,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Dczv2",
-                          "name": "Tag Matches",
-                          "fill": "$success-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "T0sfc",
+                          "name": "Status — Matches",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "RZXHX",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "KwEbT",
-                              "name": "Matches",
-                              "fill": "$success-on-tint",
+                              "id": "HJOjC",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Matches",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -462759,23 +462865,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "A4SwU",
-                          "name": "Tag Done · sprint 3",
-                          "fill": "$success-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "RpYzz",
+                          "name": "Status — Done · sprint 3",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "ohnjd",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "zWfdJ",
-                              "name": "Done · sprint 3",
-                              "fill": "$success-on-tint",
+                              "id": "G11alv",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Done · sprint 3",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -462808,23 +462918,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "grCHb",
-                          "name": "Tag Partly",
-                          "fill": "$warning-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "qfItb",
+                          "name": "Status — Partly",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "L7JWG8",
+                              "name": "Dot",
+                              "fill": "$warning",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "tXJeQ",
-                              "name": "Partly",
-                              "fill": "$warning-on-tint",
+                              "id": "WxDLh",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Partly",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -462880,23 +462994,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "uhzQ9",
-                          "name": "Tag Done · sprint 4",
-                          "fill": "$success-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "hgD5m",
+                          "name": "Status — Done · sprint 4",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "Rga4F",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "I2RtO",
-                              "name": "Done · sprint 4",
-                              "fill": "$success-on-tint",
+                              "id": "z3iS9C",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Done · sprint 4",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -462929,23 +463047,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "XtfI5",
-                          "name": "Tag Matches",
-                          "fill": "$success-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "iNnwb",
+                          "name": "Status — Matches",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "yR3HF",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "DHUZr",
-                              "name": "Matches",
-                              "fill": "$success-on-tint",
+                              "id": "ioncr",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Matches",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -463013,23 +463135,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "VeE8s",
-                          "name": "Tag Cut",
-                          "fill": "$bg-muted",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "UxCsq",
+                          "name": "Status — Cut",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "U0Fcg3",
+                              "name": "Dot",
+                              "fill": "$text-tertiary",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "RKbK3",
-                              "name": "Cut",
-                              "fill": "$text-secondary",
+                              "id": "QzBw7",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Cut",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -463133,23 +463259,27 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Z1VNT",
-                          "name": "Tag Open",
-                          "fill": "$bg-muted",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "SMQZn",
+                          "name": "Status — Open",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "T7qNV",
+                              "name": "Dot",
+                              "fill": "$text-tertiary",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "l8kpiy",
-                              "name": "Open",
-                              "fill": "$text-secondary",
+                              "id": "kXsVU",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Open",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -463394,6 +463524,42 @@
         },
         {
           "type": "frame",
+          "id": "zKwuW",
+          "name": "Goal",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            16,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "JwU23",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Goal",
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "stXj7",
+              "name": "Goal text",
+              "fill": "$text-primary",
+              "content": "A playable vertical slice of the first island",
+              "fontFamily": "$font",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
           "id": "qFCQA",
           "name": "Tabs (antd Tabs)",
           "width": "fill_container",
@@ -463428,6 +463594,32 @@
                   "name": "Conversation",
                   "fill": "$text-secondary",
                   "content": "Conversation",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s9cpLB",
+              "name": "Tab — Inputs",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uKzqW",
+                  "name": "Conversation",
+                  "fill": "$text-secondary",
+                  "content": "Inputs",
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "normal"
@@ -463703,23 +463895,27 @@
                         },
                         {
                           "type": "frame",
-                          "id": "C4rJ06",
-                          "name": "Tag Partly",
-                          "fill": "$warning-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "eEfoa",
+                          "name": "Status — Partly",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "haJgq",
+                              "name": "Dot",
+                              "fill": "$warning",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "ZFHjH",
-                              "name": "Partly",
-                              "fill": "$warning-on-tint",
+                              "id": "TdGuN",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Partly",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -464199,23 +464395,27 @@
                         },
                         {
                           "type": "frame",
-                          "id": "t55HXQ",
-                          "name": "Tag Matches",
-                          "fill": "$success-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "uJTQa",
+                          "name": "Status — Matches",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "rEWfP",
+                              "name": "Dot",
+                              "fill": "$success",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "F3fRB",
-                              "name": "Matches",
-                              "fill": "$success-on-tint",
+                              "id": "cQ482",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Matches",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -464502,6 +464702,42 @@
         },
         {
           "type": "frame",
+          "id": "FtKuw",
+          "name": "Goal",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            16,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "p1YF5w",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Goal",
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Q4iDz9",
+              "name": "Goal text",
+              "fill": "$text-primary",
+              "content": "A playable vertical slice of the first island",
+              "fontFamily": "$font",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
           "id": "pqPJ0",
           "name": "Tabs (antd Tabs)",
           "width": "fill_container",
@@ -464536,6 +464772,32 @@
                   "name": "Conversation",
                   "fill": "$text-secondary",
                   "content": "Conversation",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iXqiO",
+              "name": "Tab — Inputs",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "KTlx2",
+                  "name": "Conversation",
+                  "fill": "$text-secondary",
+                  "content": "Inputs",
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "normal"
@@ -464813,23 +465075,27 @@
                         },
                         {
                           "type": "frame",
-                          "id": "AZewu",
-                          "name": "Tag Not the game",
-                          "fill": "$error-tint",
-                          "cornerRadius": "$radius-sm",
-                          "padding": [
-                            1,
-                            8
-                          ],
+                          "id": "r70yvl",
+                          "name": "Status — Not the game",
+                          "gap": 8,
+                          "alignItems": "center",
                           "children": [
                             {
+                              "type": "ellipse",
+                              "id": "tHcoa",
+                              "name": "Dot",
+                              "fill": "$error",
+                              "width": 8,
+                              "height": 8
+                            },
+                            {
                               "type": "text",
-                              "id": "ZOOJ1",
-                              "name": "Not the game",
-                              "fill": "$error-on-tint",
+                              "id": "ji7rQ",
+                              "name": "Word",
+                              "fill": "$text-primary",
                               "content": "Not the game",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -465175,6 +465441,893 @@
                           "fontFamily": "$font",
                           "fontSize": 12,
                           "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "G0qGP",
+      "x": 18200,
+      "y": 78297,
+      "name": "12.11.10i · Admin · Checkpoints — Drawer · Curator journal · Inputs tab",
+      "clip": true,
+      "width": 960,
+      "height": 760,
+      "fill": "$surface",
+      "stroke": "$card-border",
+      "strokeWidth": {
+        "left": 1
+      },
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "KKKes",
+          "name": "Head",
+          "width": "fill_container",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "gap": 12,
+          "padding": [
+            20,
+            24
+          ],
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Sc8FB",
+              "name": "T",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rVng5",
+                  "fill": "$text-primary",
+                  "content": "Curator journal",
+                  "fontFamily": "$font",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "QF6eZ",
+                  "name": "M",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "t7TDKi",
+                      "fill": "$text-primary",
+                      "content": "Hollow Tide",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "fuOwp",
+                      "fill": "$text-secondary",
+                      "content": "Checkpoint 2 · AI curator · 1–28 Sep 2026",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "icon",
+              "id": "VeP0K",
+              "name": "X",
+              "width": 20,
+              "height": 20,
+              "icon": "x",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ZkBGt",
+          "name": "Summary",
+          "width": "fill_container",
+          "fill": "$bg-subtle",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "gap": 32,
+          "padding": [
+            16,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "NBRSV",
+              "name": "S1",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "PzsvB",
+                  "fill": "$text-secondary",
+                  "content": "Looked at",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "xQjad",
+                  "fill": "$text-primary",
+                  "content": "9 links · 4 not read",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "F3kGZ",
+              "name": "S2",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qCtIM",
+                  "fill": "$text-secondary",
+                  "content": "Video watched",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "oeicT",
+                  "fill": "$text-primary",
+                  "content": "6 min 40 s",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qfwwK",
+              "name": "S3",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "KrwcU",
+                  "fill": "$text-secondary",
+                  "content": "AI spend",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "xOIzX",
+                  "fill": "$text-primary",
+                  "content": "$0.42",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "O3CCBO",
+          "name": "Goal",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "padding": [
+            16,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "A9Rur",
+              "name": "Label",
+              "fill": "$text-tertiary",
+              "content": "Goal",
+              "fontFamily": "$font",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Pm7Ph",
+              "name": "Goal text",
+              "fill": "$text-primary",
+              "content": "A playable vertical slice of the first island",
+              "fontFamily": "$font",
+              "fontSize": 15,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Iag4R",
+          "name": "Tabs (antd Tabs)",
+          "width": "fill_container",
+          "stroke": "$border",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "strokeAlignment": "inner",
+          "gap": 24,
+          "padding": [
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "j60lv0",
+              "name": "Tab — Conversation",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "QqZ7B",
+                  "name": "Conversation",
+                  "fill": "$text-secondary",
+                  "content": "Conversation",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bISfZ",
+              "name": "Tab — Inputs",
+              "stroke": "$text-primary",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "r8kiHM",
+                  "name": "Conversation",
+                  "fill": "$text-primary",
+                  "content": "Inputs",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Qxgpi",
+              "name": "Tab — Plan",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "NcJmx",
+                  "name": "Plan",
+                  "fill": "$text-secondary",
+                  "content": "Plan",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tFjEd",
+              "name": "Tab — Artifacts",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "K1zDMq",
+                  "name": "Artifacts",
+                  "fill": "$text-secondary",
+                  "content": "Artifacts",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RZ8JD",
+              "name": "Tab — Devlogs",
+              "stroke": "#00000000",
+              "strokeWidth": {
+                "bottom": 2
+              },
+              "strokeAlignment": "inner",
+              "padding": [
+                12,
+                0
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "z20k61",
+                  "name": "Devlogs",
+                  "fill": "$text-secondary",
+                  "content": "Devlogs",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "G479nD",
+          "name": "Body",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "J3uSkL",
+              "name": "Named at the start",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jlerr",
+                  "name": "What the team named at t",
+                  "fill": "$text-primary",
+                  "content": "What the team named at the start",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "XfPRK",
+                  "name": "Input — Concept document",
+                  "width": "fill_container",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GYpaA",
+                      "name": "Concept document and a p",
+                      "fill": "$text-primary",
+                      "content": "Concept document and a paper map of the island",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "BI0ct",
+                      "name": "Concept document · Docum",
+                      "fill": "$link",
+                      "content": "Concept document · Document",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Y5dNx",
+                      "name": "AI read",
+                      "width": "fill_container",
+                      "fill": "$surface-sunken",
+                      "cornerRadius": 10,
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": [
+                        10,
+                        12
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gfzZ2",
+                          "name": "AI head",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "J81nPg",
+                              "name": "sparkles",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "sparkles",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "mfryW",
+                              "name": "What the AI found",
+                              "fill": "$text-secondary",
+                              "content": "What the AI found",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "tKxF0",
+                              "name": "Status — Matches",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "j9Ibg",
+                                  "name": "Dot",
+                                  "fill": "$success",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "bXylw",
+                                  "name": "Matches",
+                                  "fill": "$text-primary",
+                                  "content": "Matches",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Al5mA",
+                          "name": "A two-page concept with ",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "A two-page concept with the tide mechanic and a scanned map.",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Pm72U",
+                  "name": "Input — A greybox of the",
+                  "width": "fill_container",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "u4qNU6",
+                      "name": "A greybox of the beach",
+                      "fill": "$text-primary",
+                      "content": "A greybox of the beach",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "GgSgQ",
+                      "name": "—",
+                      "fill": "$text-tertiary",
+                      "content": "—",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "l2vAx",
+              "name": "Made before",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EzDeG",
+                  "name": "Made before the checkpoi",
+                  "fill": "$text-primary",
+                  "content": "Made before the checkpoint",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "FuKQU",
+                  "name": "Table (antd)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DaiLN",
+                      "name": "Head",
+                      "width": "fill_container",
+                      "fill": "$surface-sunken",
+                      "stroke": "$border-subtle",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "gap": 16,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TCLbS",
+                          "name": "Cell",
+                          "width": "fill_container",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "o9r9w",
+                              "name": "ARTIFACT",
+                              "fill": "$text-secondary",
+                              "content": "ARTIFACT",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "r78WL",
+                          "name": "Cell",
+                          "width": 160,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "O7t9Zr",
+                              "name": "TYPE",
+                              "fill": "$text-secondary",
+                              "content": "TYPE",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "C1TGAo",
+                          "name": "Cell",
+                          "width": 140,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "C5YaF",
+                              "name": "ADDED",
+                              "fill": "$text-secondary",
+                              "content": "ADDED",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "prvaJ",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "fill": "#00000000",
+                      "stroke": "$border-subtle",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "gap": 16,
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "nJqEn",
+                          "name": "Cell",
+                          "width": "fill_container",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "MEznp",
+                              "name": "Concept document",
+                              "fill": "$link",
+                              "content": "Concept document",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "t3GNyD",
+                          "name": "Cell",
+                          "width": 160,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pcmjr",
+                              "name": "Document",
+                              "fill": "$text-primary",
+                              "content": "Document",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "fKGld",
+                          "name": "Cell",
+                          "width": 140,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "C06hFn",
+                              "name": "20 Aug",
+                              "fill": "$text-primary",
+                              "content": "20 Aug",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sUqB3",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "fill": "#00000000",
+                      "stroke": "$border-subtle",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "gap": 16,
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qbDEJ",
+                          "name": "Cell",
+                          "width": "fill_container",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "eAtX3",
+                              "name": "Paper map of the island",
+                              "fill": "$link",
+                              "content": "Paper map of the island",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "r2Pjes",
+                          "name": "Cell",
+                          "width": 160,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "t1vRP",
+                              "name": "Image",
+                              "fill": "$text-primary",
+                              "content": "Image",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "M4QY8U",
+                          "name": "Cell",
+                          "width": 140,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "sjWu6",
+                              "name": "12 Aug",
+                              "fill": "$text-primary",
+                              "content": "12 Aug",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "vlkT4",
+                      "name": "Row",
+                      "width": "fill_container",
+                      "fill": "#00000000",
+                      "stroke": "$border-subtle",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "gap": 16,
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "mHMpc",
+                          "name": "Cell",
+                          "width": "fill_container",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nFMcU",
+                              "name": "Mood board",
+                              "fill": "$link",
+                              "content": "Mood board",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YzLyf",
+                          "name": "Cell",
+                          "width": 160,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DZYHt",
+                              "name": "Image",
+                              "fill": "$text-primary",
+                              "content": "Image",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "guqDE",
+                          "name": "Cell",
+                          "width": 140,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "LyQWE",
+                              "name": "2 Aug",
+                              "fill": "$text-primary",
+                              "content": "2 Aug",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
                         }
                       ]
                     }

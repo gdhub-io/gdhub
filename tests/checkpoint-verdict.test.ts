@@ -166,7 +166,7 @@ describe("settleVerdict", () => {
 		expect(settled.overrode).toBeNull();
 	});
 
-	it("refuses GoalMissed when everything is delivered, on trust or in part included", () => {
+	it("keeps GoalMissed when every task is delivered: the plan done is not the goal shown", () => {
 		const settled = settleVerdict(
 			[
 				outcome("o1", seen(EvidenceMatch.CannotTell)),
@@ -176,8 +176,8 @@ describe("settleVerdict", () => {
 			CheckpointVerdict.GoalMissed,
 		);
 
-		expect(settled.verdict).toBe(CheckpointVerdict.GoalMet);
-		expect(settled.overrode).toBe(CheckpointVerdict.GoalMissed);
+		expect(settled.verdict).toBe(CheckpointVerdict.GoalMissed);
+		expect(settled.overrode).toBeNull();
 		expect(settled.trusted).toMatchObject([{ id: "o1" }]);
 		expect(settled.partly).toMatchObject([{ id: "o2" }]);
 	});

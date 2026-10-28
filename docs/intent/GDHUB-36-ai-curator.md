@@ -33,8 +33,9 @@ the checkpoint page has nothing to show after day 1.
   no readable artifact cannot produce `StageClosed` or `GoalMet`, whatever the
   model returned. It runs on the way out of the service and the model has no way
   to waive it.
-- **It is two-sided.** A checkpoint where every remaining outcome is proven
-  cannot come back `GoalMissed` either. Both directions are tests.
+- **It is one-sided** (since GDHUB-122). It only refuses: every remaining
+  outcome proven is the plan done, not the goal reached, so a `GoalMissed` the
+  curator proposes then stands.
 - **`acceptedNote` is the human curator's alone.** The AI curator can only count
   what it can open, and must have no code path that writes one.
 - **The model sees nothing the platform cannot show the author** — goal card,
