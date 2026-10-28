@@ -7,6 +7,7 @@ import {
 } from "@/config/prisma-enums";
 import {
 	callMissed,
+	callMoveWindow,
 	callState,
 	parseCallRoomName,
 	sessionHeld,
@@ -41,6 +42,19 @@ const roomParticipants = vi.fn(async () => ({
 }));
 const startTranscriptJob = vi.fn(async () => ({ id: "job" }));
 const transcriptOfJob = vi.fn();
+const roomPresence = vi.fn(async () => ["author"]);
+const membersFind = vi.fn(async () => [
+	{
+		position: null,
+		speciality: null,
+		user: { id: "author", name: "Marta Ilves", image: null },
+	},
+	{
+		position: null,
+		speciality: { name: "Programmer" },
+		user: { id: "oleg", name: "Oleg Kim", image: null },
+	},
+]);
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -49,6 +63,7 @@ vi.mock("@/services/prisma", () => ({
 			update: (...a: unknown[]) => sessionUpdate(...a),
 			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
 		},
+		teamMember: { findMany: () => membersFind() },
 		projectCheckpoint: {
 			count: vi.fn(async () => 2),
 			findUnique: vi.fn(async () => ({ curatorId: "curator" })),
@@ -74,6 +89,7 @@ vi.mock("@/services/daily", async (importOriginal) => ({
 	callToken: (...a: unknown[]) => callToken(...(a as [])),
 	closeCallRoom: (...a: unknown[]) => closeCallRoom(...(a as [])),
 	roomParticipants: (...a: unknown[]) => roomParticipants(...(a as [])),
+	roomPresence: (...a: unknown[]) => roomPresence(...(a as [])),
 	startTranscriptJob: (...a: unknown[]) => startTranscriptJob(...(a as [])),
 	transcriptOfJob: (...a: unknown[]) => transcriptOfJob(...a),
 }));
@@ -81,6 +97,7 @@ vi.mock("@/services/daily", async (importOriginal) => ({
 const {
 	endCall,
 	getCall,
+	getCallPresence,
 	joinCall,
 	recordMeetingEnded,
 	saveTranscript,
@@ -119,6 +136,47 @@ const marta = { id: "marta", name: "Marta Ilves" };
 const patrick = { id: "curator", name: "Patrick Novak" };
 
 beforeEach(() => vi.clearAllMocks());
+
+describe("getCallPresence", () => {
+	it("lists the curator first, names the author, and asks the room only while it is open", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+
+		const open = await getCallPresence("cp", 2, "oleg", during);
+		expect(open?.people).toEqual([
+			{ id: "curator", name: "Patrick Novak", image: null, role: "curator", inCall: false },
+			{ id: "author", name: "Marta Ilves", image: null, role: "author", inCall: true },
+			{ id: "oleg", name: "Oleg Kim", image: null, role: "Programmer", inCall: false },
+		]);
+
+		roomPresence.mockClear();
+		const ahead = await getCallPresence("cp", 2, "oleg", new Date("2026-10-20T10:00:00Z"));
+		expect(roomPresence).not.toHaveBeenCalled();
+		expect(ahead?.people.every((person) => !person.inCall)).toBe(true);
+	});
+
+	it("tells nobody outside the checkpoint", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: false }));
+		await expect(getCallPresence("cp", 2, "stranger", during)).resolves.toBeNull();
+	});
+});
+
+describe("callMoveWindow", () => {
+	const startedAt = new Date("2026-10-01T00:00:00Z");
+
+	it("is the first three days of the sprint the call opens", () => {
+		expect(callMoveWindow(startedAt, 2)).toEqual({
+			from: new Date("2026-10-08T00:00:00Z"),
+			to: new Date("2026-10-11T00:00:00Z"),
+		});
+	});
+
+	it("keeps the final call within days 29–31", () => {
+		expect(callMoveWindow(startedAt, 5)).toEqual({
+			from: new Date("2026-10-29T00:00:00Z"),
+			to: new Date("2026-11-01T00:00:00Z"),
+		});
+	});
+});
 
 describe("callState", () => {
 	it("opens fifteen minutes early and closes three hours after the start", () => {

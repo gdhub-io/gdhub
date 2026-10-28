@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import styles from "./style.module.scss";
 
 export type StatusTone = "success" | "warning" | "danger" | "info" | "neutral";
@@ -5,7 +6,7 @@ export type StatusTone = "success" | "warning" | "danger" | "info" | "neutral";
 export type StatusDotProps = {
 	tone: StatusTone;
 	/** Already-translated label. */
-	label: string;
+	label: ReactNode;
 	className?: string;
 };
 

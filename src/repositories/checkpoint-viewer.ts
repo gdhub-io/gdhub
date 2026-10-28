@@ -55,8 +55,17 @@ export const checkpointViewer = async (
 	return row ? viewerOf(row, userId) : null;
 };
 
-/** The plan's editors: its curator and the project's author, nobody else on the team. */
-export const canEditPlan = (
-	row: { curatorId: string | null; project: { authorId: string } },
-	userId: string,
-) => row.curatorId === userId || row.project.authorId === userId;
+type EditorRow = { curatorId: string | null; project: { authorId: string } };
+
+/** Which side of the checkpoint acts: its curator or the project's author; nobody else on the team. */
+export const editorOf = (row: EditorRow, userId: string) => {
+	if (row.curatorId === userId) return "curator" as const;
+	if (row.project.authorId === userId) return "author" as const;
+	return null;
+};
+
+export type CheckpointEditor = NonNullable<ReturnType<typeof editorOf>>;
+
+/** The plan's editors: its curator and the project's author. */
+export const canEditPlan = (row: EditorRow, userId: string) =>
+	!!editorOf(row, userId);

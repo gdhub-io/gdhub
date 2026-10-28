@@ -1504,6 +1504,8 @@
 			"aheadCurator": "The call with {project} is on {date} at {time}. The room opens 15 minutes before; the team gets in once you join.",
 			"aheadFirst": "Hi, team! I'm {name}, the curator of {project} for the next 28 days. Our first call is on {date} at {time} — we'll agree the plan together. The room opens 15 minutes before; you'll be let in as soon as I join.",
 			"aheadTeam": "Our call is on {date} at {time}. The room opens 15 minutes before; you'll be let in as soon as I join.",
+			"author": "Author",
+			"away": "Away",
 			"brief": {
 				"none": "No brief for this call. The AI writes one the night before calls 2–5.",
 				"raise": "Worth raising",
@@ -1618,6 +1620,7 @@
 			"startsAtLine": "The call starts at {time}.",
 			"status": {
 				"live": "Live",
+				"liveFor": "Live · {time}",
 				"over": "Ended",
 				"startsAt": "Starts at {time}",
 				"startsOn": "Starts {date}"
@@ -1817,6 +1820,29 @@
 		"midnote": {
 			"open": "open",
 			"title": "Day {day} — the scope note"
+		},
+		"move": {
+			"answerFailed": "That did not go through",
+			"approve": "Move it",
+			"ask": "Ask {name} to move it",
+			"askedNote": "{name} answers. Until then it stays on {old}.",
+			"askedOfYouNote": "Until you answer, the call stays on {old}.",
+			"askedOfYouTitle": "{name} asks to move this call to {when}",
+			"askedTitle": "You asked to move this call to {when}",
+			"failed": "The request could not be sent",
+			"hours": "{name}'s free hours",
+			"keep": "Keep {day}",
+			"lead": "Now {when}. A call opens its sprint, so it can be any time in the sprint's first {count} days: {from} – {to}.",
+			"none": "{name} has no free hours in these days. Message them to find a time.",
+			"open": "Move the call",
+			"summary": "{when} — day {day} of the sprint",
+			"summaryNote": "Only this call moves; the others keep their days. {name} answers, and until then the call stays on {old}.",
+			"taken": "That hour was just taken. Pick another one.",
+			"takenSince": "That hour is no longer free; the call keeps its time.",
+			"theTeam": "the team",
+			"title": "Move call {index}",
+			"window": "Days 1–3 of the sprint",
+			"withdraw": "Withdraw"
 		},
 		"name": "Checkpoint {n}",
 		"next": {

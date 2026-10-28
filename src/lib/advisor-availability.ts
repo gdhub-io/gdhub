@@ -117,6 +117,19 @@ const overlaps = (start: Dayjs, busy: Busy[]) => {
 	);
 };
 
+/** Every hour a call fits in the advisor's checkpoint hours on one of their days. */
+function* hourlyStarts(availability: Availability, date: string) {
+	for (const range of rangesOn(availability.rules, date, "checkpoints")) {
+		for (
+			let minute = Math.ceil(range.from / 60) * 60;
+			minute + SESSION_MINUTES <= range.to;
+			minute += 60
+		) {
+			yield { minute, at: local(date, minute, availability.timeZone) };
+		}
+	}
+}
+
 /**
  * The five calls a first call at `minute` on `date` books: the same local hour,
  * a week apart. Each must sit inside hours open for checkpoints, after any
@@ -205,17 +218,39 @@ export const freeFirstCalls = (
 	) {
 		const date = day.format("YYYY-MM-DD");
 
-		for (const range of rangesOn(availability.rules, date, "checkpoints")) {
-			for (
-				let minute = Math.ceil(range.from / 60) * 60;
-				minute + SESSION_MINUTES <= range.to;
-				minute += 60
-			) {
-				const at = local(date, minute, availability.timeZone);
-				if (at.isBefore(earliest)) continue;
-				if (seriesFrom(availability, date, minute, busy))
-					starts.push(at.toDate());
-			}
+		for (const { minute, at } of hourlyStarts(availability, date)) {
+			if (at.isBefore(earliest)) continue;
+			if (seriesFrom(availability, date, minute, busy))
+				starts.push(at.toDate());
+		}
+	}
+
+	return starts.sort((a, b) => a.getTime() - b.getTime());
+};
+
+/**
+ * Single calls free between two instants, on the hour: inside hours open for
+ * checkpoints, after any away-until date, clear of everything booked. Where a
+ * booked call may be moved to.
+ */
+export const freeCallsBetween = (
+	availability: Availability,
+	busy: Busy[],
+	from: Date,
+	to: Date,
+): Date[] => {
+	const starts: Date[] = [];
+
+	for (
+		let day = dayjs(from).tz(availability.timeZone).startOf("day");
+		day.isBefore(to);
+		day = day.add(1, "day")
+	) {
+		for (const { at } of hourlyStarts(availability, day.format("YYYY-MM-DD"))) {
+			if (at.isBefore(from) || !at.isBefore(to)) continue;
+			if (availability.awayUntil && at.isBefore(availability.awayUntil))
+				continue;
+			if (!overlaps(at, busy)) starts.push(at.toDate());
 		}
 	}
 

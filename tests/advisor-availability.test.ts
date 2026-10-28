@@ -5,6 +5,7 @@ import {
 	type AvailabilityRule,
 	callsOutside,
 	earliestFirstCall,
+	freeCallsBetween,
 	freeFirstCalls,
 	rangesOn,
 	takesCheckpoints,
@@ -227,5 +228,50 @@ describe("callsOutside", () => {
 		expect(
 			callsOutside([rule()], "Europe/Lisbon", calls).map((call) => call.id),
 		).toEqual(["out"]);
+	});
+});
+
+describe("freeCallsBetween", () => {
+	// Wed 14 Oct (Lisbon, UTC+1) 09:00–13:00 and Thu 15 Oct 14:00–16:00.
+	const open = availability({
+		rules: [
+			rule({ weekdays: [3], ranges: [hours(9, 13)] }),
+			rule({ weekdays: [4], ranges: [hours(14, 16)] }),
+		],
+	});
+	const from = new Date("2026-10-14T00:00:00Z");
+	const to = new Date("2026-10-16T00:00:00Z");
+
+	it("offers each free hour in the window, clear of booked calls", () => {
+		const busy = [
+			{
+				start: new Date("2026-10-14T09:00:00Z"),
+				end: new Date("2026-10-14T09:45:00Z"),
+			},
+		];
+		expect(
+			iso(
+				freeCallsBetween(open, busy, new Date("2026-10-14T08:30:00Z"), to),
+			),
+		).toEqual([
+			"2026-10-14T10:00:00.000Z",
+			"2026-10-14T11:00:00.000Z",
+			"2026-10-15T13:00:00.000Z",
+			"2026-10-15T14:00:00.000Z",
+		]);
+	});
+
+	it("offers nothing past the window's end or while the advisor is away", () => {
+		expect(
+			freeCallsBetween(open, [], from, new Date("2026-10-14T00:00:00Z")),
+		).toEqual([]);
+		expect(
+			freeCallsBetween(
+				availability({ ...open, awayUntil: new Date("2026-10-17T00:00:00Z") }),
+				[],
+				from,
+				to,
+			),
+		).toEqual([]);
 	});
 });

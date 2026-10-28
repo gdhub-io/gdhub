@@ -1,6 +1,7 @@
 import {
 	IconArrowUpRight,
 	IconCalendarPlus,
+	IconCalendarTime,
 	IconChevronDown,
 	IconChevronUp,
 	IconCircleCheck,
@@ -18,6 +19,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
+import { MoveCallModal } from "@/components/checkpoints/CallRoom/MoveCallModal";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { SectionHeading } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
@@ -27,7 +29,7 @@ import {
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
 import { downloadIcs } from "@/lib/calendar";
-import { sessionHeld } from "@/lib/checkpoint-call";
+import { isMovable, sessionHeld } from "@/lib/checkpoint-call";
 import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
 import type {
@@ -67,6 +69,8 @@ export function RunningCheckpoint({
 	const { t } = useTranslate();
 	const router = useRouter();
 	const [opened, setOpened] = useState<number[]>([]);
+	// The call whose move modal is open (12.08.11).
+	const [moving, setMoving] = useState<number | null>(null);
 
 	const sprints = checkpoint.sprints ?? [];
 	const sessions = checkpoint.sessions ?? [];
@@ -459,12 +463,38 @@ export function RunningCheckpoint({
 				) : (
 					<Flex gap="small" align="center">
 						{action}
-						{/* Frame 07.3. Rescheduling waits for stored session times (GDHUB-70). */}
+						{/* Frame 07.3. */}
 						<Dropdown
 							trigger={["click"]}
 							placement="bottomRight"
 							menu={{
 								items: [
+									// The server's rule; it checks again who is asking.
+									...(canManage &&
+									session.timeKnown &&
+									isMovable(
+										{
+											scheduledAt: new Date(session.scheduledAt),
+											endedAt: session.endedAt
+												? new Date(session.endedAt)
+												: null,
+										},
+										checkpoint,
+										new Date(),
+									)
+										? [
+												{
+													key: "move",
+													icon: <IconCalendarTime size={16} />,
+													label: t("checkpoints.move.open", "Move the call"),
+													extra: t(
+														"checkpoints.move.window",
+														"Days 1–3 of the sprint",
+													),
+													onClick: () => setMoving(session.index),
+												},
+											]
+										: []),
 									{
 										key: "calendar",
 										icon: <IconCalendarPlus size={16} />,
@@ -530,6 +560,16 @@ export function RunningCheckpoint({
 
 	return (
 		<>
+			{moving !== null && (
+				<MoveCallModal
+					checkpointId={checkpoint.id}
+					index={moving}
+					otherSide={curatorName}
+					curatorName={curatorName}
+					open
+					onClose={() => setMoving(null)}
+				/>
+			)}
 			{sprints.filter((sprint) => sprint.state === "done").map(doneSprint)}
 
 			<PathNode marker="current" offset={here ? 64 : undefined}>

@@ -49,6 +49,10 @@ export const CALL_CLOSES_MINUTES = 180;
 export const CALL_MAX_PARTICIPANTS = CHECKPOINT_MAX_TEAM + 1;
 /** How often a team waiting for the curator asks whether they have joined. */
 export const CALL_WAIT_POLL_SECONDS = 5;
+/** A call opens its sprint: it may be moved anywhere in the sprint's first days, this many. */
+export const CALL_MOVE_DAYS = 3;
+/** How often an open call's page asks who is in the room. */
+export const CALL_PRESENCE_POLL_SECONDS = 10;
 /** Notes wait this long after a call so every part of its recording is in. */
 export const CALL_NOTES_DELAY_MINUTES = 30;
 

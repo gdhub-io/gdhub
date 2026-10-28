@@ -89,7 +89,7 @@ function WithActivity({
 
 	return ready ? (
 		<div style={{ maxWidth: 320 }}>
-			<ActivityFeed projectId={projectId} sprints={sprints} />
+			<ActivityFeed source={{ projectId }} sprints={sprints} />
 		</div>
 	) : null;
 }

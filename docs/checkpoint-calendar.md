@@ -69,6 +69,14 @@ A call the curator never joined shows as missed on the path, in the widget and o
 its page, with the call after it. Nothing else happens yet: no letter, no flag for
 an administrator.
 
+**Moving a call** (GDHUB-90). The author or the curator asks for one of the
+curator's free hours anywhere in the first **`CALL_MOVE_DAYS` (3)** days of the
+call's sprint — days 1–3, 8–10, 15–17, 22–24, 29–31 — any number of times. The
+other side approves; until then the old time stands. Approving checks the hour
+again under the curator's lock. A request lapses once the room opens at the old
+time, and only that call moves. The "an hour before" reminder is keyed by the
+call's time, so a moved call is announced again.
+
 ## Money in the calendar
 
 - Withdrawal within **`WITHDRAWAL_DAYS` (14)** of payment.

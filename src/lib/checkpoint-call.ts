@@ -1,12 +1,19 @@
 import {
 	AI_APPROVE_HOURS,
 	CALL_CLOSES_MINUTES,
+	CALL_MOVE_DAYS,
 	CALL_OPENS_MINUTES,
 	PRO_PLAN_AFTER_CALL_HOURS,
 	SCOPE_SESSION,
+	SPRINT_DAYS,
 } from "@/config/checkpoint";
-import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { MS_PER_HOUR, MS_PER_MINUTE } from "@/lib/checkpoint-days";
+import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
+import {
+	MS_PER_DAY,
+	MS_PER_HOUR,
+	MS_PER_MINUTE,
+	utcStartOfDay,
+} from "@/lib/checkpoint-days";
 import { scopeState } from "@/lib/checkpoint-scope";
 
 export type CallState = "early" | "open" | "over";
@@ -17,6 +24,17 @@ export const callWindow = (scheduledAt: Date) => ({
 		scheduledAt.getTime() + CALL_CLOSES_MINUTES * MS_PER_MINUTE,
 	),
 });
+
+/**
+ * Where call `index` may be moved: the first `CALL_MOVE_DAYS` days of the
+ * sprint it opens — days 1–3, 8–10 … and 29–31 for the final call.
+ */
+export const callMoveWindow = (startedAt: Date, index: number) => {
+	const from = new Date(
+		utcStartOfDay(startedAt).getTime() + (index - 1) * SPRINT_DAYS * MS_PER_DAY,
+	);
+	return { from, to: new Date(from.getTime() + CALL_MOVE_DAYS * MS_PER_DAY) };
+};
 
 /** Ended by the curator, or past its window: over either way. */
 export const callState = (
@@ -29,6 +47,21 @@ export const callState = (
 	if (now < opensAt) return "early";
 	return now < closesAt ? "open" : "over";
 };
+
+/** Whether a call can be moved now: a running checkpoint with a person, its room not yet open. */
+export const isMovable = (
+	session: { scheduledAt: Date; endedAt: Date | null },
+	checkpoint: {
+		status: CheckpointStatus;
+		curatorKind: CheckpointCuratorKind | null;
+		startedAt: Date | string | null;
+	},
+	now: Date,
+) =>
+	checkpoint.status === CheckpointStatus.Active &&
+	checkpoint.curatorKind === CheckpointCuratorKind.Human &&
+	!!checkpoint.startedAt &&
+	callState(session.scheduledAt, session.endedAt, now) === "early";
 
 /** Its window is past and the curator never came in. */
 export const callMissed = (

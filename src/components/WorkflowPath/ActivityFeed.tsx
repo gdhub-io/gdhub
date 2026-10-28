@@ -17,7 +17,7 @@ import { Divider, Spin, Typography } from "antd";
 import dayjs from "dayjs";
 import { type ReactNode, useEffect, useRef } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
-import { useProjectActivity } from "@/hooks/checkpoints";
+import { type ActivitySource, useProjectActivity } from "@/hooks/checkpoints";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
 import type {
 	ProjectActivity,
@@ -89,7 +89,7 @@ const when = (iso: string) =>
 	dayjs(iso).isSame(dayjs(), "day") ? null : formatDay(iso);
 
 export type ActivityFeedProps = {
-	projectId: string;
+	source: ActivitySource;
 	/** The running checkpoint's sprints: each start is a line across the feed. */
 	sprints?: CheckpointSprintDto[];
 };
@@ -99,11 +99,11 @@ export type ActivityFeedProps = {
  * where each sprint of the running checkpoint began. Earlier events load as the
  * list is scrolled to its end.
  */
-export function ActivityFeed({ projectId, sprints = [] }: ActivityFeedProps) {
+export function ActivityFeed({ source, sprints = [] }: ActivityFeedProps) {
 	const { t } = useTranslate();
 	const scroller = useRef<HTMLDivElement>(null);
 	const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } =
-		useProjectActivity(projectId);
+		useProjectActivity(source);
 	const events = data?.pages.flatMap((page) => page.events) ?? [];
 
 	const loadMore = () => {

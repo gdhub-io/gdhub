@@ -86,6 +86,12 @@ export const DetachEvidenceSchema = z.object({
 	itemId: z.string().min(1),
 });
 
+/** Asking to move a call to one of the curator's free hours. */
+export const AskCallMoveSchema = z.object({ moveTo: z.string().datetime() });
+
+/** The other side's answer to a request to move a call. */
+export const AnswerCallMoveSchema = z.object({ approve: z.boolean() });
+
 export const CheckpointListQuerySchema = z.object({
 	projectId: z.string(),
 	page: z.coerce.number().int().min(1).optional(),

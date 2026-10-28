@@ -22,6 +22,7 @@ import { CallGoal } from "./CallGoal";
 import { CallHeader } from "./CallHeader";
 import { CallPanel } from "./CallPanel";
 import { CallLayout } from "./CallParts";
+import { CallTeam } from "./CallTeam";
 import { ClosedStage } from "./ClosedStage";
 
 // Daily touches the browser's media APIs as it loads.
@@ -148,7 +149,9 @@ export function CallRoom({
 				<CuratorAside
 					projectId={teamProject(call)}
 					checkpointId={call.checkpointId}
-				/>
+				>
+					<CallTeam call={call} />
+				</CuratorAside>
 			}
 			below={below}
 		/>

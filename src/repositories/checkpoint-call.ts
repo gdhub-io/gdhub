@@ -9,6 +9,7 @@ import {
 	callRoomName,
 	callState,
 	callWindow,
+	isMovable,
 	type PlanEdit,
 	parseCallRoomName,
 	planEdit,
@@ -25,12 +26,15 @@ import {
 	viewerOf,
 	viewerSelect,
 } from "@/repositories/checkpoint-viewer";
+import { memberRole } from "@/repositories/curator-context";
 import { type CallBrief, getCallBriefs } from "@/repositories/curator-journal";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
 	callRoom,
 	callToken,
 	closeCallRoom,
 	roomParticipants,
+	roomPresence,
 	startTranscriptJob,
 	transcriptOfJob,
 } from "@/services/daily";
@@ -65,6 +69,10 @@ export type CheckpointCallDto = {
 	/** Its window passed and the curator never came in. */
 	missed: boolean;
 	curatorJoinedAt: string | null;
+	/** Whether the viewer — its curator or the author — may ask to move it now. */
+	canMove: boolean;
+	/** An open request to move it, while the room has not opened. */
+	move: { to: string; mine: boolean; askerName: string } | null;
 	role: CallRole;
 	/** The session under way, whichever this call is. */
 	current: number;
@@ -97,6 +105,75 @@ export type CheckpointCallDto = {
 
 const user = { select: { id: true, name: true, image: true } };
 
+export type CallPresenceDto = {
+	people: {
+		id: string;
+		name: string;
+		image: string | null;
+		/** "curator" and "author" are named by the page; anyone else by their role on the team. */
+		role: string | null;
+		inCall: boolean;
+	}[];
+};
+
+/**
+ * The people of a call, the curator first, and who is in its room right now
+ * (12.08.3). The room is only asked while it is open.
+ */
+export const getCallPresence = async (
+	checkpointId: string,
+	index: number,
+	userId: string,
+	now = new Date(),
+): Promise<CallPresenceDto | null> => {
+	const call = await loadCall(checkpointId, index, userId);
+	if (!call) return null;
+	const { session, checkpoint, curator } = call;
+
+	const [members, inRoom] = await Promise.all([
+		prisma.teamMember.findMany({
+			where: {
+				team: { projectId: checkpoint.projectId },
+				...CONFIRMED_MEMBERS,
+			},
+			orderBy: { startedAt: "asc" },
+			select: {
+				position: true,
+				speciality: { select: { name: true } },
+				user,
+			},
+		}),
+		callState(session.scheduledAt, session.endedAt, now) === "open"
+			? roomPresence(callRoomName(checkpointId, index))
+			: ([] as string[]),
+	]);
+
+	const person = (
+		who: { id: string; name: string | null; image: string | null },
+		role: string | null,
+	) => ({
+		id: who.id,
+		name: who.name ?? "",
+		image: who.image,
+		role,
+		inCall: inRoom.includes(who.id),
+	});
+
+	return {
+		people: [
+			person(curator, "curator"),
+			...members.map((member) =>
+				person(
+					member.user,
+					member.user.id === checkpoint.project.authorId
+						? "author"
+						: memberRole(member, "") || null,
+				),
+			),
+		],
+	};
+};
+
 /**
  * The call and who is asking: its curator, or the author or someone confirmed
  * on the team.
@@ -113,8 +190,12 @@ const loadCall = async (
 			scheduledAt: true,
 			curatorJoinedAt: true,
 			endedAt: true,
+			moveTo: true,
+			moveAskedById: true,
+			moveAskedBy: { select: { name: true } },
 			checkpoint: {
 				select: {
+					curatorKind: true,
 					projectId: true,
 					createdAt: true,
 					startedAt: true,
@@ -211,6 +292,8 @@ export const getCall = async (
 	]);
 
 	const edit = canEditPlan(plan, userId) ? planEdit(plan, now) : null;
+	// Past its room's opening a call no longer moves, and a request lapses.
+	const movable = isMovable(session, checkpoint, now);
 	// The draft advice lives on session 1 until call 1's notes replace it.
 	const draft =
 		edit === "plan" && !plan.sessions[0]?.contentStatus
@@ -233,6 +316,15 @@ export const getCall = async (
 		state: callState(session.scheduledAt, session.endedAt, now),
 		missed: callMissed(session, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
+		canMove: movable && canEditPlan(checkpoint, userId),
+		move:
+			movable && session.moveTo && session.moveAskedById
+				? {
+						to: session.moveTo.toISOString(),
+						mine: session.moveAskedById === userId,
+						askerName: session.moveAskedBy?.name ?? "",
+					}
+				: null,
 		role: call.role,
 		current: currentSessionOf(plan.sessions, now),
 		briefs,
