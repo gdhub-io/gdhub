@@ -124,6 +124,8 @@ export type CuratorJournalViewDto = {
 	sprints: { number: number; from: string; to: string }[];
 	/** When the verdict was settled: the conversation's last divider. */
 	finishedAt: string | null;
+	/** The settled verdict and why, shown under the goal. */
+	verdict: { verdict: CheckpointVerdict; note: string | null } | null;
 	messages: JournalMessageDto[];
 	plan: {
 		goal: string;
@@ -210,6 +212,8 @@ export const getJournalView = async (
 		select: {
 			projectId: true,
 			goal: true,
+			verdict: true,
+			verdictNote: true,
 			curatorKind: true,
 			curatorCharacter: true,
 			startedAt: true,
@@ -630,6 +634,10 @@ export const getJournalView = async (
 				})
 			: [],
 		finishedAt: verdictEntry?.createdAt.toISOString() ?? null,
+		verdict: checkpoint.verdict && {
+			verdict: checkpoint.verdict,
+			note: checkpoint.verdictNote,
+		},
 		messages,
 		plan: {
 			goal: checkpoint.goal,

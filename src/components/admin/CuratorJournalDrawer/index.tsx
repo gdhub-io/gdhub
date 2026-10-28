@@ -2,6 +2,7 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Descriptions, Drawer, Flex, Skeleton, Tabs, Typography } from "antd";
+import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { formatMoneyCents } from "@/config/checkpoint-pricing";
 import { useCuratorJournal } from "@/hooks/admin-checkpoints";
 import type { JournalRead } from "@/repositories/evidence-seen";
@@ -104,6 +105,17 @@ export function CuratorJournalDrawer({
 						</Typography.Text>
 						<Typography.Text strong>{view.plan.goal}</Typography.Text>
 					</Flex>
+					{view.verdict && (
+						<Flex vertical gap={4}>
+							<Typography.Text type="secondary" className={styles.meta}>
+								{t("admin.checkpoints.journal.verdictHead", "Verdict")}
+							</Typography.Text>
+							<VerdictChip verdict={view.verdict.verdict} />
+							{view.verdict.note && (
+								<Typography.Text>{view.verdict.note}</Typography.Text>
+							)}
+						</Flex>
+					)}
 					<Tabs
 						items={[
 							{

@@ -3,6 +3,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointFeeReason,
 	CheckpointStatus,
+	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import { withQueries } from "@/mocks/queries";
 import type {
@@ -27,6 +28,7 @@ const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 	refunded: null,
 	refundReason: null,
 	verdictDueBy: "2026-11-11T00:00:00.000Z",
+	verdict: null,
 	overdue: false,
 	canRefund: true,
 	canAssign: true,
@@ -137,6 +139,7 @@ const PAGE: AdminCheckpointsPageDto = {
 			number: 4,
 			stageName: "Launch prep",
 			status: CheckpointStatus.Closed,
+			verdict: CheckpointVerdict.StageClosed,
 			canRefund: false,
 			canAssign: false,
 			fee: { amount: 31500, reason: CheckpointFeeReason.Full, parts: 6 },

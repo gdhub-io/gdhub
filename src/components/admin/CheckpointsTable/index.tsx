@@ -34,6 +34,7 @@ import { AssignCuratorModal } from "@/components/admin/AssignCuratorModal";
 import { CheckpointKpis } from "@/components/admin/CheckpointKpis";
 import { CuratorJournalDrawer } from "@/components/admin/CuratorJournalDrawer";
 import { RefundCheckpointModal } from "@/components/admin/RefundCheckpointModal";
+import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
 import {
 	EmptyState,
 	StatusDot,
@@ -177,6 +178,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 
 	const reasonLabels = useRefundReasonLabels();
 	const feeReason = useFeeReasonLabel("admin");
+	const { label: verdictLabel } = useVerdictCopy();
 	const statusLabels: Partial<Record<CheckpointStatus, string>> = {
 		AwaitingCurator: t(
 			"admin.checkpoints.list.status.awaitingCurator",
@@ -362,6 +364,13 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 							tone={TONE[row.status] ?? "neutral"}
 							label={statusLabels[row.status] ?? row.status}
 						/>
+					)}
+					{row.verdict && (
+						<Typography.Text type="secondary" className={own.sub}>
+							{t("admin.checkpoints.list.verdict", "Verdict: {verdict}", {
+								verdict: verdictLabel(row.verdict),
+							})}
+						</Typography.Text>
 					)}
 					{row.rating && (
 						<RatingLine rating={row.rating} project={row.projectName} />

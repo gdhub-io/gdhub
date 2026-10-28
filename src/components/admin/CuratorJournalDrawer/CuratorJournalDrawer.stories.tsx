@@ -51,6 +51,10 @@ const VIEW: CuratorJournalViewDto = {
 		to: `2026-09-${String(number * 7).padStart(2, "0")}T00:00:00.000Z`,
 	})),
 	finishedAt: "2026-09-29T01:02:00.000Z",
+	verdict: {
+		verdict: "StageClosed",
+		note: "All three tasks are delivered and the stage's devlog is out.",
+	},
 	messages: [
 		message({
 			id: "m1",
