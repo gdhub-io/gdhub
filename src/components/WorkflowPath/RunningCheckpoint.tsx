@@ -12,7 +12,6 @@ import {
 	IconSparkles,
 	IconVideo,
 } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Dropdown, Flex, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
@@ -67,7 +66,6 @@ export function RunningCheckpoint({
 }: RunningCheckpointProps) {
 	const { t } = useTranslate();
 	const router = useRouter();
-	const _queryClient = useQueryClient();
 	const [opened, setOpened] = useState<number[]>([]);
 
 	const sprints = checkpoint.sprints ?? [];

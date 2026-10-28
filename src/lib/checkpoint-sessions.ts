@@ -5,8 +5,6 @@ import { sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { CheckpointSessionDto } from "@/types/checkpoints";
 
-export { sessionDay } from "@/lib/checkpoint-days";
-
 type SessionRow = {
 	index: number;
 	scheduledAt: Date;
@@ -26,9 +24,14 @@ export const buildSessions = (
 	startedAt: Date | null,
 	rows: SessionRow[],
 	curatorKind: CheckpointCuratorKind,
-	now = new Date(),
-	/** Told apart from the team in a call's attendees. */
-	curatorId: string | null = null,
+	{
+		now = new Date(),
+		curatorId = null,
+	}: {
+		now?: Date;
+		/** Told apart from the team in a call's attendees. */
+		curatorId?: string | null;
+	} = {},
 ): CheckpointSessionDto[] => {
 	if (!startedAt) return [];
 

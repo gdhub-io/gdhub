@@ -3,9 +3,22 @@
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Tooltip, Typography } from "antd";
+import { FINAL_SESSION } from "@/config/checkpoint";
 import styles from "./style.module.scss";
 
 export type SessionOption = { value: number; label: string; ahead: boolean };
+
+/** A session in the switcher: the sprint it opens, the last one the verdict. */
+export const useSprintLabel = () => {
+	const { t } = useTranslate();
+	return (index: number, date: string) =>
+		index === FINAL_SESSION
+			? t("checkpoints.review.option.verdict", "Verdict · {date}", { date })
+			: t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
+					n: index,
+					date,
+				});
+};
 
 /**
  * Frame u2H4n: the session shown and arrows to its neighbours, for a call

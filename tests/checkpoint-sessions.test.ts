@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { buildSessions, sessionDay } from "@/lib/checkpoint-sessions";
+import { sessionDay } from "@/lib/checkpoint-days";
+import { buildSessions } from "@/lib/checkpoint-sessions";
 
 const startedAt = new Date("2026-10-01T15:30:00Z");
 
@@ -65,7 +66,7 @@ describe("checkpoint sessions", () => {
 				startedAt,
 				[row],
 				CheckpointCuratorKind.Human,
-				later,
+				{ now: later },
 			);
 			expect(second.missed).toBe(true);
 		});
@@ -75,7 +76,7 @@ describe("checkpoint sessions", () => {
 				startedAt,
 				[row],
 				CheckpointCuratorKind.AI,
-				later,
+				{ now: later },
 			);
 			expect(second.missed).toBe(false);
 		});
@@ -85,7 +86,7 @@ describe("checkpoint sessions", () => {
 				startedAt,
 				[],
 				CheckpointCuratorKind.Human,
-				later,
+				{ now: later },
 			);
 			expect(sessions.some((session) => session.missed)).toBe(false);
 		});
@@ -105,8 +106,7 @@ describe("checkpoint sessions", () => {
 				startedAt,
 				[{ ...ended, endedAt, attendeeIds }],
 				CheckpointCuratorKind.Human,
-				new Date("2026-10-09T00:00:00Z"),
-				"curator",
+				{ now: new Date("2026-10-09T00:00:00Z"), curatorId: "curator" },
 			)[1];
 
 		it("knows the team came once someone besides the curator was in", () => {

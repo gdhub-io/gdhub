@@ -35,7 +35,6 @@ import {
 } from "@/lib/checkpoint-sprints";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
-import type { CuratorReview } from "@/types/checkpoints";
 import { NovuService } from "./novu";
 import { prisma } from "./prisma";
 

@@ -14,6 +14,8 @@
  * checkpoint. Refuses any database that is not on this machine.
  */
 import { CheckpointSessionContentStatus } from "@gdhub-io/gdhub-prisma";
+import { SPRINT_DAYS } from "@/config/checkpoint";
+import { MS_PER_DAY } from "@/lib/checkpoint-days";
 import { writeVerdictRead } from "@/repositories/checkpoint-curator.repository";
 import {
 	writeBriefFor,
@@ -23,7 +25,6 @@ import { getJournal } from "@/repositories/curator-journal";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
 
-const DAY = 24 * 60 * 60 * 1000;
 
 const [checkpointId, sprintArg] = process.argv.slice(2);
 const sprint = Number(sprintArg);
@@ -60,8 +61,9 @@ const human = checkpoint.curatorKind === "Human";
 // and the page shows it; the sprint's window runs a day past its last, so what
 // was posted or attached today is part of it either way.
 const now = new Date();
-const daysBack = human ? sprint * 7 - 1 : sprint * 7;
-const shift = now.getTime() - daysBack * DAY - checkpoint.startedAt.getTime();
+const daysBack = human ? sprint * SPRINT_DAYS - 1 : sprint * SPRINT_DAYS;
+const shift =
+	now.getTime() - daysBack * MS_PER_DAY - checkpoint.startedAt.getTime();
 const moved = (date: Date | null) =>
 	date ? new Date(date.getTime() + shift) : null;
 

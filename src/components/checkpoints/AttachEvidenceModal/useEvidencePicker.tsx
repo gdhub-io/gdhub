@@ -13,11 +13,15 @@ import { AttachEvidenceModal } from ".";
  */
 export const useEvidencePicker = (checkpointId: string) => {
 	const { can } = useAccess();
+	const canAttach = can("project.checkpoints.manage");
 	const queryClient = useQueryClient();
-	const { data: checkpoint } = useCheckpoint(checkpointId);
+	// Only whoever may attach loads the checkpoint the modal needs.
+	const { data: checkpoint } = useCheckpoint(
+		canAttach ? checkpointId : undefined,
+	);
 	const [open, setOpen] = useState(false);
 
-	if (!checkpoint || !can("project.checkpoints.manage")) {
+	if (!checkpoint || !canAttach) {
 		return { open: undefined, modal: null };
 	}
 	return {

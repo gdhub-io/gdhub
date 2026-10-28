@@ -3,9 +3,8 @@ import {
 	VERDICT_DRAFT_FROM_SPRINT,
 	VERDICT_DUE_DAYS,
 } from "@/config/checkpoint";
-import { utcStartOfDay } from "@/lib/checkpoint-days";
+import { sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import { sprintDayRange } from "@/lib/checkpoint-sprints";
 
 /**

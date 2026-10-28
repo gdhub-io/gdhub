@@ -1,4 +1,4 @@
-import { sessionDay } from "@/lib/checkpoint-sessions";
+import { sessionDay } from "@/lib/checkpoint-days";
 import type { JournalEntry } from "@/services/checkpoint-curator/prompts/card";
 import type { CuratorReview } from "@/types/checkpoints";
 

@@ -22,10 +22,14 @@ import {
 	PlanBody,
 	usePlanChange,
 } from "@/components/checkpoints/CallRoom/CallPlan";
-import { SessionSwitcher } from "@/components/checkpoints/CallRoom/SessionSwitcher";
+import {
+	SessionSwitcher,
+	useSprintLabel,
+} from "@/components/checkpoints/CallRoom/SessionSwitcher";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import { EmptyState } from "@/components/ui";
+import { formatShort } from "@/components/WorkflowPath/dates";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import {
 	AI_APPROVE_HOURS,
@@ -525,6 +529,7 @@ function ReviewSwitcher({
 	onSelect: (index: number) => void;
 }) {
 	const { t } = useTranslate();
+	const sprintLabel = useSprintLabel();
 
 	return (
 		<SessionSwitcher
@@ -536,18 +541,12 @@ function ReviewSwitcher({
 			)}
 			// Session N opens sprint N; the last one is the verdict.
 			options={review.sessions.map((session) => {
-				const date = dayjs(session.scheduledAt).format("D MMM");
 				return {
 					value: session.index,
-					label:
-						session.index === FINAL_SESSION
-							? t("checkpoints.review.option.verdict", "Verdict · {date}", {
-									date,
-								})
-							: t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
-									n: session.index,
-									date,
-								}),
+					label: sprintLabel(
+						session.index,
+						dayjs(session.scheduledAt).format("D MMM"),
+					),
 					ahead: session.index > review.current,
 				};
 			})}
@@ -672,7 +671,7 @@ function Message({
 	return (
 		<CuratorMessage
 			character={review.character}
-			date={dayjs(now?.at ?? review.startedAt).format("D MMM")}
+			date={formatShort(now?.at ?? review.startedAt)}
 			message={said?.message ?? ""}
 			extra={
 				said?.deadline && (

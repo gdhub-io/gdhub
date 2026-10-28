@@ -1,8 +1,7 @@
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import { dayNumberOn } from "@/lib/checkpoint-days";
+import { dayNumberOn, sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import { pulseIdOf, pulseToken } from "@/lib/checkpoint-pulse-token";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	devlogDayOf,
 	sprintOfDay,
@@ -130,7 +129,7 @@ export const requestPulses = async (now = new Date()) => {
 			gte: from,
 			lt: dateOfDay(checkpoint.startedAt, day + 1),
 		};
-		const [devlogs, artifacts, pulses, busy] = await Promise.all([
+		const [devlogs, artifacts, pulses] = await Promise.all([
 			prisma.projectReport.findMany({
 				where: { projectId: checkpoint.projectId, publishedAt: inSprint },
 				select: { authorId: true },
@@ -143,17 +142,24 @@ export const requestPulses = async (now = new Date()) => {
 				where: { checkpointId: checkpoint.id, week: sprint },
 				select: { teamMemberId: true },
 			}),
-			activeOnProject(
-				checkpoint.projectId,
-				(checkpoint.project.team?.members ?? []).map(
-					(member) => member.user.id,
-				),
-				inSprint,
-			),
 		]);
 		const wrote = new Set(devlogs.map((row) => row.authorId));
 		const made = new Set(artifacts.map((row) => row.createdById));
 		const already = new Set(pulses.map((row) => row.teamMemberId));
+		// The audit log is read only for those no devlog, artifact or pulse covers.
+		const busy = await activeOnProject(
+			checkpoint.projectId,
+			(checkpoint.project.team?.members ?? [])
+				.filter(
+					(member) =>
+						!already.has(member.id) &&
+						member.user.id !== checkpoint.curatorId &&
+						!wrote.has(member.user.id) &&
+						!made.has(member.user.id),
+				)
+				.map((member) => member.user.id),
+			inSprint,
+		);
 
 		for (const member of checkpoint.project.team?.members ?? []) {
 			if (already.has(member.id)) continue;

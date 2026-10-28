@@ -5,7 +5,6 @@ import {
 	PayableType,
 	PaymentStatus,
 	type Prisma,
-	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
 import {
 	CHECKPOINT_DAYS,
@@ -46,7 +45,6 @@ import type {
 	CheckpointPulseCellDto,
 	CheckpointPulseRowDto,
 	CheckpointSprintDto,
-	CuratorReview,
 } from "@/types/checkpoints";
 
 /**
@@ -427,28 +425,26 @@ const buildEvidence = (
 export type Checkpoint = Awaited<ReturnType<typeof getCheckpoint>>;
 
 /** What the AI curator says now, read with its letters; a pro's call notes stay on their page. */
-const nowOfCurator = async (checkpointId: string) => {
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id: checkpointId },
+const nowOfCurator = async (checkpoint: {
+	id: string;
+	startedAt: Date | null;
+	goalAgreedAt: Date | null;
+	planCheckedAt: Date | null;
+	scopeConfirmedAt: Date | null;
+}) => {
+	const { startedAt } = checkpoint;
+	if (!startedAt) return null;
+	const sessions = await prisma.checkpointSession.findMany({
+		where: { checkpointId: checkpoint.id },
 		select: {
-			startedAt: true,
-			goalAgreedAt: true,
-			planCheckedAt: true,
-			scopeConfirmedAt: true,
-			sessions: {
-				select: {
-					index: true,
-					scheduledAt: true,
-					endedAt: true,
-					contentStatus: true,
-					content: true,
-				},
-			},
+			index: true,
+			scheduledAt: true,
+			endedAt: true,
+			contentStatus: true,
+			content: true,
 		},
 	});
-	return checkpoint?.startedAt
-		? curatorNow({ ...checkpoint, startedAt: checkpoint.startedAt })
-		: null;
+	return curatorNow({ ...checkpoint, startedAt, sessions });
 };
 
 /** The row as the checkpoint page reads it; the artifact joins stay behind. */
@@ -477,13 +473,9 @@ const toCheckpointDetail = (row: DetailRow) => {
 			sprint: startedAt ? sprintOfDate(startedAt, report.publishedAt) : null,
 		})),
 		sprints: buildSprints(startedAt),
-		sessions: buildSessions(
-			startedAt,
-			sessions,
-			checkpoint.curatorKind,
-			undefined,
-			curator?.id ?? null,
-		),
+		sessions: buildSessions(startedAt, sessions, checkpoint.curatorKind, {
+			curatorId: curator?.id ?? null,
+		}),
 		character: characterFace(curatorCharacter),
 		pulses: buildPulseRows(
 			project.team?.members ?? [],
@@ -548,7 +540,7 @@ export const getCheckpoint = async (id: string) => {
 		checkpointLineage(row),
 		// A draft has no sprints to file builds in.
 		row.status === CheckpointStatus.Draft ? [] : artifactsDuring(row),
-		row.curatorKind === CheckpointCuratorKind.AI ? nowOfCurator(id) : null,
+		row.curatorKind === CheckpointCuratorKind.AI ? nowOfCurator(row) : null,
 	]);
 
 	return {
@@ -741,13 +733,9 @@ export const listClosedCheckpoints = async (
 	return {
 		rows: rows.map(({ sessions, ...row }) => ({
 			...withAcceptedTerms(row),
-			sessions: buildSessions(
-				row.startedAt,
-				sessions,
-				row.curatorKind,
-				undefined,
-				row.curator?.id ?? null,
-			),
+			sessions: buildSessions(row.startedAt, sessions, row.curatorKind, {
+				curatorId: row.curator?.id ?? null,
+			}),
 		})),
 		total,
 		page,

@@ -83,7 +83,6 @@ export const callToken = async (input: {
 export const closeCallRoom = (name: string) =>
 	daily(`/rooms/${name}`, { method: "DELETE" });
 
-/** Everyone's minutes across every meeting the room has held. */
 /** Who was in a room's meetings, by the user id their token carried, and the minutes they spent. */
 export const roomParticipants = async (room: string) => {
 	const { data } = await daily<{

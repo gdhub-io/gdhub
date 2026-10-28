@@ -10,8 +10,8 @@ import {
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	settleVerdict,
 	type VerdictItem,

@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { useEvidencePicker } from "@/components/checkpoints/AttachEvidenceModal/useEvidencePicker";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
-import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
@@ -26,7 +25,7 @@ import {
 	type PlanBodyProps,
 	usePlanChange,
 } from "./CallPlan";
-import { SessionSwitcher } from "./SessionSwitcher";
+import { SessionSwitcher, useSprintLabel } from "./SessionSwitcher";
 import styles from "./style.module.scss";
 
 type Session = CheckpointCallDto["sessions"][number];
@@ -170,6 +169,7 @@ export function PanelBlock({
 	const held =
 		sessions.find((session) => session.index === selected)?.held ?? false;
 
+	const sprintLabel = useSprintLabel();
 	const switcher = (
 		<SessionSwitcher
 			value={selected}
@@ -184,15 +184,7 @@ export function PanelBlock({
 				return {
 					value: session.index,
 					ahead: session.index > reached,
-					label:
-						session.index === FINAL_SESSION
-							? t("checkpoints.review.option.verdict", "Verdict · {date}", {
-									date: when,
-								})
-							: t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
-									n: session.index,
-									date: when,
-								}),
+					label: sprintLabel(session.index, when),
 				};
 			})}
 		/>

@@ -34,13 +34,14 @@ const WorkflowTasksPanel = ({
 	const { t } = useTranslate();
 
 	if (tasks.length === 0) return null;
+	const stageTasks = t("workflow.tasks.stageTitle", "Stage tasks");
 
 	return (
 		<div className={styles.wrapper}>
 			<div className={styles.panel}>
 				<AsideHead
-					title={stageName ?? t("workflow.tasks.stageTitle", "Stage tasks")}
-					sub={stageName && t("workflow.tasks.stageTitle", "Stage tasks")}
+					title={stageName ?? stageTasks}
+					sub={stageName && stageTasks}
 				/>
 				<div className={styles.rows}>
 					{tasks.map((task) => (

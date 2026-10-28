@@ -29,19 +29,21 @@ export default async function CheckpointPathPage({
 	const number = Number(/^cp(\d+)$/.exec(cp)?.[1]);
 	if (!Number.isInteger(number) || number < 1) notFound();
 
+	const index = sessionOfSprintParam(sprint);
 	const checkpointId = await checkpointIdByNumber(slug, number);
-	const kind = checkpointId && (await curatorKindOf(checkpointId));
-	if (!checkpointId || !kind) notFound();
-
-	const index =
-		sessionOfSprintParam(sprint) ?? (await currentSessionIndex(checkpointId));
+	if (!checkpointId) notFound();
+	const [kind, current] = await Promise.all([
+		curatorKindOf(checkpointId),
+		index ? null : currentSessionIndex(checkpointId),
+	]);
+	if (!kind) notFound();
 
 	return (
 		<ProjectSpace>
 			<CuratorReview
 				kind={kind}
 				checkpointId={checkpointId}
-				index={index}
+				index={index ?? current ?? 1}
 				tab={pathTabOf(tab)}
 				backHref={`/user/project/${slug}/workflow`}
 			/>

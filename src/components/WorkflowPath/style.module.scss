@@ -1,3 +1,5 @@
+@use "../../styles/surfaces" as surfaces;
+
 // Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
 // platform-design.pen.
 
@@ -52,6 +54,11 @@
 	border: 1px solid var(--gd-color-border-strong);
 	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
+
+	// As the hub's: alone above the page on a narrow screen, it needs a ground.
+	@media (max-width: 767px) {
+		background: var(--gd-color-surface);
+	}
 }
 
 // Frame 12.07 `C7axzV`: the running checkpoint takes the accent rim.
@@ -1230,11 +1237,7 @@ button.checklistItem {
 	padding: var(--gd-space-6);
 	border: 1px solid var(--gd-color-accent);
 	border-radius: var(--gd-radius-panel);
-	background: linear-gradient(
-		118deg,
-		var(--gd-color-accent-subtle),
-		var(--gd-warning-tint)
-	);
+	@include surfaces.checkpoint-wash;
 }
 
 .offerFacts > * {
@@ -1332,19 +1335,15 @@ button.checklistItem {
 	background: var(--gd-color-surface-sunken);
 }
 
-// Frames xZ32D / BixZr / ErNgO: the curator's dark band, the widget's top edge to edge.
-// Frame 12.07 `xZ32D`: the checkpoint cards' warm wash, ruled off the body.
+// Frames xZ32D / BixZr / ErNgO: the curator at the widget's top, edge to edge,
+// in the checkpoint cards' warm wash, ruled off the body.
 .curatorNote {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-4) var(--gd-space-6);
 	border-bottom: 1px solid var(--gd-color-border);
-	background: linear-gradient(
-		118deg,
-		var(--gd-color-accent-subtle),
-		var(--gd-warning-tint)
-	);
+	@include surfaces.checkpoint-wash;
 }
 
 .curatorName {

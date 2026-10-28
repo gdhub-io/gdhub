@@ -18,6 +18,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { AttachEvidenceModal } from "@/components/checkpoints/AttachEvidenceModal";
+import { firstName } from "@/components/checkpoints/CallRoom/CallHeader";
 import CreateArtifactModal from "@/components/modals/CreateArtifactModal";
 import { StatusDot } from "@/components/ui";
 import { SCOPE_SESSION } from "@/config/checkpoint";
@@ -94,7 +95,7 @@ export function SprintChecklist({
 
 	const sessions = checkpoint.sessions ?? [];
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
-	const curatorName = checkpoint.curator?.name?.split(" ")[0] ?? "";
+	const curatorName = firstName(checkpoint.curator?.name ?? "");
 	// Only the sprint under way takes actions; one behind is a record.
 	const running = sprint.state === "current";
 	const openSession = (index: number) =>

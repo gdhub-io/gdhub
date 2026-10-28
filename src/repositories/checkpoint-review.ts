@@ -19,9 +19,8 @@ import {
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
-import { MS_PER_DAY, utcStartOfDay } from "@/lib/checkpoint-days";
+import { MS_PER_DAY, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
 import { lettersSoFar } from "@/lib/curator-letters";
 import { type CuratorNow, curatorNow } from "@/lib/curator-now";

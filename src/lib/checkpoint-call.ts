@@ -6,17 +6,16 @@ import {
 	SCOPE_SESSION,
 } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { MS_PER_HOUR } from "@/lib/checkpoint-days";
-import { dateOfDay } from "@/lib/checkpoint-plan";
+import { MS_PER_HOUR, MS_PER_MINUTE } from "@/lib/checkpoint-days";
 import { scopeState } from "@/lib/checkpoint-scope";
-
-const MINUTE = 60_000;
 
 export type CallState = "early" | "open" | "over";
 
 export const callWindow = (scheduledAt: Date) => ({
-	opensAt: new Date(scheduledAt.getTime() - CALL_OPENS_MINUTES * MINUTE),
-	closesAt: new Date(scheduledAt.getTime() + CALL_CLOSES_MINUTES * MINUTE),
+	opensAt: new Date(scheduledAt.getTime() - CALL_OPENS_MINUTES * MS_PER_MINUTE),
+	closesAt: new Date(
+		scheduledAt.getTime() + CALL_CLOSES_MINUTES * MS_PER_MINUTE,
+	),
 });
 
 /** Ended by the curator, or past its window: over either way. */

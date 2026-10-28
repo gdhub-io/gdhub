@@ -17,10 +17,9 @@ import {
 	SESSIONS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { dueDateFrom, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundRowReason } from "@/lib/checkpoint-refund";
-import { sessionDay } from "@/lib/checkpoint-sessions";
 import {
 	bookSessions,
 	isFirstCallFree,

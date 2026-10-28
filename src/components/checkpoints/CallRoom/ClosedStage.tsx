@@ -27,7 +27,6 @@ export type ClosedStageProps = {
 	now?: Date;
 };
 
-/** A call's join button before its room opens: when it will. */
 /**
  * A call's join button before its room opens: the day and hour while it is a
  * day or more away, then how long is left, ticking by the minute.

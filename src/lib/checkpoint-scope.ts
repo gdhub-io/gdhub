@@ -1,6 +1,6 @@
 import { SCOPE_ANSWER_HOURS, SCOPE_SESSION } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { sessionDay } from "@/lib/checkpoint-days";
+import { MS_PER_HOUR, sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 
 /**
@@ -9,7 +9,7 @@ import { dateOfDay } from "@/lib/checkpoint-plan";
  * Browser-safe: the server refuses outside the window and the page hides the
  * action outside it, from the same arithmetic.
  */
-const SCOPE_ANSWER_MS = SCOPE_ANSWER_HOURS * 60 * 60 * 1000;
+const SCOPE_ANSWER_MS = SCOPE_ANSWER_HOURS * MS_PER_HOUR;
 
 /** Day 15: the day the third session falls on. */
 export const CHECKPOINT_SCOPE_DAY = sessionDay(SCOPE_SESSION);

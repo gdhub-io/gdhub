@@ -1,3 +1,5 @@
+@use "../../../styles/surfaces" as surfaces;
+
 // Frames 10.1–10.5 of platform-design.pen: the call room's layout, with the
 // AI curator's message where the video would be.
 
@@ -10,11 +12,7 @@
 	padding: var(--gd-space-6);
 	border: 1px solid var(--gd-color-accent);
 	border-radius: var(--gd-radius-panel);
-	background: linear-gradient(
-		118deg,
-		var(--gd-color-accent-subtle),
-		var(--gd-warning-tint)
-	);
+	@include surfaces.checkpoint-wash;
 }
 
 .body {

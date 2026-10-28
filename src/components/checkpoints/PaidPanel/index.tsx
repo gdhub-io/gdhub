@@ -313,7 +313,7 @@ export function PaidPanel({
 				)}
 				<MoneyNotice checkpoint={checkpoint} centered />
 				{exitHref && (
-					<Link href={`${exitHref}/cp${number}/review/1`}>
+					<Link href={`${exitHref}/cp${number}?sprint=1&tab=plan`}>
 						<Button type="primary">
 							{t("checkpoints.paid.readLetter", "Read the curator's letter")}
 						</Button>
