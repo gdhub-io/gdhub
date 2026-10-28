@@ -3,12 +3,14 @@
 import { useTranslate } from "@tolgee/react";
 import { Tabs, Typography } from "antd";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
+import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
 import type {
 	CallNotesDto,
 	CheckpointCallDto,
@@ -46,6 +48,7 @@ export function CallPanel({
 	onPick: (tab: PanelTab) => void;
 }) {
 	const [selected, setSelected] = useState(call.index);
+	const router = useRouter();
 	const onChange = usePlanChange(call.checkpointId);
 	const advise = useAdvisePlan(call.checkpointId);
 	const held =
@@ -63,8 +66,24 @@ export function CallPanel({
 		<PanelBlock
 			sessions={call.sessions}
 			current={call.index}
+			reached={Math.max(
+				call.index,
+				...call.sessions
+					.filter((session) =>
+						dayjs(session.scheduledAt).isBefore(dayjs().endOf("day")),
+					)
+					.map((session) => session.index),
+			)}
 			selected={selected}
-			onSelect={setSelected}
+			// The team's page is the whole sprint: picking one opens its call.
+			onSelect={
+				call.role === "team"
+					? (at) =>
+							router.push(
+								checkpointPathHref(call.project.slug, call.number, at),
+							)
+					: setSelected
+			}
 			tab={picked ?? (ownReady ? "notes" : ownBrief ? "brief" : "plan")}
 			onTab={onPick}
 			plan={call.plan}
@@ -95,8 +114,10 @@ export function CallPanel({
 
 export type PanelBlockProps = {
 	sessions: Session[];
-	/** The page's own call; the calls after it are locked. */
+	/** The page's own call; its plan is the one that may change. */
 	current: number;
+	/** The last call whose day has come; the calls after it are locked. */
+	reached?: number;
 	selected: number;
 	onSelect: (index: number) => void;
 	tab: PanelTab;
@@ -123,6 +144,7 @@ export type PanelBlockProps = {
 export function PanelBlock({
 	sessions,
 	current,
+	reached = current,
 	selected,
 	onSelect,
 	tab,
@@ -154,7 +176,7 @@ export function PanelBlock({
 				// Call N opens sprint N; the last one closes the checkpoint.
 				return {
 					value: session.index,
-					ahead: session.index > current,
+					ahead: session.index > reached,
 					label:
 						session.index === FINAL_SESSION
 							? t("checkpoints.review.option.verdict", "Verdict · {date}", {

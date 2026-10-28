@@ -11,6 +11,8 @@ import { CheckpointCuratorKind } from "@/config/prisma-enums";
 
 export type CuratorHeaderProps = {
 	backHref: string;
+	/** The checkpoint's number, counted through the project. */
+	number: number;
 	/** Who curates: a tag beside the title, on its own colour. */
 	kind: CheckpointCuratorKind;
 	subtitle: string;
@@ -19,11 +21,12 @@ export type CuratorHeaderProps = {
 };
 
 /**
- * Frame DjZqC: one title for pro and ai. The kind names what the curator is,
+ * Frame DjZqC: Path to Checkpoint N, one title for pro and ai. The kind names what the curator is,
  * so it is the theme's one chip (ui-guidelines §3), opening the line under it.
  */
 export function CuratorHeader({
 	backHref,
+	number,
 	kind,
 	subtitle,
 	status,
@@ -44,7 +47,9 @@ export function CuratorHeader({
 				<div className={callStyles.titles}>
 					<div className={callStyles.titleRow}>
 						<Typography.Title level={2} className={callStyles.title}>
-							{t("checkpoints.review.pageTitle", "Curator's Review")}
+							{t("checkpoints.path.title", "Path to Checkpoint {number}", {
+								number,
+							})}
 						</Typography.Title>
 						{status && <StatusDot tone={status.tone} label={status.label} />}
 					</div>

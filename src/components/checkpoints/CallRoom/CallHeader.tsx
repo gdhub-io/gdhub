@@ -106,6 +106,7 @@ export function CallHeader({
 	return (
 		<CuratorHeader
 			backHref={backHref}
+			number={call.number}
 			kind={CheckpointCuratorKind.Human}
 			status={status}
 			subtitle={t(

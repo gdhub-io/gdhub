@@ -26,7 +26,6 @@ const { Text } = Typography;
 export type CheckpointAsideProps = {
 	checkpoint: CheckpointDto;
 	canManage: boolean;
-	withCurator?: boolean;
 };
 
 /**
@@ -37,7 +36,6 @@ export type CheckpointAsideProps = {
 export function CheckpointAside({
 	checkpoint,
 	canManage,
-	withCurator = true,
 }: CheckpointAsideProps) {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
@@ -71,7 +69,7 @@ export function CheckpointAside({
 
 	return (
 		<section className={`${styles.asideCard} ${styles.asideCheckpoint}`}>
-			{withCurator && (curator || isAI) && (
+			{(curator || isAI) && (
 				<CuratorNote
 					checkpoint={checkpoint}
 					reviewHref={(index) =>

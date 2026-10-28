@@ -43,6 +43,7 @@ import {
 	useCheckpointReview,
 } from "@/hooks/checkpoint-review";
 import { type PlanEdit, planSession } from "@/lib/checkpoint-call";
+import { sprintParam } from "@/lib/checkpoint-hrefs";
 import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
 import type { PlanChange } from "@/schemas/checkpoint";
 import { CuratorAside } from "./CuratorAside";
@@ -230,6 +231,7 @@ export function AiReviewView({
 			header={
 				<CuratorHeader
 					backHref={backHref}
+					number={review.number}
 					kind={CheckpointCuratorKind.AI}
 					subtitle={t(
 						"checkpoints.review.subtitle",
@@ -279,7 +281,15 @@ export function AiReviewView({
 									<ReviewSwitcher
 										review={review}
 										selected={selected}
-										onSelect={setPicked}
+										onSelect={(at) => {
+											setPicked(at);
+											// The address names the sprint, for a reload or a link.
+											window.history.replaceState(
+												null,
+												"",
+												`?sprint=${sprintParam(at)}`,
+											);
+										}}
 									/>
 								),
 							}}
@@ -489,29 +499,23 @@ function ReviewSwitcher({
 			value={selected}
 			onChange={onSelect}
 			aheadLabel={t(
-				"checkpoints.review.option.ahead",
-				"This review is still ahead",
+				"checkpoints.review.option.sprintAhead",
+				"This sprint is still ahead",
 			)}
+			// Session N opens sprint N; the last one is the verdict.
 			options={review.sessions.map((session) => {
 				const date = dayjs(session.scheduledAt).format("D MMM");
-				let label: string;
-				if (session.index === 1) {
-					label = t("checkpoints.review.option.start", "Start · {date}", {
-						date,
-					});
-				} else if (session.index === FINAL_SESSION) {
-					label = t("checkpoints.review.option.verdict", "Verdict · {date}", {
-						date,
-					});
-				} else {
-					label = t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
-						n: session.index - 1,
-						date,
-					});
-				}
 				return {
 					value: session.index,
-					label,
+					label:
+						session.index === FINAL_SESSION
+							? t("checkpoints.review.option.verdict", "Verdict · {date}", {
+									date,
+								})
+							: t("checkpoints.review.option.sprint", "Sprint {n} · {date}", {
+									n: session.index,
+									date,
+								}),
 					ahead: session.index > review.current,
 				};
 			})}
