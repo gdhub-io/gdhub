@@ -325,7 +325,7 @@ export type JournalEntry = { day: number; text: string };
 export const renderJournal = (journal?: JournalEntry[]) =>
 	journal?.length
 		? stripIndents`
-				Your journal of this road so far — the letters the team has read, oldest first. The day is where each sits on the road; a letter never opens with it:
+				Your journal of this road so far — the letters the team has read, oldest first:
 				${journal.map((entry) => `(day ${entry.day}) «${entry.text}»`).join("\n")}
 			`
 		: "";

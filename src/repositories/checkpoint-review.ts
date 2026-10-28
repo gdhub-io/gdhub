@@ -71,6 +71,7 @@ import {
 } from "@/services/checkpoint-notifications";
 import { notifyVerdictSent } from "@/services/checkpoint-verdict-notifications";
 import {
+	midwayAdviceInput,
 	type PlanAdviceInput,
 	reviewSprint,
 	writePlanAdvice,
@@ -705,22 +706,13 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		session.index,
 		final,
 	);
-	// Halfway the tasks change for the last time: the advice reads the review, the letter both.
+	// Halfway the tasks change for the last time.
 	const advise =
 		session.index === SCOPE_SESSION
-			? async (written: string) =>
+			? async (review: string) =>
 					(
 						await adviceFor(
-							adviceInput(
-								checkpoint,
-								input.workflow,
-								input.team,
-								"midway",
-								written,
-								input.picture,
-								input.character ?? null,
-								input.journal ?? [],
-							),
+							midwayAdviceInput(input, review),
 							checkpoint.items,
 							session.checkpointId,
 						)

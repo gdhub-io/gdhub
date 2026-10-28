@@ -32,6 +32,7 @@ import type {
 import {
 	type CallNotes,
 	GOAL_FITS,
+	type PlanAdvice,
 	TASK_ADVICE_KINDS,
 } from "@/types/checkpoints";
 
@@ -94,6 +95,28 @@ const voice = (
 
 	${AUTHOR_VOICE}
 `;
+
+/** One structured call on the curator's model: traced, metered, null when unusable. */
+const runStructured = async <S extends z.ZodType>(
+	name: string,
+	schema: S,
+	request: { instructions: string; prompt: string },
+	meter?: AiMeter,
+) => {
+	const started = Date.now();
+	const result = await generateText({
+		model: openai(AI_MODELS.curatorReview),
+		output: Output.object({ schema, name }),
+		...request,
+	});
+	traceGenerated(name, AI_MODELS.curatorReview, started, request, result);
+	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
+	return (result.output as z.infer<S> | undefined) ?? null;
+};
+
+/** A task by its own words in text the author reads; its id stays in id fields. */
+const taskName = (tasks: CuratorTask[], id: string) =>
+	tasks.find((task) => task.id === id)?.text ?? id;
 
 // Nullable rather than optional: strict structured outputs require every key.
 const adviceSchema = z.object({
@@ -185,21 +208,7 @@ export const writePlanAdvice = async (
 			${renderPicture(input.picture)}
 		`,
 	};
-	const started = Date.now();
-	const result = await generateText({
-		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: adviceSchema, name: "plan_advice" }),
-		...request,
-	});
-	traceGenerated(
-		"plan_advice",
-		AI_MODELS.curatorReview,
-		started,
-		request,
-		result,
-	);
-	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-	return result.output ?? null;
+	return runStructured("plan_advice", adviceSchema, request, meter);
 };
 
 const assessmentSchema = z.object({
@@ -224,7 +233,7 @@ const assessmentSchema = z.object({
 		.describe("Questions the team should answer for itself."),
 });
 
-export type SprintAssessment = z.infer<typeof assessmentSchema>;
+type SprintAssessment = z.infer<typeof assessmentSchema>;
 
 /**
  * The review of one sprint, from what the team showed in it: every devlog of
@@ -248,8 +257,8 @@ export const writeSprintReview = async (
 			artifact closes it. Where a task's evidence was looked at, say what it
 			shows; a mismatch is worth naming, but it does not undo the task.
 			Use only task ids given to you, and only in the id fields: in text,
-			name a task by its own words. The team reads this review under your
-			letter; reassurance and the next step belong to the letter, not here.
+			name a task by its own words. Reassurance and the next step are not
+			part of the review.
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
 
 			${AUTHOR_VOICE}
@@ -284,30 +293,12 @@ export const writeSprintReview = async (
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
 	};
-	const started = Date.now();
-	const result = await generateText({
-		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: assessmentSchema, name: "sprint_review" }),
-		...request,
-	});
-	traceGenerated(
-		"sprint_review",
-		AI_MODELS.curatorReview,
-		started,
-		request,
-		result,
-	);
-	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-	return result.output ?? null;
+	return runStructured("sprint_review", assessmentSchema, request, meter);
 };
 
 /** The review as the next calls read it: the advice halfway, then the letter. */
-export const renderAssessment = (
-	review: SprintAssessment,
-	tasks: CuratorTask[],
-) => {
-	const named = (id: string) =>
-		tasks.find((task) => task.id === id)?.text ?? id;
+const renderAssessment = (review: SprintAssessment, tasks: CuratorTask[]) => {
+	const named = (id: string) => taskName(tasks, id);
 	return [
 		`How the sprint stands: ${review.inShort}`,
 		...review.discussed.map((row) => `- ${named(row.itemId)}: ${row.text}`),
@@ -322,11 +313,24 @@ export const renderAssessment = (
 		.join("\n");
 };
 
-/** The halfway advice the letter must agree with: one note per task, and any to add. */
-export type MidwayAdvice = {
-	tasks: { itemId: string; note: string }[];
-	add: string[];
-};
+/** The halfway advice the letter must agree with. */
+type MidwayAdvice = Pick<PlanAdvice, "tasks" | "add">;
+
+/** Halfway, the advice reads the same sprint the review did, and the review itself. */
+export const midwayAdviceInput = (
+	input: Omit<SprintReviewInput, "devlogMedia">,
+	review: string,
+): PlanAdviceInput => ({
+	goal: input.goal,
+	character: input.character,
+	journal: input.journal,
+	workflow: input.workflow,
+	team: input.team,
+	tasks: input.tasks,
+	moment: "midway",
+	review,
+	picture: input.picture,
+});
 
 const letterSchema = z.object({
 	message: z
@@ -351,7 +355,7 @@ const letterSchema = z.object({
  * The letter and the next sprint's focus, from the review already written and,
  * halfway, the advice on the tasks — so the three never disagree.
  */
-export const writeReviewLetter = async (
+const writeReviewLetter = async (
 	input: SprintReviewInput,
 	review: string,
 	advice: MidwayAdvice | null,
@@ -359,8 +363,7 @@ export const writeReviewLetter = async (
 	locale?: string,
 ) => {
 	const final = input.verdict !== null;
-	const named = (id: string) =>
-		input.tasks.find((task) => task.id === id)?.text ?? id;
+	const named = (id: string) => taskName(input.tasks, id);
 	const request = {
 		instructions: stripIndents`
 			${voice(input.character, legOfSprint(input.sprint, final))}
@@ -368,7 +371,7 @@ export const writeReviewLetter = async (
 			Your review of sprint ${input.sprint} is written below. Turn it into
 			the letter the team reads and the focus for the next sprint. Add no
 			judgement the review does not hold.
-			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it — never ask for what it drops or shortens." : ""}
+			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it." : ""}
 			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
 			${locale ? localeLine(locale) : ""}
 		`,
@@ -377,8 +380,8 @@ export const writeReviewLetter = async (
 
 			Goal: ${input.goal}
 
-			Tasks:
-			${input.tasks.map(taskLine).join("\n")}
+			Tasks, by id for the focus:
+			${input.tasks.map((task) => `- [${task.id}] ${task.text}`).join("\n")}
 
 			Your review of the sprint:
 			${review}
@@ -387,7 +390,8 @@ export const writeReviewLetter = async (
 				advice
 					? `Your advice on the tasks:\n${[
 							...advice.tasks.map(
-								(row) => `- ${named(row.itemId)}: ${row.note}`,
+								(row) =>
+									`- ${named(row.itemId)} (${row.kind}): ${row.note}${row.suggestion ? ` Reworded: ${row.suggestion}` : ""}`,
 							),
 							...advice.add.map((line) => `- Add: ${line}`),
 						].join("\n")}`
@@ -397,21 +401,7 @@ export const writeReviewLetter = async (
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
 	};
-	const started = Date.now();
-	const result = await generateText({
-		model: openai(AI_MODELS.curatorReview),
-		output: Output.object({ schema: letterSchema, name: "review_letter" }),
-		...request,
-	});
-	traceGenerated(
-		"review_letter",
-		AI_MODELS.curatorReview,
-		started,
-		request,
-		result,
-	);
-	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-	return result.output ?? null;
+	return runStructured("review_letter", letterSchema, request, meter);
 };
 
 /**
@@ -430,9 +420,16 @@ export const reviewSprint = async <Advice extends MidwayAdvice>(
 	const advice = advise ? await advise(review).catch(() => null) : null;
 	const letter = await writeReviewLetter(input, review, advice, meter, locale);
 	if (!letter) return null;
+	// A task the advice cuts is never the next sprint's focus.
+	const cut = new Set(
+		advice?.tasks.filter((row) => row.kind === "cut").map((row) => row.itemId),
+	);
 	return {
 		message: letter.message,
-		notes: { ...assessment, agreed: letter.agreed } satisfies CallNotes,
+		notes: {
+			...assessment,
+			agreed: letter.agreed.filter((line) => !cut.has(line.itemId ?? "")),
+		} satisfies CallNotes,
 		advice,
 	};
 };

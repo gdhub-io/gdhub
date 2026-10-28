@@ -16,7 +16,7 @@ const sessionUpdateMany = vi.fn();
 const sessionCreateMany = vi.fn();
 const writeSprintReview = vi.fn();
 const writePlanAdvice = vi.fn();
-const writeReviewLetter = vi.fn();
+const reviewSprint = vi.fn();
 const closeCheckpoint = vi.fn();
 const notify = vi.fn();
 const writeFirstLetter = vi.fn();
@@ -78,26 +78,13 @@ vi.mock("@/repositories/curator-context", async (actual) => ({
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
-vi.mock("@/services/curator-review", () => ({
+vi.mock("@/services/curator-review", async (original) => ({
+	midwayAdviceInput: (
+		await original<typeof import("@/services/curator-review")>()
+	).midwayAdviceInput,
 	writeSprintReview: (...a: unknown[]) => writeSprintReview(...a),
 	writePlanAdvice: (...a: unknown[]) => writePlanAdvice(...a),
-	// The chain as production runs it, over the mocked steps; its review text is the summary.
-	reviewSprint: async (
-		input: unknown,
-		advise: ((review: string) => Promise<unknown>) | null,
-		meter: unknown,
-	) => {
-		const assessment = await writeSprintReview(input, meter);
-		if (!assessment) return null;
-		const advice = advise ? await advise(assessment.inShort) : null;
-		const letter = await writeReviewLetter(input, assessment.inShort, advice);
-		if (!letter) return null;
-		return {
-			message: letter.message,
-			notes: { ...assessment, agreed: letter.agreed },
-			advice,
-		};
-	},
+	reviewSprint: (...a: unknown[]) => reviewSprint(...a),
 }));
 vi.mock("@/repositories/checkpoint-curator.repository", () => ({
 	closeCheckpoint: (...a: unknown[]) => closeCheckpoint(...a),
@@ -231,8 +218,13 @@ describe("writeDueReviews", () => {
 	beforeEach(() => {
 		sessionFindMany.mockResolvedValue([{ id: "s2" }]);
 		sessionUpdateMany.mockResolvedValue({ count: 1 });
-		writeSprintReview.mockResolvedValue(assessment);
-		writeReviewLetter.mockResolvedValue(letter);
+		reviewSprint.mockImplementation(
+			async (_input: unknown, advise: ((review: string) => unknown) | null) => ({
+				message: letter.message,
+				notes: { ...assessment, agreed: letter.agreed },
+				advice: advise ? await advise("The review.") : null,
+			}),
+		);
 	});
 
 	it("takes the AI's review days that have come, sprints while running and the final once over", async () => {
@@ -264,7 +256,7 @@ describe("writeDueReviews", () => {
 	it("leaves a session another run claimed", async () => {
 		sessionUpdateMany.mockResolvedValue({ count: 0 });
 		expect(await writeDueReviews()).toBe(0);
-		expect(writeSprintReview).not.toHaveBeenCalled();
+		expect(reviewSprint).not.toHaveBeenCalled();
 	});
 
 	it("reviews the sprint behind, drops made-up ids and tells the team once each", async () => {
@@ -273,7 +265,7 @@ describe("writeDueReviews", () => {
 		const now = new Date("2026-10-08T01:00:00Z");
 		expect(await writeDueReviews(now)).toBe(1);
 
-		const input = writeSprintReview.mock.calls[0][0];
+		const input = reviewSprint.mock.calls[0][0];
 		expect(input.sprint).toBe(1);
 		// The sprint's build video and other artifacts beside its tasks.
 		expect(input.artifactsSeen).toEqual([
@@ -329,7 +321,7 @@ describe("writeDueReviews", () => {
 
 		expect(writePlanAdvice.mock.calls[0][0]).toMatchObject({
 			moment: "midway",
-			review: "Done.",
+			review: "The review.",
 		});
 		const { advice } = sessionUpdate.mock.calls[0][0].data.content;
 		expect(advice.tasks.map((row: { itemId: string }) => row.itemId)).toEqual(["t1"]);
@@ -349,9 +341,9 @@ describe("writeDueReviews", () => {
 
 		expect(closeCheckpoint).toHaveBeenCalledWith("cp");
 		expect(closeCheckpoint.mock.invocationCallOrder[0]).toBeLessThan(
-			writeSprintReview.mock.invocationCallOrder[0],
+			reviewSprint.mock.invocationCallOrder[0],
 		);
-		expect(writeSprintReview.mock.calls[0][0].verdict).toEqual({
+		expect(reviewSprint.mock.calls[0][0].verdict).toEqual({
 			verdict: CheckpointVerdict.StageClosed,
 			note: "All proven.",
 		});
@@ -363,7 +355,7 @@ describe("writeDueReviews", () => {
 		sessionFindUniqueOrThrow.mockResolvedValue({ index: 5, checkpointId: "cp" });
 		checkpointFindUniqueOrThrow.mockResolvedValue(reviewed(5));
 		expect(await writeDueReviews()).toBe(0);
-		expect(writeSprintReview).not.toHaveBeenCalled();
+		expect(reviewSprint).not.toHaveBeenCalled();
 		expect(sessionUpdate).toHaveBeenCalledWith({
 			where: { id: "s2" },
 			data: { contentStatus: null },
@@ -373,7 +365,7 @@ describe("writeDueReviews", () => {
 	it("hands the session back when the model gives nothing", async () => {
 		sessionFindUniqueOrThrow.mockResolvedValue({ index: 2, checkpointId: "cp" });
 		checkpointFindUniqueOrThrow.mockResolvedValue(reviewed(2));
-		writeSprintReview.mockResolvedValue(null);
+		reviewSprint.mockResolvedValue(null);
 		expect(await writeDueReviews()).toBe(0);
 		expect(sessionUpdate).toHaveBeenCalledWith({
 			where: { id: "s2" },

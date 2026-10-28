@@ -64,7 +64,14 @@ beforeEach(() => {
 describe("reviewSprint", () => {
 	it("writes the review, gives it to the advice, and the letter reads both", async () => {
 		const advise = vi.fn(async (_review: string) => ({
-			tasks: [{ itemId: "t1", note: "Start with one player." }],
+			tasks: [
+				{
+					itemId: "t1",
+					kind: "shorten" as const,
+					note: "Start with one player.",
+					suggestion: null,
+				},
+			],
 			add: [],
 		}));
 
@@ -78,13 +85,23 @@ describe("reviewSprint", () => {
 		expect(letterCall.output.name).toBe("review_letter");
 		expect(letterCall.prompt).toContain("At risk: nothing was shown.");
 		expect(letterCall.prompt).toContain(
-			"Playtest with 5 players: Start with one player.",
+			"Playtest with 5 players (shorten): Start with one player.",
 		);
 		expect(result).toMatchObject({
 			message: "At risk.",
 			notes: { inShort: "At risk: nothing was shown.", agreed: [{ itemId: "t1" }] },
 			advice: { tasks: [{ itemId: "t1" }] },
 		});
+	});
+
+	it("drops from the focus a task the advice cuts", async () => {
+		const result = await reviewSprint(input, async () => ({
+			tasks: [
+				{ itemId: "t1", kind: "cut" as const, note: "Drop it.", suggestion: null },
+			],
+			add: [],
+		}));
+		expect(result?.notes.agreed).toEqual([]);
 	});
 
 	it("asks for no advice outside halfway", async () => {

@@ -26,7 +26,11 @@ import {
 	characterFace,
 	type JournalEntry,
 } from "@/services/checkpoint-curator/prompts/card";
-import { reviewSprint, writePlanAdvice } from "@/services/curator-review";
+import {
+	midwayAdviceInput,
+	reviewSprint,
+	writePlanAdvice,
+} from "@/services/curator-review";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { LAB_PERSONAS } from "./personas";
 import {
@@ -245,26 +249,15 @@ const CALLS: LabCall[] = [
 					),
 				),
 			);
-			// Halfway, as in production: the advice reads the review, the letter both.
-			const midway = input.sprint === 2 && !input.verdict;
-			const advise = midway
-				? (review: string) =>
-						writePlanAdvice(
-							{
-								goal: input.goal,
-								character: input.character,
-								journal: input.journal,
-								workflow: input.workflow,
-								team: input.team,
-								tasks: input.tasks,
-								moment: "midway",
-								review,
-								picture: input.picture,
-							},
-							undefined,
-							locale,
-						)
-				: null;
+			const advise =
+				input.sprint === 2 && !input.verdict
+					? (review: string) =>
+							writePlanAdvice(
+								midwayAdviceInput(input, review),
+								undefined,
+								locale,
+							)
+					: null;
 			return {
 				answer: await reviewSprint(
 					{ ...input, devlogMedia },
