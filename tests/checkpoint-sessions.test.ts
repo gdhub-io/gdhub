@@ -90,4 +90,32 @@ describe("checkpoint sessions", () => {
 			expect(sessions.some((session) => session.missed)).toBe(false);
 		});
 	});
+
+	describe("who came", () => {
+		const ended = {
+			index: 2,
+			scheduledAt: new Date("2026-10-08T14:00:00Z"),
+			rescheduledAt: null,
+			curatorJoinedAt: new Date("2026-10-08T13:58:00Z"),
+			endedAt: new Date("2026-10-08T15:00:00Z"),
+			contentStatus: null,
+		};
+		const second = (attendeeIds: string[], endedAt: Date | null = ended.endedAt) =>
+			buildSessions(
+				startedAt,
+				[{ ...ended, endedAt, attendeeIds }],
+				CheckpointCuratorKind.Human,
+				new Date("2026-10-09T00:00:00Z"),
+				"curator",
+			)[1];
+
+		it("knows the team came once someone besides the curator was in", () => {
+			expect(second(["curator", "marta"]).teamJoined).toBe(true);
+			expect(second(["curator"]).teamJoined).toBe(false);
+		});
+
+		it("does not say before the call has ended", () => {
+			expect(second([], null).teamJoined).toBeNull();
+		});
+	});
 });

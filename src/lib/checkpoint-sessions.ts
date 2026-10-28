@@ -14,6 +14,7 @@ type SessionRow = {
 	curatorJoinedAt: Date | null;
 	endedAt: Date | null;
 	contentStatus: CheckpointSessionDto["contentStatus"];
+	attendeeIds?: string[];
 };
 
 /**
@@ -26,6 +27,8 @@ export const buildSessions = (
 	rows: SessionRow[],
 	curatorKind: CheckpointCuratorKind,
 	now = new Date(),
+	/** Told apart from the team in a call's attendees. */
+	curatorId: string | null = null,
 ): CheckpointSessionDto[] => {
 	if (!startedAt) return [];
 
@@ -49,6 +52,11 @@ export const buildSessions = (
 				curatorKind !== CheckpointCuratorKind.AI &&
 				!!row &&
 				callMissed(row, now),
+			// Known once the call has ended; an AI review is attended by nobody.
+			teamJoined:
+				curatorKind === CheckpointCuratorKind.AI || !row?.endedAt
+					? null
+					: (row.attendeeIds ?? []).some((id) => id !== curatorId),
 		};
 	});
 };

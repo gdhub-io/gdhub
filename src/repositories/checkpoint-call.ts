@@ -25,7 +25,7 @@ import {
 	callRoom,
 	callToken,
 	closeCallRoom,
-	roomParticipantMinutes,
+	roomParticipants,
 	startTranscriptJob,
 	transcriptOfJob,
 } from "@/services/daily";
@@ -365,11 +365,13 @@ export const recordMeetingEnded = async (room: string, endedAt: Date) => {
 	});
 	if (!session) return;
 
+	const { minutes, userIds } = await roomParticipants(room);
 	await prisma.checkpointSession.update({
 		where,
 		data: {
 			endedAt: session.endedAt ?? endedAt,
-			participantMinutes: await roomParticipantMinutes(room),
+			participantMinutes: minutes,
+			attendeeIds: userIds,
 		},
 	});
 	if (call.index === 1) await agreeGoal(call.checkpointId, endedAt);

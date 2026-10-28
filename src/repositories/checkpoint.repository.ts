@@ -141,6 +141,7 @@ const sessionRowSelect = {
 		curatorJoinedAt: true,
 		endedAt: true,
 		contentStatus: true,
+		attendeeIds: true,
 	},
 } as const;
 
@@ -476,7 +477,13 @@ const toCheckpointDetail = (row: DetailRow) => {
 			sprint: startedAt ? sprintOfDate(startedAt, report.publishedAt) : null,
 		})),
 		sprints: buildSprints(startedAt),
-		sessions: buildSessions(startedAt, sessions, checkpoint.curatorKind),
+		sessions: buildSessions(
+			startedAt,
+			sessions,
+			checkpoint.curatorKind,
+			undefined,
+			curator?.id ?? null,
+		),
 		character: characterFace(curatorCharacter),
 		pulses: buildPulseRows(
 			project.team?.members ?? [],
@@ -734,7 +741,13 @@ export const listClosedCheckpoints = async (
 	return {
 		rows: rows.map(({ sessions, ...row }) => ({
 			...withAcceptedTerms(row),
-			sessions: buildSessions(row.startedAt, sessions, row.curatorKind),
+			sessions: buildSessions(
+				row.startedAt,
+				sessions,
+				row.curatorKind,
+				undefined,
+				row.curator?.id ?? null,
+			),
 		})),
 		total,
 		page,

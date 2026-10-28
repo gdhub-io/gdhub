@@ -104,6 +104,8 @@ export type CheckpointSessionDto = {
 	contentStatus: CheckpointSessionContentStatus | null;
 	/** The call's window passed and the curator never came in. */
 	missed: boolean;
+	/** Someone of the team was in the call; null until it has ended. */
+	teamJoined?: boolean | null;
 };
 
 /**

@@ -194,11 +194,22 @@ export function RunningCheckpoint({
 				{ number: String(previous?.number) },
 			),
 			plan: planLabel(item),
-			priorities: t(
-				"workflow.path.check.priorities",
-				"Set sprint priorities with {name}",
-				{ name: curatorName },
-			),
+			priorities:
+				item.call === "missed"
+					? t("workflow.path.check.callMissed", "{name} didn't join the call", {
+							name: curatorName,
+						})
+					: item.call === "noTeam"
+						? t(
+								"workflow.path.check.callNoTeam",
+								"Nobody from the team joined the call with {name}",
+								{ name: curatorName },
+							)
+						: t(
+								"workflow.path.check.priorities",
+								"Set sprint priorities with {name}",
+								{ name: curatorName },
+							),
 			build: isAI
 				? t(
 						"workflow.path.check.buildVideo",

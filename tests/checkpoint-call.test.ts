@@ -35,7 +35,10 @@ const planFind = vi.fn(async () => ({
 const callRoom = vi.fn(async () => "https://gdhub.daily.co/cp-abc-2");
 const callToken = vi.fn(async () => "token");
 const closeCallRoom = vi.fn(async () => undefined);
-const roomParticipantMinutes = vi.fn(async () => 120);
+const roomParticipants = vi.fn(async () => ({
+	minutes: 120,
+	userIds: ["curator", "author"],
+}));
 const startTranscriptJob = vi.fn(async () => ({ id: "job" }));
 const transcriptOfJob = vi.fn();
 
@@ -70,8 +73,7 @@ vi.mock("@/services/daily", async (importOriginal) => ({
 	callRoom: (...a: unknown[]) => callRoom(...(a as [])),
 	callToken: (...a: unknown[]) => callToken(...(a as [])),
 	closeCallRoom: (...a: unknown[]) => closeCallRoom(...(a as [])),
-	roomParticipantMinutes: (...a: unknown[]) =>
-		roomParticipantMinutes(...(a as [])),
+	roomParticipants: (...a: unknown[]) => roomParticipants(...(a as [])),
 	startTranscriptJob: (...a: unknown[]) => startTranscriptJob(...(a as [])),
 	transcriptOfJob: (...a: unknown[]) => transcriptOfJob(...a),
 }));
@@ -285,7 +287,11 @@ describe("Daily's webhooks", () => {
 		await recordMeetingEnded("cp-abc-2", new Date("2026-10-21T15:00:00Z"));
 		expect(sessionUpdate).toHaveBeenCalledWith({
 			where: { checkpointId_index: { checkpointId: "abc", index: 2 } },
-			data: { endedAt: during, participantMinutes: 120 },
+			data: {
+				endedAt: during,
+				participantMinutes: 120,
+				attendeeIds: ["curator", "author"],
+			},
 		});
 	});
 

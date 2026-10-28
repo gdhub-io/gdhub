@@ -73,7 +73,7 @@ describe("sprint checklist", () => {
 		expect(keys(items)).toEqual(["build", "devlog", "artifacts"]);
 	});
 
-	it("ticks the call only once the session opening the sprint has ended", () => {
+	it("ticks the call once it has ended with the team in it", () => {
 		const session = {
 			index: 2,
 			day: 8,
@@ -88,7 +88,9 @@ describe("sprint checklist", () => {
 		const open = sprintChecklist(checkpoint({ sessions: [session] }), sprint2, false);
 		const ended = sprintChecklist(
 			checkpoint({
-				sessions: [{ ...session, endedAt: "2026-10-08T14:50:00.000Z" }],
+				sessions: [
+					{ ...session, endedAt: "2026-10-08T14:50:00.000Z", teamJoined: true },
+				],
 			}),
 			sprint2,
 			false,
@@ -222,5 +224,24 @@ describe("sprint checklist", () => {
 		it("is not a line in sprints 2 and 4", () => {
 			expect(planOf(ai(), sprint2)).toBeUndefined();
 		});
+	});
+
+	it("says who came to the call: the team, nobody from it, or not the curator", () => {
+		const callOf = (session: Partial<NonNullable<CheckpointDto["sessions"]>[number]>) =>
+			sprintChecklist(
+				checkpoint({
+					sessions: [
+						{ index: 2, scheduledAt: "2026-10-08T14:00:00.000Z", ...session } as NonNullable<
+							CheckpointDto["sessions"]
+						>[number],
+					],
+				}),
+				sprint2,
+				false,
+			).find((item) => item.key === "priorities");
+
+		expect(callOf({ teamJoined: true })).toMatchObject({ done: true, call: "team" });
+		expect(callOf({ teamJoined: false })).toMatchObject({ done: false, call: "noTeam" });
+		expect(callOf({ missed: true })).toMatchObject({ done: false, call: "missed" });
 	});
 });

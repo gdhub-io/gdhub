@@ -32,6 +32,8 @@ export type ChecklistItem = {
 	done: boolean;
 	/** The plan's line only: what it waits for now. */
 	step?: PlanStep;
+	/** The call's line only, once it is behind: who came. */
+	call?: "team" | "noTeam" | "missed";
 	/** The day it is due, as a UTC midnight. */
 	dueAt: string | null;
 };
@@ -65,9 +67,17 @@ export const sprintChecklist = (
 
 	// Only a person holds a call; the AI curator's review is read, not attended.
 	if (checkpoint.curatorKind === CheckpointCuratorKind.Human) {
+		const call = session?.missed
+			? "missed"
+			: session?.teamJoined === true
+				? "team"
+				: session?.teamJoined === false
+					? "noTeam"
+					: undefined;
 		items.push({
 			key: "priorities",
-			done: !!session?.endedAt,
+			done: call === "team",
+			call,
 			dueAt: session?.scheduledAt ?? null,
 		});
 	}
