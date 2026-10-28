@@ -8,7 +8,7 @@ import {
 	useVerdictCopy,
 	VERDICT_TONE,
 } from "@/components/checkpoints/VerdictChip";
-import { InverseBand, StatusDot } from "@/components/ui";
+import { StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import type { CheckpointVerdict } from "@/config/prisma-enums";
@@ -56,7 +56,7 @@ export function CuratorMessage({
 	const { label } = useVerdictCopy();
 
 	return (
-		<InverseBand density="product" className={styles.message}>
+		<div className={styles.message}>
 			{curator ? (
 				<AppAvatar src={curator.image} size={48}>
 					{initials(curator.name)}
@@ -110,6 +110,6 @@ export function CuratorMessage({
 					</div>
 				)}
 			</div>
-		</InverseBand>
+		</div>
 	);
 }

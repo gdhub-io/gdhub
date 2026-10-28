@@ -160,8 +160,8 @@ export const useLinkHint = () => {
 				);
 			case "build":
 				return t(
-					"artifacts.modal.link.hint.build",
-					"A page on itch.io, Steam, GitHub Releases or a store. The AI curator reads the page and never downloads or runs the build.",
+					"artifacts.modal.link.hint.buildFile",
+					"A link to the build file itself — Google Drive, Dropbox or another cloud, open to anyone; store pages belong in the project's links. A curator downloads and plays it; the AI curator cannot run a build, so add a gameplay video for it.",
 				);
 			default:
 				return t(

@@ -8,12 +8,12 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { CuratorMessage } from "@/components/checkpoints/CuratorReview/CuratorMessage";
 import { SESSION_MINUTES } from "@/config/checkpoint";
 import { downloadIcs } from "@/lib/calendar";
 import { callWindow } from "@/lib/checkpoint-call";
 import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
-import { CallCountdown } from "./CallCountdown";
 import { firstName } from "./CallHeader";
 
 export type ClosedStageProps = {
@@ -28,8 +28,17 @@ export type ClosedStageProps = {
 };
 
 /** A call's join button before its room opens: when it will. */
+/**
+ * A call's join button before its room opens: the day and hour while it is a
+ * day or more away, then how long is left, ticking by the minute.
+ */
 export const useLockedJoinLabel = () => {
 	const { t } = useTranslate();
+	const [, tick] = useState(0);
+	useEffect(() => {
+		const timer = setInterval(() => tick((n) => n + 1), 60_000);
+		return () => clearInterval(timer);
+	}, []);
 	return (scheduledAt: string | Date, now: Date) => {
 		const opensIn = dayjs(callWindow(new Date(scheduledAt)).opensAt).diff(
 			now,
@@ -37,11 +46,12 @@ export const useLockedJoinLabel = () => {
 		);
 		if (opensIn >= 24 * 60)
 			return t("checkpoints.call.joinOn", "Join on {date}", {
-				date: dayjs(scheduledAt).format("D MMM"),
+				date: dayjs(scheduledAt).format("D MMM, HH:mm"),
 			});
 		if (opensIn >= 60)
-			return t("checkpoints.call.joinInHours", "Join in {n} h", {
-				n: Math.round(opensIn / 60),
+			return t("checkpoints.call.joinInHoursMinutes", "Join in {h} h {m} min", {
+				h: Math.floor(opensIn / 60),
+				m: opensIn % 60,
 			});
 		return t("checkpoints.call.joinInMinutes", "Join in {n} min", {
 			n: Math.max(opensIn, 1),
@@ -170,7 +180,6 @@ export function ClosedStage({
 		<CuratorMessage
 			curator={call.curator}
 			date={scheduled.format("D MMM, HH:mm")}
-			extra={<CallCountdown at={call.scheduledAt} />}
 			message={
 				team
 					? call.index === 1

@@ -54,12 +54,13 @@
 	overflow: hidden;
 }
 
+// Frame 12.07 `C7axzV`: the running checkpoint takes the accent rim.
+.asideCheckpoint {
+	border-color: var(--gd-color-accent);
+}
+
 .asideHead {
-	display: flex;
-	flex-direction: column;
-	gap: var(--gd-space-1);
-	padding: var(--gd-space-3) var(--gd-space-4);
-	border-bottom: 1px solid var(--gd-color-border);
+	padding: var(--gd-space-4) var(--gd-space-4) 0;
 }
 
 .asideBody {
@@ -91,11 +92,10 @@
 	font-size: var(--gd-font-size-body-sm);
 }
 
-// The stage's task rows, edge to edge of the card.
+// The stage's task rows, edge to edge of the card, the last on its bottom.
 .asideTasks {
-	margin: 0 calc(-1 * var(--gd-space-4));
+	margin: 0 calc(-1 * var(--gd-space-4)) calc(-1 * var(--gd-space-4));
 	border-top: 1px solid var(--gd-color-border);
-	border-bottom: 1px solid var(--gd-color-border);
 }
 
 // Frame 08 `Dmwhm`: the feed scrolls inside its card; the page does not grow.
@@ -1322,11 +1322,18 @@ button.checklistItem {
 }
 
 // Frames xZ32D / BixZr / ErNgO: the curator's dark band, the widget's top edge to edge.
+// Frame 12.07 `xZ32D`: the checkpoint cards' warm wash, ruled off the body.
 .curatorNote {
 	display: flex;
 	flex-direction: column;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+	background: linear-gradient(
+		118deg,
+		var(--gd-color-accent-subtle),
+		var(--gd-warning-tint)
+	);
 }
 
 .curatorName {

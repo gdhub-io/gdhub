@@ -8,6 +8,11 @@
 	&:last-child {
 		border-bottom: none;
 	}
+
+	// As a table row: the sunken fill on hover.
+	&:hover {
+		background: var(--gd-color-surface-sunken);
+	}
 }
 
 .check {
@@ -23,8 +28,8 @@
 	color: var(--gd-color-surface);
 
 	&.checkDone {
-		background-color: var(--gd-color-text);
-		border-color: var(--gd-color-text);
+		background-color: var(--gd-success-solid);
+		border-color: var(--gd-success-solid);
 	}
 }
 

@@ -2,7 +2,7 @@
 
 import { IconPaperclip } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { App, Button, Tag, Tooltip, Typography } from "antd";
+import { App, Button, Flex, Tag, Tooltip, Typography } from "antd";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
@@ -68,7 +68,7 @@ export function CheckpointAside({
 		});
 
 	return (
-		<section className={styles.asideCard}>
+		<section className={`${styles.asideCard} ${styles.asideCheckpoint}`}>
 			{withCurator && (curator || isAI) && (
 				<CuratorNote
 					checkpoint={checkpoint}
@@ -79,8 +79,8 @@ export function CheckpointAside({
 					chatLoading={openChat.isPending}
 				/>
 			)}
-			<div className={styles.asideHead}>
-				<div className={styles.asideRow}>
+			<div className={`${styles.asideHead} ${styles.asideRow}`}>
+				<Flex align="center" gap="small">
 					<Text strong className={styles.asideTitle}>
 						{t("workflow.aside.checkpoint", "Checkpoint {number}", {
 							number: String(checkpoint.number ?? 1),
@@ -89,7 +89,7 @@ export function CheckpointAside({
 					{isAI && (
 						<Tag className="gd-tag-on-page">{t("workflow.aside.ai", "AI")}</Tag>
 					)}
-				</div>
+				</Flex>
 				{checkpoint.startedAt && checkpoint.dueAt && (
 					<Text type="secondary" className={styles.asideMeta}>
 						{formatDayRange(checkpoint.startedAt, checkpoint.dueAt)}

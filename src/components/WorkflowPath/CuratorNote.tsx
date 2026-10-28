@@ -11,11 +11,9 @@ import { Button, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CallCountdown } from "@/components/checkpoints/CallRoom/CallCountdown";
 import { firstName } from "@/components/checkpoints/CallRoom/CallHeader";
 import { useLockedJoinLabel } from "@/components/checkpoints/CallRoom/ClosedStage";
 import { useCuratorNow } from "@/components/checkpoints/CuratorReview/useCuratorNow";
-import { InverseBand } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import {
@@ -65,7 +63,6 @@ export function CuratorNote({
 	let message: string;
 	let action: Action | null = null;
 	let join: Join | null = null;
-	let countdown: string | null = null;
 
 	let deadline: string | null = null;
 
@@ -168,7 +165,6 @@ export function CuratorNote({
 				href: reviewHref(live.index),
 			};
 		} else if (next) {
-			countdown = next.scheduledAt;
 			// Until the room opens the button says when it will.
 			join = {
 				label: lockedJoin(next.scheduledAt, now),
@@ -193,7 +189,7 @@ export function CuratorNote({
 		.join(" · ");
 
 	return (
-		<InverseBand density="product" className={styles.curatorNote}>
+		<div className={styles.curatorNote}>
 			<div className={styles.asideCurator}>
 				{isAI ? (
 					<AppAvatar size={40} src={character?.avatar ?? AI_CURATOR_AVATAR} />
@@ -232,7 +228,6 @@ export function CuratorNote({
 					{deadline}
 				</Text>
 			)}
-			{countdown && <CallCountdown at={countdown} />}
 			{(action || join) && (
 				<div className={styles.curatorActions}>
 					{action && (
@@ -256,6 +251,6 @@ export function CuratorNote({
 						))}
 				</div>
 			)}
-		</InverseBand>
+		</div>
 	);
 }

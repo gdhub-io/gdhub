@@ -1,13 +1,20 @@
 // Frames 10.1–10.5 of platform-design.pen: the call room's layout, with the
 // AI curator's message where the video would be.
 
-// Curator message `wVnbo`: dark in both themes, the first thing read.
+// Curator message `wVnbo`: the warm wash and the accent rim of the checkpoint
+// cards (frame `X63RjU`), the first thing read.
 .message {
 	display: flex;
 	align-items: flex-start;
 	gap: var(--gd-space-4);
 	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-accent);
 	border-radius: var(--gd-radius-panel);
+	background: linear-gradient(
+		118deg,
+		var(--gd-color-accent-subtle),
+		var(--gd-warning-tint)
+	);
 }
 
 .body {
