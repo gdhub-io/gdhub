@@ -226420,93 +226420,27 @@
                       "type": "frame",
                       "id": "C7axzV",
                       "name": "This checkpoint",
+                      "clip": true,
                       "width": "fill_container",
                       "cornerRadius": "$radius-xl",
                       "stroke": "$border",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 24,
-                      "padding": 24,
                       "children": [
-                        {
-                          "type": "frame",
-                          "id": "XL3Be",
-                          "name": "Head",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "SWMMr",
-                              "name": "Row",
-                              "width": "fill_container",
-                              "justifyContent": "space_between",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "ICCYc",
-                                  "name": "H",
-                                  "fill": "$text-primary",
-                                  "content": "Checkpoint 3",
-                                  "fontFamily": "$font",
-                                  "fontSize": 16,
-                                  "fontWeight": "600"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "cyn4q",
-                                  "x": 235,
-                                  "y": 0,
-                                  "name": "Tag — tier",
-                                  "enabled": false,
-                                  "fill": "$surface-sunken",
-                                  "cornerRadius": "$radius-sm",
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "vL0Gh",
-                                      "name": "L",
-                                      "fill": "$text-primary",
-                                      "content": "Pro",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "izR0U",
-                              "name": "Dates",
-                              "fill": "$text-secondary",
-                              "content": "1 – 28 Oct",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
                         {
                           "type": "frame",
                           "id": "xZ32D",
                           "name": "Curator",
                           "width": "fill_container",
                           "fill": "$inv-bg",
-                          "cornerRadius": "$radius-lg",
                           "stroke": "$inv-border",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 12,
-                          "padding": 16,
+                          "padding": [
+                            20,
+                            24
+                          ],
                           "children": [
                             {
                               "type": "frame",
@@ -226696,240 +226630,317 @@
                         },
                         {
                           "type": "frame",
-                          "id": "W37KSz",
-                          "name": "Goal",
+                          "id": "U49ul",
+                          "name": "Body",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "bI189",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Goal",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "eCxOS",
-                              "name": "Text",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Lock the core loop of the tide mechanic on paper and in a greybox a stranger can play for 5 minutes.",
-                              "lineHeight": 1.45,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "FlRjn",
-                          "name": "Expected outcomes",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 12,
+                          "gap": 24,
+                          "padding": 24,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "x5MZ8",
+                              "id": "XL3Be",
                               "name": "Head",
                               "width": "fill_container",
-                              "justifyContent": "space_between",
+                              "layout": "vertical",
+                              "gap": 4,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "SWMMr",
+                                  "name": "Row",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ICCYc",
+                                      "name": "H",
+                                      "fill": "$text-primary",
+                                      "content": "Checkpoint 3",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "cyn4q",
+                                      "x": 235,
+                                      "y": 0,
+                                      "name": "Tag — tier",
+                                      "enabled": false,
+                                      "fill": "$surface-sunken",
+                                      "cornerRadius": "$radius-sm",
+                                      "padding": [
+                                        4,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "vL0Gh",
+                                          "name": "L",
+                                          "fill": "$text-primary",
+                                          "content": "Pro",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "izR0U",
+                                  "name": "Dates",
+                                  "fill": "$text-secondary",
+                                  "content": "1 – 28 Oct",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "W37KSz",
+                              "name": "Goal",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "vTGW1",
+                                  "id": "bI189",
                                   "name": "L",
                                   "fill": "$text-secondary",
-                                  "content": "Tasks",
+                                  "content": "Goal",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "TyCT2",
-                              "name": "Outcome",
-                              "width": "fill_container",
-                              "height": 32,
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "QfD6d",
-                                  "name": "Icon circle-check",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle-check",
-                                  "library": "lucide",
-                                  "fill": "$success"
                                 },
                                 {
                                   "type": "text",
-                                  "id": "aFRaR",
-                                  "name": "L",
+                                  "id": "eCxOS",
+                                  "name": "Text",
                                   "fill": "$text-primary",
-                                  "content": "Core loop one-pager",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Lock the core loop of the tide mechanic on paper and in a greybox a stranger can play for 5 minutes.",
+                                  "lineHeight": 1.45,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "B4iL9",
-                                  "name": "Spacer",
-                                  "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "Us5Ya",
-                                  "name": "Link — artifact",
-                                  "width": 32,
-                                  "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "gap": 4,
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "vuSSE",
-                                      "name": "Type",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "file-text",
-                                      "library": "lucide",
-                                      "fill": "$link"
-                                    }
-                                  ]
                                 }
                               ]
                             },
                             {
                               "type": "frame",
-                              "id": "EGYaw",
-                              "name": "Outcome",
+                              "id": "FlRjn",
+                              "name": "Expected outcomes",
                               "width": "fill_container",
-                              "height": 32,
+                              "layout": "vertical",
                               "gap": 12,
-                              "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "icon",
-                                  "id": "jWkWe",
-                                  "name": "Icon circle",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "cRYe2",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Greybox build on itch.io",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
                                   "type": "frame",
-                                  "id": "d1V7CE",
-                                  "name": "Spacer",
+                                  "id": "x5MZ8",
+                                  "name": "Head",
                                   "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "f7D6zv",
-                                  "name": "Attach",
-                                  "width": 32,
-                                  "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
+                                  "justifyContent": "space_between",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "zavAS",
-                                      "name": "Icon",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "paperclip",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "vTGW1",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Tasks",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
                                     }
                                   ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "HYxlp",
-                              "name": "Outcome",
-                              "width": "fill_container",
-                              "height": 32,
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "QeqTZ",
-                                  "name": "Icon circle",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "ybCPj",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "5 playtest recordings",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "SXmbh",
-                                  "name": "Spacer",
+                                  "id": "TyCT2",
+                                  "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "yC5ys",
-                                  "name": "Attach",
-                                  "width": 32,
                                   "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
+                                  "gap": 12,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "icon",
-                                      "id": "J97dM9",
-                                      "name": "Icon",
+                                      "id": "QfD6d",
+                                      "name": "Icon circle-check",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "paperclip",
+                                      "icon": "circle-check",
                                       "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "fill": "$success"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "aFRaR",
+                                      "name": "L",
+                                      "fill": "$text-primary",
+                                      "content": "Core loop one-pager",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "B4iL9",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "Us5Ya",
+                                      "name": "Link — artifact",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "gap": 4,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "vuSSE",
+                                          "name": "Type",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "file-text",
+                                          "library": "lucide",
+                                          "fill": "$link"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "EGYaw",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "jWkWe",
+                                      "name": "Icon circle",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "cRYe2",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Greybox build on itch.io",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "d1V7CE",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "f7D6zv",
+                                      "name": "Attach",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "zavAS",
+                                          "name": "Icon",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "paperclip",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "HYxlp",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "QeqTZ",
+                                      "name": "Icon circle",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "ybCPj",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "5 playtest recordings",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "SXmbh",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "yC5ys",
+                                      "name": "Attach",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "J97dM9",
+                                          "name": "Icon",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "paperclip",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
@@ -240291,93 +240302,27 @@
                       "type": "frame",
                       "id": "RV1gV",
                       "name": "This checkpoint",
+                      "clip": true,
                       "width": "fill_container",
                       "cornerRadius": "$radius-xl",
                       "stroke": "$border",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 24,
-                      "padding": 24,
                       "children": [
-                        {
-                          "type": "frame",
-                          "id": "oYQIX",
-                          "name": "Head",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "Q3upp4",
-                              "name": "Row",
-                              "width": "fill_container",
-                              "justifyContent": "space_between",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "DxDE2",
-                                  "name": "H",
-                                  "fill": "$text-primary",
-                                  "content": "Checkpoint 3",
-                                  "fontFamily": "$font",
-                                  "fontSize": 16,
-                                  "fontWeight": "600"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "N7Taq1",
-                                  "x": 235,
-                                  "y": 0,
-                                  "name": "Tag — tier",
-                                  "enabled": false,
-                                  "fill": "$surface-sunken",
-                                  "cornerRadius": "$radius-sm",
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "AjSBG",
-                                      "name": "L",
-                                      "fill": "$text-primary",
-                                      "content": "Pro",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "D0rtZd",
-                              "name": "Dates",
-                              "fill": "$text-secondary",
-                              "content": "1 – 28 Oct",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
                         {
                           "type": "frame",
                           "id": "BixZr",
                           "name": "Curator",
                           "width": "fill_container",
                           "fill": "$inv-bg",
-                          "cornerRadius": "$radius-lg",
                           "stroke": "$inv-border",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 12,
-                          "padding": 16,
+                          "padding": [
+                            20,
+                            24
+                          ],
                           "children": [
                             {
                               "type": "frame",
@@ -240526,240 +240471,317 @@
                         },
                         {
                           "type": "frame",
-                          "id": "QAWqe",
-                          "name": "Goal",
+                          "id": "MiiuT",
+                          "name": "Body",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "t4cOMu",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Goal",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "Hf3J2",
-                              "name": "Text",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Lock the core loop of the tide mechanic on paper and in a greybox a stranger can play for 5 minutes.",
-                              "lineHeight": 1.45,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "SsE44",
-                          "name": "Expected outcomes",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 12,
+                          "gap": 24,
+                          "padding": 24,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "vOVnZ",
+                              "id": "oYQIX",
                               "name": "Head",
                               "width": "fill_container",
-                              "justifyContent": "space_between",
+                              "layout": "vertical",
+                              "gap": 4,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Q3upp4",
+                                  "name": "Row",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "DxDE2",
+                                      "name": "H",
+                                      "fill": "$text-primary",
+                                      "content": "Checkpoint 3",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "N7Taq1",
+                                      "x": 235,
+                                      "y": 0,
+                                      "name": "Tag — tier",
+                                      "enabled": false,
+                                      "fill": "$surface-sunken",
+                                      "cornerRadius": "$radius-sm",
+                                      "padding": [
+                                        4,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "AjSBG",
+                                          "name": "L",
+                                          "fill": "$text-primary",
+                                          "content": "Pro",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "D0rtZd",
+                                  "name": "Dates",
+                                  "fill": "$text-secondary",
+                                  "content": "1 – 28 Oct",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "QAWqe",
+                              "name": "Goal",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "b0YJu",
+                                  "id": "t4cOMu",
                                   "name": "L",
                                   "fill": "$text-secondary",
-                                  "content": "Tasks",
+                                  "content": "Goal",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "600"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "TR1Rx",
-                              "name": "Outcome",
-                              "width": "fill_container",
-                              "height": 32,
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "TAGvz",
-                                  "name": "Icon circle-check",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle-check",
-                                  "library": "lucide",
-                                  "fill": "$success"
                                 },
                                 {
                                   "type": "text",
-                                  "id": "eAnne",
-                                  "name": "L",
+                                  "id": "Hf3J2",
+                                  "name": "Text",
                                   "fill": "$text-primary",
-                                  "content": "Core loop one-pager",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Lock the core loop of the tide mechanic on paper and in a greybox a stranger can play for 5 minutes.",
+                                  "lineHeight": 1.45,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "t5s9Xr",
-                                  "name": "Spacer",
-                                  "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "vIuWt",
-                                  "name": "Link — artifact",
-                                  "width": 32,
-                                  "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "gap": 4,
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "Grm40",
-                                      "name": "Type",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "file-text",
-                                      "library": "lucide",
-                                      "fill": "$link"
-                                    }
-                                  ]
                                 }
                               ]
                             },
                             {
                               "type": "frame",
-                              "id": "wjgGb",
-                              "name": "Outcome",
+                              "id": "SsE44",
+                              "name": "Expected outcomes",
                               "width": "fill_container",
-                              "height": 32,
+                              "layout": "vertical",
                               "gap": 12,
-                              "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "icon",
-                                  "id": "dfNcG",
-                                  "name": "Icon circle",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "bvdVY",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Greybox build on itch.io",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
                                   "type": "frame",
-                                  "id": "aLiJH",
-                                  "name": "Spacer",
+                                  "id": "vOVnZ",
+                                  "name": "Head",
                                   "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "loSBx",
-                                  "name": "Attach",
-                                  "width": 32,
-                                  "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
+                                  "justifyContent": "space_between",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "V1YeCJ",
-                                      "name": "Icon",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "paperclip",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "b0YJu",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Tasks",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
                                     }
                                   ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "miy0H",
-                              "name": "Outcome",
-                              "width": "fill_container",
-                              "height": 32,
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "hFPB5",
-                                  "name": "Icon circle",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "Liiub",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "5 playtest recordings",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "ZKTjZ",
-                                  "name": "Spacer",
+                                  "id": "TR1Rx",
+                                  "name": "Outcome",
                                   "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "XPLw9",
-                                  "name": "Attach",
-                                  "width": 32,
                                   "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
+                                  "gap": 12,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "icon",
-                                      "id": "Pyp5R",
-                                      "name": "Icon",
+                                      "id": "TAGvz",
+                                      "name": "Icon circle-check",
                                       "width": 16,
                                       "height": 16,
-                                      "icon": "paperclip",
+                                      "icon": "circle-check",
                                       "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "fill": "$success"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "eAnne",
+                                      "name": "L",
+                                      "fill": "$text-primary",
+                                      "content": "Core loop one-pager",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "t5s9Xr",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "vIuWt",
+                                      "name": "Link — artifact",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "gap": 4,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "Grm40",
+                                          "name": "Type",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "file-text",
+                                          "library": "lucide",
+                                          "fill": "$link"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "wjgGb",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "dfNcG",
+                                      "name": "Icon circle",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "bvdVY",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Greybox build on itch.io",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "aLiJH",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "loSBx",
+                                      "name": "Attach",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "V1YeCJ",
+                                          "name": "Icon",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "paperclip",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "miy0H",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "hFPB5",
+                                      "name": "Icon circle",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "Liiub",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "5 playtest recordings",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "ZKTjZ",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "XPLw9",
+                                      "name": "Attach",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "Pyp5R",
+                                          "name": "Icon",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "paperclip",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
@@ -283827,93 +283849,27 @@
                       "type": "frame",
                       "id": "xDlDY",
                       "name": "This checkpoint",
+                      "clip": true,
                       "width": "fill_container",
                       "cornerRadius": "$radius-xl",
                       "stroke": "$border",
                       "strokeWidth": 1,
                       "layout": "vertical",
-                      "gap": 24,
-                      "padding": 24,
                       "children": [
-                        {
-                          "type": "frame",
-                          "id": "m70nJ",
-                          "name": "Head",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 4,
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "uDdJt",
-                              "name": "Row",
-                              "width": "fill_container",
-                              "justifyContent": "space_between",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "pAJGS",
-                                  "name": "H",
-                                  "fill": "$text-primary",
-                                  "content": "Checkpoint 3",
-                                  "fontFamily": "$font",
-                                  "fontSize": 16,
-                                  "fontWeight": "600"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "e3my0m",
-                                  "x": 235,
-                                  "y": 0,
-                                  "name": "Tag — tier",
-                                  "enabled": false,
-                                  "fill": "$surface-sunken",
-                                  "cornerRadius": "$radius-sm",
-                                  "padding": [
-                                    4,
-                                    8
-                                  ],
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "AkIUN",
-                                      "name": "L",
-                                      "fill": "$text-primary",
-                                      "content": "Pro",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "TsmIZ",
-                              "name": "Dates",
-                              "fill": "$text-secondary",
-                              "content": "1 – 28 Oct",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
                         {
                           "type": "frame",
                           "id": "ErNgO",
                           "name": "Curator",
                           "width": "fill_container",
                           "fill": "$inv-bg",
-                          "cornerRadius": "$radius-lg",
                           "stroke": "$inv-border",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 12,
-                          "padding": 16,
+                          "padding": [
+                            20,
+                            24
+                          ],
                           "children": [
                             {
                               "type": "frame",
@@ -283929,7 +283885,12 @@
                                   "name": "Avatar",
                                   "width": 40,
                                   "height": 40,
-                                  "fill": "$neutral-100",
+                                  "fill": {
+                                    "type": "image",
+                                    "enabled": true,
+                                    "url": "generated-17.png",
+                                    "mode": "cover"
+                                  },
                                   "cornerRadius": 999,
                                   "justifyContent": "center",
                                   "alignItems": "center",
@@ -283937,7 +283898,10 @@
                                     {
                                       "type": "icon",
                                       "id": "eehaR",
+                                      "x": 10,
+                                      "y": 10,
                                       "name": "AI",
+                                      "enabled": false,
                                       "width": 20,
                                       "height": 20,
                                       "icon": "sparkles",
@@ -284074,293 +284038,370 @@
                         },
                         {
                           "type": "frame",
-                          "id": "ycGtz",
-                          "name": "Goal",
+                          "id": "tPGZy",
+                          "name": "Body",
                           "width": "fill_container",
                           "layout": "vertical",
-                          "gap": 8,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "DlhV0",
-                              "name": "L",
-                              "fill": "$text-secondary",
-                              "content": "Goal",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "G0PYt",
-                              "name": "Text",
-                              "fill": "$text-primary",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Lock the core loop of the tide mechanic on paper and in a greybox a stranger can play for 5 minutes.",
-                              "lineHeight": 1.45,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "u72tsq",
-                          "name": "Expected outcomes",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 12,
+                          "gap": 24,
+                          "padding": 24,
                           "children": [
                             {
                               "type": "frame",
-                              "id": "h2cZ7",
+                              "id": "m70nJ",
                               "name": "Head",
                               "width": "fill_container",
-                              "justifyContent": "space_between",
+                              "layout": "vertical",
+                              "gap": 4,
                               "children": [
                                 {
+                                  "type": "frame",
+                                  "id": "uDdJt",
+                                  "name": "Row",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "pAJGS",
+                                      "name": "H",
+                                      "fill": "$text-primary",
+                                      "content": "Checkpoint 3",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "e3my0m",
+                                      "x": 235,
+                                      "y": 0,
+                                      "name": "Tag — tier",
+                                      "enabled": false,
+                                      "fill": "$surface-sunken",
+                                      "cornerRadius": "$radius-sm",
+                                      "padding": [
+                                        4,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "AkIUN",
+                                          "name": "L",
+                                          "fill": "$text-primary",
+                                          "content": "Pro",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
                                   "type": "text",
-                                  "id": "YTfaG",
-                                  "name": "L",
+                                  "id": "TsmIZ",
+                                  "name": "Dates",
                                   "fill": "$text-secondary",
-                                  "content": "Tasks",
+                                  "content": "1 – 28 Oct",
                                   "fontFamily": "$font",
                                   "fontSize": 13,
-                                  "fontWeight": "600"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
                             {
                               "type": "frame",
-                              "id": "n93C5",
-                              "name": "Outcome",
+                              "id": "ycGtz",
+                              "name": "Goal",
                               "width": "fill_container",
-                              "height": 28,
-                              "gap": 12,
-                              "alignItems": "center",
+                              "layout": "vertical",
+                              "gap": 8,
                               "children": [
                                 {
-                                  "type": "icon",
-                                  "id": "UttaM",
-                                  "name": "Icon circle-check",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle-check",
-                                  "library": "lucide",
-                                  "fill": "$success"
+                                  "type": "text",
+                                  "id": "DlhV0",
+                                  "name": "L",
+                                  "fill": "$text-secondary",
+                                  "content": "Goal",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
                                 },
                                 {
                                   "type": "text",
-                                  "id": "pa8Hm",
-                                  "name": "L",
+                                  "id": "G0PYt",
+                                  "name": "Text",
                                   "fill": "$text-primary",
-                                  "content": "Core loop one-pager",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Lock the core loop of the tide mechanic on paper and in a greybox a stranger can play for 5 minutes.",
+                                  "lineHeight": 1.45,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "normal"
-                                },
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "u72tsq",
+                              "name": "Expected outcomes",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "children": [
                                 {
                                   "type": "frame",
-                                  "id": "XKf5n",
-                                  "name": "Spacer",
+                                  "id": "h2cZ7",
+                                  "name": "Head",
                                   "width": "fill_container",
-                                  "height": 1
+                                  "justifyContent": "space_between",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "YTfaG",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Tasks",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "m9846K",
-                                  "name": "Link — artifact",
-                                  "gap": 4,
+                                  "id": "n93C5",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 28,
+                                  "gap": 12,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "icon",
-                                      "id": "XqOcq",
-                                      "name": "Type",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "file-text",
+                                      "id": "UttaM",
+                                      "name": "Icon circle-check",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle-check",
                                       "library": "lucide",
-                                      "fill": "$link"
+                                      "fill": "$success"
                                     },
                                     {
                                       "type": "text",
-                                      "id": "Nz9sc",
+                                      "id": "pa8Hm",
+                                      "name": "L",
+                                      "fill": "$text-primary",
+                                      "content": "Core loop one-pager",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "XKf5n",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "m9846K",
+                                      "name": "Link — artifact",
+                                      "gap": 4,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "XqOcq",
+                                          "name": "Type",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "file-text",
+                                          "library": "lucide",
+                                          "fill": "$link"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Nz9sc",
+                                          "name": "L",
+                                          "fill": "$link",
+                                          "content": "Document",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "icon",
+                                          "id": "PRboa",
+                                          "name": "Icon arrow-up-right",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "arrow-up-right",
+                                          "library": "lucide",
+                                          "fill": "$link"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "rdSeA",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "pFqMr",
+                                      "name": "Icon circle",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "rLzTb",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Greybox build on itch.io",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "RuL0V",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "tNIOj",
+                                      "name": "Attach",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "y3LJv7",
+                                          "name": "Icon",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "paperclip",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "UaWrD",
+                                  "name": "Outcome",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 12,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "pfL0H",
+                                      "name": "Icon circle",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "circle",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "tt3qd",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "5 playtest recordings",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "oLoi9",
+                                      "name": "Spacer",
+                                      "width": "fill_container",
+                                      "height": 1
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "o0AUL",
+                                      "name": "Attach",
+                                      "width": 32,
+                                      "height": 32,
+                                      "cornerRadius": "$radius-md",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "f7blT",
+                                          "name": "Icon",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "paperclip",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "OO5oK",
+                                  "name": "ViewAllLink — All artifacts",
+                                  "gap": 4,
+                                  "padding": [
+                                    4,
+                                    0,
+                                    0,
+                                    0
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "J9o24U",
                                       "name": "L",
                                       "fill": "$link",
-                                      "content": "Document",
+                                      "content": "All artifacts",
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
                                     },
                                     {
                                       "type": "icon",
-                                      "id": "PRboa",
-                                      "name": "Icon arrow-up-right",
+                                      "id": "pgfjE",
+                                      "name": "Icon",
                                       "width": 14,
                                       "height": 14,
-                                      "icon": "arrow-up-right",
+                                      "icon": "arrow-right",
                                       "library": "lucide",
                                       "fill": "$link"
                                     }
                                   ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "rdSeA",
-                              "name": "Outcome",
-                              "width": "fill_container",
-                              "height": 32,
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "pFqMr",
-                                  "name": "Icon circle",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "rLzTb",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "Greybox build on itch.io",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "RuL0V",
-                                  "name": "Spacer",
-                                  "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "tNIOj",
-                                  "name": "Attach",
-                                  "width": 32,
-                                  "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "y3LJv7",
-                                      "name": "Icon",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "paperclip",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "UaWrD",
-                              "name": "Outcome",
-                              "width": "fill_container",
-                              "height": 32,
-                              "gap": 12,
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "icon",
-                                  "id": "pfL0H",
-                                  "name": "Icon circle",
-                                  "width": 16,
-                                  "height": 16,
-                                  "icon": "circle",
-                                  "library": "lucide",
-                                  "fill": "$text-tertiary"
-                                },
-                                {
-                                  "type": "text",
-                                  "id": "tt3qd",
-                                  "name": "L",
-                                  "fill": "$text-secondary",
-                                  "content": "5 playtest recordings",
-                                  "fontFamily": "$font",
-                                  "fontSize": 14,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "oLoi9",
-                                  "name": "Spacer",
-                                  "width": "fill_container",
-                                  "height": 1
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "o0AUL",
-                                  "name": "Attach",
-                                  "width": 32,
-                                  "height": 32,
-                                  "cornerRadius": "$radius-md",
-                                  "justifyContent": "center",
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "f7blT",
-                                      "name": "Icon",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "paperclip",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "OO5oK",
-                              "name": "ViewAllLink — All artifacts",
-                              "gap": 4,
-                              "padding": [
-                                4,
-                                0,
-                                0,
-                                0
-                              ],
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "text",
-                                  "id": "J9o24U",
-                                  "name": "L",
-                                  "fill": "$link",
-                                  "content": "All artifacts",
-                                  "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "normal"
-                                },
-                                {
-                                  "type": "icon",
-                                  "id": "pgfjE",
-                                  "name": "Icon",
-                                  "width": 14,
-                                  "height": 14,
-                                  "icon": "arrow-right",
-                                  "library": "lucide",
-                                  "fill": "$link"
                                 }
                               ]
                             }
@@ -455965,8 +456006,8 @@
     {
       "type": "frame",
       "id": "bZQwi",
-      "x": 11998,
-      "y": 2454,
+      "x": 16136,
+      "y": 884,
       "name": "12.19 · AI curator avatars",
       "clip": true,
       "fill": "#141414",
@@ -456575,6 +456616,643 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YIuBt",
+      "x": 18114,
+      "y": 884,
+      "name": "Art — Checkpoint band (song)",
+      "width": 1600,
+      "height": 900,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "checkpoint-band-campfire.png",
+        "mode": "cover"
+      }
+    },
+    {
+      "type": "frame",
+      "id": "sOef4",
+      "x": 20039,
+      "y": 884,
+      "name": "Art — Clip keyframes (Checkpoint song)",
+      "fill": "#0E0E10",
+      "layout": "vertical",
+      "gap": 40,
+      "padding": 48,
+      "children": [
+        {
+          "type": "text",
+          "id": "TCjfy",
+          "name": "Title",
+          "fill": "#FFFFFF",
+          "content": "«Чекпоинт за чекпоинтом» — ключевые кадры клипа",
+          "fontFamily": "Inter",
+          "fontSize": 32,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "fq647",
+          "name": "Row C — Characters",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "h7TSyS",
+              "name": "C1 · Developer · character sheet",
+              "width": 768,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "TkHqw",
+                  "name": "Image",
+                  "width": 768,
+                  "height": 512,
+                  "fill": [
+                    "#C9C9C9",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "generated-18.png",
+                      "mode": "contain"
+                    }
+                  ],
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "NUtzJ",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "C1 · Developer · character sheet",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "MHncP",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Разработчик — солист. Во сне в красном худи, в комнате — в тёмно-серой футболке",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "K9saPH",
+              "name": "C2 · Artist · character sheet",
+              "width": 768,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "WkUXc",
+                  "name": "Image",
+                  "width": 768,
+                  "height": 512,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "characters/Chibi Artist Turnaround Sheet-2.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "W8coy",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "C2 · Artist · character sheet",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "nQNXK",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Художница — голос куратора. Без кисточки",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DhOab",
+              "name": "C3 · Programmer · character sheet",
+              "width": 768,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "fGhiX",
+                  "name": "Image",
+                  "width": 768,
+                  "height": 512,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "characters/Chibi Programmer Turnaround Sheet with Props-3.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "Cv4kw",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "C3 · Programmer · character sheet",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "wDXjM",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Программист. Наушники на голове, без ноутбука",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Rvzj5",
+              "name": "C4 · Robot · character sheet",
+              "width": 768,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "tiWcH",
+                  "name": "Image",
+                  "width": 768,
+                  "height": 512,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "characters/Friendly White Robot Turnaround Sheet-5.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "K7DzMl",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "C4 · Robot · character sheet",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "v0CHyh",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Робот — ИИ-куратор. Голубые глаза, антенна",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HXuiV",
+          "name": "Row 0 — Room set",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "VHECb",
+              "name": "R1 · Room set · Night",
+              "width": 1024,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pZHCg",
+                  "name": "Image",
+                  "width": 1024,
+                  "height": 576,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-19.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "o21vpH",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "R1 · Room set · Night",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "iEe23",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Эталон комнаты. Все сцены в комнате (K01–K04, K12, K13) делаются в Seedance из этого кадра: интро, ошибки, удар кулаком, засыпает, Enter, рассвет и «Мы дошли».",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NNWO0",
+          "name": "Row 2",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "E9CCi8",
+              "name": "K05 · Transition · Into the dream",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CBMsQ",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-21.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "p3QaL",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K05 · Transition · Into the dream",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "wmrNd",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Свет монитора → костёр",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "IIgLz",
+              "name": "K06 · Chorus 1 · Campfire band",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bL357",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-23.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "T3bla",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K06 · Chorus 1 · Campfire band",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "qPYjF",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "«Чекпоинт — за чекпоинтом!»",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Oz8WM",
+          "name": "Row 3",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "p0K6J",
+              "name": "K07 · Verse 2 · The nearest light",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "E1ais",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-20.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "P0scgC",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K07 · Verse 2 · The nearest light",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "wJg4u",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "«Видишь ближний огонёк?»",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "A6zgCe",
+              "name": "K08 · Chorus 2 · Lanterns ahead",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ncSxa",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-31.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "rz4nM",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K08 · Chorus 2 · Lanterns ahead",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "sjXcg",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Фонарик загорается перед ногами",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Fn7Of",
+              "name": "K09 · Chorus 2 · Halfway",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "VNbRE",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-22.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "q4cKqZ",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K09 · Chorus 2 · Halfway",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "z6Q5c",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Цепочка до середины горы",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SKsK7",
+          "name": "Row 4",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "cWiVZ",
+              "name": "K10 · Bridge · Two steps away",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QOwxs",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-26.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "nAaua",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K10 · Bridge · Two steps away",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "NaZMz",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "«А теперь он в двух шагах…»",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zIsEg",
+              "name": "K11 · Final chorus · The summit",
+              "width": 672,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "iwVuo",
+                  "name": "Image",
+                  "width": 672,
+                  "height": 378,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-29.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "text",
+                  "id": "N5BtlS",
+                  "name": "Label",
+                  "fill": "#FFFFFF",
+                  "content": "K11 · Final chorus · The summit",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "j1Ojrn",
+                  "name": "Line",
+                  "fill": "#A1A1AA",
+                  "content": "Руки на кнопке «Релиз»",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "aobm1",
+      "x": 15738,
+      "y": 12050,
+      "name": "Art — GDHub logo (no beta)",
+      "clip": true,
+      "fill": "#0E0E10",
+      "padding": 24,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "id": "KOwyk",
+          "type": "ref",
+          "ref": "S9E11",
+          "name": "Logo",
+          "descendants": {
+            "Vi1Q0": {
+              "enabled": false
+            },
+            "f5jCpi": {
+              "enabled": false
+            }
+          }
         }
       ]
     }
