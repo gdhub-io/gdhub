@@ -2219,9 +2219,7 @@
 		"tab.status": "Status",
 		"verdict": {
 			"goalMet": "Goal met",
-			"goalMetMeaning": "Outcomes are complete. The project stays on this stage; continue with a new checkpoint.",
 			"goalMissed": "Goal missed",
-			"goalMissedMeaning": "Outcomes are incomplete. Continue with a new checkpoint.",
 			"locked": "Written on day 28",
 			"lockedNote": "{done} of {total} outcomes has evidence against it so far.",
 			"nextStage": "Ready for the next stage",
