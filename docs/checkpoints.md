@@ -362,7 +362,7 @@ folder, no free-text parsing). Models and what each costs are in
 | Day 1, at payment | Character | The role the curator plays, made the author's own: a name, a world, a road |
 | Day 1, at payment | Goal read | The first letter: a word on the goal, suggested tasks |
 | Day 1, once | Tasks check | Advice under each task, a word on the goal |
-| Days 8, 15, 22 | Sprint review | The letter, notes on the sprint; on day 15 advice on the tasks too |
+| Days 8, 15, 22 | Sprint review | The review of the sprint first; on day 15 the advice on the tasks, read from it; then the letter and the next sprint's focus from both |
 | When evidence is attached | Evidence | Does the artifact show its task: matches, partly, does not |
 | Day 29 | Report | The report, a proposed verdict, the last letter |
 

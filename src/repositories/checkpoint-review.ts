@@ -71,7 +71,9 @@ import {
 } from "@/services/checkpoint-notifications";
 import { notifyVerdictSent } from "@/services/checkpoint-verdict-notifications";
 import {
+	midwayAdviceInput,
 	type PlanAdviceInput,
+	reviewSprint,
 	writePlanAdvice,
 	writeSprintReview,
 } from "@/services/curator-review";
@@ -711,34 +713,25 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		session.index,
 		final,
 	);
-	const review = await writeSprintReview(input, {
+	// Halfway the tasks change for the last time.
+	const advise =
+		session.index === SCOPE_SESSION
+			? async (review: string) =>
+					(
+						await adviceFor(
+							midwayAdviceInput(input, review),
+							checkpoint.items,
+							session.checkpointId,
+						)
+					)?.advice ?? null
+			: null;
+	const review = await reviewSprint(input, advise, {
 		checkpointId: session.checkpointId,
 		purpose: "sprintReview",
 	});
 	if (!review) return false;
 
 	const notes = knownOnly(review.notes, checkpoint.items);
-	// Halfway the tasks change for the last time: the advice comes with the review.
-	const midway =
-		session.index === SCOPE_SESSION
-			? await adviceFor(
-					adviceInput(
-						checkpoint,
-						input.workflow,
-						input.team,
-						"midway",
-						notes.inShort,
-						input.picture,
-						input.character ?? null,
-						[
-							...(input.journal ?? []),
-							{ day: sessionDay(session.index), text: review.message },
-						],
-					),
-					checkpoint.items,
-					session.checkpointId,
-				).catch(() => null)
-			: null;
 
 	await prisma.checkpointSession.update({
 		where: { id: sessionId },
@@ -746,7 +739,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 			content: {
 				message: review.message,
 				notes,
-				advice: midway?.advice ?? null,
+				advice: review.advice,
 			} satisfies CuratorReview,
 			contentStatus: CheckpointSessionContentStatus.Ready,
 			endedAt: now,
@@ -757,7 +750,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		kind: CheckpointJournalKind.Review,
 		sprint,
 		input,
-		output: { message: review.message, notes, advice: midway?.advice ?? null },
+		output: { message: review.message, notes, advice: review.advice },
 	});
 
 	if (final) {
@@ -867,7 +860,8 @@ export const writeBriefFor = async (sessionId: string) => {
 		input,
 		output: {
 			audience: "curator",
-			notes: knownOnly(review.notes, checkpoint.items),
+			// The focus is agreed on the call, not proposed in the brief.
+			notes: knownOnly({ ...review, agreed: [] }, checkpoint.items),
 			// What the curator's card shows beside each task, so it never reads the input.
 			seen: input.tasks.flatMap((task) =>
 				task.seen ? [{ itemId: task.id, ...task.seen }] : [],
