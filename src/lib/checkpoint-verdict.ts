@@ -132,9 +132,10 @@ export type SettledVerdict = WeighedOutcomes & {
 /**
  * The verdict that is actually written, given what the curator proposed.
  *
- * `StageClosed` is the only value the guardrail cannot grant on its own: whether
- * the stage's own requirements are met is a judgement, and forcing it up from
- * `GoalMet` would close a stage nobody said was finished. It only ever refuses.
+ * The guardrail only ever refuses: a task not delivered keeps the goal missed,
+ * whatever was proposed. It never lifts one — every task proven is the plan
+ * done, not the goal reached, and whether the goal is shown inside its stage
+ * is the curator's judgement (GDHUB-122).
  */
 export const settleVerdict = (
 	items: VerdictItem[],
@@ -142,11 +143,7 @@ export const settleVerdict = (
 ): SettledVerdict => {
 	const weighed = weighOutcomes(items);
 	const verdict =
-		weighed.unproven.length > 0
-			? CheckpointVerdict.GoalMissed
-			: proposed === CheckpointVerdict.GoalMissed
-				? CheckpointVerdict.GoalMet
-				: proposed;
+		weighed.unproven.length > 0 ? CheckpointVerdict.GoalMissed : proposed;
 
 	return {
 		...weighed,

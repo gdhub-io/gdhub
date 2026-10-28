@@ -20,7 +20,8 @@ import {
  * The verdict that comes back is a proposal. `settleVerdict` decides what is
  * actually written — an outcome that is not delivered (nothing attached, a
  * dead link, evidence of something else) cannot produce `StageClosed` or
- * `GoalMet` whatever this returns. The prompt says so anyway, so the summary
+ * `GoalMet` whatever this returns; every outcome delivered still leaves the
+ * goal to this judgement (GDHUB-122). The prompt says so anyway, so the summary
  * and the verdict do not contradict each other on the page, and it hands over
  * what was taken on trust so the note can say so (GDHUB-81).
  */
@@ -58,7 +59,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
+				"Why this verdict and not the others, in two to four sentences: the stage's expectation, the goal, and whether the evidence shows it. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. If the goal is missed after advice the team did not take, name that advice in one sentence and say it can be made up on the way to the next checkpoint. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -75,15 +76,31 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			This is the day-28 report. Facts only — everything you write must be
 			checkable against what is below.
 
+			Judge from the outside in. The stage has its own expectation — what
+			"What the project shows" says must be done here (on Ideation, an idea
+			found; on a demo stage, the demo). Inside it sits the checkpoint's goal,
+			and inside the goal the plan: the outcomes meant to reach it. Delivered
+			outcomes are the plan done, not the goal reached. Ask whether the
+			evidence shows the goal itself, as worded, within what this stage
+			expects.
+
 			The three verdicts:
-			- StageClosed: every outcome that was not cut is delivered, AND what has to
-			  be done on this stage to move on (listed under "What the project
-			  shows") is done. The project can leave this stage.
-			- GoalMet: every outcome that was not cut is delivered, but the stage
-			  needs more. The next checkpoint runs on the same stage — a normal
-			  outcome, since a stage often takes several checkpoints; never frame
-			  it as falling short.
-			- GoalMissed: an outcome that was not cut is not delivered.
+			- StageClosed: the goal is shown, every outcome that was not cut is
+			  delivered, AND what has to be done on this stage to move on is done.
+			  The project can leave this stage.
+			- GoalMet: the goal is shown and every outcome that was not cut is
+			  delivered, but the stage needs more. The next checkpoint runs on the
+			  same stage — a normal outcome, since a stage often takes several
+			  checkpoints; never frame it as falling short.
+			- GoalMissed: an outcome that was not cut is not delivered, or every
+			  outcome is delivered but together they do not show the goal.
+
+			Your journal above holds what you advised along the road. Where you
+			advised a change, the team went another way and the goal is not shown,
+			the goal is missed: say once, plainly and without blame, what you had
+			advised — and that it is nothing terrible: the next checkpoint starts
+			from here and can make it up. Where the team took its own route and the
+			goal is shown anyway, it is met; credit the route.
 
 			You are a cautious optimist. Whether an outcome is delivered is not yours
 			to judge — the platform has already decided it from the evidence, and the
@@ -98,8 +115,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			  accepted it without checking and that you trust the team.
 			- Shown in part: the evidence shows part of the task. It counts as
 			  delivered; the verdict note names what was missing.
-			If the first list is empty, the verdict is StageClosed or GoalMet and
-			never GoalMissed.
+			An empty first list means the plan is done; whether the goal is met is
+			still yours to judge from the evidence.
 
 			A cut outcome is not a failure and is never counted as missing.
 
