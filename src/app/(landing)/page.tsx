@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HeroBgImage from "@/assets/images/landing/hero-bg.png";
+import OgImage from "@/assets/images/landing/og-landing.jpg";
 import {
 	EMPTY_LANDING_DATA,
 	getLandingData,
