@@ -40,8 +40,7 @@ describe("docs/spaces.md", () => {
 		(type, space) => {
 			const text = section(type);
 			const missing = Object.keys(space.features).filter(
-				(feature) =>
-					!text.includes(`\`${feature}\``) && !text.includes(`${type}.${feature}.`),
+				(feature) => !text.includes(`\`${feature}\``),
 			);
 			expect(missing).toEqual([]);
 		},
@@ -59,7 +58,7 @@ describe("docs/spaces.md", () => {
 	it("lists exactly the permissions no code checks", async () => {
 		const files = await glob("src/**/*.{ts,tsx}", {
 			cwd: ROOT,
-			ignore: ["src/config/spaces/**"],
+			ignore: ["src/config/spaces/**", "src/**/*.test.*"],
 		});
 		const source = files
 			.map((file) => readFileSync(path.join(ROOT, file), "utf8"))

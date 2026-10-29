@@ -26,30 +26,30 @@ matches the code.
 ## How access works, in four lines
 
 1. **Entering a space** is decided by the role, never by a permission. The space's
-   `layout.tsx` is `createSpaceGate(type)`: no role, **404**.
+   `layout.tsx` is `createSpaceGate(type)`: no role, **404**. The hub alone has no
+   gate of its own: a session is enough.
 2. **Inside a space** a permission (`space.feature.action`) guards each page and API
    route: `createPermissionGate` on a page, `withSpaceGuard` on a route. Missing: 404
    on a page; on the API 404 when the caller has no role, 403 when the role lacks
    the permission.
-3. **Defaults by action class:** `read` actions (view, access, use, create, apply,
-   request, contact) go to owner + admin + member; `manage` actions to owner + admin;
-   `destructive` (archive, delete) to the owner only. A **guest** gets nothing unless
-   the space lists it.
+3. **Defaults by action class** ([roles-and-permissions.md §3.5](roles-and-permissions.md)):
+   reading goes to every member, managing to owner and admin, destroying to the owner.
+   A **guest** gets nothing unless the space lists it.
 4. A hub role never opens somebody else's project, event or course. Only the super
    admin crosses that line, and it is written to the audit log.
 
 ## The spaces at a glance
 
-| Space | Who is in it, and as what | Gate | Entry page |
-|---|---|---|---|
-| [hub](#hub) | everyone signed in: guest until onboarding, then member; platform staff are admin | session only (`(app)/layout.tsx`) | `/hub` |
-| [project](#project) | author = owner, invited manager = admin, hired team member = member | `createSpaceGate("project", slug)` | `/user/project/[slug]` |
-| [event](#event) | creator = owner, manager = admin, approved participant = member | `createSpaceGate("event", eventId)` | `/user/event/[eventId]` |
-| [course](#course) | author = owner, teacher = admin, student = member | `createSpaceGate("course", courseId)` | `/user/course/[courseId]` |
-| [advisor](#advisor) | anyone with a speciality open for mentoring = owner | `createSpaceGate("advisor")` | `/advisor` |
-| [scout](#scout) | anyone with a scout cabinet (created by admin) | `createSpaceGate("scout")` | `/scout` |
-| [admin](#admin) | inherited: hub admin and above | `createSpaceGate("admin")` | `/admin/users` |
-| [dev](#dev) | inherited: hub admin and above; **absent in production** | `createSpaceGate("dev")` | `/dev/ui-test` |
+| Space | Who is in it, and as what | Entry page |
+|---|---|---|
+| [hub](#hub) | everyone signed in: guest until onboarding, then member; platform staff are admin | `/hub` |
+| [project](#project) | author = owner, invited manager = admin, hired team member = member | `/user/project/[slug]` |
+| [event](#event) | creator = owner, manager = admin, approved participant = member | `/user/event/[eventId]` |
+| [course](#course) | author = owner, teacher = admin, student = member | `/user/course/[courseId]` |
+| [advisor](#advisor) | anyone with a speciality open for mentoring = owner | `/advisor` |
+| [scout](#scout) | anyone with a scout cabinet (created by admin) | `/scout` |
+| [admin](#admin) | inherited: hub admin and above | `/admin/users` |
+| [dev](#dev) | inherited: hub admin and above; **absent in production** | `/dev/ui-test` |
 
 Outside every space: the **public** pages (no sign-in), the **account** pages
 (sign-in, registration, onboarding, invitations) and the **personal** pages, which
@@ -74,7 +74,7 @@ Screens `03.*`.
 | `chat` | use | the header launcher, `/chat` | cross-space, see [Shared features](#shared-features) |
 | `live_room` | use, manage | `/live/room/reports` | member is denied `use` by override: staff only today |
 
-The hub's home page is `/hub`. Guests (not onboarded) see the `projects`, `events`,
+Guests (not onboarded) see the `projects`, `events`,
 `courses`, `jobs` and `experts` catalogues, and nothing else.
 
 ## project
@@ -115,8 +115,7 @@ Guests see `info` and `schedule`.
 ## course
 
 A paid course with groups and a classroom. Screens `05.*`. **Mostly not built:**
-`/user/course/[courseId]` says "In development", and no `course.*` permission is
-checked anywhere yet.
+`/user/course/[courseId]` says "In development".
 
 | Feature | Actions |
 |---|---|
@@ -135,8 +134,7 @@ Listed in **hub** `courses`; public page `/course/[slug]`.
 An expert's cabinet: advice requests, checkpoints they curate, their time and money.
 Screens `08.*`, `12.13`. Opened by switching mentorship on for a speciality
 (`/user/settings`, `08.11`). The Advisor Agreement (`11.06`–`11.08`) is asked for at
-that switch; the gate itself checks only the speciality today. The home page is
-`/advisor`.
+that switch; the gate itself checks only the speciality today.
 
 | Feature | Actions | Pages | Links |
 |---|---|---|---|
@@ -148,7 +146,7 @@ that switch; the gate itself checks only the speciality today. The home page is
 ## scout
 
 An investor or publisher looking for games. Screens `09.*`. The cabinet, and with it
-the space, is created by **admin** `scouts`. The home page is `/scout`.
+the space, is created by **admin** `scouts`.
 
 | Feature | Actions | Pages | Links |
 |---|---|---|---|
