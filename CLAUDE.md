@@ -53,7 +53,7 @@ default branch, so its updates land on `main` and
 `dev`. Never promote in that direction by hand.
 
 Linear issues here are titles with empty descriptions, so the intent is the only
-written statement of the goal; the detailed spec (`docs/<feature>.md`) grows out of it
+written statement of the goal; the detailed spec (`docs/<feature>/README.md`, beside the feature's diagrams in the same folder) grows out of it
 afterwards, and the UI handoff (`docs/design/specs/`) out of that. A typo, a copy change
 or a one-file bug needs none of this — say so and do the work.
 

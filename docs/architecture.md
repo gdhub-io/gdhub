@@ -108,7 +108,7 @@ public/                   static files served as they are (favicons, fonts, robo
 | A shared UI primitive | `src/components/ui/<Name>/` | PascalCase folder |
 | A data hook | `src/hooks/<domain>.ts` | `use…` |
 | A unit test | `tests/<domain>-<topic>.test.ts` | kebab-case |
-| A feature doc or flow diagram | `docs/<feature>.md`, `docs/<feature>-<topic>-flow.d2` | kebab-case |
+| A feature doc or flow diagram | `docs/<feature>/` — see Docs below | kebab-case folder |
 
 When a domain has no folder yet in a layer, create one. Do not leave a flat file
 beside the folders.
@@ -127,19 +127,31 @@ Checkpoints are the reference layout. A new domain should look the same.
 | Pure logic | `lib/checkpoints/` (statuses and moves in `status.ts`) |
 | Numbers | `config/checkpoint.ts`, `config/checkpoint-pricing.ts` |
 | Types | `types/checkpoints.ts`, `types/checkpoint-*.ts` |
-| Docs | `docs/checkpoints.md`, `docs/checkpoints-*-flow.d2` |
+| Docs | `docs/checkpoints/` (today still `docs/checkpoints.md` and `docs/checkpoints-*-flow.d2`) |
 
 ## Docs
+
+Every feature keeps its documents in its own folder, so everything about it is in
+one place:
 
 ```
 docs/
   architecture.md         this file
   intent/                 one intent per larger task, written before the code
-  <feature>.md            the spec that grows out of an intent
-  <feature>-<topic>-flow.d2 / .svg   logic diagrams
+  <feature>/              one folder per feature (checkpoints/, chat/, equity/, …)
+    README.md             what the feature is, who it is for, how it works, where its
+                          code lives, and links to everything below
+    <topic>-flow.d2/.svg  logic diagrams
+    …                     any other key material: decisions, data notes, rollout,
+                          open questions
   design/                 Pencil files (*.pen), UI handoff specs, generated art
-  legal/ finance/ analytics/ chat-flows/   topic folders
+  legal/ finance/ analytics/   topic folders
 ```
+
+Older docs still lie flat in `docs/` (`checkpoints.md` next to forty
+`checkpoints-*-flow.d2` files, `chat-system.md`, `equity-description.md`, …). New
+material goes into the feature's folder. When a feature's docs are next touched, move
+them into its folder.
 
 ## What guards the structure
 
