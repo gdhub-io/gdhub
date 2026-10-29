@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const create = vi.fn();
 const findUnique = vi.fn();
+const checkpointFind = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -10,10 +11,15 @@ vi.mock("@/services/prisma", () => ({
 			create: (...a: unknown[]) => create(...a),
 			findUnique: (...a: unknown[]) => findUnique(...a),
 		},
+		projectCheckpoint: { findUnique: (...a: unknown[]) => checkpointFind(...a) },
 	},
 }));
 
-const { generateCertificateNumber, issueCertificate } = await import(
+const {
+	generateCertificateNumber,
+	issueCertificate,
+	issueCheckpointCertificate,
+} = await import(
 	"@/services/certificates"
 );
 const { getVerifyCertificate } = await import("@/app/api/verify/_helpers");
@@ -46,6 +52,39 @@ describe("issueCertificate", () => {
 			issueCertificate({ source: "Course", userId: "u1", courseGroupStudentId: "s1" }),
 		).rejects.toBeInstanceOf(Prisma.PrismaClientKnownRequestError);
 		expect(create).toHaveBeenCalledTimes(1);
+	});
+});
+
+const withFounder = (userId: string | null) => ({
+	project: { team: { members: userId ? [{ userId }] : [] } },
+});
+
+describe("issueCheckpointCertificate", () => {
+	it("issues the closed checkpoint's certificate to the project founder", async () => {
+		checkpointFind.mockResolvedValue(withFounder("founder1"));
+		create.mockResolvedValue({ id: "c1", number: "GDH-AAAAAA", issuedAt: new Date() });
+
+		await issueCheckpointCertificate("cp1");
+
+		expect(create.mock.calls[0][0].data).toMatchObject({
+			source: "Checkpoint",
+			userId: "founder1",
+			checkpointId: "cp1",
+		});
+	});
+
+	it("issues nothing to a project with no founder", async () => {
+		checkpointFind.mockResolvedValue(withFounder(null));
+
+		expect(await issueCheckpointCertificate("cp1")).toBeNull();
+		expect(create).not.toHaveBeenCalled();
+	});
+
+	it("does not fail a close that issues a second time", async () => {
+		checkpointFind.mockResolvedValue(withFounder("founder1"));
+		create.mockRejectedValue(conflict("checkpointId"));
+
+		expect(await issueCheckpointCertificate("cp1")).toBeNull();
 	});
 });
 
@@ -95,6 +134,44 @@ describe("getVerifyCertificate", () => {
 				issuerName: "Bo Teacher",
 			},
 		});
+	});
+
+	it("shows a checkpoint certificate as the project's, issued by the platform", async () => {
+		findUnique.mockResolvedValueOnce({ source: "Checkpoint" }).mockResolvedValueOnce({
+			number: "GDH-BBBBBB",
+			issuedAt: new Date("2026-11-20T00:00:00Z"),
+			source: "Checkpoint",
+			revokedAt: null,
+			user,
+			courseGroupStudent: null,
+			checkpoint: {
+				stageName: "Prototyping",
+				startedAt: new Date("2026-10-20T00:00:00Z"),
+				decidedAt: new Date("2026-11-19T00:00:00Z"),
+				verdict: "GoalMet",
+				goal: "A playable vertical slice",
+				curator: { ...user, profile: { name: "Marta Ilves" } },
+				project: {
+					name: "Hollow Tide",
+					slug: "hollow-tide",
+					coverImage: null,
+					description: null,
+				},
+			},
+		});
+		const data = await getVerifyCertificate("GDH-BBBBBB");
+		expect(data).toMatchObject({
+			source: "Checkpoint",
+			participant: { name: "Ann Lee" },
+			project: { name: "Hollow Tide" },
+			subject: {
+				title: "Prototyping",
+				endDate: "2026-11-19T00:00:00.000Z",
+				mentorName: "Marta Ilves",
+			},
+			outcome: { verdict: "GoalMet", goal: "A playable vertical slice" },
+		});
+		expect(data?.subject.issuerName).toBeTruthy();
 	});
 
 	it("answers nothing for a number nobody holds", async () => {

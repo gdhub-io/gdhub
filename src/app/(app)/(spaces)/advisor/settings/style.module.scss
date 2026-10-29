@@ -1,0 +1,83 @@
+// Rule 7 of the UI guidelines: section menu 220 wide, 24 to the card.
+.layout {
+	background: transparent;
+}
+
+.sider {
+	background: transparent;
+
+	:global(.ant-menu) {
+		background: transparent;
+		border-inline-end: none;
+	}
+}
+
+.content {
+	min-width: 0;
+}
+
+@media (min-width: 992px) {
+	.content {
+		padding-left: var(--gd-space-6);
+	}
+}
+
+.zone {
+	max-width: calc(var(--gd-space-16) * 6);
+}
+
+.flush {
+	margin-bottom: 0;
+}
+
+.heading {
+	margin-bottom: var(--gd-space-6);
+}
+
+.statuses {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(calc(var(--gd-space-12) * 4), 1fr));
+	gap: var(--gd-space-3);
+	width: 100%;
+}
+
+// The chosen option takes the accent tint, the "selected row" the colour rule allows.
+.status {
+	align-items: flex-start;
+	margin: 0;
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+
+	&:global(.ant-radio-wrapper-checked) {
+		border-color: var(--gd-color-accent);
+		background: var(--gd-color-accent-subtle);
+	}
+}
+
+.away {
+	margin-top: var(--gd-space-4);
+}
+
+.confirm {
+	margin-top: var(--gd-space-4);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}
+
+.confirmIcon {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}
+
+.confirmText {
+	flex: 1;
+	min-width: 0;
+}
+
+// Below lg the section menu becomes a row above the card.
+.topMenu {
+	margin-bottom: var(--gd-space-4);
+	background: transparent;
+}

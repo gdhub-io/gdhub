@@ -6,7 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { findPublicVacancy } from "@/repositories/vacancy.repository";
+import { findPublicVacancy } from "@/repositories/vacancy/vacancy";
 import { prisma } from "@/services/prisma";
 
 const VacancyQuerySchema = z.object({
@@ -28,6 +28,8 @@ export const GET = withAuth({ mode: "any" })(
 			currentUser?.id
 				? prisma.teamMember.findFirst({
 						where: { vacancyId: id, userId: currentUser.id },
+						// A second application to the same vacancy is the one that counts.
+						orderBy: { createdAt: "desc" },
 					})
 				: null,
 		]);

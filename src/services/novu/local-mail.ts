@@ -1,4 +1,5 @@
 import { createTransport } from "nodemailer";
+import { escapeHtml } from "@/helpers/text";
 import type { NovuSendArgs } from "./index";
 
 /**
@@ -13,13 +14,6 @@ export const sendsLocally = () =>
 	!!process.env.EMAIL_SERVER;
 
 const URL_PATTERN = /^https?:\/\/\S+$/;
-
-const escapeHtml = (text: string) =>
-	text.replace(
-		/[&<>"]/g,
-		(char) =>
-			({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] ?? char,
-	);
 
 export function renderLocalMail({ to, payload, template }: NovuSendArgs) {
 	const rows = Object.entries(payload).map(([key, value]) => {

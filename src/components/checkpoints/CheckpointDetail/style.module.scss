@@ -1,0 +1,21 @@
+// The rule under the page title and the rule between the columns are one
+// drawing: the divider starts where the header's line ends, with no gap.
+.split {
+	width: 100%;
+	border-top: 1px solid var(--gd-color-border-strong);
+}
+
+// Margin rather than padding: the path is 272 wide and stays 272 wide, so the
+// gap to the divider does not eat into the row it holds.
+.sidebar {
+	flex: none;
+	padding-top: var(--gd-space-6);
+	margin-right: var(--gd-space-6);
+}
+
+.panel {
+	flex: 1;
+	min-width: 0;
+	padding: var(--gd-space-6) 0 0 var(--gd-space-6);
+	border-left: 1px solid var(--gd-color-border-strong);
+}

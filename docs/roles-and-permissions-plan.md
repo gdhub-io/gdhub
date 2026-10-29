@@ -216,10 +216,10 @@ tree-shakeable.
 - [access/index.ts](../src/services/access/index.ts) — `getSpaceAccess`, `can`,
   `scopeOf`, `canEnter`, флаг `RBAC_ENFORCE` (по умолчанию **включён**: забытый
   флаг должен запрещать, а не разрешать);
-- адаптеры [project](../src/repositories/project.space.ts),
-  [event](../src/repositories/event.space.ts),
-  [course](../src/repositories/course.space.ts),
-  [hub](../src/repositories/hub.space.ts) + карта
+- адаптеры [project](../src/repositories/project/space.ts),
+  [event](../src/repositories/event/space.ts),
+  [course](../src/repositories/course/space.ts),
+  [hub](../src/repositories/hub/space.ts) + карта
   [adapters.ts](../src/services/access/adapters.ts);
 - [space-gate.tsx](../src/lib/space-gate.tsx) — `createSpaceGate`; все пять
   гейтов (project, event, course, admin, dev) теперь однострочные;
@@ -351,7 +351,7 @@ tree-shakeable.
 
 **В `src/app/api` не осталось ни одной проверки доступа по `UserRole`.** Легаси
 роль читается ровно в одном месте — адаптере хаба
-([hub.space.ts](../src/repositories/hub.space.ts)), — откуда уедет в фазе 5,
+([hub/space.ts](../src/repositories/hub/space.ts)), — откуда уедет в фазе 5,
 когда роль начнёт браться из `SpaceMember`.
 
 В каталог админского спейса добавлены `projects` и `lectures` (были роуты без
@@ -555,7 +555,7 @@ tree-shakeable.
 | Что | Блокер |
 |---|---|
 | Тумблер менторства → `Speciality.isOpenForMentoring` | поля ещё нет в пакете, п. 2 [задания](gdhub-prisma-rbac-tasks.md) |
-| Адаптер [hub.space.ts](../src/repositories/hub.space.ts) — последний читатель `UserRole.Admin` | снимается **после** прогона бэкфилла на проде |
+| Адаптер [hub/space.ts](../src/repositories/hub/space.ts) — последний читатель `UserRole.Admin` | снимается **после** прогона бэкфилла на проде |
 
 Персонализация интерфейса по персоне (ради которой роли и заводились) в объём не
 входит.

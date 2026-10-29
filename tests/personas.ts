@@ -5,6 +5,7 @@ import {
 	UserRole,
 } from "@gdhub-io/gdhub-prisma";
 import { SpaceRole } from "@/config/permissions/roles";
+import { createScout } from "@/repositories/scout/scout";
 import { joinSpace } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 
@@ -259,7 +260,6 @@ export const PERSONAS: Persona[] = [
 		name: "Vera Kalina",
 		what: "Has a cabinet, so the scout space resolves.",
 		apply: async (userId) => {
-			const { createScout } = await import("@/repositories/scout");
 			await createScout(userId, { organizationName: "Northlight Capital" });
 			await joinSpace({ type: "hub", userId, role: SpaceRole.Member });
 		},

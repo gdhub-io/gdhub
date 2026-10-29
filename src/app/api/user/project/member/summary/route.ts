@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { currentMemberOf } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 const SummaryQuerySchema = z.object({
@@ -24,8 +25,10 @@ export const GET = withAuth({ mode: "user" })(
 		if (!currentUser) return apiError.unauthorized();
 		const { projectId } = body as SummaryQuery;
 
+		const current = currentMemberOf(currentUser.id);
 		const teamMember = await prisma.teamMember.findFirst({
-			where: { userId: currentUser.id, team: { project: { id: projectId } } },
+			where: { ...current.where, team: { project: { id: projectId } } },
+			orderBy: current.orderBy,
 			include: {
 				user: { select: { profile: true } },
 				team: true,

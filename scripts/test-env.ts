@@ -89,6 +89,7 @@ async function up(fresh: boolean) {
 	}
 
 	const state = containerState();
+	const reused = state !== "absent";
 
 	if (state === "absent") {
 		console.log(`Starting ${IMAGE} as ${CONTAINER} on port ${PORT}…`);
@@ -130,14 +131,20 @@ async function up(fresh: boolean) {
 	console.log("\nSeeding the permission matrix…");
 	against("bun", ["run", "scripts/rbac-seed-matrix.ts"]);
 
-	console.log("\nAdding fixtures…");
 	const unapplied: string[] = [];
 
-	for (const group of MOCK_GROUPS) {
-		try {
-			prismaCli(["mock", group]);
-		} catch {
-			unapplied.push(group);
+	// The fixtures are written once, into a new database: run again over their own
+	// rows they collide with what the app has since built on them.
+	if (reused) {
+		console.log("\nFixtures are already in; `up --fresh` rebuilds them from scratch.");
+	} else {
+		console.log("\nAdding fixtures…");
+		for (const group of MOCK_GROUPS) {
+			try {
+				prismaCli(["mock", group]);
+			} catch {
+				unapplied.push(group);
+			}
 		}
 	}
 

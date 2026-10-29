@@ -2,7 +2,7 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Flex, Switch, Typography } from "antd";
-import type { ScoutCabinet } from "@/repositories/scout";
+import type { ScoutCabinet } from "@/repositories/scout/scout";
 import { ScoutSettingsCard } from "./ScoutSettingsCard";
 import { useCabinetMutation } from "./useCabinetMutation";
 

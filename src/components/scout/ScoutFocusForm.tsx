@@ -5,8 +5,8 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Form, Select } from "antd";
 import axios from "axios";
 import { toOptions } from "@/helpers/select";
-import type { ScoutCabinet } from "@/repositories/scout";
-import type { ScoutFacets } from "@/repositories/scout.games";
+import type { ScoutFacets } from "@/repositories/scout/games";
+import type { ScoutCabinet } from "@/repositories/scout/scout";
 import { ScoutSettingsCard } from "./ScoutSettingsCard";
 import { useCabinetMutation } from "./useCabinetMutation";
 

@@ -15,7 +15,14 @@ import {
 } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	type MutableRefObject,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useAccess } from "@/components/access/AccessProvider";
 import { pipLayout } from "@/config/daily";
@@ -38,8 +45,7 @@ const ReportsClient = () => {
 	const { data: session } = useSession();
 	const { can } = useAccess();
 	const { t } = useTranslate();
-	const uuid = uuidv4();
-	const callRef = useRef(null);
+	const callRef = useRef<HTMLDivElement>(null);
 	const titleRef = useRef<InputRef>(null);
 	const subTitleRef = useRef<InputRef>(null);
 	const [form] = Form.useForm();
@@ -67,30 +73,33 @@ const ReportsClient = () => {
 		refetchOnMount: false,
 	});
 
+	const callToken = token?.data.token;
 	const callFrame = useCallFrame({
-		// TODO(daily): `parentEl` was removed from useCallFrame options in
-		// @daily-co/daily-react 0.25. The hook now relies on the consumer
-		// attaching the returned iframe via ref. Re-wire if/when reports UI
-		// is verified end-to-end.
-		parentElement: callRef.current as any,
-		options: { ...dailyCallOptions, token: token?.data.token },
-		shouldCreateInstance: useCallback(
-			() => Boolean(callRef.current) && Boolean(token?.data.token),
-			[token?.data],
+		parentElRef: callRef as MutableRefObject<HTMLElement>,
+		options: useMemo(
+			() => ({ ...dailyCallOptions, token: callToken }),
+			[callToken],
 		),
-	} as any);
+		shouldCreateInstance: useCallback(() => Boolean(callToken), [callToken]),
+	});
 
 	useEffect(() => {
 		if (!callFrame) return;
 
-		callFrame.join({ url: "https://gdhub.daily.co/reports" });
+		const joinedMeeting = () => setMeetingStarted(true);
+		const leftMeeting = async () => {
+			await callFrame.destroy();
+			setMeetingStarted(false);
+			setInstanceId(undefined);
+		};
 
 		callFrame.on("joined-meeting", joinedMeeting);
-		callFrame.on("left-meeting", () => leaveCall());
+		callFrame.on("left-meeting", leftMeeting);
+		callFrame.join({ url: "https://gdhub.daily.co/reports" });
 
 		return () => {
 			callFrame.off("joined-meeting", joinedMeeting);
-			callFrame.off("left-meeting", () => leaveCall());
+			callFrame.off("left-meeting", leftMeeting);
 		};
 	}, [callFrame]);
 
@@ -99,13 +108,14 @@ const ReportsClient = () => {
 
 		if (streamMode) {
 			callFrame.updateLiveStreaming({
-				instanceId: uuid,
+				instanceId,
 				layout: { preset: "custom", composition_params: { mode: streamMode } },
 			});
 		}
 
 		if (showTitleSlate) {
 			callFrame.updateLiveStreaming({
+				instanceId,
 				layout: {
 					preset: "custom",
 					composition_params: {
@@ -117,25 +127,14 @@ const ReportsClient = () => {
 				},
 			});
 		}
-
-		console.log("ok");
-	}, [streamMode, showTitleSlate]);
-
-	const leaveCall = async () => {
-		await callFrame?.destroy();
-		setMeetingStarted(false);
-		setInstanceId(undefined);
-	};
-
-	const joinedMeeting = () => {
-		setMeetingStarted(true);
-	};
+	}, [callFrame, instanceId, streamMode, showTitleSlate]);
 
 	const startLiveStream = async () => {
 		const formValidated = await form.validateFields();
 
 		if (!formValidated || !callFrame) return;
 
+		const uuid = uuidv4();
 		callFrame.startLiveStreaming({
 			instanceId: uuid,
 			rtmpUrl: [`${rtmpUrl}/${streamKey}`],

@@ -1,6 +1,8 @@
 import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import { z } from "zod";
 import { ARTIFACT_DESCRIPTION_MAX } from "@/components/MyProjectArtifacts/artifacts";
+import { ArtifactCheckStatus, CheckpointItemKind } from "@/config/prisma-enums";
 import {
 	apiError,
 	json,
@@ -9,7 +11,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { UNNUMBERED_STATUSES } from "@/lib/checkpoints/status";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { withEvidence } from "@/repositories/checkpoints/number";
+import { checkAndLook } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ProjectIdQuerySchema = z.object({
@@ -51,10 +56,29 @@ export const GET = pipe(
 				},
 			},
 			step: { select: { id: true, name: true, order: true } },
+			// Evidence is what a checkpoint picked for one of its outcomes.
+			checkpointEvidence: {
+				where: {
+					item: {
+						kind: CheckpointItemKind.Outcome,
+						checkpoint: { status: { notIn: UNNUMBERED_STATUSES } },
+					},
+				},
+				select: {
+					item: {
+						select: {
+							text: true,
+							checkpoint: {
+								select: { id: true, projectId: true, createdAt: true },
+							},
+						},
+					},
+				},
+			},
 		},
 	});
 
-	return json(artifacts);
+	return json(await withEvidence(artifacts));
 });
 
 export const POST = pipe(
@@ -84,6 +108,7 @@ export const POST = pipe(
 			name,
 			description,
 			link,
+			checkStatus: ArtifactCheckStatus.Pending,
 			step: workflow?.currentStepId
 				? { connect: { id: workflow.currentStepId } }
 				: undefined,
@@ -91,6 +116,7 @@ export const POST = pipe(
 			createdByUser: { connect: { id: currentUser.id } },
 		},
 	});
+	after(() => checkAndLook(artifact.id));
 
 	return json(artifact);
 });

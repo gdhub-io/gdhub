@@ -106,6 +106,24 @@ export const projectOfArtifact = async (
 	return artifact?.projectId ?? null;
 };
 
+/** `id` in the route params — the project the checkpoint belongs to. */
+export const projectOfCheckpoint = async (
+	_req: Request,
+	params: Record<string, string | string[]> | undefined,
+): Promise<string | null> => {
+	const raw = params?.id;
+	const checkpointId = Array.isArray(raw) ? raw[0] : raw;
+
+	if (!checkpointId) return null;
+
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: { projectId: true },
+	});
+
+	return checkpoint?.projectId ?? null;
+};
+
 /** `vacancyId` or `id` — the project the vacancy belongs to. */
 export const projectOfVacancy = async (
 	req: Request,
@@ -150,4 +168,19 @@ export const projectOfTeamMemberId = async (
 	});
 
 	return member?.team?.projectId ?? null;
+};
+
+/** `id` in the body or the query is a `TeamInvitation` id. */
+export const projectOfTeamInvitation = async (
+	req: Request,
+): Promise<string | null> => {
+	const id = await fromBodyOrQuery(req, "id");
+	if (!id) return null;
+
+	const invitation = await prisma.teamInvitation.findUnique({
+		where: { id },
+		select: { team: { select: { projectId: true } } },
+	});
+
+	return invitation?.team.projectId ?? null;
 };

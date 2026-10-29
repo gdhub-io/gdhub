@@ -3,6 +3,9 @@ import {
 	type ChatRoomKind,
 	type ChatRoomStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { TeamMemberStatus } from "@/config/prisma-enums";
+import { currentSprint, sprintRange } from "@/lib/checkpoints/sprints";
+import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { prisma } from "@/services/prisma";
 
 export type ChatRoomRow = {
@@ -216,10 +219,106 @@ const adviceRequestProvider: ChatKindProvider<AdviceRequestLoaded> = {
 	},
 };
 
+type CheckpointRoomContext = { checkpointId?: string; userIds?: string[] };
+
+async function loadCheckpoint(room: ChatRoomRow) {
+	const ctx = (room.context ?? {}) as CheckpointRoomContext;
+	if (!ctx.checkpointId) return null;
+
+	const checkpoint = await prisma.projectCheckpoint.findUnique({
+		where: { id: ctx.checkpointId },
+		select: {
+			projectId: true,
+			createdAt: true,
+			startedAt: true,
+			dueAt: true,
+			status: true,
+			curator: {
+				select: {
+					name: true,
+					// The talent card shows the speciality they curate with.
+					specialities: {
+						where: { isOpenForMentoring: true },
+						select: { id: true },
+						take: 1,
+					},
+				},
+			},
+			project: {
+				select: {
+					name: true,
+					slug: true,
+					author: { select: { id: true, name: true } },
+					team: {
+						select: {
+							members: {
+								where: { status: TeamMemberStatus.Founder },
+								select: { userId: true, specialityId: true },
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+	if (!checkpoint) return null;
+
+	return { ctx, checkpoint, number: await checkpointNumber(checkpoint) };
+}
+
+type CheckpointLoaded = NonNullable<Awaited<ReturnType<typeof loadCheckpoint>>>;
+
+// The curator and the team, for the length of the checkpoint. Nobody closes it
+// from the chat: it ends with the checkpoint.
+const checkpointProvider: ChatKindProvider<CheckpointLoaded> = {
+	load: loadCheckpoint,
+	buildContext(_room, loaded) {
+		if (!loaded) return DEFAULT_CONTEXT;
+		const { checkpoint, number } = loaded;
+		const author = checkpoint.project.author;
+		const { startedAt } = checkpoint;
+		const sprint = startedAt ? currentSprint(startedAt) : null;
+		const range = startedAt && sprint ? sprintRange(startedAt, sprint) : null;
+
+		return {
+			type: "checkpoint",
+			data: {
+				number,
+				status: checkpoint.status,
+				startedAt,
+				dueAt: checkpoint.dueAt,
+				sprint: sprint && range ? { number: sprint, ...range } : null,
+				curator: checkpoint.curator
+					? {
+							name: checkpoint.curator.name,
+							specialityId: checkpoint.curator.specialities[0]?.id ?? null,
+						}
+					: null,
+				author: author
+					? {
+							name: author.name,
+							specialityId:
+								checkpoint.project.team?.members.find(
+									(member) => member.userId === author.id,
+								)?.specialityId ?? null,
+						}
+					: null,
+				project: {
+					name: checkpoint.project.name,
+					slug: checkpoint.project.slug,
+				},
+			},
+		};
+	},
+	canClose: () => false,
+	participantIds: (_room, loaded) => loaded?.ctx.userIds ?? [],
+};
+
 export const chatProviders: Partial<Record<ChatRoomKind, ChatKindProvider>> = {
 	VacancyOffer: vacancyOfferProvider,
 	Direct: directProvider,
 	AdviceRequest: adviceRequestProvider,
+	Checkpoint: checkpointProvider,
 };
 
 export function getChatProvider(

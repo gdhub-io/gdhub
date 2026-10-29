@@ -9,6 +9,8 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
+import { setCurrentStep } from "@/repositories/project/workflow";
 import {
 	stepName,
 	taskName,
@@ -147,6 +149,7 @@ export const PUT = pipe(
 		where: { id },
 		select: {
 			id: true,
+			projectId: true,
 			currentStepId: true,
 			steps: {
 				select: { id: true, tasks: { select: { id: true } } },
@@ -157,11 +160,20 @@ export const PUT = pipe(
 
 	if (!existing) return apiError.notFound("Project workflow not found");
 
+	const plan = steps && planSteps(steps, existing.steps);
+	// A running checkpoint holds its stage (GDHUB-37): no deleting stages under
+	// it, and no moving the project off it, even by an admin.
+	const movesStage =
+		!!currentStepId && currentStepId !== existing.currentStepId;
+	if (plan?.deleteIds.length || movesStage) {
+		const lock = await runningCheckpointLock(existing.projectId);
+		if (lock) return apiError.conflict("checkpointRunning", lock);
+	}
+
 	const updated = await prisma.$transaction(async (tx) => {
 		let survivingIds = existing.steps.map((step) => step.id);
 
-		if (steps) {
-			const plan = planSteps(steps, existing.steps);
+		if (plan) {
 			const tasksByStepId = new Map(
 				existing.steps.map((step) => [step.id, step.tasks]),
 			);
@@ -221,19 +233,26 @@ export const PUT = pipe(
 			}
 		}
 
+		const nextCurrent =
+			currentStepId === undefined
+				? undefined
+				: resolveCurrentStepId(
+						currentStepId,
+						survivingIds,
+						existing.currentStepId,
+					);
+		// A real move dates the stages it crosses, the same way every move does.
+		if (nextCurrent && nextCurrent !== existing.currentStepId) {
+			await setCurrentStep(tx, id, nextCurrent, {
+				from: existing.currentStepId,
+			});
+		}
+
 		return tx.projectWorkflow.update({
 			where: { id },
 			data: {
 				...(title !== undefined ? { title } : null),
-				...(currentStepId !== undefined
-					? {
-							currentStepId: resolveCurrentStepId(
-								currentStepId,
-								survivingIds,
-								existing.currentStepId,
-							),
-						}
-					: null),
+				...(nextCurrent !== undefined ? { currentStepId: nextCurrent } : null),
 			},
 		});
 	});

@@ -10,6 +10,10 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeamMemberId } from "@/lib/space-ids";
+import {
+	reconcileCheckpointRooms,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -39,6 +43,7 @@ export const PUT = pipe(
 			vacancy: true,
 			team: {
 				select: {
+					projectId: true,
 					members: {
 						where: { status: TeamMemberStatus.Founder },
 						select: { userId: true, user: true },
@@ -47,6 +52,15 @@ export const PUT = pipe(
 			},
 		},
 	});
+
+	// Nothing stops this from deleting a hired member's row, so their checkpoint
+	// chats are let go here as well.
+	const projectId = deletedMember.team.projectId;
+	if (projectId) {
+		await syncChat(`withdraw ${teamMemberId}`, () =>
+			reconcileCheckpointRooms(projectId, deletedMember.user.id),
+		);
+	}
 
 	if (!deletedMember.vacancy) return json({ success: true });
 

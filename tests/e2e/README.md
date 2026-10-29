@@ -51,3 +51,44 @@ Playwright will reuse an already-running dev server on port 3000 (see
 Name it `something.authed.spec.ts`. The `authenticated` project will pick it
 up and apply the saved storage state automatically. Inside the spec you
 already have a logged-in browser context — just `page.goto(...)`.
+
+## The checkpoint suite (GDHUB-79)
+
+`tests/e2e/checkpoints/` walks the AI checkpoint end to end: a project's path,
+the purchase through Paddle's sandbox, the whole 28 days with the real model, the
+verdict, refunds and who sees what. It never touches the dev server on :3000.
+
+```bash
+bun run test-env up          # the throwaway database on 55432 (--fresh rebuilds it)
+bun run dev:test             # :3100 against it, Paddle sandbox, recorded model answers
+bun run test:e2e:checkpoints # one worker: the nightly cron is shared
+```
+
+- `.env.test` holds the Paddle **sandbox** keys. No tunnel is needed: while the
+  ready screen waits, the app asks Paddle what became of the checkout
+  (`reconcileCheckout`) and settles it. The webhook route itself is therefore not
+  covered here; if the sandbox's notification destination points at a dev server
+  (`bun run ngrok` → :3100, or a tunnel to :3000), that server only logs the
+  events as unmatched.
+- The model answers from recordings in `tests/e2e/cassettes/` (`LLM_CASSETTES`,
+  `src/services/ai/cassette.ts`): `dev:test` replays them and records what is
+  missing; `dev:test:live` calls the real model. Cassettes work only on the stand
+  — they need `E2E_TEST_AUTH=1` and never run in production — so the app the team
+  uses never gets a recorded answer. A prompt change records a new cassette; the
+  diff shows it in review.
+- Refreshing cassettes: run only the flows whose prompts changed — new recordings
+  are added, the rest stay. After a full green run, `bun run cassettes:prune
+  <time the run started>` removes recordings it never used (each answer touches its
+  file).
+- Time is moved by `makeToday(checkpointId, day)`, which shifts the checkpoint
+  and everything written on the project together, then `runCron(page)` runs
+  the night.
+- Every flow writes `test-results/checkpoints/<flow>.md`: its steps, what the
+  AI was shown and wrote (from the curator journal), the reviews, and the cost
+  — the Paddle amount and the summed `CheckpointAiUsage`. A whole checkpoint
+  costs about $0.09 of model calls when they are live.
+- Users are made per run on `example.com` addresses and removed afterwards;
+  rows an interrupted run left are removed by the next one after an hour.
+- Not covered: the email sign-in link (the stand signs in through the test
+  provider) and Novu letters (`E2E_TEST_AUTH=1` sends none — the cron's counts
+  stand in for them).

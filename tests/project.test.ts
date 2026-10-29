@@ -15,8 +15,34 @@ vi.mock("@gdhub-io/gdhub-prisma", () => ({
 	withAuditContext: (_context: unknown, callback: () => unknown) => callback(),
 }));
 
+const placeProjectOnStage = vi.fn();
+const limitAiCalls = vi.fn();
+const validate = vi.fn();
+
+vi.mock("@/lib/rate-limit", () => ({
+	limitAiCalls: (...args: unknown[]) => limitAiCalls(...args),
+}));
+vi.mock("@/services/ai-validation", () => ({
+	aiValidation: { validate: (...args: unknown[]) => validate(...args) },
+}));
+
+vi.mock("@/repositories/project/workflow", () => ({
+	DEFAULT_PROJECT_STAGE: "Ideation",
+	selectableStageNames: async () => [
+		"Ideation",
+		"Concepting",
+		"Prototyping",
+		"Preparing a demo version",
+		"Taking and analyzing metrics",
+		"Preparing a release version",
+	],
+	placeProjectOnStage: (_tx: unknown, projectId: string, stage: string) =>
+		placeProjectOnStage(projectId, stage),
+}));
+
 vi.mock("../src/services/prisma", () => ({
 	prisma: {
+		$transaction: (run: (tx: unknown) => unknown) => run({}),
 		user: { findUnique: vi.fn(), update: vi.fn() },
 		project: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn() },
 		// Creating a project now also records its owner in SpaceMember.
@@ -51,9 +77,76 @@ vi.mock("@/auth", () => ({
 	),
 }));
 
+const postProject = async (body: Record<string, unknown>) => {
+	const { POST } = await import("../src/app/api/user/project/route");
+	const { NextRequest } = await import("next/server");
+	const request = new NextRequest("http://test/api/user/project", {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify({
+			name: "Test Project",
+			description: "Test Description",
+			legal: [{ code: "ProjectRequirements", version: 1 }],
+			understandsNotAi: true,
+			...body,
+		}),
+	});
+
+	return (POST as any)(request, { params: Promise.resolve({}) }) as Promise<Response>;
+};
+
 describe("POST /api/user/project", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		limitAiCalls.mockResolvedValue(null);
+		validate.mockResolvedValue({ ok: true });
+		placeProjectOnStage.mockImplementation(async (_id, stage) => ({
+			id: "step",
+			name: stage,
+		}));
+	});
+
+	describe("genre and stage", () => {
+		beforeEach(() => {
+			(prisma.user.findUnique as any).mockResolvedValue({
+				id: "user1",
+				specialities: [{ id: "spec1" }],
+			});
+			(prisma.project.findMany as any).mockResolvedValue([]);
+			(prisma.project.create as any).mockResolvedValue({
+				id: "p1",
+				slug: "test-project",
+			});
+		});
+
+		it("stores the genre and puts the project on Ideation by default", async () => {
+			const response = await postProject({ genre: "Puzzle" });
+
+			expect(response.status).toBe(200);
+			expect((prisma.project.create as any).mock.calls[0][0].data.genre).toBe(
+				"Puzzle",
+			);
+			expect(placeProjectOnStage).toHaveBeenCalledWith("p1", "Ideation");
+			expect(await response.json()).toMatchObject({ stage: "Ideation" });
+		});
+
+		it("puts the project on the stage its author chose", async () => {
+			const response = await postProject({ stage: "Prototyping" });
+
+			expect(response.status).toBe(200);
+			expect(placeProjectOnStage).toHaveBeenCalledWith("p1", "Prototyping");
+		});
+
+		it.each(["Introduction", "Support", "Project Completion", "Nowhere"])(
+			"refuses %s before creating anything",
+			async (stage) => {
+				const response = await postProject({ stage });
+
+				expect(response.status).toBe(400);
+				expect(prisma.project.create).not.toHaveBeenCalled();
+				expect(placeProjectOnStage).not.toHaveBeenCalled();
+			},
+		);
 	});
 
 	it("creates a new project", async () => {
@@ -225,6 +318,37 @@ describe("POST /api/user/project", () => {
 		});
 
 		expect(response.status).toBe(400);
+		expect(prisma.project.create).not.toHaveBeenCalled();
+	});
+
+	it("asks for a speciality before the founder's team row is written", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({ specialities: [] });
+
+		const response = await postProject({});
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			error: "Add your speciality first",
+		});
+		expect(validate).not.toHaveBeenCalled();
+		expect(prisma.project.create).not.toHaveBeenCalled();
+	});
+
+	it("answers 429 without asking the AI when the user is over the limit", async () => {
+		(prisma.user.findUnique as any).mockResolvedValue({
+			specialities: [{ id: "spec1" }],
+		});
+		limitAiCalls.mockResolvedValue(
+			new Response(JSON.stringify({ error: "rateLimited", retryAfter: 30 }), {
+				status: 429,
+			}),
+		);
+
+		const response = await postProject({});
+
+		expect(response.status).toBe(429);
+		expect(limitAiCalls).toHaveBeenCalledWith("project-create", "user1");
+		expect(validate).not.toHaveBeenCalled();
 		expect(prisma.project.create).not.toHaveBeenCalled();
 	});
 

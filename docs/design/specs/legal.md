@@ -5,15 +5,15 @@ Frames: [`docs/design/platform-design.pen`](../platform-design.pen), row **Legal
 Intent: [docs/intent/GDHUB-54-legal-layer.md](../../intent/GDHUB-54-legal-layer.md).
 
 **Built in the checkpoint branch, not drawn here** (`feature/gdhub-31-add-checkpoints-to-projects`):
-the pay step (Purchase Terms + Withdrawal Waiver, two checkboxes) and the curator's accept
-step (Checkpoint Standard). Both use `ClickwrapField`.
+the pay step (two checkboxes: the Purchase Terms, and the request to start at once under their 5.2) and the curator's
+take-on (the Advisor Agreement, in `LegalAcceptModal`, only when the version in effect is not accepted). Both use `ClickwrapField`.
 
 ---
 
 ## 1. Problem & user
 
 Whenever someone agrees to something on GDHub — Terms at sign-up, Project Requirements,
-the Advisor Agreement, the Expert Services Terms before earning money, a project's
+the Advisor Agreement (which also covers paid work), a project's
 co-development agreement once they hold a share — the platform must later show exactly
 which text, which version, when. Visitors read every document at `/legal`; users see their
 own documents and certificates in one place; anyone checks a certificate at `/verify`;
@@ -29,7 +29,7 @@ admins see and export acceptances.
 | Sign-up · Terms of Use / not accepted | **o0tNw** / **r7Xs1y** | Registration with the Terms clickwrap; inline error instead of the old toast. |
 | Create Project modal / not accepted | **bjuWB** / **o4O2xq** | Project Requirements clickwrap. |
 | Advisor · not accepted / modal / accepted | **ep5EM** / **Opj60** / **isYQT** | `/user/settings/mentorship`: the switch, the Advisor Agreement state, the link into the space — nothing else. |
-| Advisor settings · Paid work · not set up / error / set up | **Q8dNW0** / **SyTre** / **S5YkC** | `/advisor/settings` → *Paid work*: Expert Services Terms + payout details first, then paid consultations and curation. |
+| Advisor settings · Paid work · not set up / error / set up | **Q8dNW0** / **SyTre** / **S5YkC** | `/advisor/settings` → *Paid work*: payout details first (the Advisor Agreement clickwrap only after a material change), then paid consultations and curation. |
 | Share change · member / accept / author | **S5YiA** / **JE8bI** / **kAKOz** | Team page banner and old → new share; the accept modal; the author's view of who has not accepted. |
 | Share change · first share | **CqRJV** | The accept modal when the member had no share: "You were given a share", "— → 5%". |
 | Terms prompt · first time / updated / updated, error | **BnOHg** / **wx2Zi** / **qGqSf** | The acceptance prompt over a dimmed `/hub` (cards `d4Q2Wk`, `a27pW`, `p3IKH`). |
@@ -103,14 +103,14 @@ Advisor Agreement for advisors) gets this prompt over the app. It follows the co
   space opens. Free consultations live here as part of the space.
 - `/advisor/settings` gets a fourth section **Paid work** between Requests and Danger zone
   (menu + one form card, rule 7, *Save* under the card). The card starts with an outlined
-  **Expert Services** block: account holder, IBAN or account number, invoicing
-  (self-employed / company / I accept self-billing), and the Expert Services Terms
-  clickwrap. Below it: *Paid consultations* (switch + price per consultation) and *Curation*
+  **Payout details** block: account holder, IBAN or account number, invoicing
+  (self-employed / company / self-billing), and the Advisor Agreement — accepted, or its
+  clickwrap after a material change. Below it: *Paid consultations* (switch + price per consultation) and *Curation*
   (switch + stages you curate). Both switches are locked (lock icon, tooltip) until the
   block is saved. Set up: the clickwrap is replaced by "Accepted on {date} · version {n}"
   with *View document*.
 - `/advisor` Requests stays the consultations inbox, free and paid.
-- Checkpoint Standard: accepted by the curator per checkpoint, in the checkpoint branch.
+- Advisor Agreement: asked again of a curator taking on a checkpoint only when the version in effect is not accepted.
 
 **Project agreement (share given or changed).** The member's Team page shows a
 warning-tint banner with *Review*: "You were given a share — review and accept." for a
@@ -132,8 +132,8 @@ Checkpoint: curator); the banner says "digitally signed" and the file "Signed PD
 signed (event) certificates.
 
 **/legal.** Index (Platform: Terms, Privacy, Cookie, Refund, Legal Details; Features:
-Project Requirements, Advisor Agreement, Expert Services Terms, Checkpoint Terms,
-Checkpoint Standard, Withdrawal Waiver), document page, archived page.
+Project Requirements, Advisor Agreement, Checkpoint Purchase Terms,
+Course Agreement), document page, archived page.
 
 **Admin.** One page "Legal acceptances", no tabs: search by user, document, version
 (disabled until a document is chosen), context, date range, *Export CSV* (→ `AuditLog`).
@@ -174,14 +174,14 @@ User-agent · Checksum (copy) · Context.
 | `legal.update.sign-out` | Sign out |
 | `legal.clickwrap.co-development.share-change` | I accept the `<doc>Co-Development Agreement</doc>` with the new shares |
 | `advisor.settings.paid-work.title` | Paid work |
-| `advisor.settings.paid-work.expert-services` | Expert Services |
+| `advisor.settings.paid-work.payout-details` | Payout details |
 | `advisor.settings.paid-work.account-holder` / `.account` / `.invoicing` | Account holder / IBAN or account number / Invoicing |
-| `advisor.settings.paid-work.invoicing.*` | Self-employed · Company · I accept self-billing |
+| `advisor.settings.paid-work.invoicing.*` | Self-employed · Company · Self-billing (one line under each — see checkpoint-payouts.md §10) |
 | `advisor.settings.paid-work.account.error` | Enter a full IBAN or account number |
 | `advisor.settings.paid-work.terms-accepted` | Accepted on {date} · version {version} |
 | `advisor.settings.paid-work.consultations` / `.price` | Paid consultations / Price per consultation |
 | `advisor.settings.paid-work.curation` / `.stages` | Curation / Stages you curate |
-| `advisor.settings.paid-work.locked` | Set up Expert Services first *(tooltip)* |
+| `advisor.settings.paid-work.curator.locked-payout` | Save your payout details first *(tooltip)* |
 | `legal.co-development.title` / `.project` / `.your-share` | Co-Development Agreement / Project / Your share |
 | `project.team.share-given.member` / `.title` | You were given a share — review and accept. / You were given a share |
 | `project.team.shares-changed.member` / `.title` | Shares changed — review and accept. Your {share} stays in force until you do. / Shares changed |
@@ -223,7 +223,7 @@ Document titles and "what changed" lines come from the registry; bodies are the 
 
 ## 8. Open questions
 
-1. **Free curation** — assumed none: curation always needs the Expert Services Terms.
+1. **Free curation** — none: curation is paid work under the Advisor Agreement (GDHUB-102).
 2. **Price currency and stages list** — EUR and the existing checkpoint stages assumed.
 3. **Prompt trigger** — assumed after a material version takes effect and for the one-time
    "first time" migration; a non-material version asks nothing.

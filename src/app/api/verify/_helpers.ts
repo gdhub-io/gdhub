@@ -1,3 +1,5 @@
+import type { CheckpointVerdict } from "@gdhub-io/gdhub-prisma";
+import { hubLegalEntity } from "@/config/legal/entities";
 import { prisma } from "@/services/prisma";
 
 export async function resolvePublicCertificate(number: string) {
@@ -225,6 +227,9 @@ async function resolveUnsigned(
 				select: {
 					stageName: true,
 					startedAt: true,
+					decidedAt: true,
+					verdict: true,
+					goal: true,
 					curator: person,
 					project: {
 						select: {
@@ -274,23 +279,28 @@ async function resolveUnsigned(
 		};
 	}
 
+	// Issued to the project by the platform; the founder carries it, named so
+	// the result is not anonymous.
 	const checkpoint = c.checkpoint;
 	if (c.source === "Checkpoint" && checkpoint) {
 		return {
 			...base,
 			source: "Checkpoint",
 			subject: {
-				title: `${checkpoint.project.name} · ${checkpoint.stageName}`,
-				href: `/project/${checkpoint.project.slug}`,
+				title: checkpoint.stageName,
+				// The project card below links to it; a second link would say the same.
+				href: null,
 				kind: null,
 				lang: null,
 				startDate: checkpoint.startedAt?.toISOString() ?? null,
-				endDate: null,
-				issuerName: checkpoint.curator ? personName(checkpoint.curator) : "",
-				issuerTitle: checkpoint.curator?.specialities[0]?.name?.trim() || "",
-				mentorName: null,
-				mentorSpecialty: null,
+				endDate: checkpoint.decidedAt?.toISOString() ?? null,
+				issuerName: hubLegalEntity().name,
+				issuerTitle: "",
+				mentorName: checkpoint.curator ? personName(checkpoint.curator) : null,
+				mentorSpecialty:
+					checkpoint.curator?.specialities[0]?.name?.trim() || null,
 			},
+			outcome: { verdict: checkpoint.verdict, goal: checkpoint.goal },
 			project: {
 				name: checkpoint.project.name,
 				slug: checkpoint.project.slug,
@@ -348,4 +358,6 @@ export type VerifyCertificateResponse = {
 		coverImage: string | null;
 		shortDescription: string | null;
 	} | null;
+	/** A checkpoint's result: the verdict and the goal it was measured against. */
+	outcome?: { verdict: CheckpointVerdict | null; goal: string };
 };

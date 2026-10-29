@@ -4,6 +4,6 @@
 	justify-content: center;
 	flex-shrink: 0;
 	// Fallback pair for tiles with no direction and no explicit colours.
-	background: var(--gd-color-surface-sunken);
+	background: var(--gd-color-border);
 	color: var(--gd-color-text-secondary);
 }

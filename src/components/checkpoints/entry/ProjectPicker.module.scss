@@ -1,0 +1,33 @@
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+// The value carries a 40 cover, so the control is a step above the large one.
+.picker.picker {
+	--ant-select-height: calc(var(--gd-control-height-lg) + var(--gd-space-2));
+	--ant-select-font-height: var(--gd-control-height);
+
+	flex: 1;
+	min-width: 0;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+}
+
+.tick {
+	flex: none;
+	color: var(--gd-color-text);
+}
+
+@media screen and (max-width: 599px) {
+	.row {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}

@@ -3,7 +3,7 @@ import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	getTopSubjects,
 	resolveViewsRange,
-} from "@/repositories/content-view-report.repository";
+} from "@/repositories/content/view-report";
 import { type ViewsTopQuery, ViewsTopQuerySchema } from "@/schemas/admin-views";
 import type { ViewsTopResponse } from "@/types/admin-views";
 

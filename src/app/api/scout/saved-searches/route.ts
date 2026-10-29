@@ -8,7 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { getCabinet } from "@/repositories/scout";
+import { getCabinet } from "@/repositories/scout/scout";
 import { prisma } from "@/services/prisma";
 
 const SELECT = {

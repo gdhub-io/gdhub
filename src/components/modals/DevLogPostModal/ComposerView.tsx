@@ -138,7 +138,12 @@ const Composer = ({
 							type="primary"
 							disabled={empty}
 							loading={saving}
-							onClick={() => content && onSubmit(content)}
+							// Read the editor itself: its onChange is debounced, so `content`
+							// can miss a block inserted a moment before the click.
+							onClick={async () => {
+								const latest = (await editorRef.current?.save()) ?? content;
+								if (latest) onSubmit(latest);
+							}}
 						>
 							{editing
 								? t("modal.dev-log-post.save", "Save")

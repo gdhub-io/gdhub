@@ -6,7 +6,7 @@ import {
 	mapPersonCardProjects,
 	personCardCertificatesSelect,
 	personCardProjectsSelect,
-} from "@/repositories/person-card";
+} from "@/repositories/user/person-card";
 import { prisma } from "@/services/prisma";
 
 /**

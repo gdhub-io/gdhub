@@ -1,0 +1,54 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-84 — curator availability and the first call" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+curator: "Curator · Advisor Space → Settings → Availability" {
+  hours: "Status (Open · Consultations only · Away until a date)\nAvailable hours — one schedule for everything:\nperiods of days + hours, with or without months,\neach open for consultations and/or checkpoints;\na period with months replaces the weekly hours in them,\na shorter one a longer one. At most N consultations a month"
+  save: "Save"
+  refused: "Refused: checkpoint calls fall outside the new hours.\nA checkpoint is an agreement — move each call\nwith the author (GDHUB-83, up to CALL_MOVE_DAYS later), then save"
+  cancel: "Consultations outside the new hours: listed, Cancel each.\nSaving is allowed. Cancel shows the message,\nthen notifies the team"
+  confirm: "Still correct → confirmedAt = now\n(a reminder every 30 days — cron, GDHUB-72;\nunconfirmed for 60 days → not offered for new checkpoints)"
+  hours -> save
+  save -> refused: "a checkpoint call\noutside"
+  refused -> save: "calls moved"
+  save -> cancel: "a consultation\noutside"
+}
+
+series: "A free series (server)\nfive weekly starts at the same hour, from now + FIRST_CALL_MIN_DAYS,\neach on the hour, SESSION_MINUTES long, inside hours open for checkpoints,\nnone overlapping anything booked (calls and consultations); status Open on those days;\nhours confirmed within AVAILABILITY_STALE_DAYS (60)"
+curator.hours -> series: "hours"
+
+author: "Author · purchase" {
+  step2: "Step 2 · Curator kind?" {shape: diamond}
+  expert: "Experts with at least one free series,\n\"free from <date>\" — pick week → day → hour\ndraft.startedAt = the first call"
+  ai: "AI: pick a day\ndraft.startedAt = start of that day"
+  pay: "Step 3 · Pay and start:\ncreate the 5 sessions from startedAt\nin one transaction that checks they are free" {shape: diamond}
+  back: "Taken → back to step 2"
+  step2 -> expert: expert
+  step2 -> ai: AI
+  expert -> pay
+  ai -> pay
+  pay -> back: taken
+}
+series -> author.expert: offered
+
+held: "Expert: AwaitingCurator, money on hold\nthe 5 sessions hold the slots"
+aiActive: "AI: Active at once\ndueAt from startedAt"
+author.pay -> held: "expert, free"
+author.pay -> aiActive: AI
+
+answer: "Curator answers (CURATOR_ANSWER_DAYS)" {shape: diamond}
+held -> answer
+active: "Accepted → Active\ndueAt from startedAt\nsessions show in the Calendar and the call room (GDHUB-70)"
+released: "Declined · cancelled · hold expired →\nthe 5 sessions are deleted, the slots free again"
+answer -> active: accept
+answer -> released: decline / timeout

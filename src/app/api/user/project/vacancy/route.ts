@@ -114,6 +114,8 @@ export const GET = withAuth({ mode: "user" })(
 
 		const teamMember = await prisma.teamMember.findFirst({
 			where: { vacancyId: id, userId: currentUser.id },
+			// A second application to the same vacancy is the one that counts.
+			orderBy: { createdAt: "desc" },
 		});
 
 		// The Payment row is the listing fee (status/receipt). Surface the latest one

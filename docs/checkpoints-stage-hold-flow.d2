@@ -1,0 +1,52 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-37 — a running checkpoint holds the stage" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+press: "The author presses Next (or Back)\n/user/project/[slug]/workflow"
+
+running: "A checkpoint running on this stage?\n(Active or waiting for its verdict)" {
+  shape: diamond
+}
+press -> running
+
+held: "Locked\n\"Opens after the Checkpoint N verdict · by <date>\"" {
+  style.fill: "#FFF4E0"
+}
+running -> held: "yes"
+
+tasks: "Required stage tasks done?" {
+  shape: diamond
+}
+running -> tasks: "no — none, or closed with any verdict"
+
+open: "Locked\n\"Finish the required tasks to move on\"" {
+  style.fill: "#FFF4E0"
+}
+tasks -> open: "no"
+
+equity: "Pending equity promises → confirm them first"
+tasks -> equity: "yes"
+
+moved: "The project moves to the next stage"
+equity -> moved
+
+scout: "Scout card: closed after a checkpoint verdict,\nor by its own tasks"
+moved -> scout
+
+critical: "Critical" {
+  shape: page
+  a: "The server refuses the move; the button only mirrors it"
+  b: "A verdict never moves the stage; the author presses Next"
+  c: "\"Ready for the next stage\" does not replace the required tasks"
+  d: "No checkpoint task in workflow templates"
+}

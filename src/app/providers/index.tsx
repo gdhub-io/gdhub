@@ -11,6 +11,10 @@ import { installAbortErrorSuppressor } from "@/services/matrix/suppress-abort-er
 import { QueryProvider } from "./QueryProvider";
 import { TolgeeClientProvider } from "./TolgeeClientProvider";
 
+// A popup aligned to an edge still points at the middle of what opened it;
+// antd's default leaves the arrow at the edge, off to one side of the trigger.
+const POINT_AT_CENTER = { pointAtCenter: true };
+
 setupDayjs();
 configureAxios();
 installAbortErrorSuppressor();
@@ -56,7 +60,12 @@ export function Providers({ children }: { children: ReactNode }) {
 					 * on a graphite product. Shells still override with their
 					 * own mode and density.
 					 */}
-					<ConfigProvider theme={productTheme}>
+					<ConfigProvider
+						theme={productTheme}
+						tooltip={{ arrow: POINT_AT_CENTER }}
+						popover={{ arrow: POINT_AT_CENTER }}
+						popconfirm={{ arrow: POINT_AT_CENTER }}
+					>
 						{/*
 						 * `App` is what makes `App.useApp()` return working `message`,
 						 * `modal` and `notification` — without it they are silent stubs,

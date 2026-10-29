@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { loadEventCatalogue } from "@/repositories/event-catalogue";
+import { loadEventCatalogue } from "@/repositories/event/catalogue";
 import { EventsClient } from "./EventsClient";
 
 export const metadata: Metadata = {

@@ -11,6 +11,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	reconcileCheckpointRooms,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -151,6 +155,13 @@ export const GET = withAuth({ mode: "user" })(
 					user: { connect: { id: currentUser.id } },
 				},
 			});
+
+			const projectId = invitation.team.project?.id;
+			if (projectId) {
+				await syncChat(`join ${teamMember.id}`, () =>
+					reconcileCheckpointRooms(projectId, currentUser.id),
+				);
+			}
 
 			try {
 				await NovuService.send({

@@ -1,3 +1,4 @@
+import { E2E_STAND } from "@/lib/stand";
 import { HUB_LEGAL_ENTITIES, type LegalEntityKey } from "./entities";
 
 export type LegalVersion = {
@@ -39,10 +40,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: true,
 				checksum:
-					"f67decab3c4018d583f0ed135d9a7106ffce0809b8a19c4072f83e1af45b66e7",
+					"0a26b194777632ef6aae74153ccacae0ef94dfa9ecb0f8491e4973362dd9ecc0",
 			},
 		],
 	},
@@ -55,10 +56,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"8adb763027dbaf4b06c0c0311572e920fd0f85b16e1674d2414ccaed8e9ac0d9",
+					"934c1aab9f97c38f65bbe0e43ce3a2c56948a51c39f12e11a210b873bcdbe1c9",
 			},
 		],
 	},
@@ -71,7 +72,7 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
 					"53b46980251f7cb9855c2cff7cf5438a16ea46a933943eb3aac6a7912fe98a6b",
@@ -87,10 +88,10 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"645ebb26227552ff96b5ba9bf430fe4fa48f0f16dcc1a12254619f6d0ac381a3",
+					"a1a65a10350e9e51e7fb54f12d0b5b15a4d46cce06c47c394f42d9efd7d1be37",
 			},
 		],
 	},
@@ -103,7 +104,7 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
 					"39b4e3f4f9a712288b1ffe99a59950182ce3fbe543b12ffa375a112c7f39fc43",
@@ -115,23 +116,21 @@ export const LEGAL_DOCUMENTS = {
 		title: "Advisor Agreement",
 		issuer: "hub",
 		group: "features",
-		versions: [
-			{
-				version: 1,
-				effectiveAt: "2026-10-17",
-				entity: "vsi",
-				materialChange: false,
-				checksum:
-					"24609f31624d9d2ddfcf72198d0c1e20ddbace4a672241f7b0524f035ad582c9",
-			},
-		],
-	},
-	ExpertServicesTerms: {
-		slug: "expert-services-terms",
-		title: "Expert Services Terms",
-		issuer: "hub",
-		group: "features",
-		versions: [],
+		// Unpublished until paid advising has a seller (GDHUB-108); the text stays as a
+		// draft. The e2e stand alone carries a TBD version 0, to walk the curator's
+		// agreement step (GDHUB-116).
+		versions: E2E_STAND
+			? [
+					{
+						version: 0,
+						effectiveAt: "2026-10-01",
+						entity: "founder",
+						materialChange: false,
+						checksum:
+							"670f92f139d1dde3da197f0054bc4bfb50de168632ea03b26b3b75a8d0193f08",
+					},
+				]
+			: [],
 	},
 	CheckpointPurchaseTerms: {
 		slug: "checkpoint-purchase-terms",
@@ -142,26 +141,28 @@ export const LEGAL_DOCUMENTS = {
 			{
 				version: 1,
 				effectiveAt: "2026-10-17",
-				entity: "vsi",
+				entity: "founder",
 				materialChange: false,
 				checksum:
-					"9dd6b4335aeff3efe6645626c40bece9bb311a520fd585684a209fe56f796676",
+					"36e6728770eefde4efa6cc37b143f85e3d822bac448fa05876f8cde2a5de59ad",
 			},
 		],
 	},
-	WithdrawalWaiver: {
-		slug: "withdrawal-waiver",
-		title: "Withdrawal Waiver",
+	CourseAgreement: {
+		slug: "course-agreement",
+		title: "Course Agreement",
 		issuer: "hub",
 		group: "features",
-		versions: [],
-	},
-	CheckpointStandard: {
-		slug: "checkpoint-standard",
-		title: "Checkpoint Standard",
-		issuer: "hub",
-		group: "features",
-		versions: [],
+		versions: [
+			{
+				version: 1,
+				effectiveAt: "2026-10-17",
+				entity: "founder",
+				materialChange: false,
+				checksum:
+					"8ca9e939cafcd051f33cf7149fe697ce9450b49c73a9d62d56a67035e210ae0e",
+			},
+		],
 	},
 	CoDevelopmentAgreement: {
 		slug: "co-development-agreement",
@@ -184,7 +185,7 @@ export const LEGAL_CONTEXTS = [
 	"SignUp",
 	"ProjectCreate",
 	"AdvisorJoin",
-	"ExpertServices",
+	"PaidWork",
 	"CheckpointPurchase",
 	"CuratorAccept",
 	"ShareChange",

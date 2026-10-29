@@ -1,0 +1,56 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-114 — the AI prepares the human curator" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+events: "During the run" {
+  artifact: "An artifact attached\nor its link changed"
+  devlog: "A devlog posted"
+  call: "A call held\n(notes from its transcript)"
+}
+
+look: "The AI looks, as on an AI checkpoint\n(GDHUB-110)" {
+  style.fill: "#E8F0FE"
+}
+events.artifact -> look
+events.devlog -> look
+
+journal: "Curator journal" {
+  shape: cylinder
+}
+look -> journal
+events.call -> journal: "call notes"
+
+brief: "The night before calls 2–5 (01:00 UTC run,\ncalls within 24 hours): brief for the curator\nwhat was delivered · what the evidence shows · what to raise"
+journal -> brief
+brief -> journal
+
+callpage: "Call page, curator's view\n/advisor/checkpoints/[id]/review/[index]"
+brief -> callpage
+
+read: "Day 29: the AI's read\nproposed verdict · reasons · outcomes with no artifact"
+journal -> read
+read -> journal
+
+verdict: "Verdict window\nthe AI's read beside the curator's empty fields"
+read -> verdict
+
+decide: "The curator decides and writes\n(GDHUB-77, unchanged)"
+verdict -> decide
+
+critical: "Critical" {
+  shape: page
+  a: "Curator and admins only; never in the author's view"
+  b: "The curator's verdict starts empty; the AI never fills or sends it"
+  c: "Same caps and video budget as the AI curator"
+  d: "Each brief and read written once; a missed run is caught by the next"
+}

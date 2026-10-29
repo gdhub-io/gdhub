@@ -1,0 +1,73 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: right
+
+classes: {
+  space: {style: {font-size: 18; bold: true; border-radius: 8}}
+  planned: {style: {stroke-dash: 4; opacity: 0.6}}
+}
+
+hub: "hub · every signed-in user" {
+  class: space
+  style.fill: "#EEF4FF"
+  jobs: "jobs · apply"
+  experts: "experts · request"
+  create: "create a project · event · course"
+}
+
+project: "project · author, manager, team" {
+  class: space
+  style.fill: "#FFF1F0"
+  vacancies: "vacancies · review"
+  checkpoints
+  workflow
+  info: "info · devlog"
+  members
+}
+
+advisor: "advisor · mentorship on" {
+  class: space
+  style.fill: "#F0FFF4"
+  requests
+  curate: "checkpoints · curate"
+}
+
+scout: "scout · cabinet given by admin" {
+  class: space
+  style.fill: "#FFFBE6"
+  games
+}
+
+admin: "admin · platform staff" {
+  class: space
+  style.fill: "#F5F5F5"
+  checkpoints: "checkpoints · curators · payouts"
+  workflow
+  scouts
+}
+
+event: "event · creator, participants" {
+  class: space
+  style.fill: "#F9F0FF"
+}
+
+course: "course · not built yet" {
+  class: [space; planned]
+}
+
+project.vacancies -> hub.jobs: "vacancy published"
+hub.jobs -> project.vacancies: "application"
+hub.experts -> advisor.requests: "advice request"
+project.checkpoints -> advisor.curate: "checkpoint to curate"
+admin.checkpoints -> project.checkpoints: "free · refund · verdict"
+admin.checkpoints -> advisor.curate: "approval · payouts"
+admin.workflow -> project.workflow: "stage template"
+admin.scouts -> scout: "opens the space"
+project.info -> scout.games: "public card"
+hub.create -> project
+hub.create -> event
+hub.create -> course

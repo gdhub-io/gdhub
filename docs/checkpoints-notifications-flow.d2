@@ -1,0 +1,35 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: right
+
+title: "GDHUB-72 A — checkpoint notifications" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+send: "notifyCheckpoint(...)\nNovu 'default-message': bell + email,\ntitle · message · button link;\ntransactionId = kind + checkpoint (+ session/sprint) + user,\nso a retried run never sends twice;\na Novu failure is logged, never blocks the action" {
+  style.fill: "#f4f4f2"
+}
+
+paid: "Payment settles, human curator\n(settleCheckpointCheckout → AwaitingCurator)"
+paid -> send: "curator: 'A new checkpoint for <project> waits for your answer by <date>'\n→ /advisor/requests"
+
+accepted: "Curator accepts\n(POST …/curator, accept)"
+accepted -> send: "author: '<curator> takes Checkpoint N; it starts on <date>'\n→ the project's Workflow"
+
+declined: "Curator declines\n(POST …/curator, decline)"
+declined -> send: "author: '<curator> can't take Checkpoint N — pick another curator; the hold is not charged'\n→ the project's Workflow (replace curator)"
+
+expired: "No answer in CURATOR_ANSWER_DAYS\n(cron checkpoint-holds → returnToAuthor)"
+expired -> send: "author: '<curator> did not answer — pick another curator; the hold is released'\n→ the project's Workflow"
+
+hourly: "Cron /api/cron/checkpoint-calls, every hour\nsessions with scheduledAt in [now + 60 min, now + 120 min),\ncheckpoint Active or Review, call not ended"
+hourly -> send: "curator + confirmed team members:\n'Your call on <project> starts in an hour, at 14:00 (<zone>)' —\nthe curator's zone from their availability, UTC for the team\n→ the call room (team URL / advisor URL)"
+
+daily: "Cron /api/cron/checkpoints, daily 01:00 UTC (exists)\nActive checkpoints whose today (UTC) is a devlog day\n(the sprint's last day) and that sprint has no devlog yet"
+daily -> send: "author: 'The devlog for Sprint N of <project> is due today'\n→ the project's Workflow"

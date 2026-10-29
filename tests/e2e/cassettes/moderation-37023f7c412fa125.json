@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"Nadia Newcomer\",\"Game designer\"]}",
+	"answer": {
+		"id": "modr-2353",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0007337515861650474,
+					"harassment/threatening": 0.0007543439206676645,
+					"sexual": 0.01973893488772363,
+					"hate": 0.00006986756664856784,
+					"hate/threatening": 0.0000032192334497037803,
+					"illicit": 0.003784135086979151,
+					"illicit/violent": 0.00005614787461400803,
+					"self-harm/intent": 0.00021713669539495865,
+					"self-harm/instructions": 0.00021348633304871885,
+					"self-harm": 0.0004899051972109976,
+					"sexual/minors": 0.00008626077580284027,
+					"violence": 0.016249033178287745,
+					"violence/graphic": 0.0015718675366607645
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0000010451548051737735,
+					"harassment/threatening": 1.067702870044147e-7,
+					"sexual": 0.000003024195853395102,
+					"hate": 1.5534977545950122e-7,
+					"hate/threatening": 4.450850519411503e-8,
+					"illicit": 0.000004069457790466838,
+					"illicit/violent": 0.0000020785170435063726,
+					"self-harm/intent": 6.8936104552113e-8,
+					"self-harm/instructions": 5.368750039367665e-8,
+					"self-harm": 1.4144759985825914e-7,
+					"sexual/minors": 9.422445939071362e-8,
+					"violence": 0.000005144221374220898,
+					"violence/graphic": 3.84493505874534e-7
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

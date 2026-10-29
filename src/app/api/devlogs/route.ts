@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { apiError, json, withValidation } from "@/lib/api-handlers";
-import { getDevlogFeedPage } from "@/repositories/devlog-feed";
+import { getDevlogFeedPage } from "@/repositories/devlog/feed";
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;

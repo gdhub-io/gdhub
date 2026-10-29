@@ -1,4 +1,4 @@
-import { IconShieldCheck, IconX } from "@tabler/icons-react";
+import { IconShield, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -48,7 +48,8 @@ export const RoadmapChart = ({
 	const screens = Grid.useBreakpoint();
 	const roadmapRef = useRef<HTMLDivElement>(null);
 	const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-	const [currentProgress, setCurrentProgress] = useState(0);
+	// Percent of the road up to where the current stage starts.
+	const [progress, setProgress] = useState(0);
 	const steps = useMemo(
 		() => workflow.steps.slice(1).slice(0, -1),
 		[workflow.steps],
@@ -115,20 +116,19 @@ export const RoadmapChart = ({
 
 		// If current step is not in screenSteps, don't show progress
 		if (currentStepIndex === -1) {
-			setCurrentProgress(0);
+			setProgress(0);
 			return;
 		}
 
+		const road = roadmapRef.current.getBoundingClientRect();
 		const first = stepRefs.current[0]?.getBoundingClientRect();
 		const current = stepRefs.current[currentStepIndex]?.getBoundingClientRect();
 
-		const totalWidth = roadmapRef.current.offsetWidth;
-
 		// Nothing laid out yet — leave the marker where it is rather than
 		// snapping it back to the start of the road.
-		if (!first || !current || totalWidth === 0) return;
+		if (!first || !current || road.width === 0) return;
 
-		setCurrentProgress(((current.left - first.left) / totalWidth) * 100);
+		setProgress(((current.left - first.left) / road.width) * 100);
 	}, [workflow.currentStep, screenSteps]);
 
 	useEffect(() => {
@@ -207,16 +207,21 @@ export const RoadmapChart = ({
 				className={styles.roadmapContainer}
 			>
 				<div
+					className={styles.progressDone}
+					style={{ width: `${progress}%` }}
+				/>
+				<div
 					className={styles.progressContainer}
-					style={{ width: `${currentProgress}%` }}
+					style={{ left: `${progress}%` }}
 				>
 					<div className={styles.currentTime}>
-						{/* A badge with a tick, the shape this marker has always had —
-						    the icon migration swapped `MdBeenhere` for a rosette, whose
-						    scalloped edge reads as a sticker rather than a marker. */}
+						{/* Frame `n4D6fb`: a shield with the current point in it. */}
 						<span className={styles.currentTimeText}>
 							You&apos;re here
-							<IconShieldCheck />
+							<span className={styles.achievement}>
+								<IconShield size={20} stroke={1.6} />
+								<span className={styles.point} />
+							</span>
 						</span>
 					</div>
 				</div>

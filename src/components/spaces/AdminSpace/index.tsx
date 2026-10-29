@@ -24,6 +24,8 @@ const resolveSelectedMenuKey = (pathname: string) => {
 	if (pathname.startsWith("/admin/scouts")) return "/admin/scouts";
 	if (pathname.startsWith("/admin/posts")) return "/admin/posts";
 	if (pathname.startsWith("/admin/workflows")) return "/admin/workflows";
+	if (pathname.startsWith("/admin/checkpoints")) return "/admin/checkpoints";
+	if (pathname.startsWith("/admin/payouts")) return "/admin/payouts";
 	return "/admin/users";
 };
 
@@ -65,6 +67,16 @@ const MENU_ITEMS: {
 		name: "Audit logs",
 	},
 	{ key: "/admin/views", permission: "admin.views.view", name: "Views" },
+	{
+		key: "/admin/checkpoints",
+		permission: "admin.checkpoints.view",
+		name: "Checkpoints",
+	},
+	{
+		key: "/admin/payouts",
+		permission: "admin.payouts.view",
+		name: "Payouts",
+	},
 	{ key: "/admin/legal", permission: "admin.legal.view", name: "Legal" },
 ];
 

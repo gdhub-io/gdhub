@@ -1,0 +1,283 @@
+// Frames `vC7gn` (send) and `F041BL` (draft): a header over a two-column split,
+// one vertical hairline edge to edge, no card borders.
+
+.container {
+	padding: 0 !important;
+	overflow: hidden;
+}
+
+.header {
+	margin: 0 !important;
+	padding: var(--gd-card-padding) var(--gd-space-12) var(--gd-card-padding)
+		var(--gd-space-6) !important;
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.title {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+}
+
+.meta {
+	min-width: 0;
+	font-weight: 400;
+}
+
+.body {
+	padding: 0 !important;
+}
+
+.loading {
+	padding: var(--gd-space-6);
+}
+
+// The left column scrolls, the right one stays put beside it.
+.split {
+	display: flex;
+	height: min(760px, calc(100dvh - 200px));
+}
+
+.left {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-8);
+	min-width: 0;
+	padding: var(--gd-space-6);
+	overflow: auto;
+}
+
+.right {
+	flex: 0 0 408px;
+	padding: var(--gd-space-6);
+	border-left: 1px solid var(--gd-color-border);
+	overflow: auto;
+}
+
+.sectionHead {
+	padding-bottom: var(--gd-space-3);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+// Beside the Now / On day 1 switch the heading gives up its full width.
+.sectionHead .inlineHeading {
+	width: auto;
+}
+
+.aside {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+	white-space: nowrap;
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.caption {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.success {
+	color: var(--gd-success-solid);
+}
+
+.muted {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+}
+
+// Goal card
+
+.goalBody {
+	padding: var(--gd-space-4) 0 0;
+}
+
+.goal {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 500;
+	line-height: var(--gd-line-height-body);
+}
+
+.row {
+	min-width: 0;
+	padding: var(--gd-space-3) 0;
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border-subtle);
+	}
+
+	> svg {
+		flex-shrink: 0;
+	}
+}
+
+.rowText {
+	flex: 1;
+	min-width: 0;
+}
+
+.cut {
+	color: var(--gd-color-text-tertiary) !important;
+	text-decoration: line-through;
+}
+
+.evidence {
+	flex-shrink: 0;
+	max-width: 50%;
+	min-width: 0;
+}
+
+.rowEmpty {
+	display: block;
+	padding-top: var(--gd-space-3);
+}
+
+// Last build
+
+.build {
+	padding-top: var(--gd-space-4);
+}
+
+// Devlogs
+
+.devlog {
+	min-width: 0;
+	padding: var(--gd-space-2) 0;
+	border-bottom: 1px solid var(--gd-color-border-subtle);
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+.sprintTag {
+	flex-shrink: 0;
+	margin: 0;
+}
+
+.devlogTitle {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+// Team pulse: a table inside a panel keeps its hairlines and drops its fill.
+
+.pulse {
+	padding-top: var(--gd-space-3);
+
+	:global(.ant-table) {
+		background: transparent;
+	}
+
+	:global(.ant-table-thead) > tr > th {
+		background: transparent !important;
+		font-size: var(--gd-font-size-label);
+		font-weight: 600;
+		color: var(--gd-color-text-tertiary);
+	}
+
+	:global(.ant-table-tbody) > tr > td {
+		border-bottom-color: var(--gd-color-border-subtle);
+	}
+
+	:global(.ant-table-tbody) > tr:last-child > td {
+		border-bottom: none;
+	}
+}
+
+.confirmed {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--gd-space-6);
+	height: var(--gd-space-6);
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+	vertical-align: middle;
+}
+
+// Verdict options: a radio per card, the circle on the right as drawn.
+
+.options {
+	display: flex !important;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+}
+
+.option {
+	display: flex !important;
+	flex-direction: row-reverse;
+	align-items: flex-start;
+	gap: var(--gd-space-2);
+	margin: 0 !important;
+	padding: var(--gd-space-3);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+	transition: border-color 0.15s;
+
+	&:hover {
+		border-color: var(--gd-color-border-strong);
+	}
+}
+
+// Two pixels without moving the content: the second is an inset ring.
+.selected,
+.selected:hover {
+	border-color: var(--gd-color-accent);
+	box-shadow: inset 0 0 0 1px var(--gd-color-accent);
+	background: var(--gd-color-accent-subtle);
+}
+
+.optionBody {
+	flex: 1;
+	min-width: 0;
+	padding: 0 !important;
+}
+
+.optionLabel {
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+}
+
+.counter {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+.grow {
+	flex: 1;
+}
+
+/* Frame 11.8: what an administrator's verdict refunds, above the button. */
+.missed {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.missedValue {
+	font-feature-settings: "tnum";
+}
+
+.adminAlert {
+	margin: var(--gd-space-4) var(--gd-space-6) 0;
+}
+
+.aiRead {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface-sunken);
+}

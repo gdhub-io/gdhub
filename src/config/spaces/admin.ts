@@ -24,12 +24,31 @@ export const adminSpace = defineSpace({
 		// Workflow from the platform side: the template library and editing any
 		// project's process. Not to be confused with `project.workflow` (§3.4).
 		workflow: ["view", "manage"],
+		// Checkpoint promotion codes, kept in Stripe; `manage` creates and turns them off.
+		checkpoints: ["view", "manage"],
+		// Curator payouts: bank details and money out. The owner alone by default;
+		// anyone else is granted it by hand in the role matrix.
+		payouts: ["view", "manage"],
+		// Who may curate checkpoints: approving a person lets authors pay them.
+		curators: ["view", "manage"],
 		audit_logs: ["view"],
 		// Who accepted which legal text. Read-only: acceptances are never edited.
 		legal: ["view"],
 		// The content-view report. Read-only by nature: there is nothing here to
 		// manage, only numbers the platform already counted.
 		views: ["view"],
+	},
+	overrides: {
+		[SpaceRole.Admin]: {
+			"admin.payouts.view": false,
+			"admin.payouts.manage": false,
+			"admin.curators.view": false,
+			"admin.curators.manage": false,
+		},
+		[SpaceRole.Member]: {
+			"admin.payouts.view": false,
+			"admin.curators.view": false,
+		},
 	},
 	inheritRoleFrom: { space: "hub", atLeast: SpaceRole.Admin },
 });

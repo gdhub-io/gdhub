@@ -1,0 +1,39 @@
+// The landing's section anatomy (GDHUB-109): one gutter, one heading scale.
+$wide: 992px;
+
+@mixin section {
+	padding: var(--gd-space-12) var(--gd-space-4);
+	background: var(--gd-color-bg);
+
+	@media (min-width: $wide) {
+		padding: var(--gd-space-16);
+	}
+
+	> * {
+		max-width: 1312px;
+		margin-inline: auto;
+	}
+}
+
+@mixin heading {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	max-width: 720px;
+}
+
+@mixin title {
+	margin: 0 !important;
+	font-size: var(--gd-font-size-marketing-h2) !important;
+	font-weight: 700 !important;
+	line-height: var(--gd-line-height-display) !important;
+	letter-spacing: -0.02em;
+}
+
+@mixin lead {
+	margin: 0 !important;
+	max-width: 560px;
+	font-size: var(--gd-font-size-marketing-lead);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text-secondary) !important;
+}

@@ -1,5 +1,6 @@
 import { Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
+import { after } from "next/server";
 import { z } from "zod";
 import {
 	apiError,
@@ -8,6 +9,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoints/status";
+import { seeDevlogMedia } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ReportQuerySchema = z.object({
@@ -78,7 +81,19 @@ export const POST = withAuth({ mode: "user" })(
 			select: { currentStepId: true },
 		});
 
-		await prisma.projectReport.createNumbered({
+		// A devlog written while a checkpoint is running is that checkpoint's
+		// devlog, wherever it was written from: the sprint it belongs to is read
+		// off its date, and a post the checkpoint cannot see is a sprint that
+		// looks silent when it was not.
+		const checkpoint = await prisma.projectCheckpoint.findFirst({
+			where: {
+				projectId,
+				status: { in: CHECKPOINT_RUNNING_STATUSES },
+			},
+			select: { id: true },
+		});
+
+		const post = await prisma.projectReport.createNumbered({
 			data: {
 				content,
 				contentEditor: contentEditor || Prisma.JsonNull,
@@ -87,8 +102,10 @@ export const POST = withAuth({ mode: "user" })(
 				authorId: currentUser.id,
 				projectId,
 				stepId: workflow?.currentStepId ?? undefined,
+				checkpointId: checkpoint?.id,
 			},
 		});
+		after(() => seeDevlogMedia(post.id));
 
 		return json(null);
 	}),
@@ -108,6 +125,7 @@ export const PUT = withAuth({ mode: "user" })(
 				video,
 			},
 		});
+		after(() => seeDevlogMedia(id));
 
 		return json(null);
 	}),

@@ -1,0 +1,112 @@
+/** A field label: 14/600, eight pixels off the control it names — the same rule PurchaseLayout uses. */
+.label {
+	display: block;
+	margin-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+// Frame 04: icon, what it is, and the radio on the right; the chosen one is
+// outlined in the accent and tinted with it.
+.option {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	flex: 1;
+	min-width: 0;
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+	text-align: left;
+	cursor: pointer;
+
+	&[data-chosen] {
+		border: 2px solid var(--gd-color-accent);
+		background: var(--gd-color-accent-subtle);
+	}
+}
+
+.optionText {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.optionName {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+}
+
+.optionDescription {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+}
+
+.fixedAmount {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	line-height: var(--gd-line-height-heading);
+}
+
+.note {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+}
+
+// Frame 04.1: start, reviews and price as rows of one card.
+.summary {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.summaryRow {
+	padding: var(--gd-space-4) var(--gd-space-6);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.summaryLabel {
+	flex: none;
+	width: 96px;
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// Frame 12.4a: the waitlist in place of the experts table.
+.waitlist {
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+// White with a border, so it reads on the chosen card's accent tint too.
+.soon {
+	margin: 0;
+	border-color: var(--gd-color-border);
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+	font-weight: 500;
+}
+
+.waitlistPrice {
+	flex-shrink: 0;
+	margin-inline-start: var(--gd-space-6);
+	white-space: nowrap;
+}
+
+.waitlistAmount {
+	font-size: var(--gd-font-size-h3);
+	font-feature-settings: "tnum";
+}

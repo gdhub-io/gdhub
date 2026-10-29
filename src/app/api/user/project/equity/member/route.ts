@@ -9,7 +9,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfEquityPromise } from "@/lib/space-ids";
-import { ProjectEquityRepository } from "@/repositories/project-equity.repository";
+import { ProjectEquityRepository } from "@/repositories/project/equity";
 import { prisma } from "@/services/prisma";
 
 const CreateMemberShareSchema = z.object({

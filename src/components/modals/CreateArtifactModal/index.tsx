@@ -24,6 +24,7 @@ import {
 	KIND_ICON,
 	useArtifactKindLabel,
 	useArtifactTypeLabel,
+	useLinkHint,
 } from "@/components/MyProjectArtifacts/labels";
 import type { ProjectArtifactType } from "@/config/prisma-enums";
 import { gtmEventTrigger } from "@/helpers/gtm";
@@ -46,8 +47,10 @@ type CreateArtifactModalProps = {
 	projectId?: string;
 	/** The project's current stage — where the artifact will be filed. */
 	stageName?: string;
-	onCreate: () => void;
+	onCreate: (created: ProjectArtifact) => void;
 	onCancel: () => void;
+	/** The kind the form opens on: a sprint's build asks for a video or a build. */
+	initialKind?: ArtifactKind;
 };
 
 /** Frame `ZKHiF`, minus the file drop: there is no storage for uploads yet. */
@@ -57,12 +60,14 @@ const CreateArtifactModal = ({
 	stageName,
 	onCreate,
 	onCancel,
+	initialKind = INITIAL_KIND,
 }: CreateArtifactModalProps) => {
 	const { t } = useTranslate();
 	const kindLabel = useArtifactKindLabel();
+	const linkHint = useLinkHint();
 	const typeLabel = useArtifactTypeLabel();
 	const [form] = Form.useForm<ArtifactForm>();
-	const kind = Form.useWatch("kind", form) ?? INITIAL_KIND;
+	const kind = Form.useWatch("kind", form) ?? initialKind;
 
 	const { mutateAsync: createArtifact, isPending } = useMutation({
 		mutationFn: ({ kind: _kind, ...artifact }: ArtifactForm) =>
@@ -79,7 +84,7 @@ const CreateArtifactModal = ({
 		try {
 			const { data } = await createArtifact(values);
 			gtmEventTrigger("artifact_create", { projectId, name: data.name });
-			onCreate();
+			onCreate(data);
 		} catch (error) {
 			message.error(
 				(isAxiosError(error) && error.response?.data?.message) ||
@@ -138,8 +143,8 @@ const CreateArtifactModal = ({
 				autoComplete="off"
 				requiredMark={false}
 				initialValues={{
-					kind: INITIAL_KIND,
-					type: TYPES_OF_KIND[INITIAL_KIND][0],
+					kind: initialKind,
+					type: TYPES_OF_KIND[initialKind][0],
 				}}
 			>
 				<Form.Item name="kind" label={t("artifacts.modal.kind.label", "Kind")}>
@@ -178,17 +183,11 @@ const CreateArtifactModal = ({
 					name="link"
 					label={t("artifacts.modal.link.label", "Link")}
 					rules={[{ required: true, type: "url" }]}
-					extra={
-						kind === "video" &&
-						t(
-							"artifacts.modal.link.videoHelp",
-							"YouTube, Vimeo or a direct link.",
-						)
-					}
+					extra={linkHint(kind)}
 				>
 					<Input
 						prefix={<IconLink size={16} stroke={2} />}
-						placeholder={kind === "video" ? "https://youtu.be/…" : "https://…"}
+						placeholder="https://…"
 					/>
 				</Form.Item>
 

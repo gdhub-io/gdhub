@@ -1,0 +1,335 @@
+.layout {
+	position: relative;
+	display: grid;
+	gap: 28px;
+}
+
+.offers {
+	display: grid;
+	gap: var(--gd-space-4);
+}
+
+// Cropped at the waist on a phone: the art is an aside, not the offer.
+.art {
+	order: -1;
+	width: 100%;
+	max-width: 260px;
+	// `height: auto` is what lets the ratio win over next/image's own attribute.
+	height: auto;
+	aspect-ratio: 260 / 192;
+	object-fit: cover;
+	object-position: top;
+	justify-self: center;
+}
+
+.table {
+	width: 100%;
+	// `separate`: a collapsed table loses the cell borders once `thead` is hidden.
+	border-collapse: separate;
+	border-spacing: 0;
+	font-feature-settings: "tnum";
+
+	thead {
+		display: none;
+	}
+
+	th,
+	td {
+		text-align: start;
+	}
+
+	tbody th,
+	tbody td {
+		border-top: 1px solid var(--gd-color-border-strong);
+		transition: background-color 0.2s;
+	}
+
+	tbody td {
+		padding-block: 16px;
+		font-size: var(--gd-font-size-h3);
+		font-weight: 600;
+		color: var(--gd-color-text);
+		text-align: end;
+	}
+}
+
+@media (hover: hover) {
+	.table tbody tr:hover th,
+	.table tbody tr:hover td {
+		background-color: var(--gd-fill-subtle);
+	}
+}
+
+// A phone has no table head to carry the outline, so the table becomes a card.
+.priceCard {
+	box-sizing: border-box;
+	width: 100%;
+	// 4 at the foot plus the last row's own 16 is the 20 the head has.
+	padding: 20px 20px 4px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+}
+
+// The expert offer while it is a waitlist, outlined quieter than the AI panel.
+.expertCard {
+	box-sizing: border-box;
+	display: grid;
+	gap: var(--gd-space-6);
+	padding: 20px;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	background-color: var(--gd-fill-subtle);
+}
+
+// Light on the dark card, so "not yet" is read before the price is.
+.soonTag.soonTag {
+	margin: 0;
+	border-color: transparent;
+	background: var(--gd-color-text);
+	color: var(--gd-color-bg);
+	font-size: var(--gd-font-size-label);
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+// A phone shows the price column only, so the head says which team it is for.
+.tableHead {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding-block: 0 12px;
+}
+
+.tableTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.tableNote {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.onRequest {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+}
+
+.level {
+	padding-block: 16px;
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.levelHead {
+	width: 340px;
+}
+
+.wideOnly {
+	display: none;
+}
+
+.offerHead {
+	display: grid;
+	grid-template-columns: 44px minmax(0, 1fr);
+	gap: 12px 20px;
+}
+
+.aiPanel {
+	box-sizing: border-box;
+	padding: 20px;
+	// The one thing on sale: outlined in the brand, so it reads on the dark band.
+	border: 1px solid var(--gd-color-accent);
+	border-radius: var(--gd-radius-panel);
+	background-color: var(--gd-fill-subtle);
+}
+
+.tile {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: var(--gd-radius-card);
+	background-color: var(--gd-fill-strong);
+	color: var(--gd-color-text);
+
+	&[data-tone="accent"] {
+		background-color: var(--gd-color-accent);
+	}
+}
+
+.offerCopy {
+	display: grid;
+	gap: 4px;
+}
+
+.offerTitle {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-3);
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-lead);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.offerBody {
+	margin: 0;
+	font-size: var(--gd-font-size-body);
+	line-height: 1.55;
+	color: var(--gd-color-text-secondary);
+}
+
+.offerPrice {
+	display: grid;
+	gap: 4px;
+	margin: 0;
+	grid-column: 2;
+}
+
+.offerPriceValue {
+	font-size: var(--gd-font-size-marketing-stat);
+	font-weight: 700;
+	color: var(--gd-color-text);
+}
+
+.offerPriceNote {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.ctaLink {
+	justify-self: start;
+}
+
+.cta {
+	font-weight: 600;
+}
+
+@media screen and (min-width: 992px) {
+	.layout {
+		gap: 52px;
+	}
+
+	.intro {
+		max-width: 620px;
+	}
+
+	// Gutters on the cells, not the table, so the row hairlines reach the panel edge.
+	.table {
+		border: 1px solid var(--gd-color-border-strong);
+		border-radius: var(--gd-radius-panel);
+
+		thead {
+			display: table-header-group;
+		}
+
+		thead th {
+			height: 56px;
+			background-color: var(--gd-fill-subtle);
+			font-size: var(--gd-font-size-label);
+			font-weight: 600;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+			color: var(--gd-color-text-tertiary);
+		}
+
+		tbody th,
+		tbody td {
+			height: 74px;
+			padding-block: 0;
+			text-align: start;
+		}
+
+		// A table cannot be clipped by `overflow`, so the head's outer corners round here.
+		thead th:first-child {
+			border-start-start-radius: calc(var(--gd-radius-panel) - 1px);
+		}
+
+		thead th:last-child {
+			border-start-end-radius: calc(var(--gd-radius-panel) - 1px);
+		}
+
+		th:first-child,
+		td:first-child {
+			padding-inline-start: 28px;
+		}
+
+		th:last-child,
+		td:last-child {
+			padding-inline-end: 28px;
+		}
+	}
+
+	.level {
+		font-size: var(--gd-font-size-h4);
+		font-weight: 600;
+	}
+
+	.tableHead {
+		display: none;
+	}
+
+	// The table takes the outline back: a card around it would box a box.
+	.priceCard {
+		padding: 0;
+		border: 0;
+	}
+
+	.expertCard {
+		padding: 24px 28px;
+	}
+
+	.wideOnly {
+		display: table-cell;
+	}
+
+	.offerHead {
+		grid-template-columns: 44px minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 20px;
+	}
+
+	.aiPanel {
+		padding: 24px 28px;
+	}
+
+	.offerPrice {
+		grid-column: auto;
+		justify-items: end;
+	}
+}
+
+// The art needs a lane beside 780 of offers; narrower than this they would
+// overlap, so below it the art stays above them as on a phone.
+@media screen and (min-width: 1280px) {
+	.table {
+		max-width: 780px;
+	}
+
+	.aiPanel,
+	.expertCard {
+		max-width: 780px;
+	}
+
+	// Out of the flow and as tall as the whole section, in the lane beside the offers.
+	.art {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: min(520px, calc(100% - 820px));
+		height: 100%;
+		max-width: none;
+		aspect-ratio: auto;
+		object-fit: contain;
+		object-position: right bottom;
+	}
+}

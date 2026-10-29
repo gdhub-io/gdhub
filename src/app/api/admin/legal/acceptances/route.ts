@@ -13,7 +13,7 @@ import {
 	acceptancesCsv,
 	exportAcceptances,
 	listAcceptances,
-} from "@/repositories/legal-acceptances.repository";
+} from "@/repositories/legal/acceptances";
 import { prisma } from "@/services/prisma";
 
 const QuerySchema = z.object({

@@ -28,6 +28,13 @@
 			corner-shape: var(--gd-corner-shape, squircle);
 		}
 
+		// At the same radius a superellipse hugs the corner tighter than the
+		// quarter circle Pencil draws, so a control looked squarer on the site than
+		// on the canvas. Controls take half as much again to read the same.
+		:root {
+			--gd-control-squircle: 1.5;
+		}
+
 		// A circle and a pill are round by definition — a superellipse squares
 		// their ends off, which turns an avatar into an app icon and a status dot
 		// into a tiny square. App code says `corner-shape: round` next to its own
@@ -54,6 +61,15 @@
 		// selector of their own.
 		.ant-radio::after,
 		.ant-switch-handle::before {
+			corner-shape: round;
+		}
+
+		// The arrow of a popover, tooltip or dropdown is a rotated square cut by a
+		// clip-path; a superellipse corner on it bends the tip off the clip and
+		// the triangle all but vanishes.
+		:is(.ant-popover-arrow, .ant-tooltip-arrow, .ant-dropdown-arrow),
+		:is(.ant-popover-arrow, .ant-tooltip-arrow, .ant-dropdown-arrow)::before,
+		:is(.ant-popover-arrow, .ant-tooltip-arrow, .ant-dropdown-arrow)::after {
 			corner-shape: round;
 		}
 
@@ -140,10 +156,10 @@
 		// invalid `border-radius` is 0, not the antd value underneath it.
 		@supports (border-radius: mod(3px, 2px)) {
 			border-radius:
-				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 0, 3))
-				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 2, 3))
-				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 1, 3))
-				calc(var(--gd-organic-base) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 3, 3));
+				calc(var(--gd-organic-base) * var(--gd-control-squircle, 1) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 0, 3))
+				calc(var(--gd-organic-base) * var(--gd-control-squircle, 1) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 2, 3))
+				calc(var(--gd-organic-base) * var(--gd-control-squircle, 1) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 1, 3))
+				calc(var(--gd-organic-base) * var(--gd-control-squircle, 1) - var(--gd-organic-amp) * mod(var(--gd-organic-i) + 3, 3));
 		}
 	}
 }

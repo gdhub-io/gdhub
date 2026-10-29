@@ -1,0 +1,1368 @@
+@use "../../styles/surfaces" as surfaces;
+
+// Values are frames 07 (d6Yh7), 07.1 (nBVNK), 08 (Y3sOPQ) and 02 (xBn27) of
+// platform-design.pen.
+
+// Frame 07's one-time notice spans both columns, over the path.
+.accepted.accepted {
+	grid-column: 1 / -1;
+	align-items: center;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-3) var(--gd-space-3) var(--gd-space-3) var(--gd-space-4);
+	border-color: color-mix(in srgb, var(--gd-success-solid) 30%, transparent);
+	background: var(--gd-success-tint);
+
+	:global(.ant-alert-icon) {
+		margin: 0;
+	}
+
+	:global(.ant-alert-title) {
+		margin: 0;
+		font-size: var(--gd-font-size-body);
+		font-weight: 600;
+		color: var(--gd-color-text);
+	}
+
+	:global(.ant-alert-description) {
+		font-size: var(--gd-font-size-body-sm);
+		color: var(--gd-color-text-secondary);
+	}
+}
+
+.layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: var(--gd-space-12);
+	align-items: start;
+
+	@media (max-width: 991px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.aside {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+// The hub's sidebar card (`sectionCardSidebar`): transparent, the stronger
+// stroke, the panel radius — one look for every card in a right column.
+.asideCard {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	overflow: hidden;
+
+	// As the hub's: alone above the page on a narrow screen, it needs a ground.
+	@media (max-width: 767px) {
+		background: var(--gd-color-surface);
+	}
+}
+
+// Frame 12.07 `C7axzV`: the running checkpoint takes the accent rim.
+.asideCheckpoint {
+	border-color: var(--gd-color-accent);
+}
+
+.asideHead {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-4) var(--gd-space-6) var(--gd-space-3);
+}
+
+.asideHead + .asideBody {
+	padding-top: 0;
+}
+
+.asideBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-4) var(--gd-space-6);
+}
+
+.asideBlock {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.asideRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-2);
+}
+
+.asideTitle {
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
+}
+
+.asideMeta {
+	display: block;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// The stage's task rows, edge to edge of the card, the last on its bottom.
+.asideTasks {
+	margin: 0 calc(-1 * var(--gd-space-6)) calc(-1 * var(--gd-space-4));
+	border-top: 1px solid var(--gd-color-border);
+}
+
+// Frame 08 `Dmwhm`: the feed scrolls inside its card; the page does not grow.
+.activityList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	max-height: 500px;
+	overflow-y: auto;
+	// Runs to the card's edges under a rule, as the task lists do, so rows scroll
+	// under it rather than vanish short of it; the rows keep the card's inset.
+	margin: 0 calc(-1 * var(--gd-space-6)) calc(-1 * var(--gd-space-4));
+	padding: var(--gd-space-4) 0;
+	border-top: 1px solid var(--gd-color-border);
+
+	// A hairline, as in the expert request modal: the standard properties only
+	// for Firefox, since in Chrome they override the 6px webkit rules below.
+	@supports (-moz-appearance: none) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--gd-color-border-strong) transparent;
+	}
+
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 3px;
+		background: var(--gd-color-border-strong);
+	}
+}
+
+.activityEvent,
+.activityBoundary,
+.activityMore {
+	padding: 0 var(--gd-space-6);
+}
+
+.activityEvent {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+}
+
+.activityText {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+// The same type as the task rows above: a body line, a small line under it.
+.activityTitle {
+	font-size: var(--gd-font-size-body);
+	line-height: 1.45;
+}
+
+.activitySub,
+.activityWhen,
+.activityMore {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: 1.4;
+}
+
+.activityWhen {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+// The list's own gap spaces it; antd's divider margin would double it.
+.activityBoundary.activityBoundary {
+	margin: 0;
+}
+
+.activityMore {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--gd-space-2);
+}
+
+.asideCurator {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+// One row of the path: a 40px gutter holding the rail and the marker, 16px, then
+// the content. Rows sit flush so the rail reads as one line.
+.node {
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr);
+	column-gap: var(--gd-space-4);
+}
+
+.rail {
+	position: relative;
+	display: flex;
+	justify-content: center;
+
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: calc(50% - 1px);
+		width: 2px;
+		background: var(--gd-color-border-strong);
+	}
+}
+
+// The road ahead: 4px dots, 5px apart.
+.railDashed::before {
+	background: repeating-linear-gradient(
+		to bottom,
+		var(--gd-color-border-strong) 0 4px,
+		transparent 4px 9px
+	);
+}
+
+.railNone::before {
+	display: none;
+}
+
+// The project's first stage: nothing came before it, so the line starts at its
+// marker (26px down, 10px to the centre of a 20px marker).
+.railStart::before {
+	top: 36px;
+}
+
+.body {
+	min-width: 0;
+}
+
+// Where the marker sits on the rail, measured from the top of the row so it
+// lines up with the row's first line — a stage head, a sprint title, a date.
+.at0 {
+	margin-top: 0;
+}
+
+.at4 {
+	margin-top: var(--gd-space-1);
+}
+
+.at6 {
+	margin-top: 6px;
+}
+
+.at14 {
+	margin-top: 14px;
+}
+
+.at18 {
+	margin-top: 18px;
+}
+
+.at24 {
+	margin-top: var(--gd-space-6);
+}
+
+.at64 {
+	margin-top: var(--gd-space-16);
+}
+
+.at26 {
+	margin-top: 26px;
+}
+
+.at28 {
+	margin-top: 28px;
+}
+
+.at30 {
+	margin-top: 30px;
+}
+
+.at56 {
+	margin-top: 56px;
+}
+
+// A stage's checkpoints run on a branch one step right of the stage line; the
+// two curves carry the line out to it and back (26 wide: from axis 20 to 44).
+.branch {
+	position: relative;
+	padding: var(--gd-space-6) 0 var(--gd-space-6) var(--gd-space-6);
+}
+
+.branchIn,
+.branchOut {
+	position: absolute;
+	left: 19px;
+	width: 26px;
+	height: var(--gd-space-6);
+	fill: none;
+	stroke: var(--gd-color-border-strong);
+	stroke-width: 2;
+}
+
+.branchIn {
+	top: 0;
+}
+
+.branchOut {
+	bottom: 0;
+}
+
+// The way back to the stage line is still ahead, so it is dashed like the rest.
+.branchAhead {
+	stroke-dasharray: 4 5;
+}
+
+.space0 {
+	padding-bottom: 0;
+}
+
+.space12 {
+	padding-bottom: var(--gd-space-3);
+}
+
+.space24 {
+	padding-bottom: var(--gd-space-6);
+}
+
+.space32 {
+	padding-bottom: var(--gd-space-8);
+}
+
+.space48 {
+	padding-bottom: var(--gd-space-12);
+}
+
+.marker {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+}
+
+.markerDone {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+// A checkpoint behind the project: the gate it went through, cleared.
+.markerCleared {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.markerCurrent {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-accent-subtle);
+
+	// Where you are: a ring spreads out from under the red dot and fades.
+	&::after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		corner-shape: round;
+		background: var(--gd-color-accent);
+		animation: marker-ripple 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
+	}
+}
+
+// A beat: the ring leaps out, slows as it spreads, and rests before the next.
+@keyframes marker-ripple {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--gd-color-accent) 45%, transparent);
+	}
+
+	70%,
+	100% {
+		box-shadow: 0 0 0 9px color-mix(in srgb, var(--gd-color-accent) 0%, transparent);
+	}
+}
+
+// Stages are squares, sprints are circles, checkpoints are flags: the shape
+// says what the row is before the text does. Filled markers carry the rail's own
+// 2px stroke, so they read as stops on the line rather than stickers on it.
+.markerStageDone {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
+	width: 20px;
+	height: 20px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.markerStageCurrent {
+	box-sizing: border-box;
+	border: 2px solid var(--gd-color-border-strong);
+	width: 20px;
+	height: 20px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-color-accent-subtle);
+
+	&::after {
+		content: "";
+		width: 8px;
+		height: 8px;
+		border-radius: 3px;
+		background: var(--gd-color-accent);
+	}
+}
+
+// A stage ahead and the release: a small rounded square, not a dot.
+.markerTodo {
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--gd-color-text-tertiary);
+	border-radius: 3px;
+	background: var(--gd-color-bg);
+}
+
+.markerSprint {
+	width: 10px;
+	height: 10px;
+	border: 2px solid var(--gd-color-text-tertiary);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-bg);
+}
+
+.markerSession {
+	box-sizing: border-box;
+	width: 32px;
+	height: 32px;
+	border: 2px solid var(--gd-color-border-strong);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+}
+
+.markerGate {
+	width: 40px;
+	height: 40px;
+	border: 2px solid var(--gd-color-text);
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text);
+}
+
+.hereRow {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	min-height: 44px;
+}
+
+.hereAbove {
+	padding-bottom: var(--gd-space-3);
+}
+
+.here {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text);
+
+	svg {
+		color: var(--gd-success-on-tint);
+	}
+}
+
+.earlier {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.quiet {
+	color: var(--gd-color-text-secondary);
+}
+
+// Stage panel: outlined when the project is not on it, filled when it is.
+.card {
+	overflow: hidden;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.cardLive {
+	border-color: transparent;
+	background: var(--gd-color-surface);
+}
+
+// Header toggles are native buttons; strip the browser's button look.
+.cardHead,
+.closedHead {
+	border: 0;
+	background: transparent;
+	font: inherit;
+	text-align: left;
+}
+
+// A stage behind is history: one compact line, so the road ahead keeps the room.
+.cardCompact {
+	.cardHead {
+		gap: var(--gd-space-3);
+		padding: var(--gd-space-3) var(--gd-space-6);
+	}
+
+	.cardTitles {
+		gap: 0;
+	}
+
+	.overline {
+		font-size: var(--gd-font-size-caption);
+	}
+
+	.title {
+		font-size: var(--gd-font-size-body);
+	}
+}
+
+.cardHead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	width: 100%;
+	padding: var(--gd-space-4) var(--gd-space-6);
+	cursor: pointer;
+	color: inherit;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.cardTitles {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.overline {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	flex: none;
+	color: var(--gd-color-text);
+}
+
+// Under the head, lined up with the stage name: 24 + 40 tile + 16 gap.
+.cardBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-1) var(--gd-space-6) var(--gd-space-6) 80px;
+}
+
+.sectionHead {
+	display: flex;
+	justify-content: space-between;
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.sectionLabel {
+	font-weight: 600;
+}
+
+.taskIcon {
+	flex: none;
+	color: var(--gd-color-border-strong);
+}
+
+.taskIconDone {
+	flex: none;
+	color: var(--gd-success-solid);
+}
+
+.taskIconFailed {
+	flex: none;
+	color: var(--gd-danger-solid);
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.meta {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+// The sprint under way: the one filled card on the page.
+.sprint {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.sprintHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	flex-wrap: wrap;
+}
+
+.sprintTitle {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.sprintMeta {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.sessionDone {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-neutral-100);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.link {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 400;
+}
+
+.checklistHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+// Rows run edge to edge of the sprint card, so a row's hover is not cut at its text.
+.checklistItem {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 52px;
+	width: calc(100% + 2 * var(--gd-space-6));
+	margin: 0 calc(-1 * var(--gd-space-6));
+	padding: 0 var(--gd-space-6);
+	border: 0;
+	border-bottom: 1px solid var(--gd-color-border);
+	background: none;
+	text-align: left;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+
+	// The list closes the card: its last row sits on the card's bottom edge.
+	&:last-child {
+		margin-bottom: calc(-1 * var(--gd-space-6));
+		border-bottom: 0;
+		border-radius: 0 0 var(--gd-radius-panel) var(--gd-radius-panel);
+	}
+}
+
+.checklistHead + .checklistItem {
+	border-top: 1px solid var(--gd-color-border);
+}
+
+button.checklistItem {
+	cursor: pointer;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.itemText {
+	display: flex;
+	flex: 1;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+}
+
+.viewResults {
+	font-weight: 500;
+}
+
+.itemDue {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.secondary {
+	color: var(--gd-color-text-secondary);
+}
+
+.chevron {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}
+
+// A sprint behind: outlined, one line of what it came to.
+.summary {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-3) var(--gd-space-4) var(--gd-space-3)
+		var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.summaryHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--gd-space-4);
+	cursor: pointer;
+}
+
+.summaryFolded {
+	cursor: pointer;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.summaryTitle {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.summaryDates {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 400;
+	color: var(--gd-color-text-secondary);
+}
+
+.stat {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+
+	svg {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.summaryMeta {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+}
+
+// The next session: outlined dark, because it is the one appointment on the page.
+.session {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+	border: 1.5px solid var(--gd-color-text);
+	border-radius: var(--gd-radius-panel);
+
+	@media (max-width: 575px) {
+		flex-wrap: wrap;
+	}
+}
+
+// The same call inside the sprint card, on its day: no frame of its own, a
+// rule under it before the checklist.
+.sessionToday {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-6);
+}
+
+.sessionWho {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	min-width: 0;
+}
+
+.sessionText {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text-secondary);
+}
+
+.sessionWhen {
+	font-size: var(--gd-font-size-h2);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+	color: var(--gd-color-text);
+}
+
+.upNextTitle {
+	padding: var(--gd-space-2) 0 var(--gd-space-4);
+}
+
+.futureSprint {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.futureDates {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.futureLine {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.futureTitle {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.with {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: 2px var(--gd-space-2) 2px 2px;
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-neutral-100);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text);
+}
+
+.chipIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-surface);
+}
+
+.gate {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.gateTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.finish {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulse {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-1) var(--gd-space-3);
+	border: 0;
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: transparent;
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-secondary);
+	cursor: pointer;
+	transition: background-color 0.15s;
+
+	// The trace says enough; the pill shows itself only when it can be opened.
+	&:hover,
+	&:focus-visible {
+		background: var(--gd-neutral-100);
+	}
+}
+
+.pulseLine {
+	color: var(--gd-color-accent);
+}
+
+.pulseStill {
+	color: var(--gd-color-text-tertiary);
+}
+
+// The pill keeps its padding for the hover without making the row taller.
+.pulseQuiet {
+	margin-block: calc(-1 * var(--gd-space-1));
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulseGhost {
+	stroke: var(--gd-color-border-strong);
+}
+
+// A heart monitor: the window over the red trace slides past, its tail fading.
+// From wholly before the line to wholly past it: 44px of tail, 72px of line.
+.pulseSweep {
+	animation: pulse-sweep 3s linear infinite;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: none;
+		transform: translateX(28px);
+	}
+}
+
+@keyframes pulse-sweep {
+	from {
+		transform: translateX(-44px);
+	}
+
+	to {
+		transform: translateX(72px);
+	}
+}
+
+// Frame 07.2: people by the seven days of the sprint.
+.pulsePopover.pulsePopover {
+	padding: 0;
+}
+
+.pulseMatrix {
+	display: flex;
+	flex-direction: column;
+	width: 480px;
+	max-width: calc(100vw - 2 * var(--gd-space-4));
+}
+
+.pulseHead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-4) var(--gd-space-4) var(--gd-space-3);
+}
+
+.pulseTitle {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+.pulseMeta,
+.pulseRole,
+.pulseDay {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.pulseEmpty {
+	padding: 0 var(--gd-space-4) var(--gd-space-3);
+}
+
+.pulseRow {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) repeat(7, 32px);
+	align-items: center;
+	gap: var(--gd-space-1);
+	padding: var(--gd-space-2) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border);
+}
+
+.pulseCols {
+	padding-top: 0;
+}
+
+.pulseDay {
+	text-align: center;
+	color: var(--gd-color-text-tertiary);
+}
+
+.pulseToday {
+	font-weight: 600;
+	color: var(--gd-color-text);
+}
+
+.pulsePerson {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-width: 0;
+}
+
+.pulseWho {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.pulseName {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-weight: 500;
+}
+
+.pulseCheck {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	margin: 0 auto;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.pulseIdle {
+	display: block;
+	width: 6px;
+	height: 6px;
+	margin: 0 auto;
+	border-radius: 50%;
+	corner-shape: round;
+	background: var(--gd-color-border-strong);
+}
+
+.pulseFoot {
+	padding: var(--gd-space-4);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+// Bleeds 8px past the column so the hover reads as a row, not a box around text.
+.closedHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: calc(100% + 2 * var(--gd-space-2));
+	gap: var(--gd-space-4);
+	margin: calc(-1 * var(--gd-space-2));
+	padding: var(--gd-space-2);
+	border-radius: var(--gd-radius-card);
+	cursor: pointer;
+	transition: background-color 0.15s;
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.closedTitle {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.closedName {
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	color: var(--gd-color-text);
+}
+
+.closedDates {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+.boundaryLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	color: var(--gd-color-text-secondary);
+
+	svg {
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+// A checkpoint behind: framed, so what comes after it on the branch reads as separate.
+.closedCard {
+	padding: var(--gd-space-3) var(--gd-space-4) var(--gd-space-3)
+		var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	margin-top: var(--gd-space-4);
+}
+
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.prose {
+	font-size: var(--gd-font-size-body);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text);
+}
+
+.outcome {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 32px;
+	font-size: var(--gd-font-size-body);
+	color: var(--gd-color-text);
+}
+
+.tertiary {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+// Spaced by the column's gap, not antd's divider margin.
+.divider.divider {
+	margin: 0;
+}
+
+.result {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+// Frames 02 and 02.1 (`TZnHs`): the checkpoint offer, and the draft it
+// becomes. A warm wash and the accent rim set it apart from the stages.
+.offer {
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-accent);
+	border-radius: var(--gd-radius-panel);
+	@include surfaces.checkpoint-wash;
+}
+
+.offerFacts > * {
+	flex: 1;
+	min-width: 0;
+}
+
+.offerFactIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 20px;
+	height: 20px;
+	color: var(--gd-color-accent);
+}
+
+.offerFactLabel {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+}
+
+.offerOptions > :not(.offerOr) {
+	flex: 1;
+	min-width: 0;
+	align-self: stretch;
+}
+
+.offerOption {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+}
+
+.offerOptionIcon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	align-self: flex-start;
+	width: var(--gd-space-8);
+	height: var(--gd-space-8);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-color-surface);
+}
+
+.offerPrice {
+	flex: none;
+	align-self: flex-start;
+}
+
+.offerOr {
+	flex: none;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	color: var(--gd-color-text-secondary);
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.dialogTitle {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+}
+
+// Frame tQa5n: after the verdict, the two ways on.
+.afterOptions {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: var(--gd-space-3);
+}
+
+.afterOption {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+// Frame 07.7 (i0ia1Y): a "Ready for the next stage" verdict opens the next stage.
+.afterNextStage {
+	padding: var(--gd-space-4);
+	border: 1px solid color-mix(in srgb, var(--gd-success-solid) 30%, transparent);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-success-tint);
+}
+
+.moveEquity {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}
+
+// Frames xZ32D / BixZr / ErNgO: the curator at the widget's top, edge to edge,
+// in the checkpoint cards' warm wash, ruled off the body.
+.curatorNote {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-bottom: 1px solid var(--gd-color-border);
+	@include surfaces.checkpoint-wash;
+}
+
+.curatorName {
+	display: block;
+}
+
+.curatorText {
+	margin: 0 !important;
+}
+
+.curatorActions {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+// "Optional" names what a line is, as the stage's task chips do.
+.optionalTag {
+	flex-shrink: 0;
+	margin: 0;
+	background: var(--gd-neutral-100);
+}

@@ -18,10 +18,15 @@ export const ogPalette = {
 	surface: neutral[0],
 	backdrop: neutral[950],
 	brand: brand[500],
+	/** The eyebrow over a headline, as the landing hero sets it. */
+	brandSoft: brand[400],
 	gradientFrom: "#8C1000",
 	gradientTo: "#5F0B00",
 	/** Hairlines and dividers drawn over artwork. */
 	rule: "#FFFFFF80",
+	/** Body lines and secondary type over the dark backdrop. */
+	inkSoft: "#FFFFFFD9",
+	inkMuted: "#FFFFFF99",
 	scrim: "#00000022",
 	scrimStrong: "#00000088",
 } as const;

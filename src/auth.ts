@@ -9,7 +9,8 @@ import { cache } from "react";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
-import { pendingLegalCodes } from "@/repositories/legal.repository";
+import { onTheStand } from "@/lib/stand";
+import { pendingLegalCodes } from "@/repositories/legal/legal";
 import { brevoApi } from "@/services/brevo";
 import { cached, cacheSet } from "@/services/cache";
 import { ensureMatrixUser } from "@/services/matrix/admin";
@@ -24,8 +25,7 @@ import type {
 //   - NODE_ENV must not be "production"
 //   - E2E_TEST_AUTH must be exactly "1"
 // Lets Playwright sign in as an existing user by email, no SMTP/Google needed.
-export const isE2EAuth =
-	process.env.NODE_ENV !== "production" && process.env.E2E_TEST_AUTH === "1";
+export const isE2EAuth = onTheStand();
 
 const e2eCredentialsProvider = CredentialsProvider({
 	id: "e2e-credentials",

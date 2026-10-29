@@ -48,8 +48,6 @@ const ALLOWED: Record<string, string> = {
 	"src/components/profile/SkillCapitalIcon.tsx":
 		"brand gradient inside an illustration",
 	"src/components/GameCard/DefaultCover.tsx": "placeholder cover art gradients",
-	"src/components/landing/LandingFeedbackSection/index.tsx":
-		"generated avatar skin tone",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
 	"src/components/layouts/Header/Header.stories.tsx": "avatar fill in a story",
 

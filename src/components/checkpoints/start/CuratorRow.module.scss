@@ -1,0 +1,21 @@
+.row {
+	min-width: 0;
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.name {
+	font-weight: 600;
+}
+
+.specialisations {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.freeFrom {
+	font-size: var(--gd-font-size-body-sm);
+	white-space: nowrap;
+}

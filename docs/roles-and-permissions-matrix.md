@@ -57,6 +57,13 @@ Entering a space is not guarded by a permission — any role gets you in
 | `project.artifacts.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `project.artifacts.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
+| `project.checkpoints.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `project.checkpoints.create` | ✅ | — | — | — | read & take part |
+| `project.checkpoints.manage` | ✅ | — | — | — | manage |
+| | | | | | |
+| `project.room.use` | ✅ | ✅ | ✅ | — | read & take part |
+| `project.room.manage` | — | — | — | — | manage |
+| | | | | | |
 | `project.workflow.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `project.workflow.edit` | ✅ | ✅ | — | — | manage |
 | | | | | | |
@@ -122,6 +129,38 @@ Entering a space is not guarded by a permission — any role gets you in
 | `course.certificates.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `course.certificates.issue` | ✅ | ✅ | — | — | manage |
 
+## scout
+
+| Permission | Owner | Admin | Member | Guest | Class |
+|---|---|---|---|---|---|
+| `scout.games.view` | ✅ | ✅ | ✅ | — | read & take part |
+| | | | | | |
+| `scout.deals.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `scout.deals.create` | ✅ | ✅ | ✅ | — | read & take part |
+| `scout.deals.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
+| `scout.team.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `scout.team.invite` | ✅ | ✅ | — | — | manage |
+| `scout.team.remove` | ✅ | ✅ | — | — | manage |
+| | | | | | |
+| `scout.settings.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `scout.settings.manage` | ✅ | ✅ | — | — | manage |
+
+## advisor
+
+| Permission | Owner | Admin | Member | Guest | Class |
+|---|---|---|---|---|---|
+| `advisor.requests.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `advisor.requests.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
+| `advisor.checkpoints.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `advisor.checkpoints.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
+| `advisor.calendar.view` | ✅ | ✅ | ✅ | — | read & take part |
+| | | | | | |
+| `advisor.settings.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `advisor.settings.manage` | ✅ | ✅ | — | — | manage |
+
 ## admin — running the platform
 
 | Permission | Owner | Admin | Member | Guest | Class |
@@ -138,13 +177,21 @@ Entering a space is not guarded by a permission — any role gets you in
 | `admin.devlog_posts.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.devlog_posts.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
+| `admin.events.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `admin.events.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
 | `admin.projects.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.projects.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
+| `admin.scouts.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `admin.scouts.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
 | `admin.workflow.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.workflow.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
 | `admin.audit_logs.view` | ✅ | ✅ | ✅ | — | read & take part |
+| | | | | | |
+| `admin.views.view` | ✅ | ✅ | ✅ | — | read & take part |
 
 Role is inherited from the `hub` space, from `Admin` upwards.
 

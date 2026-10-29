@@ -10,7 +10,7 @@ import { REQUEST_STATUS } from "@/components/advisor/requestStatus";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
-import type { AdvisorRequest } from "@/repositories/advisor.requests";
+import type { AdvisorRequest } from "@/repositories/advisor/requests";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;

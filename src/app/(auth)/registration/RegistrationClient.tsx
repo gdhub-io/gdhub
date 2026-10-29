@@ -18,6 +18,10 @@ import { signIn } from "next-auth/react";
 import { type ReactNode, useState } from "react";
 import { MagicLinkSent } from "@/components/auth/MagicLinkSent";
 import {
+	CHECKPOINT_INTENT,
+	entryHubHref,
+} from "@/components/checkpoints/entry/hrefs";
+import {
 	ClickwrapField,
 	LegalLink,
 	legalAcceptances,
@@ -41,6 +45,14 @@ export function RegistrationClient() {
 	const [isRegistration, setIsRegistration] = useState(false);
 
 	const forParam = searchParams?.get("for") || "";
+	const intent = searchParams?.get("intent") || "";
+	const projectSlug = searchParams?.get("project");
+
+	/** Where sign-up lands: onboarding, or straight to the checkpoint hub when it came from there. */
+	const afterSignUp = (provider: "email" | "google") =>
+		intent === CHECKPOINT_INTENT
+			? entryHubHref(projectSlug)
+			: `/registration/onboarding?locale=${getLanguage()}&provider=${provider}${forParam ? `&for=${forParam}` : ""}`;
 
 	const handleSendWithEmail = async () => {
 		let values: Awaited<ReturnType<typeof formRegEmail.validateFields>>;
@@ -59,6 +71,7 @@ export function RegistrationClient() {
 			"auth.email.pre-registration",
 			JSON.stringify({
 				for: forParam,
+				intent,
 				legal: legalAcceptances(["TermsOfUse"]),
 				needSubscribeToNewsletter,
 			}),
@@ -67,7 +80,7 @@ export function RegistrationClient() {
 		const response = await signIn("email", {
 			email,
 			redirect: false,
-			callbackUrl: `/registration/onboarding?locale=${getLanguage()}&provider=email${forParam ? `&for=${forParam}` : ""}`,
+			callbackUrl: afterSignUp("email"),
 		});
 
 		if (response?.ok) {
@@ -99,6 +112,7 @@ export function RegistrationClient() {
 			"auth.google.pre-registration",
 			JSON.stringify({
 				for: forParam,
+				intent,
 				legal: legalAcceptances(["TermsOfUse"]),
 				needSubscribeToNewsletter,
 			}),
@@ -107,7 +121,7 @@ export function RegistrationClient() {
 		await signIn(
 			"google",
 			{
-				callbackUrl: `/registration/onboarding?locale=${getLanguage()}&provider=google${forParam ? `&for=${forParam}` : ""}`,
+				callbackUrl: afterSignUp("google"),
 			},
 			{ prompt: "select_account consent" },
 		);
@@ -165,7 +179,14 @@ export function RegistrationClient() {
 									"Registration with Google",
 								)}
 							</Button>
-							<Link href="/signin" className={styles.createAccountLink}>
+							<Link
+								href={
+									intent === CHECKPOINT_INTENT
+										? `/signin?callbackUrl=${encodeURIComponent(entryHubHref(projectSlug))}`
+										: "/signin"
+								}
+								className={styles.createAccountLink}
+							>
 								{t(
 									"page.registration.iAlreadyHaveAnAccount",
 									"I already have an account",

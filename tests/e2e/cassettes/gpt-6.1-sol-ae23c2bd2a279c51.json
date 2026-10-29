@@ -1,0 +1,183 @@
+{
+	"name": "gpt-6.1-sol",
+	"prompt": "{\"prompt\":[{\"role\":\"system\",\"content\":\"You look at evidence a game team attached on GDHub: text, images, or frames\\nsampled from a video. Say only what is actually there. You did not run or\\nplay anything: say what is shown — a level, a mechanic, a menu, a character —\\nnever how the game feels to play. Plain English, short.\\nDescribe in one or two sentences what this media from a devlog shows.\"},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Not read: a youtube video: only its title and thumbnail, the video itself was not watched.\\nVideo title: Big Buck Bunny 60fps 4K - Official Blender Foundation Short Film\"},{\"type\":\"file\",\"mediaType\":\"image/jpeg\",\"data\":{\"type\":\"data\",\"data\":\"bytes:b21501d9cfcc8d2c02b4ff5e7b00d372055772f05af7a8a9bb1d26adf1bb48b6\"}}]}]}",
+	"answer": {
+		"content": [
+			{
+				"type": "text",
+				"text": "The thumbnail shows a large white animated rabbit in a sunny grassy clearing, with “Big Buck Bunny” and “UHD 60fps” text. The title identifies it as an official Blender Foundation short film in 4K.",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "msg_0530d70c93e23369006ae3435c607887d2824eb30b70e0d4c4",
+						"phase": "final_answer"
+					}
+				}
+			}
+		],
+		"finishReason": {
+			"unified": "stop"
+		},
+		"usage": {
+			"inputTokens": {
+				"total": 351,
+				"noCache": 351,
+				"cacheRead": 0,
+				"cacheWrite": 0
+			},
+			"outputTokens": {
+				"total": 50,
+				"text": 50,
+				"reasoning": 0
+			},
+			"raw": {
+				"input_tokens": 351,
+				"input_tokens_details": {
+					"cache_write_tokens": 0,
+					"cached_tokens": 0
+				},
+				"output_tokens": 50,
+				"output_tokens_details": {
+					"reasoning_tokens": 0
+				},
+				"total_tokens": 401
+			}
+		},
+		"response": {
+			"id": "resp_0530d70c93e23369006ae3435b32ec87d2a0d343dbea0de8d1",
+			"timestamp": "2026-10-29T13:00:11.000Z",
+			"modelId": "gpt-6.1-sol",
+			"headers": {
+				"access-control-expose-headers": "X-Request-ID, Server-Timing-Total, CF-Ray, CF-Ray",
+				"alt-svc": "h3=\":443\"; ma=86400",
+				"cf-cache-status": "DYNAMIC",
+				"cf-ray": "a5225c993b01c28a-AMS",
+				"connection": "keep-alive",
+				"content-encoding": "br",
+				"content-type": "application/json",
+				"date": "Thu, 29 Oct 2026 13:00:13 GMT",
+				"openai-organization": "gdhub",
+				"openai-processing-ms": "2138",
+				"openai-project": "proj_Sxbfe4DKP4kJZiAvrgGwGcx0",
+				"openai-version": "2020-10-01",
+				"server": "cloudflare",
+				"set-cookie": "__cf_bm=zHPADqJ1mSmr6DCxVZzzcpJOO.a0YvEl7uKmnsB3NR4-1793278811.0826771-1.0.1.1-OkDmmZ4Yz95rv_B6JLwmK5_2Ht3Ej8O1ZkDyVjjuZzUpNmQy7iyu73o2kSpC1QRdtIS6YEzUKIqm6J0lfEfOYeVObfXaWyGE_ILUqcLrG4y_iLn819._jagKhljT9vWC; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com; Expires=Thu, 29 Oct 2026 13:30:13 GMT",
+				"strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+				"transfer-encoding": "chunked",
+				"x-content-type-options": "nosniff",
+				"x-ratelimit-limit-input-images": "50000",
+				"x-ratelimit-limit-requests": "10000",
+				"x-ratelimit-limit-tokens": "4000000",
+				"x-ratelimit-remaining-input-images": "49999",
+				"x-ratelimit-remaining-requests": "9999",
+				"x-ratelimit-remaining-tokens": "4000000",
+				"x-ratelimit-reset-input-images": "1ms",
+				"x-ratelimit-reset-requests": "6ms",
+				"x-ratelimit-reset-tokens": "0s",
+				"x-request-id": "req_a1db14df694545ee9a442de6798c716c"
+			},
+			"body": {
+				"id": "resp_0530d70c93e23369006ae3435b32ec87d2a0d343dbea0de8d1",
+				"object": "response",
+				"created_at": 1793278811,
+				"status": "completed",
+				"access_programs": null,
+				"background": false,
+				"billing": {
+					"payer": "openai"
+				},
+				"completed_at": 1793278813,
+				"error": null,
+				"frequency_penalty": 0,
+				"incomplete_details": null,
+				"instructions": null,
+				"max_output_tokens": null,
+				"max_tool_calls": null,
+				"model": "gpt-6.1-sol",
+				"moderation": null,
+				"output": [
+					{
+						"id": "msg_0530d70c93e23369006ae3435c607887d2824eb30b70e0d4c4",
+						"type": "message",
+						"status": "completed",
+						"content": [
+							{
+								"type": "output_text",
+								"annotations": [],
+								"logprobs": [],
+								"text": "The thumbnail shows a large white animated rabbit in a sunny grassy clearing, with “Big Buck Bunny” and “UHD 60fps” text. The title identifies it as an official Blender Foundation short film in 4K."
+							}
+						],
+						"phase": "final_answer",
+						"role": "assistant"
+					}
+				],
+				"parallel_tool_calls": true,
+				"presence_penalty": 0,
+				"previous_response_id": null,
+				"prompt_cache_key": null,
+				"prompt_cache_retention": "24h",
+				"reasoning": {
+					"context": "all_turns",
+					"effort": "medium",
+					"mode": "standard",
+					"summary": null
+				},
+				"safety_identifier": null,
+				"service_tier": "default",
+				"store": true,
+				"temperature": 1,
+				"text": {
+					"format": {
+						"type": "text"
+					},
+					"verbosity": "medium"
+				},
+				"tool_choice": "auto",
+				"tool_usage": {
+					"image_gen": {
+						"input_tokens": 0,
+						"input_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"output_tokens": 0,
+						"output_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"total_tokens": 0
+					},
+					"web_search": {
+						"num_requests": 0
+					}
+				},
+				"tools": [],
+				"top_logprobs": 0,
+				"top_p": 0.98,
+				"truncation": "disabled",
+				"usage": {
+					"input_tokens": 351,
+					"input_tokens_details": {
+						"cache_write_tokens": 0,
+						"cached_tokens": 0
+					},
+					"output_tokens": 50,
+					"output_tokens_details": {
+						"reasoning_tokens": 0
+					},
+					"total_tokens": 401
+				},
+				"user": null,
+				"metadata": {}
+			}
+		},
+		"providerMetadata": {
+			"openai": {
+				"responseId": "resp_0530d70c93e23369006ae3435b32ec87d2a0d343dbea0de8d1",
+				"serviceTier": "default",
+				"reasoningContext": "all_turns"
+			}
+		},
+		"warnings": []
+	}
+}

@@ -11,3 +11,9 @@
 		padding-left: 26px;
 	}
 }
+
+// Genre and stage side by side, each taking half; they stack on a narrow modal.
+.pair > :global(.ant-form-item) {
+	flex: 1 1 220px;
+	min-width: 0;
+}

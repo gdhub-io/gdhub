@@ -1,0 +1,129 @@
+.path {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	width: 272px;
+	flex: none;
+}
+
+.label {
+	padding: var(--gd-space-1) var(--gd-space-3) var(--gd-space-2);
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.06em;
+}
+
+.step {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-3);
+	border: 1px solid transparent;
+	border-radius: var(--gd-radius-control);
+	background: none;
+	text-align: left;
+	cursor: pointer;
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.45;
+	}
+
+	&:not(:disabled, .selected):hover {
+		background: var(--gd-fill-subtle);
+	}
+}
+
+.selected {
+	background: var(--gd-color-surface);
+	border-color: var(--gd-color-border-strong);
+
+	.name {
+		font-weight: 600;
+	}
+}
+
+.glyph {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	flex: none;
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	border: 1px solid transparent;
+	color: var(--gd-color-text-secondary);
+}
+
+.start {
+	background: var(--gd-color-surface-sunken);
+}
+
+.done {
+	background: var(--gd-success-tint);
+	color: var(--gd-success-solid);
+}
+
+.current {
+	border: 2px solid var(--gd-color-accent);
+}
+
+.ahead {
+	border-color: var(--gd-color-border-strong);
+}
+
+.locked {
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-tertiary);
+}
+
+.dot {
+	width: var(--gd-space-2);
+	height: var(--gd-space-2);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-color-accent);
+}
+
+.text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+	flex: 1;
+}
+
+.name {
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body);
+	font-weight: 500;
+	line-height: var(--gd-line-height-ui);
+}
+
+.meta {
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+	font-feature-settings: "tnum";
+}
+
+.needsYou {
+	width: var(--gd-space-2);
+	height: var(--gd-space-2);
+	flex: none;
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: var(--gd-color-accent);
+}
+
+.next {
+	padding-top: var(--gd-space-4);
+}
+
+.footNote {
+	padding: var(--gd-space-2) var(--gd-space-1) 0;
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-caption);
+	line-height: var(--gd-line-height-ui);
+}

@@ -1,7 +1,8 @@
+// The "You're here" label rises above the road; the top margin makes room for it.
 .roadmapContainer {
   position: relative;
   width: 100%;
-  margin: 16px 0;
+  margin: var(--gd-space-6) 0 var(--gd-space-4);
 
   :global(.ant-typography) {
     font-size: 10px;
@@ -55,6 +56,16 @@
   }
 }
 
+// The stages behind the project: one flat tint of the sprint's colour.
+.progressDone {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  height: calc(50% - 5px);
+  background: color-mix(in srgb, var(--gd-success-solid) 20%, transparent);
+}
+
+// The sprint under way — the first half of the current stage.
 .progressContainer {
   position: absolute;
   top: 5px;
@@ -79,12 +90,33 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: var(--gd-success-solid);
+  color: var(--gd-success-on-tint);
   font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
   white-space: nowrap;
   position: absolute;
-  top: -26px;
-  left: -24px;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.achievement {
+  position: relative;
+  display: flex;
+}
+
+// The frame sets the shield 2px above the point, so the point sits low in it.
+.point {
+  position: absolute;
+  top: calc(50% + 2px);
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: var(--gd-radius-pill);
+  corner-shape: round;
+  background: var(--gd-success-on-tint);
+  transform: translate(-50%, -50%);
 }
 
 .nextStepName {

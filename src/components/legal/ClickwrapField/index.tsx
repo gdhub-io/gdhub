@@ -1,7 +1,7 @@
 "use client";
 
 import { T, useTranslate } from "@tolgee/react";
-import { Checkbox, Form } from "antd";
+import { Checkbox, Form, type FormItemProps } from "antd";
 import Link from "next/link";
 import type { ReactElement, ReactNode } from "react";
 import { LEGAL_DOCUMENTS, type LegalCode } from "@/config/legal/registry";
@@ -42,6 +42,8 @@ export function legalAcceptances(codes: LegalCode[]): LegalAcceptanceInput[] {
 
 type Props = {
 	code: LegalCode;
+	/** A second box about the same document, e.g. a request it names; defaults to the document's acceptance. */
+	name?: FormItemProps["name"];
 	/** The server refused the version this box showed — the text changed under the form. */
 	stale?: boolean;
 	/** Replaces the generic "You need to accept…", e.g. "…to create a project". */
@@ -54,10 +56,18 @@ type Props = {
  * The one checkbox every legal acceptance goes through: never pre-ticked, it
  * names the document, and the name is the only link to the exact version.
  */
-export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
+export function ClickwrapField({
+	code,
+	name,
+	stale,
+	requiredMessage,
+	label,
+}: Props) {
 	const { t } = useTranslate();
 	const { title, slug } = LEGAL_DOCUMENTS[code];
 	const version = versionInEffect(code);
+	// A document with no version in effect has nothing to accept.
+	if (!version) return null;
 	const href = version
 		? `/legal/${slug}/v${version.version}`
 		: `/legal/${slug}`;
@@ -68,7 +78,7 @@ export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
 
 	return (
 		<Form.Item
-			name={clickwrapFieldName(code)}
+			name={name ?? clickwrapFieldName(code)}
 			valuePropName="checked"
 			initialValue={false}
 			// Full width whatever the form's column layout: the label is a sentence.
@@ -117,8 +127,11 @@ export function ClickwrapField({ code, stale, requiredMessage, label }: Props) {
 	);
 }
 
-/** The document whose version the server refused as outdated, from an axios error. */
-export function outdatedLegalCode(error: unknown): LegalCode | null {
+const refusedLegalCode = (
+	error: unknown,
+	status: number,
+	reason: string,
+): LegalCode | null => {
 	const data = (
 		error as {
 			response?: {
@@ -127,7 +140,15 @@ export function outdatedLegalCode(error: unknown): LegalCode | null {
 			};
 		}
 	)?.response;
-	return data?.status === 409 && data.data?.details?.reason === "legal.outdated"
+	return data?.status === status && data.data?.details?.reason === reason
 		? (data.data.details.code ?? null)
 		: null;
-}
+};
+
+/** The document whose version the server refused as outdated, from an axios error. */
+export const outdatedLegalCode = (error: unknown) =>
+	refusedLegalCode(error, 409, "legal.outdated");
+
+/** The document the server asked for and the request did not carry. */
+export const missingLegalCode = (error: unknown) =>
+	refusedLegalCode(error, 400, "legal.required");

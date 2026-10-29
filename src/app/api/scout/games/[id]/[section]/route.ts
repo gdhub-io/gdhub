@@ -15,7 +15,7 @@ import {
 	getProjectCardTeam,
 	getProjectCardWorkflow,
 	visibleProjectId,
-} from "@/repositories/scout.project-card";
+} from "@/repositories/scout/project-card";
 
 /**
  * One section of a project card.

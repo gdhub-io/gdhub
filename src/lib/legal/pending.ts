@@ -3,7 +3,7 @@ import {
 	type LegalCode,
 	legalDocument,
 } from "@/config/legal/registry";
-import { pendingLegal } from "@/repositories/legal.repository";
+import { pendingLegal } from "@/repositories/legal/legal";
 import { versionInEffect } from "./versions";
 
 export type PendingDocument = {

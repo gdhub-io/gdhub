@@ -10,7 +10,7 @@ type SpecialityWithDirection = Speciality & { direction: WorkDirection };
 /**
  * The current user's work directions at `minLevel` or above — the client-side
  * half of the same rule the server enforces
- * (`repositories/speciality.repository.ts`).
+ * (`repositories/user/speciality.ts`).
  *
  * Anywhere a form asks the user to pick a direction they will act in, this is
  * the list to offer: showing all of them and refusing on submit is a worse way

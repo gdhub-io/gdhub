@@ -19,8 +19,12 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://example.com/concept",
 		createdAt: "2026-07-12",
 		checkStatus: ArtifactCheckStatus.Readable,
+		checkNote: null,
 		createdByUser: marta,
 		step: concepting,
+		evidence: [
+			{ checkpointNumber: 1, tasks: ["Core loop described on one page"] },
+		],
 	},
 	{
 		id: "2",
@@ -29,8 +33,10 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://example.com/pitch",
 		createdAt: "2026-07-24",
 		checkStatus: ArtifactCheckStatus.Pending,
+		checkNote: null,
 		createdByUser: marta,
 		step: concepting,
+		evidence: [],
 	},
 	{
 		id: "3",
@@ -39,8 +45,15 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://example.com/walkthrough",
 		createdAt: "2026-09-26",
 		checkStatus: ArtifactCheckStatus.Readable,
+		checkNote: null,
 		createdByUser: marta,
 		step: prototyping,
+		evidence: [
+			{
+				checkpointNumber: 2,
+				tasks: ["Greybox: one island, tide in and out", "Five playtesters"],
+			},
+		],
 	},
 	{
 		id: "4",
@@ -49,8 +62,10 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://drive.google.com/file/d/level-plans",
 		createdAt: "2026-09-26",
 		checkStatus: ArtifactCheckStatus.Unreachable,
+		checkNote: "needsLogin",
 		createdByUser: tom,
 		step: prototyping,
+		evidence: [],
 	},
 	{
 		id: "5",
@@ -59,8 +74,10 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://example.com/art",
 		createdAt: "2026-09-26",
 		checkStatus: ArtifactCheckStatus.Unsupported,
+		checkNote: null,
 		createdByUser: tom,
 		step: prototyping,
+		evidence: [],
 	},
 	{
 		id: "6",
@@ -69,8 +86,10 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://hollowtide.itch.io/prototype?secret=9f2ac1b7d04e4c7f8a1e",
 		createdAt: "2026-09-27",
 		checkStatus: null,
+		checkNote: null,
 		createdByUser: tom,
 		step: prototyping,
+		evidence: [],
 	},
 	{
 		id: "7",
@@ -79,8 +98,10 @@ const artifacts: ArtifactListItem[] = [
 		link: "https://example.com/old-gdd",
 		createdAt: "2026-03-03",
 		checkStatus: null,
+		checkNote: null,
 		createdByUser: { name: "Owen Marsh", image: null },
 		step: null,
+		evidence: [],
 	},
 ];
 
@@ -94,6 +115,7 @@ const meta = {
 		canManage: true,
 		onRetry: () => {},
 		onDelete: () => {},
+		onReplace: () => {},
 	},
 } satisfies Meta<typeof ArtifactsView>;
 

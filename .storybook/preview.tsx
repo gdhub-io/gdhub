@@ -6,6 +6,7 @@ import { Tolgee, TolgeeProvider } from "@tolgee/react";
 import { ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { CSSProperties, ReactElement } from "react";
+import { setupDayjs } from "../src/config/dayjs-setup";
 import { productTheme } from "../src/config/design/antd";
 import { designCssVariables } from "../src/config/design/css";
 import { fontClassName, uiFont } from "../src/config/design/fonts";
@@ -13,6 +14,9 @@ import { fontClassName, uiFont } from "../src/config/design/fonts";
 import "../src/styles/globals.scss";
 // Override the app's dark html/body background with a light canvas for stories.
 import "./preview.css";
+
+// The plugins the app extends at startup — `fromNow`, `utc` and friends.
+setupDayjs();
 
 // Minimal Tolgee instance so `useTranslate`/`useTolgee` resolve to the inline
 // defaults (`t(key, "Default {value}")`) without hitting the Tolgee server.

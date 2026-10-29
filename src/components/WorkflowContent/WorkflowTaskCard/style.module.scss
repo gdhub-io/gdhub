@@ -1,21 +1,27 @@
 .row {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	padding: 14px 16px;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3) var(--gd-space-6);
 	border-bottom: 1px solid var(--gd-color-border);
 
 	&:last-child {
 		border-bottom: none;
 	}
+
+	// As a table row; one step past the sunken fill, which is the page under
+	// these outlined cards (ui-guidelines 1).
+	&:hover {
+		background: var(--gd-neutral-100);
+	}
 }
 
 .check {
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
+	width: 16px;
+	height: 16px;
+	border-radius: var(--gd-radius-pill);
 	corner-shape: round;
-	border: 1.5px solid var(--gd-color-border-strong);
+	border: 1px solid var(--gd-color-border-strong);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -23,8 +29,8 @@
 	color: var(--gd-color-surface);
 
 	&.checkDone {
-		background-color: var(--gd-color-text);
-		border-color: var(--gd-color-text);
+		background-color: var(--gd-success-solid);
+		border-color: var(--gd-success-solid);
 	}
 }
 
@@ -32,12 +38,12 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--gd-space-1);
 }
 
 .label {
-	font-size: 14px;
-	font-weight: 500;
+	font-size: var(--gd-font-size-body);
+	font-weight: 400;
 	line-height: 1.45;
 	color: var(--gd-color-text);
 
@@ -48,28 +54,15 @@
 }
 
 .description {
-	font-size: 12px;
+	font-size: var(--gd-font-size-body-sm);
 	line-height: 1.4;
 	color: var(--gd-color-text-secondary);
 }
 
-.pill {
+// "Required" names what a task is, so it is a chip. The theme's sunken fill
+// vanishes on the outlined panel, so it takes the next step (ui-guidelines 1).
+.tag {
 	flex-shrink: 0;
-	display: inline-flex;
-	align-items: center;
-	padding: 3px 8px;
-	border-radius: var(--gd-radius-chip);
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.3px;
-
-	&.required {
-		background-color: var(--gd-danger-tint);
-		color: var(--gd-danger-solid);
-	}
-
-	&.optional {
-		background-color: var(--gd-color-border);
-		color: var(--gd-color-text-secondary);
-	}
+	margin: 0;
+	background: var(--gd-neutral-100);
 }

@@ -88,6 +88,12 @@
 		height: 40px;
 		background: var(--gd-neutral-100) !important;
 	}
+
+	// The fix sits under its artifact; the row's own hover would wash it out.
+	:global(.ant-table) :global(.ant-table-tbody) > tr.fixRow > td {
+		padding-top: 0;
+		background: transparent !important;
+	}
 }
 
 .stage {
@@ -123,4 +129,11 @@
 
 .footer {
 	margin-top: var(--gd-space-4);
+}
+
+.evidence {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	color: var(--gd-success-solid);
+	cursor: default;
 }

@@ -1,25 +1,12 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useTranslate } from "@tolgee/react";
-import dynamic from "next/dynamic";
-import { useSession } from "next-auth/react";
-import { ProjectSpace } from "@/components/spaces/ProjectSpace";
-import { useCurrentProject } from "@/hooks/project";
+/** The space opens on its workflow until the project gets an overview of its own. */
+export default async function MyProjectHomePage({
+	params,
+}: {
+	params: Promise<{ slug: string }>;
+}) {
+	const { slug } = await params;
 
-const WorkflowContent = dynamic(() => import("@/components/WorkflowContent"), {
-	ssr: false,
-});
-
-export default function MyProjectHomePage() {
-	const { t } = useTranslate();
-	const { project } = useCurrentProject();
-	const { data: session } = useSession();
-
-	return (
-		<ProjectSpace title={t("Workflow")}>
-			{!!project && (
-				<WorkflowContent projectId={project.id} locale={session?.user.lang} />
-			)}
-		</ProjectSpace>
-	);
+	redirect(`/user/project/${slug}/workflow`);
 }

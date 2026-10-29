@@ -41,9 +41,19 @@ export function buildAntdTheme({
 	density = "product",
 	cssVarKey,
 }: BuildThemeOptions = {}): ThemeConfig {
-	const r = roles[mode];
-	const d = densities[density];
 	const isInverse = mode === "inverse";
+	// The brand fills a button only on a marketing band; a dark panel inside the
+	// product commits with a light button, the mirror of the graphite one.
+	const lightAction = isInverse && density === "product";
+	const r = lightAction
+		? {
+				...roles.inverse,
+				action: neutral[0],
+				actionHover: neutral[100],
+				onAction: neutral[900],
+			}
+		: roles[mode];
+	const d = densities[density];
 	const fills = isInverse ? fillInverse : fill;
 
 	return {
@@ -113,6 +123,12 @@ export function buildAntdTheme({
 			borderRadiusLG: radius.card,
 			borderRadiusSM: radius.chip,
 			borderRadiusXS: 4,
+			// Global, not per component: antd draws the arrow's clip path from the
+			// seed value, so a component override leaves a 12px box cut for 16.
+			sizePopupArrow: 12,
+			// The arrow's shoulder curve; antd derives 6 from our radii, which on a
+			// 12px arrow folds the path over itself and the triangle disappears.
+			borderRadiusOuter: 2,
 
 			controlHeight: d.controlHeight,
 			controlHeightSM: d.controlHeightSm,
@@ -154,6 +170,12 @@ export function buildAntdTheme({
 				borderColorDisabled: r.border,
 				textHoverBg: fills.base,
 				primaryColor: r.onAction,
+				// The dark algorithm would grey a white primary; set it as drawn.
+				...(lightAction && {
+					colorPrimary: r.action,
+					colorPrimaryHover: r.actionHover,
+					colorPrimaryActive: r.actionHover,
+				}),
 			},
 			Input: {
 				paddingInline: space[3],
@@ -180,6 +202,8 @@ export function buildAntdTheme({
 				multipleItemHeight: 26,
 				hoverBorderColor: r.borderStrong,
 				activeBorderColor: r.accent,
+				// Without it antd draws its own graphite ring around the brand border.
+				activeOutlineColor: "rgba(241, 85, 65, 0.2)",
 			},
 			// A segmented switch stands next to inputs and selects, so it has to be
 			// the same height and carry the same corner. The inner item nests
@@ -294,7 +318,6 @@ export function buildAntdTheme({
 				controlHeight: 24,
 				paddingSM: space[2],
 				paddingXS: space[2],
-				sizePopupArrow: 12,
 			},
 			Checkbox: {
 				controlInteractiveSize: 18,
@@ -302,6 +325,14 @@ export function buildAntdTheme({
 			Radio: {
 				radioSize: 18,
 				dotSize: 8,
+			},
+			// Amber filled over the disabled grey (checkpoint rating, spec §5).
+			Rate: {
+				starColor: semantic.warning.solid,
+				starBg: isInverse ? neutral[700] : neutral[300],
+				starSize: 20,
+				starSizeSM: 16,
+				marginXS: space[1],
 			},
 			Progress: {
 				defaultColor: r.accent,
@@ -343,6 +374,13 @@ export const inverseTheme = buildAntdTheme({
 	mode: "inverse",
 	density: "marketing",
 	cssVarKey: "gd-inverse",
+});
+
+/** A dark surface inside the product — the call stage — at product sizes. */
+export const inverseProductTheme = buildAntdTheme({
+	mode: "inverse",
+	density: "product",
+	cssVarKey: "gd-inverse-product",
 });
 
 export const paletteReference = { brand, neutral, semantic };

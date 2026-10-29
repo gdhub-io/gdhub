@@ -8,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { CONFIRMED_STATUS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 const EventMembersBatchUpdateSchema = z.object({
@@ -53,9 +54,12 @@ export const POST = pipe(
 	if (data.projectId) {
 		const teamMembers = await prisma.teamMember.findMany({
 			where: {
+				...CONFIRMED_STATUS,
 				userId: { in: members.map((m) => m.userId) },
 				team: { projectId: data.projectId },
 			},
+			// Oldest first, so the map keeps each user's newest row.
+			orderBy: { startedAt: "asc" },
 			select: { id: true, userId: true },
 		});
 

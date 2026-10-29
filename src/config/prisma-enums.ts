@@ -1,5 +1,6 @@
 import type {
 	AdviceRequestStatus as AdviceRequestStatusType,
+	AdvisorAvailabilityStatus as AdvisorAvailabilityStatusType,
 	AIThreadStatus as AIThreadStatusType,
 	ApplauseActivityType as ApplauseActivityTypeType,
 	ArtifactCheckStatus as ArtifactCheckStatusType,
@@ -8,6 +9,13 @@ import type {
 	CertificateSource as CertificateSourceType,
 	ChatRoomKind as ChatRoomKindType,
 	ChatRoomStatus as ChatRoomStatusType,
+	CheckpointCuratorKind as CheckpointCuratorKindType,
+	CheckpointFeeReason as CheckpointFeeReasonType,
+	CheckpointItemKind as CheckpointItemKindType,
+	CheckpointJournalKind as CheckpointJournalKindType,
+	CheckpointSessionContentStatus as CheckpointSessionContentStatusType,
+	CheckpointStatus as CheckpointStatusType,
+	CheckpointVerdict as CheckpointVerdictType,
 	ContentViewSubject as ContentViewSubjectType,
 	CourseGroupStatus as CourseGroupStatusType,
 	CourseInvoiceStatus as CourseInvoiceStatusType,
@@ -20,6 +28,7 @@ import type {
 	EventMemberStatus as EventMemberStatusType,
 	EventStatus as EventStatusType,
 	EventType as EventTypeType,
+	EvidenceMatch as EvidenceMatchType,
 	ExpertInvoicing as ExpertInvoicingType,
 	InvitationStatus as InvitationStatusType,
 	Language as LanguageType,
@@ -39,6 +48,7 @@ import type {
 	TeamMemberStatus as TeamMemberStatusType,
 	TeamVacancyStatus as TeamVacancyStatusType,
 	UserRole as UserRoleType,
+	WaitlistFeature as WaitlistFeatureType,
 } from "@gdhub-io/gdhub-prisma";
 
 /**
@@ -128,6 +138,94 @@ export const ChatRoomStatus = {
 	Closed: "Closed",
 } as const satisfies Record<ChatRoomStatusType, ChatRoomStatusType>;
 export type ChatRoomStatus = ChatRoomStatusType;
+
+export const ArtifactCheckStatus = {
+	Pending: "Pending",
+	Readable: "Readable",
+	Unreachable: "Unreachable",
+	Unsupported: "Unsupported",
+} as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
+export type ArtifactCheckStatus = ArtifactCheckStatusType;
+
+export const EvidenceMatch = {
+	Matches: "Matches",
+	Partly: "Partly",
+	DoesNotMatch: "DoesNotMatch",
+	CannotTell: "CannotTell",
+} as const satisfies Record<EvidenceMatchType, EvidenceMatchType>;
+export type EvidenceMatch = EvidenceMatchType;
+
+export const CheckpointJournalKind = {
+	Evidence: "Evidence",
+	DevlogMedia: "DevlogMedia",
+	Artifact: "Artifact",
+	Review: "Review",
+	Verdict: "Verdict",
+	Letter: "Letter",
+	Platform: "Platform",
+} as const satisfies Record<
+	CheckpointJournalKindType,
+	CheckpointJournalKindType
+>;
+export type CheckpointJournalKind = CheckpointJournalKindType;
+
+export const CheckpointCuratorKind = {
+	AI: "AI",
+	Human: "Human",
+} as const satisfies Record<
+	CheckpointCuratorKindType,
+	CheckpointCuratorKindType
+>;
+export type CheckpointCuratorKind = CheckpointCuratorKindType;
+
+export const CheckpointFeeReason = {
+	Full: "Full",
+	RefundReduced: "RefundReduced",
+	Replacement: "Replacement",
+} as const satisfies Record<CheckpointFeeReasonType, CheckpointFeeReasonType>;
+export type CheckpointFeeReason = CheckpointFeeReasonType;
+
+export const CheckpointItemKind = {
+	Input: "Input",
+	Outcome: "Outcome",
+} as const satisfies Record<CheckpointItemKindType, CheckpointItemKindType>;
+export type CheckpointItemKind = CheckpointItemKindType;
+
+export const CheckpointStatus = {
+	Draft: "Draft",
+	AwaitingCurator: "AwaitingCurator",
+	Active: "Active",
+	Review: "Review",
+	Closed: "Closed",
+	Cancelled: "Cancelled",
+} as const satisfies Record<CheckpointStatusType, CheckpointStatusType>;
+export type CheckpointStatus = CheckpointStatusType;
+
+export const CheckpointVerdict = {
+	StageClosed: "StageClosed",
+	GoalMet: "GoalMet",
+	GoalMissed: "GoalMissed",
+} as const satisfies Record<CheckpointVerdictType, CheckpointVerdictType>;
+export type CheckpointVerdict = CheckpointVerdictType;
+
+export const AdvisorAvailabilityStatus = {
+	Open: "Open",
+	ConsultationsOnly: "ConsultationsOnly",
+	Away: "Away",
+} as const satisfies Record<
+	AdvisorAvailabilityStatusType,
+	AdvisorAvailabilityStatusType
+>;
+export type AdvisorAvailabilityStatus = AdvisorAvailabilityStatusType;
+
+export const CheckpointSessionContentStatus = {
+	Pending: "Pending",
+	Ready: "Ready",
+} as const satisfies Record<
+	CheckpointSessionContentStatusType,
+	CheckpointSessionContentStatusType
+>;
+export type CheckpointSessionContentStatus = CheckpointSessionContentStatusType;
 
 export const ContentViewSubject = {
 	ProjectReport: "ProjectReport",
@@ -348,14 +446,6 @@ export const SubscriptionStatus = {
 } as const satisfies Record<SubscriptionStatusType, SubscriptionStatusType>;
 export type SubscriptionStatus = SubscriptionStatusType;
 
-export const ArtifactCheckStatus = {
-	Pending: "Pending",
-	Readable: "Readable",
-	Unreachable: "Unreachable",
-	Unsupported: "Unsupported",
-} as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
-export type ArtifactCheckStatus = ArtifactCheckStatusType;
-
 export const ProjectArtifactType = {
 	JDA: "JDA",
 	Concept: "Concept",
@@ -393,3 +483,9 @@ export const UserRole = {
 	Admin: "Admin",
 } as const satisfies Record<UserRoleType, UserRoleType>;
 export type UserRole = UserRoleType;
+
+export const WaitlistFeature = {
+	ExpertCheckpoint: "ExpertCheckpoint",
+	ScoutSpace: "ScoutSpace",
+} as const satisfies Record<WaitlistFeatureType, WaitlistFeatureType>;
+export type WaitlistFeature = WaitlistFeatureType;

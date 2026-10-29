@@ -40,6 +40,13 @@ system, a deadline, a cost. Also what must be reused rather than rebuilt.
 - [ ] Checkable statements, each true or false by looking at the product.
 - [ ] These become the acceptance criteria and, where they can be, the tests.
 
+## How to check it on the platform
+
+Steps anyone can follow to see it working, through the UI where possible —
+which persona to sign in as (`/dev-signin`), which page, what to click, what
+should appear — and through an endpoint (method, path, body, expected answer)
+where the UI cannot show it.
+
 ## Out of scope
 
 The neighbouring work this deliberately does not do. This section is what stops

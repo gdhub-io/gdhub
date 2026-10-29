@@ -1,4 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { publishForTest } from "./helpers/legal";
+
+// Unpublished until paid advising has a seller (GDHUB-108); its rules still hold.
+publishForTest("AdvisorAgreement");
 
 const specialityCount = vi.fn();
 const expertFindUnique = vi.fn();
@@ -15,7 +19,7 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 const { needsAcceptance, pendingLegalCodes } = await import(
-	"@/repositories/legal.repository"
+	"@/repositories/legal/legal"
 );
 
 beforeEach(() => {
@@ -37,7 +41,7 @@ describe("needsAcceptance", () => {
 	});
 
 	it("asks nothing for a document with no version in effect", () => {
-		expect(needsAcceptance("ExpertServicesTerms", undefined, now)).toBe(false);
+		expect(needsAcceptance("CoDevelopmentAgreement", undefined, now)).toBe(false);
 	});
 });
 
@@ -46,6 +50,17 @@ describe("pendingLegalCodes", () => {
 		expect(await pendingLegalCodes("u1")).toEqual(["TermsOfUse"]);
 
 		specialityCount.mockResolvedValue(1);
+		expect(await pendingLegalCodes("u1")).toEqual([
+			"TermsOfUse",
+			"AdvisorAgreement",
+		]);
+	});
+
+	it("holds a curator to the Advisor Agreement even with no speciality open for mentoring", async () => {
+		expertFindUnique.mockResolvedValue({
+			paidConsultations: false,
+			curation: true,
+		});
 		expect(await pendingLegalCodes("u1")).toEqual([
 			"TermsOfUse",
 			"AdvisorAgreement",

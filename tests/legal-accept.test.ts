@@ -87,13 +87,13 @@ describe("acceptLegal", () => {
 		).toBe("unpublished:TermsOfUse");
 		expect(
 			await reasonOf(
-				acceptLegal(client, [{ code: "ExpertServicesTerms", version: 1 }], ["ExpertServicesTerms"], {
+				acceptLegal(client, [{ code: "CoDevelopmentAgreement", version: 1 }], ["CoDevelopmentAgreement"], {
 					userId: "u1",
-					context: "ExpertServices",
+					context: "ShareChange",
 					meta,
 					now,
 				}),
 			),
-		).toBe("unpublished:ExpertServicesTerms");
+		).toBe("unpublished:CoDevelopmentAgreement");
 	});
 });

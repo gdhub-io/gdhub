@@ -37,7 +37,7 @@ import {
 	type LegalCode,
 	type LegalContext,
 } from "@/config/legal/registry";
-import type { AcceptanceRow } from "@/repositories/legal-acceptances.repository";
+import type { AcceptanceRow } from "@/repositories/legal/acceptances";
 import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;
@@ -46,7 +46,7 @@ const CONTEXT_LABELS: Record<LegalContext, string> = {
 	SignUp: "Sign-up",
 	ProjectCreate: "Project created",
 	AdvisorJoin: "Advisor switch-on",
-	ExpertServices: "Expert services on",
+	PaidWork: "Paid work on",
 	CheckpointPurchase: "Checkpoint purchase",
 	CuratorAccept: "Curator accept",
 	ShareChange: "Share change",

@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import { useRef } from "react";
 import slugify from "slugify";
+import { LegalLink } from "@/components/legal/ClickwrapField";
 import { useWorkDirections } from "@/hooks/library";
 
 const { Text } = Typography;
@@ -274,16 +275,13 @@ const CreateCourseModal = ({
 					>
 						<Checkbox>
 							{t("modal.create-course.field.agreedToTerms", "I agree to the")}{" "}
-							<a
-								href="https://gdhub.notion.site/course-agreement"
-								target="_blank"
-								rel="noreferrer"
-							>
+							{/* Courses come later: the agreement is a TBD page, not yet a recorded acceptance. */}
+							<LegalLink href="/legal/course-agreement">
 								{t(
 									"modal.create-course.field.agreedToTerms.link",
 									"Course Agreement & Payouts Policy",
 								)}
-							</a>
+							</LegalLink>
 							.
 						</Checkbox>
 					</Form.Item>

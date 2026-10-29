@@ -15,13 +15,18 @@ const nextConfig = {
 	distDir: process.env.NEXT_DIST_DIR || ".next",
 	// Legal texts are read from disk at request time; without this they are not
 	// in the serverless bundle and every legal page renders empty in production.
-	outputFileTracingIncludes: { "/**": ["./docs/legal/**/*.md"] },
+	outputFileTracingIncludes: {
+		"/**": ["./docs/legal/**/*.md"],
+		// The AI curator samples video frames with this binary in the daily cron.
+		"/api/cron/checkpoints": ["./node_modules/ffmpeg-static/ffmpeg"],
+	},
 	serverExternalPackages: [
 		"discord.js",
 		"matrix-js-sdk",
 		"@gdhub-io/gdhub-prisma",
 		"@prisma/client",
 		"@prisma/adapter-pg",
+		"ffmpeg-static",
 	],
 	images: {
 		remotePatterns: [
@@ -157,6 +162,12 @@ const nextConfig = {
 		},
 	],
 	headers: async () => [
+		// The hero game's models: a week in the browser cache, so a returning
+		// visitor loads none of them; a rebuilt model reaches everyone within it.
+		{
+			source: "/models/hero-game/:path*",
+			headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+		},
 		{
 			source: "/api/:path*",
 			headers: [

@@ -1,0 +1,96 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-106 — the AI Checkpoint is paid through Paddle, behind one payment interface" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+gateway: "src/services/payments — one interface, two adapters" {
+  iface: "PaymentGateway (src/services/payments/types.ts)\nstartCheckout(input) → { url } | { paddleTransactionId, successUrl }\ncheckoutState(txn) → open | expired | paid (amount charged)\ncancelCheckout(txn)\nrefund(txn, part?) → providerRefundId\nreceiptUrl(txn)\npromoCodes: firstPurchase · list · create · setActive\nhold only: capture(txn) · release(txn)  (optional)"
+  pick: "gatewayFor(provider)\nnew checkout → CHECKPOINT_PAYMENT_PROVIDER (config/checkpoint.ts) = PADDLE\nanything after → Payment.provider"
+  stripe: "stripeGateway\nwraps services/stripe/server.ts as it is\n(hosted Checkout, manual capture, refunds, promotion codes)"
+  paddle: "paddleGateway\n@paddle/paddle-node-sdk, PADDLE_API_KEY\nno hold: capture / release absent"
+  iface -> pick
+  pick -> stripe: "STRIPE"
+  pick -> paddle: "PADDLE"
+}
+
+pay: "POST /api/checkpoint/[id]/pay — checks unchanged" {
+  checks: "purchase open · 18+ · terms accepted with 'start now'\nexpert draft → 400 expertClosed (GDHUB-107)"
+  quote: "checkpointCheckout → AI: CHECKPOINT_AI_PRICE 20 USD"
+  stale: "an earlier PENDING row (any provider)?\n→ gatewayFor(row.provider).checkoutState → paid: settle\n→ else cancelCheckout + row CANCELED\n(the holds cron reconciles PENDING rows of both providers)"
+  row: "Payment PENDING · provider PADDLE · CHECKPOINT · amount 2000 · USD"
+  txn: "paddleGateway.checkout\nPOST /transactions\nitems: PADDLE_AI_CHECKPOINT_PRICE_ID × 1\ncustom_data { paymentId, checkpointId } · customer email\n→ providerTransactionId = txn_…"
+  checks -> quote -> stale -> row -> txn
+}
+
+client: "PaymentStep (useCheckpointCheckout)" {
+  open: "{ paddle: transactionId } → Paddle.Checkout.open({ transactionId })\n(overlay: card, VAT, 'Add discount')\n{ redirect: url } → location = url (Stripe, kept)"
+  back: "successUrl → /checkpoint/[id]?paid=1 → reconcile (retrieve → settle)"
+  open -> back
+}
+pay.txn -> client.open
+
+hook: "POST /api/paddle/webhooks (existing route, signature + PaymentEvent once)" {
+  route: "custom_data.paymentId → Payment.payableType" {shape: diamond}
+  vacancy: "VACANCY: publish, unchanged"
+  cp: "CHECKPOINT: transaction.completed\n→ settleCheckpointCheckout(payment, charged = details.totals.grand_total)"
+  adj: "adjustment.created / adjustment.updated (refund)"
+  route -> vacancy
+  route -> cp
+}
+client.open -> hook.route: "Paddle, async"
+client.back -> hook.cp: "same settle, whichever comes first" {style.stroke-dash: 3}
+
+settle: "settleCheckpointCheckout (shared with Stripe)" {
+  guard: "row still PENDING? (atomic updateMany)" {shape: diamond}
+  skip: "no → nothing (replay, or a cancelled attempt)"
+  done: "Payment COMPLETED · amount = charged (after the discount)\nproviderInvoiceId, customer id\n→ startAiCheckpoint (no hold)"
+  guard -> skip: no
+  guard -> done: yes
+}
+hook.cp -> settle.guard
+
+refund: "Admin → Refund (GDHUB-101, reasons and amount unchanged)" {
+  calc: "refundQuote: paid − kept (parts already provided)"
+  send: "gatewayFor(Payment.provider).refund\nPaddle: POST /adjustments { action: refund, transaction_id,\n  type partial | full, item amount, reason }\nidempotency: one checkpoint refund only (existing 409)"
+  write: "one transaction, at once (as with Stripe):\nRefund { amount, reason, providerRefundId = adj_… }\nPayment PARTIALLY_REFUNDED / REFUNDED · checkpoint Cancelled\n→ room closed, author notified"
+  calc -> send -> write
+}
+
+later: "adjustment.updated from Paddle" {
+  ok: "approved → nothing more"
+  no: "rejected / reversed → AuditLog paddleRefundRefused + error log\n(the row is kept; the admin settles it by hand)"
+  dash: "otherwise (ours, or made in the Paddle dashboard)\n→ upsert Refund by providerRefundId, Payment status\nwhole refund closes a Draft / AwaitingCurator checkpoint (as Stripe)"
+}
+hook.adj -> later.ok
+hook.adj -> later.no
+hook.adj -> later.dash
+refund.send -> hook.adj: "later, async" {style.stroke-dash: 3}
+
+promo: "Admin → Promo codes (same tab, same rules)" {
+  list: "gatewayFor(config).promoCodes.list\nPaddle: GET /discounts (restrict_to the AI price)"
+  create: "create: code A–Z0–9 · 1–99% or a fixed USD amount · expires? · max uses?\nPaddle: POST /discounts { type percentage | flat, code,\n  enabled_for_checkout, usage_limit, expires_at, restrict_to }\n100% → 400 (a free checkpoint is GDHUB-40)"
+  first: "'first purchase only': Paddle has no such restriction\n→ the option is hidden for Paddle codes"
+  toggle: "on / off: PATCH /discounts/[id] { status active | archived }\nAuditLog as today"
+  list -> create -> first
+  create -> toggle
+}
+
+receipt: "Receipt link: gatewayFor(Payment.provider).receiptUrl\nPaddle: GET /transactions/[id]/invoice (existing helper)"
+settle.done -> receipt
+
+kept: "Untouched: Stripe webhook route and services/stripe/*;\nhuman curator hold / capture / release (only reached through stripeGateway,\nand experts are closed); Payment rows already made with STRIPE keep using Stripe" {
+  style.stroke-dash: 3
+}
+
+catalog: "Paddle catalog\nsandbox: product 'AI Checkpoint' + price 20 USD, created through the API now\nlive: Dmitry after Paddle approves the product\nenv: PADDLE_AI_CHECKPOINT_PRICE_ID (.env.example)" {
+  style.stroke-dash: 3
+}
