@@ -81,9 +81,13 @@ if (target === "--list") {
 }
 
 const url = addressOf(target);
+// Daily takes padded base64 only; the app decodes either, so the bytes are what must match.
+const hmac = Buffer.from(need("DAILY_WEBHOOK_SECRET"), "base64").toString(
+	"base64",
+);
 const body = JSON.stringify({
 	url,
-	hmac: need("DAILY_WEBHOOK_SECRET"),
+	hmac,
 	eventTypes: EVENTS,
 });
 const existing = (await listed()).find((hook) => hook.url === url);
