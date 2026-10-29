@@ -16,6 +16,7 @@ import {
 	audit,
 	missedCallsRefund,
 } from "@/repositories/checkpoints/admin";
+import { keptPayment } from "@/repositories/checkpoints/payment";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import { refundWrites } from "@/repositories/checkpoints/refund";
 import type { CuratorVerdictInput } from "@/repositories/checkpoints/verdict";
@@ -180,14 +181,20 @@ export const assignCurator = async (
 			return { ok: false as const, error: "firstCallMissing" as const };
 		}
 
-		const pick = { curatorKind: kind, curatorId: curator?.id ?? null };
+		// A curator turned it down or never answered: the money stayed with it.
+		const paidWith = (await keptPayment(checkpointId))?.id ?? null;
+		const pick = {
+			curatorKind: kind,
+			curatorId: curator?.id ?? null,
+			...(paidWith && { paymentId: paidWith }),
+		};
 
 		if (!human) {
 			await prisma.projectCheckpoint.update({
 				where: { id: checkpointId },
 				data: pick,
 			});
-			if (!(await startAiCheckpoint(checkpointId, null))) {
+			if (!(await startAiCheckpoint(checkpointId, paidWith))) {
 				return { ok: false as const, error: "notSwappable" as const };
 			}
 		} else {
@@ -214,7 +221,7 @@ export const assignCurator = async (
 			}
 		}
 		await prisma.auditLog.create({
-			data: audit(adminId, checkpointId, { ...meta, free: true }),
+			data: audit(adminId, checkpointId, { ...meta, free: !paidWith }),
 		});
 		if (human) await notifyCuratorAsked(checkpointId);
 		return { ok: true as const };

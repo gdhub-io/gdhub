@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import {
 	AI_APPROVE_HOURS,
 	CURATOR_ANSWER_DAYS,
+	CURATOR_REPICK_DAYS,
 	WITHDRAWAL_DAYS,
 } from "@/config/checkpoint";
 import { CheckpointJournalKind, SpaceRole } from "@/config/prisma-enums";
@@ -13,6 +14,7 @@ import { VERDICT_DAY } from "@/lib/checkpoints/plan";
 import type { RefundReason } from "@/lib/checkpoints/refund";
 import { journal } from "@/repositories/checkpoints/journal";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
+import { keptPayment } from "@/repositories/checkpoints/payment";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import { NovuService } from "../novu";
 import { prisma } from "../prisma";
@@ -189,8 +191,15 @@ export const notifyAuthorOfAnswer = async (
 	});
 	if (!row) return;
 
-	const number = await checkpointNumber(row);
+	const [number, kept] = await Promise.all([
+		checkpointNumber(row),
+		answer === "accepted" ? null : keptPayment(checkpointId),
+	]);
 	const transactionId = `cp-${answer}-${checkpointId}-${row.createdAt.getTime()}`;
+	// A card hold is let go on the way back; money already taken stays.
+	const repick = kept
+		? `Your payment stays with the checkpoint. Pick another curator and a time for the first call, or cancel it for a full refund. If nobody is picked within ${CURATOR_REPICK_DAYS} days, it is cancelled and refunded.`
+		: "The hold on your card is released, so nothing was charged. Pick another curator to buy it again.";
 
 	const letters = {
 		accepted: {
@@ -201,13 +210,11 @@ export const notifyAuthorOfAnswer = async (
 		},
 		declined: {
 			title: `${curatorName} can't take Checkpoint ${number}`,
-			message:
-				"Nothing was charged. Pick another curator and a time for the first call.",
+			message: repick,
 		},
 		silent: {
 			title: `${curatorName} did not answer about Checkpoint ${number}`,
-			message:
-				"The hold on your card is released. Pick another curator and a time for the first call.",
+			message: repick,
 		},
 	} satisfies Record<CuratorAnswer, { title: string; message: string }>;
 
@@ -246,6 +253,23 @@ export const notifyAuthorOfRefund = async (
 		checkpointId,
 		title: `Checkpoint ${number} is closed and ${amount} is on its way back`,
 		message: `${why} The refund reaches your card in 5–10 business days. It covers everything that was not delivered.`,
+		redirectUrl: workflowUrl(row.project.slug),
+	});
+};
+
+/** Nobody was picked after a curator could not take it: cancelled, money on its way back. */
+export const notifyAuthorOfLapse = async (
+	checkpointId: string,
+	amount: string,
+) => {
+	const row = await authorRow(checkpointId);
+	if (!row) return;
+
+	const number = await checkpointNumber(row);
+	await notify(row.project.author, `cp-lapse-${checkpointId}`, {
+		checkpointId,
+		title: `Checkpoint ${number} is cancelled and ${amount} is on its way back`,
+		message: `No other curator was picked within ${CURATOR_REPICK_DAYS} days. The refund reaches your card in 5–10 business days.`,
 		redirectUrl: workflowUrl(row.project.slug),
 	});
 };

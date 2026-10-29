@@ -47,8 +47,8 @@
 		"rbac:backfill:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-backfill.ts",
 		"test-env": "bun run scripts/test-env.ts",
 		"cassettes:prune": "bun run scripts/prune-cassettes.ts",
-		"dev:test": "dotenv -e .env.test -- cross-env E2E_TEST_AUTH=1 LLM_CASSETTES=auto CRON_SECRET=e2e-cron CHECKPOINTS_PURCHASE_OPEN=true NEXT_DIST_DIR=.next-test NEXTAUTH_URL=http://localhost:3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test next dev --turbopack -p 3100",
-		"dev:test:live": "dotenv -e .env.test -- cross-env E2E_TEST_AUTH=1 CRON_SECRET=e2e-cron CHECKPOINTS_PURCHASE_OPEN=true NEXT_DIST_DIR=.next-test NEXTAUTH_URL=http://localhost:3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test next dev --turbopack -p 3100"
+		"dev:test": "dotenv -e .env.test -- cross-env E2E_TEST_AUTH=1 NEXT_PUBLIC_E2E_STAND=1 DAILY_EMULATED=1 NEXT_PUBLIC_DAILY_EMULATED=1 DAILY_WEBHOOK_SECRET=ZTJlLWRhaWx5LXNlY3JldA== NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN=1 LLM_CASSETTES=auto CRON_SECRET=e2e-cron CHECKPOINTS_PURCHASE_OPEN=true NEXT_DIST_DIR=.next-test NEXTAUTH_URL=http://localhost:3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test next dev --turbopack -p 3100",
+		"dev:test:live": "dotenv -e .env.test -- cross-env E2E_TEST_AUTH=1 NEXT_PUBLIC_E2E_STAND=1 DAILY_EMULATED=1 NEXT_PUBLIC_DAILY_EMULATED=1 DAILY_WEBHOOK_SECRET=ZTJlLWRhaWx5LXNlY3JldA== NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN=1 CRON_SECRET=e2e-cron CHECKPOINTS_PURCHASE_OPEN=true NEXT_DIST_DIR=.next-test NEXTAUTH_URL=http://localhost:3100 NEXT_PUBLIC_APP_URL=http://localhost:3100 DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55432/gdhub_test next dev --turbopack -p 3100"
 	},
 	"dependencies": {
 		"@9gustin/react-notion-render": "^3.11.2",

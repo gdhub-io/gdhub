@@ -1,3 +1,4 @@
+import { E2E_STAND } from "@/lib/stand";
 import { HUB_LEGAL_ENTITIES, type LegalEntityKey } from "./entities";
 
 export type LegalVersion = {
@@ -115,8 +116,21 @@ export const LEGAL_DOCUMENTS = {
 		title: "Advisor Agreement",
 		issuer: "hub",
 		group: "features",
-		// Unpublished until paid advising has a seller (GDHUB-108); the text stays as a draft.
-		versions: [],
+		// Unpublished until paid advising has a seller (GDHUB-108); the text stays as a
+		// draft. The e2e stand alone carries a TBD version 0, to walk the curator's
+		// agreement step (GDHUB-116).
+		versions: E2E_STAND
+			? [
+					{
+						version: 0,
+						effectiveAt: "2026-10-01",
+						entity: "founder",
+						materialChange: false,
+						checksum:
+							"670f92f139d1dde3da197f0054bc4bfb50de168632ea03b26b3b75a8d0193f08",
+					},
+				]
+			: [],
 	},
 	CheckpointPurchaseTerms: {
 		slug: "checkpoint-purchase-terms",

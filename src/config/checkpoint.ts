@@ -5,6 +5,7 @@ import {
 	ProjectArtifactType,
 	type SkillLevel,
 } from "@/config/prisma-enums";
+import { E2E_STAND } from "@/lib/stand";
 
 /**
  * Every number a checkpoint runs on. Code that needs one imports it from here;
@@ -151,8 +152,14 @@ export const CHECKPOINT_MIN_AGE = 18;
 /** "Briefly about your experience" on About you. */
 export const CHECKPOINT_EXPERIENCE_MAX = 500;
 
-/** How long a curator has to answer before the money goes back. */
+/** How long a curator has to answer before the checkpoint goes back to its author. */
 export const CURATOR_ANSWER_DAYS = 3;
+/**
+ * Back with its author after a curator turned it down or never answered, a paid
+ * checkpoint keeps its money this long for another curator to be picked; then it
+ * is cancelled and refunded. Paddle charges at once and holds nothing.
+ */
+export const CURATOR_REPICK_DAYS = 14;
 /** The first call is booked at least this many days ahead. */
 export const FIRST_CALL_MIN_DAYS = 3;
 
@@ -181,9 +188,12 @@ export const MIN_CHARGE_AFTER_DISCOUNT = 50;
 
 /**
  * Whether a checkpoint with an expert can be bought. Off until there is a seller
- * for human curation (GDHUB-107): choosing an expert leads to a waitlist.
+ * for human curation (GDHUB-107): choosing an expert leads to a waitlist. The
+ * e2e stand opens it (`NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN`) to walk the expert's
+ * flows; production stays closed whatever the variable says.
  */
-export const EXPERT_CHECKPOINT_OPEN = false;
+export const EXPERT_CHECKPOINT_OPEN =
+	E2E_STAND && process.env.NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN === "1";
 
 /**
  * Who takes the money for a new checkpoint checkout and holds the promotion codes

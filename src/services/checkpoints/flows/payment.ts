@@ -4,8 +4,17 @@ import {
 	type PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { dueDateFrom, sessionDay, utcStartOfDay } from "@/lib/checkpoints/days";
+import {
+	CURATOR_REPICK_DAYS,
+	SESSIONS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
+import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
+import {
+	dueDateFrom,
+	MS_PER_DAY,
+	sessionDay,
+	utcStartOfDay,
+} from "@/lib/checkpoints/days";
 import { dateOfDay } from "@/lib/checkpoints/plan";
 import type { RefundRowReason } from "@/lib/checkpoints/refund";
 import { checkpointMove } from "@/lib/checkpoints/status";
@@ -15,10 +24,15 @@ import {
 } from "@/repositories/advisor/availability";
 import {
 	afterResponse,
+	cancelUnpicked,
 	heldPaymentWhere,
 	type PendingCheckout,
+	unpickedSince,
 } from "@/repositories/checkpoints/payment";
-import { notifyCuratorAsked } from "@/services/checkpoints/notifications";
+import {
+	notifyAuthorOfLapse,
+	notifyCuratorAsked,
+} from "@/services/checkpoints/notifications";
 import { type CheckoutPaid, gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
 
@@ -299,4 +313,35 @@ export const startAiCheckpoint = async (
 		await writeFirstLetter(checkpointId);
 	});
 	return true;
+};
+
+/**
+ * The holds cron: a checkpoint a curator could not take, with nobody picked in
+ * CURATOR_REPICK_DAYS, is cancelled first — so an author picking at that moment
+ * cannot lose a checkpoint already refunded — then refunded, its author told.
+ */
+export const cancelUnpickedCheckpoints = async (now = new Date()) => {
+	const before = new Date(now.getTime() - CURATOR_REPICK_DAYS * MS_PER_DAY);
+	let cancelled = 0;
+
+	for (const payment of await unpickedSince(before)) {
+		if (!(await cancelUnpicked(payment.payableId))) continue;
+
+		const returned = await returnCheckpointMoney(
+			payment.payableId,
+			"curatorDeclined",
+		);
+		if (!returned || "failed" in returned) {
+			console.error(
+				`[checkpoint] ${payment.payableId} cancelled but not refunded`,
+			);
+			continue;
+		}
+		await notifyAuthorOfLapse(
+			payment.payableId,
+			formatCheckpointMoney(payment.amount),
+		);
+		cancelled += 1;
+	}
+	return cancelled;
 };

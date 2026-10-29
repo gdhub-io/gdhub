@@ -2,6 +2,7 @@ import {
 	CheckpointItemKind,
 	CheckpointJournalKind,
 	type ProjectArtifactType,
+	SkillLevel,
 	TeamMemberStatus,
 	UserRole,
 } from "@gdhub-io/gdhub-prisma";
@@ -14,9 +15,10 @@ import {
 } from "@playwright/test";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
 import type { LegalCode } from "../../../../src/config/legal/registry";
-import { MS_PER_DAY } from "../../../../src/lib/checkpoints/days";
+import { MS_PER_DAY, MS_PER_HOUR } from "../../../../src/lib/checkpoints/days";
 import { resolveLegal } from "../../../../src/lib/legal/accept";
 import { versionInEffect } from "../../../../src/lib/legal/versions";
+import { selectableStageNames } from "../../../../src/repositories/project/workflow";
 import { prisma } from "../../../../src/services/prisma";
 import { becomePersona, type PersonaKey } from "../../../personas";
 import { acceptCookieConsent } from "../../setup/cookies";
@@ -83,6 +85,90 @@ export async function grantUser(
 	});
 
 	return { id: user.id, email, name };
+}
+
+/**
+ * An industry expert who can be bought for any stage: an approved curator with
+ * an Experienced speciality, open to mentees, free every day around the clock
+ * (UTC) so a first call can be booked whenever the test runs.
+ */
+export async function grantCurator(label: string): Promise<StandUser> {
+	// Named for this run: a curator a stopped run left behind is listed too.
+	const curator = await grantUser(label, "advisor", `Expert ${label} ${RUN}`);
+	const direction = await prisma.workDirection.findFirstOrThrow({
+		orderBy: { name: "asc" },
+		select: { id: true },
+	});
+	const profile = {
+		curation: true,
+		curatorApprovedAt: new Date(),
+		curatorStages: await selectableStageNames(),
+	};
+	await Promise.all([
+		prisma.speciality.create({
+			data: {
+				userId: curator.id,
+				name: "Game designer",
+				specialization: "Systems design",
+				level: SkillLevel.Experienced,
+				workDirectionId: direction.id,
+				isOpenForMentoring: true,
+			},
+		}),
+		prisma.expertProfile.upsert({
+			where: { userId: curator.id },
+			create: { userId: curator.id, ...profile },
+			update: profile,
+		}),
+		prisma.advisorAvailability.upsert({
+			where: { userId: curator.id },
+			create: {
+				userId: curator.id,
+				timeZone: "UTC",
+				confirmedAt: new Date(),
+				rules: {
+					create: {
+						weekdays: [0, 1, 2, 3, 4, 5, 6],
+						ranges: [{ from: 0, to: 24 * 60 }],
+					},
+				},
+			},
+			update: {},
+		}),
+	]);
+	return curator;
+}
+
+/**
+ * The expert's way to a checkpoint request: the Advisor Agreement accepted on
+ * the way in (a TBD text, on the stand only), then the request opened and
+ * answered.
+ */
+export async function answerAsCurator(page: Page, accept: boolean) {
+	await page.goto("/advisor/checkpoints");
+	const terms = page.getByRole("dialog").filter({ hasText: "Please accept our terms" });
+	const asked = await terms
+		.waitFor({ state: "visible", timeout: 10_000 })
+		.then(() => true)
+		.catch(() => false);
+	if (asked) {
+		await terms.getByRole("checkbox", { name: /I accept the Advisor Agreement/ }).check();
+		await terms.getByRole("button", { name: "Accept and continue" }).click();
+		await expect(terms).toBeHidden();
+	}
+	await page.getByRole("button", { name: "Review and answer" }).first().click();
+	await page.getByRole("button", { name: accept ? "Take it on" : "Turn down" }).click();
+}
+
+/** The author hands a paid checkpoint to another expert, first hour they offer. */
+export async function handTo(page: Page, slug: string, expert: string, button: string) {
+	await page.goto(`/checkpoint/new/checkout?project=${slug}`);
+	await page.getByRole("button", { name: button }).click();
+	const modal = page.getByRole("dialog", { name: "Replace the curator" });
+	await modal.getByRole("row", { name: new RegExp(expert) }).first().click();
+	await modal.getByRole("button", { name: /^\d\d:\d\d$/ }).first().click();
+	await modal.getByRole("button", { name: "Hand it to them" }).click();
+	await expect(modal).toBeHidden();
 }
 
 export async function signInAs(browser: Browser, user: StandUser) {
@@ -325,15 +411,42 @@ export async function prove(
 	expect(attached.ok(), await attached.text()).toBe(true);
 }
 
-/** The nightly run, now. */
-export async function runCron(page: Page) {
-	const response = await page.request.get("/api/cron/checkpoints", {
+/** A cron, now: the nightly run, or another by its path. */
+export async function runCron(page: Page, path = "/api/cron/checkpoints") {
+	const response = await page.request.get(path, {
 		headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
 		timeout: 300_000,
 	});
 	expect(response.ok(), await response.text()).toBe(true);
 
 	return response.json();
+}
+
+/** A whole hour from now, `hours` ahead (or back, when negative). */
+export const hoursFromNow = (hours: number) => {
+	const at = new Date(Date.now() + hours * MS_PER_HOUR);
+	at.setUTCMinutes(0, 0, 0);
+	return at;
+};
+
+/** An admin refunds the project's checkpoint from the checkpoints list, for `reason`. */
+export async function refundAsAdmin(
+	admin: Page,
+	project: string,
+	reason: string | RegExp,
+) {
+	await admin.goto("/admin/checkpoints");
+	await admin
+		.getByRole("row")
+		.filter({ hasText: project })
+		.first()
+		.getByRole("button", { name: "Actions" })
+		.click();
+	await admin.getByRole("menuitem", { name: "Refund payment" }).click();
+	const dialog = admin.getByRole("dialog");
+	await dialog.getByText(reason).click();
+	await dialog.getByRole("button", { name: /^Refund / }).click();
+	await expect(admin.getByText(/^Refunded /)).toBeVisible({ timeout: 60_000 });
 }
 
 /**
@@ -387,6 +500,15 @@ export async function removeRun() {
 	});
 	const ids = users.map((user) => user.id);
 	if (ids.length === 0) return;
+
+	// A curator's fees, payouts and requests hold the user; they go first.
+	await prisma.checkpointFee.deleteMany({ where: { curatorId: { in: ids } } });
+	await prisma.adviceRequest.deleteMany({
+		where: { OR: [{ toUserId: { in: ids } }, { fromUserId: { in: ids } }] },
+	});
+	await prisma.curatorPayout.deleteMany({
+		where: { OR: [{ curatorId: { in: ids } }, { paidById: { in: ids } }] },
+	});
 
 	const ofTheirProjects = { equity: { project: { authorId: { in: ids } } } };
 	// Equity is Restrict on the project and its transactions on the

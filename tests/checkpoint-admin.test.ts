@@ -19,7 +19,8 @@ vi.mock("@/services/prisma", () => {
 		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
 		user: { findUnique: vi.fn() },
 		refund: { upsert: vi.fn() },
-		payment: { update: vi.fn() },
+		// No payment kept from a curator who turned it down, unless a test says so.
+		payment: { update: vi.fn(), findFirst: vi.fn(async () => null) },
 		auditLog: { create: vi.fn() },
 		$transaction: vi.fn(),
 	};
@@ -208,6 +209,23 @@ describe("assigning a curator by hand", () => {
 			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "Partner" }),
 		).resolves.toEqual({ ok: true });
 		expect(startAiCheckpoint).toHaveBeenCalledWith("cp1", null);
+	});
+
+	// A curator turned it down and the money stayed: the admin's pick takes it on,
+	// not a free start.
+	it("starts it on the money a declined checkpoint kept", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(draft() as never);
+		vi.mocked(prisma.payment.findFirst).mockResolvedValue({ id: "pay1" } as never);
+
+		await assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "Partner" });
+
+		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+			expect.objectContaining({ data: expect.objectContaining({ paymentId: "pay1" }) }),
+		);
+		expect(startAiCheckpoint).toHaveBeenCalledWith("cp1", "pay1");
+		expect(vi.mocked(prisma.auditLog.create).mock.calls[0][0]).toMatchObject({
+			data: { meta: expect.objectContaining({ free: false }) },
+		});
 	});
 
 	it("refuses the AI when the draft started or was called off meanwhile", async () => {

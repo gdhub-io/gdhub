@@ -106,10 +106,12 @@ export const POST = pipe(
 		}
 	}
 
-	// Accepting takes the money that is held. Turning it down gives it back —
-	// released if it is still only held, refunded if it was already captured,
-	// which is what a checkpoint bought before holds existed still carries.
+	// Accepting takes the money that is held. Turning it down keeps money already
+	// taken (Paddle) with the checkpoint: its author picks another curator or
+	// cancels for a refund, and after CURATOR_REPICK_DAYS the holds cron cancels
+	// and refunds it. A card hold (Stripe) cannot wait that long and is let go.
 	const held = await heldCheckpointPayment(id);
+	const holdOnly = !!held && !!gatewayFor(held.provider).release;
 
 	if (accept) {
 		if (held?.providerTransactionId) {
@@ -123,12 +125,9 @@ export const POST = pipe(
 
 			await markPaymentCaptured(held.id);
 		}
-	} else {
+	} else if (holdOnly) {
 		const returned = await returnCheckpointMoney(id, "curatorDeclined");
-
-		// Money the author paid must not be left behind a checkpoint nobody is
-		// running: better to refuse the decline than to lose track of it.
-		if (held && (!returned || "failed" in returned)) {
+		if (!returned || "failed" in returned) {
 			return apiError.internal("paymentNotSettled");
 		}
 	}

@@ -1,0 +1,50 @@
+{
+	"name": "relevance",
+	"prompt": "{\"model\":\"gpt-4.1-mini\",\"messages\":[{\"role\":\"system\",\"content\":\"You are a strict form-validation assistant for a game-development\\nplatform. For each field, decide whether the user's value plausibly\\nmatches the \\\"expected content\\\" described for that field.\\n\\nRules:\\n- Reason \\\"gibberish\\\" (relevant: false) for keyboard mashing, random\\ncharacters, or meaningless filler (e.g. \\\"asdf\\\", \\\"qwerty\\\", \\\"123456\\\",\\n\\\"aaaaa\\\", \\\"test test\\\").\\n- Reason \\\"irrelevant\\\" (relevant: false) when the text is real language\\nbut does not belong in this field (e.g. \\\"I love swimming\\\" in a job\\ntitle field).\\n- Reason \\\"ok\\\" (relevant: true) for anything that reasonably fits, in ANY\\nlanguage or script. Be tolerant of short but valid answers and of\\npersonal names written in any alphabet.\\n- Judge ONLY topical relevance to the field. Never judge grammar,\\nspelling, style, or quality.\\n- Do NOT flag offensive or unsafe content here — that is handled by a\\nseparate moderation step.\\n\\nThe user's interface language is \\\"en\\\".\"},{\"role\":\"user\",\"content\":\"Validate these fields and answer via the report_field_relevance\\nfunction with exactly one entry per field key.\\n\\nFields:\\n- key: \\\"name\\\"\\nfield name: \\\"Title\\\"\\nexpected content: A plausible name or title for a game or game-development project. Short, invented, or stylized titles are perfectly fine (e.g. \\\"Limbo\\\", \\\"Hollow Knight\\\", \\\"FTL\\\"). Only reject keyboard-mashing, random characters, or obvious filler.\\nuser value: \\\"\\\"\\\"Ironmoss\\\"\\\"\\\"\\n\\n- key: \\\"description\\\"\\nfield name: \\\"Description\\\"\\nexpected content: A meaningful description of a game or game-development project — its concept, genre, gameplay, setting, or goals. Not filler, unrelated text, or gibberish.\\nuser value: \\\"\\\"\\\"A co-op sailing roguelike: two players crew a small boat between islands that flood and drain with the tide.\\\"\\\"\\\"\"}]}",
+	"answer": {
+		"id": "chatcmpl-EeMMAGHs0HQgLfDrOtmyKwsPC84Th",
+		"object": "chat.completion",
+		"created": 1793287766,
+		"model": "gpt-4.1-mini-2025-04-14",
+		"choices": [
+			{
+				"index": 0,
+				"message": {
+					"role": "assistant",
+					"content": null,
+					"tool_calls": [
+						{
+							"id": "call_19G8d865JKBhDD9lHwCQpOz9",
+							"type": "function",
+							"function": {
+								"name": "report_field_relevance",
+								"arguments": "{\"fields\":[{\"key\":\"name\",\"relevant\":true,\"reason\":\"ok\"},{\"key\":\"description\",\"relevant\":true,\"reason\":\"ok\"}]}"
+							}
+						}
+					],
+					"refusal": null,
+					"annotations": []
+				},
+				"logprobs": null,
+				"finish_reason": "stop"
+			}
+		],
+		"usage": {
+			"prompt_tokens": 495,
+			"completion_tokens": 31,
+			"total_tokens": 526,
+			"prompt_tokens_details": {
+				"cached_tokens": 0,
+				"audio_tokens": 0
+			},
+			"completion_tokens_details": {
+				"reasoning_tokens": 0,
+				"audio_tokens": 0,
+				"accepted_prediction_tokens": 0,
+				"rejected_prediction_tokens": 0
+			}
+		},
+		"service_tier": "default",
+		"system_fingerprint": "fp_197486f41a"
+	}
+}

@@ -32,9 +32,8 @@ import {
 import { isEligibleCurator } from "@/repositories/checkpoints/curator-catalog";
 import { getCheckpoint } from "@/repositories/checkpoints/detail";
 import {
-	completedPaymentOf,
 	curatorCharge,
-	heldAmount,
+	keptPayment,
 	pendingCheckout,
 } from "@/repositories/checkpoints/payment";
 import { checkpointViewer } from "@/repositories/checkpoints/viewer";
@@ -138,9 +137,8 @@ export const PUT = pipe(
 
 	// Every read the checks below need, at once; they are still judged in order.
 	const choosing = curatorId !== undefined || !!curatorKind;
-	const [paidWith, held, eligible, firstCallFree] = await Promise.all([
-		choosing ? completedPaymentOf(id) : null,
-		choosing ? heldAmount(id) : null,
+	const [kept, eligible, firstCallFree] = await Promise.all([
+		choosing ? keptPayment(id) : null,
 		curatorId && curatorId !== currentUser.id
 			? isEligibleCurator(curatorId, checkpoint.stageName)
 			: true,
@@ -148,6 +146,8 @@ export const PUT = pipe(
 			? isFirstCallFree(curator, startedAt, id)
 			: true,
 	]);
+	const paidWith = kept?.id ?? null;
+	const held = kept?.amount ?? null;
 
 	// An expert is a waitlist until it opens. A paid draft a curator handed
 	// back keeps its expert path, so the author is not made to pay again.

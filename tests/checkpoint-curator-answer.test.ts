@@ -187,12 +187,32 @@ describe("a curator answering", () => {
 		expect(notifyAuthor).not.toHaveBeenCalled();
 	});
 
-	// Held or already captured, the author gets it back the right way — the
-	// repository decides which, and the answer waits for it either way.
-	it("gives the money back when they turn it down", async () => {
+	// Money Paddle already took stays with the checkpoint: its author picks another
+	// curator or cancels for a refund, and the holds cron refunds it after
+	// CURATOR_REPICK_DAYS. A Stripe card hold cannot wait that long.
+	it("lets a card hold go when they turn it down", async () => {
 		await answer(false);
 
 		expect(returnMoney).toHaveBeenCalledWith("cp1", "curatorDeclined");
+		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "declined");
+	});
+
+	it("refuses the decline when the hold will not let go", async () => {
+		returnMoney.mockResolvedValue({ failed: "holdNotReleased" });
+
+		expect((await answer(false)).status).toBe(500);
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
+	});
+
+	it("keeps the money Paddle took when they turn it down", async () => {
+		paymentFindFirst.mockResolvedValue({
+			id: "pay_1",
+			provider: "PADDLE",
+			providerTransactionId: "txn_1",
+		});
+		await answer(false);
+
+		expect(returnMoney).not.toHaveBeenCalled();
 		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "declined");
 		expect(captureCheckout).not.toHaveBeenCalled();
 		expect(checkpointUpdateMany).toHaveBeenCalledWith(
@@ -215,14 +235,6 @@ describe("a curator answering", () => {
 		});
 	});
 
-	// A decline that could not return the money would leave the author paying
-	// for a checkpoint nobody runs.
-	it("refuses the decline when the money cannot be given back", async () => {
-		returnMoney.mockResolvedValue(null);
-
-		expect((await answer(false)).status).toBe(500);
-		expect(checkpointUpdateMany).not.toHaveBeenCalled();
-	});
 
 	// The checkpoint must not start on a capture that failed: the 28 days would
 	// be running against money nobody has.
