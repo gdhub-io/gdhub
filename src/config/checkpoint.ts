@@ -181,9 +181,13 @@ export const MIN_CHARGE_AFTER_DISCOUNT = 50;
 
 /**
  * Whether a checkpoint with an expert can be bought. Off until there is a seller
- * for human curation (GDHUB-107): choosing an expert leads to a waitlist.
+ * for human curation (GDHUB-107): choosing an expert leads to a waitlist. The
+ * e2e stand opens it (`NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN`) to walk the expert's
+ * flows; production stays closed whatever the variable says.
  */
-export const EXPERT_CHECKPOINT_OPEN = false;
+export const EXPERT_CHECKPOINT_OPEN =
+	process.env.NODE_ENV !== "production" &&
+	process.env.NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN === "1";
 
 /**
  * Who takes the money for a new checkpoint checkout and holds the promotion codes

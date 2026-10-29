@@ -42,6 +42,7 @@ import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import { CallHeader, type CallHeaderProps, callTime } from "./CallHeader";
 import { CallLayout, CallStage, LiveStage, ParticipantTile } from "./CallParts";
 import { CallTeam } from "./CallTeam";
+import { DAILY_EMULATED, emulatedCall } from "./emulated-call";
 import { type CallDevices, PreJoin } from "./PreJoin";
 import styles from "./style.module.scss";
 import { playTestTone } from "./tone";
@@ -63,7 +64,26 @@ export type OpenCallProps = {
 
 /** The open room: one Daily call object for the page, from preview to leaving. */
 export function OpenCall(props: OpenCallProps) {
+	return DAILY_EMULATED ? (
+		<EmulatedCall {...props} />
+	) : (
+		<DailyCall {...props} />
+	);
+}
+
+function DailyCall(props: OpenCallProps) {
 	const callObject = useCallObject({});
+
+	return (
+		<DailyProvider callObject={callObject}>
+			<Room {...props} />
+		</DailyProvider>
+	);
+}
+
+/** On the e2e stand: the same room over an emulated call object. */
+function EmulatedCall(props: OpenCallProps) {
+	const [callObject] = useState(emulatedCall);
 
 	return (
 		<DailyProvider callObject={callObject}>

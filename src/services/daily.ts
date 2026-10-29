@@ -1,6 +1,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { CALL_MAX_PARTICIPANTS } from "@/config/checkpoint";
 import { env } from "@/helpers/env";
+import { dailyEmulated } from "@/lib/stand";
+import { emulatedDaily, emulatedText } from "@/services/daily-emulated";
 
 const API = "https://api.daily.co/v1";
 
@@ -8,6 +10,13 @@ const daily = async <T>(
 	path: string,
 	init?: { method?: string; body?: unknown },
 ): Promise<T> => {
+	if (dailyEmulated()) {
+		return emulatedDaily(
+			path,
+			init?.method ?? "GET",
+			init?.body as Record<string, unknown>,
+		) as T;
+	}
 	const response = await fetch(`${API}${path}`, {
 		method: init?.method ?? "GET",
 		headers: {
@@ -31,10 +40,10 @@ const seconds = (date: Date) => Math.floor(date.getTime() / 1000);
  * long as the call's window, made by whoever asks first.
  */
 export const callRoom = async (name: string, closesAt: Date) => {
-	const existing = await fetch(`${API}/rooms/${name}`, {
-		headers: { Authorization: `Bearer ${env("DAILY_API_KEY")}` },
-	});
-	if (existing.ok) return ((await existing.json()) as { url: string }).url;
+	const existing = await daily<{ url: string }>(`/rooms/${name}`).catch(
+		() => null,
+	);
+	if (existing) return existing.url;
 
 	const room = await daily<{ url: string }>("/rooms", {
 		method: "POST",
@@ -146,7 +155,7 @@ export const transcriptOfJob = async (jobId: string) => {
 		room: recording.room_name,
 		recordingId,
 		startedAt: new Date(recording.start_ts * 1000).toISOString(),
-		text: await (await fetch(link)).text(),
+		text: emulatedText(link) ?? (await (await fetch(link)).text()),
 	};
 };
 

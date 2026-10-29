@@ -7,6 +7,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { onTheStand } from "@/lib/stand";
 
 /**
  * Recorded model answers for the e2e stand (`LLM_CASSETTES`), so a run is fast
@@ -24,8 +25,7 @@ type Mode = "auto" | "replay" | "record";
 const DIR = path.join(process.cwd(), "tests/e2e/cassettes");
 
 export const cassetteMode = (): Mode | null => {
-	if (process.env.NODE_ENV === "production") return null;
-	if (process.env.E2E_TEST_AUTH !== "1") return null;
+	if (!onTheStand()) return null;
 	const mode = process.env.LLM_CASSETTES;
 	return mode === "auto" || mode === "replay" || mode === "record"
 		? mode
