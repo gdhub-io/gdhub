@@ -104,13 +104,22 @@ export async function ensureCheckpointRoom(checkpointId: string) {
  * caller invited if the sync on joining the team did not reach them.
  */
 export async function checkpointRoomFor(checkpointId: string, userId: string) {
-	const room = await ensureCheckpointRoom(checkpointId);
+	// Nearly always the room exists: one read then, instead of making sure of it.
+	const existing = await prisma.chatRoom.findUnique({
+		where: { directKey: checkpointRoomKey(checkpointId) },
+		select: { id: true, matrixRoomId: true, context: true },
+	});
+	const room = existing?.matrixRoomId
+		? { chatRoomId: existing.id, roomId: existing.matrixRoomId }
+		: await ensureCheckpointRoom(checkpointId);
 	if (!room) return null;
 
-	const row = await prisma.chatRoom.findUnique({
-		where: { id: room.chatRoomId },
-		select: { context: true },
-	});
+	const row = existing?.matrixRoomId
+		? existing
+		: await prisma.chatRoom.findUnique({
+				where: { id: room.chatRoomId },
+				select: { context: true },
+			});
 	const context = contextOf(row ?? { context: null });
 	const curatorId = context.userIds?.[0];
 

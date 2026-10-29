@@ -19,6 +19,7 @@ import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
+import { isDeclined, isFreshDraft } from "@/lib/checkpoints/draft";
 import { isRunning } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
@@ -86,16 +87,8 @@ export function PaidPanel({
 	// The few seconds between Stripe returning the author and the webhook landing.
 	// A decline looks identical by status and payment — both are a draft with no
 	// money on it — so the refusal is what tells them apart.
-	const settling =
-		checkpoint.status === CheckpointStatus.Draft &&
-		!checkpoint.paymentId &&
-		!checkpoint.curatorDeclinedAt;
-	// Paid for, a draft again and carrying nobody: the only way a checkpoint
-	// reaches that is a curator handing it back.
-	const declined =
-		checkpoint.status === CheckpointStatus.Draft &&
-		!!checkpoint.curatorDeclinedAt &&
-		!checkpoint.curator;
+	const settling = isFreshDraft(checkpoint);
+	const declined = isDeclined(checkpoint);
 	// The AI curator needs nobody's yes: once the webhook lands the days run.
 	const onTheWay =
 		checkpoint.curatorKind === CheckpointCuratorKind.AI &&

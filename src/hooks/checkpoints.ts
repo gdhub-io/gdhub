@@ -29,24 +29,20 @@ import type {
 	VerdictContextDto,
 } from "@/types/checkpoints";
 
-const listKey = (projectId?: string, page = 1, limit?: number) => [
-	"project-checkpoints",
-	projectId,
-	page,
-	limit,
-];
+// One size for every screen, so they all share one cached list and one request.
+const LIST_LIMIT = 50;
 
 /**
  * What is on the go, what is behind, and whether another one can be started —
  * one request, because the tab shows all three at once.
  */
-export const useCheckpoints = (projectId?: string, page = 1, limit?: number) =>
+export const useCheckpoints = (projectId?: string) =>
 	useQuery({
-		queryKey: listKey(projectId, page, limit),
+		queryKey: ["project-checkpoints", projectId],
 		queryFn: async () =>
 			(
 				await axios.get<CheckpointListResponse>("/api/checkpoint", {
-					params: { projectId, page, limit },
+					params: { projectId, limit: LIST_LIMIT },
 				})
 			).data,
 		enabled: !!projectId,

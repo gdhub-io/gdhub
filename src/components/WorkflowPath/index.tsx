@@ -52,8 +52,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 	const { data: workflow, refetch } = useProjectWorkflow(project.id);
 	const { data: list } = useCheckpoints(
 		can("project.checkpoints.view") ? project.id : undefined,
-		1,
-		50,
 	);
 	const running =
 		list?.current && isRunning(list.current.status) ? list.current : null;

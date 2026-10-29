@@ -56,6 +56,46 @@ describe("getCreationBlocker", () => {
 		expect(prisma.projectWorkflow.findUnique).not.toHaveBeenCalled();
 	});
 
+	it("takes an open current checkpoint as the blocker without reading it again", async () => {
+		const current = {
+			id: "cp1",
+			status: CheckpointStatus.Review,
+			dueAt: new Date("2026-09-28"),
+			stageName: "Prototyping",
+			order: 1,
+		};
+
+		await expect(getCreationBlocker("p1", current)).resolves.toEqual({
+			reason: "checkpointOpen",
+			checkpoint: current,
+		});
+		expect(prisma.projectCheckpoint.findFirst).not.toHaveBeenCalled();
+	});
+
+	// An older paid row may sit behind a newer draft, so a draft current is no answer.
+	it("still looks for an open one behind a current draft", async () => {
+		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue({
+			id: "cp0",
+			status: CheckpointStatus.AwaitingCurator,
+			dueAt: null,
+			stageName: "Prototyping",
+			order: 1,
+		} as never);
+
+		await expect(
+			getCreationBlocker("p1", {
+				id: "cp1",
+				status: CheckpointStatus.Draft,
+				dueAt: null,
+				stageName: "Prototyping",
+				order: 2,
+			}),
+		).resolves.toMatchObject({
+			reason: "checkpointOpen",
+			checkpoint: { id: "cp0" },
+		});
+	});
+
 	// A draft is the attempt itself and does not block. A checkpoint waiting on
 	// its curator does: it is paid for, and a second one beside it would be two
 	// live purchases on one project.

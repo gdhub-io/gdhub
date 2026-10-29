@@ -205,7 +205,7 @@ export type CheckpointDto = {
 	updatedAt: string;
 	items: CheckpointItemDto[];
 	/** Sent by the detail endpoint only — the list does not carry them. */
-	reports?: CheckpointDevlogDto[];
+	reports?: Omit<CheckpointDevlogDto, "content">[];
 	/** Empty until the checkpoint starts: there are no dates to divide yet. */
 	sprints?: CheckpointSprintDto[];
 	/** Detail only, and empty until the checkpoint starts. */

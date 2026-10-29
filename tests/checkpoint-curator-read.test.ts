@@ -14,9 +14,11 @@ vi.mock("@/lib/space-guard", () => ({
 }));
 
 vi.mock("@/repositories/checkpoints/checkpoint", () => ({
-	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 	withProgress: <T>(checkpoint: T) => checkpoint,
 	replaceCheckpointItems: vi.fn(),
+}));
+vi.mock("@/repositories/checkpoints/detail", () => ({
+	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 }));
 
 vi.mock("@/services/prisma", () => ({

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getCheckpoint } from "@/repositories/checkpoints/checkpoint";
+import { getCheckpoint } from "@/repositories/checkpoints/detail";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({

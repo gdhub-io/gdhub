@@ -82,13 +82,11 @@ describe("sprintFactsOf", () => {
 				{
 					id: "r1",
 					publishedAt: "2026-09-06T10:00:00.000Z",
-					content: "one",
 					sprint: 1,
 				},
 				{
 					id: "r2",
 					publishedAt: "2026-09-13T10:00:00.000Z",
-					content: "two",
 					sprint: 2,
 				},
 			],
@@ -232,7 +230,6 @@ describe("sprintNeedsYou", () => {
 					devlog: {
 						id: "r",
 						publishedAt: "2026-09-13T10:00:00.000Z",
-						content: "",
 						sprint: 2,
 					},
 				}),

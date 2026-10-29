@@ -62,6 +62,8 @@ vi.mock("@/repositories/checkpoints/checkpoint", async (actual) => ({
 		await actual<typeof import("@/repositories/checkpoints/checkpoint")>()
 	).createCheckpointItems,
 	getCreationBlocker: (...args: unknown[]) => getCreationBlocker(...args),
+}));
+vi.mock("@/repositories/checkpoints/detail", () => ({
 	toArtifactRef: <T>(artifact: T) => artifact,
 }));
 vi.mock("@/lib/rate-limit", () => ({

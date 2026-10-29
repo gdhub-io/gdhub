@@ -38,6 +38,7 @@ import {
 	useCheckpoint,
 	useDiscardCheckpoint,
 } from "@/hooks/checkpoints";
+import { isDeclined } from "@/lib/checkpoints/draft";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -216,7 +217,7 @@ export function CheckpointOffer({
 
 	const paid = !!draft.paymentId;
 	const waiting = draft.status === CheckpointStatus.AwaitingCurator;
-	const declined = !waiting && !!draft.curatorDeclinedAt && !draft.curator;
+	const declined = isDeclined(draft);
 	const curatorName = draft.curator?.name?.split(" ")[0] ?? "";
 
 	// Where the setup stopped: the step it needs next.

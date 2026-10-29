@@ -12,7 +12,7 @@ import {
 	remindDevlogsDue,
 	remindEvidenceDue,
 	remindVerdictsDue,
-} from "@/services/checkpoints/notifications";
+} from "@/services/checkpoints/reminders";
 
 /**
  * The checkpoints' daily run: a checkpoint whose 28 days are over waits for

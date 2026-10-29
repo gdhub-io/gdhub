@@ -14,10 +14,8 @@ import {
 import { CHECKPOINT_ENTRY_ITEMS_MAX } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { CHECKPOINT_OPEN_STATUSES } from "@/lib/checkpoints/status";
-import {
-	createCheckpointItems,
-	toArtifactRef,
-} from "@/repositories/checkpoints/checkpoint";
+import { createCheckpointItems } from "@/repositories/checkpoints/checkpoint";
+import { toArtifactRef } from "@/repositories/checkpoints/detail";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { prisma } from "@/services/prisma";

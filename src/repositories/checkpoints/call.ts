@@ -7,7 +7,7 @@ import {
 } from "@/lib/checkpoints/call";
 import { currentSessionOf } from "@/lib/checkpoints/sessions";
 import { isRunning } from "@/lib/checkpoints/status";
-import { toArtifactRef } from "@/repositories/checkpoints/checkpoint";
+import { toArtifactRef } from "@/repositories/checkpoints/detail";
 import { getCallBriefs } from "@/repositories/checkpoints/journal";
 import {
 	checkpointNumber,

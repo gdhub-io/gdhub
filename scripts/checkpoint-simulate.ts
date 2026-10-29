@@ -35,11 +35,7 @@ import { approvePlan } from "@/services/checkpoints/flows/plan-edit";
 import { requestPulses } from "@/services/checkpoints/flows/pulse";
 import { adviseOnPlan, writeDueBriefs, writeDueReviews } from "@/services/checkpoints/flows/review";
 import { moveFinishedToReview } from "@/services/checkpoints/flows/verdict";
-import {
-	remindDevlogsDue,
-	remindEvidenceDue,
-	remindVerdictsDue,
-} from "@/services/checkpoints/notifications";
+import { remindDevlogsDue, remindEvidenceDue, remindVerdictsDue } from "@/services/checkpoints/reminders";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
 

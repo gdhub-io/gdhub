@@ -9,6 +9,7 @@ import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { useCreateCheckpoint } from "@/hooks/checkpoints";
+import { isDeclined } from "@/lib/checkpoints/draft";
 import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoints/facts";
 import { isPending } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -83,7 +84,7 @@ export function CheckpointDetail({
 				// A curator who said no leaves a draft with no money on it: the
 				// hold went back. The page still has to say that happened before it
 				// becomes an ordinary draft again.
-				(!!checkpoint.curatorDeclinedAt && !checkpoint.curator) ||
+				isDeclined(checkpoint) ||
 				search?.get("paid") === "1"));
 
 	const asked = search?.get("step");

@@ -32,15 +32,17 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
+const { notifyAuthorOfAnswer } = await import(
+	"@/services/checkpoints/notifications"
+);
 const {
-	notifyAuthorOfAnswer,
 	remindCallsSoon,
 	remindDevlogsDue,
 	remindEvidenceDue,
 	remindPlansUnsent,
 	remindScopeClosing,
 	remindVerdictsDue,
-} = await import("@/services/checkpoints/notifications");
+} = await import("@/services/checkpoints/reminders");
 
 const person = (id: string) => ({ id, email: `${id}@x.test` });
 

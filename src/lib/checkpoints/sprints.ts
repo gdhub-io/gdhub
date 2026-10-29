@@ -4,6 +4,7 @@ import {
 	SPRINTS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
 import { dayNumberOn, utcStartOfDay } from "@/lib/checkpoints/days";
+import type { CheckpointSprintDto } from "@/types/checkpoints";
 
 /**
  * The four sprints inside a checkpoint.
@@ -66,3 +67,32 @@ export const sprintOfDate = (startedAt: Date, at: Date) => {
 /** The sprint under way, clamped to the last one once the 28 days are over. */
 export const currentSprint = (startedAt: Date, now = new Date()) =>
 	sprintOfDay(dayNumberOn(startedAt, now));
+
+/** The four sprints, or nothing at all: a draft has no dates to divide. */
+export const buildSprints = (startedAt: Date | null): CheckpointSprintDto[] => {
+	if (!startedAt) return [];
+
+	const now = new Date();
+	const today = utcStartOfDay(now);
+	const current = currentSprint(startedAt, now);
+
+	return Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, index) => {
+		const number = index + 1;
+		const { from, to } = sprintRange(startedAt, number);
+		const { firstDay, lastDay } = sprintDayRange(number);
+		// `currentSprint` clamps to the fourth, so a finished sprint is decided by
+		// its last day rather than by which one it names.
+		const state =
+			to < today ? "done" : number === current ? "current" : "ahead";
+
+		return {
+			number,
+			from: from.toISOString(),
+			to: to.toISOString(),
+			firstDay,
+			lastDay,
+			devlogDay: devlogDayOf(number),
+			state,
+		} satisfies CheckpointSprintDto;
+	});
+};

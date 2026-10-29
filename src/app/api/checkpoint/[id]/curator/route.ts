@@ -1,4 +1,5 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import { z } from "zod";
 import {
 	apiError,
@@ -151,9 +152,10 @@ export const POST = pipe(
 	}
 
 	// The chat opens as the checkpoint starts, and the curator's yes is what
-	// starts it. The first click on the chat makes the room if this could not.
+	// starts it. The first click on the chat makes the room if this could not,
+	// so the answer does not wait on Matrix.
 	if (accept) {
-		await syncChat(`start ${id}`, () => ensureCheckpointRoom(id));
+		after(() => syncChat(`start ${id}`, () => ensureCheckpointRoom(id)));
 	}
 
 	await notifyAuthorOfAnswer(

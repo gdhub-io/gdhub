@@ -3,7 +3,7 @@ import { sessionDay } from "@/lib/checkpoints/days";
 import { dateOfDay } from "@/lib/checkpoints/plan";
 import { pulseIdOf } from "@/lib/checkpoints/pulse-token";
 import { sprintRange } from "@/lib/checkpoints/sprints";
-import { pulseCell } from "@/repositories/checkpoints/checkpoint";
+import { pulseCell } from "@/repositories/checkpoints/detail";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { prisma } from "@/services/prisma";
 import type { PulseState, PulseViewDto } from "@/types/checkpoints";

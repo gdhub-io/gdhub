@@ -24,18 +24,17 @@ import {
 	checkpointDraftState,
 	checkpointStatusOf,
 	deleteCheckpoint,
-	getCheckpoint,
 	replaceCheckpointItems,
 	updateCheckpointDraft,
 	updateCheckpointDraftAndBook,
 	withProgress,
 } from "@/repositories/checkpoints/checkpoint";
 import { isEligibleCurator } from "@/repositories/checkpoints/curator-catalog";
+import { getCheckpoint } from "@/repositories/checkpoints/detail";
 import {
 	completedPaymentOf,
 	curatorCharge,
 	heldAmount,
-	isCheckpointPaid,
 	pendingCheckout,
 } from "@/repositories/checkpoints/payment";
 import { checkpointViewer } from "@/repositories/checkpoints/viewer";
@@ -137,12 +136,25 @@ export const PUT = pipe(
 
 	if (!mayEdit) return apiError.badRequest("checkpointNotDraft");
 
+	// Every read the checks below need, at once; they are still judged in order.
+	const choosing = curatorId !== undefined || !!curatorKind;
+	const [paidWith, held, eligible, firstCallFree] = await Promise.all([
+		choosing ? completedPaymentOf(id) : null,
+		choosing ? heldAmount(id) : null,
+		curatorId && curatorId !== currentUser.id
+			? isEligibleCurator(curatorId, checkpoint.stageName)
+			: true,
+		human && startedAt && curator
+			? isFirstCallFree(curator, startedAt, id)
+			: true,
+	]);
+
 	// An expert is a waitlist until it opens. A paid draft a curator handed
 	// back keeps its expert path, so the author is not made to pay again.
 	if (
 		!EXPERT_CHECKPOINT_OPEN &&
 		curatorKind === CheckpointCuratorKind.Human &&
-		!(await isCheckpointPaid(id))
+		!paidWith
 	) {
 		return apiError.badRequest("expertClosed");
 	}
@@ -155,14 +167,12 @@ export const PUT = pipe(
 			return apiError.badRequest("curatorIsAuthor");
 		}
 
-		if (!(await isEligibleCurator(curatorId, checkpoint.stageName)))
-			return apiError.badRequest("curatorNotOpenForMentoring");
+		if (!eligible) return apiError.badRequest("curatorNotOpenForMentoring");
 	}
 
 	// Money already held buys exactly one price: a dearer curator would need a
 	// top-up and a cheaper one a partial refund, and neither exists yet.
-	if (curatorId !== undefined || curatorKind) {
-		const held = await heldAmount(id);
+	if (choosing) {
 		const charge =
 			held === null
 				? null
@@ -180,7 +190,7 @@ export const PUT = pipe(
 	// With a person the start is their first call, so it must still open a free
 	// series of five with them; the hour belongs to that curator alone.
 	if (human && startedAt) {
-		if (!curator || !(await isFirstCallFree(curator, startedAt, id))) {
+		if (!curator || !firstCallFree) {
 			return apiError.badRequest("slotTaken");
 		}
 	}
@@ -196,10 +206,6 @@ export const PUT = pipe(
 	// A curator who declined leaves a paid checkpoint back in Draft. Naming
 	// someone else sends it to them rather than asking the author to pay again;
 	// naming the AI starts it, exactly as paying for the AI does.
-	const paidWith =
-		curatorId !== undefined || curatorKind
-			? await completedPaymentOf(id)
-			: null;
 	const rehomedToAi = !!paidWith && curatorKind === CheckpointCuratorKind.AI;
 	const rehomedToHuman = !!paidWith && !rehomedToAi;
 	const move =
@@ -256,13 +262,11 @@ export const PUT = pipe(
 		}
 	}
 
-	if (inputs) {
-		await replaceCheckpointItems(id, CheckpointItemKind.Input, inputs);
-	}
-
-	if (outcomes) {
-		await replaceCheckpointItems(id, CheckpointItemKind.Outcome, outcomes);
-	}
+	await Promise.all([
+		inputs && replaceCheckpointItems(id, CheckpointItemKind.Input, inputs),
+		outcomes &&
+			replaceCheckpointItems(id, CheckpointItemKind.Outcome, outcomes),
+	]);
 
 	return json(withProgress(await getCheckpoint(id)));
 });

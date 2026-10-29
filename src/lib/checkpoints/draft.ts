@@ -1,6 +1,7 @@
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
+	CheckpointStatus,
 } from "@/config/prisma-enums";
 import type { CheckpointDto } from "@/types/checkpoints";
 
@@ -40,3 +41,25 @@ export const draftMissing = (
 
 	return missing;
 };
+
+type DraftState = Pick<
+	CheckpointDto,
+	"status" | "paymentId" | "curatorDeclinedAt" | "curator"
+>;
+
+/** A draft as it was made: never paid for, never handed back. */
+export const isFreshDraft = (checkpoint: Omit<DraftState, "curator">) =>
+	checkpoint.status === CheckpointStatus.Draft &&
+	!checkpoint.paymentId &&
+	!checkpoint.curatorDeclinedAt;
+
+/**
+ * Paid for, a draft again and carrying nobody: the only way a checkpoint
+ * reaches that is a curator handing it back.
+ */
+export const isDeclined = (
+	checkpoint: Pick<DraftState, "status" | "curatorDeclinedAt" | "curator">,
+) =>
+	checkpoint.status === CheckpointStatus.Draft &&
+	!!checkpoint.curatorDeclinedAt &&
+	!checkpoint.curator;

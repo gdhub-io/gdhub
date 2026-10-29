@@ -18,9 +18,9 @@ import {
 	detachEvidence,
 	evidenceArtifactOf,
 	evidenceTargetOf,
-	getCheckpoint,
 	withProgress,
 } from "@/repositories/checkpoints/checkpoint";
+import { getCheckpoint } from "@/repositories/checkpoints/detail";
 import {
 	type CheckpointEvidenceBody,
 	CheckpointEvidenceSchema,

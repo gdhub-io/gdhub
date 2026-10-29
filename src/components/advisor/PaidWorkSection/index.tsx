@@ -4,7 +4,6 @@ import {
 	IconExternalLink,
 	IconFileCheck,
 	IconInfoCircle,
-	IconLock,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -16,9 +15,6 @@ import {
 	Form,
 	Input,
 	Radio,
-	Select,
-	Switch,
-	Tooltip,
 	Typography,
 } from "antd";
 import dayjs from "dayjs";
@@ -31,7 +27,7 @@ import {
 	missingLegalCode,
 	outdatedLegalCode,
 } from "@/components/legal/ClickwrapField";
-import { IconTile, StatusDot } from "@/components/ui";
+import { IconTile } from "@/components/ui";
 import { LEGAL_DOCUMENTS } from "@/config/legal/registry";
 import { ExpertInvoicing } from "@/config/prisma-enums";
 import {
@@ -39,8 +35,9 @@ import {
 	type PaidWorkBody,
 	useInvoicingLabels,
 } from "@/hooks/payouts";
-import { validPayoutAccount } from "@/lib/payout-account";
 import type { CurationDto, PaidWorkDto } from "@/types/checkpoints";
+import { AccountField } from "./AccountField";
+import { CurationBlock } from "./CurationBlock";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;
@@ -272,84 +269,14 @@ export function PaidWorkSection({
 							<Input maxLength={140} autoComplete="name" />
 						</Form.Item>
 
-						{editingAccount ? (
-							<Form.Item
-								name="account"
-								label={t(
-									"advisor.settings.paid-work.account.label",
-									"IBAN or account number",
-								)}
-								extra={
-									paidWork.account ? (
-										<Flex justify="space-between" align="center" gap={12} wrap>
-											<span>
-												{t(
-													"advisor.settings.paid-work.account.changeHelp",
-													"The next payout goes to the new account.",
-												)}
-											</span>
-											<Button
-												type="link"
-												onClick={keepAccount}
-												className={styles.inlineLink}
-											>
-												{t(
-													"advisor.settings.paid-work.account.keep",
-													"Keep {account}",
-													{ account: paidWork.account },
-												)}
-											</Button>
-										</Flex>
-									) : undefined
-								}
-								rules={[
-									{
-										validator: (_, value?: string) =>
-											value && validPayoutAccount(value)
-												? Promise.resolve()
-												: Promise.reject(new Error(accountError)),
-									},
-								]}
-								className={styles.item}
-							>
-								<Input
-									autoFocus={changing}
-									autoComplete="off"
-									spellCheck={false}
-									placeholder={
-										paidWork.account
-											? t(
-													"advisor.settings.paid-work.account.placeholder",
-													"New IBAN or account number",
-												)
-											: undefined
-									}
-								/>
-							</Form.Item>
-						) : (
-							<Form.Item
-								label={t(
-									"advisor.settings.paid-work.account.label",
-									"IBAN or account number",
-								)}
-								className={styles.item}
-							>
-								<Input
-									readOnly
-									value={paidWork.account ?? ""}
-									className={styles.masked}
-									suffix={
-										<Button
-											type="link"
-											onClick={() => setChanging(true)}
-											className={styles.inlineLink}
-										>
-											{t("advisor.settings.paid-work.account.change", "Change")}
-										</Button>
-									}
-								/>
-							</Form.Item>
-						)}
+						<AccountField
+							editingAccount={editingAccount}
+							paidWork={paidWork}
+							keepAccount={keepAccount}
+							accountError={accountError}
+							changing={changing}
+							setChanging={setChanging}
+						/>
 
 						<Form.Item
 							name="invoicing"
@@ -462,161 +389,5 @@ export function PaidWorkSection({
 				</Flex>
 			</Flex>
 		</Form>
-	);
-}
-
-/** Frames `S5YkC` / `JPpKq` / `Q8dNW0`: the switch, the stages and one curator status. */
-function CurationBlock({
-	curation,
-	askingAgain,
-	onAskAgain,
-}: {
-	curation: CurationDto;
-	askingAgain?: boolean;
-	onAskAgain: () => Promise<unknown>;
-}) {
-	const { t } = useTranslate();
-	const { message } = App.useApp();
-	const lockedReason = t(
-		"advisor.settings.paid-work.curator.locked-payout",
-		"Save your payout details first",
-	);
-	const notOffered = t(
-		"advisor.settings.paid-work.curator.notOffered",
-		"You're not offered to authors until GDHub approves you.",
-	);
-	const day = (date: string | null) =>
-		date ? dayjs(date).format("D MMM") : "";
-
-	const askAgain = async () => {
-		try {
-			await onAskAgain();
-		} catch {
-			message.error(
-				t(
-					"advisor.settings.paid-work.curator.saveFailed",
-					"Couldn't save project curation. Try again.",
-				),
-			);
-		}
-	};
-
-	return (
-		<div className={styles.curation}>
-			<Flex justify="space-between" align="center" gap={12}>
-				<Text
-					className={curation.locked ? styles.rowTitleLocked : styles.rowTitle}
-				>
-					{t("advisor.settings.paid-work.projectCuration", "Project curation")}
-				</Text>
-				<Tooltip title={curation.locked ? lockedReason : undefined}>
-					<Flex align="center" gap={8}>
-						{curation.locked && (
-							<IconLock size={14} className={styles.lockIcon} />
-						)}
-						<Form.Item name="curationOn" valuePropName="checked" noStyle>
-							<Switch
-								disabled={curation.locked}
-								aria-label={t(
-									"advisor.settings.paid-work.projectCuration",
-									"Project curation",
-								)}
-							/>
-						</Form.Item>
-					</Flex>
-				</Tooltip>
-			</Flex>
-
-			<Form.Item
-				name="curationStages"
-				label={t(
-					"advisor.settings.paid-work.curator.stages",
-					"Stages you curate",
-				)}
-				className={styles.item}
-			>
-				<Select
-					mode="multiple"
-					disabled={curation.locked}
-					placeholder={t(
-						"advisor.settings.paid-work.curator.stagesPlaceholder",
-						"Select stages",
-					)}
-					options={curation.stageOptions.map((stage) => ({
-						value: stage,
-						label: stage,
-					}))}
-				/>
-			</Form.Item>
-
-			{curation.status === "pending" && (
-				<Flex vertical gap={4}>
-					<StatusDot
-						tone="warning"
-						className={styles.statusLabel}
-						label={t(
-							"advisor.settings.paid-work.curator.pending",
-							"Waiting for review · sent {date}",
-							{ date: day(curation.requestedAt) },
-						)}
-					/>
-					<Text type="secondary" className={styles.note}>
-						{notOffered}
-					</Text>
-				</Flex>
-			)}
-
-			{curation.status === "approved" && (
-				<Flex vertical gap={4}>
-					<StatusDot
-						tone="success"
-						className={styles.statusLabel}
-						label={t(
-							"advisor.settings.paid-work.curator.approved",
-							"Approved · {date}",
-							{ date: day(curation.approvedAt) },
-						)}
-					/>
-					{/* With the switch off the approval stays, but nobody is offered them. */}
-					{curation.on && (
-						<Text type="secondary" className={styles.note}>
-							{t(
-								"advisor.settings.paid-work.curator.offered",
-								"Authors are offered you at these stages.",
-							)}
-						</Text>
-					)}
-				</Flex>
-			)}
-
-			{curation.status === "notApproved" && (
-				<Flex vertical gap={4} align="flex-start">
-					<StatusDot
-						tone="neutral"
-						className={styles.statusLabel}
-						label={t(
-							"advisor.settings.paid-work.curator.notApproved",
-							"Not approved",
-						)}
-					/>
-					{curation.note && (
-						<Text type="secondary" className={styles.note}>
-							“{curation.note}”
-						</Text>
-					)}
-					<Text type="secondary" className={styles.note}>
-						{notOffered}
-					</Text>
-					<Button
-						type="link"
-						loading={askingAgain}
-						onClick={askAgain}
-						className={styles.askAgain}
-					>
-						{t("advisor.settings.paid-work.curator.askAgain", "Ask again")}
-					</Button>
-				</Flex>
-			)}
-		</div>
 	);
 }
