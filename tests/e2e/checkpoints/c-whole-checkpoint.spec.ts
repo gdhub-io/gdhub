@@ -169,6 +169,14 @@ test.describe.serial("a whole AI checkpoint", () => {
 			.toBeGreaterThanOrEqual(3);
 		log.step("Five tasks set; four with evidence, three of them read by the AI");
 
+		// Since GDHUB-117 the author sends the tasks for the AI's check and approves
+		// the plan; until then a removed task is deleted rather than cut.
+		const check = await page.request.post(`/api/checkpoint/${checkpointId}/plan/advice`);
+		expect(check.ok(), await check.text()).toBe(true);
+		const approve = await page.request.post(`/api/checkpoint/${checkpointId}/plan/approve`);
+		expect(approve.ok(), await approve.text()).toBe(true);
+		log.step("The tasks were checked and the plan approved");
+
 		await sprintDevlog("Sprint 1: the tide floods and drains one island; two players can crew the boat.");
 	});
 

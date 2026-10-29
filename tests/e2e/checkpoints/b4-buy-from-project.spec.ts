@@ -56,8 +56,9 @@ test("an AI checkpoint bought from the project space starts", async ({
 	log.step(`Active; payment ${payment.providerTransactionId} completed`);
 
 	await expect(page.getByText("You're on your way")).toBeVisible({ timeout: 60_000 });
-	await page.getByRole("button", { name: "Go to the workflow" }).click();
-	await page.waitForURL(/\/workflow$/);
+	// Since GDHUB-117 day 1 with the AI curator opens on its letter and the plan.
+	await page.getByRole("button", { name: "Read the curator's letter" }).click();
+	await page.waitForURL(/\/workflow\/cp1\?sprint=1&tab=plan$/);
 	await expect(page.getByText(/Checkpoint 1/).first()).toBeVisible();
-	log.step("The ready screen leads to the workflow, where the checkpoint runs");
+	log.step("The ready screen leads to the curator's letter on the plan");
 });

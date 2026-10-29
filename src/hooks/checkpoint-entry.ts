@@ -93,6 +93,12 @@ export const useSaveEntryProject = () => {
 			queryClient.invalidateQueries({
 				queryKey: entryKeys.prefill(input.projectId),
 			});
+			// Saving the project opens its draft. The list is shared with the
+			// project's path, which may hold it from before: drop it, so the
+			// checkout waits for one that has the draft instead of leaving.
+			queryClient.removeQueries({
+				queryKey: ["project-checkpoints", input.projectId],
+			});
 		},
 	});
 };

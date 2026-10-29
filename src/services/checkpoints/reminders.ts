@@ -1,3 +1,4 @@
+import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import {
 	AI_REMIND_HOURS,
@@ -154,8 +155,9 @@ export const remindEvidenceDue = async (now = new Date()) => {
 	const unproven = {
 		kind: CheckpointItemKind.Outcome,
 		cut: false,
-		artifactId: null,
-	};
+		// A task is proven by its evidence rows since GDHUB-115.
+		evidence: { none: {} },
+	} satisfies Prisma.CheckpointItemWhereInput;
 	// Today is that day for a checkpoint started EVIDENCE_REMIND_DAY - 1 midnights ago.
 	const startDay =
 		utcStartOfDay(now).getTime() - (EVIDENCE_REMIND_DAY - 1) * MS_PER_DAY;

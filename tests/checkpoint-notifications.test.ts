@@ -338,7 +338,7 @@ describe("remindEvidenceDue", () => {
 				gte: new Date("2026-10-01T00:00:00Z"),
 				lt: new Date("2026-10-02T00:00:00Z"),
 			},
-			items: { some: { cut: false, artifactId: null } },
+			items: { some: { cut: false, evidence: { none: {} } } },
 		});
 	});
 
