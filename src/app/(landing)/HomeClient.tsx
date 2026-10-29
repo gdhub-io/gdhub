@@ -21,7 +21,7 @@ import { LandingLayout } from "@/components/layouts/LandingLayout";
 import { publicTheme } from "@/config/design";
 import { useCheckpointPurchaseOpen } from "@/contexts/CheckpointPurchaseContext";
 import { useTelegram } from "@/helpers/useTelegram";
-import type { LandingData } from "@/repositories/landing.repository";
+import type { LandingData } from "@/repositories/content/landing";
 import styles from "./home.module.scss";
 
 export interface HomeStats {

@@ -15,7 +15,7 @@ vi.mock("@/services/evidence/frames", () => ({
 		seconds: Math.min(90, maxSeconds),
 	})),
 }));
-vi.mock("@/repositories/artifact-check", () => ({ checkArtifact: vi.fn() }));
+vi.mock("@/repositories/project/artifact-check", () => ({ checkArtifact: vi.fn() }));
 vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyEvidenceMismatch: vi.fn(),
 }));

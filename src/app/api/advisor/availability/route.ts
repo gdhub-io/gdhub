@@ -9,7 +9,7 @@ import {
 import {
 	getAvailability,
 	saveAvailability,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import {
 	type AvailabilityBody,
 	AvailabilitySchema,

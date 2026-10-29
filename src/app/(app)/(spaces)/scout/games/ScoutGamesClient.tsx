@@ -36,8 +36,8 @@ import {
 } from "@/helpers/investment";
 import { toOptions } from "@/helpers/select";
 import type { PageMeta } from "@/lib/pagination";
-import type { ScoutCabinet } from "@/repositories/scout";
-import type { ScoutFacets } from "@/repositories/scout.games";
+import type { ScoutFacets } from "@/repositories/scout/games";
+import type { ScoutCabinet } from "@/repositories/scout/scout";
 import type { InvestmentEstimate } from "@/services/investment/estimate";
 import styles from "./style.module.scss";
 

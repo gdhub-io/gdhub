@@ -100,7 +100,7 @@ describe("advisor space definition", () => {
 
 describe("advisor space adapter", () => {
 	const resolve = async () => {
-		const { advisorSpaceAdapter } = await import("@/repositories/advisor.space");
+		const { advisorSpaceAdapter } = await import("@/repositories/advisor/space");
 		return advisorSpaceAdapter.resolve?.("", advisor);
 	};
 
@@ -120,7 +120,7 @@ describe("advisor space adapter", () => {
 
 describe("inbox filters", () => {
 	it("keeps declined and withdrawn questions out of every working filter", async () => {
-		const { REQUEST_FILTERS } = await import("@/repositories/advisor.requests");
+		const { REQUEST_FILTERS } = await import("@/repositories/advisor/requests");
 
 		for (const filter of ["new", "inProgress", "answered"] as const) {
 			expect(REQUEST_FILTERS[filter]).not.toContain("Rejected");
@@ -129,7 +129,7 @@ describe("inbox filters", () => {
 	});
 
 	it("answers only for the status that means the advisor finished", async () => {
-		const { REQUEST_FILTERS } = await import("@/repositories/advisor.requests");
+		const { REQUEST_FILTERS } = await import("@/repositories/advisor/requests");
 
 		expect(REQUEST_FILTERS.answered).toEqual(["Executed"]);
 		// `all` filters on nothing, which is what shows the history.
@@ -138,7 +138,7 @@ describe("inbox filters", () => {
 
 	it("counts the inbox and not the search", async () => {
 		const { countAdvisorRequests } = await import(
-			"@/repositories/advisor.requests"
+			"@/repositories/advisor/requests"
 		);
 
 		requestGroupBy.mockResolvedValue([
@@ -158,10 +158,10 @@ describe("inbox filters", () => {
 
 describe("listing the inbox", () => {
 	const list = async (args: Parameters<
-		typeof import("@/repositories/advisor.requests").listAdvisorRequests
+		typeof import("@/repositories/advisor/requests").listAdvisorRequests
 	>[1]) => {
 		const { listAdvisorRequests } = await import(
-			"@/repositories/advisor.requests"
+			"@/repositories/advisor/requests"
 		);
 		await listAdvisorRequests("u-advisor", args);
 		return requestFindMany.mock.calls.at(-1)?.[0] as {
@@ -209,7 +209,7 @@ describe("listing the inbox", () => {
 describe("the speciality a question was asked in", () => {
 	const askedIn = async () => {
 		const { askedInSpeciality } = await import(
-			"@/repositories/advisor.requests"
+			"@/repositories/advisor/requests"
 		);
 		return askedInSpeciality("u-advisor");
 	};

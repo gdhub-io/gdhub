@@ -1,4 +1,4 @@
-import { getProjectCardFacts } from "@/repositories/project-card.repository";
+import { getProjectCardFacts } from "@/repositories/project/card";
 import type { ProjectActivityRow, ProjectLink } from "@/types/project";
 import { prisma } from ".";
 

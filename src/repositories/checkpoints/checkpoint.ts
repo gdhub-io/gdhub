@@ -23,7 +23,7 @@ import {
 	checkpointMove,
 	isOpen,
 } from "@/lib/checkpoints/status";
-import { bookSessions } from "@/repositories/advisor-availability";
+import { bookSessions } from "@/repositories/advisor/availability";
 import { checkpointLineage } from "@/repositories/checkpoints/number";
 import {
 	checkpointSelect,
@@ -35,8 +35,8 @@ import {
 import {
 	ensureCheckpointStage,
 	type Tx,
-} from "@/repositories/project-workflow";
-import { CONFIRMED_STATUS } from "@/repositories/scout.games";
+} from "@/repositories/project/workflow";
+import { CONFIRMED_STATUS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 
 /**

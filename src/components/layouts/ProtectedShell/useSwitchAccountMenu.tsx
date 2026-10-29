@@ -8,7 +8,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useMemo } from "react";
 import { endChatSession } from "@/components/Chat/session";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import type { FixtureUser } from "@/repositories/dev-fixture-users.repository";
+import type { FixtureUser } from "@/repositories/admin/dev-fixture-users";
 import styles from "./style.module.scss";
 
 const { Text } = Typography;

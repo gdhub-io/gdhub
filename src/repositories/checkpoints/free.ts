@@ -2,7 +2,7 @@ import { CHECKPOINT_GOAL_MAX, INPUT_ARTIFACTS } from "@/config/checkpoint";
 import { CheckpointItemKind, ProjectStatus } from "@/config/prisma-enums";
 import { CHECKPOINT_CURRENT_STATUSES } from "@/lib/checkpoints/status";
 import type { AssignCuratorInput } from "@/repositories/checkpoints/admin";
-import { UNSELECTABLE_STAGES } from "@/repositories/project-workflow";
+import { UNSELECTABLE_STAGES } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 import type { FreeCheckpointProjectDto } from "@/types/checkpoints";
 /**

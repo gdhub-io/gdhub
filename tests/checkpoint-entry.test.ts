@@ -76,7 +76,7 @@ vi.mock("@/services/access/membership", () => ({
 	joinSpace: (...args: unknown[]) => joinSpace(...args),
 }));
 vi.mock("@/services/brevo/sync", () => ({ syncUserToBrevo: vi.fn() }));
-vi.mock("@/repositories/project-workflow", () => ({
+vi.mock("@/repositories/project/workflow", () => ({
 	ensureCheckpointStage: (...args: unknown[]) => ensureCheckpointStage(...args),
 }));
 vi.mock("@/repositories/checkpoints/number", () => ({

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	checkArtifact,
 	sweepArtifactChecks,
-} from "@/repositories/artifact-check";
+} from "@/repositories/project/artifact-check";
 import { openLink } from "@/services/artifact-check/safe-fetch";
 import { prisma } from "@/services/prisma";
 

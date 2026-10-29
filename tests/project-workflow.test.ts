@@ -143,7 +143,7 @@ const {
 	ensureCheckpointStage,
 	placeProjectOnStage,
 	selectableStageNames,
-} = await import("@/repositories/project-workflow");
+} = await import("@/repositories/project/workflow");
 
 const tx = db as never;
 const NOW = new Date("2026-10-16T10:00:00Z");

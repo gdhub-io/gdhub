@@ -30,7 +30,7 @@ vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfAnswer: (...a: unknown[]) => notifyAuthor(...a),
 }));
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

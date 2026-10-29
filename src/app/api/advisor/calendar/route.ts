@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { advisorCalendar } from "@/repositories/advisor-availability";
+import { advisorCalendar } from "@/repositories/advisor/availability";
 
 /** Every checkpoint call booked with the asker, upcoming and past. */
 export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {

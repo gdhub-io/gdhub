@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { getProjectActivity } from "@/repositories/project-activity.repository";
+import { getProjectActivity } from "@/repositories/project/activity";
 
 const ActivityQuerySchema = z.object({
 	projectId: z.string().min(1),

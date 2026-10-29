@@ -14,7 +14,7 @@ vi.mock("../src/services/prisma", () => ({
 	},
 }));
 
-import { getProjectActivity } from "../src/repositories/project-activity.repository";
+import { getProjectActivity } from "../src/repositories/project/activity";
 
 const at = (iso: string) => new Date(iso);
 

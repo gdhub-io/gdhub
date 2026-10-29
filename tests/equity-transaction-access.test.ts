@@ -14,7 +14,7 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-vi.mock("@/repositories/project-equity.repository", () => ({
+vi.mock("@/repositories/project/equity", () => ({
 	ProjectEquityRepository: { getTransactionHistory: vi.fn(() => []) },
 }));
 

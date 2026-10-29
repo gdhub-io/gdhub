@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { FixtureUser } from "@/repositories/dev-fixture-users.repository";
+import type { FixtureUser } from "@/repositories/admin/dev-fixture-users";
 
 const { Title, Text } = Typography;
 

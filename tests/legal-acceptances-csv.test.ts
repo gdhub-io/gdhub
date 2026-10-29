@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("@/services/prisma", () => ({ prisma: {} }));
 
 const { acceptancesCsv } = await import(
-	"@/repositories/legal-acceptances.repository"
+	"@/repositories/legal/acceptances"
 );
 
 const row = (userAgent: string) => ({

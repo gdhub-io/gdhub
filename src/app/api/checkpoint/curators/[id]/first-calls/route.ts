@@ -1,5 +1,5 @@
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
-import { freeFirstCallsFor } from "@/repositories/advisor-availability";
+import { freeFirstCallsFor } from "@/repositories/advisor/availability";
 import { FirstCallsQuerySchema } from "@/schemas/advisor-availability";
 
 /**

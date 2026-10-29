@@ -25,10 +25,7 @@ import {
 	markPaymentCaptured,
 	returnToAuthor,
 } from "@/repositories/checkpoints/payment";
-import {
-	latestAcceptance,
-	needsAcceptance,
-} from "@/repositories/legal.repository";
+import { latestAcceptance, needsAcceptance } from "@/repositories/legal/legal";
 import {
 	ensureCheckpointRoom,
 	syncChat,

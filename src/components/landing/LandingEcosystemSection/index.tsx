@@ -6,7 +6,7 @@ import ProjectsIsland from "@/assets/images/landing/v2/district-projects.webp";
 import ScoutIsland from "@/assets/images/landing/v2/district-scout.webp";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
-import type { LandingData } from "@/repositories/landing.repository";
+import type { LandingData } from "@/repositories/content/landing";
 import styles from "./style.module.scss";
 
 const { Title, Paragraph, Text } = Typography;

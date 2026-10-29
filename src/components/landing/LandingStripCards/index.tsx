@@ -10,7 +10,7 @@ import type {
 	LandingExpert,
 	LandingProject,
 	LandingTalent,
-} from "@/repositories/landing.repository";
+} from "@/repositories/content/landing";
 import styles from "./style.module.scss";
 
 const { Text, Paragraph } = Typography;

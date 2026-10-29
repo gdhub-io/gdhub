@@ -9,14 +9,14 @@ vi.mock("../src/auth", () => ({
 	auth: vi.fn(),
 }));
 
-vi.mock("../src/repositories/dev-fixture-users.repository", () => ({
+vi.mock("../src/repositories/admin/dev-fixture-users", () => ({
 	listFixtureUsers: vi.fn(),
 }));
 
 vi.mock("../src/services/prisma", () => ({ prisma: {} }));
 
 import { GET } from "../src/app/api/dev/fixture-users/route";
-import { listFixtureUsers } from "../src/repositories/dev-fixture-users.repository";
+import { listFixtureUsers } from "../src/repositories/admin/dev-fixture-users";
 
 const fixtures = [
 	{ email: "scout@gdhub.local", name: "Scout", image: null, badges: [] },

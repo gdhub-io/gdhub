@@ -3,7 +3,7 @@ import HeroBgImage from "@/assets/images/landing/hero-bg.png";
 import {
 	EMPTY_LANDING_DATA,
 	getLandingData,
-} from "@/repositories/landing.repository";
+} from "@/repositories/content/landing";
 import { prisma } from "@/services/prisma";
 import { HomeClient, type HomeStats } from "./HomeClient";
 

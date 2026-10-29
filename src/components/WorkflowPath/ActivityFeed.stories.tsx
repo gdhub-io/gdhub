@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type {
 	ProjectActivity,
 	ProjectActivityKind,
-} from "@/repositories/project-activity.repository";
+} from "@/repositories/project/activity";
 import type { CheckpointSprintDto } from "@/types/checkpoints";
 import { ActivityFeed } from "./ActivityFeed";
 

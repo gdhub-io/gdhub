@@ -19,7 +19,7 @@ import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
 	isFirstCallFree,
 	SlotTakenError,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import {
 	checkpointDraftState,
 	checkpointStatusOf,

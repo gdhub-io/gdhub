@@ -7,11 +7,11 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import { goalCheckHash } from "@/repositories/checkpoints/ai-curator";
 import { curatorTeam } from "@/repositories/checkpoints/ai-curator-context";
 import { journal } from "@/repositories/checkpoints/journal";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { recheckCheckpointArtifacts } from "@/repositories/project/artifact-check";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { checkpointCurator } from "@/services/checkpoints/ai-curator";
 import { closeCheckpoint, runGoalCheck, writeFirstLetter, writeVerdictRead } from "@/services/checkpoints/flows/ai-curator";
 import { notifyDayOne } from "@/services/checkpoints/notifications";
@@ -65,7 +65,7 @@ vi.mock("@/repositories/checkpoints/ai-curator-context", () => ({
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
 
-vi.mock("@/repositories/artifact-check", () => ({
+vi.mock("@/repositories/project/artifact-check", () => ({
 	recheckCheckpointArtifacts: vi.fn(),
 }));
 

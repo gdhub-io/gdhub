@@ -1,7 +1,7 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import { CURATOR_LEVELS, type CuratorLevel } from "@/config/checkpoint-pricing";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
-import { earliestFirstCalls } from "@/repositories/advisor-availability";
+import { earliestFirstCalls } from "@/repositories/advisor/availability";
 import { prisma } from "@/services/prisma";
 import type { CheckpointCurator, FeaturedCurator } from "@/types/checkpoints";
 /** No curator record yet — the experts set, `isFeatured` first then most-read. */

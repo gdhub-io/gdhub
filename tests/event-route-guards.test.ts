@@ -188,7 +188,7 @@ describe("event listings — a draft belongs to its organiser", () => {
 			expect(source).not.toMatch(/status: status\s*\?/);
 		}
 
-		expect(readFileSync("src/repositories/event-catalogue.ts", "utf8")).toContain(
+		expect(readFileSync("src/repositories/event/catalogue.ts", "utf8")).toContain(
 			"PUBLIC_EVENT_STATUSES",
 		);
 	});

@@ -6,10 +6,7 @@ import {
 	resolveLegal,
 } from "@/lib/legal/accept";
 import { maskAccount, normalisePayoutAccount } from "@/lib/payout-account";
-import {
-	latestAcceptance,
-	needsAcceptance,
-} from "@/repositories/legal.repository";
+import { latestAcceptance, needsAcceptance } from "@/repositories/legal/legal";
 import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import type { PaidWorkDto } from "@/types/checkpoints";

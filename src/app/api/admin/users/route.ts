@@ -26,7 +26,7 @@ import {
 	buildAdminUsersWhere,
 	parseAdminUsersFilters,
 	resolvePermissionGrants,
-} from "@/repositories/admin-users.repository";
+} from "@/repositories/admin/users";
 import { getBrevoContactEmails } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 

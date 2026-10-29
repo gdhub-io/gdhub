@@ -6,7 +6,7 @@ import {
 	withAcceptedTerms,
 } from "@/repositories/checkpoints/select";
 import { prisma } from "@/services/prisma";
-import { CONFIRMED_MEMBERS } from "../scout.games";
+import { CONFIRMED_MEMBERS } from "../scout/games";
 import { briefAuthor, briefMemberSelect, lastVerdict } from "./brief";
 import { withProgress } from "./checkpoint";
 

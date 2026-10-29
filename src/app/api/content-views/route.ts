@@ -1,5 +1,5 @@
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
-import { recordContentViews } from "@/repositories/content-view.repository";
+import { recordContentViews } from "@/repositories/content/views";
 import {
 	type ContentViewsInput,
 	ContentViewsSchema,

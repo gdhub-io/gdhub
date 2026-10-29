@@ -7,7 +7,7 @@ import {
 import {
 	bookSessions,
 	isFirstCallFree,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import { prisma } from "@/services/prisma";
 
 const authMock = vi.fn();
@@ -54,7 +54,7 @@ vi.mock("@/services/checkpoints/flows/ai-curator", () => ({
 	writeFirstLetter: (...args: unknown[]) => writeFirstLetter(...args),
 }));
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

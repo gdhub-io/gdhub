@@ -13,7 +13,7 @@ vi.mock("next/server", async (original) => ({
 	...(await original<typeof import("next/server")>()),
 	after: vi.fn(),
 }));
-vi.mock("@/repositories/artifact-check", () => ({ checkArtifact: vi.fn() }));
+vi.mock("@/repositories/project/artifact-check", () => ({ checkArtifact: vi.fn() }));
 
 // Covered by space-guard.test.ts; mocked here so the assertions are about the
 // binding rather than about access resolution.

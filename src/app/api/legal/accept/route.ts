@@ -12,7 +12,7 @@ import {
 	LegalError,
 } from "@/lib/legal/accept";
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
-import { pendingLegalCodes } from "@/repositories/legal.repository";
+import { pendingLegalCodes } from "@/repositories/legal/legal";
 import { prisma } from "@/services/prisma";
 
 const AcceptSchema = z.object({ legal: LegalAcceptancesSchema });

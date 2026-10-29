@@ -9,7 +9,7 @@ import {
 	CONFIRMED_MEMBERS,
 	DEFAULT_STAGE_FILTER,
 	VISIBLE_STATUSES,
-} from "@/repositories/scout.games";
+} from "@/repositories/scout/games";
 import { estimateInvestment } from "@/services/investment/estimate";
 import { prisma } from "@/services/prisma";
 

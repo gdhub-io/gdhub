@@ -10,7 +10,7 @@ import { POST } from "@/app/api/stripe/webhooks/route";
 import {
 	bookSessions,
 	SlotTakenError,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import { prisma } from "@/services/prisma";
 import {
 	captureCheckout,
@@ -19,7 +19,7 @@ import {
 	stripeEvent,
 } from "@/services/stripe/server";
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

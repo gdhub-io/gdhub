@@ -1,7 +1,7 @@
 import { CALL_MOVE_DAYS, CALL_OPENS_MINUTES } from "@/config/checkpoint";
 import { callMoveWindow, isMovable } from "@/lib/checkpoints/call";
 import { MS_PER_DAY, MS_PER_MINUTE } from "@/lib/checkpoints/days";
-import { type Db, freeMoveSlots } from "@/repositories/advisor-availability";
+import { type Db, freeMoveSlots } from "@/repositories/advisor/availability";
 import {
 	type CheckpointEditor,
 	editorOf,

@@ -24,11 +24,11 @@ import {
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
 import { MS_PER_DAY } from "@/lib/checkpoints/days";
-import { sweepArtifactChecks } from "@/repositories/artifact-check";
 import { getJournalView } from "@/repositories/checkpoints/journal-view";
 import { changePlan } from "@/repositories/checkpoints/plan-edit";
-import { ensureCheckpointStage } from "@/repositories/project-workflow";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { sweepArtifactChecks } from "@/repositories/project/artifact-check";
+import { ensureCheckpointStage } from "@/repositories/project/workflow";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { writeDueVerdictReads } from "@/services/checkpoints/flows/ai-curator";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
 import { approvePlan } from "@/services/checkpoints/flows/plan-edit";

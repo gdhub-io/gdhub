@@ -37,7 +37,7 @@ import {
 	type LegalCode,
 	type LegalContext,
 } from "@/config/legal/registry";
-import type { AcceptanceRow } from "@/repositories/legal-acceptances.repository";
+import type { AcceptanceRow } from "@/repositories/legal/acceptances";
 import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;

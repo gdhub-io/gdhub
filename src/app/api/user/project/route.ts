@@ -29,8 +29,8 @@ import {
 	DEFAULT_PROJECT_STAGE,
 	placeProjectOnStage,
 	selectableStageNames,
-} from "@/repositories/project-workflow";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+} from "@/repositories/project/workflow";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { cacheDelete } from "@/services/cache";

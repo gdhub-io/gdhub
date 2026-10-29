@@ -114,7 +114,8 @@ src/
   layouts/        Page layouts (Protected, Public, Admin, Landing, ...).
   services/       External integrations (prisma, paddle, openai, novu, brevo,
                   typesense, telegram, matrix, langgraph, legal).
-  repositories/   DB access logic grouped by domain (*.repository.ts).
+  repositories/   DB access, one folder per domain (checkpoints/, project/, scout/, …),
+                  plain kebab-case names: repositories/project/workflow.ts.
   lib/            Core utilities (api-handlers.ts, firebase, matrix-client).
   helpers/        Small pure helpers (env, format, access, file, ...).
   hooks/          Reusable React hooks.

@@ -12,7 +12,7 @@ import type {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
-import type { ProjectActivity } from "@/repositories/project-activity.repository";
+import type { ProjectActivity } from "@/repositories/project/activity";
 import type {
 	CheckpointEvidenceBody,
 	CheckpointItemInput,

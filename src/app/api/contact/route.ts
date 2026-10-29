@@ -6,7 +6,7 @@ import { clientIp } from "@/helpers/request";
 import { escapeHtml } from "@/helpers/text";
 import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
 import { limitAiCalls } from "@/lib/rate-limit";
-import { joinWaitlist } from "@/repositories/feature-waitlist";
+import { joinWaitlist } from "@/repositories/user/feature-waitlist";
 import { brevoApi } from "@/services/brevo";
 
 const ContactSchema = z.object({

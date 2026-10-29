@@ -1,5 +1,5 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 
 /**

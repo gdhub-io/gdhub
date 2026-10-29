@@ -6,7 +6,7 @@ import Link from "next/link";
 import type React from "react";
 import { avatarImage } from "@/helpers/image";
 import { useUserSpaces } from "@/hooks/useUserSpaces";
-import type { UserSpaceGroup } from "@/repositories/user-spaces";
+import type { UserSpaceGroup } from "@/repositories/user/spaces";
 import styles from "./style.module.scss";
 import type { SpaceKind } from "./types";
 

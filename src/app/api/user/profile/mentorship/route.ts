@@ -16,8 +16,8 @@ import { versionInEffect } from "@/lib/legal/versions";
 import {
 	hasAcceptedCurrent,
 	latestAcceptance,
-} from "@/repositories/legal.repository";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+} from "@/repositories/legal/legal";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";

@@ -5,10 +5,10 @@ import {
 	createDraftCheckpoint,
 	getCreationBlocker,
 } from "@/repositories/checkpoints/checkpoint";
-import { ensureCheckpointStage } from "@/repositories/project-workflow";
+import { ensureCheckpointStage } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 
-vi.mock("@/repositories/project-workflow", () => ({
+vi.mock("@/repositories/project/workflow", () => ({
 	ensureCheckpointStage: vi.fn(),
 }));
 

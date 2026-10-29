@@ -22,7 +22,7 @@ import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import type {
 	ProjectActivity,
 	ProjectActivityKind,
-} from "@/repositories/project-activity.repository";
+} from "@/repositories/project/activity";
 import type { CheckpointSprintDto } from "@/types/checkpoints";
 import { AsideHead } from "./AsideHead";
 import { formatDay, formatShort } from "./dates";

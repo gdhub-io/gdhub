@@ -1,6 +1,6 @@
 import { isE2EAuth } from "@/auth";
 import { apiError, json } from "@/lib/api-handlers";
-import { listFixtureUsers } from "@/repositories/dev-fixture-users.repository";
+import { listFixtureUsers } from "@/repositories/admin/dev-fixture-users";
 
 export const dynamic = "force-dynamic";
 

@@ -6,7 +6,7 @@ vi.mock("../src/services/prisma", () => ({
 }));
 
 import { SpaceRole } from "../src/config/permissions/roles";
-import { projectSpaceAdapter } from "../src/repositories/project.space";
+import { projectSpaceAdapter } from "../src/repositories/project/space";
 
 describe("projectSpaceAdapter", () => {
 	it("reads only the rows that hold a place on the team", async () => {

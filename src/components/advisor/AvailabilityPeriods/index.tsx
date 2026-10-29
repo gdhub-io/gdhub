@@ -7,7 +7,7 @@ import { useState } from "react";
 import { AvailabilityPeriodEditor } from "@/components/advisor/AvailabilityPeriodEditor";
 import { RefusedCallsAlert } from "@/components/advisor/RefusedCallsAlert";
 import type { AvailabilityRule } from "@/lib/advisor-availability";
-import type { BookedCall } from "@/repositories/advisor-availability";
+import type { BookedCall } from "@/repositories/advisor/availability";
 import { formatMonths, formatRanges, formatWeekdays } from "./format";
 import styles from "./style.module.scss";
 

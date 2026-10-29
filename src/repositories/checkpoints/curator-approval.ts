@@ -4,10 +4,7 @@ import {
 	curatorStatusOf,
 } from "@/lib/checkpoints/curator-status";
 import { hasPayoutDetails } from "@/lib/payout-account";
-import {
-	latestAcceptance,
-	needsAcceptance,
-} from "@/repositories/legal.repository";
+import { latestAcceptance, needsAcceptance } from "@/repositories/legal/legal";
 import { prisma } from "@/services/prisma";
 import type { AdminCuratorRowDto, CurationDto } from "@/types/checkpoints";
 

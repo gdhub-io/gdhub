@@ -3,12 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CHECKPOINT_AI_PRICE, CHECKPOINT_MAX_TEAM } from "@/config/checkpoint";
 import { curatorPrice } from "@/config/checkpoint-pricing";
 import { SkillLevel } from "@/config/prisma-enums";
-import { isFirstCallFree } from "@/repositories/advisor-availability";
+import { isFirstCallFree } from "@/repositories/advisor/availability";
 import {
 	checkpointCheckout,
 	returnToAuthor,
 } from "@/repositories/checkpoints/payment";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 
 
@@ -21,7 +21,7 @@ vi.mock("@/config/checkpoint", async (importOriginal) => ({
 	},
 }));
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

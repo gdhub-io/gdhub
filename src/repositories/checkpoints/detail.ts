@@ -32,7 +32,7 @@ import {
 	withAcceptedTerms,
 	withCraft,
 } from "@/repositories/checkpoints/select";
-import { CONFIRMED_STATUS } from "@/repositories/scout.games";
+import { CONFIRMED_STATUS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,

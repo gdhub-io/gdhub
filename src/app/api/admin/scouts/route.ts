@@ -12,8 +12,8 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { createScout, listScouts } from "@/repositories/scout";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import { createScout, listScouts } from "@/repositories/scout/scout";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { cacheDelete } from "@/services/cache";
 
 const CreateSchema = z.object({

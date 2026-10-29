@@ -16,7 +16,7 @@ vi.mock("@/services/prisma", () => ({
 			fn({ checkpointSession: { update: sessionUpdate } }),
 	},
 }));
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	freeMoveSlots: (...a: unknown[]) => freeMoveSlots(...a),
 	lockCurator: (...a: unknown[]) => lockCurator(...a),
 }));

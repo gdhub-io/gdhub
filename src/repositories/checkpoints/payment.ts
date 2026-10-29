@@ -19,11 +19,11 @@ import {
 } from "@/config/checkpoint";
 import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
 import { checkpointMove } from "@/lib/checkpoints/status";
-import { isFirstCallFree } from "@/repositories/advisor-availability";
+import { isFirstCallFree } from "@/repositories/advisor/availability";
 import { curatorEligibleWhere } from "@/repositories/checkpoints/curator-catalog";
 import { refundedTotal } from "@/repositories/checkpoints/refund";
-import { recordProviderRefund } from "@/repositories/payment-records";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { recordProviderRefund } from "@/repositories/payments/records";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 /** The money a checkpoint holds or has taken. */
 export const heldPaymentWhere = (checkpointId: string) => ({

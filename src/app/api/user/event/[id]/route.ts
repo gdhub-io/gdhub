@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { deleteSpaceMembership } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";

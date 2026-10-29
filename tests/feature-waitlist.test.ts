@@ -5,7 +5,7 @@ import {
 	joinWaitlist,
 	listWaitlist,
 	writeToWaitlist,
-} from "@/repositories/feature-waitlist";
+} from "@/repositories/user/feature-waitlist";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 

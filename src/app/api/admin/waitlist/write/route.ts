@@ -11,7 +11,7 @@ import {
 } from "@/lib/api-handlers";
 import { appUrl } from "@/lib/checkpoints/hrefs";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { writeToWaitlist } from "@/repositories/feature-waitlist";
+import { writeToWaitlist } from "@/repositories/user/feature-waitlist";
 
 const WriteSchema = z.object({
 	feature: z.nativeEnum(WaitlistFeature),

@@ -1,5 +1,5 @@
 import { apiError, json, type RouteContext } from "@/lib/api-handlers";
-import { findPublishedBlogPost } from "@/repositories/blog.repository";
+import { findPublishedBlogPost } from "@/repositories/content/blog";
 
 export const GET = async (
 	_req: Request,

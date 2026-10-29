@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Form, Input, Segmented, Switch } from "antd";
 import { ScoutType } from "@/config/prisma-enums";
-import type { ScoutCabinet } from "@/repositories/scout";
+import type { ScoutCabinet } from "@/repositories/scout/scout";
 import { ScoutSettingsCard } from "./ScoutSettingsCard";
 import { useCabinetMutation } from "./useCabinetMutation";
 

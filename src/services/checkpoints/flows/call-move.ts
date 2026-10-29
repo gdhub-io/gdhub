@@ -1,4 +1,4 @@
-import { lockCurator } from "@/repositories/advisor-availability";
+import { lockCurator } from "@/repositories/advisor/availability";
 import {
 	clearRequest,
 	isOneOf,

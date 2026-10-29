@@ -23,7 +23,6 @@ import {
 	isRunning,
 } from "@/lib/checkpoints/status";
 import { standingOf } from "@/lib/checkpoints/verdict";
-import { checkArtifact } from "@/repositories/artifact-check";
 import {
 	devlogMediaLinks,
 	mediaLine,
@@ -34,6 +33,7 @@ import {
 	sprintLooks,
 	videoSecondsOf,
 } from "@/repositories/checkpoints/journal";
+import { checkArtifact } from "@/repositories/project/artifact-check";
 import type { AiMeter } from "@/services/ai-usage";
 import {
 	describeMedia,

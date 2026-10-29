@@ -4,7 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import { Alert, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
-import type { BookedCall } from "@/repositories/advisor-availability";
+import type { BookedCall } from "@/repositories/advisor/availability";
 import styles from "./style.module.scss";
 
 export type RefusedCallsAlertProps = {

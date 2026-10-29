@@ -8,7 +8,7 @@ import {
 	getPageCover,
 } from "@/helpers/content";
 import { devlogTitle } from "@/helpers/devlog";
-import { loadPublicDevlogPost } from "@/repositories/devlog-post";
+import { loadPublicDevlogPost } from "@/repositories/devlog/post";
 import { devlogOgImage } from "@/services/telegram/messages";
 import { DevlogPostClient, type Post } from "./DevlogPostClient";
 

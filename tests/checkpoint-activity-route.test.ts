@@ -11,7 +11,7 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: { findUnique: (...a: unknown[]) => checkpointFind(...a) },
 	},
 }));
-vi.mock("@/repositories/project-activity.repository", () => ({
+vi.mock("@/repositories/project/activity", () => ({
 	getProjectActivity: (...a: unknown[]) => getProjectActivity(...(a as [])),
 }));
 

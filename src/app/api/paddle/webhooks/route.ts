@@ -1,7 +1,7 @@
 import { PayableType, PaymentProvider } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import { recordPaddleAdjustment } from "@/repositories/checkpoints/payment";
-import { paymentOf, recordPaymentEvent } from "@/repositories/payment-records";
+import { paymentOf, recordPaymentEvent } from "@/repositories/payments/records";
 import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
 import { NovuService } from "@/services/novu";
 import { paddleMinor, verifyPaddleWebhook } from "@/services/paddle/server";
