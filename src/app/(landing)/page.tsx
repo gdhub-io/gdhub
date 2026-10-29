@@ -11,12 +11,6 @@ const TITLE = "Game Developers Hub";
 const DESCRIPTION =
 	"Game Developers Hub is a platform for game developers and specialists.";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
-const OG_IMAGE =
-	`${APP_URL}/api/og?t=${encodeURIComponent(TITLE)}` +
-	`&st=${encodeURIComponent("for everyone who wants to make video games")}` +
-	`&img=${encodeURIComponent(APP_URL + HeroBgImage.src)}`;
-
 /**
  * The landing is the one page that is actually meant to be indexed, so its tags
  * are built here rather than in the client shell: metadata has to be in the
@@ -36,9 +30,10 @@ export const metadata: Metadata = {
 		description: DESCRIPTION,
 		images: [
 			{
-				url: OG_IMAGE,
-				width: 1200,
-				height: 360,
+				// Drawn in Pencil (frame `H9Twa`); resolved against `metadataBase`.
+				url: OgImage.src,
+				width: OgImage.width,
+				height: OgImage.height,
 				alt: "Game Developers Hub cover",
 			},
 		],
