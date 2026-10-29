@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { sessionDay } from "@/lib/checkpoint-days";
-import { buildSessions, currentSessionOf } from "@/lib/checkpoint-sessions";
+import { sessionDay } from "@/lib/checkpoints/days";
+import { buildSessions, currentSessionOf } from "@/lib/checkpoints/sessions";
 
 const startedAt = new Date("2026-10-01T15:30:00Z");
 

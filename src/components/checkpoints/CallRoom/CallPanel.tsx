@@ -14,12 +14,12 @@ import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
-import { checkpointPathHref, type PathTab } from "@/lib/checkpoint-hrefs";
+import { checkpointPathHref, type PathTab } from "@/lib/checkpoints/hrefs";
 import type {
+	CallBrief as CallBriefData,
 	CallNotesDto,
 	CheckpointCallDto,
-} from "@/repositories/checkpoint-call";
-import type { CallBrief as CallBriefData } from "@/repositories/curator-journal";
+} from "@/types/checkpoint-call";
 import type { PlanAdvice } from "@/types/checkpoints";
 import { CallBrief } from "./CallBrief";
 import { NotesBody, NotesTranscript } from "./CallNotes";

@@ -8,13 +8,12 @@ import type {
 	CheckpointVerdict,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
-import { MS_PER_HOUR } from "@/lib/checkpoint-days";
-import type { Standing } from "@/lib/checkpoint-verdict";
-import { curatorNow } from "@/lib/curator-now";
-import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
-import type { LabSettled } from "@/services/ai-curator-lab";
-import { characterFace } from "@/services/checkpoint-curator/prompts/card";
-import type { CuratorReview } from "@/types/checkpoints";
+import { characterFace } from "@/lib/checkpoints/curator-characters";
+import { curatorNow } from "@/lib/checkpoints/curator-now";
+import { MS_PER_HOUR } from "@/lib/checkpoints/days";
+import type { Standing } from "@/lib/checkpoints/verdict";
+import type { LabSettled } from "@/services/checkpoints/ai-curator-lab";
+import type { CheckpointReviewDto, CuratorReview } from "@/types/checkpoints";
 import { useStandingStatus } from "../checkpoints/EvidenceStanding";
 
 const { Text } = Typography;

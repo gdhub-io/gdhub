@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { sprintChecklist } from "@/lib/checkpoint-checklist";
+import { sprintChecklist } from "@/lib/checkpoints/checklist";
 import type {
 	CheckpointDto,
 	CheckpointEvidenceDto,

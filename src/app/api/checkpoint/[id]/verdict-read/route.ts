@@ -1,7 +1,7 @@
 import { json, pipe, withAuth } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
-import { prisma } from "@/services/prisma";
+import { markPreviousVerdictRead } from "@/repositories/checkpoints/checkpoint";
 
 /**
  * Someone on the team opened the previous checkpoint's verdict, which ticks the
@@ -17,10 +17,7 @@ export const POST = pipe(
 )(async (_req, ctx) => {
 	const { id } = (await ctx.params) as { id: string };
 
-	await prisma.projectCheckpoint.updateMany({
-		where: { id, previousVerdictReadAt: null },
-		data: { previousVerdictReadAt: new Date() },
-	});
+	await markPreviousVerdictRead(id);
 
 	return json(null);
 });

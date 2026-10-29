@@ -4,7 +4,7 @@ import {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import { totalPerCurrency } from "@/helpers/investment";
-import { checkpointNumbers } from "@/repositories/checkpoint-number";
+import { checkpointNumbers } from "@/repositories/checkpoints/number";
 import { estimateInvestment } from "@/services/investment/estimate";
 import { prisma } from "@/services/prisma";
 import {

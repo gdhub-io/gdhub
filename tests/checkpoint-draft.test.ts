@@ -41,13 +41,14 @@ vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
 }));
 
-vi.mock("@/repositories/checkpoint.repository", () => ({
+vi.mock("@/repositories/checkpoints/checkpoint", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoints/checkpoint")>()),
 	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 	withProgress: <T>(checkpoint: T) => checkpoint,
 	replaceCheckpointItems: vi.fn(),
 }));
 
-vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+vi.mock("@/services/checkpoints/flows/ai-curator", () => ({
 	writeFirstLetter: (...args: unknown[]) => writeFirstLetter(...args),
 }));
 

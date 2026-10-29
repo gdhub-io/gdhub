@@ -12,36 +12,41 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
-import { checkpointMove } from "@/lib/checkpoint-status";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoints/days";
+import { checkpointMove } from "@/lib/checkpoints/status";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
-	bookSessions,
 	isFirstCallFree,
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import {
+	checkpointDraftState,
+	checkpointStatusOf,
+	deleteCheckpoint,
 	getCheckpoint,
 	replaceCheckpointItems,
+	updateCheckpointDraft,
+	updateCheckpointDraftAndBook,
 	withProgress,
-} from "@/repositories/checkpoint.repository";
-import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
+} from "@/repositories/checkpoints/checkpoint";
+import { isEligibleCurator } from "@/repositories/checkpoints/curator-catalog";
 import {
 	completedPaymentOf,
 	curatorCharge,
 	heldAmount,
 	isCheckpointPaid,
 	pendingCheckout,
-	reconcileCheckout,
-	startAiCheckpoint,
-} from "@/repositories/checkpoint-payment";
-import { checkpointViewer } from "@/repositories/checkpoint-viewer";
+} from "@/repositories/checkpoints/payment";
+import { checkpointViewer } from "@/repositories/checkpoints/viewer";
 import {
 	type UpdateCheckpointBody,
 	UpdateCheckpointSchema,
 } from "@/schemas/checkpoint";
-import { prisma } from "@/services/prisma";
+import {
+	reconcileCheckout,
+	startAiCheckpoint,
+} from "@/services/checkpoints/flows/payment";
 
 /** The checkpoint as its page reads it; a draft paid for without the webhook is settled first. */
 const readCheckpoint = async (id: string) => {
@@ -110,15 +115,7 @@ export const PUT = pipe(
 	const { goal, curatorKind, curatorId, inputs, outcomes, startedAt } =
 		body as UpdateCheckpointBody;
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: {
-			status: true,
-			curatorKind: true,
-			curatorId: true,
-			stageName: true,
-		},
-	});
+	const checkpoint = await checkpointDraftState(id);
 
 	if (!checkpoint) return apiError.notFound();
 
@@ -158,15 +155,8 @@ export const PUT = pipe(
 			return apiError.badRequest("curatorIsAuthor");
 		}
 
-		const eligible = await prisma.speciality.findFirst({
-			where: {
-				...curatorEligibleWhere(checkpoint.stageName),
-				userId: curatorId,
-			},
-			select: { id: true },
-		});
-
-		if (!eligible) return apiError.badRequest("curatorNotOpenForMentoring");
+		if (!(await isEligibleCurator(curatorId, checkpoint.stageName)))
+			return apiError.badRequest("curatorNotOpenForMentoring");
 	}
 
 	// Money already held buys exactly one price: a dearer curator would need a
@@ -250,24 +240,14 @@ export const PUT = pipe(
 		let written = 0;
 		if (books) {
 			try {
-				written = await prisma.$transaction(async (tx) => {
-					const { count } = await tx.projectCheckpoint.updateMany({
-						where,
-						data,
-					});
-					if (count) await bookSessions(tx, id);
-					return count;
-				});
+				written = await updateCheckpointDraftAndBook(id, where, data);
 			} catch (error) {
 				if (error instanceof SlotTakenError)
 					return apiError.badRequest("slotTaken");
 				throw error;
 			}
 		} else {
-			({ count: written } = await prisma.projectCheckpoint.updateMany({
-				where,
-				data,
-			}));
+			written = await updateCheckpointDraft(where, data);
 		}
 		if (!written) return apiError.badRequest("checkpointNotDraft");
 
@@ -303,17 +283,14 @@ export const DELETE = pipe(
 
 	const { id } = (await ctx.params) as { id: string };
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { status: true },
-	});
+	const checkpoint = await checkpointStatusOf(id);
 
 	if (!checkpoint) return apiError.notFound();
 	if (checkpoint.status !== CheckpointStatus.Draft) {
 		return apiError.badRequest("checkpointNotDraft");
 	}
 
-	await prisma.projectCheckpoint.delete({ where: { id } });
+	await deleteCheckpoint(id);
 
 	return json({ success: true });
 });

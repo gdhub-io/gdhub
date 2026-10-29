@@ -11,15 +11,15 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
+	checkpointCuratorIdOf,
+	missedCallsRefund,
+} from "@/repositories/checkpoints/admin";
+import {
 	getAdvisorCheckpoint,
 	getAdvisorProject,
-} from "@/repositories/advisor-checkpoints";
-import {
-	missedCallsRefund,
-	writeAdminVerdict,
-} from "@/repositories/checkpoint-admin";
-import { getVerdictContext } from "@/repositories/checkpoint-verdict.repository";
-import { prisma } from "@/services/prisma";
+} from "@/repositories/checkpoints/advisor";
+import { getVerdictContext } from "@/repositories/checkpoints/verdict";
+import { writeAdminVerdict } from "@/services/checkpoints/flows/admin";
 
 const VerdictSchema = z.object({
 	verdict: z.nativeEnum(CheckpointVerdict),
@@ -35,16 +35,13 @@ export const GET = pipe(
 	withSpaceGuard({ permission: "admin.checkpoints.view" }),
 )(async (_req, ctx) => {
 	const { id } = (await ctx.params) as { id: string };
-	const row = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { curatorId: true },
-	});
-	if (!row?.curatorId) return apiError.notFound();
+	const curatorId = await checkpointCuratorIdOf(id);
+	if (!curatorId) return apiError.notFound();
 
 	const [checkpoint, context, project, missed] = await Promise.all([
-		getAdvisorCheckpoint(id, row.curatorId),
-		getVerdictContext(id, row.curatorId),
-		getAdvisorProject(id, row.curatorId),
+		getAdvisorCheckpoint(id, curatorId),
+		getVerdictContext(id, curatorId),
+		getAdvisorProject(id, curatorId),
 		missedCallsRefund(id),
 	]);
 	if (!checkpoint || !context || !project) return apiError.notFound();

@@ -15,13 +15,10 @@
  */
 import { CheckpointSessionContentStatus } from "@gdhub-io/gdhub-prisma";
 import { SPRINT_DAYS } from "@/config/checkpoint";
-import { MS_PER_DAY } from "@/lib/checkpoint-days";
-import { writeVerdictRead } from "@/repositories/checkpoint-curator.repository";
-import {
-	writeBriefFor,
-	writeReviewFor,
-} from "@/repositories/checkpoint-review";
-import { getJournal } from "@/repositories/curator-journal";
+import { MS_PER_DAY } from "@/lib/checkpoints/days";
+import { getJournal } from "@/repositories/checkpoints/journal";
+import { writeVerdictRead } from "@/services/checkpoints/flows/ai-curator";
+import { writeBriefFor, writeReviewFor } from "@/services/checkpoints/flows/review";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
 

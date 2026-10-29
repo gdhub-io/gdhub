@@ -1,12 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	devlogMediaLines,
-	devlogMediaLinks,
-	seeCheckpointEvidence,
-	seeDevlogMedia,
-} from "@/repositories/evidence-seen";
+import { devlogMediaLinks } from "@/repositories/checkpoints/evidence-seen";
 import { fetchBody } from "@/services/artifact-check/safe-fetch";
-import { notifyEvidenceMismatch } from "@/services/checkpoint-notifications";
+import { devlogMediaLines, seeCheckpointEvidence, seeDevlogMedia } from "@/services/checkpoints/flows/evidence-seen";
+import { notifyEvidenceMismatch } from "@/services/checkpoints/notifications";
 import { describeMedia, judgeEvidence } from "@/services/evidence/judge";
 import { readableLink } from "@/services/evidence/links";
 import { readEvidence } from "@/services/evidence/read";
@@ -20,7 +16,7 @@ vi.mock("@/services/evidence/frames", () => ({
 	})),
 }));
 vi.mock("@/repositories/artifact-check", () => ({ checkArtifact: vi.fn() }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyEvidenceMismatch: vi.fn(),
 }));
 vi.mock("@/services/evidence/judge", () => ({

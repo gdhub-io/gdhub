@@ -52,10 +52,10 @@ import {
 	useCheckpointReview,
 } from "@/hooks/checkpoint-review";
 import { useAddressPick } from "@/hooks/useAddressPick";
-import { type PlanEdit, planSession } from "@/lib/checkpoint-call";
-import { type PathTab, sprintParam } from "@/lib/checkpoint-hrefs";
-import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
+import { type PlanEdit, planSession } from "@/lib/checkpoints/call";
+import { type PathTab, sprintParam } from "@/lib/checkpoints/hrefs";
 import type { PlanChange } from "@/schemas/checkpoint";
+import type { CheckpointReviewDto } from "@/types/checkpoints";
 import { CuratorAside } from "./CuratorAside";
 import { CuratorHeader } from "./CuratorHeader";
 import { type CuratorAction, CuratorMessage } from "./CuratorMessage";

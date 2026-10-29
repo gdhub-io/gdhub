@@ -8,12 +8,14 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import {
-	answerCallMove,
-	askCallMove,
 	callMoveOptions,
 	withdrawCallMove,
-} from "@/repositories/checkpoint-call-move";
+} from "@/repositories/checkpoints/call-move";
 import { AnswerCallMoveSchema, AskCallMoveSchema } from "@/schemas/checkpoint";
+import {
+	answerCallMove,
+	askCallMove,
+} from "@/services/checkpoints/flows/call-move";
 
 /**
  * Moving one call (GDHUB-90): the free hours it may take, a request, the other

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { App } from "antd";
-import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
+import type { PulseViewDto } from "@/types/checkpoints";
 import { PulseCard } from ".";
 
 // Frames 09.1–09.3: Marta, Hollow Tide, the third sprint of checkpoint 2.

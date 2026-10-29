@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { devlogWords } from "@/lib/curator-text";
+import { devlogWords } from "@/lib/checkpoints/curator-text";
 
 const editor = (blocks: object[]) => ({ content: "", contentEditor: { blocks } });
 

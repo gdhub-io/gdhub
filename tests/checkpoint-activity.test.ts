@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeDaysByUser } from "@/lib/checkpoint-activity";
+import { activeDaysByUser } from "@/lib/checkpoints/activity";
 
 const start = new Date("2026-10-08T00:00:00.000Z");
 

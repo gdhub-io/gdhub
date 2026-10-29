@@ -9,8 +9,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoint-status";
-import { seeDevlogMedia } from "@/repositories/evidence-seen";
+import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoints/status";
+import { seeDevlogMedia } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ReportQuerySchema = z.object({

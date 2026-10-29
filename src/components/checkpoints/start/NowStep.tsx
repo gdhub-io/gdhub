@@ -25,7 +25,7 @@ import {
 } from "@/config/checkpoint";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useUpdateCheckpoint } from "@/hooks/checkpoints";
-import { teamCapacity } from "@/lib/checkpoint-capacity";
+import { teamCapacity } from "@/lib/checkpoints/capacity";
 import styles from "./NowStep.module.scss";
 import { usePrepareNav } from "./PrepareNav";
 import { PurchaseLayout } from "./PurchaseLayout";

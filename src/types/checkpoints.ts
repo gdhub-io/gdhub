@@ -1,28 +1,35 @@
 import type {
 	ArtifactCheckStatus,
-	CheckpointCuratorKind,
 	CheckpointFeeReason,
-	CheckpointItemKind,
-	CheckpointJournalKind,
-	CheckpointSessionContentStatus,
 	CheckpointStatus,
-	CheckpointVerdict,
 	EvidenceMatch,
 	ExpertInvoicing,
 	ProjectArtifactType,
-	SkillLevel,
 } from "@gdhub-io/gdhub-prisma";
-import type { NoFeeReason } from "@/lib/checkpoint-fee";
-import type { AuthorNextStep } from "@/lib/checkpoint-plan";
+import type { CuratorLevel } from "@/config/checkpoint-pricing";
+import type {
+	CheckpointCuratorKind,
+	CheckpointItemKind,
+	CheckpointSessionContentStatus,
+	CheckpointVerdict,
+	SkillLevel,
+} from "@/config/prisma-enums";
+import type {
+	CalendarViewer,
+	CheckpointCalendarEvent,
+} from "@/lib/checkpoints/calendar";
+import type { PlanEdit } from "@/lib/checkpoints/call";
+import type { CuratorNow } from "@/lib/checkpoints/curator-now";
+import type { CuratorStatus } from "@/lib/checkpoints/curator-status";
+import type { NoFeeReason } from "@/lib/checkpoints/fee";
+import type { AuthorNextStep } from "@/lib/checkpoints/plan";
 import type {
 	RefundReason,
 	RefundRowReason,
 	reasonRefused,
-} from "@/lib/checkpoint-refund";
-import type { UnprovenOutcome } from "@/lib/checkpoint-verdict";
-import type { VerdictStage } from "@/lib/checkpoint-verdict-window";
-import type { CuratorNow } from "@/lib/curator-now";
-import type { CuratorStatus } from "@/lib/curator-status";
+} from "@/lib/checkpoints/refund";
+import type { UnprovenOutcome } from "@/lib/checkpoints/verdict";
+import type { VerdictStage } from "@/lib/checkpoints/verdict-window";
 
 /**
  * What the checkpoint endpoints send to the browser.
@@ -759,4 +766,113 @@ export type AdminCuratorRowDto = {
 	status: CuratorStatus;
 	requestedAt: string | null;
 	approvedAt: string | null;
+};
+
+export type CheckpointCalendarDto = {
+	startedAt: string;
+	/** Labels follow who reads: the curator, or the author and the team. */
+	as: CalendarViewer;
+	/** The curator's first name; null with the AI. */
+	curatorName: string | null;
+	projectName: string;
+	events: (Omit<CheckpointCalendarEvent, "start"> & { start: string })[];
+	/** The personal subscription link (12.08.16). */
+	feedUrl: string;
+};
+
+export type FreeCheckpointProjectDto = {
+	id: string;
+	name: string;
+	stage: string;
+	author: string | null;
+	/** The goal it would start with. */
+	goal: string;
+};
+
+export type CheckpointReviewDto = {
+	/** The last checkpoint's verdict, through this one's first sprint. */
+	previous: PreviousVerdict | null;
+	/** The session the checkpoint is at now: the last one whose day has come. */
+	current: number;
+	/** What the AI curator says now, and what it waits for (GDHUB-117). */
+	curatorNow: CuratorNow;
+	number: number;
+	stageName: string;
+	startedAt: string;
+	dueAt: string;
+	project: { id: string; name: string; slug: string };
+	plan: {
+		goal: string;
+		/** What the viewer may change now; null for those who only read. */
+		edit: PlanEdit;
+		/** Until when `edit` holds. */
+		editUntil: string | null;
+		/** The AI curator has read the tasks the author sent: its one check of day 1. */
+		checked: boolean;
+		/** The goal and tasks agreed: approved on the AI curator's day 1, on call 1 with a pro one. */
+		approved: boolean;
+		tasks: {
+			id: string;
+			text: string;
+			cut: boolean;
+			addedAt: string | null;
+			artifacts: CheckpointArtifactRef[];
+		}[];
+	};
+	sessions: {
+		index: number;
+		scheduledAt: string;
+		contentStatus: CheckpointSessionContentStatus | null;
+		content: CuratorReview | null;
+	}[];
+	verdict: { verdict: CheckpointVerdict; note: string | null } | null;
+	/** The stage a "Ready for the next stage" verdict opens, while the project is still on this one. */
+	nextStage: { name: string; key: string } | null;
+	/** Who the AI curator plays on this checkpoint — its name and avatar. */
+	character: { name: string; avatar: string | null } | null;
+};
+
+export type PulseState = "open" | "confirmed" | "closed";
+export type PulseViewDto = {
+	state: PulseState;
+	firstName: string;
+	project: { name: string; slug: string };
+	number: number;
+	sprint: number;
+	from: string;
+	to: string;
+	/** Only the sprints the person was on the team for. */
+	cells: Pick<CheckpointPulseCellDto, "sprint" | "state">[];
+};
+
+export type FeaturedCurator = {
+	id: string;
+	/** Speciality name — "Game Designer", "Technical Director". */
+	role: string;
+	name: string;
+	level: SkillLevel;
+	summary: string;
+	image: string | null;
+};
+/**
+ * The people a checkpoint can actually be given to.
+ *
+ * `Speciality.isOpenForMentoring` is the switch a specialist flips themselves;
+ * `CURATOR_LEVELS` is the floor the checkpoint sets, and it is not the author's
+ * to lower; the author themselves is never on the list. There is no curator
+ * record yet, so a row is a speciality with its user on it, and the rate and the
+ * record of past checkpoints arrive with GDHUB-42.
+ */
+export type CheckpointCurator = {
+	userId: string;
+	specialityId: string;
+	name: string;
+	image: string | null;
+	/** Speciality name — "Game Designer", "Technical Director". */
+	role: string;
+	specialization: string;
+	level: CuratorLevel;
+	summary: string;
+	/** The earliest first call that opens five free weekly calls with them. */
+	firstCallFrom: string;
 };

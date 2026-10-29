@@ -1,6 +1,6 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { listAdvisorCheckpoints } from "@/repositories/advisor-checkpoints";
+import { listAdvisorCheckpoints } from "@/repositories/checkpoints/advisor";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({

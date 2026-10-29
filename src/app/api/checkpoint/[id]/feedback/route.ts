@@ -11,7 +11,7 @@ import {
 import {
 	feedbackFor,
 	rateCheckpoint,
-} from "@/repositories/checkpoint-feedback";
+} from "@/repositories/checkpoints/feedback";
 
 /**
  * The rating block of the results modal. Scoped by the session: only the

@@ -18,7 +18,7 @@ vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
 }));
 
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumbers: (...a: unknown[]) => checkpointNumbers(...a),
 }));
 vi.mock("@/services/prisma", () => ({

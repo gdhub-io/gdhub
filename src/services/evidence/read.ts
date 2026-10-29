@@ -1,5 +1,5 @@
 import pdf from "pdf-parse/lib/pdf-parse.js";
-import { capped } from "@/lib/curator-text";
+import { capped } from "@/lib/checkpoints/curator-text";
 import {
 	fetchBody,
 	type OpenFailure,

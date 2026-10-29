@@ -19,7 +19,7 @@ import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
-import { isRunning } from "@/lib/checkpoint-status";
+import { isRunning } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { MoneyNotice } from "../MoneyNotice";

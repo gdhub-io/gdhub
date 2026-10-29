@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Flex, Table, Typography } from "antd";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { hoursSpan, teamCapacity } from "@/lib/checkpoint-capacity";
+import { hoursSpan, teamCapacity } from "@/lib/checkpoints/capacity";
 import styles from "./TeamResource.module.scss";
 import { type TeamHoursRow, useTeamHours } from "./teamHours";
 

@@ -6,7 +6,7 @@ import { Alert, Button, Flex, Input, Tooltip, Typography } from "antd";
 import { type ReactNode, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import type { GoalAdvice } from "@/types/checkpoints";
 import { usePlanChange } from "./CallPlan";
 import styles from "./style.module.scss";

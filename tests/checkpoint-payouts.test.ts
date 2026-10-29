@@ -1,11 +1,11 @@
 import { CheckpointFeeReason, ExpertInvoicing } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { payoutStatus } from "@/lib/checkpoint-costs";
+import { payoutStatus } from "@/lib/checkpoints/costs";
 import { maskAccount } from "@/lib/payout-account";
-import { recordCheckpointFee } from "@/repositories/checkpoint-fee";
-import { markPayoutPaid } from "@/repositories/checkpoint-payouts";
-import { refundCaseOf } from "@/repositories/checkpoint-refund";
-import { notify } from "@/services/checkpoint-notifications";
+import { recordCheckpointFee } from "@/repositories/checkpoints/fee";
+import { refundCaseOf } from "@/repositories/checkpoints/refund";
+import { markPayoutPaid } from "@/services/checkpoints/flows/payouts";
+import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => {
@@ -23,12 +23,12 @@ vi.mock("@/services/prisma", () => {
 	);
 	return { prisma: client };
 });
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: vi.fn(),
 	appUrl: () => "",
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({ checkpointNumbers: vi.fn() }));
-vi.mock("@/repositories/checkpoint-refund", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({ checkpointNumbers: vi.fn() }));
+vi.mock("@/repositories/checkpoints/refund", () => ({
 	refundCaseOf: vi.fn(),
 	CAPTURED: [],
 	refundedTotal: vi.fn(),

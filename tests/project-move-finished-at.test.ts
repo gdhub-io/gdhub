@@ -14,7 +14,7 @@ vi.mock("@/lib/space-guard", () => ({
 vi.mock("@/services/workflow/recomputeStepTasks", () => ({
 	recomputeStepTasks: async (tasks: unknown[]) => tasks,
 }));
-vi.mock("@/repositories/checkpoint-guards", () => ({
+vi.mock("@/repositories/checkpoints/workflow-lock", () => ({
 	stageMoveApproved: vi.fn(async () => true),
 	runningCheckpointLock: (...a: unknown[]) => checkpointFindFirst(...a),
 }));

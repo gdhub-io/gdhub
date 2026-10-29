@@ -1,8 +1,4 @@
-import {
-	CheckpointStatus,
-	PayableType,
-	PaymentStatus,
-} from "@gdhub-io/gdhub-prisma";
+import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -12,8 +8,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
-import { checkpointMove } from "@/lib/checkpoint-status";
+import { utcStartOfDay } from "@/lib/checkpoints/days";
 import {
 	LegalAcceptancesSchema,
 	LegalError,
@@ -21,9 +16,14 @@ import {
 } from "@/lib/legal/accept";
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import {
-	returnCheckpointMoney,
+	curatorAnswerState,
+	startAcceptedCheckpoint,
+} from "@/repositories/checkpoints/checkpoint";
+import {
+	heldCheckpointPayment,
+	markPaymentCaptured,
 	returnToAuthor,
-} from "@/repositories/checkpoint-payment";
+} from "@/repositories/checkpoints/payment";
 import {
 	latestAcceptance,
 	needsAcceptance,
@@ -32,9 +32,9 @@ import {
 	ensureCheckpointRoom,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
-import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
+import { returnCheckpointMoney } from "@/services/checkpoints/flows/payment";
+import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { gatewayFor } from "@/services/payments/gateway";
-import { prisma } from "@/services/prisma";
 
 const AnswerSchema = z.object({
 	accept: z.boolean(),
@@ -74,10 +74,7 @@ export const POST = pipe(
 	const { id } = (await ctx.params) as { id: string };
 	const { accept, legal } = body as z.infer<typeof AnswerSchema>;
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { status: true, curatorId: true, startedAt: true },
-	});
+	const checkpoint = await curatorAnswerState(id);
 
 	if (!checkpoint) return apiError.notFound();
 	if (checkpoint.curatorId !== curator.id) return apiError.forbidden();
@@ -114,14 +111,7 @@ export const POST = pipe(
 	// Accepting takes the money that is held. Turning it down gives it back —
 	// released if it is still only held, refunded if it was already captured,
 	// which is what a checkpoint bought before holds existed still carries.
-	const held = await prisma.payment.findFirst({
-		where: {
-			payableType: PayableType.CHECKPOINT,
-			payableId: id,
-			status: PaymentStatus.PROCESSING,
-		},
-		select: { id: true, provider: true, providerTransactionId: true },
-	});
+	const held = await heldCheckpointPayment(id);
 
 	if (accept) {
 		if (held?.providerTransactionId) {
@@ -133,10 +123,7 @@ export const POST = pipe(
 
 			if (!captured) return apiError.internal("paymentNotSettled");
 
-			await prisma.payment.update({
-				where: { id: held.id },
-				data: { status: PaymentStatus.COMPLETED, completedAt: new Date() },
-			});
+			await markPaymentCaptured(held.id);
 		}
 	} else {
 		const returned = await returnCheckpointMoney(id, "curatorDeclined");
@@ -151,21 +138,7 @@ export const POST = pipe(
 	const startedAt = startsOn(checkpoint.startedAt);
 
 	if (accept) {
-		if (acceptances.length)
-			await prisma.legalAcceptance.createMany({ data: acceptances });
-		const move = checkpointMove(
-			CheckpointStatus.AwaitingCurator,
-			CheckpointStatus.Active,
-		);
-		const { count } = await prisma.projectCheckpoint.updateMany({
-			where: { id, ...move.where },
-			data: {
-				...move.data,
-				curatorAcceptedAt: new Date(),
-				startedAt,
-				dueAt: dueDateFrom(startedAt),
-			},
-		});
+		const count = await startAcceptedCheckpoint(id, startedAt, acceptances);
 		// Stripe will not both capture a hold and let it go, so only a decline
 		// racing this one gets here.
 		if (!count) {

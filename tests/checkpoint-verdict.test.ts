@@ -11,7 +11,7 @@ import {
 	standingOf,
 	type VerdictItem,
 	weighOutcomes,
-} from "@/lib/checkpoint-verdict";
+} from "@/lib/checkpoints/verdict";
 
 const outcome = (id: string, over: Partial<VerdictItem> = {}): VerdictItem => ({
 	id,

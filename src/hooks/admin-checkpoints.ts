@@ -14,15 +14,15 @@ import type {
 	CheckpointStatus,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
-import { VERDICT_DAY } from "@/lib/checkpoint-plan";
-import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
-import type { FreeCheckpointProjectDto } from "@/repositories/checkpoint-free";
-import type { CuratorJournalViewDto } from "@/repositories/curator-journal-view";
+import { VERDICT_DAY } from "@/lib/checkpoints/plan";
+import type { RefundReason, RefundRowReason } from "@/lib/checkpoints/refund";
+import type { CuratorJournalViewDto } from "@/types/checkpoint-journal";
 import type {
 	AdminCheckpointsPageDto,
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
 	CheckpointRefundQuoteDto,
+	FreeCheckpointProjectDto,
 	VerdictContextDto,
 } from "@/types/checkpoints";
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { listClosedCheckpoints } from "@/repositories/checkpoint.repository";
+import { listClosedCheckpoints } from "@/repositories/checkpoints/checkpoint";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({

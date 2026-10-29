@@ -22,9 +22,9 @@ import {
 } from "@/config/checkpoint";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useChangePlan } from "@/hooks/checkpoint-call";
-import { canTakeEvidence } from "@/lib/checkpoint-verdict";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import { canTakeEvidence } from "@/lib/checkpoints/verdict";
 import type { PlanChange } from "@/schemas/checkpoint";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import type {
 	PlanAdvice,
 	TaskAdvice,

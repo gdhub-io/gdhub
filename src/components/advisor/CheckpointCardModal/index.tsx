@@ -35,7 +35,7 @@ import {
 	useAnswerCheckpoint,
 	useCheckpointChat,
 } from "@/hooks/checkpoints";
-import { isPending } from "@/lib/checkpoint-status";
+import { isPending } from "@/lib/checkpoints/status";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import { CheckpointTab } from "./CheckpointTab";
 import { DevlogsTab } from "./DevlogsTab";

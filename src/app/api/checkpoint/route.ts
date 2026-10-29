@@ -13,7 +13,7 @@ import {
 	getUnfinishedCheckpoint,
 	listClosedCheckpoints,
 	withProgress,
-} from "@/repositories/checkpoint.repository";
+} from "@/repositories/checkpoints/checkpoint";
 import {
 	type CheckpointListQuery,
 	CheckpointListQuerySchema,

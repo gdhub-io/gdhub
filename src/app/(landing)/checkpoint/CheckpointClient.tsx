@@ -21,7 +21,7 @@ import { InverseBand } from "@/components/ui/InverseBand";
 import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
 import { publicTheme } from "@/config/design";
 import { designCssVariables } from "@/config/design/css";
-import type { FeaturedCurator } from "@/repositories/checkpoint-curators";
+import type { FeaturedCurator } from "@/types/checkpoints";
 import styles from "./checkpoint.module.scss";
 
 // Marketing density on the light bands too; the dark ones get it from `InverseBand`.

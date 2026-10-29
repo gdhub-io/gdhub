@@ -1,6 +1,6 @@
 import { ArtifactCheckStatus } from "@/config/prisma-enums";
 import { isSanityImage } from "@/helpers/image";
-import { CHECKPOINT_CURRENT_STATUSES } from "@/lib/checkpoint-status";
+import { CHECKPOINT_CURRENT_STATUSES } from "@/lib/checkpoints/status";
 import { openLink } from "@/services/artifact-check/safe-fetch";
 import { prisma } from "@/services/prisma";
 

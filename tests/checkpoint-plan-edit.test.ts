@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { planCloses, planEdit } from "@/lib/checkpoint-call";
+import { planCloses, planEdit } from "@/lib/checkpoints/call";
 
 const checkpointFindUnique = vi.fn();
 const checkpointUpdate = vi.fn();
@@ -33,15 +33,18 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyPlanApproved: (...a: unknown[]) => notifyPlanApproved(...a),
 }));
-vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+vi.mock("@/services/checkpoints/flows/ai-curator", () => ({
 	writePlanLetter: (...a: unknown[]) => writePlanLetter(...a),
 }));
 
-const { agreeGoal, approveCheckedPlans, approvePlan, changePlan } = await import(
-	"@/repositories/checkpoint-plan-edit"
+const { agreeGoal, changePlan } = await import(
+	"@/repositories/checkpoints/plan-edit"
+);
+const { approveCheckedPlans, approvePlan } = await import(
+	"@/services/checkpoints/flows/plan-edit"
 );
 
 // The checkpoint starts on Monday 5 Oct; call 1 is that day at 14:00,

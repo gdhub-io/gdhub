@@ -10,7 +10,7 @@ import type { StatusTone } from "@/components/ui";
 import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { firstName } from "@/helpers/format";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 
 export type CallHeaderProps = {
 	call: Pick<

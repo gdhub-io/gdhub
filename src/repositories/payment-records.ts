@@ -6,7 +6,7 @@ import {
 import {
 	CHECKPOINT_PENDING_STATUSES,
 	checkpointMove,
-} from "@/lib/checkpoint-status";
+} from "@/lib/checkpoints/status";
 import { prisma } from "@/services/prisma";
 
 /**

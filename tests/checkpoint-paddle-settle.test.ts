@@ -5,10 +5,7 @@ import {
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	reconcileCheckout,
-	settleCheckpointCheckout,
-} from "@/repositories/checkpoint-payment";
+import { reconcileCheckout, settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
 import type { CheckoutPaid } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
 import { captureCheckout, releaseCheckout } from "@/services/stripe/server";

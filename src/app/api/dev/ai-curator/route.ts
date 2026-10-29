@@ -7,7 +7,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { labCatalogue, runLab } from "@/services/ai-curator-lab";
+import { labCatalogue, runLab } from "@/services/checkpoints/ai-curator-lab";
 
 export const dynamic = "force-dynamic";
 /** A sprint review reads its media and describes it before the review itself. */

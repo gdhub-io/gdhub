@@ -5,8 +5,8 @@ import {
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { type Browser, expect, test } from "@playwright/test";
-import { MS_PER_DAY } from "../../../src/lib/checkpoint-days";
-import { refundedTotal } from "../../../src/repositories/checkpoint-refund";
+import { MS_PER_DAY } from "../../../src/lib/checkpoints/days";
+import { refundedTotal } from "../../../src/repositories/checkpoints/refund";
 import { prisma } from "../../../src/services/prisma";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";

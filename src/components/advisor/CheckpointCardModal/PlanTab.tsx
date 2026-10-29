@@ -20,8 +20,8 @@ import {
 	checkpointPlan,
 	dateOfDay,
 	VERDICT_DAY,
-} from "@/lib/checkpoint-plan";
-import { sprintDayRange } from "@/lib/checkpoint-sprints";
+} from "@/lib/checkpoints/plan";
+import { sprintDayRange } from "@/lib/checkpoints/sprints";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

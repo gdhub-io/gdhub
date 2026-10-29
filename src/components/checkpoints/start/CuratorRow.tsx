@@ -4,7 +4,7 @@ import { T } from "@tolgee/react";
 import { Flex, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
+import type { CheckpointCurator } from "@/types/checkpoints";
 import styles from "./CuratorRow.module.scss";
 
 /**

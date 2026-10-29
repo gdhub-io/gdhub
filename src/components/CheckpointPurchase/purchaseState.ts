@@ -1,5 +1,5 @@
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import { isRunning } from "@/lib/checkpoint-status";
+import { isRunning } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import {
 	PURCHASE_STEPS,

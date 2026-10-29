@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { pathTabOf, sessionOfSprintParam } from "@/lib/checkpoint-hrefs";
-import { checkpointIdByNumber } from "@/repositories/checkpoint-number";
+import { pathTabOf, sessionOfSprintParam } from "@/lib/checkpoints/hrefs";
+import { checkpointIdByNumber } from "@/repositories/checkpoints/number";
 import {
 	curatorKindOf,
 	currentSessionIndex,
-} from "@/repositories/checkpoint-review";
+} from "@/repositories/checkpoints/review";
 
 export const metadata: Metadata = {
 	title: "Path to Checkpoint",

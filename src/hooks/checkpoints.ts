@@ -12,9 +12,6 @@ import type {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
-import type { CheckpointCalendarDto } from "@/repositories/checkpoint-calendar";
-import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
-import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
 import type { ProjectActivity } from "@/repositories/project-activity.repository";
 import type {
 	CheckpointEvidenceBody,
@@ -24,8 +21,11 @@ import type { CheckoutStart } from "@/services/payments/types";
 import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
+	CheckpointCalendarDto,
+	CheckpointCurator,
 	CheckpointDto,
 	CheckpointListResponse,
+	PulseViewDto,
 	VerdictContextDto,
 } from "@/types/checkpoints";
 

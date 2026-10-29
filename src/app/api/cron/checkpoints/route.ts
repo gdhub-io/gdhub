@@ -1,18 +1,18 @@
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import { sweepArtifactChecks } from "@/repositories/artifact-check";
-import { writeDueVerdictReads } from "@/repositories/checkpoint-curator.repository";
-import { requestPulses } from "@/repositories/checkpoint-pulse";
+import { writeDueVerdictReads } from "@/services/checkpoints/flows/ai-curator";
+import { requestPulses } from "@/services/checkpoints/flows/pulse";
 import {
 	writeDueBriefs,
 	writeDueReviews,
-} from "@/repositories/checkpoint-review";
-import { moveFinishedToReview } from "@/repositories/checkpoint-verdict.repository";
+} from "@/services/checkpoints/flows/review";
+import { moveFinishedToReview } from "@/services/checkpoints/flows/verdict";
 import {
 	remindDevlogsDue,
 	remindEvidenceDue,
 	remindVerdictsDue,
-} from "@/services/checkpoint-notifications";
+} from "@/services/checkpoints/notifications";
 
 /**
  * The checkpoints' daily run: a checkpoint whose 28 days are over waits for

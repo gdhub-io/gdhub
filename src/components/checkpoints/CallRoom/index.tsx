@@ -17,7 +17,7 @@ import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCheckpointCall } from "@/hooks/checkpoint-call";
 import { useCheckpointChat } from "@/hooks/checkpoints";
 import { useAddressPick } from "@/hooks/useAddressPick";
-import type { PathTab } from "@/lib/checkpoint-hrefs";
+import type { PathTab } from "@/lib/checkpoints/hrefs";
 import { CallGoal } from "./CallGoal";
 import { CallHeader } from "./CallHeader";
 import { CallPanel } from "./CallPanel";

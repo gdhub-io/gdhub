@@ -1,4 +1,4 @@
-import { aiCostMicros } from "@/lib/checkpoint-costs";
+import { aiCostMicros } from "@/lib/checkpoints/costs";
 import { prisma } from "@/services/prisma";
 
 /** Every AI task run for a checkpoint, as its usage row names it. */

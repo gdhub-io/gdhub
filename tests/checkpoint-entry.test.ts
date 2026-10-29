@@ -57,9 +57,9 @@ const db = {
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 vi.mock("@/services/prisma", () => ({ prisma: db }));
-vi.mock("@/repositories/checkpoint.repository", async (actual) => ({
+vi.mock("@/repositories/checkpoints/checkpoint", async (actual) => ({
 	createCheckpointItems: (
-		await actual<typeof import("@/repositories/checkpoint.repository")>()
+		await actual<typeof import("@/repositories/checkpoints/checkpoint")>()
 	).createCheckpointItems,
 	getCreationBlocker: (...args: unknown[]) => getCreationBlocker(...args),
 	toArtifactRef: <T>(artifact: T) => artifact,
@@ -77,12 +77,12 @@ vi.mock("@/services/brevo/sync", () => ({ syncUserToBrevo: vi.fn() }));
 vi.mock("@/repositories/project-workflow", () => ({
 	ensureCheckpointStage: (...args: unknown[]) => ensureCheckpointStage(...args),
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: (...args: unknown[]) => checkpointNumber(...args),
 }));
 
 const { carryOverItems, getEntryPrefill, getEntryStatus } = await import(
-	"@/repositories/checkpoint-entry"
+	"@/repositories/checkpoints/entry"
 );
 
 const artifact = (id: string, checkStatus: ArtifactCheckStatus | null) => ({

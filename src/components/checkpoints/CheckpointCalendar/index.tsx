@@ -28,8 +28,8 @@ import {
 	SPRINT_DAYS,
 } from "@/config/checkpoint";
 import { useCheckpointCalendar } from "@/hooks/checkpoints";
-import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
-import type { CheckpointCalendarDto } from "@/repositories/checkpoint-calendar";
+import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoints/plan";
+import type { CheckpointCalendarDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 dayjs.extend(utc);

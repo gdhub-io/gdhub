@@ -1,8 +1,7 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { hasRun } from "@/lib/checkpoint-status";
-import { viewerOf, viewerSelect } from "@/repositories/checkpoint-viewer";
+import { hasRun } from "@/lib/checkpoints/status";
+import { chatAccessOf, viewerOf } from "@/repositories/checkpoints/viewer";
 import { checkpointRoomFor } from "@/services/chat/checkpoint-room";
-import { prisma } from "@/services/prisma";
 
 // Imports the server-side Matrix SDK via ensureChatRoom — keep dynamic
 export const dynamic = "force-dynamic";
@@ -17,10 +16,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	if (!caller) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { status: true, ...viewerSelect(caller.id) },
-	});
+	const checkpoint = await chatAccessOf(id, caller.id);
 	if (!checkpoint?.curatorId) return apiError.notFound();
 
 	// The room opens with the curator's yes; before that there is nobody to talk to.

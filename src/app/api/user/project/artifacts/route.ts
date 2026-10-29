@@ -11,10 +11,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { UNNUMBERED_STATUSES } from "@/lib/checkpoint-status";
+import { UNNUMBERED_STATUSES } from "@/lib/checkpoints/status";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { withEvidence } from "@/repositories/checkpoint-number";
-import { checkAndLook } from "@/repositories/evidence-seen";
+import { withEvidence } from "@/repositories/checkpoints/number";
+import { checkAndLook } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ProjectIdQuerySchema = z.object({

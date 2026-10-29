@@ -3,7 +3,7 @@ import {
 	authorNextStep,
 	checkpointPlan,
 	dateOfDay,
-} from "@/lib/checkpoint-plan";
+} from "@/lib/checkpoints/plan";
 
 // Calls on days 1, 8, 15, 22 and 29 and the verdict by day 31, as the standard
 // has them; devlogs where `devlogDayOf` puts them, which is what reminds.

@@ -1,6 +1,6 @@
 import { after } from "next/server";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { adviseOnPlan } from "@/repositories/checkpoint-review";
+import { adviseOnPlan } from "@/services/checkpoints/flows/review";
 
 /** The AI curator reads the tasks as saved; on day 1, once. */
 export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {

@@ -24,16 +24,19 @@ vi.mock("@/services/prisma", () => ({
 		},
 	},
 }));
-vi.mock("@/repositories/checkpoint.repository", () => ({
+vi.mock("@/repositories/checkpoints/checkpoint", () => ({
 	createDraftCheckpoint: (...a: unknown[]) => createDraftCheckpoint(...a),
 	getCreationBlocker: (...a: unknown[]) => getCreationBlocker(...a),
 }));
-vi.mock("@/repositories/checkpoint-admin", () => ({
+vi.mock("@/services/checkpoints/flows/admin", () => ({
 	assignCurator: (...a: unknown[]) => assignCurator(...a),
 }));
 
-const { freeCheckpointProjects, startFreeCheckpoint } = await import(
-	"@/repositories/checkpoint-free"
+const { freeCheckpointProjects } = await import(
+	"@/repositories/checkpoints/free"
+);
+const { startFreeCheckpoint } = await import(
+	"@/services/checkpoints/flows/free"
 );
 
 beforeEach(() => {

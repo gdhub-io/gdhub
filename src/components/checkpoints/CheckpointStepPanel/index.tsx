@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { artifactLabel } from "@/components/checkpoints/EvidenceSlot";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
-import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";

@@ -22,7 +22,7 @@ const lastAcceptance = vi.fn();
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
 const notifyAuthor = vi.fn();
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfAnswer: (...a: unknown[]) => notifyAuthor(...a),
 }));
 
@@ -55,7 +55,7 @@ vi.mock("@/services/stripe/server", () => ({
 	captureCheckout: (...a: unknown[]) => captureCheckout(...a),
 }));
 
-vi.mock("@/repositories/checkpoint-payment", async (importOriginal) => ({
+vi.mock("@/services/checkpoints/flows/payment", async (importOriginal) => ({
 	...(await importOriginal<object>()),
 	returnCheckpointMoney: (...a: unknown[]) => returnMoney(...a),
 }));

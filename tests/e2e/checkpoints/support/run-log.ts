@@ -2,11 +2,11 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { PayableType } from "@gdhub-io/gdhub-prisma";
 import { CHECKPOINT_MINOR_UNITS } from "../../../../src/config/checkpoint";
-import { MICROS_PER_USD } from "../../../../src/lib/checkpoint-costs";
+import { MICROS_PER_USD } from "../../../../src/lib/checkpoints/costs";
 import {
 	CAPTURED,
 	refundedTotal,
-} from "../../../../src/repositories/checkpoint-refund";
+} from "../../../../src/repositories/checkpoints/refund";
 import { prisma } from "../../../../src/services/prisma";
 
 /**

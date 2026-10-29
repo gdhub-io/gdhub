@@ -7,7 +7,7 @@ import {
 	canMove,
 	checkpointMove,
 	IllegalCheckpointMove,
-} from "@/lib/checkpoint-status";
+} from "@/lib/checkpoints/status";
 
 const { Draft, AwaitingCurator, Active, Review, Closed, Cancelled } =
 	CheckpointStatus;

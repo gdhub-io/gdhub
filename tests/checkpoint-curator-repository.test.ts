@@ -8,18 +8,13 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
-import {
-	closeCheckpoint,
-	goalCheckHash,
-	runGoalCheck,
-	writeFirstLetter,
-	writeVerdictRead,
-} from "@/repositories/checkpoint-curator.repository";
-import { curatorTeam } from "@/repositories/curator-context";
-import { journal } from "@/repositories/curator-journal";
+import { goalCheckHash } from "@/repositories/checkpoints/ai-curator";
+import { curatorTeam } from "@/repositories/checkpoints/ai-curator-context";
+import { journal } from "@/repositories/checkpoints/journal";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
-import { checkpointCurator } from "@/services/checkpoint-curator";
-import { notifyDayOne } from "@/services/checkpoint-notifications";
+import { checkpointCurator } from "@/services/checkpoints/ai-curator";
+import { closeCheckpoint, runGoalCheck, writeFirstLetter, writeVerdictRead } from "@/services/checkpoints/flows/ai-curator";
+import { notifyDayOne } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -37,7 +32,7 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyDayOne: vi.fn(),
 }));
 
@@ -52,12 +47,12 @@ const { TEAM } = vi.hoisted(() => ({
 	},
 }));
 
-vi.mock("@/repositories/evidence-seen", () => ({
+vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 }));
-vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
-vi.mock("@/repositories/curator-context", () => ({
+vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
+vi.mock("@/repositories/checkpoints/ai-curator-context", () => ({
 	curatorTeam: vi.fn(async () => TEAM),
 	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
 	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
@@ -74,11 +69,11 @@ vi.mock("@/repositories/artifact-check", () => ({
 	recheckCheckpointArtifacts: vi.fn(),
 }));
 
-vi.mock("@/services/checkpoint-curator/character", () => ({
+vi.mock("@/services/checkpoints/ai-curator/character", () => ({
 	createCharacter: vi.fn(async () => '{"name":"Captain Irma"}'),
 }));
 
-vi.mock("@/services/checkpoint-curator", () => ({
+vi.mock("@/services/checkpoints/ai-curator", () => ({
 	checkpointCurator: {
 		checkGoal: vi.fn(),
 		writeReport: vi.fn(),
@@ -307,7 +302,7 @@ describe("runGoalCheck", () => {
 		});
 		// The curator's card reads the same definition.
 		expect(
-			readFileSync("src/repositories/advisor-checkpoints.ts", "utf8"),
+			readFileSync("src/repositories/checkpoints/advisor.ts", "utf8"),
 		).toContain("CONFIRMED_MEMBERS");
 	});
 
@@ -400,7 +395,7 @@ describe("runGoalCheck", () => {
 	describe("keepCharacter — the curator's character for the checkpoint", () => {
 		it("makes it once from the author's profile and keeps it", async () => {
 			const { keepCharacter } = await import(
-				"@/repositories/checkpoint-curator.repository"
+				"@/services/checkpoints/flows/ai-curator"
 			);
 			vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
 				projectId: "p1",
@@ -696,7 +691,7 @@ describe("closeCheckpoint", () => {
 describe("goal check schema", () => {
 	it("asks for advice on the goal and suggested tasks, never notes on tasks", async () => {
 		const { goalCheckSchema } = await import(
-			"@/services/checkpoint-curator/prompts/goal-check"
+			"@/services/checkpoints/ai-curator/prompts/goal-check"
 		);
 		const schema = goalCheckSchema();
 
@@ -710,7 +705,7 @@ describe("goal check schema", () => {
 
 	it("puts the game and its author in front of the model", async () => {
 		const { goalCheckMessages } = await import(
-			"@/services/checkpoint-curator/prompts/goal-check"
+			"@/services/checkpoints/ai-curator/prompts/goal-check"
 		);
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },

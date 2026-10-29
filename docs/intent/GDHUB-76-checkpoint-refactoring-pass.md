@@ -62,13 +62,25 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
      - An admin refund could overwrite a verdict that was just sent.
    - Moved to phase 4: the draft-state helpers (`isDeclined`, `isSettling`),
      which also read payment fields and differ between screens.
-3. **Layers.**
-   - Move the files into the `checkpoints/` subfolders, renaming the four
-     curator files after what each one does.
-   - Split each repository into data (Prisma only) and flows (notify, pay, AI,
-     cron).
-   - Routes call a flow instead of Prisma.
-   - DTOs move into `types/`.
+3. **Layers.** Done 2026-10-29.
+   - The checkpoint domain moved into `repositories/checkpoints/`,
+     `services/checkpoints/` and `lib/checkpoints/`: 79 files, all imports
+     rewritten. The curator files are now `curator-catalog`,
+     `curator-approval`, `ai-curator-context` and `ai-curator`.
+   - Flows (notifying, paying, calling the AI or Daily) moved to
+     `services/checkpoints/flows/<area>.ts`. They read and write through the
+     repository of the same area. `tests/checkpoint-layers.test.ts` fails if a
+     checkpoint repository imports a service at runtime.
+   - `appUrl`, `reviewUrl` and the AI curator's character catalogue moved to
+     `lib/checkpoints/`, the curator's types to `types/checkpoint-curator.ts`.
+   - Checkpoint routes call repositories and flows; none imports Prisma.
+   - Cancelling now deletes only a pending checkpoint, so it cannot race a
+     curator accepting.
+   - The DTOs the screens read moved to `types/checkpoints.ts`,
+     `types/checkpoint-call.ts` and `types/checkpoint-journal.ts`. No component
+     imports a checkpoint repository.
+   - Flows still call Prisma directly in places. Moving every one of those
+     queries into a repository is left for when a flow is next touched.
 4. **Big files and load.**
    - Split the files over about 600 lines.
    - Clear the duplicate reads, round trips and caches from the issue's "Load"
@@ -85,9 +97,9 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
 - [ ] No set of checkpoint statuses lives outside the status module. A
       comparison with a single status is fine. An illegal transition is
       refused, with a test for each refusal.
-- [ ] No file under `repositories/checkpoints/` imports a notification, payment,
-      chat or AI service. A lint rule enforces this.
-- [ ] No checkpoint route under `app/api` imports Prisma.
+- [x] No file under `repositories/checkpoints/` imports a notification, payment,
+      chat or AI service. A test enforces this.
+- [x] No checkpoint route under `app/api` imports Prisma.
 - [ ] "14 days", "28 days" and the call length appear nowhere as literals in
       code, copy or prompts.
 - [ ] Moving a project across several stages, from the admin or in one jump,

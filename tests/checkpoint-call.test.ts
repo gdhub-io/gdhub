@@ -11,7 +11,7 @@ import {
 	callState,
 	parseCallRoomName,
 	sessionHeld,
-} from "@/lib/checkpoint-call";
+} from "@/lib/checkpoints/call";
 
 const sessionFindUnique = vi.fn();
 const sessionUpdate = vi.fn();
@@ -73,7 +73,7 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-vi.mock("@/repositories/curator-journal", () => ({
+vi.mock("@/repositories/checkpoints/journal", () => ({
 	getCallBriefs: vi.fn(async () => [
 		{
 			index: 2,
@@ -94,15 +94,15 @@ vi.mock("@/services/daily", async (importOriginal) => ({
 	transcriptOfJob: (...a: unknown[]) => transcriptOfJob(...a),
 }));
 
+const { getCall } = await import("@/repositories/checkpoints/call");
 const {
 	endCall,
-	getCall,
 	getCallPresence,
 	joinCall,
 	recordMeetingEnded,
 	saveTranscript,
 	transcribeRecording,
-} = await import("@/repositories/checkpoint-call");
+} = await import("@/services/checkpoints/flows/call");
 
 const scheduledAt = new Date("2026-10-21T14:00:00Z");
 const during = new Date("2026-10-21T14:05:00Z");

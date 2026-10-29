@@ -6,13 +6,13 @@ import {
 	CALL_PRESENCE_POLL_SECONDS,
 	CALL_WAIT_POLL_SECONDS,
 } from "@/config/checkpoint";
+import type { PlanChange } from "@/schemas/checkpoint";
 import type {
+	CallMoveOptionsDto,
 	CallNotesDto,
 	CallPresenceDto,
 	CheckpointCallDto,
-} from "@/repositories/checkpoint-call";
-import type { CallMoveOptionsDto } from "@/repositories/checkpoint-call-move";
-import type { PlanChange } from "@/schemas/checkpoint";
+} from "@/types/checkpoint-call";
 
 /** An early room is asked again this often, so the page opens on time. */
 const EARLY_POLL_MS = 30_000;

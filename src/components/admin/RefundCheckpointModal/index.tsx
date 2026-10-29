@@ -24,7 +24,7 @@ import {
 	useRefundQuote,
 	useRefundReasonLabels,
 } from "@/hooks/admin-checkpoints";
-import type { RefundReason } from "@/lib/checkpoint-refund";
+import type { RefundReason } from "@/lib/checkpoints/refund";
 import styles from "./style.module.scss";
 
 export type RefundCheckpointModalProps = {

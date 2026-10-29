@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 
+vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://gdhub.test");
+
 const findMany = vi.fn();
 const updateMany = vi.fn();
 const update = vi.fn();
@@ -8,18 +10,14 @@ const findUniqueOrThrow = vi.fn();
 const writeCallNotes = vi.fn();
 const notify = vi.fn();
 
-vi.mock("@/services/call-notes", async (original) => ({
-	...(await original<typeof import("@/services/call-notes")>()),
+vi.mock("@/services/checkpoints/call-notes", async (original) => ({
+	...(await original<typeof import("@/services/checkpoints/call-notes")>()),
 	writeCallNotes: (...a: unknown[]) => writeCallNotes(...a),
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
-	appUrl: () => "https://gdhub.test",
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: (...a: unknown[]) => notify(...a),
-	recipient: { select: { id: true, email: true } },
-	reviewUrl: (slug: string, number: number, index: number) =>
-		`https://gdhub.test/user/project/${slug}/workflow/cp${number}/review/${index}`,
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: vi.fn(async () => 1),
 }));
 vi.mock("@/services/prisma", () => ({
@@ -36,7 +34,7 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 const { writeDueCallNotes } = await import(
-	"@/repositories/checkpoint-call-notes"
+	"@/services/checkpoints/flows/call-notes"
 );
 
 const person = (id: string) => ({ id, email: `${id}@x.test` });
@@ -115,7 +113,7 @@ describe("writeDueCallNotes", () => {
 		);
 		expect(Object.keys(letters).sort()).toEqual(["curator", "marta"]);
 		expect(letters.marta.url).toBe(
-			"https://gdhub.test/user/project/hollow-tide/workflow/cp1/review/2",
+			"https://gdhub.test/user/project/hollow-tide/workflow/cp1?sprint=2&tab=review",
 		);
 		expect(letters.curator.url).toBe(
 			"https://gdhub.test/advisor/checkpoints/cp/review/2",

@@ -5,7 +5,7 @@ import {
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { reconcileCheckout } from "@/repositories/checkpoint-payment";
+import { reconcileCheckout } from "@/services/checkpoints/flows/payment";
 import { prisma } from "@/services/prisma";
 import { retrieveCheckout } from "@/services/stripe/server";
 

@@ -60,13 +60,13 @@ import {
 	useSendVerdict,
 	useVerdictContext,
 } from "@/hooks/checkpoints";
-import { dayNumberOn } from "@/lib/checkpoint-days";
-import { isProven } from "@/lib/checkpoint-verdict";
+import { dayNumberOn } from "@/lib/checkpoints/days";
+import { isProven } from "@/lib/checkpoints/verdict";
 import {
 	verdictDueBy,
 	verdictOverdue,
 	verdictSendOpensAt,
-} from "@/lib/checkpoint-verdict-window";
+} from "@/lib/checkpoints/verdict-window";
 import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,

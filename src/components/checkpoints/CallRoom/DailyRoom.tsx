@@ -38,7 +38,7 @@ import {
 	useEndCall,
 	useJoinCall,
 } from "@/hooks/checkpoint-call";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import { CallHeader, type CallHeaderProps, callTime } from "./CallHeader";
 import { CallLayout, CallStage, LiveStage, ParticipantTile } from "./CallParts";
 import { CallTeam } from "./CallTeam";

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { CuratorReview } from "@/components/checkpoints/CuratorReview";
 import { AdvisorSpace } from "@/components/spaces/AdvisorSpace";
 import { SESSIONS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { pathTabOf } from "@/lib/checkpoint-hrefs";
-import { curatorKindOf } from "@/repositories/checkpoint-review";
+import { pathTabOf } from "@/lib/checkpoints/hrefs";
+import { curatorKindOf } from "@/repositories/checkpoints/review";
 
 export const metadata: Metadata = {
 	title: "Curator's Review",

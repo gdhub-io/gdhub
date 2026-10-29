@@ -6,6 +6,8 @@ import {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 
+vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://gdhub.test");
+
 const checkpointFindUnique = vi.fn();
 const checkpointFindUniqueOrThrow = vi.fn();
 const checkpointUpdate = vi.fn();
@@ -53,16 +55,16 @@ vi.mock("@/services/prisma", () => {
 	};
 	return { prisma };
 });
-vi.mock("@/repositories/evidence-seen", () => ({
+vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 	sprintArtifactLines: vi.fn(async () => [
 		'GameplayVideo "Sprint 1 build" https://x.test/v: one tide loop played through',
 	]),
 }));
-vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
-vi.mock("@/repositories/curator-context", async (actual) => ({
-	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
+vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
+vi.mock("@/repositories/checkpoints/ai-curator-context", async (actual) => ({
+	memberRole: (await actual<typeof import("@/repositories/checkpoints/ai-curator-context")>())
 		.memberRole,
 	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
 	curatorTeam: vi.fn(async () => ({
@@ -84,38 +86,36 @@ vi.mock("@/repositories/curator-context", async (actual) => ({
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
-vi.mock("@/services/curator-review", async (original) => ({
+vi.mock("@/services/checkpoints/ai-review", async (original) => ({
 	midwayAdviceInput: (
-		await original<typeof import("@/services/curator-review")>()
+		await original<typeof import("@/services/checkpoints/ai-review")>()
 	).midwayAdviceInput,
 	writeSprintReview: (...a: unknown[]) => writeSprintReview(...a),
 	writePlanAdvice: (...a: unknown[]) => writePlanAdvice(...a),
 	reviewSprint: (...a: unknown[]) => reviewSprint(...a),
 }));
-vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+vi.mock("@/services/checkpoints/flows/ai-curator", () => ({
 	closeCheckpoint: (...a: unknown[]) => closeCheckpoint(...a),
 	writeFirstLetter: (...a: unknown[]) => writeFirstLetter(...a),
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
-	appUrl: () => "https://gdhub.test",
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: (...a: unknown[]) => notify(...a),
 	notifyPlanChecked: (...a: unknown[]) => notifyPlanChecked(...a),
-	recipient: { select: { id: true, email: true } },
-	reviewUrl: (slug: string, number: number, index: number) =>
-		`https://gdhub.test/user/project/${slug}/workflow/cp${number}/review/${index}`,
 }));
-vi.mock("@/services/checkpoint-verdict-notifications", () => ({
+vi.mock("@/services/checkpoints/verdict-notifications", () => ({
 	notifyVerdictSent: (...a: unknown[]) => notifyVerdictSent(...a),
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: vi.fn(async () => 3),
 }));
 vi.mock("@/services/stripe/server", () => ({}));
 
-const { startAiCheckpoint } = await import("@/repositories/checkpoint-payment");
+const { startAiCheckpoint } = await import(
+	"@/services/checkpoints/flows/payment"
+);
 const { adviseOnPlan, writeBriefFor, writeDueBriefs, writeDueReviews } =
-	await import("@/repositories/checkpoint-review");
-const { journal } = await import("@/repositories/curator-journal");
+	await import("@/services/checkpoints/flows/review");
+const { journal } = await import("@/repositories/checkpoints/journal");
 
 // Started Thursday 1 Oct: sprint 1 is 1–7 Oct, its review on day 8.
 const startedAt = new Date("2026-10-01T00:00:00Z");
@@ -333,12 +333,12 @@ describe("writeDueReviews", () => {
 			[
 				"author",
 				"cp-review-s2-author",
-				"https://gdhub.test/user/project/hollow-tide/workflow/cp3/review/2",
+				"https://gdhub.test/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
 			],
 			[
 				"oleg",
 				"cp-review-s2-oleg",
-				"https://gdhub.test/user/project/hollow-tide/workflow/cp3/review/2",
+				"https://gdhub.test/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
 			],
 		]);
 	});

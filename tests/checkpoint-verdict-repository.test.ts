@@ -4,17 +4,14 @@ import {
 	CheckpointVerdict,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { journalCuratorVerdict } from "@/repositories/checkpoint-curator.repository";
-import {
-	moveFinishedToReview,
-	saveVerdictDraft,
-	writeCuratorVerdict,
-} from "@/repositories/checkpoint-verdict.repository";
+import { journalCuratorVerdict } from "@/repositories/checkpoints/ai-curator";
+import { saveVerdictDraft } from "@/repositories/checkpoints/verdict";
 import { closeCheckpointRoom } from "@/services/chat/checkpoint-room";
+import { moveFinishedToReview, writeCuratorVerdict } from "@/services/checkpoints/flows/verdict";
 import {
 	notifyVerdictDue,
 	notifyVerdictSent,
-} from "@/services/checkpoint-verdict-notifications";
+} from "@/services/checkpoints/verdict-notifications";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -32,12 +29,12 @@ vi.mock("@/services/chat/checkpoint-room", () => ({
 	syncChat: (_label: string, run: () => Promise<unknown>) => run(),
 }));
 
-vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+vi.mock("@/repositories/checkpoints/ai-curator", () => ({
 	getVerdictRead: vi.fn(async () => null),
 	journalCuratorVerdict: vi.fn(),
 }));
 
-vi.mock("@/services/checkpoint-verdict-notifications", () => ({
+vi.mock("@/services/checkpoints/verdict-notifications", () => ({
 	notifyVerdictDue: vi.fn(),
 	notifyVerdictSent: vi.fn(),
 }));

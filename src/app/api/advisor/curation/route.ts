@@ -7,7 +7,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { getCuration, saveCuration } from "@/repositories/curators";
+import {
+	getCuration,
+	saveCuration,
+} from "@/repositories/checkpoints/curator-approval";
 
 /** Advisor settings → Paid work → Project curation, for whoever is asking. */
 export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {

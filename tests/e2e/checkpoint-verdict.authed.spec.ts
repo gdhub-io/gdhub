@@ -5,7 +5,7 @@ import {
 	CheckpointVerdict,
 } from "@gdhub-io/gdhub-prisma";
 import { type Browser, expect, type Page, test } from "@playwright/test";
-import { dueDateFrom } from "../../src/lib/checkpoint-days";
+import { dueDateFrom } from "../../src/lib/checkpoints/days";
 import { prisma } from "../../src/services/prisma";
 import { ensurePersona, PERSONAS } from "../personas";
 import { acceptCookieConsent } from "./setup/cookies";

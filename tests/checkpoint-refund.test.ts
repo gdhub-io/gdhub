@@ -11,9 +11,9 @@ import {
 	type RefundCase,
 	reasonRefused,
 	refundAmount,
-} from "@/lib/checkpoint-refund";
-import { issueCheckpointRefund } from "@/repositories/checkpoint-refund";
-import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
+} from "@/lib/checkpoints/refund";
+import { issueCheckpointRefund } from "@/services/checkpoints/flows/refund";
+import { notifyAuthorOfRefund } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import { refundCheckout } from "@/services/stripe/server";
 
@@ -31,7 +31,7 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfRefund: vi.fn(),
 }));
 vi.mock("@/services/chat/checkpoint-room", () => ({

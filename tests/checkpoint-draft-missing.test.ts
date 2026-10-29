@@ -3,7 +3,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import { draftMissing } from "@/lib/checkpoint-draft";
+import { draftMissing } from "@/lib/checkpoints/draft";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 
 const outcome = {

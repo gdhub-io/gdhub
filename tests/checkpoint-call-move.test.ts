@@ -20,12 +20,16 @@ vi.mock("@/repositories/advisor-availability", () => ({
 	freeMoveSlots: (...a: unknown[]) => freeMoveSlots(...a),
 	lockCurator: (...a: unknown[]) => lockCurator(...a),
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyCallMove: (...a: unknown[]) => notifyCallMove(...a),
 }));
 
-const { answerCallMove, askCallMove, callMoveOptions, withdrawCallMove } =
-	await import("@/repositories/checkpoint-call-move");
+const { callMoveOptions, withdrawCallMove } = await import(
+	"@/repositories/checkpoints/call-move"
+);
+const { answerCallMove, askCallMove } = await import(
+	"@/services/checkpoints/flows/call-move"
+);
 
 // Call 2 on Thu 8 Oct 14:00; the checkpoint started on 1 Oct.
 const scheduledAt = new Date("2026-10-08T14:00:00Z");

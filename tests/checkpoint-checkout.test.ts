@@ -7,7 +7,7 @@ import { isFirstCallFree } from "@/repositories/advisor-availability";
 import {
 	checkpointCheckout,
 	returnToAuthor,
-} from "@/repositories/checkpoint-payment";
+} from "@/repositories/checkpoints/payment";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 

@@ -12,7 +12,7 @@ import type { ProjectArtifactType } from "@/config/prisma-enums";
 import type {
 	CuratorJournalViewDto,
 	JournalTaskDto,
-} from "@/repositories/curator-journal-view";
+} from "@/types/checkpoint-journal";
 import { Boundary, FoldOuts, when } from "./parts";
 import styles from "./style.module.scss";
 

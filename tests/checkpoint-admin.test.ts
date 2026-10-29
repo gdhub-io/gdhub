@@ -6,11 +6,11 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { bookSessions, SlotTakenError } from "@/repositories/advisor-availability";
-import { assignCurator, writeAdminVerdict } from "@/repositories/checkpoint-admin";
-import { startAiCheckpoint } from "@/repositories/checkpoint-payment";
-import { refundCaseOf } from "@/repositories/checkpoint-refund";
-import { afterVerdictSent } from "@/repositories/checkpoint-verdict.repository";
-import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
+import { refundCaseOf } from "@/repositories/checkpoints/refund";
+import { assignCurator, writeAdminVerdict } from "@/services/checkpoints/flows/admin";
+import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
+import { afterVerdictSent } from "@/services/checkpoints/flows/verdict";
+import { notifyCuratorAsked } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import { refundCheckout } from "@/services/stripe/server";
 
@@ -29,19 +29,21 @@ vi.mock("@/services/prisma", () => {
 	return { prisma: client };
 });
 vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
-vi.mock("@/repositories/checkpoint-refund", async (importOriginal) => ({
-	...(await importOriginal<typeof import("@/repositories/checkpoint-refund")>()),
+vi.mock("@/repositories/checkpoints/refund", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoints/refund")>()),
 	refundCaseOf: vi.fn(),
 }));
-vi.mock("@/repositories/checkpoint-verdict.repository", () => ({
+vi.mock("@/services/checkpoints/flows/verdict", () => ({
 	afterVerdictSent: vi.fn(),
 }));
-vi.mock("@/repositories/checkpoint-payment", () => ({ startAiCheckpoint: vi.fn() }));
+vi.mock("@/services/checkpoints/flows/payment", () => ({
+	startAiCheckpoint: vi.fn(),
+}));
 vi.mock("@/repositories/advisor-availability", () => ({
 	bookSessions: vi.fn(),
 	SlotTakenError: class SlotTakenError extends Error {},
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: vi.fn(),
 	notifyAuthorOfRefund: vi.fn(),
 	notifyCuratorAsked: vi.fn(),

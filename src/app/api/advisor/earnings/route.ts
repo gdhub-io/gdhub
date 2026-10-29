@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { curatorEarnings } from "@/repositories/curator-earnings";
+import { curatorEarnings } from "@/repositories/checkpoints/curator-earnings";
 
 /** Frame 13.4: the asking curator's own fees and payouts, nobody else's. */
 export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {

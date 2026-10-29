@@ -25,9 +25,13 @@ vi.mock("@/config/checkpoint-pricing", () => ({
 	checkpointPurchaseOpen: () => true,
 }));
 
-vi.mock("@/repositories/checkpoint-payment", () => ({
-	pendingCheckout: async () => null,
+vi.mock("@/services/checkpoints/flows/payment", () => ({
 	reconcileCheckout: async () => undefined,
+}));
+
+vi.mock("@/repositories/checkpoints/payment", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoints/payment")>()),
+	pendingCheckout: async () => null,
 	checkpointCheckout: async () => ({
 		ok: true,
 		amount: 45000,

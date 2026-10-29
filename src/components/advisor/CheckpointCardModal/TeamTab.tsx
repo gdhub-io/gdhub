@@ -10,7 +10,7 @@ import { specialityLine } from "@/components/scout/ProjectCardModal/format";
 import { Section } from "@/components/scout/ProjectCardModal/parts";
 import styles from "@/components/scout/ProjectCardModal/style.module.scss";
 import { duration } from "@/helpers/investment";
-import { hoursSpan } from "@/lib/checkpoint-capacity";
+import { hoursSpan } from "@/lib/checkpoints/capacity";
 import type { AdvisorProjectDto } from "@/types/checkpoints";
 
 const { Text } = Typography;

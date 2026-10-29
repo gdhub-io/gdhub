@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { getAdvisorProject } from "@/repositories/advisor-checkpoints";
+import { getAdvisorProject } from "@/repositories/checkpoints/advisor";
 
 /**
  * The project behind one of the curator's checkpoints. Reached through the

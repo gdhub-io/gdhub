@@ -4,10 +4,10 @@ import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { EvidenceMatch } from "@/config/prisma-enums";
-import { devlogText } from "@/lib/curator-text";
+import { devlogText } from "@/lib/checkpoints/curator-text";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
-import { localeLine } from "@/services/checkpoint-curator/prompts/card";
+import { localeLine } from "@/services/checkpoints/ai-curator/prompts/card";
 import type { EvidenceContent } from "./read";
 
 const HONEST = stripIndents`

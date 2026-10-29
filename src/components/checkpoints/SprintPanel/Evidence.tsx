@@ -14,8 +14,8 @@ import {
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { ArtifactCheckStatus } from "@/config/prisma-enums";
-import type { SprintFacts } from "@/lib/checkpoint-facts";
-import { acceptsEvidence } from "@/lib/checkpoint-status";
+import type { SprintFacts } from "@/lib/checkpoints/facts";
+import { acceptsEvidence } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

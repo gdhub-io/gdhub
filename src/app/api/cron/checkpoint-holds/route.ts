@@ -1,21 +1,18 @@
 import {
-	CheckpointStatus,
-	PayableType,
-	PaymentProvider,
-	PaymentStatus,
-} from "@gdhub-io/gdhub-prisma";
-import {
 	CURATOR_ANSWER_DAYS,
 	PAYMENT_WEBHOOK_GRACE_MINUTES,
 } from "@/config/checkpoint";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import {
-	reconcileCheckout,
+	awaitingCuratorOf,
+	markPaymentCanceled,
+	pendingCheckoutsBefore,
 	returnToAuthor,
-} from "@/repositories/checkpoint-payment";
-import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
-import { prisma } from "@/services/prisma";
+	staleStripeHolds,
+} from "@/repositories/checkpoints/payment";
+import { reconcileCheckout } from "@/services/checkpoints/flows/payment";
+import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { releaseCheckout } from "@/services/stripe/server";
 
 const WEBHOOK_GRACE_MS = PAYMENT_WEBHOOK_GRACE_MINUTES * 60 * 1000;
@@ -26,20 +23,9 @@ const WEBHOOK_GRACE_MS = PAYMENT_WEBHOOK_GRACE_MINUTES * 60 * 1000;
  * runs out on the author's card.
  */
 const reconcilePending = async () => {
-	const pending = await prisma.payment.findMany({
-		where: {
-			payableType: PayableType.CHECKPOINT,
-			status: PaymentStatus.PENDING,
-			providerTransactionId: { not: null },
-			createdAt: { lt: new Date(Date.now() - WEBHOOK_GRACE_MS) },
-		},
-		select: {
-			id: true,
-			payableId: true,
-			provider: true,
-			providerTransactionId: true,
-		},
-	});
+	const pending = await pendingCheckoutsBefore(
+		new Date(Date.now() - WEBHOOK_GRACE_MS),
+	);
 
 	let settled = 0;
 
@@ -73,16 +59,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		const deadline = new Date();
 		deadline.setUTCDate(deadline.getUTCDate() - CURATOR_ANSWER_DAYS);
 
-		const stale = await prisma.payment.findMany({
-			where: {
-				payableType: PayableType.CHECKPOINT,
-				// Only Stripe holds money it has not taken; Paddle charges at once.
-				provider: PaymentProvider.STRIPE,
-				status: PaymentStatus.PROCESSING,
-				createdAt: { lt: deadline },
-			},
-			select: { id: true, payableId: true, providerTransactionId: true },
-		});
+		const stale = await staleStripeHolds(deadline);
 
 		let released = 0;
 
@@ -98,20 +75,11 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				continue;
 			}
 
-			await prisma.payment.update({
-				where: { id: payment.id },
-				data: { status: PaymentStatus.CANCELED },
-			});
+			await markPaymentCanceled(payment.id);
 
 			// Silence is an answer too: back to the author exactly as a decline
 			// leaves it.
-			const waiting = await prisma.projectCheckpoint.findFirst({
-				where: {
-					id: payment.payableId,
-					status: CheckpointStatus.AwaitingCurator,
-				},
-				select: { curatorId: true, curator: { select: { name: true } } },
-			});
+			const waiting = await awaitingCuratorOf(payment.payableId);
 
 			if (!waiting) continue;
 

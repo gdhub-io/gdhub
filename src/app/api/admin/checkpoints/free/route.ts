@@ -9,10 +9,8 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import {
-	freeCheckpointProjects,
-	startFreeCheckpoint,
-} from "@/repositories/checkpoint-free";
+import { freeCheckpointProjects } from "@/repositories/checkpoints/free";
+import { startFreeCheckpoint } from "@/services/checkpoints/flows/free";
 
 const QuerySchema = z.object({ q: z.string().trim().max(100).default("") });
 

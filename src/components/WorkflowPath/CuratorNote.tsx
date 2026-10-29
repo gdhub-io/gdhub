@@ -20,7 +20,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
-import { callState } from "@/lib/checkpoint-call";
+import { callState } from "@/lib/checkpoints/call";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { formatShort } from "./dates";
 import styles from "./style.module.scss";

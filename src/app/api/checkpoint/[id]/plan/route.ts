@@ -6,7 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { changePlan } from "@/repositories/checkpoint-plan-edit";
+import { changePlan } from "@/repositories/checkpoints/plan-edit";
 import { type PlanChange, PlanChangeSchema } from "@/schemas/checkpoint";
 
 /**

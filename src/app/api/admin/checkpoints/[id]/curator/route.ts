@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { assignCurator } from "@/repositories/checkpoint-admin";
+import { assignCurator } from "@/services/checkpoints/flows/admin";
 
 const AssignSchema = z.object({
 	kind: z.nativeEnum(CheckpointCuratorKind),

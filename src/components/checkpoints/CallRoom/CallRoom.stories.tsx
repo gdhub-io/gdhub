@@ -2,11 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
 import { CuratorMessage } from "@/components/checkpoints/CuratorReview/CuratorMessage";
 import { CuratorReviewSkeleton } from "@/components/checkpoints/CuratorReview/CuratorReviewSkeleton";
-import type { PathTab } from "@/lib/checkpoint-hrefs";
-import type {
-	CallNotesDto,
-	CheckpointCallDto,
-} from "@/repositories/checkpoint-call";
+import type { PathTab } from "@/lib/checkpoints/hrefs";
+import type { CallNotesDto, CheckpointCallDto } from "@/types/checkpoint-call";
 import { GoalCard } from "./CallGoal";
 import { CallHeader, type CallHeaderProps } from "./CallHeader";
 import { PanelBlock } from "./CallPanel";

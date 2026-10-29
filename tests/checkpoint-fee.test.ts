@@ -5,8 +5,8 @@ import {
 	callCost,
 	curatorFee,
 	payoutDueOn,
-} from "@/lib/checkpoint-costs";
-import { type FeeCase, feeFor } from "@/lib/checkpoint-fee";
+} from "@/lib/checkpoints/costs";
+import { type FeeCase, feeFor } from "@/lib/checkpoints/fee";
 
 const calls = (held: number[]) =>
 	[1, 2, 3, 4, 5].map((index) => ({

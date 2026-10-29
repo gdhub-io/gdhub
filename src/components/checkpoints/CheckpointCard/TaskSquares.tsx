@@ -4,7 +4,7 @@ import { Flex, Tooltip, Typography } from "antd";
 import clsx from "clsx";
 import { useArtifactTypeLabel } from "@/components/MyProjectArtifacts/labels";
 import { BOX_TICK_STROKE } from "@/components/ui";
-import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import type { CheckpointItemDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

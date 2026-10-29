@@ -6,7 +6,7 @@ import {
 	searchParam,
 } from "@/components/checkpoints/entry/hrefs";
 import { requireSession } from "@/helpers/require-session";
-import { isProjectFounder } from "@/repositories/checkpoint-entry";
+import { isProjectFounder } from "@/repositories/checkpoints/entry";
 import { prisma } from "@/services/prisma";
 
 export const metadata: Metadata = {

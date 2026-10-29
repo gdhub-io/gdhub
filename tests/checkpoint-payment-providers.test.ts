@@ -5,8 +5,8 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { returnToAuthor } from "@/repositories/checkpoint-payment";
-import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
+import { returnToAuthor } from "@/repositories/checkpoints/payment";
+import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import {
 	getCheckoutReceiptUrl,
@@ -34,12 +34,16 @@ vi.mock("@/services/paddle/server", () => ({
 	getTransactionInvoiceUrl: vi.fn(async () => "https://paddle/invoice.pdf"),
 }));
 
-vi.mock("@/repositories/checkpoint-payment", () => ({
+vi.mock("@/services/checkpoints/flows/payment", () => ({
 	reconcileCheckout: vi.fn(async () => false),
+}));
+
+vi.mock("@/repositories/checkpoints/payment", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoints/payment")>()),
 	returnToAuthor: vi.fn(),
 }));
 
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfAnswer: vi.fn(),
 }));
 

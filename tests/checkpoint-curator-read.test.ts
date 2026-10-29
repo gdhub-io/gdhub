@@ -13,7 +13,7 @@ vi.mock("@/lib/space-guard", () => ({
 		new Response(JSON.stringify({ error: "Not found" }), { status: 404 }),
 }));
 
-vi.mock("@/repositories/checkpoint.repository", () => ({
+vi.mock("@/repositories/checkpoints/checkpoint", () => ({
 	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 	withProgress: <T>(checkpoint: T) => checkpoint,
 	replaceCheckpointItems: vi.fn(),

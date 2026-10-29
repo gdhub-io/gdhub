@@ -1,12 +1,12 @@
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
-import { writeDueCallNotes } from "@/repositories/checkpoint-call-notes";
-import { approveCheckedPlans } from "@/repositories/checkpoint-plan-edit";
+import { writeDueCallNotes } from "@/services/checkpoints/flows/call-notes";
+import { approveCheckedPlans } from "@/services/checkpoints/flows/plan-edit";
 import {
 	remindCallsSoon,
 	remindPlansUnsent,
 	remindScopeClosing,
-} from "@/services/checkpoint-notifications";
+} from "@/services/checkpoints/notifications";
 
 /**
  * Hourly: the curator and the team hear about a call an hour before it, a

@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { decideCurator } from "@/repositories/curators";
+import { decideCurator } from "@/services/checkpoints/flows/curator-approval";
 
 const DecisionSchema = z.discriminatedUnion("action", [
 	z.object({ action: z.literal("approve") }),

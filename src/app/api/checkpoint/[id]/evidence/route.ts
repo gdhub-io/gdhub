@@ -9,38 +9,28 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { acceptsEvidence } from "@/lib/checkpoint-status";
-import { canTakeEvidence } from "@/lib/checkpoint-verdict";
+import { acceptsEvidence } from "@/lib/checkpoints/status";
+import { canTakeEvidence } from "@/lib/checkpoints/verdict";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
+	attachEvidence,
+	detachEvidence,
+	evidenceArtifactOf,
+	evidenceTargetOf,
 	getCheckpoint,
 	withProgress,
-} from "@/repositories/checkpoint.repository";
-import { checkAndLook } from "@/repositories/evidence-seen";
+} from "@/repositories/checkpoints/checkpoint";
 import {
 	type CheckpointEvidenceBody,
 	CheckpointEvidenceSchema,
 	DetachEvidenceSchema,
 } from "@/schemas/checkpoint";
-import { prisma } from "@/services/prisma";
+import { checkAndLook } from "@/services/checkpoints/flows/evidence-seen";
 
 /** The running checkpoint the evidence belongs to, or why it cannot take any. */
 const openCheckpoint = async (id: string) => {
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: {
-			status: true,
-			projectId: true,
-			items: {
-				select: {
-					id: true,
-					kind: true,
-					evidence: { select: { artifactId: true } },
-				},
-			},
-		},
-	});
+	const checkpoint = await evidenceTargetOf(id);
 	if (!checkpoint) return { refused: apiError.notFound() };
 	// Evidence is collected while the 28 days run; once the verdict is being
 	// written the card is the record the verdict is read from.
@@ -99,19 +89,13 @@ export const POST = guard(
 			);
 			if (full) return apiError.badRequest("evidenceFull");
 
-			const artifact = await prisma.projectArtifact.findUnique({
-				where: { id: artifactId },
-				select: { projectId: true, checkStatus: true },
-			});
+			const artifact = await evidenceArtifactOf(artifactId);
 			if (!artifact) return apiError.notFound();
 			if (artifact.projectId !== checkpoint.projectId) {
 				return apiError.badRequest("artifactNotInProject");
 			}
 
-			await prisma.checkpointItemEvidence.createMany({
-				data: itemIds.map((itemId) => ({ itemId, artifactId })),
-				skipDuplicates: true,
-			});
+			await attachEvidence(itemIds, artifactId);
 			// Older than the check itself: it becomes evidence now, so it is checked now.
 			after(() =>
 				checkAndLook(artifactId, { checked: !!artifact.checkStatus }),
@@ -134,9 +118,7 @@ export const DELETE = guard(
 		const wrong = outcomeOf(checkpoint.items, itemId);
 		if (wrong) return wrong;
 
-		await prisma.checkpointItemEvidence.deleteMany({
-			where: { itemId, artifactId },
-		});
+		await detachEvidence(itemId, artifactId);
 		return json(withProgress(await getCheckpoint(id)));
 	}),
 );

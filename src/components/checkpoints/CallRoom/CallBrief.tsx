@@ -6,8 +6,10 @@ import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { EvidenceMatchTag } from "@/components/checkpoints/EvidenceMatchTag";
 import { IconTile } from "@/components/ui";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
-import type { CallBrief as CallBriefData } from "@/repositories/curator-journal";
+import type {
+	CallBrief as CallBriefData,
+	CheckpointCallDto,
+} from "@/types/checkpoint-call";
 import styles from "./style.module.scss";
 
 /**

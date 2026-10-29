@@ -8,7 +8,7 @@ said otherwise). The engineering side is in [checkpoints.md](checkpoints.md).
 ## How days are counted
 
 - **Day 1 is `startedAt`**, a UTC midnight. Days are counted midnight to midnight
-  in UTC (`dayNumberOn`, [src/lib/checkpoint-days.ts](../src/lib/checkpoint-days.ts)),
+  in UTC (`dayNumberOn`, [src/lib/checkpoints/days.ts](../src/lib/checkpoints/days.ts)),
   so a checkpoint bought at 23:50 is not on day 2 ten minutes later.
 - **Four sprints of seven days** (`SPRINT_DAYS`): 1–7, 8–14, 15–21, 22–28. A
   sprint's last day is when its devlog, build and artifacts are due.
@@ -27,7 +27,7 @@ said otherwise). The engineering side is in [checkpoints.md](checkpoints.md).
 
 **What the team sees.** On any day the Workflow widget and Curator's Review show
 the same message from the curator — what it has done and what it waits for
-(`curatorNow`, [src/lib/curator-now.ts](../src/lib/curator-now.ts)). The page asks
+(`curatorNow`, [src/lib/checkpoints/curator-now.ts](../src/lib/checkpoints/curator-now.ts)). The page asks
 for it again once, when it is next due to change, and when the tab comes back.
 
 **Tags.** `ai request` — a model call; `cron` — started by a scheduled run, not
@@ -80,7 +80,7 @@ call's time, so a moved call is announced again.
 ## The Calendar tab and the subscription (GDHUB-124)
 
 Every date above is also on the Calendar tab of Path to Checkpoint — a grid, a
-sprint a row — built by `checkpointCalendar` (`src/lib/checkpoint-calendar.ts`)
+sprint a row — built by `checkpointCalendar` (`src/lib/checkpoints/calendar.ts`)
 from the start day, the calls as booked and these rules; the curator also sees
 the AI's briefs. "Subscribe" gives a personal link (`/api/calendar/<signed
 token>.ics`) that Google, Apple and Outlook keep in sync: it is built anew on

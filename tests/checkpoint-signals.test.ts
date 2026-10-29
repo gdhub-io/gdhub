@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkpointSignals, type SignalsInput } from "@/lib/checkpoint-signals";
+import { checkpointSignals, type SignalsInput } from "@/lib/checkpoints/signals";
 
 const startedAt = new Date("2026-09-01T00:00:00.000Z");
 // Day 10 — inside sprint 2, which runs 8–14 September.

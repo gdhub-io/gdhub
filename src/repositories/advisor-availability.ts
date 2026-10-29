@@ -16,8 +16,8 @@ import {
 	type MinuteRange,
 	seriesAt,
 } from "@/lib/advisor-availability";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
-import { CHECKPOINT_OPEN_STATUSES } from "@/lib/checkpoint-status";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoints/days";
+import { CHECKPOINT_OPEN_STATUSES } from "@/lib/checkpoints/status";
 import { prisma } from "@/services/prisma";
 
 /** The client, or the one an interactive transaction hands its callback. */

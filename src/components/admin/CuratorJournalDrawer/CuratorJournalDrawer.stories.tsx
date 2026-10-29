@@ -3,7 +3,7 @@ import { withQueries } from "@/mocks/queries";
 import type {
 	CuratorJournalViewDto,
 	JournalMessageDto,
-} from "@/repositories/curator-journal-view";
+} from "@/types/checkpoint-journal";
 import type { AdminCheckpointRowDto } from "@/types/checkpoints";
 import { CuratorJournalDrawer } from ".";
 

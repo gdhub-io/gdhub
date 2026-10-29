@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { setPayoutNote } from "@/repositories/checkpoint-payouts";
+import { setPayoutNote } from "@/repositories/checkpoints/payouts";
 
 const NoteSchema = z.object({ note: z.string().max(PAYOUT_NOTE_MAX) });
 

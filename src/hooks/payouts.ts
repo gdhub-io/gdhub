@@ -13,7 +13,7 @@ import {
 	CheckpointFeeReason,
 	type ExpertInvoicing,
 } from "@/config/prisma-enums";
-import type { NoFeeReason } from "@/lib/checkpoint-fee";
+import type { NoFeeReason } from "@/lib/checkpoints/fee";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
 import type {
 	AdminPayoutsDto,

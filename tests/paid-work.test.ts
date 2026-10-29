@@ -6,7 +6,7 @@ import {
 	needsAcceptance,
 } from "@/repositories/legal.repository";
 import { savePaidWork } from "@/repositories/paid-work";
-import { notify } from "@/services/checkpoint-notifications";
+import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -25,7 +25,7 @@ vi.mock("@/repositories/legal.repository", () => ({
 vi.mock("@/lib/legal/accept", () => ({
 	resolveLegal: vi.fn(() => [{ code: "AdvisorAgreement" }]),
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: vi.fn(),
 	appUrl: () => "",
 }));
