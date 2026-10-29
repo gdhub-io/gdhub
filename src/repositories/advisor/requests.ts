@@ -1,5 +1,6 @@
 import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import { pageMeta } from "@/lib/pagination";
+import { CONFIRMED_STATUS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -129,9 +130,12 @@ async function rolesOnProjects(
 
 	const members = await prisma.teamMember.findMany({
 		where: {
+			...CONFIRMED_STATUS,
 			teamId: { in: [...new Set(pairs.map((pair) => pair.teamId))] },
 			userId: { in: [...new Set(pairs.map((pair) => pair.userId))] },
 		},
+		// Oldest first, so the map keeps each pair's newest row.
+		orderBy: { startedAt: "asc" },
 		select: {
 			teamId: true,
 			userId: true,

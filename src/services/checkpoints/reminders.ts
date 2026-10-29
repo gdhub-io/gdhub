@@ -29,7 +29,7 @@ import {
 } from "@/lib/checkpoints/sprints";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { recipient } from "@/repositories/checkpoints/recipient";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
 	authorRowSelect,
 	checkpointAdmins,

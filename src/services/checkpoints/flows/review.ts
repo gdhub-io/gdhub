@@ -37,7 +37,7 @@ import {
 	taskSelect,
 } from "@/repositories/checkpoints/review";
 import { canEditPlan } from "@/repositories/checkpoints/viewer";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
 	midwayAdviceInput,
 	type PlanAdviceInput,

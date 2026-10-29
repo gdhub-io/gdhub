@@ -135,7 +135,8 @@ decorators**. Building blocks:
 - `withAuth({ mode, roles? })` — auth gate. `mode`: `"user"` (default), `"any"`, `"api"`,
   `"public_api"`, `"vercel_cron"`, `"gumroad"`. Injects `user` into the handler's `locals`.
 - `withValidation(zodSchema, "body" | "query")` — validates input, injects parsed `body`.
-- `withTeamGuard()` — verifies the user belongs to the `teamId`, injects `team`.
+- `withSpaceGuard({ permission, idFrom })` (`@/lib/space-guard`) — checks the caller's
+  role in the project, hub or event the request names, injects `access`.
 - `pipe(...wrappers)(handler)` — compose right-to-left.
 - `json(data, init?)` and `apiError.{unauthorized,forbidden,badRequest,notFound,internal}`
   for responses.

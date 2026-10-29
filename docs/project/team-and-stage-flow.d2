@@ -1,0 +1,49 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-76 phase 5 — who is on the team, and where the project stands" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+membership: "Team membership" {
+  direction: down
+
+  change: "Membership changes\nhire · fire · withdraw · accept invite · finish pending invite"
+  current: "currentMembership(user, team | project)\nHired or Founder, not finished; the newest row wins"
+  rooms: "reconcileCheckpointRooms(project, user)\non the team → in every open checkpoint chat\nnot on the team → out of them"
+  readers: "Every 'is this person on the team' check\nproject space · project by slug · team list · invite guard\nequity · member summary · checkpoint viewer · advisor requests · event common projects"
+
+  change -> rooms: "after the write"
+  rooms -> current: "asks"
+  readers -> current: "asks"
+}
+
+stage: "Stage moves" {
+  direction: down
+
+  movers: "Anything that moves the current stage\nauthor's next · admin edit · admin reset · new project · checkpoint draft"
+  set: "setCurrentStep(project, to)"
+  before: "Stages before 'to'\nunfinished ones get finished = now\nstart date left as it is"
+  target: "'to'\nfinished cleared · start = now if it has none"
+  back: "Stages the project leaves behind going back\n(after 'to', up to the old current one)\nfinished and start both cleared"
+  ahead: "Stages ahead it never reached\nleft alone: the author's planned dates stay"
+
+  movers -> set
+  set -> before
+  set -> target
+  set -> back
+  set -> ahead
+}
+
+critical: "Critical" {
+  near: bottom-right
+  style.stroke: "#e5484d"
+  c: "one definition of 'on the team': a fired user taken back has a Fired row beside the new one\nwithdrawing an old application must not throw a current member out of the chats\nan applicant or a fired user no longer reads the project by slug\nno moved stage keeps a stale 'finished' date; a jump does not invent start dates\none transaction per move, blocked while a checkpoint runs, as today"
+}

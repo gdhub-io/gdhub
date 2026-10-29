@@ -12,7 +12,7 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeamMember } from "@/lib/space-ids";
 import {
-	removeFromCheckpointRooms,
+	reconcileCheckpointRooms,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
 import { NovuService } from "@/services/novu";
@@ -65,7 +65,7 @@ export const PUT = pipe(
 	const projectId = firedMember.team.projectId;
 	if (projectId) {
 		await syncChat(`fire ${id}`, () =>
-			removeFromCheckpointRooms(projectId, firedMember.user.id),
+			reconcileCheckpointRooms(projectId, firedMember.user.id),
 		);
 	}
 

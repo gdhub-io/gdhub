@@ -13,6 +13,7 @@ import {
 	runningCheckpointLock,
 	stageMoveApproved,
 } from "@/repositories/checkpoints/workflow-lock";
+import { setCurrentStep } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 
@@ -88,21 +89,11 @@ export const PUT = pipe(
 	);
 	if (!nextStep) return json(null);
 
-	await prisma.projectWorkflow.update({
-		where: { projectId },
-		data: { currentStepId: nextStep.id },
-	});
-	// Leaving a stage is when it finished.
-	await prisma.projectWorkflowStep.update({
-		where: { id: currentStep.id },
-		data: { finishedAt: new Date() },
-	});
-	if (!nextStep.plannedAt) {
-		await prisma.projectWorkflowStep.update({
-			where: { id: nextStep.id },
-			data: { plannedAt: new Date() },
-		});
-	}
+	await prisma.$transaction((tx) =>
+		setCurrentStep(tx, currentStep.projectWorkflowId, nextStep.id, {
+			from: currentStep.id,
+		}),
+	);
 
 	// Transfer equity promises to allocations
 	for (const promise of currentStep.equityPromises) {

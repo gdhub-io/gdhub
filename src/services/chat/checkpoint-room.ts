@@ -1,7 +1,10 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import { ChatRoomKind, ChatRoomStatus } from "@/config/prisma-enums";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import {
+	CONFIRMED_MEMBERS,
+	currentMembership,
+} from "@/repositories/project/team";
 import {
 	inviteUserToRoom,
 	kickUserFromRoom,
@@ -147,7 +150,7 @@ const openRoomsOf = (projectId: string) =>
 	});
 
 /** Someone joined the team: they are let into every chat of a running checkpoint. */
-export async function addToCheckpointRooms(projectId: string, userId: string) {
+async function addToCheckpointRooms(projectId: string, userId: string) {
 	for (const room of await openRoomsOf(projectId)) {
 		const context = contextOf(room);
 		const curatorId = context.userIds?.[0];
@@ -163,10 +166,7 @@ export async function addToCheckpointRooms(projectId: string, userId: string) {
  * Someone left the team: they leave its checkpoint chats too. The registry is
  * written first, so the context card stops answering them even if Matrix fails.
  */
-export async function removeFromCheckpointRooms(
-	projectId: string,
-	userId: string,
-) {
+async function removeFromCheckpointRooms(projectId: string, userId: string) {
 	for (const room of await openRoomsOf(projectId)) {
 		const context = contextOf(room);
 		const curatorId = context.userIds?.[0];
@@ -181,6 +181,22 @@ export async function removeFromCheckpointRooms(
 		);
 		await kickUserFromRoom(curatorId, room.matrixRoomId, userId);
 	}
+}
+
+/**
+ * A membership changed: the user is put into the open checkpoint chats of the
+ * project if they are on its team now, and taken out if not. Asking rather than
+ * being told is what keeps a withdrawn old application from throwing a current
+ * member out (GDHUB-76).
+ */
+export async function reconcileCheckpointRooms(
+	projectId: string,
+	userId: string,
+) {
+	const onTeam = await currentMembership(userId, { projectId });
+	return onTeam
+		? addToCheckpointRooms(projectId, userId)
+		: removeFromCheckpointRooms(projectId, userId);
 }
 
 /**

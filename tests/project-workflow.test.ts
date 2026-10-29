@@ -53,12 +53,14 @@ const db = {
 		})),
 	},
 	projectWorkflow: {
-		findUnique: vi.fn(async ({ where }: { where: { projectId: string } }) => {
-			const workflow = store.workflows.find(
-				(row) => row.projectId === where.projectId,
+		findUnique: vi.fn(
+			async ({ where }: { where: { projectId?: string; id?: string } }) => {
+			const workflow = store.workflows.find((row) =>
+				where.id ? row.id === where.id : row.projectId === where.projectId,
 			);
 			return workflow ? { ...workflow, steps: stepsOf(workflow.id) } : null;
-		}),
+			},
+		),
 		create: vi.fn(async ({ data }: { data: { projectId: string } }) => {
 			const row = { id: nextId("wf"), projectId: data.projectId, currentStepId: null };
 			store.workflows.push(row);
@@ -111,11 +113,12 @@ const db = {
 				where,
 				data,
 			}: {
-				where: { id: { in: string[] }; finishedAt: null };
+				where: { id: { in: string[] }; finishedAt?: null };
 				data: Partial<StepRow>;
 			}) => {
 				for (const row of store.steps) {
-					if (where.id.in.includes(row.id) && row.finishedAt === null) {
+					const open = !("finishedAt" in where) || row.finishedAt === null;
+					if (where.id.in.includes(row.id) && open) {
 						Object.assign(row, data);
 					}
 				}
@@ -143,6 +146,7 @@ const {
 	ensureCheckpointStage,
 	placeProjectOnStage,
 	selectableStageNames,
+	setCurrentStep,
 } = await import("@/repositories/project/workflow");
 
 const tx = db as never;
@@ -290,5 +294,82 @@ describe("ensureCheckpointStage", () => {
 		store.workflows.push({ id: "wf-empty", projectId: "p1", currentStepId: null });
 
 		await expect(ensureCheckpointStage("p1", NOW)).resolves.toBeNull();
+	});
+});
+
+describe("setCurrentStep", () => {
+	const EARLIER = new Date("2026-09-01T10:00:00Z");
+	const PLANNED = new Date("2026-12-01T10:00:00Z");
+
+	/** On Prototyping, with Introduction to Concepting finished and dated. */
+	const onPrototyping = () => {
+		const workflow = seedOnFirstStage("p1");
+		const steps = stepsOf(workflow.id);
+		for (const step of steps.slice(0, 3)) {
+			step.plannedAt = EARLIER;
+			step.finishedAt = EARLIER;
+		}
+		steps[3].plannedAt = EARLIER;
+		// A date the author planned for a stage the project has not reached.
+		steps[6].plannedAt = PLANNED;
+		workflow.currentStepId = steps[3].id;
+		return { workflow, steps };
+	};
+
+	it("finishes every stage a jump skips, without inventing a start", async () => {
+		const { workflow, steps } = onPrototyping();
+
+		await setCurrentStep(tx, workflow.id, steps[5].id, { now: NOW });
+
+		expect(currentName("p1")).toBe("Taking and analyzing metrics");
+		expect(steps[3].finishedAt).toEqual(NOW);
+		expect(steps[4]).toMatchObject({ finishedAt: NOW, plannedAt: null });
+		expect(steps[5]).toMatchObject({ finishedAt: null, plannedAt: NOW });
+		// What was finished before keeps its own date.
+		expect(steps[0].finishedAt).toEqual(EARLIER);
+	});
+
+	it("takes both dates off the stages a move back leaves behind", async () => {
+		const { workflow, steps } = onPrototyping();
+
+		await setCurrentStep(tx, workflow.id, steps[1].id, { now: NOW });
+
+		expect(currentName("p1")).toBe("Ideation");
+		expect(steps[1]).toMatchObject({ finishedAt: null, plannedAt: EARLIER });
+		for (const step of steps.slice(2, 4)) {
+			expect(step).toMatchObject({ finishedAt: null, plannedAt: null });
+		}
+		expect(steps[0].finishedAt).toEqual(EARLIER);
+	});
+
+	it("keeps the dates planned for stages the project never reached", async () => {
+		const { workflow, steps } = onPrototyping();
+
+		await setCurrentStep(tx, workflow.id, steps[1].id, { now: NOW });
+		expect(steps[6].plannedAt).toEqual(PLANNED);
+
+		await setCurrentStep(tx, workflow.id, steps[4].id, { now: NOW });
+		expect(steps[6].plannedAt).toEqual(PLANNED);
+	});
+
+	it("clears everything after the target when the stage it was on is gone", async () => {
+		const { workflow, steps } = onPrototyping();
+
+		await setCurrentStep(tx, workflow.id, steps[0].id, {
+			from: "deleted-step",
+			now: NOW,
+		});
+
+		for (const step of steps.slice(1)) {
+			expect(step).toMatchObject({ finishedAt: null, plannedAt: null });
+		}
+	});
+
+	it("refuses a step from another workflow", async () => {
+		const { workflow } = onPrototyping();
+
+		await expect(
+			setCurrentStep(tx, workflow.id, "elsewhere", { now: NOW }),
+		).rejects.toThrow();
 	});
 });

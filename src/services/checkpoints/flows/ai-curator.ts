@@ -37,7 +37,7 @@ import {
 } from "@/repositories/checkpoints/brief";
 import { journal } from "@/repositories/checkpoints/journal";
 import { recheckCheckpointArtifacts } from "@/repositories/project/artifact-check";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import {

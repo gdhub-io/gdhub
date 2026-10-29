@@ -1,3 +1,4 @@
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 /** How many faces the card's avatar stack shows before it turns into a count. */
@@ -43,7 +44,7 @@ export async function getProjectCardFacts(
 				members: {
 					// Founders and hired members are the team; applicants and the
 					// people who left are not.
-					where: { status: { in: ["Founder", "Hired"] }, finishedAt: null },
+					where: CONFIRMED_MEMBERS,
 					select: { user: { select: { name: true, image: true } } },
 					orderBy: { startedAt: "asc" },
 				},

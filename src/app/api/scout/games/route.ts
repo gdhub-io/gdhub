@@ -4,9 +4,9 @@ import { totalPerCurrency } from "@/helpers/investment";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { pageMeta, paginateInMemory } from "@/lib/pagination";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
 	ABANDONED_FILTER,
-	CONFIRMED_MEMBERS,
 	DEFAULT_STAGE_FILTER,
 	VISIBLE_STATUSES,
 } from "@/repositories/scout/games";

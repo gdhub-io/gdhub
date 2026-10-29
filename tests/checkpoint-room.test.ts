@@ -13,15 +13,19 @@ vi.mock("../src/services/matrix/admin", () => ({
 	makeRoomReadOnly: vi.fn(),
 }));
 
+const currentMembership = vi.fn();
+vi.mock("../src/repositories/project/team", () => ({
+	currentMembership: (...a: unknown[]) => currentMembership(...a),
+}));
+
 vi.mock("../src/services/chat/ensure-room", () => ({
 	autoJoinRoom: vi.fn(),
 	ensureChatRoom: vi.fn(),
 }));
 
 import {
-	addToCheckpointRooms,
 	closeCheckpointRoom,
-	removeFromCheckpointRooms,
+	reconcileCheckpointRooms,
 } from "../src/services/chat/checkpoint-room";
 import { autoJoinRoom } from "../src/services/chat/ensure-room";
 import {
@@ -39,6 +43,16 @@ const room = (userIds: string[]) => ({
 const writtenUserIds = () =>
 	(prisma.chatRoom.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data
 		.context.userIds;
+
+const onTeam = { id: "tm1" };
+const addToCheckpointRooms = (projectId: string, userId: string) => {
+	currentMembership.mockResolvedValue(onTeam);
+	return reconcileCheckpointRooms(projectId, userId);
+};
+const removeFromCheckpointRooms = (projectId: string, userId: string) => {
+	currentMembership.mockResolvedValue(null);
+	return reconcileCheckpointRooms(projectId, userId);
+};
 
 beforeEach(() => {
 	vi.clearAllMocks();
@@ -95,6 +109,19 @@ describe("checkpoint chat follows the team", () => {
 
 		expect(writtenUserIds()).toEqual(["curator", "author"]);
 		expect(kickUserFromRoom).toHaveBeenCalledWith("curator", "!room", "leaver");
+	});
+
+	it("asks whether the user is on the team now, not what the route did", async () => {
+		vi.mocked(prisma.chatRoom.findMany).mockResolvedValue([
+			room(["curator", "author", "member"]),
+		] as never);
+
+		// A withdrawn old application while a current Hired row stands.
+		await addToCheckpointRooms("p1", "member");
+
+		expect(currentMembership).toHaveBeenCalledWith("member", { projectId: "p1" });
+		expect(kickUserFromRoom).not.toHaveBeenCalled();
+		expect(prisma.chatRoom.update).not.toHaveBeenCalled();
 	});
 
 	it("never removes the curator on a team change", async () => {

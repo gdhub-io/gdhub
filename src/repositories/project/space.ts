@@ -1,5 +1,6 @@
 import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { SpaceRole } from "@/config/permissions/roles";
+import { currentMemberOf } from "@/repositories/project/team";
 import type { SpaceAdapter } from "@/services/access/types";
 import { prisma } from "@/services/prisma";
 
@@ -20,16 +21,7 @@ export const projectSpaceAdapter: SpaceAdapter = {
 				authorId: true,
 				team: {
 					select: {
-						members: {
-							// Someone fired and taken back has a Fired row beside the new one.
-							where: {
-								userId: user.id,
-								status: {
-									in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired],
-								},
-							},
-							select: { status: true },
-						},
+						members: { ...currentMemberOf(user.id), select: { status: true } },
 					},
 				},
 			},

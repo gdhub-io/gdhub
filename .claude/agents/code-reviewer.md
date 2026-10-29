@@ -11,8 +11,8 @@ Review only what changed plus the context needed to judge it.
 
 Check, in priority order:
 1. **Correctness & security** — auth gates present on protected API routes (`withAuth` with
-   the right `mode`/`roles`), input validated with Zod (`withValidation`), team access via
-   `withTeamGuard`, no secret leakage, no SQL/Prisma injection via unchecked input, no
+   the right `mode`/`roles`), input validated with Zod (`withValidation`), project access via
+   `withSpaceGuard`, no secret leakage, no SQL/Prisma injection via unchecked input, no
    missing `await ctx.params`.
 2. **Project conventions** — no `next-api-decorators`/`class-validator`; DB only via
    `@/services/prisma`; env via `env()`; frontend data via TanStack Query + axios; antd v6

@@ -106,10 +106,38 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
    - Left on purpose: the space guard's one-column read of an `[id]` route's
      project. Folding it into the handler would change the guard for every
      route, to save a primary-key lookup.
-5. **Team membership.** This is a behaviour fix.
-   - Add `currentMembership()` and `reconcileCheckpointRooms()`.
-   - Add `setCurrentStep(from, to)`, which stamps or clears `finishedAt` for
-     every stage it crosses.
+5. **Team membership and stage moves.** Done 2026-10-29. This is a behaviour
+   fix. The rules were approved in
+   [docs/project/team-and-stage-flow.d2](../project/team-and-stage-flow.d2).
+   - **Membership:** `repositories/project/team.ts` holds `CONFIRMED_STATUS` (was
+     on the team at some point), `CONFIRMED_MEMBERS` (on it today) and
+     `currentMembership` / `currentMemberOf` (the newest current row).
+     - These checks now ask it: the project space role, the project by slug (an
+       applicant or a fired user no longer reads it), the public team list, the
+       invite guard, the member summary, the equity history and transfer, the
+       project card, the person card's team size and lifecycle notifications.
+     - Event participant links and advisor request roles use
+       `CONFIRMED_STATUS`, so applicants and rejections no longer count. The
+       newest row wins.
+     - `withTeamGuard`, which nothing used, is removed. The agents' guidance
+       now names `withSpaceGuard`.
+   - **Chat rooms:** `reconcileCheckpointRooms` replaces the add and remove
+     calls in five team routes. It asks `currentMembership`, so withdrawing an
+     old application no longer throws a current member out.
+   - **Stage moves:** `setCurrentStep` is now the only way the current stage
+     moves. It covers the author's "next", an admin edit, an admin reset, a new
+     project and a checkpoint draft.
+     - A forward jump finishes the stages it skips now and invents no start.
+     - A move back clears both dates on the stages it leaves behind.
+     - Stages the project never reached keep their planned dates.
+   - Left alone:
+     - Founder-only checks. A founder cannot be fired.
+     - `apply` refusing any earlier row. That is a re-application policy, not
+       a membership check.
+     - Task conditions, whose status filter is configured per task.
+     - `PUT /api/user/project/workflow/step` moving `workflow.createdAt` when
+       the second stage's date changes. It reads as intended (Ideation is when
+       work starts), not as a numbering bug.
 
 ## Done when
 
@@ -123,7 +151,7 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
 - [x] No checkpoint route under `app/api` imports Prisma.
 - [ ] "14 days", "28 days" and the call length appear nowhere as literals in
       code, copy or prompts.
-- [ ] Moving a project across several stages, from the admin or in one jump,
+- [x] Moving a project across several stages, from the admin or in one jump,
       leaves each crossed stage with a correct `finishedAt`. A test covers it.
 
 ## Out of scope

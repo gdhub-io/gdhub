@@ -28,12 +28,6 @@ export const UNSELECTABLE_STAGES = [
 /** The extended client's own transaction type, as the admin workflow route types it. */
 export type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
-type StageStep = {
-	id: string;
-	name: string;
-	plannedAt: Date | null;
-};
-
 export type StageRef = { id: string; name: string };
 
 const readDefaultTemplate = async (tx: Tx) => {
@@ -68,27 +62,63 @@ export const selectableStageNames = async (tx: Tx = prisma) => {
 };
 
 /**
- * Makes `steps[targetIndex]` current. Earlier stages are finished now unless
- * they already were; the target is reopened and gets a planned date, as a
- * forward move on the workflow page does.
+ * Makes `toStepId` the project's current stage and keeps every stage's dates true
+ * to it (GDHUB-76, docs/project/team-and-stage-flow.d2):
+ *  - stages before it that never finished are finished now, with no start
+ *    invented for them; the stage being left forward finished now;
+ *  - the new stage is reopened and starts now unless it already has a start;
+ *  - going back, the stages it leaves behind lose both dates. Stages it never
+ *    reached keep the dates their author planned.
+ * `from` is the stage it was on; one no longer among the steps counts as the last.
  */
-const placeOnStep = async (
+export const setCurrentStep = async (
 	tx: Tx,
 	workflowId: string,
-	steps: StageStep[],
-	targetIndex: number,
-	now: Date,
+	toStepId: string,
+	{ from, now = new Date() }: { from?: string | null; now?: Date } = {},
 ): Promise<StageRef> => {
-	const target = steps[targetIndex];
-	const earlierIds = steps.slice(0, targetIndex).map((step) => step.id);
+	const workflow = await tx.projectWorkflow.findUnique({
+		where: { id: workflowId },
+		select: {
+			currentStepId: true,
+			steps: {
+				select: { id: true, name: true, plannedAt: true },
+				orderBy: { order: "asc" },
+			},
+		},
+	});
+	if (!workflow) throw new Error(`No workflow ${workflowId}`);
+	const { steps } = workflow;
+	const to = steps.findIndex((step) => step.id === toStepId);
+	if (to < 0)
+		throw new Error(`Step ${toStepId} is not on workflow ${workflowId}`);
 
-	if (earlierIds.length) {
+	const fromId = from === undefined ? workflow.currentStepId : from;
+	const found = steps.findIndex((step) => step.id === fromId);
+	const was = fromId && found < 0 ? steps.length - 1 : found;
+	const ids = (a: number, b: number) =>
+		steps.slice(a, b).map((step) => step.id);
+
+	if (to > 0) {
 		await tx.projectWorkflowStep.updateMany({
-			where: { id: { in: earlierIds }, finishedAt: null },
+			where: { id: { in: ids(0, to) }, finishedAt: null },
 			data: { finishedAt: now },
 		});
 	}
+	if (was >= 0 && was < to) {
+		await tx.projectWorkflowStep.update({
+			where: { id: steps[was].id },
+			data: { finishedAt: now },
+		});
+	}
+	if (was > to) {
+		await tx.projectWorkflowStep.updateMany({
+			where: { id: { in: ids(to + 1, was + 1) } },
+			data: { finishedAt: null, plannedAt: null },
+		});
+	}
 
+	const target = steps[to];
 	await tx.projectWorkflowStep.update({
 		where: { id: target.id },
 		data: {
@@ -96,7 +126,6 @@ const placeOnStep = async (
 			...(target.plannedAt ? null : { plannedAt: now }),
 		},
 	});
-
 	await tx.projectWorkflow.update({
 		where: { id: workflowId },
 		data: { currentStepId: target.id },
@@ -142,17 +171,7 @@ export const createProjectWorkflow = async (
 	const plan = planReset([], template.steps, "full");
 	const stepIds = await applyResetPlan(tx, workflow.id, plan, Prisma.DbNull);
 
-	return placeOnStep(
-		tx,
-		workflow.id,
-		stepIds.map((id, index) => ({
-			id,
-			name: template.steps[index].name,
-			plannedAt: null,
-		})),
-		targetIndex,
-		now,
-	);
+	return setCurrentStep(tx, workflow.id, stepIds[targetIndex], { now });
 };
 
 const readWorkflow = (tx: Tx, projectId: string) =>
@@ -181,12 +200,11 @@ export const placeProjectOnStage = async (
 	const workflow = await readWorkflow(tx, projectId);
 	if (!workflow) return createProjectWorkflow(tx, projectId, stageName, now);
 
-	return placeOnStep(
+	return setCurrentStep(
 		tx,
 		workflow.id,
-		workflow.steps,
-		stageIndex(workflow.steps, stageName),
-		now,
+		workflow.steps[stageIndex(workflow.steps, stageName)].id,
+		{ now },
 	);
 };
 
@@ -215,11 +233,10 @@ export const ensureCheckpointStage = (
 		}
 
 		// On the first stage, or on none at all: the next one is where work starts.
-		return placeOnStep(
+		return setCurrentStep(
 			tx,
 			workflow.id,
-			steps,
-			Math.min(1, steps.length - 1),
-			now,
+			steps[Math.min(1, steps.length - 1)].id,
+			{ now },
 		);
 	});

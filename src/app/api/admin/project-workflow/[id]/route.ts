@@ -10,6 +10,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
+import { setCurrentStep } from "@/repositories/project/workflow";
 import {
 	stepName,
 	taskName,
@@ -232,19 +233,26 @@ export const PUT = pipe(
 			}
 		}
 
+		const nextCurrent =
+			currentStepId === undefined
+				? undefined
+				: resolveCurrentStepId(
+						currentStepId,
+						survivingIds,
+						existing.currentStepId,
+					);
+		// A real move dates the stages it crosses, the same way every move does.
+		if (nextCurrent && nextCurrent !== existing.currentStepId) {
+			await setCurrentStep(tx, id, nextCurrent, {
+				from: existing.currentStepId,
+			});
+		}
+
 		return tx.projectWorkflow.update({
 			where: { id },
 			data: {
 				...(title !== undefined ? { title } : null),
-				...(currentStepId !== undefined
-					? {
-							currentStepId: resolveCurrentStepId(
-								currentStepId,
-								survivingIds,
-								existing.currentStepId,
-							),
-						}
-					: null),
+				...(nextCurrent !== undefined ? { currentStepId: nextCurrent } : null),
 			},
 		});
 	});

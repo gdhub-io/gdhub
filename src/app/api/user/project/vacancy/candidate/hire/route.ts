@@ -12,7 +12,7 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeamMember } from "@/lib/space-ids";
 import {
-	addToCheckpointRooms,
+	reconcileCheckpointRooms,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
@@ -82,7 +82,7 @@ export const PUT = pipe(
 	const projectId = member.team.projectId;
 	if (projectId) {
 		await syncChat(`hire ${member.id}`, () =>
-			addToCheckpointRooms(projectId, member.user.id),
+			reconcileCheckpointRooms(projectId, member.user.id),
 		);
 	}
 

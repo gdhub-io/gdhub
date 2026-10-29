@@ -2,8 +2,8 @@ import {
 	EquityTransactionType,
 	type ProjectEquity,
 } from "@gdhub-io/gdhub-prisma";
+import { currentMembership } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
-import { CONFIRMED_MEMBERS } from "../scout/games";
 
 /**
  * Interface for transferring shares between participants
@@ -460,13 +460,11 @@ export class ProjectEquityRepository {
 
 			if (!toAllocation) {
 				// Get TeamMember ID for recipient, if he is in the team
-				const teamMember = await prisma.teamMember.findFirst({
-					where: {
-						userId: toUserId,
-						teamId: equity.project.team?.id,
-						...CONFIRMED_MEMBERS,
-					},
-				});
+				const teamMember = equity.project.team
+					? await currentMembership(toUserId, {
+							teamId: equity.project.team.id,
+						})
+					: null;
 
 				// Create new allocation for recipient
 				toAllocation = await prisma.equityAllocation.create({
