@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { listAdvisorCheckpoints } from "@/repositories/advisor-checkpoints";
+import { listAdvisorCheckpoints } from "@/repositories/checkpoints/advisor";
 
 /**
  * The checkpoints handed to whoever is asking.

@@ -2,7 +2,7 @@
 
 import { useTranslate } from "@tolgee/react";
 import { useCallPresence } from "@/hooks/checkpoint-call";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import { CallPersonRow, CallTeamPanel } from "./CallParts";
 
 /** Frame 12.08.3: the call's people, who is in the room and who is away. */

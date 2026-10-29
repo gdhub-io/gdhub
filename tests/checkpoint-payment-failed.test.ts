@@ -1,6 +1,6 @@
 import { CheckpointStatus, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getUnfinishedCheckpoint } from "@/repositories/checkpoint.repository";
+import { getUnfinishedCheckpoint } from "@/repositories/checkpoints/checkpoint";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({

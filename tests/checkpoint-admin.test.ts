@@ -6,11 +6,11 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { bookSessions, SlotTakenError } from "@/repositories/advisor-availability";
-import { assignCurator, writeAdminVerdict } from "@/repositories/checkpoint-admin";
-import { startAiCheckpoint } from "@/repositories/checkpoint-payment";
-import { refundCaseOf } from "@/repositories/checkpoint-refund";
-import { afterVerdictSent } from "@/repositories/checkpoint-verdict.repository";
-import { notifyCuratorAsked } from "@/services/checkpoint-notifications";
+import { refundCaseOf } from "@/repositories/checkpoints/refund";
+import { assignCurator, writeAdminVerdict } from "@/services/checkpoints/flows/admin";
+import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
+import { afterVerdictSent } from "@/services/checkpoints/flows/verdict";
+import { notifyCuratorAsked } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import { refundCheckout } from "@/services/stripe/server";
 
@@ -29,19 +29,21 @@ vi.mock("@/services/prisma", () => {
 	return { prisma: client };
 });
 vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
-vi.mock("@/repositories/checkpoint-refund", async (importOriginal) => ({
-	...(await importOriginal<typeof import("@/repositories/checkpoint-refund")>()),
+vi.mock("@/repositories/checkpoints/refund", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoints/refund")>()),
 	refundCaseOf: vi.fn(),
 }));
-vi.mock("@/repositories/checkpoint-verdict.repository", () => ({
+vi.mock("@/services/checkpoints/flows/verdict", () => ({
 	afterVerdictSent: vi.fn(),
 }));
-vi.mock("@/repositories/checkpoint-payment", () => ({ startAiCheckpoint: vi.fn() }));
+vi.mock("@/services/checkpoints/flows/payment", () => ({
+	startAiCheckpoint: vi.fn(),
+}));
 vi.mock("@/repositories/advisor-availability", () => ({
 	bookSessions: vi.fn(),
 	SlotTakenError: class SlotTakenError extends Error {},
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: vi.fn(),
 	notifyAuthorOfRefund: vi.fn(),
 	notifyCuratorAsked: vi.fn(),
@@ -120,7 +122,11 @@ describe("an administrator's verdict", () => {
 		);
 		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: { id: "cp1", status: CheckpointStatus.Review, verdict: null },
+				where: {
+					id: "cp1",
+					status: { in: [CheckpointStatus.Review] },
+					verdict: null,
+				},
 				data: expect.objectContaining({
 					status: CheckpointStatus.Closed,
 					verdict: CheckpointVerdict.GoalMissed,
@@ -191,6 +197,8 @@ describe("assigning a curator by hand", () => {
 
 	beforeEach(() => {
 		vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: "u9", email: "c@x" } as never);
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 1 } as never);
+		vi.mocked(startAiCheckpoint).mockResolvedValue(true);
 	});
 
 	it("starts an AI checkpoint from a draft with no payment", async () => {
@@ -200,6 +208,16 @@ describe("assigning a curator by hand", () => {
 			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "Partner" }),
 		).resolves.toEqual({ ok: true });
 		expect(startAiCheckpoint).toHaveBeenCalledWith("cp1", null);
+	});
+
+	it("refuses the AI when the draft started or was called off meanwhile", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(draft() as never);
+		vi.mocked(startAiCheckpoint).mockResolvedValue(false);
+
+		await expect(
+			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "Partner" }),
+		).resolves.toEqual({ ok: false, error: "notSwappable" });
+		expect(prisma.auditLog.create).not.toHaveBeenCalled();
 	});
 
 	it("books a person's calls and asks them, as a payment would", async () => {
@@ -212,8 +230,9 @@ describe("assigning a curator by hand", () => {
 		});
 
 		expect(bookSessions).toHaveBeenCalled();
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: { id: "cp1", status: { in: [CheckpointStatus.Draft] } },
 				data: expect.objectContaining({
 					curatorId: "u9",
 					status: CheckpointStatus.AwaitingCurator,
@@ -221,6 +240,22 @@ describe("assigning a curator by hand", () => {
 			}),
 		);
 		expect(notifyCuratorAsked).toHaveBeenCalledWith("cp1");
+	});
+
+	it("books nobody and asks nobody when the draft moved meanwhile", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(draft() as never);
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 0 } as never);
+
+		await expect(
+			assignCurator("cp1", "admin1", {
+				kind: CheckpointCuratorKind.Human,
+				userId: "u9",
+				reason: "Partner",
+			}),
+		).resolves.toEqual({ ok: false, error: "notSwappable" });
+		expect(bookSessions).not.toHaveBeenCalled();
+		expect(notifyCuratorAsked).not.toHaveBeenCalled();
+		expect(prisma.auditLog.create).not.toHaveBeenCalled();
 	});
 
 	it("refuses a draft without a goal, and one whose first call is taken", async () => {

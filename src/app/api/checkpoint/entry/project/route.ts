@@ -11,14 +11,14 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { getCreationBlocker } from "@/repositories/checkpoint.repository";
+import { getCreationBlocker } from "@/repositories/checkpoints/checkpoint";
 import {
 	foreignArtifactIds,
 	getEntryPrefill,
 	getEntryStatus,
 	isProjectFounder,
 	saveEntryProject,
-} from "@/repositories/checkpoint-entry";
+} from "@/repositories/checkpoints/entry";
 import type { EntryProjectInput } from "@/types/checkpoints";
 
 const PrefillQuerySchema = z.object({ projectId: z.string().min(1) });

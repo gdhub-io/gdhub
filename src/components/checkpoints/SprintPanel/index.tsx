@@ -3,7 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Tabs } from "antd";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import type { SprintFacts } from "@/lib/checkpoint-facts";
+import type { SprintFacts } from "@/lib/checkpoints/facts";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { Evidence } from "./Evidence";
 import { Review } from "./Review";

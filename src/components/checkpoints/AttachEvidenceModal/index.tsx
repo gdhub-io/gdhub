@@ -10,7 +10,7 @@ import {
 import { CHECKPOINT_MAX_EVIDENCE_PER_ITEM } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { useAttachEvidence } from "@/hooks/checkpoints";
-import { canTakeEvidence } from "@/lib/checkpoint-verdict";
+import { canTakeEvidence } from "@/lib/checkpoints/verdict";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

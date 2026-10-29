@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import * as schemas from "@/services/ai-curator-lab/schemas";
-import { evidenceSituations } from "@/services/ai-curator-lab/situations/evidence";
-import { goalCheckSituations } from "@/services/ai-curator-lab/situations/goal-check";
-import { planAdviceSituations } from "@/services/ai-curator-lab/situations/plan-advice";
-import { reportSituations } from "@/services/ai-curator-lab/situations/report";
-import { sprintReviewSituations } from "@/services/ai-curator-lab/situations/sprint-review";
 import { traceAiCall, traced } from "@/services/ai-trace";
+import * as schemas from "@/services/checkpoints/ai-curator-lab/schemas";
+import { evidenceSituations } from "@/services/checkpoints/ai-curator-lab/situations/evidence";
+import { goalCheckSituations } from "@/services/checkpoints/ai-curator-lab/situations/goal-check";
+import { planAdviceSituations } from "@/services/checkpoints/ai-curator-lab/situations/plan-advice";
+import { reportSituations } from "@/services/checkpoints/ai-curator-lab/situations/report";
+import { sprintReviewSituations } from "@/services/checkpoints/ai-curator-lab/situations/sprint-review";
 
 const trace = (name: string) => ({
 	name,

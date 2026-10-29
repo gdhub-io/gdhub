@@ -29,13 +29,13 @@ import {
 import { LegalAcceptModal } from "@/components/legal/LegalAcceptModal";
 import styles from "@/components/scout/ProjectCardModal/style.module.scss";
 import { AppImage } from "@/components/ui/AppImage";
-import { CheckpointStatus } from "@/config/prisma-enums";
 import { platformOptions } from "@/helpers/react-content";
 import {
 	useAdvisorProject,
 	useAnswerCheckpoint,
 	useCheckpointChat,
 } from "@/hooks/checkpoints";
+import { isPending } from "@/lib/checkpoints/status";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import { CheckpointTab } from "./CheckpointTab";
 import { DevlogsTab } from "./DevlogsTab";
@@ -79,9 +79,7 @@ export function CheckpointCardModal({
 	const answer = useAnswerCheckpoint(checkpoint.id);
 	const openChat = useCheckpointChat(checkpoint.id);
 	// Its devlogs are for the curator running it; the server sends none before.
-	const accepted =
-		checkpoint.status !== CheckpointStatus.Draft &&
-		checkpoint.status !== CheckpointStatus.AwaitingCurator;
+	const accepted = !isPending(checkpoint.status);
 
 	useEffect(() => {
 		if (open) setTab("checkpoint");

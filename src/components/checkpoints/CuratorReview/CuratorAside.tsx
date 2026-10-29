@@ -5,7 +5,7 @@ import { ActivityFeed } from "@/components/WorkflowPath/ActivityFeed";
 import styles from "@/components/WorkflowPath/style.module.scss";
 import { WorkflowAside } from "@/components/WorkflowPath/WorkflowAside";
 import { useCheckpoint } from "@/hooks/checkpoints";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 
 /**
  * Path to Checkpoint keeps the Workflow sidebar, less the checkpoint it is.

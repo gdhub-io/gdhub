@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	runningCheckpointLock,
 	stageMoveApproved,
-} from "@/repositories/checkpoint-guards";
+} from "@/repositories/checkpoints/workflow-lock";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({

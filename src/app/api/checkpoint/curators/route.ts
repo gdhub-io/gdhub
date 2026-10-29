@@ -7,7 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { listCheckpointCurators } from "@/repositories/checkpoint-curators";
+import { listCheckpointCurators } from "@/repositories/checkpoints/curator-catalog";
 
 const QuerySchema = z.object({ stage: z.string().max(200).optional() });
 

@@ -7,12 +7,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { REFUND_REASONS } from "@/lib/checkpoint-refund";
+import { REFUND_REASONS } from "@/lib/checkpoints/refund";
 import { withSpaceGuard } from "@/lib/space-guard";
-import {
-	issueCheckpointRefund,
-	quoteCheckpointRefund,
-} from "@/repositories/checkpoint-refund";
+import { quoteCheckpointRefund } from "@/repositories/checkpoints/refund";
+import { issueCheckpointRefund } from "@/services/checkpoints/flows/refund";
 
 const RefundSchema = z.object({ reason: z.enum(REFUND_REASONS) });
 

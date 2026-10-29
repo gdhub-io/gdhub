@@ -5,7 +5,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { StatusDot } from "@/components/ui/StatusDot";
-import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import { CheckpointSection } from "../CheckpointSection";
 import styles from "./style.module.scss";
 

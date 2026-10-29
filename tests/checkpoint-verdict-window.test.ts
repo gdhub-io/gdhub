@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { dueDateFrom } from "@/lib/checkpoint-days";
+import { dueDateFrom } from "@/lib/checkpoints/days";
 import {
 	verdictDraftOpensAt,
 	verdictDueBy,
 	verdictOverdue,
 	verdictSendOpensAt,
 	verdictStage,
-} from "@/lib/checkpoint-verdict-window";
+} from "@/lib/checkpoints/verdict-window";
 
 // Started 1 Sep late in the evening UTC: day 28 is 28 Sep, the final call 29 Sep.
 const startedAt = new Date("2026-09-01T21:30:00.000Z");

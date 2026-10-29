@@ -1,4 +1,4 @@
-import { calendarFeed } from "@/repositories/checkpoint-calendar";
+import { calendarFeed } from "@/repositories/checkpoints/calendar";
 
 /**
  * The checkpoint calendar a person subscribed to. Calendar apps fetch it on

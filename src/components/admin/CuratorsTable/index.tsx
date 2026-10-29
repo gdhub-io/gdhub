@@ -37,7 +37,7 @@ import {
 	isAlreadyDecided,
 	useDecideCurator,
 } from "@/hooks/curators";
-import type { CuratorStatus } from "@/lib/curator-status";
+import type { CuratorStatus } from "@/lib/checkpoints/curator-status";
 import type { AdminCuratorRowDto as Row } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

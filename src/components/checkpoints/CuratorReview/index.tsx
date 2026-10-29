@@ -1,6 +1,6 @@
 import { CallRoom } from "@/components/checkpoints/CallRoom";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import type { PathTab } from "@/lib/checkpoint-hrefs";
+import type { PathTab } from "@/lib/checkpoints/hrefs";
 import { AiReview } from "./AiReview";
 
 export type CuratorReviewProps = {

@@ -29,9 +29,9 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
-import { isMovable, sessionHeld } from "@/lib/checkpoint-call";
-import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
-import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
+import { isMovable, sessionHeld } from "@/lib/checkpoints/call";
+import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
+import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoints/plan";
 import type {
 	CheckpointDto,
 	CheckpointSessionDto,

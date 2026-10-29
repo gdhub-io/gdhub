@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { apiError, json } from "@/lib/api-handlers";
-import { confirmPulse } from "@/repositories/checkpoint-pulse";
+import { confirmPulse } from "@/repositories/checkpoints/pulse";
 
 /** The pulse page's one button. No session: the signed token is the proof. */
 export async function POST(

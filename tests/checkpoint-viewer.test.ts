@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("@/services/prisma", () => ({ prisma: {} }));
 
 const { canEditPlan, viewerOf } = await import(
-	"@/repositories/checkpoint-viewer"
+	"@/repositories/checkpoints/viewer"
 );
 
 const row = (members: unknown[] = []) => ({

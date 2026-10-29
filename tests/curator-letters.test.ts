@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lettersSoFar } from "@/lib/curator-letters";
+import { lettersSoFar } from "@/lib/checkpoints/curator-letters";
 
 describe("the curator's letters so far", () => {
 	const sessions = [

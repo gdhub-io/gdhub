@@ -19,6 +19,7 @@ import { CHECKPOINT_DAYS, CURATOR_ANSWER_DAYS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useCancelCheckpoint } from "@/hooks/checkpoints";
+import { isRunning } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CuratorBadge } from "../CuratorBadge";
 import { MoneyNotice } from "../MoneyNotice";
@@ -98,8 +99,7 @@ export function PaidPanel({
 	// The AI curator needs nobody's yes: once the webhook lands the days run.
 	const onTheWay =
 		checkpoint.curatorKind === CheckpointCuratorKind.AI &&
-		(checkpoint.status === CheckpointStatus.Active ||
-			checkpoint.status === CheckpointStatus.Review);
+		isRunning(checkpoint.status);
 
 	const reserved = checkpoint.status === CheckpointStatus.AwaitingCurator;
 	const listed = useCheckpointPrice(checkpoint);

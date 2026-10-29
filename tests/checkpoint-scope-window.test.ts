@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { CHECKPOINT_SCOPE_DAY, scopeState } from "@/lib/checkpoint-scope";
+import { CHECKPOINT_SCOPE_DAY, scopeState } from "@/lib/checkpoints/scope";
 
 const startedAt = "2026-09-01T00:00:00.000Z";
 const at = (iso: string) => new Date(iso);

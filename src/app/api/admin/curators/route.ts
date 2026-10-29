@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { listCurators } from "@/repositories/curators";
+import { listCurators } from "@/repositories/checkpoints/curator-approval";
 
 const QuerySchema = z.object({
 	pending: z

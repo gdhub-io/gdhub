@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { checkpointCalendar } from "@/lib/checkpoint-calendar";
+import { checkpointCalendar } from "@/lib/checkpoints/calendar";
 
 vi.stubEnv("NEXTAUTH_SECRET", "test-secret");
 const { calendarToken, calendarTokenOf } = await import(
-	"@/lib/checkpoint-calendar-token"
+	"@/lib/checkpoints/calendar-token"
 );
 
 const startedAt = new Date("2026-10-01T00:00:00Z");

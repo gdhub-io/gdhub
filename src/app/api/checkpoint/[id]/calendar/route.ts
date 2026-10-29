@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { getCheckpointCalendar } from "@/repositories/checkpoint-calendar";
+import { getCheckpointCalendar } from "@/repositories/checkpoints/calendar";
 
 /** Every date of the checkpoint, as its curator or one of its team sees them. */
 export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {

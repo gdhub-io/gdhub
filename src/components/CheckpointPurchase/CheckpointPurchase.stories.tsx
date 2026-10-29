@@ -6,8 +6,8 @@ import {
 	CheckpointStatus,
 	SkillLevel,
 } from "@/config/prisma-enums";
-import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
 import type {
+	CheckpointCurator,
 	CheckpointDto,
 	CheckpointListResponse,
 } from "@/types/checkpoints";

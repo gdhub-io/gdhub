@@ -1,12 +1,12 @@
 import { PaymentProvider } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { settleCheckpointCheckout } from "@/repositories/checkpoint-payment";
 import {
 	paymentOf,
 	recordPaymentEvent,
 	recordProviderRefund,
 } from "@/repositories/payment-records";
+import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
 import { paidOfSession } from "@/services/payments/stripe";
 import { sessionOfPaymentIntent, stripeEvent } from "@/services/stripe/server";
 

@@ -4,8 +4,8 @@ import { IconMessage2 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Card, Typography } from "antd";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { SprintFacts } from "@/lib/checkpoint-facts";
-import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
+import type { SprintFacts } from "@/lib/checkpoints/facts";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import styles from "./style.module.scss";
 
 export type ReviewProps = {

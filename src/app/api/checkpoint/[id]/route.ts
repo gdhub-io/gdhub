@@ -12,33 +12,41 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoints/days";
+import { checkpointMove } from "@/lib/checkpoints/status";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
-	bookSessions,
 	isFirstCallFree,
 	SlotTakenError,
 } from "@/repositories/advisor-availability";
 import {
+	checkpointDraftState,
+	checkpointStatusOf,
+	deleteCheckpoint,
 	getCheckpoint,
 	replaceCheckpointItems,
+	updateCheckpointDraft,
+	updateCheckpointDraftAndBook,
 	withProgress,
-} from "@/repositories/checkpoint.repository";
-import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
+} from "@/repositories/checkpoints/checkpoint";
+import { isEligibleCurator } from "@/repositories/checkpoints/curator-catalog";
 import {
+	completedPaymentOf,
 	curatorCharge,
 	heldAmount,
 	isCheckpointPaid,
 	pendingCheckout,
-	reconcileCheckout,
-} from "@/repositories/checkpoint-payment";
-import { checkpointViewer } from "@/repositories/checkpoint-viewer";
+} from "@/repositories/checkpoints/payment";
+import { checkpointViewer } from "@/repositories/checkpoints/viewer";
 import {
 	type UpdateCheckpointBody,
 	UpdateCheckpointSchema,
 } from "@/schemas/checkpoint";
-import { prisma } from "@/services/prisma";
+import {
+	reconcileCheckout,
+	startAiCheckpoint,
+} from "@/services/checkpoints/flows/payment";
 
 /** The checkpoint as its page reads it; a draft paid for without the webhook is settled first. */
 const readCheckpoint = async (id: string) => {
@@ -107,15 +115,7 @@ export const PUT = pipe(
 	const { goal, curatorKind, curatorId, inputs, outcomes, startedAt } =
 		body as UpdateCheckpointBody;
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: {
-			status: true,
-			curatorKind: true,
-			curatorId: true,
-			stageName: true,
-		},
-	});
+	const checkpoint = await checkpointDraftState(id);
 
 	if (!checkpoint) return apiError.notFound();
 
@@ -155,15 +155,8 @@ export const PUT = pipe(
 			return apiError.badRequest("curatorIsAuthor");
 		}
 
-		const eligible = await prisma.speciality.findFirst({
-			where: {
-				...curatorEligibleWhere(checkpoint.stageName),
-				userId: curatorId,
-			},
-			select: { id: true },
-		});
-
-		if (!eligible) return apiError.badRequest("curatorNotOpenForMentoring");
+		if (!(await isEligibleCurator(curatorId, checkpoint.stageName)))
+			return apiError.badRequest("curatorNotOpenForMentoring");
 	}
 
 	// Money already held buys exactly one price: a dearer curator would need a
@@ -201,12 +194,17 @@ export const PUT = pipe(
 				: undefined;
 
 	// A curator who declined leaves a paid checkpoint back in Draft. Naming
-	// someone else sends it to them rather than asking the author to pay again.
-	const rehomed =
-		(curatorId !== undefined || curatorKind) && (await isCheckpointPaid(id))
-			? curatorKind === CheckpointCuratorKind.AI
-				? CheckpointStatus.Active
-				: CheckpointStatus.AwaitingCurator
+	// someone else sends it to them rather than asking the author to pay again;
+	// naming the AI starts it, exactly as paying for the AI does.
+	const paidWith =
+		curatorId !== undefined || curatorKind
+			? await completedPaymentOf(id)
+			: null;
+	const rehomedToAi = !!paidWith && curatorKind === CheckpointCuratorKind.AI;
+	const rehomedToHuman = !!paidWith && !rehomedToAi;
+	const move =
+		rehomedToHuman && checkpoint.status === CheckpointStatus.Draft
+			? checkpointMove(CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator)
 			: null;
 
 	if (
@@ -215,8 +213,10 @@ export const PUT = pipe(
 		curatorId !== undefined ||
 		start !== undefined
 	) {
+		// Unmoved, it still has to be in the state it was read in: a curator's yes may land meanwhile.
+		const where = { id, ...(move?.where ?? { status: checkpoint.status }) };
 		const data = {
-			...(rehomed && { status: rehomed }),
+			...move?.data,
 			...(goal !== undefined && { goal }),
 			...(curatorKind && { curatorKind }),
 			...(curatorId !== undefined && { curatorId }),
@@ -233,23 +233,26 @@ export const PUT = pipe(
 		// taken already — so its calls are booked now, as a payment books them.
 		const books =
 			human &&
-			(rehomed === CheckpointStatus.AwaitingCurator ||
+			(rehomedToHuman ||
 				(checkpoint.status === CheckpointStatus.AwaitingCurator &&
 					start !== undefined));
 
+		let written = 0;
 		if (books) {
 			try {
-				await prisma.$transaction(async (tx) => {
-					await tx.projectCheckpoint.update({ where: { id }, data });
-					await bookSessions(tx, id);
-				});
+				written = await updateCheckpointDraftAndBook(id, where, data);
 			} catch (error) {
 				if (error instanceof SlotTakenError)
 					return apiError.badRequest("slotTaken");
 				throw error;
 			}
 		} else {
-			await prisma.projectCheckpoint.update({ where: { id }, data });
+			written = await updateCheckpointDraft(where, data);
+		}
+		if (!written) return apiError.badRequest("checkpointNotDraft");
+
+		if (rehomedToAi && !(await startAiCheckpoint(id, paidWith))) {
+			return apiError.badRequest("checkpointNotDraft");
 		}
 	}
 
@@ -280,17 +283,14 @@ export const DELETE = pipe(
 
 	const { id } = (await ctx.params) as { id: string };
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { status: true },
-	});
+	const checkpoint = await checkpointStatusOf(id);
 
 	if (!checkpoint) return apiError.notFound();
 	if (checkpoint.status !== CheckpointStatus.Draft) {
 		return apiError.badRequest("checkpointNotDraft");
 	}
 
-	await prisma.projectCheckpoint.delete({ where: { id } });
+	await deleteCheckpoint(id);
 
 	return json({ success: true });
 });

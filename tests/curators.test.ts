@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { curatorStatusOf } from "@/lib/curator-status";
-import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
-import { decideCurator, saveCuration } from "@/repositories/curators";
+import { curatorStatusOf } from "@/lib/checkpoints/curator-status";
+import { saveCuration } from "@/repositories/checkpoints/curator-approval";
+import { curatorEligibleWhere } from "@/repositories/checkpoints/curator-catalog";
 import { needsAcceptance } from "@/repositories/legal.repository";
-import { notify } from "@/services/checkpoint-notifications";
+import { decideCurator } from "@/services/checkpoints/flows/curator-approval";
+import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -18,7 +19,7 @@ vi.mock("@/repositories/legal.repository", () => ({
 	latestAcceptance: vi.fn(),
 	needsAcceptance: vi.fn(),
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: vi.fn(),
 	appUrl: () => "",
 }));

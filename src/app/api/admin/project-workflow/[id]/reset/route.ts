@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { runningCheckpointLock } from "@/repositories/checkpoint-guards";
+import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
 import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
 import { applyResetPlan } from "@/services/workflow/applyResetPlan";

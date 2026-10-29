@@ -4,7 +4,10 @@ import { CHECKPOINT_AI_PRICE, CHECKPOINT_MAX_TEAM } from "@/config/checkpoint";
 import { curatorPrice } from "@/config/checkpoint-pricing";
 import { SkillLevel } from "@/config/prisma-enums";
 import { isFirstCallFree } from "@/repositories/advisor-availability";
-import { checkpointCheckout } from "@/repositories/checkpoint-payment";
+import {
+	checkpointCheckout,
+	returnToAuthor,
+} from "@/repositories/checkpoints/payment";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import { prisma } from "@/services/prisma";
 
@@ -28,9 +31,9 @@ vi.mock("@/services/prisma", () => ({
 	prisma: {
 		$transaction: vi.fn(),
 		checkpointSession: { deleteMany: vi.fn() },
-		projectCheckpoint: { findUnique: vi.fn() },
+		projectCheckpoint: { findUnique: vi.fn(), updateMany: vi.fn() },
 		speciality: { findFirst: vi.fn() },
-		payment: { count: vi.fn() },
+		payment: { findFirst: vi.fn() },
 	},
 }));
 
@@ -64,7 +67,7 @@ beforeEach(() => {
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 		checkpoint() as never,
 	);
-	vi.mocked(prisma.payment.count).mockResolvedValue(0 as never);
+	vi.mocked(prisma.payment.findFirst).mockResolvedValue(null);
 	vi.mocked(prisma.speciality.findFirst).mockResolvedValue({
 		level: SkillLevel.Expert,
 	} as never);
@@ -158,7 +161,7 @@ describe("what a checkpoint checkout would charge", () => {
 	});
 
 	it("refuses a checkpoint that has already been paid for", async () => {
-		vi.mocked(prisma.payment.count).mockResolvedValue(1 as never);
+		vi.mocked(prisma.payment.findFirst).mockResolvedValue({ id: "pay1" } as never);
 
 		await expect(checkpointCheckout("cp1")).resolves.toMatchObject({
 			ok: false,
@@ -215,5 +218,43 @@ describe("while a checkpoint with an expert is a waitlist", () => {
 			checkpoint({ curatorKind: CheckpointCuratorKind.AI, curatorId: null }) as never,
 		);
 		expect((await checkpointCheckout("cp1")).ok).toBe(true);
+	});
+});
+
+// A decline, the holds cron and a curator's yes can all reach one checkpoint
+// at once: only the one that finds it still waiting may hand it back.
+describe("handing a checkpoint back to its author", () => {
+	it("makes it a draft again and lets that curator's calls go", async () => {
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 1,
+		});
+
+		await expect(returnToAuthor("cp1", "u9")).resolves.toBe(true);
+
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith({
+			where: {
+				id: "cp1",
+				status: { in: [CheckpointStatus.AwaitingCurator] },
+			},
+			data: expect.objectContaining({
+				status: CheckpointStatus.Draft,
+				curatorId: null,
+				paymentId: null,
+				declinedCuratorIds: { push: "u9" },
+			}),
+		});
+		expect(prisma.checkpointSession.deleteMany).toHaveBeenCalledWith({
+			where: { checkpointId: "cp1" },
+		});
+	});
+
+	it("leaves a checkpoint that stopped waiting, and its calls, alone", async () => {
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 0,
+		});
+
+		await expect(returnToAuthor("cp1", "u9")).resolves.toBe(false);
+
+		expect(prisma.checkpointSession.deleteMany).not.toHaveBeenCalled();
 	});
 });

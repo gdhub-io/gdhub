@@ -13,10 +13,9 @@ import { useAccess } from "@/components/access/AccessProvider";
 import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
 import { gtmEventTrigger, trackCheckpoint } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
-import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
-
+import { isPending, isRunning } from "@/lib/checkpoints/status";
+import { verdictDueBy } from "@/lib/checkpoints/verdict-window";
 import { AfterVerdict } from "./AfterVerdict";
-
 import { CheckpointOffer } from "./CheckpointOffer";
 import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { CuratorAccepted } from "./CuratorAccepted";
@@ -28,11 +27,6 @@ import styles from "./style.module.scss";
 import { useProjectWorkflow, WorkflowAside } from "./WorkflowAside";
 
 const { Text } = Typography;
-
-const RUNNING: CheckpointStatus[] = [
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 export type WorkflowPathProps = {
 	project: { id: string; name: string; slug: string };
@@ -62,17 +56,11 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 		50,
 	);
 	const running =
-		list?.current && RUNNING.includes(list.current.status)
-			? list.current
-			: null;
+		list?.current && isRunning(list.current.status) ? list.current : null;
 	const { data: detail } = useCheckpoint(running?.id);
 	// A draft, or one paid and waiting on its curator: shown as the offer card.
 	const pending =
-		list?.current &&
-		(list.current.status === CheckpointStatus.Draft ||
-			list.current.status === CheckpointStatus.AwaitingCurator)
-			? list.current
-			: null;
+		list?.current && isPending(list.current.status) ? list.current : null;
 	const canManage = can("project.checkpoints.manage");
 	// Until purchase opens the offer still shows, its button locked.
 	const locked = list?.blocker?.reason === "purchaseClosed";

@@ -4,7 +4,7 @@ import { type QueryKey, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import dayjs from "dayjs";
 import { useEffect } from "react";
-import type { CuratorNow } from "@/lib/curator-now";
+import type { CuratorNow } from "@/lib/checkpoints/curator-now";
 
 /** What the author does about it: the page turns it into a link or a button. */
 export type CuratorNowAction = "tasks" | "plan" | "review" | "verdict";

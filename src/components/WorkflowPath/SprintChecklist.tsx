@@ -28,8 +28,8 @@ import {
 	type ChecklistItem,
 	type ChecklistKey,
 	sprintChecklist,
-} from "@/lib/checkpoint-checklist";
-import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
+} from "@/lib/checkpoints/checklist";
+import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
 import type { CheckpointDto, CheckpointSprintDto } from "@/types/checkpoints";
 import { CheckpointResult } from "./ClosedCheckpoint";
 import { daysUntil, formatShort } from "./dates";

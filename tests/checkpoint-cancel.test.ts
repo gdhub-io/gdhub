@@ -5,6 +5,7 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { CHECKPOINT_PENDING_STATUSES } from "@/lib/checkpoints/status";
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
@@ -30,7 +31,7 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
-			delete: (...a: unknown[]) => checkpointDelete(...a),
+			deleteMany: (...a: unknown[]) => checkpointDelete(...a),
 		},
 		payment: {
 			findFirst: (...a: unknown[]) => paymentFindFirst(...a),
@@ -77,7 +78,7 @@ beforeEach(() => {
 		status: CheckpointStatus.AwaitingCurator,
 	});
 	checkpointUpdate.mockResolvedValue({});
-	checkpointDelete.mockResolvedValue({});
+	checkpointDelete.mockResolvedValue({ count: 1 });
 	paymentFindFirst.mockResolvedValue(charged);
 	refundCheckout.mockResolvedValue({ id: "re_1", amount: 45000, currency: "usd" });
 	releaseCheckout.mockResolvedValue({ id: "pi_1", status: "canceled" });
@@ -97,7 +98,9 @@ describe("cancelling a checkpoint", () => {
 		expect(refundCheckout).toHaveBeenCalledWith("cs_1", undefined);
 		// Deleted rather than kept as Cancelled: it never ran, and a row saying a
 		// purchase was undone is noise in the project's history.
-		expect(checkpointDelete).toHaveBeenCalledWith({ where: { id: "cp1" } });
+		expect(checkpointDelete).toHaveBeenCalledWith({
+			where: { id: "cp1", status: { in: CHECKPOINT_PENDING_STATUSES } },
+		});
 	});
 
 	// A row saying REFUNDED that Stripe never agreed to would be a lie in our
@@ -151,6 +154,18 @@ describe("cancelling a checkpoint", () => {
 		expect(paymentUpdate).toHaveBeenCalledWith(
 			expect.objectContaining({ data: { status: PaymentStatus.CANCELED } }),
 		);
+	});
+
+	// The curator's yes can land between the read and the delete: the checkpoint it started stays.
+	it("refuses once a curator started it meanwhile", async () => {
+		checkpointDelete.mockResolvedValue({ count: 0 });
+
+		const response = await post();
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "checkpointRunning",
+		});
 	});
 
 	it("keeps the checkpoint when the hold cannot be let go", async () => {

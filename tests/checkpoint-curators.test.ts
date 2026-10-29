@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CURATOR_LEVELS } from "@/config/checkpoint-pricing";
-import { listCheckpointCurators } from "@/repositories/checkpoint-curators";
+import { listCheckpointCurators } from "@/repositories/checkpoints/curator-catalog";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({

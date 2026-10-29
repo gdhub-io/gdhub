@@ -10,7 +10,8 @@ publishForTest("AdvisorAgreement");
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
-const checkpointUpdate = vi.fn();
+const checkpointUpdateMany = vi.fn();
+const sessionDeleteMany = vi.fn();
 const paymentFindFirst = vi.fn();
 const paymentUpdate = vi.fn();
 const captureCheckout = vi.fn();
@@ -21,7 +22,7 @@ const lastAcceptance = vi.fn();
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
 const notifyAuthor = vi.fn();
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfAnswer: (...a: unknown[]) => notifyAuthor(...a),
 }));
 
@@ -34,10 +35,10 @@ vi.mock("@/repositories/advisor-availability", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		$transaction: vi.fn(),
-		checkpointSession: { deleteMany: vi.fn() },
+		checkpointSession: { deleteMany: (...a: unknown[]) => sessionDeleteMany(...a) },
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
-			update: (...a: unknown[]) => checkpointUpdate(...a),
+			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
 		},
 		legalAcceptance: {
 			createMany: (...a: unknown[]) => createMany(...a),
@@ -54,7 +55,7 @@ vi.mock("@/services/stripe/server", () => ({
 	captureCheckout: (...a: unknown[]) => captureCheckout(...a),
 }));
 
-vi.mock("@/repositories/checkpoint-payment", async (importOriginal) => ({
+vi.mock("@/services/checkpoints/flows/payment", async (importOriginal) => ({
 	...(await importOriginal<object>()),
 	returnCheckpointMoney: (...a: unknown[]) => returnMoney(...a),
 }));
@@ -97,7 +98,7 @@ beforeEach(() => {
 		curatorId: "u9",
 		startedAt: new Date("2026-09-20T00:00:00.000Z"),
 	});
-	checkpointUpdate.mockResolvedValue({});
+	checkpointUpdateMany.mockResolvedValue({ count: 1 });
 	paymentFindFirst.mockResolvedValue({
 		id: "pay_1",
 		provider: "STRIPE",
@@ -119,7 +120,7 @@ describe("a curator answering", () => {
 			details: { reason: "legal.required", code: "AdvisorAgreement" },
 		});
 		expect(captureCheckout).not.toHaveBeenCalled();
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("records the terms with the checkpoint they were accepted for", async () => {
@@ -157,11 +158,29 @@ describe("a curator answering", () => {
 				data: expect.objectContaining({ status: PaymentStatus.COMPLETED }),
 			}),
 		);
-		expect(checkpointUpdate).toHaveBeenCalledWith(
+		expect(checkpointUpdateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: {
+					id: "cp1",
+					status: { in: [CheckpointStatus.AwaitingCurator] },
+				},
 				data: expect.objectContaining({ status: CheckpointStatus.Active }),
 			}),
 		);
+	});
+
+	// A decline (or the holds cron) landed between the read and the write.
+	it("refuses the yes when the checkpoint stopped waiting meanwhile", async () => {
+		checkpointUpdateMany.mockResolvedValue({ count: 0 });
+		vi.spyOn(console, "error").mockImplementation(() => {});
+
+		const response = await answer(true);
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			error: "checkpointNotAwaiting",
+		});
+		expect(notifyAuthor).not.toHaveBeenCalled();
 	});
 
 	// Held or already captured, the author gets it back the right way — the
@@ -172,8 +191,12 @@ describe("a curator answering", () => {
 		expect(returnMoney).toHaveBeenCalledWith("cp1", "curatorDeclined");
 		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "declined");
 		expect(captureCheckout).not.toHaveBeenCalled();
-		expect(checkpointUpdate).toHaveBeenCalledWith(
+		expect(checkpointUpdateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: {
+					id: "cp1",
+					status: { in: [CheckpointStatus.AwaitingCurator] },
+				},
 				data: expect.objectContaining({
 					status: CheckpointStatus.Draft,
 					curatorId: null,
@@ -183,6 +206,9 @@ describe("a curator answering", () => {
 				}),
 			}),
 		);
+		expect(sessionDeleteMany).toHaveBeenCalledWith({
+			where: { checkpointId: "cp1" },
+		});
 	});
 
 	// A decline that could not return the money would leave the author paying
@@ -191,7 +217,7 @@ describe("a curator answering", () => {
 		returnMoney.mockResolvedValue(null);
 
 		expect((await answer(false)).status).toBe(500);
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	// The checkpoint must not start on a capture that failed: the 28 days would
@@ -200,7 +226,7 @@ describe("a curator answering", () => {
 		captureCheckout.mockResolvedValue(null);
 
 		expect((await answer(true)).status).toBe(500);
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("is refused to anyone who is not the curator named on it", async () => {

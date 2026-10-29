@@ -11,11 +11,11 @@ import {
 	type Page,
 	test,
 } from "@playwright/test";
+import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
 import type { LegalCode } from "../../../../src/config/legal/registry";
-import { MS_PER_DAY } from "../../../../src/lib/checkpoint-days";
+import { MS_PER_DAY } from "../../../../src/lib/checkpoints/days";
 import { resolveLegal } from "../../../../src/lib/legal/accept";
 import { versionInEffect } from "../../../../src/lib/legal/versions";
-import { startAiCheckpoint } from "../../../../src/repositories/checkpoint-payment";
 import { prisma } from "../../../../src/services/prisma";
 import { becomePersona, type PersonaKey } from "../../../personas";
 import { acceptCookieConsent } from "../../setup/cookies";

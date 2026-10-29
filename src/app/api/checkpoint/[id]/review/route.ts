@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { getReview } from "@/repositories/checkpoint-review";
+import { getReview } from "@/repositories/checkpoints/review";
 
 export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const caller = user as SessionUser | undefined;

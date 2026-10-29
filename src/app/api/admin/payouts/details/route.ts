@@ -7,7 +7,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { payoutDetails } from "@/repositories/checkpoint-payouts";
+import { payoutDetails } from "@/repositories/checkpoints/payouts";
 import type { PayoutDetailsDto } from "@/types/checkpoints";
 
 const QuerySchema = z.object({ curatorId: z.string().min(1) });

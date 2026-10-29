@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { characterFor } from "@/services/checkpoint-curator/prompts/card";
+import { characterFor } from "@/lib/checkpoints/curator-characters";
 
 const persona = (settings: string[], genres: string[] = []) => ({
 	settings,
@@ -25,7 +25,7 @@ describe("the AI curator's character", () => {
 describe("the character's voice", () => {
 	it("is named and introduces itself; nothing improper whoever it is", async () => {
 		const { renderCharacter } = await import(
-			"@/services/checkpoint-curator/prompts/card"
+			"@/services/checkpoints/ai-curator/prompts/card"
 		);
 		const pirate = renderCharacter("pirate", "route", true);
 		expect(pirate).toContain("Captain Flint");
@@ -43,7 +43,7 @@ describe("the character's voice", () => {
 describe("the road the sprints make", () => {
 	it("lays the route, walks it, rethinks it, walks the corrected one and arrives", async () => {
 		const { legOfSprint, renderCharacter } = await import(
-			"@/services/checkpoint-curator/prompts/card"
+			"@/services/checkpoints/ai-curator/prompts/card"
 		);
 		expect([1, 2, 3].map((sprint) => legOfSprint(sprint, false))).toEqual([
 			"walk",
@@ -59,7 +59,7 @@ describe("the road the sprints make", () => {
 describe("a character made the author's own", () => {
 	it("is read back from the checkpoint; a broken one is the plain curator", async () => {
 		const { renderCharacter } = await import(
-			"@/services/checkpoint-curator/prompts/card"
+			"@/services/checkpoints/ai-curator/prompts/card"
 		);
 		const sheet = JSON.stringify({
 			name: "Captain Irma",
@@ -77,7 +77,7 @@ describe("a character made the author's own", () => {
 describe("the character's face on the pages", () => {
 	it("is its own name and its role's avatar", async () => {
 		const { characterFace } = await import(
-			"@/services/checkpoint-curator/prompts/card"
+			"@/lib/checkpoints/curator-characters"
 		);
 		expect(
 			characterFace(
@@ -103,7 +103,7 @@ describe("the avatars", () => {
 	it("are there for every role", async () => {
 		const { existsSync } = await import("node:fs");
 		const { CURATOR_CHARACTERS } = await import(
-			"@/services/checkpoint-curator/prompts/card"
+			"@/lib/checkpoints/curator-characters"
 		);
 		const missing = Object.keys(CURATOR_CHARACTERS).filter(
 			(role) => !existsSync(`public/curators/${role}.webp`),

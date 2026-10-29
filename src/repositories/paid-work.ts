@@ -1,4 +1,5 @@
 import { AuditAction, type ExpertInvoicing } from "@gdhub-io/gdhub-prisma";
+import { appUrl } from "@/lib/checkpoints/hrefs";
 import {
 	type LegalAcceptanceInput,
 	type RequestMeta,
@@ -9,7 +10,7 @@ import {
 	latestAcceptance,
 	needsAcceptance,
 } from "@/repositories/legal.repository";
-import { appUrl, notify } from "@/services/checkpoint-notifications";
+import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import type { PaidWorkDto } from "@/types/checkpoints";
 

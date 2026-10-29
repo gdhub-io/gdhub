@@ -9,7 +9,7 @@ import { useChat } from "@/components/Chat/useChat";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
-import { opensRoom } from "@/lib/checkpoint-room";
+import { opensRoom } from "@/lib/checkpoints/room";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

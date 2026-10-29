@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PulseCard } from "@/components/checkpoints/PulseCard";
-import { pulseView } from "@/repositories/checkpoint-pulse";
+import { pulseView } from "@/repositories/checkpoints/pulse";
 
 export const metadata: Metadata = {
 	title: "Pulse",

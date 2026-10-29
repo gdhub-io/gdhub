@@ -12,7 +12,7 @@ import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	runningCheckpointLock,
 	stageMoveApproved,
-} from "@/repositories/checkpoint-guards";
+} from "@/repositories/checkpoints/workflow-lock";
 import { prisma } from "@/services/prisma";
 import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 

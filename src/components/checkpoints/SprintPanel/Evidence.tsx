@@ -13,8 +13,9 @@ import {
 } from "@/components/MyProjectArtifacts/labels";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
-import { ArtifactCheckStatus, CheckpointStatus } from "@/config/prisma-enums";
-import type { SprintFacts } from "@/lib/checkpoint-facts";
+import { ArtifactCheckStatus } from "@/config/prisma-enums";
+import type { SprintFacts } from "@/lib/checkpoints/facts";
+import { acceptsEvidence } from "@/lib/checkpoints/status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -35,9 +36,7 @@ export function Evidence({ checkpoint, facts }: EvidenceProps) {
 	const [attaching, setAttaching] = useState(false);
 
 	// Once the verdict is written the card is the record, not a form.
-	const canAttach =
-		checkpoint.status === CheckpointStatus.Active ||
-		checkpoint.status === CheckpointStatus.Draft;
+	const canAttach = acceptsEvidence(checkpoint.status);
 
 	const checkStatus = useCheckStatus();
 	// Older than the check itself: it is checked once it becomes evidence.

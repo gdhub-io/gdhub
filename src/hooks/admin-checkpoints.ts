@@ -8,19 +8,21 @@ import {
 } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import axios from "axios";
+import { WITHDRAWAL_DAYS } from "@/config/checkpoint";
 import type {
 	CheckpointCuratorKind,
 	CheckpointStatus,
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
-import type { RefundReason, RefundRowReason } from "@/lib/checkpoint-refund";
-import type { FreeCheckpointProjectDto } from "@/repositories/checkpoint-free";
-import type { CuratorJournalViewDto } from "@/repositories/curator-journal-view";
+import { VERDICT_DAY } from "@/lib/checkpoints/plan";
+import type { RefundReason, RefundRowReason } from "@/lib/checkpoints/refund";
+import type { CuratorJournalViewDto } from "@/types/checkpoint-journal";
 import type {
 	AdminCheckpointsPageDto,
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,
 	CheckpointRefundQuoteDto,
+	FreeCheckpointProjectDto,
 	VerdictContextDto,
 } from "@/types/checkpoints";
 
@@ -94,7 +96,8 @@ export const useRefundReasonLabels = (): Record<RefundRowReason, string> => {
 	return {
 		withdrawal: t(
 			"admin.checkpoints.refund.reason.withdrawal",
-			"Withdrawal within 14 days",
+			"Withdrawal within {days} days",
+			{ days: WITHDRAWAL_DAYS },
 		),
 		curatorGone: t(
 			"admin.checkpoints.refund.reason.curatorGone",
@@ -102,7 +105,8 @@ export const useRefundReasonLabels = (): Record<RefundRowReason, string> => {
 		),
 		noVerdict: t(
 			"admin.checkpoints.refund.reason.noVerdict",
-			"No verdict by day 31",
+			"No verdict by day {day}",
+			{ day: VERDICT_DAY },
 		),
 		missedCalls: t(
 			"admin.checkpoints.refund.reason.missedCalls",

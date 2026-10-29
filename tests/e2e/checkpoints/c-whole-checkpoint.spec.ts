@@ -6,7 +6,7 @@ import {
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
 import { type Browser, expect, type Page, test } from "@playwright/test";
-import { pulseToken } from "../../../src/lib/checkpoint-pulse-token";
+import { pulseToken } from "../../../src/lib/checkpoints/pulse-token";
 import { prisma } from "../../../src/services/prisma";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";

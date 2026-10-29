@@ -1,6 +1,6 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import { ChatRoomKind, ChatRoomStatus } from "@/config/prisma-enums";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
+import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
 import {
 	inviteUserToRoom,

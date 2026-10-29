@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import { type ReactNode, useEffect, useRef } from "react";
 import { EmptyState, IconTile } from "@/components/ui";
 import { type ActivitySource, useProjectActivity } from "@/hooks/checkpoints";
-import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoint-scope";
+import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import type {
 	ProjectActivity,
 	ProjectActivityKind,

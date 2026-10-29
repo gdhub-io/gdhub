@@ -16,6 +16,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { WITHDRAWAL_DAYS } from "@/config/checkpoint";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import {
@@ -23,7 +24,7 @@ import {
 	useRefundQuote,
 	useRefundReasonLabels,
 } from "@/hooks/admin-checkpoints";
-import type { RefundReason } from "@/lib/checkpoint-refund";
+import type { RefundReason } from "@/lib/checkpoints/refund";
 import styles from "./style.module.scss";
 
 export type RefundCheckpointModalProps = {
@@ -70,13 +71,17 @@ export function RefundCheckpointModal({
 		return refused === "withdrawalOver"
 			? t(
 					"admin.checkpoints.refund.withdrawal.over",
-					"Paid {date} — the 14 days are over",
-					{ date: paidOn },
+					"Paid {date} — the {limit} days are over",
+					{ date: paidOn, limit: WITHDRAWAL_DAYS },
 				)
 			: t(
 					"admin.checkpoints.refund.withdrawal.within",
-					"Only within 14 days of payment — paid {date}, {days} days ago.",
-					{ date: paidOn, days: dayjs().diff(data.paidAt, "day") },
+					"Only within {limit} days of payment — paid {date}, {days} days ago.",
+					{
+						date: paidOn,
+						days: dayjs().diff(data.paidAt, "day"),
+						limit: WITHDRAWAL_DAYS,
+					},
 				);
 	};
 

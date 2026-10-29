@@ -1,7 +1,6 @@
 import { hubLegalEntity } from "@/config/legal/entities";
 import {
 	CheckpointCuratorKind,
-	CheckpointStatus,
 	PaymentProvider,
 	ProjectArtifactType,
 	type SkillLevel,
@@ -92,6 +91,29 @@ export const SPRINT_BUILD_TYPES: Record<
 };
 /** The author's local hour those reminders go out at: the first such morning after each mark. */
 export const AI_REMIND_LOCAL_HOUR = 10;
+/** The UTC hour the daily run writes the AI's reviews; `/api/cron/checkpoints` in vercel.json must match. */
+export const AI_WRITES_AT_HOUR = 1;
+/** A human curator's call starting within this many hours gets its brief on tonight's run. */
+export const BRIEF_AHEAD_HOURS = 24;
+
+// What the AI curator reads
+
+/** Days before a checkpoint starts whose activity the goal check and the plan read. */
+export const LEAD_IN_DAYS = 14;
+/** Enough for a month of a busy team; older events past it are said to exist. */
+export const CURATOR_ACTIVITY_LIMIT = 60;
+/** A devlog longer than this is shortened, and says so. */
+export const CURATOR_DEVLOG_MAX_CHARS = 2500;
+/** Seconds of video looked at per sprint (Dmitry, 2026-10-24). */
+export const SPRINT_VIDEO_SECONDS = 10 * 60;
+/** Devlog images and videos looked at per sprint. */
+export const DEVLOG_MEDIA_PER_SPRINT = 6;
+/** Artifacts that prove no task, looked at per sprint. */
+export const ARTIFACTS_PER_SPRINT = 6;
+/** What the journal keeps of a document's text. */
+export const JOURNAL_TEXT_CHARS = 2000;
+/** How many of the project's latest artifacts stand in for inputs nobody named. */
+export const INPUT_ARTIFACTS = 5;
 /** Day 15 with the AI curator: hours before the change closes that an author who has not confirmed is reminded. */
 export const SCOPE_REMIND_BEFORE_HOURS = 4;
 /** The day an author whose tasks still lack evidence is told, three days before the verdict. */
@@ -119,22 +141,6 @@ export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
 export const CHECKPOINT_MAX_EVIDENCE_PER_ITEM = 3;
 
 // Buying one
-
-/**
- * A checkpoint under way. `AwaitingCurator` belongs here and not with the
- * drafts: it has been paid for, and a second one may not be started beside it.
- */
-export const CHECKPOINT_OPEN_STATUSES = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
-
-/** Under way: the 28 days or their review. A refund only ever stops one of these. */
-export const CHECKPOINT_RUNNING_STATUSES: CheckpointStatus[] = [
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 /** "What's done so far" on the way in: at least one line, at most this many. */
 export const CHECKPOINT_ENTRY_ITEMS_MAX = 5;

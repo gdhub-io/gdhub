@@ -33,14 +33,14 @@ import {
 } from "@/components/checkpoints/VerdictChip";
 import { StatusDot } from "@/components/ui";
 import { formatCount, formatDollar } from "@/helpers/format";
-import { MICROS_PER_USD } from "@/lib/checkpoint-costs";
+import { MICROS_PER_USD } from "@/lib/checkpoints/costs";
+import type { AiTrace } from "@/services/ai-trace";
 import type {
 	LabSettled,
 	labCatalogue,
 	runLab,
-} from "@/services/ai-curator-lab";
-import type { LabLanguage } from "@/services/ai-curator-lab/schemas";
-import type { AiTrace } from "@/services/ai-trace";
+} from "@/services/checkpoints/ai-curator-lab";
+import type { LabLanguage } from "@/services/checkpoints/ai-curator-lab/schemas";
 import { AuthorView } from "./AuthorView";
 import styles from "./style.module.scss";
 

@@ -13,11 +13,11 @@ const pulseUpdateMany = vi.fn();
 const projectFindUnique = vi.fn();
 const auditFindMany = vi.fn();
 
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	appUrl: () => "https://gdhub.test",
 	notify: (...a: unknown[]) => send(...a),
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: vi.fn(async () => 2),
 }));
 vi.mock("@/services/prisma", () => ({
@@ -38,10 +38,11 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-const { pulseIdOf, pulseToken } = await import("@/lib/checkpoint-pulse-token");
-const { confirmPulse, pulseView, requestPulses } = await import(
-	"@/repositories/checkpoint-pulse"
+const { pulseIdOf, pulseToken } = await import("@/lib/checkpoints/pulse-token");
+const { confirmPulse, pulseView } = await import(
+	"@/repositories/checkpoints/pulse"
 );
+const { requestPulses } = await import("@/services/checkpoints/flows/pulse");
 
 // Started Monday 5 Oct: Sunday 11 Oct is day 7, the last of sprint 1;
 // call 2 (which opens sprint 2) is on 12 Oct at 14:00.

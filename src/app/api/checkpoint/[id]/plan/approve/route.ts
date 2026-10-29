@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { approvePlan } from "@/repositories/checkpoint-plan-edit";
+import { approvePlan } from "@/services/checkpoints/flows/plan-edit";
 
 /** With the AI curator, on day 1 or day 15: the author is done with the plan, and it locks. */
 export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {

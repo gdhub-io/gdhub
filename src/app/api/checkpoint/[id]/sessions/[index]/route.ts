@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { getCall } from "@/repositories/checkpoint-call";
+import { getCall } from "@/repositories/checkpoints/call";
 
 /**
  * The call as the curator or the team sees it. Not behind the space guard —

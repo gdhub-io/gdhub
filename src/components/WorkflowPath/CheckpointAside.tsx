@@ -13,7 +13,7 @@ import {
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
 import { useCheckpointChat } from "@/hooks/checkpoints";
-import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
+import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { ArtifactLinks } from "./ArtifactLink";
 import { AsideHead } from "./AsideHead";

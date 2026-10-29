@@ -1,10 +1,10 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { dueDateFrom } from "@/lib/checkpoint-days";
+import { dueDateFrom } from "@/lib/checkpoints/days";
 import {
 	createDraftCheckpoint,
 	getCreationBlocker,
-} from "@/repositories/checkpoint.repository";
+} from "@/repositories/checkpoints/checkpoint";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { prisma } from "@/services/prisma";
 

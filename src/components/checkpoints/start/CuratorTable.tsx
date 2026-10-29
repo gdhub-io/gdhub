@@ -9,7 +9,7 @@ import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
 import { CHECKPOINT_PRICE_CURRENCY } from "@/config/checkpoint";
 import { curatorPrice } from "@/config/checkpoint-pricing";
 import { useCheckpointCurators } from "@/hooks/checkpoints";
-import type { CheckpointCurator } from "@/repositories/checkpoint-curators";
+import type { CheckpointCurator } from "@/types/checkpoints";
 import { CuratorRow } from "./CuratorRow";
 import styles from "./CuratorTable.module.scss";
 

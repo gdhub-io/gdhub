@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	feedbackFor,
 	rateCheckpoint,
-} from "@/repositories/checkpoint-feedback";
-import { averageRating } from "@/repositories/checkpoint-payouts";
+} from "@/repositories/checkpoints/feedback";
+import { averageRating } from "@/repositories/checkpoints/payouts";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -14,11 +14,11 @@ vi.mock("@/services/prisma", () => ({
 		checkpointFeedback: { findUnique: vi.fn(), create: vi.fn() },
 	},
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: vi.fn(),
 	appUrl: () => "",
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({ checkpointNumber: vi.fn() }));
+vi.mock("@/repositories/checkpoints/number", () => ({ checkpointNumber: vi.fn() }));
 
 const closed = {
 	verdict: CheckpointVerdict.GoalMet,

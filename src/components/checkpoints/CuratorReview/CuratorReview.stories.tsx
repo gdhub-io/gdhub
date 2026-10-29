@@ -9,12 +9,12 @@ import {
 	ParticipantTile,
 } from "@/components/checkpoints/CallRoom/CallParts";
 import { ClosedStage } from "@/components/checkpoints/CallRoom/ClosedStage";
-import type { PathTab } from "@/lib/checkpoint-hrefs";
-import { curatorNow } from "@/lib/curator-now";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
-import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
+import { curatorNow } from "@/lib/checkpoints/curator-now";
+import type { PathTab } from "@/lib/checkpoints/hrefs";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import type {
 	CallNotes,
+	CheckpointReviewDto,
 	CuratorReview,
 	PreviousVerdict as PreviousVerdictDto,
 } from "@/types/checkpoints";

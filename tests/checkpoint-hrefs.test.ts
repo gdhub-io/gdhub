@@ -4,7 +4,7 @@ import {
 	pathTabOf,
 	sessionOfSprintParam,
 	sprintParam,
-} from "@/lib/checkpoint-hrefs";
+} from "@/lib/checkpoints/hrefs";
 
 describe("Path to Checkpoint links", () => {
 	it("names sprints 1–4 by number and the last session the verdict", () => {

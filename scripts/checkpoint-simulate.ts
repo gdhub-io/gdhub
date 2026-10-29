@@ -23,26 +23,23 @@ import {
 	CheckpointStatus,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
-import { MS_PER_DAY } from "@/lib/checkpoint-days";
+import { MS_PER_DAY } from "@/lib/checkpoints/days";
 import { sweepArtifactChecks } from "@/repositories/artifact-check";
-import { writeDueVerdictReads } from "@/repositories/checkpoint-curator.repository";
-import { startAiCheckpoint } from "@/repositories/checkpoint-payment";
-import { approvePlan, changePlan } from "@/repositories/checkpoint-plan-edit";
-import { requestPulses } from "@/repositories/checkpoint-pulse";
-import {
-	adviseOnPlan,
-	writeDueBriefs,
-	writeDueReviews,
-} from "@/repositories/checkpoint-review";
-import { moveFinishedToReview } from "@/repositories/checkpoint-verdict.repository";
-import { getJournalView } from "@/repositories/curator-journal-view";
+import { getJournalView } from "@/repositories/checkpoints/journal-view";
+import { changePlan } from "@/repositories/checkpoints/plan-edit";
 import { ensureCheckpointStage } from "@/repositories/project-workflow";
 import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { writeDueVerdictReads } from "@/services/checkpoints/flows/ai-curator";
+import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
+import { approvePlan } from "@/services/checkpoints/flows/plan-edit";
+import { requestPulses } from "@/services/checkpoints/flows/pulse";
+import { adviseOnPlan, writeDueBriefs, writeDueReviews } from "@/services/checkpoints/flows/review";
+import { moveFinishedToReview } from "@/services/checkpoints/flows/verdict";
 import {
 	remindDevlogsDue,
 	remindEvidenceDue,
 	remindVerdictsDue,
-} from "@/services/checkpoint-notifications";
+} from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
 

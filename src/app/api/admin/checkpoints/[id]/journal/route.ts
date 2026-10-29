@@ -1,6 +1,6 @@
 import { apiError, json, pipe, withAuth } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { getJournalView } from "@/repositories/curator-journal-view";
+import { getJournalView } from "@/repositories/checkpoints/journal-view";
 
 /** Frames 12.11.10–10h: one checkpoint's journal, as a conversation and by subject. */
 export const GET = pipe(

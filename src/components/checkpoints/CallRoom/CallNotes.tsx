@@ -11,10 +11,7 @@ import { Skeleton, Table, Typography } from "antd";
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
-import type {
-	CallNotesDto,
-	CheckpointCallDto,
-} from "@/repositories/checkpoint-call";
+import type { CallNotesDto, CheckpointCallDto } from "@/types/checkpoint-call";
 import type { CallNotes as CallNotesContent } from "@/types/checkpoints";
 import { TaskIcon } from "./CallPlan";
 import styles from "./style.module.scss";

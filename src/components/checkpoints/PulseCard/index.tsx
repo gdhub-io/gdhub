@@ -19,7 +19,7 @@ import { PulseCell } from "@/components/checkpoints/PulseCell";
 import { IconTile, ViewAllLink } from "@/components/ui";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useConfirmPulse } from "@/hooks/checkpoints";
-import type { PulseViewDto } from "@/repositories/checkpoint-pulse";
+import type { PulseViewDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
 const { Text, Title, Paragraph } = Typography;

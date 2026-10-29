@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
-import {
-	type FeaturedCurator,
-	getFeaturedCurators,
-} from "@/repositories/checkpoint-curators";
+import { getFeaturedCurators } from "@/repositories/checkpoints/curator-catalog";
 import { prisma } from "@/services/prisma";
+import type { FeaturedCurator } from "@/types/checkpoints";
 import { CheckpointClient } from "./CheckpointClient";
 
 const TITLE = "Checkpoint — 28 days closer to release";

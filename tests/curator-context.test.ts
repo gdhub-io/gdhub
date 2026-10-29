@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
-import { devlogText } from "@/lib/curator-text";
+import { devlogText } from "@/lib/checkpoints/curator-text";
 import {
 	curatorTeam,
 	projectPicture,
 	stageWorkflow,
-} from "@/repositories/curator-context";
+} from "@/repositories/checkpoints/ai-curator-context";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
 import { prisma } from "@/services/prisma";
 

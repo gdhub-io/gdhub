@@ -8,7 +8,7 @@ import {
 import type { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/paddle/webhooks/route";
-import { settleCheckpointCheckout } from "@/repositories/checkpoint-payment";
+import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -24,9 +24,9 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 // Settling itself is covered in checkpoint-paddle-settle.test.ts.
-vi.mock("@/repositories/checkpoint-payment", async (importOriginal) => ({
+vi.mock("@/services/checkpoints/flows/payment", async (importOriginal) => ({
 	...(await importOriginal<
-		typeof import("@/repositories/checkpoint-payment")
+		typeof import("@/services/checkpoints/flows/payment")
 	>()),
 	settleCheckpointCheckout: vi.fn(async () => true),
 }));

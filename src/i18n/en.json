@@ -657,9 +657,9 @@
 					"curatorDeclined": "Curator declined",
 					"curatorGone": "Curator gone, no replacement",
 					"missedCalls": "Calls never held",
-					"noVerdict": "No verdict by day 31",
+					"noVerdict": "No verdict by day {day}",
 					"stripeRefund": "In Stripe",
-					"withdrawal": "Withdrawal within 14 days"
+					"withdrawal": "Withdrawal within {days} days"
 				},
 				"reasonLabel": "Reason",
 				"stripeFailed": "Stripe did not refund — nothing was recorded. Try again.",
@@ -667,8 +667,8 @@
 				"success": "Refunded {amount}",
 				"title": "Refund {project} · Checkpoint {number}",
 				"withdrawal": {
-					"over": "Paid {date} — the 14 days are over",
-					"within": "Only within 14 days of payment — paid {date}, {days} days ago."
+					"over": "Paid {date} — the {limit} days are over",
+					"within": "Only within {limit} days of payment — paid {date}, {days} days ago."
 				}
 			},
 			"tab": {
@@ -2024,7 +2024,7 @@
 			"calls": "Calls with {name}",
 			"callsWhen": "{weekday}s at {time} · {from} – {to} · five calls",
 			"capacity": "Team capacity",
-			"capacityHours": "{week} hours per sprint · {run} hours over 28 days",
+			"capacityHours": "{week} hours per sprint · {run} hours over {days} days",
 			"capacityUnknown": "Nobody has stated their hours yet",
 			"checkingBody": "The outcomes you wrote are being weighed against the hours the team has.",
 			"checkingTitle": "Reading your plan",
@@ -2062,7 +2062,7 @@
 			"title": "Check and pay",
 			"vat": "+ VAT",
 			"waitForCheck": "Wait for the plan to be read",
-			"want": "What you want in 28 days",
+			"want": "What you want in {days} days",
 			"whatExists": "What exists now",
 			"whatMustExist": "What must exist by day 28",
 			"whatYouGet": "What the curator does"

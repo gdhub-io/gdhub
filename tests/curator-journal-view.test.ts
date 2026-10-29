@@ -14,7 +14,7 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-const { getJournalView } = await import("@/repositories/curator-journal-view");
+const { getJournalView } = await import("@/repositories/checkpoints/journal-view");
 
 const startedAt = new Date("2026-09-01T00:00:00Z");
 const at = (iso: string) => new Date(iso);

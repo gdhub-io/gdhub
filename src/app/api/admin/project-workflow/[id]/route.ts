@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { runningCheckpointLock } from "@/repositories/checkpoint-guards";
+import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
 import {
 	stepName,
 	taskName,

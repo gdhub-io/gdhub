@@ -3,7 +3,7 @@ import {
 	CheckpointCuratorKind,
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
-import type { CuratorNow } from "@/lib/curator-now";
+import type { CuratorNow } from "@/lib/checkpoints/curator-now";
 import type { CheckpointDto, CheckpointSessionDto } from "@/types/checkpoints";
 import { CuratorNote } from "./CuratorNote";
 

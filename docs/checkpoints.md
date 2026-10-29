@@ -362,8 +362,8 @@ against it in any devlog. A quiet week on its own is not the signal.
 
 ## 8. The AI curator
 
-The model calls of one AI checkpoint, through `src/services/checkpoint-curator` and
-`src/services/curator-review` (typed input, typed result, prompts in their own
+The model calls of one AI checkpoint, through `src/services/checkpoints/ai-curator` and
+`src/services/checkpoints/ai-review` (typed input, typed result, prompts in their own
 folder, no free-text parsing). Models and what each costs are in
 [ai-costs.md](ai-costs.md).
 
@@ -846,7 +846,7 @@ find.
 
 ## 15. Notifications
 
-Every letter goes through Novu (`src/services/checkpoint-notifications.ts`); what
+Every letter goes through Novu (`src/services/checkpoints/notifications.ts`); what
 goes out on which day is in [checkpoint-calendar.md](checkpoint-calendar.md). Two
 cron routes, both behind `withAuth({ mode: "vercel_cron" })`:
 

@@ -17,7 +17,7 @@ import {
 	verdictDraftOpensAt,
 	verdictDueBy,
 	verdictOverdue,
-} from "@/lib/checkpoint-verdict-window";
+} from "@/lib/checkpoints/verdict-window";
 import type { AdvisorCheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 

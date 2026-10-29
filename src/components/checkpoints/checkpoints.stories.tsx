@@ -9,7 +9,7 @@ import {
 	ProjectArtifactType,
 	SkillLevel,
 } from "@/config/prisma-enums";
-import { sprintFactsOf } from "@/lib/checkpoint-facts";
+import { sprintFactsOf } from "@/lib/checkpoints/facts";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { AskPanel } from "./AskPanel";
 import { CheckpointCard } from "./CheckpointCard";

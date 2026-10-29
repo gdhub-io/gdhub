@@ -13,8 +13,8 @@ import {
 	type CuratorVerdictResult,
 	getVerdictContext,
 	saveVerdictDraft,
-	writeCuratorVerdict,
-} from "@/repositories/checkpoint-verdict.repository";
+} from "@/repositories/checkpoints/verdict";
+import { writeCuratorVerdict } from "@/services/checkpoints/flows/verdict";
 
 const verdict = z.nativeEnum(CheckpointVerdict);
 

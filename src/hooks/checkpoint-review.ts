@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import type { CheckpointReviewDto } from "@/repositories/checkpoint-review";
+import type { CheckpointReviewDto } from "@/types/checkpoints";
 
 /** An AI checkpoint's Curator's Review; the plan on it changes through `useChangePlan`. */
 export const useCheckpointReview = (id: string) =>

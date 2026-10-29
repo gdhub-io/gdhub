@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { curatorNow } from "@/lib/curator-now";
+import { curatorNow } from "@/lib/checkpoints/curator-now";
 
 // Started 1 Oct: sessions at UTC midnight of days 1, 8, 15, 22 and 29.
 const startedAt = "2026-10-01T00:00:00.000Z";

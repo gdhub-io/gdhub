@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { SkillLevel } from "@/config/prisma-enums";
-import type { FeaturedCurator } from "@/repositories/checkpoint-curators";
+import type { FeaturedCurator } from "@/types/checkpoints";
 import { CheckpointCuratorsSection } from "./index";
 
 const CURATORS: FeaturedCurator[] = [

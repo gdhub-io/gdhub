@@ -6,9 +6,13 @@ import {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 
+vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://gdhub.test");
+
 const checkpointFindUnique = vi.fn();
 const checkpointFindUniqueOrThrow = vi.fn();
 const checkpointUpdate = vi.fn();
+const checkpointUpdateMany = vi.fn();
+const sessionDeleteMany = vi.fn();
 const sessionFindMany = vi.fn();
 const sessionFindUniqueOrThrow = vi.fn();
 const sessionUpdate = vi.fn();
@@ -24,20 +28,23 @@ const notifyPlanChecked = vi.fn();
 const notifyVerdictSent = vi.fn();
 const journalFindFirst = vi.fn();
 
-vi.mock("@/services/prisma", () => ({
-	prisma: {
-		$transaction: vi.fn(async (ops: unknown[]) => ops),
+vi.mock("@/services/prisma", () => {
+	const prisma = {
+		$transaction: vi.fn(async (ops: unknown) =>
+			typeof ops === "function" ? ops(prisma) : ops,
+		),
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 			findUniqueOrThrow: (...a: unknown[]) => checkpointFindUniqueOrThrow(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
+			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
 		},
 		checkpointSession: {
 			findMany: (...a: unknown[]) => sessionFindMany(...a),
 			findUniqueOrThrow: (...a: unknown[]) => sessionFindUniqueOrThrow(...a),
 			update: (...a: unknown[]) => sessionUpdate(...a),
 			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
-			deleteMany: vi.fn(),
+			deleteMany: (...a: unknown[]) => sessionDeleteMany(...a),
 			createMany: (...a: unknown[]) => sessionCreateMany(...a),
 		},
 		checkpointJournalEntry: {
@@ -45,18 +52,19 @@ vi.mock("@/services/prisma", () => ({
 		},
 		projectReport: { findMany: vi.fn(async () => [{ content: "Devlog" }]) },
 		projectArtifact: { findMany: vi.fn(async () => []) },
-	},
-}));
-vi.mock("@/repositories/evidence-seen", () => ({
+	};
+	return { prisma };
+});
+vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 	sprintArtifactLines: vi.fn(async () => [
 		'GameplayVideo "Sprint 1 build" https://x.test/v: one tide loop played through',
 	]),
 }));
-vi.mock("@/repositories/curator-journal", () => ({ journal: vi.fn() }));
-vi.mock("@/repositories/curator-context", async (actual) => ({
-	memberRole: (await actual<typeof import("@/repositories/curator-context")>())
+vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
+vi.mock("@/repositories/checkpoints/ai-curator-context", async (actual) => ({
+	memberRole: (await actual<typeof import("@/repositories/checkpoints/ai-curator-context")>())
 		.memberRole,
 	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
 	curatorTeam: vi.fn(async () => ({
@@ -78,52 +86,59 @@ vi.mock("@/repositories/curator-context", async (actual) => ({
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 }));
-vi.mock("@/services/curator-review", async (original) => ({
+vi.mock("@/services/checkpoints/ai-review", async (original) => ({
 	midwayAdviceInput: (
-		await original<typeof import("@/services/curator-review")>()
+		await original<typeof import("@/services/checkpoints/ai-review")>()
 	).midwayAdviceInput,
 	writeSprintReview: (...a: unknown[]) => writeSprintReview(...a),
 	writePlanAdvice: (...a: unknown[]) => writePlanAdvice(...a),
 	reviewSprint: (...a: unknown[]) => reviewSprint(...a),
 }));
-vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+vi.mock("@/services/checkpoints/flows/ai-curator", () => ({
 	closeCheckpoint: (...a: unknown[]) => closeCheckpoint(...a),
 	writeFirstLetter: (...a: unknown[]) => writeFirstLetter(...a),
 }));
-vi.mock("@/services/checkpoint-notifications", () => ({
-	appUrl: () => "https://gdhub.test",
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: (...a: unknown[]) => notify(...a),
 	notifyPlanChecked: (...a: unknown[]) => notifyPlanChecked(...a),
-	recipient: { select: { id: true, email: true } },
-	reviewUrl: (slug: string, number: number, index: number) =>
-		`https://gdhub.test/user/project/${slug}/workflow/cp${number}/review/${index}`,
 }));
-vi.mock("@/services/checkpoint-verdict-notifications", () => ({
+vi.mock("@/services/checkpoints/verdict-notifications", () => ({
 	notifyVerdictSent: (...a: unknown[]) => notifyVerdictSent(...a),
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: vi.fn(async () => 3),
 }));
 vi.mock("@/services/stripe/server", () => ({}));
 
-const { startAiCheckpoint } = await import("@/repositories/checkpoint-payment");
+const { startAiCheckpoint } = await import(
+	"@/services/checkpoints/flows/payment"
+);
 const { adviseOnPlan, writeBriefFor, writeDueBriefs, writeDueReviews } =
-	await import("@/repositories/checkpoint-review");
-const { journal } = await import("@/repositories/curator-journal");
+	await import("@/services/checkpoints/flows/review");
+const { journal } = await import("@/repositories/checkpoints/journal");
 
 // Started Thursday 1 Oct: sprint 1 is 1–7 Oct, its review on day 8.
 const startedAt = new Date("2026-10-01T00:00:00Z");
 const person = (id: string) => ({ id, email: `${id}@x.test` });
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+	vi.clearAllMocks();
+	checkpointUpdateMany.mockResolvedValue({ count: 1 });
+});
 
 describe("startAiCheckpoint", () => {
 	it("starts today when the day picked passed before the payment", async () => {
 		checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt });
 		const now = new Date("2026-10-04T15:00:00Z");
-		await startAiCheckpoint("cp", "pay", now);
+		expect(await startAiCheckpoint("cp", "pay", now)).toBe(true);
 
-		const data = checkpointUpdate.mock.calls[0][0].data;
+		const { where, data } = checkpointUpdateMany.mock.calls[0][0];
+		expect(where).toEqual({
+			id: "cp",
+			status: {
+				in: [CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
+			},
+		});
 		expect(data).toMatchObject({
 			status: CheckpointStatus.Active,
 			paymentId: "pay",
@@ -146,12 +161,28 @@ describe("startAiCheckpoint", () => {
 			[4, "2026-10-25"],
 			[5, "2026-11-01"],
 		]);
+		await vi.waitFor(() => expect(writeFirstLetter).toHaveBeenCalledWith("cp"));
 	});
 
 	it("keeps a day still ahead", async () => {
 		checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt });
 		await startAiCheckpoint("cp", "pay", new Date("2026-09-29T10:00:00Z"));
-		expect(checkpointUpdate.mock.calls[0][0].data.startedAt).toEqual(startedAt);
+		expect(checkpointUpdateMany.mock.calls[0][0].data.startedAt).toEqual(
+			startedAt,
+		);
+	});
+
+	it("books nothing and writes no letter when it already started or was called off", async () => {
+		checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt });
+		checkpointUpdateMany.mockResolvedValueOnce({ count: 0 });
+
+		expect(
+			await startAiCheckpoint("cp", "pay", new Date("2026-10-04T15:00:00Z")),
+		).toBe(false);
+		expect(sessionDeleteMany).not.toHaveBeenCalled();
+		expect(sessionCreateMany).not.toHaveBeenCalled();
+		await new Promise((resolve) => setTimeout(resolve, 20));
+		expect(writeFirstLetter).not.toHaveBeenCalled();
 	});
 });
 
@@ -302,12 +333,12 @@ describe("writeDueReviews", () => {
 			[
 				"author",
 				"cp-review-s2-author",
-				"https://gdhub.test/user/project/hollow-tide/workflow/cp3/review/2",
+				"https://gdhub.test/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
 			],
 			[
 				"oleg",
 				"cp-review-s2-oleg",
-				"https://gdhub.test/user/project/hollow-tide/workflow/cp3/review/2",
+				"https://gdhub.test/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
 			],
 		]);
 	});

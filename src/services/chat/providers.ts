@@ -4,8 +4,8 @@ import {
 	type ChatRoomStatus,
 } from "@gdhub-io/gdhub-prisma";
 import { TeamMemberStatus } from "@/config/prisma-enums";
-import { currentSprint, sprintRange } from "@/lib/checkpoint-sprints";
-import { checkpointNumber } from "@/repositories/checkpoint-number";
+import { currentSprint, sprintRange } from "@/lib/checkpoints/sprints";
+import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { prisma } from "@/services/prisma";
 
 export type ChatRoomRow = {

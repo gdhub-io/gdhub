@@ -1,4 +1,3 @@
-import { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { checkoutHref } from "@/components/checkpoints/entry/hrefs";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
@@ -11,7 +10,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { underCheckpointAge } from "@/lib/checkpoint-age";
+import { underCheckpointAge } from "@/lib/checkpoints/age";
 import {
 	LegalAcceptancesSchema,
 	LegalError,
@@ -20,13 +19,15 @@ import {
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
+import { yearOfBirthOf } from "@/repositories/checkpoints/entry";
 import {
 	checkpointCheckout,
+	openCheckpointPayment,
 	pendingCheckout,
-	reconcileCheckout,
-} from "@/repositories/checkpoint-payment";
+	setProviderTransaction,
+} from "@/repositories/checkpoints/payment";
+import { reconcileCheckout } from "@/services/checkpoints/flows/payment";
 import { checkoutGateway, gatewayFor } from "@/services/payments/gateway";
-import { prisma } from "@/services/prisma";
 
 /**
  * Opens the checkout for a checkpoint and hands back where the author pays: a
@@ -62,11 +63,7 @@ export const POST = pipe(
 	if (!checkpointPurchaseOpen()) return apiError.badRequest("purchaseClosed");
 
 	// Onboarding admits 16; a Checkpoint is sold at 18.
-	const profile = await prisma.profile.findUnique({
-		where: { userId: payer.id },
-		select: { yearOfBirth: true },
-	});
-	if (underCheckpointAge(profile?.yearOfBirth)) {
+	if (underCheckpointAge(await yearOfBirthOf(payer.id))) {
 		return apiError.badRequest("underage");
 	}
 
@@ -120,28 +117,13 @@ export const POST = pipe(
 
 	const gateway = checkoutGateway();
 
-	await prisma.payment.updateMany({
-		where: {
-			payableType: PayableType.CHECKPOINT,
-			payableId: id,
-			status: PaymentStatus.PENDING,
-		},
-		data: { status: PaymentStatus.CANCELED },
-	});
-
-	await prisma.legalAcceptance.createMany({ data: acceptances });
-
-	const payment = await prisma.payment.create({
-		data: {
-			amount: quote.amount,
-			currency: quote.currency,
-			status: PaymentStatus.PENDING,
-			payableType: PayableType.CHECKPOINT,
-			payableId: id,
-			payerId: payer.id,
-			provider: gateway.provider,
-		},
-		select: { id: true },
+	const payment = await openCheckpointPayment({
+		checkpointId: id,
+		payerId: payer.id,
+		acceptances,
+		amount: quote.amount,
+		currency: quote.currency,
+		provider: gateway.provider,
 	});
 
 	const checkout = await gateway.startCheckout({
@@ -156,10 +138,7 @@ export const POST = pipe(
 		cancelUrl: `${base}${checkoutHref(slug, "payment")}&cancelled=1`,
 	});
 
-	await prisma.payment.update({
-		where: { id: payment.id },
-		data: { providerTransactionId: checkout.transactionId },
-	});
+	await setProviderTransaction(payment.id, checkout.transactionId);
 
 	return json(checkout.start);
 });

@@ -122,6 +122,7 @@ beforeEach(() => {
 	vi.mocked(prisma.paymentEvent.create).mockResolvedValue({} as never);
 	vi.mocked(prisma.payment.findUnique).mockResolvedValue(payment as never);
 	vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 1 });
+	vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 1 });
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 		draft() as never,
 	);
@@ -137,6 +138,7 @@ describe("the Stripe webhook", () => {
 		expect((await post()).status).toBe(401);
 		expect(prisma.paymentEvent.create).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	// Stripe retries, and a retry must not start a second run of the 28 days.
@@ -147,6 +149,7 @@ describe("the Stripe webhook", () => {
 		expect((await post()).status).toBe(200);
 		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	// The providers never cross: a Stripe event cannot settle a row Paddle took.
@@ -159,19 +162,22 @@ describe("the Stripe webhook", () => {
 		expect((await post()).status).toBe(200);
 		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	it("hands a checkpoint to its curator rather than starting it", async () => {
 		await post();
 
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: { id: "cp1", status: { in: [CheckpointStatus.Draft] } },
 				data: expect.objectContaining({
 					status: CheckpointStatus.AwaitingCurator,
 					paymentId: "pay_1",
 				}),
 			}),
 		);
+		expect(bookSessions).toHaveBeenCalledWith(prisma, "cp1");
 		// Authorised, not charged: the money is taken when a curator accepts.
 		expect(prisma.payment.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -205,6 +211,23 @@ describe("the Stripe webhook", () => {
 				}),
 			}),
 		);
+		// The move to AwaitingCurator is made only inside the transaction the
+		// taken slot rolls back.
+		await expect(
+			vi.mocked(prisma.$transaction).mock.results[0].value,
+		).rejects.toBeInstanceOf(SlotTakenError);
+	});
+
+	// The draft was handed on or started between the read and the write.
+	it("books nothing when the draft moved on meanwhile", async () => {
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 0,
+		});
+
+		expect((await post()).status).toBe(200);
+
+		expect(bookSessions).not.toHaveBeenCalled();
+		expect(releaseCheckout).not.toHaveBeenCalled();
 	});
 
 	it("starts the 28 days at once when the AI curator runs them", async () => {
@@ -214,11 +237,18 @@ describe("the Stripe webhook", () => {
 
 		await post();
 
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: {
+					id: "cp1",
+					status: {
+						in: [CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
+					},
+				},
 				data: expect.objectContaining({ status: CheckpointStatus.Active }),
 			}),
 		);
+		expect(prisma.checkpointSession.createMany).toHaveBeenCalled();
 	});
 
 	// Nobody accepts for the AI curator, so a hold left as it is would be let go
@@ -254,6 +284,7 @@ describe("the Stripe webhook", () => {
 			}),
 		);
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	it("leaves a human curator's hold uncharged until they accept", async () => {
@@ -272,6 +303,7 @@ describe("the Stripe webhook", () => {
 
 		expect(prisma.payment.updateMany).toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	// The reconciliation may have applied it first, or the curator declined and
@@ -283,6 +315,7 @@ describe("the Stripe webhook", () => {
 
 		expect(prisma.projectCheckpoint.findUnique).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	// Payment.amount is what was charged, which a promotion code makes less than the price.
@@ -328,6 +361,7 @@ describe("the Stripe webhook", () => {
 		});
 		expect(prisma.projectCheckpoint.findUnique).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 		expect(bookSessions).not.toHaveBeenCalled();
 		expect(captureCheckout).not.toHaveBeenCalled();
 	});
@@ -341,6 +375,7 @@ describe("the Stripe webhook", () => {
 		await post();
 
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 });
 

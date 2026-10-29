@@ -8,7 +8,8 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { listPayouts, markPayoutPaid } from "@/repositories/checkpoint-payouts";
+import { listPayouts } from "@/repositories/checkpoints/payouts";
+import { markPayoutPaid } from "@/services/checkpoints/flows/payouts";
 
 /** `2026-09` → its first day, UTC. */
 const Month = z

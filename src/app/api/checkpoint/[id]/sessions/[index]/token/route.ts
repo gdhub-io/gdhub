@@ -1,5 +1,5 @@
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
-import { joinCall } from "@/repositories/checkpoint-call";
+import { joinCall } from "@/services/checkpoints/flows/call";
 
 export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	const caller = user as SessionUser | undefined;

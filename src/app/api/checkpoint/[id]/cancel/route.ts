@@ -1,15 +1,12 @@
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, pipe, withAuth } from "@/lib/api-handlers";
+import { isPending } from "@/lib/checkpoints/status";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
-import { returnCheckpointMoney } from "@/repositories/checkpoint-payment";
-import { prisma } from "@/services/prisma";
-
-/** The two states a checkpoint can be called off from; a running one cannot. */
-const CANCELLABLE: CheckpointStatus[] = [
-	CheckpointStatus.Draft,
-	CheckpointStatus.AwaitingCurator,
-];
+import {
+	checkpointStatusOf,
+	deletePendingCheckpoint,
+} from "@/repositories/checkpoints/checkpoint";
+import { returnCheckpointMoney } from "@/services/checkpoints/flows/payment";
 
 /**
  * Calling off a checkpoint that has not started, and returning the money if
@@ -41,13 +38,10 @@ export const POST = pipe(
 )(async (_req, ctx) => {
 	const { id } = (await ctx.params) as { id: string };
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { status: true },
-	});
+	const checkpoint = await checkpointStatusOf(id);
 
 	if (!checkpoint) return apiError.notFound();
-	if (!CANCELLABLE.includes(checkpoint.status)) {
+	if (!isPending(checkpoint.status)) {
 		return apiError.badRequest("checkpointRunning");
 	}
 
@@ -56,7 +50,10 @@ export const POST = pipe(
 	if (returned && "failed" in returned)
 		return apiError.internal(returned.failed);
 
-	await prisma.projectCheckpoint.delete({ where: { id } });
+	// A curator's yes landing meanwhile has started it: it is no longer this button's to undo.
+	if (!(await deletePendingCheckpoint(id))) {
+		return apiError.badRequest("checkpointRunning");
+	}
 
 	return json({
 		refunded: returned?.refunded ?? false,

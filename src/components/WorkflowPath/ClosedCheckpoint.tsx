@@ -25,9 +25,9 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import { sessionHeld } from "@/lib/checkpoint-call";
-import { checkpointPathHref } from "@/lib/checkpoint-hrefs";
-import { standingOf, standingOfPiece } from "@/lib/checkpoint-verdict";
+import { sessionHeld } from "@/lib/checkpoints/call";
+import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
+import { standingOf, standingOfPiece } from "@/lib/checkpoints/verdict";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { ArtifactLink } from "./ArtifactLink";
 import { formatShort } from "./dates";

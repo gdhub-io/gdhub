@@ -4,7 +4,7 @@ import { Carousel, Grid, Tag, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { AppImage } from "@/components/ui/AppImage";
 import { avatarImage } from "@/helpers/image";
-import type { FeaturedCurator } from "@/repositories/checkpoint-curators";
+import type { FeaturedCurator } from "@/types/checkpoints";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";

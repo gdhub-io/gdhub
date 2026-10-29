@@ -9,7 +9,9 @@ vi.mock("@/auth", () => ({ auth: () => authMock() }));
 vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
 }));
-vi.mock("@/repositories/evidence-seen", () => ({ checkAndLook: vi.fn() }));
+vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
+	checkAndLook: vi.fn(),
+}));
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		projectArtifact: { findMany: (...a: unknown[]) => artifactFindMany(...a) },

@@ -1,4 +1,4 @@
-import { CheckpointStatus, Prisma } from "@gdhub-io/gdhub-prisma";
+import { Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { after } from "next/server";
 import { z } from "zod";
@@ -9,7 +9,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { seeDevlogMedia } from "@/repositories/evidence-seen";
+import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoints/status";
+import { seeDevlogMedia } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const ReportQuerySchema = z.object({
@@ -87,7 +88,7 @@ export const POST = withAuth({ mode: "user" })(
 		const checkpoint = await prisma.projectCheckpoint.findFirst({
 			where: {
 				projectId,
-				status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+				status: { in: CHECKPOINT_RUNNING_STATUSES },
 			},
 			select: { id: true },
 		});

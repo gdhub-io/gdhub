@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { teamCapacity } from "@/lib/checkpoint-capacity";
+import { teamCapacity } from "@/lib/checkpoints/capacity";
 
 describe("teamCapacity", () => {
 	it("sums the stated ranges and carries them over the four sprints", () => {

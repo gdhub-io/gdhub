@@ -4,7 +4,7 @@ import {
 	checkpointLineage,
 	checkpointNumber,
 	checkpointNumbers,
-} from "@/repositories/checkpoint-number";
+} from "@/repositories/checkpoints/number";
 import { prisma } from "@/services/prisma";
 
 type Row = {

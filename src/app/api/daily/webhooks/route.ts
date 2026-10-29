@@ -3,7 +3,7 @@ import {
 	recordMeetingEnded,
 	saveTranscript,
 	transcribeRecording,
-} from "@/repositories/checkpoint-call";
+} from "@/services/checkpoints/flows/call";
 import { isDailyWebhook } from "@/services/daily";
 
 type DailyEvent = { type?: string; payload?: Record<string, never> };

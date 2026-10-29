@@ -1,6 +1,6 @@
-import { CHECKPOINT_OPEN_STATUSES } from "@/config/checkpoint";
-import { ArtifactCheckStatus, CheckpointStatus } from "@/config/prisma-enums";
+import { ArtifactCheckStatus } from "@/config/prisma-enums";
 import { isSanityImage } from "@/helpers/image";
+import { CHECKPOINT_CURRENT_STATUSES } from "@/lib/checkpoints/status";
 import { openLink } from "@/services/artifact-check/safe-fetch";
 import { prisma } from "@/services/prisma";
 
@@ -63,7 +63,7 @@ export async function sweepArtifactChecks() {
 							item: {
 								checkpoint: {
 									status: {
-										in: [CheckpointStatus.Draft, ...CHECKPOINT_OPEN_STATUSES],
+										in: CHECKPOINT_CURRENT_STATUSES,
 									},
 								},
 							},

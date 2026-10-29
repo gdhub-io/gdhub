@@ -11,23 +11,27 @@ import {
 	type RefundCase,
 	reasonRefused,
 	refundAmount,
-} from "@/lib/checkpoint-refund";
-import { issueCheckpointRefund } from "@/repositories/checkpoint-refund";
-import { notifyAuthorOfRefund } from "@/services/checkpoint-notifications";
+} from "@/lib/checkpoints/refund";
+import { issueCheckpointRefund } from "@/services/checkpoints/flows/refund";
+import { notifyAuthorOfRefund } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import { refundCheckout } from "@/services/stripe/server";
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		$transaction: vi.fn(async (ops: unknown[]) => ops),
-		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn() },
+		$transaction: vi.fn(async (ops: unknown[]) => Promise.all(ops)),
+		projectCheckpoint: {
+			findUnique: vi.fn(),
+			update: vi.fn(),
+			updateMany: vi.fn(),
+		},
 		payment: { findFirst: vi.fn(), update: vi.fn() },
 		refund: { upsert: vi.fn() },
 		auditLog: { create: vi.fn() },
 	},
 }));
 vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
-vi.mock("@/services/checkpoint-notifications", () => ({
+vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfRefund: vi.fn(),
 }));
 vi.mock("@/services/chat/checkpoint-room", () => ({
@@ -175,6 +179,9 @@ describe("issuing a refund", () => {
 			sessions: [1, 2, 3, 4, 5].map((index) => call(index, index <= 2)),
 		} as never);
 		vi.mocked(prisma.payment.findFirst).mockResolvedValue(payment() as never);
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 1,
+		} as never);
 		vi.mocked(refundCheckout).mockResolvedValue({
 			id: "re_1",
 			amount: 30000,
@@ -190,10 +197,14 @@ describe("issuing a refund", () => {
 			amount: 30000,
 			idempotencyKey: "checkpoint-refund-cp1",
 		});
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith({
-			where: { id: "cp1" },
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith({
+			where: {
+				id: "cp1",
+				status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+			},
 			data: { status: CheckpointStatus.Cancelled },
 		});
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
 		expect(prisma.payment.update).toHaveBeenCalledWith({
 			where: { id: "pay1" },
 			data: { status: "PARTIALLY_REFUNDED" },
@@ -208,6 +219,44 @@ describe("issuing a refund", () => {
 			}),
 		);
 		expect(notifyAuthorOfRefund).toHaveBeenCalledWith("cp1", "$300", "withdrawal");
+	});
+
+	// The verdict landed between the read and the write: the money has gone
+	// back all the same, so it is recorded, but the verdict is not overwritten.
+	it("records the refund and leaves a checkpoint decided meanwhile Closed", async () => {
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 0,
+		} as never);
+		const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+
+		await expect(
+			issueCheckpointRefund("cp1", "withdrawal", "admin1", NOW),
+		).resolves.toEqual({ ok: true, amount: 30000 });
+
+		// The only status write is the one guarded by Active/Review.
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledTimes(1);
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: expect.objectContaining({
+					status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+				}),
+			}),
+		);
+		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.refund.upsert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				create: expect.objectContaining({ amount: 30000, reason: "withdrawal" }),
+			}),
+		);
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay1" },
+			data: { status: "PARTIALLY_REFUNDED" },
+		});
+		expect(prisma.auditLog.create).toHaveBeenCalled();
+		expect(logged).toHaveBeenCalledWith(
+			expect.stringContaining("cp1 was decided while refunded"),
+		);
+		logged.mockRestore();
 	});
 
 	it("sends nothing when the payment already has a refund", async () => {

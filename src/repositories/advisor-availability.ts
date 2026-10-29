@@ -16,7 +16,8 @@ import {
 	type MinuteRange,
 	seriesAt,
 } from "@/lib/advisor-availability";
-import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoints/days";
+import { CHECKPOINT_OPEN_STATUSES } from "@/lib/checkpoints/status";
 import { prisma } from "@/services/prisma";
 
 /** The client, or the one an interactive transaction hands its callback. */
@@ -24,13 +25,6 @@ export type Db = Omit<
 	typeof prisma,
 	"$connect" | "$disconnect" | "$on" | "$transaction" | "$extends"
 >;
-
-/** The checkpoints whose calls hold an advisor's time. */
-const HOLDING = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 export type AvailabilityDto = {
 	timeZone: string;
@@ -112,7 +106,7 @@ export const getAvailability = async (
 /** Calls that still hold the time of these curators. */
 const holdingCalls = (curatorId: string | { in: string[] }) => ({
 	scheduledAt: { gte: dayjs().subtract(1, "day").toDate() },
-	checkpoint: { curatorId, status: { in: HOLDING } },
+	checkpoint: { curatorId, status: { in: CHECKPOINT_OPEN_STATUSES } },
 });
 
 const callSelect = {
@@ -406,7 +400,9 @@ export const advisorCalendar = async (userId: string) => {
 				scheduledAt: { gte: dayjs().subtract(60, "day").toDate() },
 				checkpoint: {
 					curatorId: userId,
-					status: { in: [...HOLDING, CheckpointStatus.Closed] },
+					status: {
+						in: [...CHECKPOINT_OPEN_STATUSES, CheckpointStatus.Closed],
+					},
 				},
 			},
 			orderBy: { scheduledAt: "asc" },

@@ -27,7 +27,7 @@ An error hides the widget: it is secondary to the task list.
 list (`WorkflowTasksPanel`), because they carry a deadline:
 
 - the sprint's devlog while it is owed — `authorNextStep` in
-  `src/lib/checkpoint-plan.ts`, due on the devlog day, "Overdue since …" (danger
+  `src/lib/checkpoints/plan.ts`, due on the devlog day, "Overdue since …" (danger
   dot) until the next call;
 - every outcome the author promised ("What must exist by day 28"), due day 28,
   done once an artifact is attached; cut outcomes are left out.

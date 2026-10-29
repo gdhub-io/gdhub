@@ -36,9 +36,9 @@ vi.mock("@/config/checkpoint-pricing", () => ({
 	checkpointPurchaseOpen: () => true,
 }));
 
-vi.mock("@/repositories/checkpoint-payment", () => ({
+vi.mock("@/repositories/checkpoints/payment", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/checkpoints/payment")>()),
 	pendingCheckout: (...a: unknown[]) => pendingCheckout(...a),
-	reconcileCheckout: async () => false,
 	checkpointCheckout: async () => ({
 		ok: true,
 		amount: 2000,
@@ -47,6 +47,10 @@ vi.mock("@/repositories/checkpoint-payment", () => ({
 		description: "",
 		checkpoint: { project: { slug: "tide" } },
 	}),
+}));
+
+vi.mock("@/services/checkpoints/flows/payment", () => ({
+	reconcileCheckout: async () => false,
 }));
 
 vi.mock("@/services/stripe/server", () => ({

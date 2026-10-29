@@ -7,9 +7,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { viewerOf, viewerSelect } from "@/repositories/checkpoint-viewer";
+import { activityAccessOf, viewerOf } from "@/repositories/checkpoints/viewer";
 import { getProjectActivity } from "@/repositories/project-activity.repository";
-import { prisma } from "@/services/prisma";
 
 const QuerySchema = z.object({
 	before: z.string().datetime().optional(),
@@ -29,10 +28,7 @@ export const GET = pipe(
 	const { id } = (await ctx.params) as { id: string };
 	const { before, limit } = body as z.infer<typeof QuerySchema>;
 
-	const checkpoint = await prisma.projectCheckpoint.findUnique({
-		where: { id },
-		select: { projectId: true, ...viewerSelect(currentUser.id) },
-	});
+	const checkpoint = await activityAccessOf(id, currentUser.id);
 	if (!checkpoint) return apiError.notFound();
 	if (!viewerOf(checkpoint, currentUser.id)) return apiError.forbidden();
 

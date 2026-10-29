@@ -12,10 +12,10 @@ const journal = vi.fn();
 vi.mock("@/services/novu", () => ({
 	NovuService: { send: (...a: unknown[]) => send(...a) },
 }));
-vi.mock("@/repositories/curator-journal", () => ({
+vi.mock("@/repositories/checkpoints/journal", () => ({
 	journal: (...a: unknown[]) => journal(...a),
 }));
-vi.mock("@/repositories/checkpoint-number", () => ({
+vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: vi.fn(async () => 2),
 }));
 vi.mock("@/services/prisma", () => ({
@@ -40,7 +40,7 @@ const {
 	remindPlansUnsent,
 	remindScopeClosing,
 	remindVerdictsDue,
-} = await import("@/services/checkpoint-notifications");
+} = await import("@/services/checkpoints/notifications");
 
 const person = (id: string) => ({ id, email: `${id}@x.test` });
 

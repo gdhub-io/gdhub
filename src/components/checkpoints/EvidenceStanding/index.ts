@@ -1,6 +1,6 @@
 import { useTranslate } from "@tolgee/react";
 import type { StatusDotProps } from "@/components/ui";
-import type { Standing } from "@/lib/checkpoint-verdict";
+import type { Standing } from "@/lib/checkpoints/verdict";
 
 /**
  * The label an outcome's evidence standing carries (frame 12.07.4). Delivered

@@ -12,7 +12,7 @@ import {
 import scout from "@/components/scout/ProjectCardModal/style.module.scss";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
-import { hoursSpan } from "@/lib/checkpoint-capacity";
+import { hoursSpan } from "@/lib/checkpoints/capacity";
 import type {
 	AdvisorCheckpointDto,
 	AdvisorProjectDto,

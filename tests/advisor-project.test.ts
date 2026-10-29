@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getAdvisorProject } from "@/repositories/advisor-checkpoints";
-import { getCheckpoint } from "@/repositories/checkpoint.repository";
+import { getAdvisorProject } from "@/repositories/checkpoints/advisor";
+import { getCheckpoint } from "@/repositories/checkpoints/checkpoint";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -8,7 +8,7 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 // The pulse and devlogs come from the checkpoint page's own read.
-vi.mock("@/repositories/checkpoint.repository", async (importOriginal) => ({
+vi.mock("@/repositories/checkpoints/checkpoint", async (importOriginal) => ({
 	...(await importOriginal<object>()),
 	getCheckpoint: vi.fn().mockResolvedValue({
 		status: "Active",

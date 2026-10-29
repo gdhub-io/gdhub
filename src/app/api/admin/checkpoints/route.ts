@@ -5,7 +5,7 @@ import {
 import { z } from "zod";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { listAdminCheckpoints } from "@/repositories/checkpoint-refund";
+import { listAdminCheckpoints } from "@/repositories/checkpoints/refund";
 
 const QuerySchema = z.object({
 	status: z.nativeEnum(CheckpointStatus).optional(),

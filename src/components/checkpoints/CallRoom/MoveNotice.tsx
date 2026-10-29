@@ -5,7 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button, Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { useCallMove } from "@/hooks/checkpoint-call";
-import type { CheckpointCallDto } from "@/repositories/checkpoint-call";
+import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import styles from "./style.module.scss";
 
 /**

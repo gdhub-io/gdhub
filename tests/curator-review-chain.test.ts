@@ -10,9 +10,9 @@ vi.mock("@ai-sdk/openai", () => ({ openai: (model: string) => model }));
 vi.mock("@/services/ai-trace", () => ({ traceGenerated: vi.fn() }));
 vi.mock("@/services/ai-usage", () => ({ recordAiUsage: vi.fn() }));
 
-const { reviewSprint } = await import("@/services/curator-review");
+const { reviewSprint } = await import("@/services/checkpoints/ai-review");
 const { hollowTide } = await import(
-	"@/services/ai-curator-lab/situations/hollow-tide"
+	"@/services/checkpoints/ai-curator-lab/situations/hollow-tide"
 );
 const project = hollowTide("en");
 
