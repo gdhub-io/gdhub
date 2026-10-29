@@ -155,7 +155,9 @@ export const transcriptOfJob = async (jobId: string) => {
 		room: recording.room_name,
 		recordingId,
 		startedAt: new Date(recording.start_ts * 1000).toISOString(),
-		text: emulatedText(link) ?? (await (await fetch(link)).text()),
+		text: dailyEmulated()
+			? (emulatedText(link) ?? "")
+			: await (await fetch(link)).text(),
 	};
 };
 

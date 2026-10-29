@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"Cinderwake\",\"A co-op sailing roguelike: two players crew a small boat between islands that flood and drain with the tide.\"]}",
+	"answer": {
+		"id": "modr-5370",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.00007437028637763686,
+					"harassment/threatening": 0.000020662982488383408,
+					"sexual": 0.01978897580689893,
+					"hate": 0.0000072543618230189156,
+					"hate/threatening": 0.0000010451548051737735,
+					"illicit": 0.000020342697805520655,
+					"illicit/violent": 0.000015598027633743823,
+					"self-harm/intent": 0.00021439027518160267,
+					"self-harm/instructions": 0.00021296615605463458,
+					"self-harm": 0.0004672347498334401,
+					"sexual/minors": 0.00003514382632807918,
+					"violence": 0.022846483170315107,
+					"violence/graphic": 0.0016120876359939614
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0000072543618230189156,
+					"harassment/threatening": 0.00000498595821272702,
+					"sexual": 0.000009028039015031105,
+					"hate": 0.0000017231572752142392,
+					"hate/threatening": 2.0904585994978246e-7,
+					"illicit": 0.000013982207564732913,
+					"illicit/violent": 0.000008888084683809127,
+					"self-harm/intent": 0.000002931153855960119,
+					"self-harm/instructions": 9.368717268777097e-7,
+					"self-harm": 0.000010720880092159908,
+					"sexual/minors": 2.4824800371656586e-7,
+					"violence": 0.0012413647992119714,
+					"violence/graphic": 0.000050333557545281144
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

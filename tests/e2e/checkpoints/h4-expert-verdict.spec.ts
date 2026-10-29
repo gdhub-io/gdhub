@@ -5,9 +5,9 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
-import { type ExpertCheckpoint, expertCheckpoint, statusBecomes } from "./support/expert";
+import { type ExpertCheckpoint, expertCheckpoint, intoReview } from "./support/expert";
 import { RunLog } from "./support/run-log";
-import { makeToday, removeRun, runCron } from "./support/stand";
+import { removeRun } from "./support/stand";
 
 /**
  * GDHUB-116 H4 (GDHUB-77, moved here from checkpoint-verdict.authed.spec.ts):
@@ -39,18 +39,8 @@ test.describe.serial("the verdict with an expert", () => {
 		run = await expertCheckpoint(browser, "h4", "Glassreef");
 		log.track(run.checkpointId);
 
-		await makeToday(run.checkpointId, 29);
-		// The final call is over: sending the verdict opens when it starts.
-		await prisma.checkpointSession.update({
-			where: { checkpointId_index: { checkpointId: run.checkpointId, index: 5 } },
-			data: {
-				scheduledAt: new Date(Date.now() - 3 * 3_600_000),
-				endedAt: new Date(Date.now() - 2 * 3_600_000),
-			},
-		});
-		const night = await runCron(run.authorPage);
+		const night = await intoReview(run);
 		expect(night.verdictReads).toBe(1);
-		await statusBecomes(run.checkpointId, CheckpointStatus.Review);
 		log.step("Day 29: in review; the AI read the four sprints for the expert");
 	});
 

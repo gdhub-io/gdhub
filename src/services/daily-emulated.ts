@@ -9,10 +9,14 @@ import path from "node:path";
  * joins and leaves through `/api/dev/daily`; the test signs Daily's webhooks.
  */
 
-type Person = { userId: string; userName: string; since: number };
+type Person = {
+	userId: string;
+	userName: string;
+	owner: boolean;
+	since: number;
+};
 type Room = {
 	url: string;
-	exp: number;
 	deleted: boolean;
 	present: Map<string, Person>;
 	/** Seconds each user has spent in the room, across joins. */
@@ -37,7 +41,7 @@ shared.__dailyEmulated ??= {
 };
 const state = shared.__dailyEmulated;
 
-export const EMULATED_DAILY_URL = "https://emulated.daily.local";
+const EMULATED_DAILY_URL = "https://emulated.daily.local";
 const TRANSCRIPT_LINK = `${EMULATED_DAILY_URL}/transcript.txt`;
 const TRANSCRIPT = path.join(
 	process.cwd(),
@@ -76,7 +80,6 @@ export const emulatedDaily = (
 		const name = body?.name as string;
 		const room: Room = {
 			url: `${EMULATED_DAILY_URL}/${name}`,
-			exp: (body?.properties as { exp: number }).exp,
 			deleted: false,
 			present: new Map(),
 			spent: new Map(),
@@ -163,6 +166,7 @@ export const emulatedPresence = (token: string, present: boolean) => {
 		room.present.set(grant.userId, {
 			userId: grant.userId,
 			userName: grant.userName,
+			owner: grant.owner,
 			since: Date.now(),
 		});
 	} else {
@@ -184,13 +188,10 @@ export const emulatedRoom = (name: string) => {
 	return {
 		open: true,
 		jobs,
-		people: [...room.present.values()].map(({ userId, userName }) => ({
+		people: [...room.present.values()].map(({ userId, userName, owner }) => ({
 			userId,
 			userName,
-			owner: [...state.tokens.values()].some(
-				(token) =>
-					token.room === name && token.userId === userId && token.owner,
-			),
+			owner,
 		})),
 	};
 };

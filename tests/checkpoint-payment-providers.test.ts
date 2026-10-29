@@ -15,6 +15,15 @@ import {
 
 const authMock = vi.fn();
 
+// The Stripe half of the holds cron runs only while Stripe sells checkpoints.
+const selling = vi.hoisted(() => ({ provider: "STRIPE" }));
+vi.mock("@/config/checkpoint", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/config/checkpoint")>()),
+	get CHECKPOINT_PAYMENT_PROVIDER() {
+		return selling.provider;
+	},
+}));
+
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
 vi.mock("@/services/prisma", () => ({
@@ -131,6 +140,21 @@ describe("the holds cron", () => {
 			{ params: Promise.resolve({}) },
 		);
 	};
+
+	it("asks Stripe nothing while Paddle sells", async () => {
+		selling.provider = PaymentProvider.PADDLE;
+		vi.mocked(prisma.payment.findMany).mockResolvedValue([]);
+
+		await run();
+		selling.provider = PaymentProvider.STRIPE;
+
+		expect(prisma.payment.findMany).not.toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: expect.objectContaining({ provider: PaymentProvider.STRIPE }),
+			}),
+		);
+		expect(releaseCheckout).not.toHaveBeenCalled();
+	});
 
 	// Paddle charges at once: a PROCESSING Paddle row is money taken, not a
 	// Stripe hold, and a Stripe release on a Paddle id can never return it.

@@ -8,6 +8,7 @@ const checkpointFindUnique = vi.fn();
 const reportCount = vi.fn();
 const userFindMany = vi.fn();
 const journal = vi.fn();
+const paymentFindFirst = vi.fn();
 
 vi.mock("@/services/novu", () => ({
 	NovuService: { send: (...a: unknown[]) => send(...a) },
@@ -29,6 +30,7 @@ vi.mock("@/services/prisma", () => ({
 		},
 		projectReport: { count: (...a: unknown[]) => reportCount(...a) },
 		user: { findMany: (...a: unknown[]) => userFindMany(...a) },
+		payment: { findFirst: (...a: unknown[]) => paymentFindFirst(...a) },
 	},
 }));
 
@@ -153,8 +155,10 @@ describe("notifyAuthorOfAnswer", () => {
 			startedAt: null,
 			project: { slug: "hollow-tide", author: person("author") },
 		});
+		paymentFindFirst.mockResolvedValue({ id: "pay", amount: 2000 });
 		await notifyAuthorOfAnswer("cp", "Patrick", "declined");
 		const [args] = send.mock.calls[0];
+		expect(args.payload.message).toMatch(/^Your payment stays with the checkpoint/);
 		expect(args.to.subscriberId).toBe("author");
 		expect(args.payload.title).toBe("Patrick can't take Checkpoint 2");
 		expect(args.payload.redirectUrl).toMatch(/\/user\/project\/hollow-tide\/workflow$/);
@@ -180,6 +184,21 @@ describe("notifyAuthorOfAnswer", () => {
 		await expect(
 			notifyAuthorOfAnswer("cp", "Patrick", "silent"),
 		).resolves.toBeUndefined();
+	});
+
+	// A card hold let go on the way back: nothing stays, and the letter says so.
+	it("tells the author the hold is released when nothing was kept", async () => {
+		checkpointFindUnique.mockResolvedValue({
+			projectId: "p",
+			createdAt: new Date(),
+			startedAt: null,
+			project: { slug: "hollow-tide", author: person("author") },
+		});
+		paymentFindFirst.mockResolvedValue(null);
+		await notifyAuthorOfAnswer("cp", "Patrick", "silent");
+		expect(send.mock.calls[0][0].payload.message).toMatch(
+			/^The hold on your card is released/,
+		);
 	});
 });
 

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
 import { type ExpertCheckpoint, expertCheckpoint } from "./support/expert";
 import { RunLog } from "./support/run-log";
-import { makeToday, removeRun, runCron } from "./support/stand";
+import { hoursFromNow, makeToday, removeRun, runCron } from "./support/stand";
 
 /**
  * GDHUB-116 H3: in sprint 2 the author asks to move call 2 and the expert
@@ -20,12 +20,6 @@ const call2 = () =>
 		where: { checkpointId_index: { checkpointId: run.checkpointId, index: 2 } },
 		select: { scheduledAt: true, moveTo: true },
 	});
-
-const hoursFromNow = (hours: number) => {
-	const at = new Date(Date.now() + hours * 3_600_000);
-	at.setUTCMinutes(0, 0, 0);
-	return at;
-};
 
 test.describe.serial("call 2 with an expert", () => {
 	test.afterAll(async () => {

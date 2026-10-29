@@ -14,6 +14,7 @@ import { VERDICT_DAY } from "@/lib/checkpoints/plan";
 import type { RefundReason } from "@/lib/checkpoints/refund";
 import { journal } from "@/repositories/checkpoints/journal";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
+import { keptPayment } from "@/repositories/checkpoints/payment";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import { NovuService } from "../novu";
 import { prisma } from "../prisma";
@@ -190,9 +191,15 @@ export const notifyAuthorOfAnswer = async (
 	});
 	if (!row) return;
 
-	const number = await checkpointNumber(row);
+	const [number, kept] = await Promise.all([
+		checkpointNumber(row),
+		answer === "accepted" ? null : keptPayment(checkpointId),
+	]);
 	const transactionId = `cp-${answer}-${checkpointId}-${row.createdAt.getTime()}`;
-	const repick = `Your payment stays with the checkpoint. Pick another curator and a time for the first call, or cancel it for a full refund. If nobody is picked within ${CURATOR_REPICK_DAYS} days, it is cancelled and refunded.`;
+	// A card hold is let go on the way back; money already taken stays.
+	const repick = kept
+		? `Your payment stays with the checkpoint. Pick another curator and a time for the first call, or cancel it for a full refund. If nobody is picked within ${CURATOR_REPICK_DAYS} days, it is cancelled and refunded.`
+		: "The hold on your card is released, so nothing was charged. Pick another curator to buy it again.";
 
 	const letters = {
 		accepted: {
@@ -255,14 +262,7 @@ export const notifyAuthorOfLapse = async (
 	checkpointId: string,
 	amount: string,
 ) => {
-	const row = await prisma.projectCheckpoint.findUnique({
-		where: { id: checkpointId },
-		select: {
-			projectId: true,
-			createdAt: true,
-			project: { select: { slug: true, author: recipient } },
-		},
-	});
+	const row = await authorRow(checkpointId);
 	if (!row) return;
 
 	const number = await checkpointNumber(row);

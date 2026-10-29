@@ -4,10 +4,17 @@ import {
 	ExpertInvoicing,
 } from "@gdhub-io/gdhub-prisma";
 import { expect, type Page, test } from "@playwright/test";
+import { previousMonth } from "../../../src/lib/checkpoints/costs";
+import { MS_PER_DAY } from "../../../src/lib/checkpoints/days";
 import { prisma } from "../../../src/services/prisma";
-import { type ExpertCheckpoint, expertCheckpoint, statusBecomes } from "./support/expert";
+import {
+	type ExpertCheckpoint,
+	expertCheckpoint,
+	intoReview,
+	statusBecomes,
+} from "./support/expert";
 import { RunLog } from "./support/run-log";
-import { grantUser, makeToday, removeRun, runCron, signInAs } from "./support/stand";
+import { grantUser, removeRun, signInAs } from "./support/stand";
 
 /**
  * GDHUB-116 H5: the expert's verdict earns them a fee; the author rates the
@@ -41,16 +48,7 @@ test.describe.serial("an expert paid for a checkpoint", () => {
 		run = await expertCheckpoint(browser, "h5", PROJECT);
 		log.track(run.checkpointId);
 
-		await makeToday(run.checkpointId, 29);
-		await prisma.checkpointSession.update({
-			where: { checkpointId_index: { checkpointId: run.checkpointId, index: 5 } },
-			data: {
-				scheduledAt: new Date(Date.now() - 3 * 3_600_000),
-				endedAt: new Date(Date.now() - 2 * 3_600_000),
-			},
-		});
-		await runCron(run.authorPage);
-		await statusBecomes(run.checkpointId, CheckpointStatus.Review);
+		await intoReview(run);
 
 		// H4 walks the verdict window; here the verdict is only the way to the money.
 		const sent = await run.curatorPage.request.post(
@@ -99,9 +97,7 @@ test.describe.serial("an expert paid for a checkpoint", () => {
 
 	test("a month on, an admin pays the expert", async ({ browser }) => {
 		// The checkpoint closed last month, so its fee falls due this one.
-		const lastMonth = new Date();
-		lastMonth.setUTCDate(1);
-		lastMonth.setUTCMonth(lastMonth.getUTCMonth() - 1, 15);
+		const lastMonth = new Date(previousMonth(new Date()).getTime() + 14 * MS_PER_DAY);
 		await prisma.checkpointFee.updateMany({
 			where: { checkpointId: run.checkpointId },
 			data: { earnedAt: lastMonth },

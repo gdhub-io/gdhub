@@ -1,4 +1,6 @@
+import { PaymentProvider } from "@gdhub-io/gdhub-prisma";
 import {
+	CHECKPOINT_PAYMENT_PROVIDER,
 	CURATOR_ANSWER_DAYS,
 	PAYMENT_WEBHOOK_GRACE_MINUTES,
 } from "@/config/checkpoint";
@@ -62,7 +64,11 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		const deadline = new Date();
 		deadline.setUTCDate(deadline.getUTCDate() - CURATOR_ANSWER_DAYS);
 
-		const stale = await staleStripeHolds(deadline);
+		// Stripe is kept for later; while Paddle sells, nothing here asks Stripe.
+		const stale =
+			CHECKPOINT_PAYMENT_PROVIDER === PaymentProvider.STRIPE
+				? await staleStripeHolds(deadline)
+				: [];
 
 		let released = 0;
 

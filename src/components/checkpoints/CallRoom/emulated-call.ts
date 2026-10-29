@@ -1,4 +1,5 @@
 import type { DailyCall } from "@daily-co/daily-js";
+import { E2E_STAND } from "@/lib/stand";
 
 /**
  * The browser's call object on the e2e stand (`NEXT_PUBLIC_DAILY_EMULATED`,
@@ -8,8 +9,7 @@ import type { DailyCall } from "@daily-co/daily-js";
  * other side appears, and "end for everyone" sends this one out too.
  */
 export const DAILY_EMULATED =
-	process.env.NODE_ENV !== "production" &&
-	process.env.NEXT_PUBLIC_DAILY_EMULATED === "1";
+	E2E_STAND && process.env.NEXT_PUBLIC_DAILY_EMULATED === "1";
 
 type Listener = (event: Record<string, unknown>) => void;
 type Person = { userId: string; userName: string; owner: boolean };
@@ -40,12 +40,11 @@ const participant = (sessionId: string, person: Person, local: boolean) => ({
 class EmulatedCall {
 	private listeners = new Map<string, Set<Listener>>();
 	private state = "new";
-	private destroyed = false;
 	private token: string | null = null;
 	private roomName = "";
 	private me: Person = { userId: "", userName: "", owner: false };
 	private others = new Map<string, Person>();
-	private watch: ReturnType<typeof setInterval> | null = null;
+	private watch: ReturnType<typeof setTimeout> | null = null;
 
 	on(event: string, listener: Listener) {
 		if (!this.listeners.has(event)) this.listeners.set(event, new Set());
@@ -56,14 +55,6 @@ class EmulatedCall {
 	off(event: string, listener: Listener) {
 		this.listeners.get(event)?.delete(listener);
 		return this;
-	}
-
-	once(event: string, listener: Listener) {
-		const once: Listener = (payload) => {
-			this.off(event, once);
-			listener(payload);
-		};
-		return this.on(event, once);
 	}
 
 	private emit(action: string, payload: Record<string, unknown> = {}) {
@@ -87,7 +78,7 @@ class EmulatedCall {
 		]);
 	}
 
-	async join({ url, token }: { url: string; token: string }) {
+	async join({ token }: { url: string; token: string }) {
 		this.state = "joining-meeting";
 		this.emit("joining-meeting");
 		const response = await fetch("/api/dev/daily", {
@@ -100,14 +91,25 @@ class EmulatedCall {
 			this.emit("error", { errorMsg: "emulated join refused" });
 			throw new Error("emulated join refused");
 		}
-		const { userId } = (await response.json()) as { userId: string };
+		const { room, userId } = (await response.json()) as {
+			room: string;
+			userId: string;
+		};
 		this.token = token;
-		this.roomName = new URL(url).pathname.slice(1);
+		this.roomName = room;
 		await this.refresh(userId);
 		this.state = "joined-meeting";
 		this.emit("joined-meeting", { participants: this.participants() });
-		this.watch = setInterval(() => void this.refresh(userId), 1000);
+		this.poll(userId);
 		return this.participants();
+	}
+
+	/** The next look a second after the last one ends, so a slow one never overlaps. */
+	private poll(userId: string) {
+		this.watch = setTimeout(async () => {
+			await this.refresh(userId);
+			if (this.state === "joined-meeting") this.poll(userId);
+		}, 1000);
 	}
 
 	/** The room as the emulated Daily sees it: who came, who went, or that it closed. */
@@ -139,7 +141,7 @@ class EmulatedCall {
 	}
 
 	async leave() {
-		if (this.watch) clearInterval(this.watch);
+		if (this.watch) clearTimeout(this.watch);
 		this.watch = null;
 		if (this.token && this.state === "joined-meeting") {
 			await fetch("/api/dev/daily", {
@@ -153,53 +155,26 @@ class EmulatedCall {
 		this.emit("left-meeting");
 	}
 
-	async destroy() {
-		await this.leave();
-		this.destroyed = true;
-	}
+	isDestroyed = () => false;
 
-	isDestroyed() {
-		return this.destroyed;
-	}
-
-	// What daily-react and the call page ask of a real call object, answered
-	// with nothing to show: no camera, no microphone, no network to measure.
+	// What daily-react's provider and the call page ask of a real call object,
+	// answered with nothing to show: no camera, no microphone, no network.
 	startCamera = async () => ({});
 	setLocalAudio = () => this;
 	setLocalVideo = () => this;
-	updateParticipant = () => this;
-	sendAppMessage = () => this;
-	load = async () => undefined;
 	room = async () => ({ name: this.roomName });
 	enumerateDevices = async () => ({ devices: [] });
 	getInputDevices = async () => ({ camera: {}, mic: {}, speaker: {} });
 	setInputDevicesAsync = async () => ({ camera: {}, mic: {}, speaker: {} });
-	getInputSettings = async () => ({});
-	getNetworkStats = async () => ({
-		stats: {},
-		threshold: "good",
-		quality: 100,
-	});
 	getNetworkTopology = async () => ({ topology: "none" });
-	getCpuLoadStats = async () => ({ cpuLoadState: "low" });
-	getReceiveSettings = async () => ({});
 	meetingSessionState = () => ({ data: {}, topology: "none" });
 	meetingSessionSummary = () => ({});
-	participantCounts = () => ({ present: this.others.size + 1, hidden: 0 });
 	startLocalAudioLevelObserver = async () => undefined;
 	startRemoteParticipantsAudioLevelObserver = async () => undefined;
-	stopLocalAudioLevelObserver = () => undefined;
-	stopRemoteParticipantsAudioLevelObserver = () => undefined;
 	isLocalAudioLevelObserverRunning = () => false;
 	isRemoteParticipantsAudioLevelObserverRunning = () => false;
-	getLocalAudioLevel = () => 0;
-	getRemoteParticipantsAudioLevel = () => ({});
-	getSendSettings = () => ({});
 	setOutputDeviceAsync = async () => ({ speaker: {} });
 	subscribeToTracksAutomatically = () => true;
-	waitingParticipants = () => ({});
-	updateWaitingParticipant = async () => ({ id: "" });
-	updateWaitingParticipants = async () => ({ ids: [] });
 }
 
 export const emulatedCall = () => new EmulatedCall() as unknown as DailyCall;

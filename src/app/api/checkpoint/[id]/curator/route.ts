@@ -30,6 +30,7 @@ import {
 	ensureCheckpointRoom,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
+import { returnCheckpointMoney } from "@/services/checkpoints/flows/payment";
 import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { gatewayFor } from "@/services/payments/gateway";
 
@@ -105,10 +106,12 @@ export const POST = pipe(
 		}
 	}
 
-	// Accepting takes the money that is held. Turning it down keeps it with the
-	// checkpoint: its author picks another curator or cancels for a refund, and
-	// after CURATOR_REPICK_DAYS the holds cron cancels and refunds it.
+	// Accepting takes the money that is held. Turning it down keeps money already
+	// taken (Paddle) with the checkpoint: its author picks another curator or
+	// cancels for a refund, and after CURATOR_REPICK_DAYS the holds cron cancels
+	// and refunds it. A card hold (Stripe) cannot wait that long and is let go.
 	const held = await heldCheckpointPayment(id);
+	const holdOnly = !!held && !!gatewayFor(held.provider).release;
 
 	if (accept) {
 		if (held?.providerTransactionId) {
@@ -121,6 +124,11 @@ export const POST = pipe(
 			if (!captured) return apiError.internal("paymentNotSettled");
 
 			await markPaymentCaptured(held.id);
+		}
+	} else if (holdOnly) {
+		const returned = await returnCheckpointMoney(id, "curatorDeclined");
+		if (!returned || "failed" in returned) {
+			return apiError.internal("paymentNotSettled");
 		}
 	}
 

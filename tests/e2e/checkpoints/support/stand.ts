@@ -15,7 +15,7 @@ import {
 } from "@playwright/test";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
 import type { LegalCode } from "../../../../src/config/legal/registry";
-import { MS_PER_DAY } from "../../../../src/lib/checkpoints/days";
+import { MS_PER_DAY, MS_PER_HOUR } from "../../../../src/lib/checkpoints/days";
 import { resolveLegal } from "../../../../src/lib/legal/accept";
 import { versionInEffect } from "../../../../src/lib/legal/versions";
 import { selectableStageNames } from "../../../../src/repositories/project/workflow";
@@ -99,45 +99,43 @@ export async function grantCurator(label: string): Promise<StandUser> {
 		orderBy: { name: "asc" },
 		select: { id: true },
 	});
-	await prisma.speciality.create({
-		data: {
-			userId: curator.id,
-			name: "Game designer",
-			specialization: "Systems design",
-			level: SkillLevel.Experienced,
-			workDirectionId: direction.id,
-			isOpenForMentoring: true,
-		},
-	});
-	await prisma.expertProfile.upsert({
-		where: { userId: curator.id },
-		create: {
-			userId: curator.id,
-			curation: true,
-			curatorApprovedAt: new Date(),
-			curatorStages: await selectableStageNames(),
-		},
-		update: {
-			curation: true,
-			curatorApprovedAt: new Date(),
-			curatorStages: await selectableStageNames(),
-		},
-	});
-	await prisma.advisorAvailability.upsert({
-		where: { userId: curator.id },
-		create: {
-			userId: curator.id,
-			timeZone: "UTC",
-			confirmedAt: new Date(),
-			rules: {
-				create: {
-					weekdays: [0, 1, 2, 3, 4, 5, 6],
-					ranges: [{ from: 0, to: 24 * 60 }],
+	const profile = {
+		curation: true,
+		curatorApprovedAt: new Date(),
+		curatorStages: await selectableStageNames(),
+	};
+	await Promise.all([
+		prisma.speciality.create({
+			data: {
+				userId: curator.id,
+				name: "Game designer",
+				specialization: "Systems design",
+				level: SkillLevel.Experienced,
+				workDirectionId: direction.id,
+				isOpenForMentoring: true,
+			},
+		}),
+		prisma.expertProfile.upsert({
+			where: { userId: curator.id },
+			create: { userId: curator.id, ...profile },
+			update: profile,
+		}),
+		prisma.advisorAvailability.upsert({
+			where: { userId: curator.id },
+			create: {
+				userId: curator.id,
+				timeZone: "UTC",
+				confirmedAt: new Date(),
+				rules: {
+					create: {
+						weekdays: [0, 1, 2, 3, 4, 5, 6],
+						ranges: [{ from: 0, to: 24 * 60 }],
+					},
 				},
 			},
-		},
-		update: {},
-	});
+			update: {},
+		}),
+	]);
 	return curator;
 }
 
@@ -413,9 +411,9 @@ export async function prove(
 	expect(attached.ok(), await attached.text()).toBe(true);
 }
 
-/** The nightly run, now. */
-export async function runCron(page: Page) {
-	const response = await page.request.get("/api/cron/checkpoints", {
+/** A cron, now: the nightly run, or another by its path. */
+export async function runCron(page: Page, path = "/api/cron/checkpoints") {
+	const response = await page.request.get(path, {
 		headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
 		timeout: 300_000,
 	});
@@ -424,14 +422,31 @@ export async function runCron(page: Page) {
 	return response.json();
 }
 
-/** The hourly run: calls, their notes, reminders before them. */
-export async function runCallsCron(page: Page) {
-	const response = await page.request.get("/api/cron/checkpoint-calls", {
-		headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
-		timeout: 300_000,
-	});
-	expect(response.ok(), await response.text()).toBe(true);
-	return response.json();
+/** A whole hour from now, `hours` ahead (or back, when negative). */
+export const hoursFromNow = (hours: number) => {
+	const at = new Date(Date.now() + hours * MS_PER_HOUR);
+	at.setUTCMinutes(0, 0, 0);
+	return at;
+};
+
+/** An admin refunds the project's checkpoint from the checkpoints list, for `reason`. */
+export async function refundAsAdmin(
+	admin: Page,
+	project: string,
+	reason: string | RegExp,
+) {
+	await admin.goto("/admin/checkpoints");
+	await admin
+		.getByRole("row")
+		.filter({ hasText: project })
+		.first()
+		.getByRole("button", { name: "Actions" })
+		.click();
+	await admin.getByRole("menuitem", { name: "Refund payment" }).click();
+	const dialog = admin.getByRole("dialog");
+	await dialog.getByText(reason).click();
+	await dialog.getByRole("button", { name: /^Refund / }).click();
+	await expect(admin.getByText(/^Refunded /)).toBeVisible({ timeout: 60_000 });
 }
 
 /**

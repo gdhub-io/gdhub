@@ -17,9 +17,7 @@ const checkpointUpdateMany = vi.fn();
 const sessionDeleteMany = vi.fn();
 const sessionCreateMany = vi.fn();
 const specialityFindFirst = vi.fn();
-// The payment the checkpoint keeps (`keptPaymentOf`, its id), apart from the sum
-// it holds or took (`heldAmount`), which prices the next curator.
-const completedPaymentFindFirst = vi.fn();
+// The payment the checkpoint keeps: its id relinks it, its sum prices the next curator.
 const paymentFindFirst = vi.fn();
 const getCheckpoint = vi.fn();
 const writeFirstLetter = vi.fn();
@@ -77,10 +75,7 @@ vi.mock("@/services/prisma", () => ({
 			findFirst: (...args: unknown[]) => specialityFindFirst(...args),
 		},
 		payment: {
-			findFirst: (args: { select?: { id?: boolean } }) =>
-				args.select?.id
-					? completedPaymentFindFirst(args)
-					: paymentFindFirst(args),
+			findFirst: (...args: unknown[]) => paymentFindFirst(...args),
 		},
 	},
 }));
@@ -112,7 +107,6 @@ beforeEach(() => {
 	checkpointUpdateMany.mockResolvedValue({ count: 1 });
 	checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt: null });
 	specialityFindFirst.mockResolvedValue({ id: "sp1" });
-	completedPaymentFindFirst.mockResolvedValue(null);
 	paymentFindFirst.mockResolvedValue(null);
 	getCheckpoint.mockResolvedValue({ id: "cp1" });
 });
@@ -192,8 +186,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// Naming someone else hands it to them; asking the author to pay twice for
 	// the same 28 days is the bug this guards.
 	it("sends a paid checkpoint to the curator picked next, unpaid again", async () => {
-		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
-		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		await put({ curatorKind: "Human", curatorId: "u9" });
@@ -211,8 +204,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	});
 
 	it("books nobody when the paid draft moved on meanwhile", async () => {
-		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
-		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 		checkpointUpdateMany.mockResolvedValue({ count: 0 });
 
@@ -229,8 +221,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// its review days written and its first letter sent, not just a status flipped.
 	it("starts a paid draft handed to the AI the way a payment starts it", async () => {
 		const aiPrice = CHECKPOINT_AI_PRICE * CHECKPOINT_MINOR_UNITS;
-		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
-		paymentFindFirst.mockResolvedValue({ amount: aiPrice });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: aiPrice });
 
 		const response = await put({ curatorKind: "AI", curatorId: null });
 
@@ -256,8 +247,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	});
 
 	it("refuses the AI on a paid draft that started meanwhile", async () => {
-		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
-		paymentFindFirst.mockResolvedValue({ amount: CHECKPOINT_AI_PRICE * CHECKPOINT_MINOR_UNITS });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: CHECKPOINT_AI_PRICE * CHECKPOINT_MINOR_UNITS });
 		checkpointUpdateMany
 			.mockResolvedValueOnce({ count: 1 })
 			.mockResolvedValueOnce({ count: 0 });
@@ -285,8 +275,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// a paid checkpoint is settled, so only this one field may move.
 	it("lets a waiting checkpoint be handed to somebody else", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
-		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
-		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		const response = await put({
@@ -309,8 +298,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// calls are booked all the same.
 	it("books the new curator's calls on a checkpoint waiting on a hold", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
-		completedPaymentFindFirst.mockResolvedValue(null);
-		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+			specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		const response = await put({
 			curatorKind: "Human",
@@ -352,7 +340,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// cheaper one a partial refund; until either exists, both are refused.
 	it("refuses a replacement who costs other than what is held", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
-		paymentFindFirst.mockResolvedValue({ amount: 30000 });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: 30000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		const response = await put({ curatorKind: "Human", curatorId: "u9" });
@@ -366,7 +354,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 
 	it("refuses the AI curator in place of a person already paid for", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
-		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: 45000 });
 
 		const response = await put({ curatorKind: "AI", curatorId: null });
 
@@ -426,8 +414,7 @@ describe("PUT /api/checkpoint/[id] — while an expert is a waitlist", () => {
 	// A curator who declined a paid checkpoint must still be replaceable.
 	it("still lets a paid draft go to another expert", async () => {
 		expert.open = false;
-		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
-		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		paymentFindFirst.mockResolvedValue({ id: "pay1", amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		const response = await put({ curatorKind: "Human", curatorId: "u9" });

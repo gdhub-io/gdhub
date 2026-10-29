@@ -32,34 +32,19 @@ export const heldPaymentWhere = (checkpointId: string) => ({
 	status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
 });
 
-/** The payment that bought this checkpoint, whatever state it is in now. */
-export const completedPaymentOf = async (checkpointId: string) =>
-	(
-		await prisma.payment.findFirst({
-			where: {
-				payableType: PayableType.CHECKPOINT,
-				payableId: checkpointId,
-				status: PaymentStatus.COMPLETED,
-			},
-			select: { id: true },
-		})
-	)?.id ?? null;
-
 /**
  * The money a checkpoint keeps: held while its curator has not answered (Paddle's
  * charge waits there as PROCESSING too), complete once taken. A checkpoint back
  * with its author after a refusal or silence goes to the next curator on it.
  */
-export const keptPaymentOf = async (checkpointId: string) =>
-	(
-		await prisma.payment.findFirst({
-			where: heldPaymentWhere(checkpointId),
-			select: { id: true },
-		})
-	)?.id ?? null;
+export const keptPayment = (checkpointId: string) =>
+	prisma.payment.findFirst({
+		where: heldPaymentWhere(checkpointId),
+		select: { id: true, amount: true },
+	});
 
 export const isCheckpointPaid = async (checkpointId: string) =>
-	(await completedPaymentOf(checkpointId)) !== null;
+	(await keptPayment(checkpointId)) !== null;
 
 /**
  * What this curator costs for the 28 days, in minor units, or null when they
@@ -89,12 +74,7 @@ export const curatorCharge = async (
  * top-up and no partial refund yet.
  */
 export const heldAmount = async (checkpointId: string) =>
-	(
-		await prisma.payment.findFirst({
-			where: heldPaymentWhere(checkpointId),
-			select: { amount: true },
-		})
-	)?.amount ?? null;
+	(await keptPayment(checkpointId))?.amount ?? null;
 
 /** Minor units back to the whole ones the price table and the screen use. */
 export const toWholePrice = (amount: number) => amount / MINOR;
@@ -471,10 +451,10 @@ export const unpickedSince = async (before: Date) => {
 
 	return prisma.payment.findMany({
 		where: {
-			payableType: PayableType.CHECKPOINT,
+			...heldPaymentWhere(""),
 			payableId: { in: returned.map((row) => row.id) },
-			status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
 		},
+		distinct: ["payableId"],
 		select: { payableId: true, amount: true },
 	});
 };

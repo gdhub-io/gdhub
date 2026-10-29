@@ -5,6 +5,7 @@ import {
 	ProjectArtifactType,
 	type SkillLevel,
 } from "@/config/prisma-enums";
+import { E2E_STAND } from "@/lib/stand";
 
 /**
  * Every number a checkpoint runs on. Code that needs one imports it from here;
@@ -192,8 +193,7 @@ export const MIN_CHARGE_AFTER_DISCOUNT = 50;
  * flows; production stays closed whatever the variable says.
  */
 export const EXPERT_CHECKPOINT_OPEN =
-	process.env.NODE_ENV !== "production" &&
-	process.env.NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN === "1";
+	E2E_STAND && process.env.NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN === "1";
 
 /**
  * Who takes the money for a new checkpoint checkout and holds the promotion codes

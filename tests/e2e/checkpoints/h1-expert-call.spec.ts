@@ -4,9 +4,10 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { expect, type Page, test } from "@playwright/test";
 import { callRoomName } from "../../../src/lib/checkpoints/call";
+import { MS_PER_MINUTE } from "../../../src/lib/checkpoints/days";
 import { prisma } from "../../../src/services/prisma";
 import { finishCall, roomState } from "./support/daily";
-import { GOAL, payInPaddle, planCheckpoint } from "./support/purchase";
+import { buyWithExpert } from "./support/expert";
 import { RunLog } from "./support/run-log";
 import {
 	answerAsCurator,
@@ -14,7 +15,7 @@ import {
 	grantUser,
 	makeProject,
 	removeRun,
-	runCallsCron,
+	runCron,
 	type StandUser,
 	signInAs,
 } from "./support/stand";
@@ -66,31 +67,13 @@ test.describe.serial("a checkpoint with an expert", () => {
 		const project = await makeProject(authorPage, "Reefline");
 		projectSlug = project.slug;
 
-		await authorPage.goto(`/user/project/${project.slug}/workflow`);
-		await authorPage.getByRole("button", { name: "Plan this checkpoint" }).click();
-		await authorPage.waitForURL(/\/checkpoint\/new\?project=/);
-		await planCheckpoint(authorPage, "A greybox reef with one diving loop", curator.name);
-		await expect(authorPage.getByText(GOAL)).toBeVisible();
-		await payInPaddle(authorPage);
-
-		await expect
-			.poll(
-				async () =>
-					(
-						await prisma.projectCheckpoint.findFirst({
-							where: { projectId: project.id },
-							select: { id: true, status: true },
-						})
-					)?.status,
-				{ timeout: 90_000 },
-			)
-			.toBe(CheckpointStatus.AwaitingCurator);
-		const checkpoint = await prisma.projectCheckpoint.findFirstOrThrow({
-			where: { projectId: project.id },
-			select: { id: true, curatorId: true },
-		});
-		checkpointId = checkpoint.id;
-		expect(checkpoint.curatorId).toBe(curator.id);
+		checkpointId = await buyWithExpert(
+			authorPage,
+			project,
+			"A greybox reef with one diving loop",
+			curator.name,
+		);
+		expect((await checkpointOf()).curatorId).toBe(curator.id);
 		log.track(checkpointId);
 		log.step("Paid with the expert; the checkpoint waits for their answer");
 	});
@@ -158,9 +141,9 @@ test.describe.serial("a checkpoint with an expert", () => {
 		// Notes are written half an hour after a call ends.
 		await prisma.checkpointSession.update({
 			where: call1(),
-			data: { endedAt: new Date(Date.now() - 31 * 60_000) },
+			data: { endedAt: new Date(Date.now() - 31 * MS_PER_MINUTE) },
 		});
-		await runCallsCron(authorPage);
+		await runCron(authorPage, "/api/cron/checkpoint-calls");
 
 		await expect
 			.poll(async () => (await session()).contentStatus, { timeout: 120_000 })

@@ -3,7 +3,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { CHECKPOINT_MINOR_UNITS } from "../../../src/config/checkpoint";
 import { curatorPrice } from "../../../src/config/checkpoint-pricing";
 import { prisma } from "../../../src/services/prisma";
-import { payInPaddle, planCheckpoint } from "./support/purchase";
+import { buyWithExpert } from "./support/expert";
 import { RunLog } from "./support/run-log";
 import {
 	answerAsCurator,
@@ -56,37 +56,21 @@ test.describe.serial("an expert checkpoint changing hands", () => {
 	});
 
 	test("bought with the first expert", async ({ browser }) => {
-		author = await grantUser("author-h2");
-		first = await grantCurator("first-h2");
-		second = await grantCurator("second-h2");
+		[author, first, second] = await Promise.all([
+			grantUser("author-h2"),
+			grantCurator("first-h2"),
+			grantCurator("second-h2"),
+		]);
 		authorPage = await signInAs(browser, author);
 		const project = await makeProject(authorPage, "Saltgrass");
 		projectSlug = project.slug;
 
-		await authorPage.goto(`/user/project/${project.slug}/workflow`);
-		await authorPage.getByRole("button", { name: "Plan this checkpoint" }).click();
-		await authorPage.waitForURL(/\/checkpoint\/new\?project=/);
-		await planCheckpoint(authorPage, "A marsh with one tide and a boat", first.name);
-		await payInPaddle(authorPage);
-
-		await expect
-			.poll(
-				async () =>
-					(
-						await prisma.projectCheckpoint.findFirst({
-							where: { projectId: project.id },
-							select: { status: true },
-						})
-					)?.status,
-				{ timeout: 90_000 },
-			)
-			.toBe(CheckpointStatus.AwaitingCurator);
-		checkpointId = (
-			await prisma.projectCheckpoint.findFirstOrThrow({
-				where: { projectId: project.id },
-				select: { id: true },
-			})
-		).id;
+		checkpointId = await buyWithExpert(
+			authorPage,
+			project,
+			"A marsh with one tide and a boat",
+			first.name,
+		);
 		// Paddle charges every checkpoint at the AI price for now: an expert's price
 		// arrives with their seller (GDHUB-107). The money held is set to what an
 		// expert checkout will charge, so changing hands is judged on the right sum.

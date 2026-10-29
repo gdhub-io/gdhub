@@ -14,6 +14,7 @@ import {
 	grantUser,
 	makeProject,
 	makeToday,
+	refundAsAdmin,
 	removeRun,
 	runCron,
 	signInAs,
@@ -63,18 +64,7 @@ test("a withdrawal inside 14 days is refunded less the reviews written", async (
 	).json();
 	log.step(`The quote: ${JSON.stringify(quote)}`);
 
-	await admin.goto("/admin/checkpoints");
-	await admin
-		.getByRole("row")
-		.filter({ hasText: "Tidebound" })
-		.first()
-		.getByRole("button", { name: "Actions" })
-		.click();
-	await admin.getByRole("menuitem", { name: "Refund payment" }).click();
-	const dialog = admin.getByRole("dialog");
-	await dialog.getByText("Withdrawal within 14 days").click();
-	await dialog.getByRole("button", { name: /^Refund / }).click();
-	await expect(admin.getByText(/^Refunded /)).toBeVisible({ timeout: 60_000 });
+	await refundAsAdmin(admin, "Tidebound", "Withdrawal within 14 days");
 
 	const payment = await prisma.payment.findUniqueOrThrow({
 		where: { id: checkpoint.paymentId ?? "" },

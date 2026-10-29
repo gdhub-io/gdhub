@@ -1,11 +1,17 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
-import { type Browser, expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { CHECKPOINT_PARTS } from "../../../src/config/checkpoint";
 import { refundedTotal } from "../../../src/repositories/checkpoints/refund";
 import { prisma } from "../../../src/services/prisma";
 import { type ExpertCheckpoint, expertCheckpoint } from "./support/expert";
 import { RunLog } from "./support/run-log";
-import { grantUser, makeToday, removeRun, signInAs } from "./support/stand";
+import {
+	grantUser,
+	makeToday,
+	refundAsAdmin,
+	removeRun,
+	signInAs,
+} from "./support/stand";
 
 /**
  * GDHUB-116 H6: an admin refunds an expert checkpoint through Paddle — the
@@ -22,27 +28,6 @@ const heldCalls = (checkpointId: string, calls: number) =>
 		where: { checkpointId, index: { lte: calls } },
 		data: { curatorJoinedAt: new Date(), endedAt: new Date() },
 	});
-
-const refundAsAdmin = async (
-	browser: Browser,
-	label: string,
-	project: string,
-	reason: string | RegExp,
-) => {
-	const admin = await signInAs(browser, await grantUser(label, "superAdmin"));
-	await admin.goto("/admin/checkpoints");
-	await admin
-		.getByRole("row")
-		.filter({ hasText: project })
-		.first()
-		.getByRole("button", { name: "Actions" })
-		.click();
-	await admin.getByRole("menuitem", { name: "Refund payment" }).click();
-	const dialog = admin.getByRole("dialog");
-	await dialog.getByText(reason).click();
-	await dialog.getByRole("button", { name: /^Refund / }).click();
-	await expect(admin.getByText(/^Refunded /)).toBeVisible({ timeout: 60_000 });
-};
 
 /** Refunded the parts not delivered, the checkpoint cancelled, no fee. */
 const expectRefunded = async (
@@ -86,7 +71,8 @@ test.describe("refunds of an expert checkpoint", () => {
 		await makeToday(run.checkpointId, 10);
 		await heldCalls(run.checkpointId, 1);
 
-		await refundAsAdmin(browser, "admin-h6-gone", "Cinderwake", "Curator gone, no replacement");
+		const admin = await signInAs(browser, await grantUser("admin-h6-gone", "superAdmin"));
+		await refundAsAdmin(admin, "Cinderwake", "Curator gone, no replacement");
 		const { paid, refunded } = await expectRefunded(run, "Cinderwake", 1);
 		log.step(`Curator gone after call 1: refunded ${refunded} of ${paid}; no fee`);
 	});
@@ -98,7 +84,8 @@ test.describe("refunds of an expert checkpoint", () => {
 		// Due on day 28, with three days to write it: day 33 is past them.
 		await makeToday(run.checkpointId, 33);
 
-		await refundAsAdmin(browser, "admin-h6-late", "Ashgrove", /^No verdict by day/);
+		const admin = await signInAs(browser, await grantUser("admin-h6-late", "superAdmin"));
+		await refundAsAdmin(admin, "Ashgrove", /^No verdict by day/);
 		const { paid, refunded } = await expectRefunded(run, "Ashgrove", 5);
 		log.step(`No verdict after five calls: refunded ${refunded} of ${paid}; no fee`);
 	});

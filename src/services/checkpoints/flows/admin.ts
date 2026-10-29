@@ -16,7 +16,7 @@ import {
 	audit,
 	missedCallsRefund,
 } from "@/repositories/checkpoints/admin";
-import { keptPaymentOf } from "@/repositories/checkpoints/payment";
+import { keptPayment } from "@/repositories/checkpoints/payment";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import { refundWrites } from "@/repositories/checkpoints/refund";
 import type { CuratorVerdictInput } from "@/repositories/checkpoints/verdict";
@@ -182,7 +182,7 @@ export const assignCurator = async (
 		}
 
 		// A curator turned it down or never answered: the money stayed with it.
-		const paidWith = await keptPaymentOf(checkpointId);
+		const paidWith = (await keptPayment(checkpointId))?.id ?? null;
 		const pick = {
 			curatorKind: kind,
 			curatorId: curator?.id ?? null,

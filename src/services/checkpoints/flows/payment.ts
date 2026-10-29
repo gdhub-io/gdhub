@@ -29,7 +29,10 @@ import {
 	type PendingCheckout,
 	unpickedSince,
 } from "@/repositories/checkpoints/payment";
-import { notifyCuratorAsked } from "@/services/checkpoints/notifications";
+import {
+	notifyAuthorOfLapse,
+	notifyCuratorAsked,
+} from "@/services/checkpoints/notifications";
 import { type CheckoutPaid, gatewayFor } from "@/services/payments/gateway";
 import { prisma } from "@/services/prisma";
 
@@ -334,9 +337,6 @@ export const cancelUnpickedCheckpoints = async (now = new Date()) => {
 			);
 			continue;
 		}
-		const { notifyAuthorOfLapse } = await import(
-			"@/services/checkpoints/notifications"
-		);
 		await notifyAuthorOfLapse(
 			payment.payableId,
 			formatCheckpointMoney(payment.amount),

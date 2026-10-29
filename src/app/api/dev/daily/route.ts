@@ -25,9 +25,8 @@ export const GET = async (req: Request) => {
 };
 
 export const POST = withValidation(ActionSchema)(
-	async (_req, _ctx, { body }) => {
+	async (_req, _ctx, { body: input }) => {
 		if (!dailyEmulated()) return apiError.notFound();
-		const input = body as z.infer<typeof ActionSchema>;
 		try {
 			if (input.action === "recording") {
 				return json({ recordingId: emulatedRecording(input.room) });
