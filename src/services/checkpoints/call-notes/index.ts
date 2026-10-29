@@ -1,10 +1,10 @@
-import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import type { EvidenceMatch } from "@/config/prisma-enums";
+import { aiModel } from "@/services/ai/model";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { CallNotes } from "@/types/checkpoints";
 
@@ -128,7 +128,7 @@ export const writeCallNotes = async (
 	meter?: AiMeter,
 ): Promise<CallNotes | null> => {
 	const { output, usage } = await generateText({
-		model: openai(AI_MODELS.callNotes),
+		model: aiModel(AI_MODELS.callNotes),
 		output: Output.object({ schema, name: "call_notes" }),
 		instructions: stripIndents`
 			You write the notes of a call between a game team and its curator on

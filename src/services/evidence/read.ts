@@ -1,5 +1,6 @@
 import pdf from "pdf-parse/lib/pdf-parse.js";
 import { capped } from "@/lib/checkpoints/curator-text";
+import { withCassette } from "@/services/ai/cassette";
 import {
 	fetchBody,
 	type OpenFailure,
@@ -117,16 +118,23 @@ async function readVideoPage(
  * video as frames, a page as its words. Nothing is run and a build is never
  * downloaded — the caller passes only links whose kind is not a build.
  */
-export async function readEvidence(
+export const readEvidence = (
 	link: string,
-	{
-		videoSecondsLeft,
-		pageOnly = false,
-	}: {
+	options: {
 		videoSecondsLeft: number;
 		/** A build: its page is read, anything else at the link is not fetched. */
 		pageOnly?: boolean;
 	},
+): Promise<EvidenceContent> =>
+	// On the e2e stand a page reads as it was recorded: a live one changes its counters.
+	withCassette("evidence", { link, ...options }, () => readLive(link, options));
+
+async function readLive(
+	link: string,
+	{
+		videoSecondsLeft,
+		pageOnly = false,
+	}: { videoSecondsLeft: number; pageOnly?: boolean },
 ): Promise<EvidenceContent> {
 	const target = readableLink(link);
 	if (target.videoPage) return readVideoPage(target.videoPage, link);

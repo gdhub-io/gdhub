@@ -1,10 +1,10 @@
-import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { EvidenceMatch } from "@/config/prisma-enums";
 import { devlogText } from "@/lib/checkpoints/curator-text";
+import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import { localeLine } from "@/services/checkpoints/ai-curator/prompts/card";
@@ -111,7 +111,7 @@ export async function judgeEvidence(
 	};
 	const started = Date.now();
 	const result = await generateText({
-		model: openai(AI_MODELS.curatorReview),
+		model: aiModel(AI_MODELS.curatorReview),
 		output: Output.object({ schema: judgeSchema, name: "evidence_match" }),
 		...request,
 	});
@@ -142,7 +142,7 @@ export async function describeMedia(
 	};
 	const started = Date.now();
 	const result = await generateText({
-		model: openai(AI_MODELS.curatorReview),
+		model: aiModel(AI_MODELS.curatorReview),
 		...request,
 	});
 	traceGenerated(

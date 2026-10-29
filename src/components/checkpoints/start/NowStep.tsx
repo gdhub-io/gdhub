@@ -59,6 +59,9 @@ export function NowStep() {
 	const [mine, setMine] = useState<[number, number]>();
 
 	const saveHours = useMutation({
+		// Leaving "from" then "up to" saves twice: one after the other, or the
+		// first can land last and keep half the range.
+		scope: { id: "checkpoint-hours" },
 		mutationFn: (timeForWork: number[]) =>
 			axios.put("/api/user/profile", { timeForWork }),
 		onSuccess: () =>

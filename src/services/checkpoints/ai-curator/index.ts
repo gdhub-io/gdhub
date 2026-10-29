@@ -19,6 +19,7 @@
 
 import { AI_MODELS } from "@/config/ai-models";
 import { isValidJSON } from "@/helpers/format";
+import { withCassette } from "@/services/ai/cassette";
 import { traceAiCall } from "@/services/ai-trace";
 import {
 	type AiMeter,
@@ -70,16 +71,21 @@ class CheckpointCuratorService {
 			// cron route must stay loadable without one.
 			const { openAI } = await import("@/services/openai");
 			const started = Date.now();
-			const completion = await openAI.openai.chat.completions.create({
-				model: this.model,
-				messages,
-				tools: [{ type: "function", function: { name, parameters } }],
-				tool_choice: { type: "function", function: { name } },
-				// The GPT-6 models refuse function tools on chat completions while
-				// reasoning is on.
-				reasoning_effort: "none",
-				temperature: 0,
-			});
+			const completion = await withCassette(
+				name,
+				{ model: this.model, messages, parameters },
+				() =>
+					openAI.openai.chat.completions.create({
+						model: this.model,
+						messages,
+						tools: [{ type: "function", function: { name, parameters } }],
+						tool_choice: { type: "function", function: { name } },
+						// The GPT-6 models refuse function tools on chat completions while
+						// reasoning is on.
+						reasoning_effort: "none",
+						temperature: 0,
+					}),
+			);
 			await recordAiUsage(meter, this.model, {
 				inputTokens: completion.usage?.prompt_tokens,
 				outputTokens: completion.usage?.completion_tokens,
