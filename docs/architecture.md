@@ -137,6 +137,8 @@ one place:
 ```
 docs/
   architecture.md         this file
+  spaces.md               what the product is made of: spaces, features, links, access
+  platform-map.md         every screen, numbered as in the design file
   intent/                 one intent per larger task, written before the code
   <feature>/              one folder per feature (checkpoints/, chat/, equity/, …)
     README.md             what the feature is, who it is for, how it works, where its

@@ -106,6 +106,10 @@ unavailable and the pre-push hook is what actually holds the line.
 
 ## Repository layout
 
+What the product is made of — every space, its features, how spaces feed each other
+and who may do what — is in [docs/spaces.md](docs/spaces.md); start there to find
+what a change touches and what it has to be tested against.
+
 **Read [docs/architecture.md](docs/architecture.md) before creating a file.** It has
 the full directory map, the layer rules and a "where a new file goes" table. In short:
 
