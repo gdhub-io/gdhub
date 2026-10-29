@@ -63,14 +63,15 @@ checkpoint task under GDHUB-31.
 
 ## Done when
 
-- [ ] `bun run test:e2e:checkpoints` passes the human-curator flows on the
-      stand: the purchase and waitlist, accept / decline / replace, the five
+- [x] `bun run test:e2e:checkpoints` passes the human-curator flows on the
+      stand (H1–H6): the purchase, accept / decline / replace, the five
       calls, a call moved, the brief and the AI's read, the verdict, the payout
-      with earnings and rating, and both refunds.
-- [ ] They run without Daily keys, ngrok or a real call, and a unit test proves
+      with earnings and rating, and both refunds. The waitlist stays in its
+      story and unit tests (see the expert flag above).
+- [x] They run without Daily keys, ngrok or a real call, and a unit test proves
       the Daily emulation is off outside the stand.
-- [ ] `tests/e2e/checkpoint-verdict.authed.spec.ts` lives in the suite.
-- [ ] Every flow writes `test-results/checkpoints/<flow>.md`, as GDHUB-79's do.
+- [x] `tests/e2e/checkpoint-verdict.authed.spec.ts` lives in the suite, as H4.
+- [x] Every flow writes `test-results/checkpoints/<flow>.md`, as GDHUB-79's do.
 
 ## How to check it on the platform
 
@@ -103,8 +104,7 @@ checkpoint task under GDHUB-31.
 
 ## Open questions
 
-- **Where the fake Daily API lives:** assumed to be in `services/daily.ts`
-  behind the stand's flag, the same way as the cassettes, not as a separate
-  server.
-- **The transcript fixture:** assumed to be a short WebVTT of one call,
-  committed beside the cassettes.
+- **Where the fake Daily API lives:** `services/daily-emulated.ts`, called from
+  `services/daily.ts` behind `dailyEmulated()`; the browser's call object is
+  `CallRoom/emulated-call.ts`. Not a separate server.
+- **The transcript fixture:** plain text, `tests/e2e/fixtures/call-transcript.txt`.
