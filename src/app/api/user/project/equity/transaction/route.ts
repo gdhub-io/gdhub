@@ -6,8 +6,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { ProjectEquityRepository } from "@/repositories/project-equity.repository";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { ProjectEquityRepository } from "@/repositories/project/equity";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 
 const TransactionQuerySchema = z.object({

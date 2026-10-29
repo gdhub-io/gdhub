@@ -7,7 +7,7 @@ import dayjs, { type Dayjs } from "dayjs";
 import Link from "next/link";
 import { IconTile } from "@/components/ui";
 import { FINAL_SESSION, SESSION_MINUTES } from "@/config/checkpoint";
-import type { AdvisorCalendar } from "@/repositories/advisor-availability";
+import type { AdvisorCalendar } from "@/repositories/advisor/availability";
 import styles from "./style.module.scss";
 
 type Call = AdvisorCalendar["upcoming"][number];

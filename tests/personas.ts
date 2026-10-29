@@ -5,7 +5,7 @@ import {
 	UserRole,
 } from "@gdhub-io/gdhub-prisma";
 import { SpaceRole } from "@/config/permissions/roles";
-import { createScout } from "@/repositories/scout";
+import { createScout } from "@/repositories/scout/scout";
 import { joinSpace } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 

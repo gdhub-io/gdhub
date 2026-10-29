@@ -6,7 +6,7 @@ import {
 	remindCallsSoon,
 	remindPlansUnsent,
 	remindScopeClosing,
-} from "@/services/checkpoints/notifications";
+} from "@/services/checkpoints/reminders";
 
 /**
  * Hourly: the curator and the team hear about a call an hour before it, a

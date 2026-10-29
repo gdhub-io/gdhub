@@ -1,6 +1,6 @@
 import { apiError, json, pipe, withAuth } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { getProjectCardOverview } from "@/repositories/scout.project-card";
+import { getProjectCardOverview } from "@/repositories/scout/project-card";
 
 /**
  * The card's header and the facts Overview leads with. Everything below it —

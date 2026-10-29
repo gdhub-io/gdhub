@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/contact/route";
 import { CONTACT_EMAIL } from "@/config/contact";
-import { joinWaitlist } from "@/repositories/feature-waitlist";
+import { joinWaitlist } from "@/repositories/user/feature-waitlist";
 
 const limited = vi.fn();
 const sendMail = vi.fn();
@@ -10,7 +10,7 @@ const sendTransacEmail = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => Promise.resolve(null) }));
 vi.mock("@/lib/rate-limit", () => ({ limitAiCalls: () => limited() }));
-vi.mock("@/repositories/feature-waitlist", () => ({ joinWaitlist: vi.fn() }));
+vi.mock("@/repositories/user/feature-waitlist", () => ({ joinWaitlist: vi.fn() }));
 vi.mock("nodemailer", () => ({
 	createTransport: () => ({ sendMail: (letter: unknown) => sendMail(letter) }),
 }));

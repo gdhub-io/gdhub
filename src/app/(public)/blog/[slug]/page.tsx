@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { getEditorjsPageCover } from "@/helpers/content";
-import { findPublishedBlogPost } from "@/repositories/blog.repository";
+import { findPublishedBlogPost } from "@/repositories/content/blog";
 import { type BlogPost, BlogPostClient } from "./BlogPostClient";
 
 type Params = Promise<{ slug: string }>;

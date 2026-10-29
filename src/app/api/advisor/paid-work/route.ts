@@ -11,7 +11,7 @@ import {
 import { LegalAcceptancesSchema, LegalError } from "@/lib/legal/accept";
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { validPayoutAccount } from "@/lib/payout-account";
-import { getPaidWork, savePaidWork } from "@/repositories/paid-work";
+import { getPaidWork, savePaidWork } from "@/repositories/advisor/paid-work";
 
 /** Advisor settings → Paid work, for whoever is asking. */
 export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { listPublishedBlogPosts } from "@/repositories/blog.repository";
+import { listPublishedBlogPosts } from "@/repositories/content/blog";
 import { BlogClient } from "./BlogClient";
 
 export const revalidate = 300;

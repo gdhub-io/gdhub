@@ -62,6 +62,8 @@ vi.mock("@/repositories/checkpoints/checkpoint", async (actual) => ({
 		await actual<typeof import("@/repositories/checkpoints/checkpoint")>()
 	).createCheckpointItems,
 	getCreationBlocker: (...args: unknown[]) => getCreationBlocker(...args),
+}));
+vi.mock("@/repositories/checkpoints/detail", () => ({
 	toArtifactRef: <T>(artifact: T) => artifact,
 }));
 vi.mock("@/lib/rate-limit", () => ({
@@ -74,7 +76,7 @@ vi.mock("@/services/access/membership", () => ({
 	joinSpace: (...args: unknown[]) => joinSpace(...args),
 }));
 vi.mock("@/services/brevo/sync", () => ({ syncUserToBrevo: vi.fn() }));
-vi.mock("@/repositories/project-workflow", () => ({
+vi.mock("@/repositories/project/workflow", () => ({
 	ensureCheckpointStage: (...args: unknown[]) => ensureCheckpointStage(...args),
 }));
 vi.mock("@/repositories/checkpoints/number", () => ({

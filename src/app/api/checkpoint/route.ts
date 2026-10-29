@@ -44,7 +44,7 @@ export const GET = pipe(
 		// Everything but the row above it, so a checkpoint can never be in neither
 		// list — which is how a paid one used to disappear.
 		listClosedCheckpoints(projectId, { page, limit, exceptId: current?.id }),
-		getCreationBlocker(projectId),
+		getCreationBlocker(projectId, current),
 	]);
 
 	return json({

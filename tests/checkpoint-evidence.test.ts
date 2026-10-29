@@ -13,7 +13,7 @@ vi.mock("next/server", async (original) => ({
 	...(await original<typeof import("next/server")>()),
 	after: vi.fn(),
 }));
-vi.mock("@/repositories/artifact-check", () => ({ checkArtifact: vi.fn() }));
+vi.mock("@/repositories/project/artifact-check", () => ({ checkArtifact: vi.fn() }));
 
 // Covered by space-guard.test.ts; mocked here so the assertions are about the
 // binding rather than about access resolution.
@@ -23,8 +23,10 @@ vi.mock("@/lib/space-guard", () => ({
 
 vi.mock("@/repositories/checkpoints/checkpoint", async (importOriginal) => ({
 	...(await importOriginal<typeof import("@/repositories/checkpoints/checkpoint")>()),
-	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 	withProgress: <T>(checkpoint: T) => checkpoint,
+}));
+vi.mock("@/repositories/checkpoints/detail", () => ({
+	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 }));
 
 vi.mock("@/services/prisma", () => ({

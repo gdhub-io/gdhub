@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useState } from "react";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import type { AvailabilityRule } from "@/lib/advisor-availability";
-import type { BookedCall } from "@/repositories/advisor-availability";
+import type { BookedCall } from "@/repositories/advisor/availability";
 import { AvailabilityPeriods, type AvailabilityPeriodsProps } from ".";
 
 const RULES: AvailabilityRule[] = [

@@ -10,7 +10,7 @@ import { checkpointMove, isOpen } from "@/lib/checkpoints/status";
 import {
 	bookSessions,
 	SlotTakenError,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import {
 	type AssignCuratorInput,
 	audit,

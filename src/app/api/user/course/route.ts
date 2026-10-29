@@ -10,7 +10,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";

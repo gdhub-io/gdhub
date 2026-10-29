@@ -41,7 +41,7 @@ import {
 } from "@/hooks/payouts";
 import { useUrlTab } from "@/hooks/useUrlTab";
 import type { AvailabilityRule } from "@/lib/advisor-availability";
-import type { AvailabilityDto } from "@/repositories/advisor-availability";
+import type { AvailabilityDto } from "@/repositories/advisor/availability";
 import styles from "./style.module.scss";
 
 const DATE_FORMAT = "D MMMM YYYY";

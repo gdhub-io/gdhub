@@ -5,7 +5,7 @@ import {
 	PaymentProvider,
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { bookSessions, SlotTakenError } from "@/repositories/advisor-availability";
+import { bookSessions, SlotTakenError } from "@/repositories/advisor/availability";
 import { refundCaseOf } from "@/repositories/checkpoints/refund";
 import { assignCurator, writeAdminVerdict } from "@/services/checkpoints/flows/admin";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
@@ -39,7 +39,7 @@ vi.mock("@/services/checkpoints/flows/verdict", () => ({
 vi.mock("@/services/checkpoints/flows/payment", () => ({
 	startAiCheckpoint: vi.fn(),
 }));
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	bookSessions: vi.fn(),
 	SlotTakenError: class SlotTakenError extends Error {},
 }));

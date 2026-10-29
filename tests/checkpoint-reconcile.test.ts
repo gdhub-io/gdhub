@@ -9,7 +9,7 @@ import { reconcileCheckout } from "@/services/checkpoints/flows/payment";
 import { prisma } from "@/services/prisma";
 import { retrieveCheckout } from "@/services/stripe/server";
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

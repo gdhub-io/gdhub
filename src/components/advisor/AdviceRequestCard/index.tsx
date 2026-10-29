@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import { REQUEST_STATUS } from "@/components/advisor/requestStatus";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
-import type { AdvisorRequest } from "@/repositories/advisor.requests";
+import type { AdvisorRequest } from "@/repositories/advisor/requests";
 import styles from "./style.module.scss";
 
 export type AdviceRequestCardProps = {

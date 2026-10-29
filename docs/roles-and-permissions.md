@@ -477,7 +477,7 @@ export const adminSpace = defineSpace({
 ### 4.2 Адаптер — доменный код
 
 ```ts
-// src/repositories/project.space.ts
+// src/repositories/project/space.ts
 registerSpaceAdapter("project", {
   /** Роль в спейсе. Пока читает доменные таблицы; после бэкфилла в SpaceMember — удаляется. */
   resolveRole: async (spaceId, user) => { /* prisma: author / TeamMember */ },
@@ -520,7 +520,7 @@ withSpaceGuard({ permission: "project.members.invite", idFrom: "body.projectId" 
 доменное знание (что у проекта есть `slug`, известно только проекту):
 
 ```ts
-// src/repositories/project.space.ts
+// src/repositories/project/space.ts
 registerSpaceAdapter("project", {
   /** slug из роута → Project.id, он же spaceId. Кэшируется на запрос. */
   resolveSpaceId: async (param) =>

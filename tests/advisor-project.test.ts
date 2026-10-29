@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getAdvisorProject } from "@/repositories/checkpoints/advisor";
-import { getCheckpoint } from "@/repositories/checkpoints/checkpoint";
+import { getCheckpointCore } from "@/repositories/checkpoints/detail";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/prisma", () => ({
@@ -8,9 +8,8 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 // The pulse and devlogs come from the checkpoint page's own read.
-vi.mock("@/repositories/checkpoints/checkpoint", async (importOriginal) => ({
-	...(await importOriginal<object>()),
-	getCheckpoint: vi.fn().mockResolvedValue({
+vi.mock("@/repositories/checkpoints/detail", () => ({
+	getCheckpointCore: vi.fn().mockResolvedValue({
 		status: "Active",
 		sprints: [],
 		pulses: [{ memberId: "m1", cells: [{ sprint: 1, state: "confirmed" }] }],
@@ -143,7 +142,7 @@ describe("the project as its curator reads it", () => {
 	});
 
 	it("keeps the pulse and devlogs from a curator who has not taken it on yet", async () => {
-		vi.mocked(getCheckpoint).mockResolvedValueOnce({
+		vi.mocked(getCheckpointCore).mockResolvedValueOnce({
 			status: "AwaitingCurator",
 			sprints: [{ number: 1 }],
 			pulses: [{ memberId: "m1", cells: [{ sprint: 1, state: "confirmed" }] }],

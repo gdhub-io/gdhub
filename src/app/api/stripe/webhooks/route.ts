@@ -5,7 +5,7 @@ import {
 	paymentOf,
 	recordPaymentEvent,
 	recordProviderRefund,
-} from "@/repositories/payment-records";
+} from "@/repositories/payments/records";
 import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
 import { paidOfSession } from "@/services/payments/stripe";
 import { sessionOfPaymentIntent, stripeEvent } from "@/services/stripe/server";

@@ -12,7 +12,7 @@ import {
 	countAdvisorRequests,
 	isRequestFilter,
 	listAdvisorRequests,
-} from "@/repositories/advisor.requests";
+} from "@/repositories/advisor/requests";
 
 const QuerySchema = z.object({
 	filter: z.string().refine(isRequestFilter).optional(),

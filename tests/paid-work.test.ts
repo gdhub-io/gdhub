@@ -1,11 +1,11 @@
 import { ExpertInvoicing } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { validPayoutAccount } from "@/lib/payout-account";
+import { savePaidWork } from "@/repositories/advisor/paid-work";
 import {
 	latestAcceptance,
 	needsAcceptance,
-} from "@/repositories/legal.repository";
-import { savePaidWork } from "@/repositories/paid-work";
+} from "@/repositories/legal/legal";
 import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 
@@ -18,7 +18,7 @@ vi.mock("@/services/prisma", () => ({
 		$transaction: vi.fn(),
 	},
 }));
-vi.mock("@/repositories/legal.repository", () => ({
+vi.mock("@/repositories/legal/legal", () => ({
 	latestAcceptance: vi.fn(),
 	needsAcceptance: vi.fn(),
 }));

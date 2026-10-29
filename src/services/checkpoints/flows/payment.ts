@@ -12,7 +12,7 @@ import { checkpointMove } from "@/lib/checkpoints/status";
 import {
 	bookSessions,
 	SlotTakenError,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import {
 	afterResponse,
 	heldPaymentWhere,

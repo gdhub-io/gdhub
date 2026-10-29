@@ -6,8 +6,8 @@ import {
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
-import { getProjectActivity } from "@/repositories/project-activity.repository";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { getProjectActivity } from "@/repositories/project/activity";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 import type {
 	CuratorPersona,

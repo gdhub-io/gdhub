@@ -2,7 +2,7 @@ import { z } from "zod";
 import { WaitlistFeature } from "@/config/prisma-enums";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { listWaitlist } from "@/repositories/feature-waitlist";
+import { listWaitlist } from "@/repositories/user/feature-waitlist";
 
 const QuerySchema = z.object({
 	feature: z.nativeEnum(WaitlistFeature),

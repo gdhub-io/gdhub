@@ -12,7 +12,7 @@ import {
 	user,
 } from "@/repositories/checkpoints/call";
 import { agreeGoal } from "@/repositories/checkpoints/plan-edit";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import {
 	callRoom,
 	callToken,

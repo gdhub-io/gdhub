@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
-import type { AdvisorRequest } from "@/repositories/advisor.requests";
+import type { AdvisorRequest } from "@/repositories/advisor/requests";
 import { AdviceRequestCard } from "./index";
 
 const request: AdvisorRequest = {

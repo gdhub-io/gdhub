@@ -20,7 +20,7 @@ import type {
 
 export type SprintFacts = {
 	sprint: CheckpointSprintDto;
-	devlog: CheckpointDevlogDto | null;
+	devlog: Omit<CheckpointDevlogDto, "content"> | null;
 	/** The scope note, on the sprint day 15 falls in, until it is answered. */
 	scopeNote: string | null;
 	/** The call-3 window is open: the tasks can change on the call. */

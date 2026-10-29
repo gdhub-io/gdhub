@@ -440,7 +440,7 @@ describe("GET /api/scout/games/[id]/[section]", () => {
 describe("how a stage was closed (GDHUB-37)", () => {
 	it("names the checkpoint verdict that let it close, or its own tasks", async () => {
 		const { getProjectCardWorkflow } = await import(
-			"@/repositories/scout.project-card"
+			"@/repositories/scout/project-card"
 		);
 		const step = (id: string, order: number, finishedAt: Date | null) => ({
 			id,

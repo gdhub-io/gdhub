@@ -81,10 +81,31 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
      imports a checkpoint repository.
    - Flows still call Prisma directly in places. Moving every one of those
      queries into a repository is left for when a flow is next touched.
-4. **Big files and load.**
-   - Split the files over about 600 lines.
-   - Clear the duplicate reads, round trips and caches from the issue's "Load"
-     list.
+4. **Big files and load.** Done 2026-10-29.
+   - Split every checkpoint file over about 600 lines:
+     - `repositories/checkpoints/checkpoint.ts`: the detail builder moved to
+       `detail.ts`, and the shared selects to `select.ts`.
+     - `services/checkpoints/notifications.ts`: the scheduled reminders moved
+       to `reminders.ts`.
+     - `journal-view.ts`: the text helpers moved to `lib/checkpoints/journal-text.ts`.
+     - Six components (`VerdictModal`, `CheckpointsTable`, `AiReview`,
+       `RunningCheckpoint`, `CallPlan`, `PaidWorkSection`) are split into
+       files in their own folders.
+     - `types/checkpoints.ts` stays whole: it holds only types.
+   - Load:
+     - `GET /api/checkpoint` takes the blocker from the current row when that
+       row is open. Every screen shares one cached list.
+     - `PUT /api/checkpoint/[id]` reads the payment once and runs its
+       independent checks at once. It still judges them in the same order.
+     - The curator's card reads the checkpoint without the author-only reads.
+     - Opening the chat answers from the room row when the room exists.
+     - The curator's yes no longer waits for Matrix (`after()`).
+     - The author's checkpoint no longer carries the devlog bodies.
+   - The draft states are written once, as `isFreshDraft` and `isDeclined` in
+     `lib/checkpoints/draft.ts`.
+   - Left on purpose: the space guard's one-column read of an `[id]` route's
+     project. Folding it into the handler would change the guard for every
+     route, to save a primary-key lookup.
 5. **Team membership.** This is a behaviour fix.
    - Add `currentMembership()` and `reconcileCheckpointRooms()`.
    - Add `setCurrentStep(from, to)`, which stamps or clears `finishedAt` for

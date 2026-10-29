@@ -1,6 +1,7 @@
 import { useTranslate } from "@tolgee/react";
 import { StatusDot } from "@/components/ui";
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { isDeclined } from "@/lib/checkpoints/draft";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { VerdictChip } from "../VerdictChip";
 import styles from "./style.module.scss";
@@ -58,11 +59,7 @@ export function CheckpointStatusSlot({
 
 	// A draft again, but not a fresh one: somebody was asked and said no, and
 	// "Draft" would hide the one fact the author has to act on.
-	if (
-		checkpoint.status === CheckpointStatus.Draft &&
-		checkpoint.curatorDeclinedAt &&
-		!checkpoint.curator
-	) {
+	if (isDeclined(checkpoint)) {
 		return (
 			<StatusDot
 				tone="warning"

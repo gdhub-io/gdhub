@@ -13,7 +13,7 @@ import { LegalUpdateModal } from "@/components/legal/LegalUpdateModal";
 import { requireSession } from "@/helpers/require-session";
 import { USER_SPACES_QUERY_KEY } from "@/hooks/useUserSpaces";
 import { pendingDocuments } from "@/lib/legal/pending";
-import { getCachedUserSpaces } from "@/repositories/user-spaces";
+import { getCachedUserSpaces } from "@/repositories/user/spaces";
 import { getSpaceAccess, type MaybeAccessUser } from "@/services/access";
 import { toSnapshot } from "@/services/access/snapshot";
 

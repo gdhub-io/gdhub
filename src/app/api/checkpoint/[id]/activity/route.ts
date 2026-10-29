@@ -8,7 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { activityAccessOf, viewerOf } from "@/repositories/checkpoints/viewer";
-import { getProjectActivity } from "@/repositories/project-activity.repository";
+import { getProjectActivity } from "@/repositories/project/activity";
 
 const QuerySchema = z.object({
 	before: z.string().datetime().optional(),

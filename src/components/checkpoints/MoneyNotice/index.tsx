@@ -6,6 +6,7 @@ import { App, Button, Flex, Typography } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { isDeclined } from "@/lib/checkpoints/draft";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
@@ -42,10 +43,7 @@ export function MoneyNotice({
 	const [fetching, setFetching] = useState(false);
 
 	const held = checkpoint.status === CheckpointStatus.AwaitingCurator;
-	const declined =
-		checkpoint.status === CheckpointStatus.Draft &&
-		!!checkpoint.curatorDeclinedAt &&
-		!checkpoint.curator;
+	const declined = isDeclined(checkpoint);
 
 	// The receipt is the provider's own page, fetched when asked rather than
 	// stored: what it says is their record, not ours.

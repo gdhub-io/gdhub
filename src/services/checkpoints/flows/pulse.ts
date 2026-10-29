@@ -9,7 +9,7 @@ import {
 	sprintRange,
 } from "@/lib/checkpoints/sprints";
 import { activeOnProject } from "@/repositories/checkpoints/pulse";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { notify } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 

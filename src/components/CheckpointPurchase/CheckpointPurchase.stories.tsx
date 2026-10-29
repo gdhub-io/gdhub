@@ -84,10 +84,7 @@ const withCheckpoint =
 			blocker: null,
 		};
 
-		client.setQueryData(
-			["project-checkpoints", project.id, 1, undefined],
-			list,
-		);
+		client.setQueryData(["project-checkpoints", project.id], list);
 		client.setQueryData(["user-project-team", "t1"], {
 			data: {
 				members: [

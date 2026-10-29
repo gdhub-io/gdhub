@@ -16,7 +16,6 @@ import {
 	checkpointMove,
 } from "@/lib/checkpoints/status";
 import { settleVerdict } from "@/lib/checkpoints/verdict";
-import { recheckCheckpointArtifacts } from "@/repositories/artifact-check";
 import {
 	curatorItemSelect,
 	goalCheckHash,
@@ -37,7 +36,8 @@ import {
 	lastVerdict,
 } from "@/repositories/checkpoints/brief";
 import { journal } from "@/repositories/checkpoints/journal";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { recheckCheckpointArtifacts } from "@/repositories/project/artifact-check";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { issueCheckpointCertificate } from "@/services/certificates";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import {

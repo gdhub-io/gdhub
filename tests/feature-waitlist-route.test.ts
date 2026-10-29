@@ -1,14 +1,14 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/waitlist/[feature]/route";
-import { joinWaitlist } from "@/repositories/feature-waitlist";
+import { joinWaitlist } from "@/repositories/user/feature-waitlist";
 
 const authMock = vi.fn();
 const limited = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 vi.mock("@/lib/rate-limit", () => ({ limitAiCalls: () => limited() }));
-vi.mock("@/repositories/feature-waitlist", () => ({
+vi.mock("@/repositories/user/feature-waitlist", () => ({
 	joinWaitlist: vi.fn(),
 	isOnWaitlist: vi.fn(),
 }));

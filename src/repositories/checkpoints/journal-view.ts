@@ -9,6 +9,7 @@ import {
 } from "@/config/prisma-enums";
 import { characterFace } from "@/lib/checkpoints/curator-characters";
 import { devlogText, devlogWords } from "@/lib/checkpoints/curator-text";
+import { firstLine, reviewDetails } from "@/lib/checkpoints/journal-text";
 import { sprintOfDate, sprintRange } from "@/lib/checkpoints/sprints";
 import type { JournalRead } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
@@ -30,123 +31,80 @@ import type { CallNotes, PlanAdvice } from "@/types/checkpoints";
 /** How many of the project's artifacts from before the checkpoint the Inputs tab lists. */
 const BEFORE_SHOWN = 20;
 
-/**
- * A review's notes and halfway advice as labelled lines: how the sprint stands,
- * each task, the focus set for the next sprint, the advice under the tasks.
- */
-const reviewDetails = (
-	notes: CallNotes | null | undefined,
-	advice: Pick<PlanAdvice, "tasks" | "add"> | null | undefined,
-	taskName: (id: string | null) => string | null,
-) => [
-	...(notes?.inShort ? [{ label: "inShort", value: notes.inShort }] : []),
-	...(notes?.discussed ?? []).map((row) => ({
-		label: taskName(row.itemId) ?? row.itemId,
-		value: row.text,
-	})),
-	...(notes?.agreed.length
-		? [
-				{
-					label: "focus",
-					value: notes.agreed.map((row) => row.text).join("\n"),
+const journalViewSelect = {
+	projectId: true,
+	goal: true,
+	verdict: true,
+	verdictNote: true,
+	curatorKind: true,
+	curatorCharacter: true,
+	startedAt: true,
+	dueAt: true,
+	planCheckedAt: true,
+	goalAgreedAt: true,
+	goalAgreedById: true,
+	scopeConfirmedAt: true,
+	curator: { select: { name: true, image: true } },
+	project: { select: { authorId: true } },
+	items: {
+		orderBy: { order: "asc" },
+		select: {
+			id: true,
+			kind: true,
+			text: true,
+			originalText: true,
+			cut: true,
+			addedAt: true,
+			evidence: {
+				orderBy: { createdAt: "asc" },
+				select: {
+					match: true,
+					matchNote: true,
+					artifact: {
+						select: {
+							id: true,
+							name: true,
+							type: true,
+							link: true,
+							createdAt: true,
+						},
+					},
 				},
-			]
-		: []),
-	...(advice?.tasks.length || advice?.add.length
-		? [
-				{
-					label: "advice",
-					value: [
-						...advice.tasks.map(
-							(row) => `${taskName(row.itemId) ?? row.itemId}: ${row.note}`,
-						),
-						...advice.add.map((line) => `+ ${line}`),
-					].join("\n"),
-				},
-			]
-		: []),
-];
-
-/** The first line of a devlog, short enough to stand as its title. */
-const firstLine = (content: string) =>
-	content
-		.split("\n")
-		.find((line) => line.trim())
-		?.trim()
-		.slice(0, 120) ?? "";
+			},
+		},
+	},
+	pulses: {
+		where: { confirmedAt: { not: null } },
+		select: {
+			id: true,
+			week: true,
+			confirmedAt: true,
+			source: true,
+			teamMember: { select: { userId: true } },
+		},
+	},
+	journal: {
+		orderBy: { createdAt: "asc" },
+		select: {
+			id: true,
+			kind: true,
+			sprint: true,
+			link: true,
+			devlogId: true,
+			itemId: true,
+			input: true,
+			output: true,
+			createdAt: true,
+		},
+	},
+} as const;
 
 export const getJournalView = async (
 	checkpointId: string,
 ): Promise<CuratorJournalViewDto | null> => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
-		select: {
-			projectId: true,
-			goal: true,
-			verdict: true,
-			verdictNote: true,
-			curatorKind: true,
-			curatorCharacter: true,
-			startedAt: true,
-			dueAt: true,
-			planCheckedAt: true,
-			goalAgreedAt: true,
-			goalAgreedById: true,
-			scopeConfirmedAt: true,
-			curator: { select: { name: true, image: true } },
-			project: { select: { authorId: true } },
-			items: {
-				orderBy: { order: "asc" },
-				select: {
-					id: true,
-					kind: true,
-					text: true,
-					originalText: true,
-					cut: true,
-					addedAt: true,
-					evidence: {
-						orderBy: { createdAt: "asc" },
-						select: {
-							match: true,
-							matchNote: true,
-							artifact: {
-								select: {
-									id: true,
-									name: true,
-									type: true,
-									link: true,
-									createdAt: true,
-								},
-							},
-						},
-					},
-				},
-			},
-			pulses: {
-				where: { confirmedAt: { not: null } },
-				select: {
-					id: true,
-					week: true,
-					confirmedAt: true,
-					source: true,
-					teamMember: { select: { userId: true } },
-				},
-			},
-			journal: {
-				orderBy: { createdAt: "asc" },
-				select: {
-					id: true,
-					kind: true,
-					sprint: true,
-					link: true,
-					devlogId: true,
-					itemId: true,
-					input: true,
-					output: true,
-					createdAt: true,
-				},
-			},
-		},
+		select: journalViewSelect,
 	});
 	if (!checkpoint) return null;
 	const tasks = checkpoint.items.filter(

@@ -6,10 +6,10 @@ import {
 	projectPicture,
 	stageWorkflow,
 } from "@/repositories/checkpoints/ai-curator-context";
-import { getProjectActivity } from "@/repositories/project-activity.repository";
+import { getProjectActivity } from "@/repositories/project/activity";
 import { prisma } from "@/services/prisma";
 
-vi.mock("@/repositories/project-activity.repository", () => ({
+vi.mock("@/repositories/project/activity", () => ({
 	getProjectActivity: vi.fn(),
 }));
 vi.mock("@/services/prisma", () => ({

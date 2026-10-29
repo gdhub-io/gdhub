@@ -10,7 +10,7 @@ import { ScoutAlertsForm } from "@/components/scout/ScoutAlertsForm";
 import { ScoutDangerZone } from "@/components/scout/ScoutDangerZone";
 import { ScoutFocusForm } from "@/components/scout/ScoutFocusForm";
 import { ScoutGeneralForm } from "@/components/scout/ScoutGeneralForm";
-import type { ScoutCabinet } from "@/repositories/scout";
+import type { ScoutCabinet } from "@/repositories/scout/scout";
 import styles from "./style.module.scss";
 
 type Section = "general" | "focus" | "alerts" | "danger";

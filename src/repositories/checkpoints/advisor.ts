@@ -1,14 +1,14 @@
 import { CheckpointStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { teamCapacity } from "@/lib/checkpoints/capacity";
-import { prisma } from "@/services/prisma";
-import { CONFIRMED_MEMBERS } from "../scout.games";
-import { briefAuthor, briefMemberSelect, lastVerdict } from "./brief";
+import { getCheckpointCore } from "@/repositories/checkpoints/detail";
 import {
 	checkpointSelect,
-	getCheckpoint,
 	withAcceptedTerms,
-	withProgress,
-} from "./checkpoint";
+} from "@/repositories/checkpoints/select";
+import { prisma } from "@/services/prisma";
+import { CONFIRMED_MEMBERS } from "../scout/games";
+import { briefAuthor, briefMemberSelect, lastVerdict } from "./brief";
+import { withProgress } from "./checkpoint";
 
 const advisorCheckpointSelect = {
 	...checkpointSelect,
@@ -156,7 +156,7 @@ export const getAdvisorProject = async (
 		found,
 		// The page's own sprints, pulse and devlog reads, so the card cannot draw a
 		// week differently from the checkpoint it describes.
-		getCheckpoint(checkpointId),
+		getCheckpointCore(checkpointId),
 		found.then((row) => row && lastVerdict(row.projectId, checkpointId)),
 	]);
 

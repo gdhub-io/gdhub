@@ -12,7 +12,7 @@ import { ModernTable } from "@/components/ModernTable";
 import type {
 	MyAcceptance,
 	MyCertificate,
-} from "@/repositories/my-documents.repository";
+} from "@/repositories/legal/my-documents";
 import styles from "./style.module.scss";
 
 const { Text, Title } = Typography;

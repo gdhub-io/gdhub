@@ -10,7 +10,7 @@ import { curatorNow } from "@/lib/checkpoints/curator-now";
 import { scopeWindow } from "@/lib/checkpoints/scope";
 import { currentSessionOf } from "@/lib/checkpoints/sessions";
 import { hasRun } from "@/lib/checkpoints/status";
-import { toArtifactRef } from "@/repositories/checkpoints/checkpoint";
+import { toArtifactRef } from "@/repositories/checkpoints/detail";
 import {
 	checkpointNumber,
 	previousVerdict,

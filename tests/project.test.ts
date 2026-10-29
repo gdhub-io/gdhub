@@ -26,7 +26,7 @@ vi.mock("@/services/ai-validation", () => ({
 	aiValidation: { validate: (...args: unknown[]) => validate(...args) },
 }));
 
-vi.mock("@/repositories/project-workflow", () => ({
+vi.mock("@/repositories/project/workflow", () => ({
 	DEFAULT_PROJECT_STAGE: "Ideation",
 	selectableStageNames: async () => [
 		"Ideation",

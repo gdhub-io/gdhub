@@ -20,13 +20,17 @@ const createMany = vi.fn();
 const lastAcceptance = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
+vi.mock("next/server", async (original) => ({
+	...(await original<typeof import("next/server")>()),
+	after: vi.fn(),
+}));
 
 const notifyAuthor = vi.fn();
 vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyAuthorOfAnswer: (...a: unknown[]) => notifyAuthor(...a),
 }));
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

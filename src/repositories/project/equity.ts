@@ -3,7 +3,7 @@ import {
 	type ProjectEquity,
 } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
-import { CONFIRMED_MEMBERS } from "./scout.games";
+import { CONFIRMED_MEMBERS } from "../scout/games";
 
 /**
  * Interface for transferring shares between participants

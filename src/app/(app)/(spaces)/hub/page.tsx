@@ -6,7 +6,7 @@ import {
 import type { Metadata } from "next";
 import { getSession } from "@/auth";
 import { DEVLOG_FEED_LIMIT, devlogFeedQueryKey } from "@/config/devlog-feed";
-import { getDevlogFeedPage } from "@/repositories/devlog-feed";
+import { getDevlogFeedPage } from "@/repositories/devlog/feed";
 import HubClient from "./HubClient";
 
 export const metadata: Metadata = {

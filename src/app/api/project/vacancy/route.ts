@@ -6,7 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { findPublicVacancy } from "@/repositories/vacancy.repository";
+import { findPublicVacancy } from "@/repositories/vacancy/vacancy";
 import { prisma } from "@/services/prisma";
 
 const VacancyQuerySchema = z.object({

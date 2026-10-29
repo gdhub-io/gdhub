@@ -12,8 +12,12 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { deleteScout, getCabinet, updateCabinet } from "@/repositories/scout";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import {
+	deleteScout,
+	getCabinet,
+	updateCabinet,
+} from "@/repositories/scout/scout";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { cacheDelete } from "@/services/cache";
 
 const nullableText = z.string().trim().nullable().optional();

@@ -6,7 +6,7 @@ import type {
 	AdvisorCalendar,
 	AvailabilityDto,
 	BookedCall,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import type { AvailabilityBody } from "@/schemas/advisor-availability";
 
 const KEY = ["advisor-availability"];

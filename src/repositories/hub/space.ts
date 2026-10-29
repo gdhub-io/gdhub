@@ -1,6 +1,6 @@
 import { UserRole } from "@gdhub-io/gdhub-prisma";
 import { SpaceRole } from "@/config/permissions/roles";
-import { hasQualifiedSpeciality } from "@/repositories/speciality.repository";
+import { hasQualifiedSpeciality } from "@/repositories/user/speciality";
 import { DEFAULT_SPACE_ID, type SpaceAdapter } from "@/services/access/types";
 
 /**

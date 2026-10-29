@@ -22,10 +22,7 @@ import {
 	entryAboutState,
 	saveEntryAbout,
 } from "@/repositories/checkpoints/entry";
-import {
-	latestAcceptance,
-	needsAcceptance,
-} from "@/repositories/legal.repository";
+import { latestAcceptance, needsAcceptance } from "@/repositories/legal/legal";
 import { joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { syncUserToBrevo } from "@/services/brevo/sync";

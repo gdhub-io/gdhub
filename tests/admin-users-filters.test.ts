@@ -4,7 +4,7 @@ import { SpaceRole } from "@/config/permissions/roles";
 import {
 	buildAdminUsersWhere,
 	parseAdminUsersFilters,
-} from "@/repositories/admin-users.repository";
+} from "@/repositories/admin/users";
 
 const clauses = (where: Prisma.UserWhereInput): Prisma.UserWhereInput[] =>
 	Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : [];

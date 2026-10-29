@@ -4,7 +4,10 @@ import { WaitlistFeature } from "@/config/prisma-enums";
 import { clientIp } from "@/helpers/request";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { limitAiCalls } from "@/lib/rate-limit";
-import { isOnWaitlist, joinWaitlist } from "@/repositories/feature-waitlist";
+import {
+	isOnWaitlist,
+	joinWaitlist,
+} from "@/repositories/user/feature-waitlist";
 
 const FeatureSchema = z.nativeEnum(WaitlistFeature);
 const GuestSchema = z.object({ email: z.string().trim().email().max(254) });

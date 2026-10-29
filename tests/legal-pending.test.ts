@@ -19,7 +19,7 @@ vi.mock("@/services/prisma", () => ({
 }));
 
 const { needsAcceptance, pendingLegalCodes } = await import(
-	"@/repositories/legal.repository"
+	"@/repositories/legal/legal"
 );
 
 beforeEach(() => {

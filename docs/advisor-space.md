@@ -211,7 +211,7 @@ model ProjectEstimation {
 ```
 
 **Consequence to handle in the same change:** every existing reader must filter
-`status: Published` — `getProjectCardReviews` in `src/repositories/scout.project-card.ts`
+`status: Published` — `getProjectCardReviews` in `src/repositories/scout/project-card.ts`
 and the estimation count in `src/services/workflow/evaluateTaskCondition.ts` —
 otherwise a draft would show on the project card and satisfy a workflow task.
 

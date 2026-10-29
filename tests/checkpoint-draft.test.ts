@@ -7,7 +7,7 @@ import {
 import {
 	bookSessions,
 	isFirstCallFree,
-} from "@/repositories/advisor-availability";
+} from "@/repositories/advisor/availability";
 import { prisma } from "@/services/prisma";
 
 const authMock = vi.fn();
@@ -43,16 +43,18 @@ vi.mock("@/lib/space-guard", () => ({
 
 vi.mock("@/repositories/checkpoints/checkpoint", async (importOriginal) => ({
 	...(await importOriginal<typeof import("@/repositories/checkpoints/checkpoint")>()),
-	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 	withProgress: <T>(checkpoint: T) => checkpoint,
 	replaceCheckpointItems: vi.fn(),
+}));
+vi.mock("@/repositories/checkpoints/detail", () => ({
+	getCheckpoint: (...args: unknown[]) => getCheckpoint(...args),
 }));
 
 vi.mock("@/services/checkpoints/flows/ai-curator", () => ({
 	writeFirstLetter: (...args: unknown[]) => writeFirstLetter(...args),
 }));
 
-vi.mock("@/repositories/advisor-availability", () => ({
+vi.mock("@/repositories/advisor/availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
 	SlotTakenError: class SlotTakenError extends Error {},

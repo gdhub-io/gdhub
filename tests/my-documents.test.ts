@@ -10,7 +10,7 @@ vi.mock("@/services/prisma", () => ({
 	},
 }));
 
-const { myDocuments } = await import("@/repositories/my-documents.repository");
+const { myDocuments } = await import("@/repositories/legal/my-documents");
 
 beforeEach(() => {
 	vi.clearAllMocks();

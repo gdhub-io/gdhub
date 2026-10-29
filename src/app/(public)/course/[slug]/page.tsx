@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { findPublishedCourse } from "@/repositories/public-course";
+import { findPublishedCourse } from "@/repositories/course/public";
 import { CoursePageClient } from "./CoursePageClient";
 
 type Params = Promise<{ slug: string }>;

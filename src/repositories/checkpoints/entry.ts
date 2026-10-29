@@ -14,12 +14,10 @@ import {
 import { CHECKPOINT_ENTRY_ITEMS_MAX } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
 import { CHECKPOINT_OPEN_STATUSES } from "@/lib/checkpoints/status";
-import {
-	createCheckpointItems,
-	toArtifactRef,
-} from "@/repositories/checkpoints/checkpoint";
+import { createCheckpointItems } from "@/repositories/checkpoints/checkpoint";
+import { toArtifactRef } from "@/repositories/checkpoints/detail";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
-import { ensureCheckpointStage } from "@/repositories/project-workflow";
+import { ensureCheckpointStage } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 import type {
 	CheckpointArtifactRef,
@@ -28,7 +26,7 @@ import type {
 	EntryProjectPrefillDto,
 	EntryStatusDto,
 } from "@/types/checkpoints";
-import { latestAcceptance, needsAcceptance } from "../legal.repository";
+import { latestAcceptance, needsAcceptance } from "../legal/legal";
 
 /**
  * The checkpoint entry hub (`/checkpoint/new`): who the author is, which project

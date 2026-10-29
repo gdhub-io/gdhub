@@ -10,7 +10,7 @@ const ensureMatrixUser = vi.fn();
 const store = new Map<string, unknown>();
 
 // Which legal documents are pending is its own concern, tested in legal-pending.test.ts.
-vi.mock("@/repositories/legal.repository", () => ({
+vi.mock("@/repositories/legal/legal", () => ({
 	pendingLegalCodes: async () => [],
 }));
 

@@ -1,5 +1,5 @@
 import { apiError, json } from "@/lib/api-handlers";
-import { findPublishedCourse } from "@/repositories/public-course";
+import { findPublishedCourse } from "@/repositories/course/public";
 
 type Params = Promise<{ slug: string }>;
 

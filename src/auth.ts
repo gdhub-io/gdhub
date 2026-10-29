@@ -9,7 +9,7 @@ import { cache } from "react";
 import { brevoTemplates } from "@/config/brevo-templates";
 import { defaultLocale, isAvailableLocale } from "@/config/locale";
 import { env } from "@/helpers/env";
-import { pendingLegalCodes } from "@/repositories/legal.repository";
+import { pendingLegalCodes } from "@/repositories/legal/legal";
 import { brevoApi } from "@/services/brevo";
 import { cached, cacheSet } from "@/services/cache";
 import { ensureMatrixUser } from "@/services/matrix/admin";

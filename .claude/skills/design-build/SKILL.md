@@ -81,7 +81,7 @@ What CLAUDE.md does not say:
   rewritten anyway: `formatDollar` / `formatCompactCount`
   (`src/helpers/format.ts`), `toOptions` (`src/helpers/select.ts`),
   `paginateInMemory` (`src/lib/pagination.ts`), `getProjectCardFacts`
-  (`src/repositories/project-card.repository.ts`),
+  (`src/repositories/project/card.ts`),
   `prisma.project.getApplauseCounts`.
 - A two-column grid is layout, not a component — "antd over hand-rolled markup"
   is about not rebuilding components antd ships, not about avoiding CSS.

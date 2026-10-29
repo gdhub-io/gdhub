@@ -12,7 +12,7 @@ import {
 	CONFIRMED_STATUS,
 	toEstimateInput,
 	VISIBLE_STATUSES,
-} from "./scout.games";
+} from "./games";
 
 /**
  * The project a scout may open, or `null`.

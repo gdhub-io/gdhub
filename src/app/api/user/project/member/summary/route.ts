@@ -7,7 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout.games";
+import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 
 const SummaryQuerySchema = z.object({

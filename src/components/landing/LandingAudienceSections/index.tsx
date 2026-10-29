@@ -27,7 +27,7 @@ import {
 } from "@/components/project/cards";
 import { VacancyCard } from "@/components/VacancyCard";
 import { ContactTopic } from "@/config/contact";
-import type { LandingData } from "@/repositories/landing.repository";
+import type { LandingData } from "@/repositories/content/landing";
 import {
 	AudienceAction,
 	AudienceSection,

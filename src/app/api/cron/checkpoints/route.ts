@@ -1,6 +1,6 @@
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
-import { sweepArtifactChecks } from "@/repositories/artifact-check";
+import { sweepArtifactChecks } from "@/repositories/project/artifact-check";
 import { writeDueVerdictReads } from "@/services/checkpoints/flows/ai-curator";
 import { requestPulses } from "@/services/checkpoints/flows/pulse";
 import {
@@ -12,7 +12,7 @@ import {
 	remindDevlogsDue,
 	remindEvidenceDue,
 	remindVerdictsDue,
-} from "@/services/checkpoints/notifications";
+} from "@/services/checkpoints/reminders";
 
 /**
  * The checkpoints' daily run: a checkpoint whose 28 days are over waits for

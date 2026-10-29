@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isE2EAuth } from "@/auth";
-import { listFixtureUsers } from "@/repositories/dev-fixture-users.repository";
+import { listFixtureUsers } from "@/repositories/admin/dev-fixture-users";
 import { DevSignInClient } from "./DevSignInClient";
 
 export const metadata: Metadata = {

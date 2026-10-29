@@ -4,6 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import { Tag } from "antd";
 import { useParams } from "next/navigation";
 import { CheckpointStatus } from "@/config/prisma-enums";
+import { isFreshDraft } from "@/lib/checkpoints/draft";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointCurator } from "./CheckpointCard/Curator";
 import { dayRange } from "./CheckpointCard/SprintTrack";
@@ -40,12 +41,7 @@ export const useCheckpointHero = (checkpoint?: CheckpointDto | null) => {
 	// being set up, and the line under it says how far that has got. Once it has
 	// been bought it is that checkpoint for good, even if a curator handed it
 	// back and the status is a draft again.
-	const isDraft =
-		checkpoint.status === CheckpointStatus.Draft &&
-		!checkpoint.paymentId &&
-		!checkpoint.curatorDeclinedAt;
-
-	if (isDraft) {
+	if (isFreshDraft(checkpoint)) {
 		return {
 			title: t("checkpoints.draft.pageTitle", "Checkpoint draft"),
 			description: t("checkpoints.draft.pageSub", "Prepare · Setup incomplete"),

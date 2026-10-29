@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
-import { pruneContentViews } from "@/repositories/content-view.repository";
+import { pruneContentViews } from "@/repositories/content/views";
 import { CONTENT_VIEW_RETENTION_DAYS } from "@/types/content-views";
 
 export const GET = withAuth({ mode: "vercel_cron" })(async () => {
