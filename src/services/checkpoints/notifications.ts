@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import {
 	AI_APPROVE_HOURS,
 	CURATOR_ANSWER_DAYS,
+	CURATOR_REPICK_DAYS,
 	WITHDRAWAL_DAYS,
 } from "@/config/checkpoint";
 import { CheckpointJournalKind, SpaceRole } from "@/config/prisma-enums";
@@ -191,6 +192,7 @@ export const notifyAuthorOfAnswer = async (
 
 	const number = await checkpointNumber(row);
 	const transactionId = `cp-${answer}-${checkpointId}-${row.createdAt.getTime()}`;
+	const repick = `Your payment stays with the checkpoint. Pick another curator and a time for the first call, or cancel it for a full refund. If nobody is picked within ${CURATOR_REPICK_DAYS} days, it is cancelled and refunded.`;
 
 	const letters = {
 		accepted: {
@@ -201,13 +203,11 @@ export const notifyAuthorOfAnswer = async (
 		},
 		declined: {
 			title: `${curatorName} can't take Checkpoint ${number}`,
-			message:
-				"Nothing was charged. Pick another curator and a time for the first call.",
+			message: repick,
 		},
 		silent: {
 			title: `${curatorName} did not answer about Checkpoint ${number}`,
-			message:
-				"The hold on your card is released. Pick another curator and a time for the first call.",
+			message: repick,
 		},
 	} satisfies Record<CuratorAnswer, { title: string; message: string }>;
 
@@ -246,6 +246,30 @@ export const notifyAuthorOfRefund = async (
 		checkpointId,
 		title: `Checkpoint ${number} is closed and ${amount} is on its way back`,
 		message: `${why} The refund reaches your card in 5–10 business days. It covers everything that was not delivered.`,
+		redirectUrl: workflowUrl(row.project.slug),
+	});
+};
+
+/** Nobody was picked after a curator could not take it: cancelled, money on its way back. */
+export const notifyAuthorOfLapse = async (
+	checkpointId: string,
+	amount: string,
+) => {
+	const row = await prisma.projectCheckpoint.findUnique({
+		where: { id: checkpointId },
+		select: {
+			projectId: true,
+			createdAt: true,
+			project: { select: { slug: true, author: recipient } },
+		},
+	});
+	if (!row) return;
+
+	const number = await checkpointNumber(row);
+	await notify(row.project.author, `cp-lapse-${checkpointId}`, {
+		checkpointId,
+		title: `Checkpoint ${number} is cancelled and ${amount} is on its way back`,
+		message: `No other curator was picked within ${CURATOR_REPICK_DAYS} days. The refund reaches your card in 5–10 business days.`,
 		redirectUrl: workflowUrl(row.project.slug),
 	});
 };

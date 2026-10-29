@@ -45,6 +45,19 @@ export const completedPaymentOf = async (checkpointId: string) =>
 		})
 	)?.id ?? null;
 
+/**
+ * The money a checkpoint keeps: held while its curator has not answered (Paddle's
+ * charge waits there as PROCESSING too), complete once taken. A checkpoint back
+ * with its author after a refusal or silence goes to the next curator on it.
+ */
+export const keptPaymentOf = async (checkpointId: string) =>
+	(
+		await prisma.payment.findFirst({
+			where: heldPaymentWhere(checkpointId),
+			select: { id: true },
+		})
+	)?.id ?? null;
+
 export const isCheckpointPaid = async (checkpointId: string) =>
 	(await completedPaymentOf(checkpointId)) !== null;
 
@@ -440,3 +453,41 @@ export const awaitingCuratorOf = (checkpointId: string) =>
 		},
 		select: { curatorId: true, curator: { select: { name: true } } },
 	});
+
+/**
+ * Checkpoints back with their authors since before `before` — a curator turned
+ * them down or never answered — with nobody picked since and the money still kept.
+ */
+export const unpickedSince = async (before: Date) => {
+	const returned = await prisma.projectCheckpoint.findMany({
+		where: {
+			status: CheckpointStatus.Draft,
+			curatorId: null,
+			curatorDeclinedAt: { lt: before },
+		},
+		select: { id: true },
+	});
+	if (!returned.length) return [];
+
+	return prisma.payment.findMany({
+		where: {
+			payableType: PayableType.CHECKPOINT,
+			payableId: { in: returned.map((row) => row.id) },
+			status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
+		},
+		select: { payableId: true, amount: true },
+	});
+};
+
+/** Cancels a checkpoint nobody was picked for, only while that is still so. */
+export const cancelUnpicked = async (checkpointId: string) => {
+	const move = checkpointMove(
+		CheckpointStatus.Draft,
+		CheckpointStatus.Cancelled,
+	);
+	const { count } = await prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, curatorId: null, ...move.where },
+		data: move.data,
+	});
+	return count > 0;
+};

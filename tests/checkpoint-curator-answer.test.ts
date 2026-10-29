@@ -189,10 +189,12 @@ describe("a curator answering", () => {
 
 	// Held or already captured, the author gets it back the right way — the
 	// repository decides which, and the answer waits for it either way.
-	it("gives the money back when they turn it down", async () => {
+	// The money stays with the checkpoint: its author picks another curator or
+	// cancels for a refund, and the holds cron refunds it after CURATOR_REPICK_DAYS.
+	it("keeps the money with the checkpoint when they turn it down", async () => {
 		await answer(false);
 
-		expect(returnMoney).toHaveBeenCalledWith("cp1", "curatorDeclined");
+		expect(returnMoney).not.toHaveBeenCalled();
 		expect(notifyAuthor).toHaveBeenCalledWith("cp1", expect.any(String), "declined");
 		expect(captureCheckout).not.toHaveBeenCalled();
 		expect(checkpointUpdateMany).toHaveBeenCalledWith(
@@ -215,14 +217,6 @@ describe("a curator answering", () => {
 		});
 	});
 
-	// A decline that could not return the money would leave the author paying
-	// for a checkpoint nobody runs.
-	it("refuses the decline when the money cannot be given back", async () => {
-		returnMoney.mockResolvedValue(null);
-
-		expect((await answer(false)).status).toBe(500);
-		expect(checkpointUpdateMany).not.toHaveBeenCalled();
-	});
 
 	// The checkpoint must not start on a capture that failed: the 28 days would
 	// be running against money nobody has.

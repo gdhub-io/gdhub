@@ -17,8 +17,8 @@ const checkpointUpdateMany = vi.fn();
 const sessionDeleteMany = vi.fn();
 const sessionCreateMany = vi.fn();
 const specialityFindFirst = vi.fn();
-// The payment that bought the checkpoint (`completedPaymentOf`), apart from the
-// money it holds or took (`heldAmount`): a hold is not a purchase.
+// The payment the checkpoint keeps (`keptPaymentOf`, its id), apart from the sum
+// it holds or took (`heldAmount`), which prices the next curator.
 const completedPaymentFindFirst = vi.fn();
 const paymentFindFirst = vi.fn();
 const getCheckpoint = vi.fn();
@@ -77,8 +77,8 @@ vi.mock("@/services/prisma", () => ({
 			findFirst: (...args: unknown[]) => specialityFindFirst(...args),
 		},
 		payment: {
-			findFirst: (args: { where: { status?: unknown } }) =>
-				args.where.status === "COMPLETED"
+			findFirst: (args: { select?: { id?: boolean } }) =>
+				args.select?.id
 					? completedPaymentFindFirst(args)
 					: paymentFindFirst(args),
 		},

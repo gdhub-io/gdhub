@@ -151,8 +151,14 @@ export const CHECKPOINT_MIN_AGE = 18;
 /** "Briefly about your experience" on About you. */
 export const CHECKPOINT_EXPERIENCE_MAX = 500;
 
-/** How long a curator has to answer before the money goes back. */
+/** How long a curator has to answer before the checkpoint goes back to its author. */
 export const CURATOR_ANSWER_DAYS = 3;
+/**
+ * Back with its author after a curator turned it down or never answered, a paid
+ * checkpoint keeps its money this long for another curator to be picked; then it
+ * is cancelled and refunded. Paddle charges at once and holds nothing.
+ */
+export const CURATOR_REPICK_DAYS = 14;
 /** The first call is booked at least this many days ahead. */
 export const FIRST_CALL_MIN_DAYS = 3;
 

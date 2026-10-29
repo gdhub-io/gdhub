@@ -11,7 +11,10 @@ import {
 	returnToAuthor,
 	staleStripeHolds,
 } from "@/repositories/checkpoints/payment";
-import { reconcileCheckout } from "@/services/checkpoints/flows/payment";
+import {
+	cancelUnpickedCheckpoints,
+	reconcileCheckout,
+} from "@/services/checkpoints/flows/payment";
 import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { releaseCheckout } from "@/services/stripe/server";
 
@@ -94,7 +97,9 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			released += 1;
 		}
 
-		return { settled, released, considered: stale.length };
+		const lapsed = await cancelUnpickedCheckpoints();
+
+		return { settled, released, considered: stale.length, lapsed };
 	});
 
 	return json(result);

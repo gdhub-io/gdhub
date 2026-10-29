@@ -32,9 +32,9 @@ import {
 import { isEligibleCurator } from "@/repositories/checkpoints/curator-catalog";
 import { getCheckpoint } from "@/repositories/checkpoints/detail";
 import {
-	completedPaymentOf,
 	curatorCharge,
 	heldAmount,
+	keptPaymentOf,
 	pendingCheckout,
 } from "@/repositories/checkpoints/payment";
 import { checkpointViewer } from "@/repositories/checkpoints/viewer";
@@ -139,7 +139,7 @@ export const PUT = pipe(
 	// Every read the checks below need, at once; they are still judged in order.
 	const choosing = curatorId !== undefined || !!curatorKind;
 	const [paidWith, held, eligible, firstCallFree] = await Promise.all([
-		choosing ? completedPaymentOf(id) : null,
+		choosing ? keptPaymentOf(id) : null,
 		choosing ? heldAmount(id) : null,
 		curatorId && curatorId !== currentUser.id
 			? isEligibleCurator(curatorId, checkpoint.stageName)

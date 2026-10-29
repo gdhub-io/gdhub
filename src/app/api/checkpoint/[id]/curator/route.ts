@@ -30,7 +30,6 @@ import {
 	ensureCheckpointRoom,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
-import { returnCheckpointMoney } from "@/services/checkpoints/flows/payment";
 import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { gatewayFor } from "@/services/payments/gateway";
 
@@ -106,9 +105,9 @@ export const POST = pipe(
 		}
 	}
 
-	// Accepting takes the money that is held. Turning it down gives it back —
-	// released if it is still only held, refunded if it was already captured,
-	// which is what a checkpoint bought before holds existed still carries.
+	// Accepting takes the money that is held. Turning it down keeps it with the
+	// checkpoint: its author picks another curator or cancels for a refund, and
+	// after CURATOR_REPICK_DAYS the holds cron cancels and refunds it.
 	const held = await heldCheckpointPayment(id);
 
 	if (accept) {
@@ -122,14 +121,6 @@ export const POST = pipe(
 			if (!captured) return apiError.internal("paymentNotSettled");
 
 			await markPaymentCaptured(held.id);
-		}
-	} else {
-		const returned = await returnCheckpointMoney(id, "curatorDeclined");
-
-		// Money the author paid must not be left behind a checkpoint nobody is
-		// running: better to refuse the decline than to lose track of it.
-		if (held && (!returned || "failed" in returned)) {
-			return apiError.internal("paymentNotSettled");
 		}
 	}
 

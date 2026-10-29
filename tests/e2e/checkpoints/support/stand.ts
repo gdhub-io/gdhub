@@ -94,7 +94,7 @@ export async function grantUser(
  */
 export async function grantCurator(label: string): Promise<StandUser> {
 	// Named for this run: a curator a stopped run left behind is listed too.
-	const curator = await grantUser(label, "advisor", `Expert ${RUN}`);
+	const curator = await grantUser(label, "advisor", `Expert ${label} ${RUN}`);
 	const direction = await prisma.workDirection.findFirstOrThrow({
 		orderBy: { name: "asc" },
 		select: { id: true },
@@ -139,6 +139,38 @@ export async function grantCurator(label: string): Promise<StandUser> {
 		update: {},
 	});
 	return curator;
+}
+
+/**
+ * The expert's way to a checkpoint request: the Advisor Agreement accepted on
+ * the way in (a TBD text, on the stand only), then the request opened and
+ * answered.
+ */
+export async function answerAsCurator(page: Page, accept: boolean) {
+	await page.goto("/advisor/checkpoints");
+	const terms = page.getByRole("dialog").filter({ hasText: "Please accept our terms" });
+	const asked = await terms
+		.waitFor({ state: "visible", timeout: 10_000 })
+		.then(() => true)
+		.catch(() => false);
+	if (asked) {
+		await terms.getByRole("checkbox", { name: /I accept the Advisor Agreement/ }).check();
+		await terms.getByRole("button", { name: "Accept and continue" }).click();
+		await expect(terms).toBeHidden();
+	}
+	await page.getByRole("button", { name: "Review and answer" }).first().click();
+	await page.getByRole("button", { name: accept ? "Take it on" : "Turn down" }).click();
+}
+
+/** The author hands a paid checkpoint to another expert, first hour they offer. */
+export async function handTo(page: Page, slug: string, expert: string, button: string) {
+	await page.goto(`/checkpoint/new/checkout?project=${slug}`);
+	await page.getByRole("button", { name: button }).click();
+	const modal = page.getByRole("dialog", { name: "Replace the curator" });
+	await modal.getByRole("row", { name: new RegExp(expert) }).first().click();
+	await modal.getByRole("button", { name: /^\d\d:\d\d$/ }).first().click();
+	await modal.getByRole("button", { name: "Hand it to them" }).click();
+	await expect(modal).toBeHidden();
 }
 
 export async function signInAs(browser: Browser, user: StandUser) {

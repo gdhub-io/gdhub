@@ -49,9 +49,14 @@ checkpoint task under GDHUB-31.
     `DAILY_WEBHOOK_SECRET` and posted to the real `/api/daily/webhooks`.
   - **The transcript:** a fixture. The notes the AI writes from it come from
     cassettes.
-- **The expert flag:** `EXPERT_CHECKPOINT_OPEN` reads from the environment. It
-  stays off by default and in production; `dev:test` turns it on. One test
-  keeps it off and checks the waitlist.
+- **The expert flag:** `EXPERT_CHECKPOINT_OPEN` reads from the environment
+  (`NEXT_PUBLIC_EXPERT_CHECKPOINT_OPEN`). It stays off by default and in
+  production; `dev:test` turns it on. It is fixed when the app is built, so the
+  stand cannot also show it off: the waitlist stays covered by
+  `ExpertWaitlist.stories.tsx` and the draft route's unit tests.
+- **The Advisor Agreement** is unpublished in production. The stand alone gets a
+  TBD version 0 (`docs/legal/advisor-agreement/v0.md`, `NEXT_PUBLIC_E2E_STAND`),
+  so the advisor's "accept our terms" step is walked.
 - Tests grant rather than borrow. Time is moved by shifting dates and calling
   the crons, as in GDHUB-79. Refusals, windows and money arithmetic stay in the
   unit tests.
@@ -83,6 +88,18 @@ checkpoint task under GDHUB-31.
 - Running the suite in CI.
 - Fixing what the suite finds. Each finding goes to GDHUB-81 unless it is small
   enough to fix here, as in GDHUB-79.
+
+## Decided on the way (2026-10-29)
+
+- **A curator's refusal keeps the money.** Dmitry: the author picks another
+  expert at no charge, or cancels it for a refund. If nobody is picked within
+  `CURATOR_REPICK_DAYS` (14), the holds cron cancels and refunds it. Paddle
+  charges at once and holds nothing. Silence works the same way, an admin's pick
+  takes the kept money too, and the author's letters say so.
+- **Found: the expert price is not in Paddle.** Every checkout charges
+  `PADDLE_AI_CHECKPOINT_PRICE_ID`, so an expert checkpoint costs the AI price
+  until their seller exists (GDHUB-107). H2 sets the held sum to the expert's
+  price, so changing hands is judged on the right sum. Listed in GDHUB-81.
 
 ## Open questions
 

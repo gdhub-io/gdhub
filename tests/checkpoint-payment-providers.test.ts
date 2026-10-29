@@ -36,6 +36,7 @@ vi.mock("@/services/paddle/server", () => ({
 
 vi.mock("@/services/checkpoints/flows/payment", () => ({
 	reconcileCheckout: vi.fn(async () => false),
+	cancelUnpickedCheckpoints: vi.fn(async () => 0),
 }));
 
 vi.mock("@/repositories/checkpoints/payment", async (importOriginal) => ({
