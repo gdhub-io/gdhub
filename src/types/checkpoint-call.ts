@@ -6,6 +6,7 @@ import type { CallState, PlanEdit } from "@/lib/checkpoints/call";
 import type {
 	CallNotes,
 	CheckpointArtifactRef,
+	GoalAdvice,
 	PlanAdvice,
 	PreviousVerdict,
 } from "@/types/checkpoints";
@@ -87,5 +88,9 @@ export type CallBrief = {
 	notes: CallNotes;
 	/** What each task's evidence was seen to show when the brief was written. */
 	seen: { itemId: string; match: EvidenceMatch; note: string | null }[];
+	/** Call 2: the goal against its stage (GDHUB-125); null on other calls and older briefs. */
+	goal?: GoalAdvice | null;
+	/** Calls 2 and 4: each open task against the goal, as the author with the AI curator would read it. */
+	advice?: PlanAdvice | null;
 	writtenAt: string;
 };

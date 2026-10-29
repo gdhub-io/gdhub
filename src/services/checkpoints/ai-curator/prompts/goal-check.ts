@@ -8,6 +8,7 @@ import type {
 import { GOAL_FITS } from "@/types/checkpoints";
 import {
 	CURATOR_STANCE,
+	GOAL_STAGE,
 	localeLine,
 	renderCard,
 	renderCharacter,
@@ -53,8 +54,17 @@ export const goalCheckSchema = () => ({
 					description:
 						"One or two sentences: why, and for widen or narrow the goal reworded, ready to use.",
 				},
+				stage: {
+					type: "object",
+					description: GOAL_STAGE.description,
+					properties: {
+						inside: { type: "boolean" },
+						note: { type: "string", description: GOAL_STAGE.note },
+					},
+					required: ["inside", "note"],
+				},
 			},
-			required: ["fit", "note"],
+			required: ["fit", "note", "stage"],
 		},
 		suggestions: {
 			type: "array",
@@ -111,6 +121,10 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			should be — the narrowed or widened one where you advise that. Never
 			suggest the stage's required tasks: the workflow tracks those, and a
 			checkpoint may be one of several on a stage.
+
+			Read the goal against the stage goal too: it sits inside unless it
+			clearly reaches past it. A goal outside is the author's choice to
+			keep — flag it, never refuse it.
 
 			Be fair rather than strict: the goal fits unless it clearly does not.
 

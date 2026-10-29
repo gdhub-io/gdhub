@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
+import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/checkpoints/curator-text";
 import {
 	curatorTeam,
@@ -215,6 +215,7 @@ describe("the stage as the curator reads it", () => {
 			currentStage: "Prototyping",
 			nextStage: "Demo version",
 			description: CURATOR_STAGE_BRIEFS.Prototyping,
+			goal: CURATOR_STAGE_GOALS.Prototyping,
 			requiredTasks: [
 				{ name: "Playable greybox", done: true },
 				{ name: "Playtest with five people", done: false },
@@ -234,7 +235,27 @@ describe("the stage as the curator reads it", () => {
 			currentStage: "A stage of our own",
 			nextStage: null,
 			description: null,
+			goal: null,
 			requiredTasks: [],
 		});
+	});
+});
+
+// GDHUB-125: every prompt reads the chain from the same block.
+describe("renderWorkflow", () => {
+	it("gives the model the project goal and the stage goal", async () => {
+		const { renderWorkflow } = await import(
+			"@/services/checkpoints/ai-curator/prompts/card"
+		);
+		const { PROJECT_GOAL } = await import("@/config/checkpoint");
+		const text = renderWorkflow({
+			currentStage: "Prototyping",
+			nextStage: null,
+			description: null,
+			goal: CURATOR_STAGE_GOALS.Prototyping,
+			requiredTasks: [],
+		});
+		expect(text).toContain(`Project goal: ${PROJECT_GOAL}`);
+		expect(text).toContain(CURATOR_STAGE_GOALS.Prototyping);
 	});
 });

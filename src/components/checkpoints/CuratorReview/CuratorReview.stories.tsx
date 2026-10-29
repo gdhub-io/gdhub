@@ -264,7 +264,8 @@ const advice = (tasks: CuratorReview["advice"]): CuratorReview["advice"] =>
 const aiReview = (
 	current: number,
 	tasks: Task[],
-	plan: Pick<CheckpointReviewDto["plan"], "edit" | "editUntil">,
+	plan: Pick<CheckpointReviewDto["plan"], "edit" | "editUntil"> &
+		Partial<Pick<CheckpointReviewDto["plan"], "checked">>,
 	contents: (CuratorReview | null)[],
 	extra: Partial<CheckpointReviewDto> = {},
 ): CheckpointReviewDto => {
@@ -296,7 +297,8 @@ const aiReview = (
 		project: { id: "p1", name: "Hollow Tide", slug: "hollow-tide" },
 		plan: {
 			goal: GOAL,
-			checked: plan.edit !== "goalAndTasks",
+			// Day 1 and day 15 wait for the curator's check until a story says otherwise.
+			checked: plan.edit !== "goalAndTasks" && plan.edit !== "tasks",
 			approved: plan.edit !== "goalAndTasks",
 			...plan,
 			tasks,
@@ -602,6 +604,29 @@ export const AiDay1: Story = {
 	),
 };
 
+/** Day 1, a goal that reaches past its stage (frame 12.10.1d): flagged under it, never blocked. */
+export const AiDay1GoalOutsideStage: Story = {
+	name: "AI · day 1, goal outside its stage",
+	render: () => (
+		<AiPage
+			index={1}
+			review={aiReview(1, [], { edit: "goalAndTasks", editUntil: null }, [
+				{
+					...firstLetter,
+					goal: {
+						fit: "fits",
+						note: "It fits the hours you have.",
+						stage: {
+							inside: false,
+							note: "Beyond the Concepting stage: a Steam release comes after a demo and a release version. Concepting ends with a concept the team can build from. You can keep this goal — the 28 days will be judged against it.",
+						},
+					},
+				},
+			])}
+		/>
+	),
+};
+
 /** Day 2: the tasks are set with the AI's advice; the last verdict above. */
 export const AiSprint1: Story = {
 	name: "AI · sprint 1 (day 2)",
@@ -629,6 +654,22 @@ export const AiSprint3Day1: Story = {
 				3,
 				midTasks,
 				{ edit: "tasks", editUntil: "2026-10-16T01:00:00.000Z" },
+				[startContent, sprint1, sprint2],
+			)}
+		/>
+	),
+};
+
+/** Day 15, the changes checked (frame 12.10.5a): confirm the tasks. */
+export const AiSprint3Checked: Story = {
+	name: "AI · day 15, changes checked",
+	render: () => (
+		<AiPage
+			index={3}
+			review={aiReview(
+				3,
+				midTasks,
+				{ edit: "tasks", editUntil: "2026-10-16T01:00:00.000Z", checked: true },
 				[startContent, sprint1, sprint2],
 			)}
 		/>

@@ -138,7 +138,7 @@ export const VERDICT_NOTE_MAX = 1200;
 
 export const CHECKPOINT_GOAL_MAX = 500;
 export const CHECKPOINT_ITEM_TEXT_MAX = 200;
-export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
+export const CHECKPOINT_MAX_ITEMS_PER_KIND = 5;
 export const CHECKPOINT_MAX_EVIDENCE_PER_ITEM = 3;
 
 // Buying one
@@ -290,4 +290,32 @@ export const CURATOR_STAGE_BRIEFS: Record<string, string> = {
 		"The game is out: fixes and patches, answers to players and reviews, and the sales and review numbers that the project's close reads.",
 	"Project Completion":
 		"Closing the project: a postmortem — what went right, what went wrong, the lessons — and the final numbers, for the team's next project.",
+};
+
+/** What every project on the platform is ultimately for; each stage goal leads to it. */
+export const PROJECT_GOAL = "The game is released and people play it.";
+
+/**
+ * Where each stage of the Default workflow has to leave the project — the
+ * result, where `CURATOR_STAGE_BRIEFS` is the work. A checkpoint goal sits
+ * inside its stage's goal without having to reach all of it.
+ */
+export const CURATOR_STAGE_GOALS: Record<string, string> = {
+	Introduction:
+		"The author knows how the platform works and the project is ready to start.",
+	Ideation:
+		"One idea is chosen and defended: what the game is, who it is for and why this idea over the others.",
+	Concepting:
+		"A concept the team can build from: core loop, audience, scope and look are settled, and the riskiest open questions are named.",
+	Prototyping:
+		"The concept's riskiest questions are answered with something playable or visible: the core works and the style is chosen.",
+	"Preparing a demo version":
+		"A short slice of the game at near-final quality is public for anyone to play, and the store page is live.",
+	"Taking and analyzing metrics":
+		"What players do with the demo is measured and turned into decisions: what to fix, cut or build on.",
+	"Preparing a release version": "The full game is finished and released.",
+	Support:
+		"The released game keeps its players: problems fixed, players answered, the numbers watched.",
+	"Project Completion":
+		"The project is closed with a postmortem and final numbers the team carries into its next game.",
 };

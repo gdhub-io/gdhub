@@ -80,7 +80,10 @@ export const getCallBriefs = async (
 		entry.sprint
 			? [
 					{
-						...(entry.output as Pick<CallBrief, "notes" | "seen">),
+						...(entry.output as Pick<
+							CallBrief,
+							"notes" | "seen" | "goal" | "advice"
+						>),
 						// A brief reads the sprint before the call it is for.
 						index: entry.sprint + 1,
 						writtenAt: entry.createdAt.toISOString(),

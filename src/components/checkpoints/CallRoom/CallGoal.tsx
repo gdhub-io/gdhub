@@ -1,13 +1,18 @@
 "use client";
 
-import { IconPencil, IconSparkles, IconTarget } from "@tabler/icons-react";
+import {
+	IconFlag,
+	IconPencil,
+	IconSparkles,
+	IconTarget,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Flex, Input, Tooltip, Typography } from "antd";
 import { type ReactNode, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
 import type { CheckpointCallDto } from "@/types/checkpoint-call";
-import type { GoalAdvice } from "@/types/checkpoints";
+import type { GoalAdvice, GoalStage } from "@/types/checkpoints";
 import { usePlanChange } from "./CallPlan";
 import styles from "./style.module.scss";
 
@@ -30,7 +35,7 @@ export type GoalCardProps = {
 	editable: boolean;
 	/** Needed only while `editable`. */
 	onSave?: (goal: string) => Promise<void>;
-	/** The AI curator's word on the goal, on day 1 (frame SWg9T). */
+	/** The AI curator's word on the goal, on day 1 (frame SWg9T), and on its stage (12.10.1d). */
 	advice?: GoalAdvice | null;
 };
 
@@ -78,6 +83,7 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 						className={styles.goalAdvice}
 					/>
 				)}
+				<StageFlag stage={advice?.stage} className={styles.goalAdvice} />
 			</div>
 			{canEdit && !editing && (
 				<Tooltip title={t("checkpoints.call.goal.edit", "Edit the goal")}>
@@ -89,6 +95,26 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 				</Tooltip>
 			)}
 		</section>
+	);
+}
+
+/** Frame 12.10.1d: a goal past its stage is flagged, never blocked — the author may keep it. */
+export function StageFlag({
+	stage,
+	className,
+}: {
+	stage?: GoalStage | null;
+	className?: string;
+}) {
+	if (!stage || stage.inside) return null;
+	return (
+		<Alert
+			type="warning"
+			showIcon
+			icon={<IconFlag size={14} />}
+			title={stage.note}
+			className={className}
+		/>
 	);
 }
 

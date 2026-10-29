@@ -1,5 +1,9 @@
 import { stripIndents } from "common-tags";
-import { CHECKPOINT_DAYS, SESSION_MINUTES } from "@/config/checkpoint";
+import {
+	CHECKPOINT_DAYS,
+	PROJECT_GOAL,
+	SESSION_MINUTES,
+} from "@/config/checkpoint";
 import { sheetOf } from "@/lib/checkpoints/curator-characters";
 import type {
 	CuratorGoalCard,
@@ -105,9 +109,18 @@ export const renderPulse = (team: CuratorTeam, week: number) => {
 	return `Pulse: ${worked.length} confirmed working${roles(worked)}, ${missing.length} did not${roles(missing)}.`;
 };
 
+/** The goal against its stage (GDHUB-125), the same words for the goal check and the plan advice. */
+export const GOAL_STAGE = {
+	description:
+		"Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else.",
+	note: "One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside.",
+};
+
 export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
+	Project goal: ${PROJECT_GOAL} Every stage leads to it.
 	Workflow stage: ${workflow.currentStage}
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
+	${workflow.goal ? `Stage goal, where the stage has to leave the project: ${workflow.goal} A checkpoint goal sits inside it without having to reach all of it.` : ""}
 	${workflow.nextStage ? `To move on to "${workflow.nextStage}", the stage requires:` : "This is the last stage of the path. It requires:"}
 	${workflow.requiredTasks.map((task) => `- [${task.done ? "x" : " "}] ${task.name}`).join("\n") || "- (nothing is required)"}
 	The stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.

@@ -38,6 +38,8 @@ export type CuratorWorkflow = {
 	nextStage: string | null;
 	/** What the stage is for, written for the curator; null for a stage with none. */
 	description: string | null;
+	/** Where the stage has to leave the project (GDHUB-125); null for a stage with none. */
+	goal: string | null;
 	/** The tasks the template requires on this stage, done or not; the optional ones never reach the model. */
 	requiredTasks: { name: string; done: boolean }[];
 };

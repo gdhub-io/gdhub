@@ -4,7 +4,12 @@ import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import { type PlanEdit, planCloses, planEdit } from "@/lib/checkpoints/call";
+import {
+	type PlanEdit,
+	planChecked,
+	planCloses,
+	planEdit,
+} from "@/lib/checkpoints/call";
 import { characterFace } from "@/lib/checkpoints/curator-characters";
 import { curatorNow } from "@/lib/checkpoints/curator-now";
 import { scopeWindow } from "@/lib/checkpoints/scope";
@@ -193,7 +198,7 @@ export const getReview = async (
 					...checkpoint,
 					startedAt: checkpoint.startedAt,
 				})?.toISOString() ?? null,
-			checked: !!checkpoint.planCheckedAt,
+			checked: planChecked(checkpoint, edit),
 			approved: !!checkpoint.goalAgreedAt,
 			tasks: checkpoint.items.map((item) => ({
 				id: item.id,

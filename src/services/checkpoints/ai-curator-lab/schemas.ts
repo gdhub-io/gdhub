@@ -45,6 +45,7 @@ const workflow = z.object({
 	currentStage: z.string(),
 	nextStage: z.string().nullable(),
 	description: z.string().nullable(),
+	goal: z.string().nullable(),
 	requiredTasks: z.array(z.object({ name: z.string(), done: z.boolean() })),
 });
 

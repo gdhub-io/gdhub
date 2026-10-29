@@ -440,6 +440,24 @@ the last is too long for a tooltip, so its full refusal is the confirm step (`rh
 
 ---
 
+### The goal chain (GDHUB-125)
+
+Each check is advice, never a block.
+
+| State | Frame | Built in |
+|---|---|---|
+| Goal outside its stage: a warning line with a flag icon under the goal | `12.10.1d` (`DUZmi`) | `CallRoom/CallGoal.tsx` (`GoalCard`) |
+| Task that does not lead to the goal: advice of kind `offGoal`. Same look as the other advice; the note says what the task would have to become | `12.10.1b` (`EcXmU`), task `I3oRe7` | `CallRoom/PlanForm.tsx` (`AdviceLine`) |
+| Day 15 before the check: "Save and send to the curator"; confirming is not offered | `12.10.5` (`GZa5e`) | `CuratorReview/PlanFooter.tsx` |
+| Day 15 after the check: "Confirm the tasks" | `12.10.5a` (`E8V0vo`) | `CuratorReview/PlanFooter.tsx` |
+| The human curator's brief: the goal against its stage, and the `offGoal` tasks | `12.08.10` (`nLpkT`) | `CallRoom/CallBrief.tsx` |
+
+Where the code departs from the frames:
+
+- Frame 12.10.1b labels the add control at the limit "Add task · 5 of 5". The code keeps the plain "Add task", disabled, with its existing tooltip "A checkpoint holds at most 5 tasks".
+- The brief puts an `offGoal` task that the sprint review did not discuss in a row of its own, after the discussed tasks. Frame 12.08.10 shows only a task the review discussed.
+- With a human curator, the author's draft advice before call 1 drops the stage verdict and the `offGoal` entries. Those reach the curator in the briefs for calls 2 and 4.
+
 ## 7. Copy (Tolgee keys)
 
 Namespace `checkpoints`. Keys from the first pass that named weeks, the thread or devlog

@@ -1,6 +1,6 @@
 import { AI_APPROVE_HOURS } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import { planEdit } from "@/lib/checkpoints/call";
+import { planChecked, planEdit } from "@/lib/checkpoints/call";
 import { MS_PER_HOUR } from "@/lib/checkpoints/days";
 import {
 	type ApproveRefusal,
@@ -12,7 +12,7 @@ import { prisma } from "@/services/prisma";
 /**
  * The author is done with the plan, with the AI curator: on day 1 after the
  * one check, which locks the goal and tasks until day 15; on day 15 after
- * the sprint 2 review's advice, which locks the tasks for the rest of it.
+ * the check of the changes sent, which locks the tasks for the rest of it.
  */
 export const approvePlan = async (
 	checkpointId: string,
@@ -30,7 +30,12 @@ export const approvePlan = async (
 			scopeConfirmedAt: true,
 			project: { select: { authorId: true } },
 			sessions: {
-				select: { index: true, scheduledAt: true, endedAt: true },
+				select: {
+					index: true,
+					scheduledAt: true,
+					endedAt: true,
+					content: true,
+				},
 			},
 			items: {
 				where: HAS_TASKS.items.some,
@@ -44,6 +49,8 @@ export const approvePlan = async (
 	const edit = planEdit(checkpoint, now);
 
 	if (edit === "tasks") {
+		// Day 15 confirms only what the curator has checked (GDHUB-125).
+		if (!planChecked(checkpoint, edit)) return "notChecked";
 		await prisma.projectCheckpoint.updateMany({
 			where: { id: checkpointId, scopeConfirmedAt: null },
 			data: { scopeConfirmedAt: now },

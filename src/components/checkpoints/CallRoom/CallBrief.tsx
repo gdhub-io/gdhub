@@ -10,11 +10,15 @@ import type {
 	CallBrief as CallBriefData,
 	CheckpointCallDto,
 } from "@/types/checkpoint-call";
+import { StageFlag } from "./CallGoal";
+import { AdviceLine } from "./PlanForm";
 import styles from "./style.module.scss";
 
 /**
- * Frame 08.10, the "Before the call" tab: the AI's read of the sprint behind a
- * call, written the night before it (GDHUB-114). Only the curator is sent it.
+ * Frame 12.08.10, the "Before the call" tab: the AI's read of the sprint behind
+ * a call, written the night before it (GDHUB-114), with the goal checked
+ * against its stage and each task against the goal (GDHUB-125). Only the
+ * curator is sent it.
  */
 export function CallBrief({
 	brief,
@@ -27,6 +31,13 @@ export function CallBrief({
 	const { notes } = brief;
 	const taskText = new Map(tasks.map((task) => [task.id, task.text]));
 	const seen = new Map(brief.seen.map((row) => [row.itemId, row]));
+	const offGoal = new Map(
+		(brief.advice?.tasks ?? [])
+			.filter((row) => row.kind === "offGoal")
+			.map((row) => [row.itemId, row.note]),
+	);
+	const discussed = new Set(notes.discussed.map((row) => row.itemId));
+	const undiscussed = [...offGoal].filter(([itemId]) => !discussed.has(itemId));
 
 	return (
 		<Flex vertical gap={12} className={styles.brief}>
@@ -50,6 +61,8 @@ export function CallBrief({
 
 			<Typography.Text>{notes.inShort}</Typography.Text>
 
+			<StageFlag stage={brief.goal?.stage} />
+
 			{notes.discussed.map((row) => {
 				const match = seen.get(row.itemId);
 				return (
@@ -63,9 +76,19 @@ export function CallBrief({
 						<Typography.Text type="secondary" className={styles.small}>
 							{row.text}
 						</Typography.Text>
+						{offGoal.has(row.itemId) && (
+							<AdviceLine>{offGoal.get(row.itemId)}</AdviceLine>
+						)}
 					</Flex>
 				);
 			})}
+
+			{undiscussed.map(([itemId, note]) => (
+				<Flex key={itemId} vertical gap={4} className={styles.briefTask}>
+					<Typography.Text strong>{taskText.get(itemId)}</Typography.Text>
+					<AdviceLine>{note}</AdviceLine>
+				</Flex>
+			))}
 
 			{notes.questions.length > 0 && (
 				<Flex vertical gap={6} className={styles.briefRaise}>
