@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
 import {
 	AI_REMIND_HOURS,
 	AI_REMIND_LOCAL_HOUR,
@@ -27,6 +26,7 @@ import {
 	sprintOfDay,
 	sprintRange,
 } from "@/lib/checkpoints/sprints";
+import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoints/status";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
@@ -278,7 +278,7 @@ export const remindCallsSoon = async (now = new Date()) => {
 			},
 			endedAt: null,
 			checkpoint: {
-				status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+				status: { in: CHECKPOINT_RUNNING_STATUSES },
 				curatorId: { not: null },
 			},
 		},

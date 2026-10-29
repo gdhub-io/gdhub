@@ -33,7 +33,7 @@ Review -> Cancelled: "admin refund"
 
 sets: "Named sets, one module (lib/checkpoint-status.ts)" {
   near: bottom-center
-  s: "current = Draft · AwaitingCurator · Active · Review   (one per project)\nopen = AwaitingCurator · Active · Review   (holds a curator, blocks a second checkpoint)\nrunning = Active · Review   (calls, verdict, admin refund)\nran = Active · Review · Closed   (pages stay readable)\npending = Draft · AwaitingCurator   (before day one; the author may cancel)\nended = Closed · Cancelled · unnumbered = Draft · Cancelled\nacceptsEvidence = Draft · Active"
+  s: "current = Draft · AwaitingCurator · Active · Review   (one per project)\nopen = AwaitingCurator · Active · Review   (holds a curator, blocks a second checkpoint)\nrunning = Active · Review   (calls, verdict, admin refund)\nran = Active · Review · Closed   (pages stay readable)\ndaysOver = Review · Closed   (the AI's final review is written)\npending = Draft · AwaitingCurator   (before day one; the author may cancel)\nended = Closed · Cancelled · unnumbered = Draft · Cancelled\nacceptsEvidence = Draft · Active"
 }
 
 critical: "Critical" {

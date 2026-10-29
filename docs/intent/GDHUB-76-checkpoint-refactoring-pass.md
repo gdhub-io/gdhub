@@ -143,14 +143,15 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
 
 - [ ] Every phase leaves lint, type-check, the unit tests and the GDHUB-79
       checkpoint e2e scenarios green, and no screen differs.
-- [ ] No set of checkpoint statuses lives outside the status module. A
+- [x] No set of checkpoint statuses lives outside the status module. A
       comparison with a single status is fine. An illegal transition is
       refused, with a test for each refusal.
 - [x] No file under `repositories/checkpoints/` imports a notification, payment,
       chat or AI service. A test enforces this.
 - [x] No checkpoint route under `app/api` imports Prisma.
-- [ ] "14 days", "28 days" and the call length appear nowhere as literals in
-      code, copy or prompts.
+- [x] "14 days", "28 days" and the call length appear nowhere as literals in
+      code, copy or prompts, except the landing's marketing copy and the legal
+      clickwrap, which phase 1 left on purpose. Comments may name the 28 days.
 - [x] Moving a project across several stages, from the admin or in one jump,
       leaves each crossed stage with a correct `finishedAt`. A test covers it.
 
