@@ -46,6 +46,10 @@ it exactly, and keep it to a screen. Rules that matter more than the shape:
 - **Done when** is checkable by looking at the product. "Advisors can decline a
   request with a reason" is checkable; "the inbox is improved" is not. These
   become the tests, so write them as though someone has to prove each one.
+- **How to check it on the platform** says how to see each "Done when" working:
+  preferably through the UI — the persona from `/dev-signin`, the page, the
+  clicks, what should appear — otherwise through an endpoint, with method, path,
+  body and the expected answer.
 - **Out of scope** is not optional. It is the section that stops an agent from
   rebuilding the neighbouring feature because it was nearby.
 - **Open questions** each carry the answer assumed for now. Work is never
@@ -76,7 +80,9 @@ Statuses on the GDHub team are `Backlog`, `Todo`, `In Progress`, **`In Review`**
 
 Every task gets an issue, even the small ones that skip the intent file — the issue
 is cheap and it is the only place the request survives. Put in its description what
-was decided, and what was deliberately **not** done: an unwritten test, a version
+was decided, **how to check on the platform that it works** (through the UI where
+possible, otherwise an endpoint — as in the intent), and what was deliberately
+**not** done: an unwritten test, a version
 declined, a check that was not possible. A checklist ticked without comment tells
 him nothing.
 
