@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { SPRINT_VIDEO_SECONDS } from "@/config/checkpoint";
 import {
 	CheckpointItemKind,
 	type CheckpointVerdict,
@@ -16,7 +17,6 @@ import {
 	judgeRead,
 	mediaLine,
 	readArtifact,
-	SPRINT_VIDEO_SECONDS,
 } from "@/repositories/evidence-seen";
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoint-curator";

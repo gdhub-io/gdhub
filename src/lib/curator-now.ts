@@ -1,7 +1,11 @@
-import { FINAL_SESSION, SCOPE_SESSION } from "@/config/checkpoint";
+import {
+	AI_WRITES_AT_HOUR,
+	FINAL_SESSION,
+	SCOPE_SESSION,
+} from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { planCloses } from "@/lib/checkpoint-call";
-import { MS_PER_MINUTE } from "@/lib/checkpoint-days";
+import { MS_PER_HOUR, MS_PER_MINUTE } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
 import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import type { CuratorReview } from "@/types/checkpoints";
@@ -55,8 +59,8 @@ type NowInput = {
 	}[];
 };
 
-// The daily run writes reviews at 01:00 UTC on the session's day; a margin over it.
-const WRITTEN_AFTER_MS = 75 * MS_PER_MINUTE;
+// When the daily run writes reviews on the session's day, plus a margin.
+const WRITTEN_AFTER_MS = AI_WRITES_AT_HOUR * MS_PER_HOUR + 15 * MS_PER_MINUTE;
 // The first letter is written at payment and takes seconds.
 const FIRST_LETTER_MS = MS_PER_MINUTE / 2;
 

@@ -11,6 +11,7 @@ import { after } from "next/server";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_CURRENCY,
+	CHECKPOINT_DAYS,
 	CHECKPOINT_MAX_TEAM,
 	EXPERT_CHECKPOINT_OPEN,
 	CHECKPOINT_MINOR_UNITS as MINOR,
@@ -194,8 +195,8 @@ export const checkpointCheckout = async (checkpointId: string) => {
 		currency: CHECKPOINT_CURRENCY,
 		name: `${checkpoint.project.name} — checkpoint ${checkpoint.order}`,
 		description: isAI
-			? `${checkpoint.stageName} · 28 days with the AI curator`
-			: `${checkpoint.stageName} · 28 days with ${checkpoint.curator?.name ?? "a curator"}`,
+			? `${checkpoint.stageName} · ${CHECKPOINT_DAYS} days with the AI curator`
+			: `${checkpoint.stageName} · ${CHECKPOINT_DAYS} days with ${checkpoint.curator?.name ?? "a curator"}`,
 	};
 };
 

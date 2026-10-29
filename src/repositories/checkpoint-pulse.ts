@@ -1,3 +1,4 @@
+import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
 import { dayNumberOn, sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
@@ -277,7 +278,7 @@ const toView = async (
 			.filter((row) => row.teamMemberId === pulse.teamMemberId)
 			.map((row) => [row.week, row]),
 	);
-	const cells = [1, 2, 3, 4]
+	const cells = Array.from({ length: SPRINTS_PER_CHECKPOINT }, (_, i) => i + 1)
 		.map((sprint) =>
 			pulseCell(sprint, teamMember, mine.get(sprint), startedAt, now),
 		)

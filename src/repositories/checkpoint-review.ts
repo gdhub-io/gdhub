@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import {
+	BRIEF_AHEAD_HOURS,
 	CHECKPOINT_RUNNING_STATUSES,
 	FINAL_SESSION,
 	SCOPE_SESSION,
@@ -19,7 +20,7 @@ import {
 	planEdit,
 	planSession,
 } from "@/lib/checkpoint-call";
-import { MS_PER_DAY, sessionDay } from "@/lib/checkpoint-days";
+import { MS_PER_HOUR } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
 import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
@@ -793,9 +794,6 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 	return true;
 };
 
-/** A human curator's call starting within this window gets its brief on tonight's run. */
-const BRIEF_AHEAD_MS = MS_PER_DAY;
-
 /**
  * The night before a human curator's calls 2–5 (GDHUB-114): the sprint behind
  * the call as the AI read it, for the curator only. The daily run at 01:00 UTC
@@ -806,7 +804,10 @@ export const writeDueBriefs = async (now = new Date()) => {
 		where: {
 			index: { gt: 1 },
 			endedAt: null,
-			scheduledAt: { gt: now, lte: new Date(now.getTime() + BRIEF_AHEAD_MS) },
+			scheduledAt: {
+				gt: now,
+				lte: new Date(now.getTime() + BRIEF_AHEAD_HOURS * MS_PER_HOUR),
+			},
 			checkpoint: {
 				curatorKind: CheckpointCuratorKind.Human,
 				status: { in: CHECKPOINT_RUNNING_STATUSES },

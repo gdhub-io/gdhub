@@ -1,4 +1,10 @@
-import { CHECKPOINT_RUNNING_STATUSES } from "@/config/checkpoint";
+import {
+	ARTIFACTS_PER_SPRINT,
+	CHECKPOINT_RUNNING_STATUSES,
+	DEVLOG_MEDIA_PER_SPRINT,
+	JOURNAL_TEXT_CHARS,
+	SPRINT_VIDEO_SECONDS,
+} from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
 	CheckpointItemKind,
@@ -30,15 +36,6 @@ import {
 import { readableLink } from "@/services/evidence/links";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import { prisma } from "@/services/prisma";
-
-/** Seconds of video looked at per sprint (Dmitry, 2026-10-24). */
-export const SPRINT_VIDEO_SECONDS = 10 * 60;
-/** Devlog images and videos looked at per sprint. */
-const DEVLOG_MEDIA_PER_SPRINT = 6;
-/** Artifacts that prove no task, looked at per sprint. */
-const ARTIFACTS_PER_SPRINT = 6;
-/** What the journal keeps of a document's text. */
-const JOURNAL_TEXT_CHARS = 2000;
 
 /** What was read at a link, as the journal keeps it: text only, never the files. */
 const whatWasRead = (link: string, content: EvidenceContent) => ({

@@ -1,6 +1,7 @@
 import {
 	CHECKPOINT_GOAL_MAX,
 	CHECKPOINT_OPEN_STATUSES,
+	INPUT_ARTIFACTS,
 } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
@@ -86,9 +87,6 @@ export const freeCheckpointProjects = async (
 /** The goal a free checkpoint starts with: the stage's own; the author rewrites it on day 1. */
 export const stageGoal = (stage: string) =>
 	`Do what the ${stage} stage asks for`.slice(0, CHECKPOINT_GOAL_MAX);
-
-/** How many of the project's latest artifacts stand in for inputs nobody named. */
-const INPUT_ARTIFACTS = 5;
 
 /** When the project brought nothing named: its latest artifacts, or one line to fill in on day 1. */
 const inputsFromProject = async (projectId: string) => {

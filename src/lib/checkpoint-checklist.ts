@@ -1,3 +1,4 @@
+import { SCOPE_SESSION } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
@@ -174,7 +175,7 @@ const planItem = (
 		};
 	}
 
-	if (sprint === 3) {
+	if (sprint === SCOPE_SESSION) {
 		const { opens, closes } = scopeWindow(
 			startedAt,
 			checkpoint.sessions,

@@ -38,18 +38,22 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
 
 ## Phases
 
-1. **Config and names.**
-   - Move the scattered limits into config and interpolate `WITHDRAWAL_DAYS` and
-     the checkpoint length into copy.
-   - Delete dead code: `getJournal`.
-   - Rename the four curator files after what each one does.
+1. **Config.** Move the scattered limits into config, and interpolate
+   `WITHDRAWAL_DAYS` and the checkpoint length into copy and prompts.
+   - Left as literals on purpose:
+     - The landing's marketing copy, because `CHECKPOINT_DAYS` is the product.
+     - The legal clickwrap, which quotes Purchase Terms 5.2.
+     - Technical limits (file sizes, timeouts, page sizes).
+   - `getJournal` stays: `scripts/checkpoint-review.ts` uses it.
+   - The curator renames moved to phase 3, so each file moves only once.
 2. **Status.**
    - One module of named sets and predicates, with a table of allowed
      transitions.
    - Every status write goes through one `transition()`.
    - Draft states move into the same module.
 3. **Layers.**
-   - Move the files into the `checkpoints/` subfolders.
+   - Move the files into the `checkpoints/` subfolders, renaming the four
+     curator files after what each one does.
    - Split each repository into data (Prisma only) and flows (notify, pay, AI,
      cron).
    - Routes call a flow instead of Prisma.

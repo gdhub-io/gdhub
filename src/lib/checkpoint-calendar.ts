@@ -1,4 +1,5 @@
 import {
+	AI_WRITES_AT_HOUR,
 	EVIDENCE_REMIND_DAY,
 	SCOPE_ANSWER_HOURS,
 	SCOPE_SESSION,
@@ -38,9 +39,6 @@ export type CheckpointCalendarEvent = {
 };
 
 export type CalendarViewer = "curator" | "team";
-
-/** The AI curator writes overnight; its letters are there at this hour, UTC. */
-const AI_WRITES_AT_HOUR = 1;
 
 export const checkpointCalendar = (
 	checkpoint: {

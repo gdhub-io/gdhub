@@ -11,6 +11,7 @@ import {
 import scout from "@/components/scout/ProjectCardModal/style.module.scss";
 import {
 	CHECKPOINT_DAYS,
+	SESSION_MINUTES,
 	SPRINT_DAYS,
 	SPRINTS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
@@ -27,7 +28,6 @@ import styles from "./style.module.scss";
 const { Text } = Typography;
 
 /** A call runs 45 minutes — `docs/checkpoint-standard.md` §3. */
-const CALL_MINUTES = 45;
 
 const ICON = {
 	call: IconPhoneCall,
@@ -125,7 +125,7 @@ export function PlanTab({ checkpoint }: { checkpoint: AdvisorCheckpointDto }) {
 					label={t("advisor.plan.calls", "Calls")}
 					value={t("advisor.plan.callsValue", "{count} × {minutes} min", {
 						count: SPRINTS_PER_CHECKPOINT + 1,
-						minutes: CALL_MINUTES,
+						minutes: SESSION_MINUTES,
 					})}
 					sub={t(
 						"advisor.plan.callsSub",

@@ -12,6 +12,7 @@ import {
 	SCOPE_REMIND_BEFORE_HOURS,
 	SCOPE_SESSION,
 	VERDICT_DUE_DAYS,
+	WITHDRAWAL_DAYS,
 } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
@@ -27,7 +28,7 @@ import {
 	utcStartOfDay,
 } from "@/lib/checkpoint-days";
 import { checkpointPathHref, type PathTab } from "@/lib/checkpoint-hrefs";
-import { dateOfDay } from "@/lib/checkpoint-plan";
+import { dateOfDay, VERDICT_DAY } from "@/lib/checkpoint-plan";
 import type { RefundReason } from "@/lib/checkpoint-refund";
 import {
 	devlogDayOf,
@@ -429,10 +430,10 @@ export const notifyAuthorOfRefund = async (
 
 	const number = await checkpointNumber(row);
 	const why = {
-		withdrawal: "You withdrew from it within the 14 days.",
+		withdrawal: `You withdrew from it within the ${WITHDRAWAL_DAYS} days.`,
 		curatorGone:
 			"Your curator stopped and we could not find a replacement in time.",
-		noVerdict: "No verdict was sent by the end of day 31.",
+		noVerdict: `No verdict was sent by the end of day ${VERDICT_DAY}.`,
 	}[reason];
 
 	await notify(row.project.author, `cp-refund-${checkpointId}`, {

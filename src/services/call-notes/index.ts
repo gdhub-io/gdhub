@@ -3,6 +3,7 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import type { EvidenceMatch } from "@/config/prisma-enums";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { CallNotes } from "@/types/checkpoints";
@@ -81,7 +82,7 @@ const schema = z.object({
 			}),
 		)
 		.describe(
-			"What was agreed for the next call; dueDay is a day of the checkpoint, 1–28, when one was named.",
+			`What was agreed for the next call; dueDay is a day of the checkpoint, 1–${CHECKPOINT_DAYS}, when one was named.`,
 		),
 	questions: z.array(z.string()).describe("Questions left open."),
 });

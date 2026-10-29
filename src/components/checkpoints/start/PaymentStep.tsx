@@ -331,8 +331,9 @@ export function PaymentStep() {
 							{capacity.hoursPerWeek && capacity.hoursPerRun
 								? t(
 										"checkpoints.pay.capacityHours",
-										"{week} hours per sprint · {run} hours over 28 days",
+										"{week} hours per sprint · {run} hours over {days} days",
 										{
+											days: CHECKPOINT_DAYS,
 											week: hoursSpan(capacity.hoursPerWeek),
 											run: hoursSpan(capacity.hoursPerRun),
 										},
@@ -365,7 +366,9 @@ export function PaymentStep() {
 					)}
 
 					{block(
-						t("checkpoints.pay.want", "What you want in 28 days"),
+						t("checkpoints.pay.want", "What you want in {days} days", {
+							days: CHECKPOINT_DAYS,
+						}),
 						"goal",
 						<Typography.Text>{draft.goal}</Typography.Text>,
 					)}

@@ -3,6 +3,7 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import { CURATOR_CHARACTERS, characterFor } from "./prompts/card";
@@ -53,7 +54,7 @@ export const createCharacter = async (
 	const request = {
 		instructions: stripIndents`
 			You give a guide character its own identity for one game developer. It
-			will lead their team through 28 days of work as a guide leads travellers
+			will lead their team through ${CHECKPOINT_DAYS} days of work as a guide leads travellers
 			through its world.
 
 			Keep the base role: who it is and that it has walked such roads before.

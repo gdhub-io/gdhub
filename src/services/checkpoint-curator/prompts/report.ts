@@ -1,4 +1,5 @@
 import { stripIndents } from "common-tags";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { CheckpointVerdict } from "@/config/prisma-enums";
 import type { TrustReason, UnprovenReason } from "@/lib/checkpoint-verdict";
 import { devlogText } from "@/lib/curator-text";
@@ -73,7 +74,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			${CURATOR_STANCE}
 
-			This is the day-28 report. Facts only — everything you write must be
+			This is the day-${CHECKPOINT_DAYS} report. Facts only — everything you write must be
 			checkable against what is below.
 
 			Judge from the outside in. The stage has its own expectation — what

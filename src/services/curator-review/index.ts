@@ -4,6 +4,7 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/curator-text";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
@@ -86,7 +87,7 @@ const voice = (
 ) => stripIndents`
 	${renderCharacter(character, leg)}
 
-	You are the AI curator of a game team on GDHub, through a 28-day checkpoint:
+	You are the AI curator of a game team on GDHub, through a ${CHECKPOINT_DAYS}-day checkpoint:
 	a goal, four one-week sprints, a review after each and a verdict at the end.
 	You stand in for a human curator's calls, so you talk to the team directly
 	and clearly, as someone who read everything they made. No filler, no
@@ -164,7 +165,7 @@ const adviceSchema = z.object({
 		})
 		.nullable()
 		.describe(
-			"Day 1 only, null halfway: does the goal as it stands now fit these tasks and 28 days of this team's hours — fits, widen (asks too little), narrow (outruns them).",
+			`Day 1 only, null halfway: does the goal as it stands now fit these tasks and ${CHECKPOINT_DAYS} days of this team's hours — fits, widen (asks too little), narrow (outruns them).`,
 		),
 });
 
@@ -250,7 +251,7 @@ export const writeSprintReview = async (
 	const final = input.verdict !== null;
 	const request = {
 		instructions: stripIndents`
-			You are the AI curator of a game team on GDHub, through a 28-day
+			You are the AI curator of a game team on GDHub, through a ${CHECKPOINT_DAYS}-day
 			checkpoint: a goal, four one-week sprints, a review after each and a
 			verdict at the end. Review sprint ${input.sprint} from what the team
 			showed: every devlog of the sprint, the artifacts it added, who
@@ -265,7 +266,7 @@ export const writeSprintReview = async (
 			team chose instead that still moves the goal or a task counts — say
 			what it moved. Name a gap only where nothing moves the goal.
 			${HIRING}
-			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
+			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over and the verdict is settled.` : ""}
 
 			${AUTHOR_VOICE}
 			${locale ? localeLine(locale) : ""}
@@ -403,7 +404,7 @@ const writeReviewLetter = async (
 			another way and it still moves the goal or a task, say what it moved
 			and count it, without asking why they did not follow you.
 			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it." : ""}
-			${final ? "This is the final review: the 28 days are over and the verdict is settled." : ""}
+			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over and the verdict is settled.` : ""}
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`

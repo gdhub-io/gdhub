@@ -1,4 +1,8 @@
-import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
+import {
+	CURATOR_ACTIVITY_LIMIT,
+	CURATOR_STAGE_BRIEFS,
+	LEAD_IN_DAYS,
+} from "@/config/checkpoint";
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoint-capacity";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoint-days";
@@ -11,10 +15,6 @@ import type {
 } from "@/services/checkpoint-curator/types";
 import { prisma } from "@/services/prisma";
 
-/** Days before a checkpoint starts whose activity the goal check and the plan read. */
-const LEAD_IN_DAYS = 14;
-/** Enough for a month of a busy team; older events past it are said to exist. */
-const ACTIVITY_LIMIT = 60;
 const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
 
 /**
@@ -163,7 +163,7 @@ async function activityLines(
 ) {
 	const { events: page } = await getProjectActivity(projectId, {
 		before: to,
-		limit: ACTIVITY_LIMIT,
+		limit: CURATOR_ACTIVITY_LIMIT,
 	});
 	const shown = page
 		.filter((event) => new Date(event.at) >= from)
@@ -177,7 +177,8 @@ async function activityLines(
 		})
 		.reverse();
 	const more =
-		page.length === ACTIVITY_LIMIT && new Date(page.at(-1)?.at ?? to) >= from
+		page.length === CURATOR_ACTIVITY_LIMIT &&
+		new Date(page.at(-1)?.at ?? to) >= from
 			? "\n- (earlier events in this period not listed)"
 			: "";
 

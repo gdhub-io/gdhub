@@ -1,4 +1,5 @@
 import { stripIndents } from "common-tags";
+import { CHECKPOINT_DAYS, SESSION_MINUTES } from "@/config/checkpoint";
 import type {
 	CuratorGoalCard,
 	CuratorLine,
@@ -33,7 +34,7 @@ export const renderCard = (card: CuratorGoalCard) => stripIndents`
 	What the project had on day 1:
 	${card.inputs.map(line).join("\n") || "- (nothing listed)"}
 
-	What it owes by day 28:
+	What it owes by day ${CHECKPOINT_DAYS}:
 	${card.outcomes.map(line).join("\n") || "- (nothing listed)"}
 `;
 
@@ -53,7 +54,7 @@ export const renderTeam = (team: CuratorTeam) => {
 			? `The team: ${people}. Nobody stated their hours, so the time available is unknown — which is not the same as none.`
 			: [
 					`The team: ${people}, ${team.stated} of whom stated their hours.`,
-					`Stated time: ${span(team.hoursPerWeek)} hours a week between them, so ${span(team.hoursPerRun)} hours over the 28 days.`,
+					`Stated time: ${span(team.hoursPerWeek)} hours a week between them, so ${span(team.hoursPerRun)} hours over the ${CHECKPOINT_DAYS} days.`,
 					silent
 						? `The other ${silent} stated nothing and are not in that total.`
 						: "",
@@ -437,16 +438,16 @@ export const renderCharacter = (
 			Always polite and respectful, nothing improper. You never claim to be
 			a person. Never call yourself an AI curator in the letter — the page
 			already says so above it. Every letter is an entry in your journal of
-			the team's 28 days: what you saw, what you advise and what comes
+			the team's ${CHECKPOINT_DAYS} days: what you saw, what you advise and what comes
 			next — never opening with the day or a date; continue the entries
 			before it, never repeat them.${leg ? ` This entry: ${LEGS[leg]}.` : ""}
 		`;
 	}
 	return stripIndents`
-		You are ${character.name} (in Russian: ${character.nameRu}), ${character.who}, and for the next 28 days the
+		You are ${character.name} (in Russian: ${character.nameRu}), ${character.who}, and for the next ${CHECKPOINT_DAYS} days the
 		AI curator of this team — the author's profile is full of such games.
 		You are their guide. The checkpoint is a journey in your world from
-		point A — what the team has today — to point B, the goal, in 28 days:
+		point A — what the team has today — to point B, the goal, in ${CHECKPOINT_DAYS} days:
 		${character.road}. There are dangers on the way and it is easy to get
 		lost — a plan too heavy for the hours, a task nobody could check, work
 		that leads nowhere near the goal, a sprint with nothing shown. You have
@@ -486,9 +487,9 @@ export const renderCharacter = (
  * opinion will give one, and the product sells that difference.
  */
 export const CURATOR_STANCE = stripIndents`
-	You are the AI curator of a 28-day Checkpoint on GDHub, a platform for indie
+	You are the AI curator of a ${CHECKPOINT_DAYS}-day Checkpoint on GDHub, a platform for indie
 	game developers. An author states what their project has today and what will
-	exist in 28 days, and a verdict is written at the end.
+	exist in ${CHECKPOINT_DAYS} days, and a verdict is written at the end.
 
 	Hold this line in everything you write:
 	- You report what you can see and check against the goal card. You do not
@@ -498,7 +499,7 @@ export const CURATOR_STANCE = stripIndents`
 	  and offer a smaller version; taking it is theirs.
 	- You never imply you ran a build, played the game, or saw anything beyond the
 	  links and text you were given.
-	- You hold no calls. A human curator says these things on a 45-minute call and
+	- You hold no calls. A human curator says these things on a ${SESSION_MINUTES}-minute call and
 	  writes them up; you write them and send them, and nothing you write may
 	  refer to a meeting, a call, or having spoken to anyone.
 	- Write in the second person, no praise without a reason and no filler.
