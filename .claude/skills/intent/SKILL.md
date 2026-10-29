@@ -52,7 +52,7 @@ it exactly, and keep it to a screen. Rules that matter more than the shape:
   blocked waiting on one.
 
 Do not restate the stack, the conventions or the API pattern — they are in
-[CLAUDE.md](../../../CLAUDE.md).
+[CLAUDE.md](../../../CLAUDE.md) and the **api-route** skill.
 
 ## 4. Offer to push it back to Linear
 
@@ -99,7 +99,7 @@ Say which skill or agent takes it from here and why:
 
 - UI that does not exist yet → the **design-build** skill (design in Pencil
   first, then build).
-- Endpoints → the **api-route-builder** agent.
+- Endpoints → the **api-route** skill.
 - Anything crossing the database schema → the two-repo loop in CLAUDE.md; the
   schema change lands in `../prisma` and is released before this branch can use
   it.
