@@ -11,9 +11,10 @@
  *
  *   DAILY_WEBHOOK_SECRET=<that deployment's secret> bun run daily:webhook <domain>
  *
- * A webhook already on that address is updated, which also brings one Daily
- * switched to FAILED back. Every webhook on the account gets every room's
- * events: local, staging and production share one Daily domain.
+ * Daily allows one webhook per Daily domain, and local, staging and production
+ * share one. So this moves that webhook to the new address (an update also
+ * brings back one Daily switched to FAILED); the address it pointed at before
+ * stops getting events.
  */
 
 const API = "https://api.daily.co/v1";
@@ -86,13 +87,16 @@ const body = JSON.stringify({
 	hmac: need("DAILY_WEBHOOK_SECRET"),
 	eventTypes: EVENTS,
 });
-const existing = (await listed()).find((hook) => hook.url === url);
+const [existing] = await listed();
 
 // Daily sends a test delivery on both: an address that does not answer 200 is refused here.
 const saved = existing
 	? await daily<Webhook>(`/webhooks/${existing.uuid}`, { method: "POST", body })
 	: await daily<Webhook>("/webhooks", { method: "POST", body });
 
+if (existing && existing.url !== url) {
+	console.log(`Moved from ${existing.url}; it gets no events now.`);
+}
 console.log(existing ? "Updated:" : "Registered:");
 show(saved);
 
