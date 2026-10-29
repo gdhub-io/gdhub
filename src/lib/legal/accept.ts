@@ -18,7 +18,8 @@ import { versionInEffect } from "./versions";
 /** What a form sends for each ticked checkbox: the document and the version it showed. */
 const LegalAcceptanceInputSchema = z.object({
 	code: z.enum(LEGAL_CODES),
-	version: z.number().int().positive(),
+	// 0 is the e2e stand's placeholder version (GDHUB-116); real versions start at 1.
+	version: z.number().int().nonnegative(),
 });
 export type LegalAcceptanceInput = z.infer<typeof LegalAcceptanceInputSchema>;
 

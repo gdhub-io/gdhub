@@ -97,13 +97,27 @@ test.describe.serial("a checkpoint with an expert", () => {
 	test("the expert takes it on", async ({ browser }) => {
 		curatorPage = await signInAs(browser, curator);
 		await curatorPage.goto("/advisor/checkpoints");
+		// An advisor who has not accepted the Advisor Agreement is asked to on the
+		// way in (a TBD text, published on the stand only).
+		const terms = curatorPage.getByRole("dialog").filter({
+			hasText: "Please accept our terms",
+		});
+		await terms.getByRole("checkbox", { name: /I accept the Advisor Agreement/ }).check();
+		await terms.getByRole("button", { name: "Accept and continue" }).click();
+		await expect(terms).toBeHidden();
+
 		await curatorPage.getByRole("button", { name: "Review and answer" }).first().click();
 		await curatorPage.getByRole("button", { name: "Take it on" }).click();
 
 		await expect
 			.poll(async () => (await checkpointOf()).status, { timeout: 30_000 })
 			.toBe(CheckpointStatus.Active);
-		log.step("The expert took it on; the checkpoint is running");
+		expect(
+			await prisma.legalAcceptance.count({
+				where: { userId: curator.id, code: "AdvisorAgreement" },
+			}),
+		).toBe(1);
+		log.step("The expert accepted the agreement and took it on; the checkpoint runs");
 	});
 
 	test("call 1: the expert in first, the team let in, ended for everyone", async () => {

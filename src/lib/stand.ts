@@ -8,3 +8,8 @@ export const onTheStand = () =>
 
 export const dailyEmulated = () =>
 	onTheStand() && process.env.DAILY_EMULATED === "1";
+
+/** The stand as the browser can tell it too: for config both sides read. */
+export const E2E_STAND =
+	process.env.NODE_ENV !== "production" &&
+	process.env.NEXT_PUBLIC_E2E_STAND === "1";
