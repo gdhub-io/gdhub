@@ -1,4 +1,4 @@
-import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
+import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
 import type { LabLanguage } from "../schemas";
 
 /**
@@ -24,6 +24,7 @@ const workflowAt = (moment: Moment) => ({
 	currentStage: "Prototyping",
 	nextStage: "Preparing a demo version",
 	description: CURATOR_STAGE_BRIEFS.Prototyping,
+	goal: CURATOR_STAGE_GOALS.Prototyping,
 	requiredTasks: [
 		{
 			name: "Publish a devlog about the prototype",

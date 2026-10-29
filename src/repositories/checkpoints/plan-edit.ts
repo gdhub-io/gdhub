@@ -33,6 +33,7 @@ const loadPlan = (checkpointId: string) =>
 					order: true,
 					text: true,
 					originalText: true,
+					cut: true,
 					_count: { select: { evidence: true } },
 				},
 			},
@@ -69,7 +70,9 @@ export const changePlan = async (
 	}
 
 	if (change.op === "add") {
-		if (checkpoint.items.length >= CHECKPOINT_MAX_ITEMS_PER_KIND) {
+		// A task cut on day 15 frees its place.
+		const open = checkpoint.items.filter((item) => !item.cut).length;
+		if (open >= CHECKPOINT_MAX_ITEMS_PER_KIND) {
 			return "tooManyTasks";
 		}
 		const order =

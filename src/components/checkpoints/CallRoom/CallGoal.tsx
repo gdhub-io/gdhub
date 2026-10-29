@@ -1,6 +1,11 @@
 "use client";
 
-import { IconPencil, IconSparkles, IconTarget } from "@tabler/icons-react";
+import {
+	IconFlag,
+	IconPencil,
+	IconSparkles,
+	IconTarget,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Flex, Input, Tooltip, Typography } from "antd";
 import { type ReactNode, useState } from "react";
@@ -30,7 +35,7 @@ export type GoalCardProps = {
 	editable: boolean;
 	/** Needed only while `editable`. */
 	onSave?: (goal: string) => Promise<void>;
-	/** The AI curator's word on the goal, on day 1 (frame SWg9T). */
+	/** The AI curator's word on the goal, on day 1 (frame SWg9T), and on its stage (12.10.1d). */
 	advice?: GoalAdvice | null;
 };
 
@@ -75,6 +80,16 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 						showIcon
 						icon={<IconSparkles size={14} />}
 						title={advice.note}
+						className={styles.goalAdvice}
+					/>
+				)}
+				{advice?.stage && !advice.stage.inside && (
+					// Frame 12.10.1d: flagged, never blocked — the author may keep the goal.
+					<Alert
+						type="warning"
+						showIcon
+						icon={<IconFlag size={14} />}
+						title={advice.stage.note}
 						className={styles.goalAdvice}
 					/>
 				)}

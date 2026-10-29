@@ -472,6 +472,58 @@ export const PanelBriefCurator: Story = {
 	),
 };
 
+/** Frame 12.08.10 with the goal checks (GDHUB-125): the goal past its stage, a task off the goal. */
+export const PanelBriefGoalChecks: Story = {
+	render: () => (
+		<PanelStory
+			current={2}
+			held={1}
+			tab="brief"
+			briefs={[
+				{
+					index: 2,
+					notes: {
+						inShort:
+							"Two of three tasks have evidence, but the core-loop one-pager shows a photo of dice, not the loop.",
+						discussed: [
+							{
+								itemId: "t1",
+								text: "Drive image: colourful dice on a table, no text about the loop.",
+							},
+						],
+						notDiscussed: ["t3"],
+						outsidePlan: [],
+						agreed: [],
+						questions: [],
+					},
+					seen: [{ itemId: "t1", match: "DoesNotMatch", note: null }],
+					goal: {
+						fit: "fits",
+						note: "Fits.",
+						stage: {
+							inside: false,
+							note: 'The goal reaches past Prototyping: "a stranger can play for 5 minutes" is close to a demo. The author kept it — worth agreeing on the call what the 28 days are judged against.',
+						},
+					},
+					advice: {
+						tasks: [
+							{
+								itemId: "t3",
+								kind: "offGoal",
+								note: 'Doesn\'t lead to the goal as written: five people prove nothing about the tide unless they play the greybox. To serve it: "Five strangers play the greybox, notes in a doc".',
+								suggestion: null,
+							},
+						],
+						add: [],
+						hash: "",
+					},
+					writtenAt: "2026-10-08T01:00:00.000Z",
+				},
+			]}
+		/>
+	),
+};
+
 /** A call the AI wrote no brief for: plain text, nothing to click. */
 export const PanelBriefNone: Story = {
 	render: () => <PanelStory current={3} held={2} tab="brief" briefs={[]} />,

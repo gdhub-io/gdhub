@@ -53,8 +53,22 @@ export const goalCheckSchema = () => ({
 					description:
 						"One or two sentences: why, and for widen or narrow the goal reworded, ready to use.",
 				},
+				stage: {
+					type: "object",
+					description:
+						"Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else.",
+					properties: {
+						inside: { type: "boolean" },
+						note: {
+							type: "string",
+							description:
+								"One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside.",
+						},
+					},
+					required: ["inside", "note"],
+				},
 			},
-			required: ["fit", "note"],
+			required: ["fit", "note", "stage"],
 		},
 		suggestions: {
 			type: "array",
@@ -111,6 +125,10 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			should be — the narrowed or widened one where you advise that. Never
 			suggest the stage's required tasks: the workflow tracks those, and a
 			checkpoint may be one of several on a stage.
+
+			Read the goal against the stage goal too: it sits inside unless it
+			clearly reaches past it. A goal outside is the author's choice to
+			keep — flag it, never refuse it.
 
 			Be fair rather than strict: the goal fits unless it clearly does not.
 

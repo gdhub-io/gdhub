@@ -1,5 +1,9 @@
 import { stripIndents } from "common-tags";
-import { CHECKPOINT_DAYS, SESSION_MINUTES } from "@/config/checkpoint";
+import {
+	CHECKPOINT_DAYS,
+	PROJECT_GOAL,
+	SESSION_MINUTES,
+} from "@/config/checkpoint";
 import { sheetOf } from "@/lib/checkpoints/curator-characters";
 import type {
 	CuratorGoalCard,
@@ -106,8 +110,10 @@ export const renderPulse = (team: CuratorTeam, week: number) => {
 };
 
 export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
+	Project goal: ${PROJECT_GOAL} Every stage leads to it.
 	Workflow stage: ${workflow.currentStage}
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
+	${workflow.goal ? `Stage goal, where the stage has to leave the project: ${workflow.goal} A checkpoint goal sits inside it without having to reach all of it.` : ""}
 	${workflow.nextStage ? `To move on to "${workflow.nextStage}", the stage requires:` : "This is the last stage of the path. It requires:"}
 	${workflow.requiredTasks.map((task) => `- [${task.done ? "x" : " "}] ${task.name}`).join("\n") || "- (nothing is required)"}
 	The stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.

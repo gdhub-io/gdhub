@@ -404,6 +404,7 @@ export const TASK_ADVICE_KINDS = [
 	"shorten",
 	"cut",
 	"onTrack",
+	"offGoal",
 ] as const;
 
 export type TaskAdviceKind = (typeof TASK_ADVICE_KINDS)[number];
@@ -441,6 +442,8 @@ export type CuratorReview = {
 	firstLetter?: string;
 	/** Day 1 with the AI curator: the letter once the plan is approved, read through sprint 1. */
 	planLetter?: string;
+	/** Day 15 (GDHUB-125): when the curator checked the author's changes; confirming waits for it. */
+	checkedAt?: string;
 };
 
 export const GOAL_FITS = ["fits", "widen", "narrow"] as const;
@@ -449,7 +452,11 @@ export const GOAL_FITS = ["fits", "widen", "narrow"] as const;
 export type GoalAdvice = {
 	fit: (typeof GOAL_FITS)[number];
 	note: string;
+	/** Day 1 (GDHUB-125): whether the goal sits inside its stage; flagged, never blocked. */
+	stage?: GoalStage | null;
 };
+
+export type GoalStage = { inside: boolean; note: string };
 
 /** A task the curator suggests, and the one sentence on why this one. */
 export type TaskSuggestion = { text: string; why: string };

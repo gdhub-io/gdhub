@@ -134,7 +134,7 @@ const adviceSchema = z.object({
 			kind: z
 				.enum(TASK_ADVICE_KINDS)
 				.describe(
-					"clear: checkable and fits; risky: may not fit the time left; vague: nobody could check it is done; shorten: keep it smaller; cut: drop it; onTrack: going as planned.",
+					"clear: checkable and fits; risky: may not fit the time left; vague: nobody could check it is done; shorten: keep it smaller; cut: drop it; onTrack: going as planned; offGoal: done or not, it would not bring the goal closer — the note says what the task would have to become to serve it.",
 				),
 			note: z
 				.string()
@@ -162,6 +162,18 @@ const adviceSchema = z.object({
 				.describe(
 					"One or two sentences: why, and for widen or narrow the goal reworded, ready to use.",
 				),
+			stage: z
+				.object({
+					inside: z.boolean(),
+					note: z
+						.string()
+						.describe(
+							"For outside: what lies beyond the stage and what it ends with; the author may keep the goal. Empty for inside.",
+						),
+				})
+				.describe(
+					"Whether the goal sits inside the stage goal; it may stop short of it, and is outside only when it reaches past it.",
+				),
 		})
 		.nullable()
 		.describe(
@@ -185,8 +197,9 @@ export const writePlanAdvice = async (
 
 			Read the team's tasks against the goal and the time left. A good task
 			ends in something anyone can open — a build, a document, a video —
-			and fits the weeks it has. Give one entry per open task (not done,
-			not cut).
+			fits the weeks it has, and brings the goal closer: a task that would
+			not, done or not, is offGoal, with what it would have to become to
+			serve the goal. Give one entry per open task (not done, not cut).
 			${
 				input.moment === "start"
 					? "This is day 1: four weeks lie ahead. The author wrote these tasks after your first letter and sent them to you; this is your one check of them, and next they approve the plan. Do not greet again. Say whether the goal and the tasks hold together, and what to change before approving."

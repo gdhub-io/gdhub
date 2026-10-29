@@ -1,6 +1,7 @@
 import {
 	CURATOR_ACTIVITY_LIMIT,
 	CURATOR_STAGE_BRIEFS,
+	CURATOR_STAGE_GOALS,
 	LEAD_IN_DAYS,
 } from "@/config/checkpoint";
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
@@ -56,6 +57,7 @@ export async function stageWorkflow(
 		currentStage,
 		nextStage: next?.name ?? null,
 		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
+		goal: CURATOR_STAGE_GOALS[currentStage] ?? null,
 		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
 			task.name ? [{ name: task.name, done: task.done }] : [],
 		),

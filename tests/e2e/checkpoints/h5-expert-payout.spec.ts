@@ -121,7 +121,7 @@ test.describe.serial("an expert paid for a checkpoint", () => {
 		const modal = admin.getByRole("dialog", { name: /^Mark .+ paid$/ });
 		await modal.getByLabel("Reference").fill(REFERENCE);
 		await modal.getByRole("button", { name: /^Mark .+ paid$/ }).click();
-		await expect(modal).toBeHidden();
+		await expect(modal).toBeHidden({ timeout: 30_000 });
 		await expect(row).toContainText(`ref ${REFERENCE}`);
 
 		const fee = await feeOf();

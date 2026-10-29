@@ -709,7 +709,7 @@ describe("goal check schema", () => {
 		);
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, goal: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [], openings: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
@@ -732,7 +732,7 @@ describe("the goal check's stored read", () => {
 	it("is not paid for again because the project picture moved on", () => {
 		const input = {
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", nextStage: null, description: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, goal: null, requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [], openings: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },

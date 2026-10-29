@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { MS_PER_DAY } from "@/lib/checkpoints/days";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { listPayouts } from "@/repositories/checkpoints/payouts";
 import { markPayoutPaid } from "@/services/checkpoints/flows/payouts";
@@ -32,9 +33,13 @@ export const GET = pipe(
 const MarkPaidSchema = z.object({
 	curatorId: z.string().min(1),
 	month: Month,
+	// A calendar day in the admin's own zone: east of UTC, today there is tomorrow here.
 	paidOn: z.coerce
 		.date()
-		.refine((date) => date <= new Date(), "A transfer can't be in the future"),
+		.refine(
+			(date) => date.getTime() <= Date.now() + MS_PER_DAY,
+			"A transfer can't be in the future",
+		),
 	reference: z.string().trim().min(1).max(140),
 	detailsSeenAt: z.coerce.date(),
 });

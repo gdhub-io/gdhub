@@ -56,7 +56,8 @@ export function PlanForm({
 	const [drafts, setDrafts] = useState<number[]>([]);
 	const nextDraft = useRef(0);
 	const full =
-		plan.tasks.length + drafts.length >= CHECKPOINT_MAX_ITEMS_PER_KIND;
+		plan.tasks.filter((task) => !task.cut).length + drafts.length >=
+		CHECKPOINT_MAX_ITEMS_PER_KIND;
 
 	const addDraft = () => {
 		nextDraft.current += 1;
@@ -217,7 +218,7 @@ function TaskRow({
  * The AI curator's word under a task, marked as its own: advice to read, not
  * a button — the author decides and edits the task themselves.
  */
-function AdviceLine({ children }: { children: ReactNode }) {
+export function AdviceLine({ children }: { children: ReactNode }) {
 	return (
 		<div className={styles.advice}>
 			<IconSparkles size={14} className={styles.adviceIcon} />
@@ -274,4 +275,5 @@ const WARNING_KINDS = new Set<TaskAdvice["kind"]>([
 	"vague",
 	"shorten",
 	"cut",
+	"offGoal",
 ]);

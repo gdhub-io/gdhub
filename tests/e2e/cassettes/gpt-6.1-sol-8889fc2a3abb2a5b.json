@@ -1,0 +1,258 @@
+{
+	"name": "gpt-6.1-sol",
+	"prompt": "{\"prompt\":[{\"role\":\"system\",\"content\":\"You are the AI curator of a game team on GDHub, through a 28-day\\ncheckpoint: a goal, four one-week sprints, a review after each and a\\nverdict at the end. Review sprint 1 from what the team\\nshowed: every devlog of the sprint, the artifacts it added, who\\nconfirmed working, and what happened on the project. Judge by what\\nanyone can open, not by intentions. A task is done only when an\\nartifact closes it. Where a task's evidence was looked at, say what it\\nshows; a mismatch is worth naming, but it does not undo the task.\\nUse only task ids given to you, and only in the id fields: in text,\\nname a task by its own words. Reassurance and the next step are not\\npart of the review.\\nThe focus set for this sprint was advice, not the measure: work the\\nteam chose instead that still moves the goal or a task counts — say\\nwhat it moved. Name a gap only where nothing moves the goal.\\nThe people change the plan. When someone joined during the checkpoint,\\nsomeone stopped confirming work, or a position is open, say in one\\nsentence what it changes for the tasks — never pass over it.\\nA new person is rarely the answer. Suggest finding one only when the plan\\nplainly cannot be done by this team — a task needs a skill nobody on the\\nteam has, or the hours they stated cannot hold it — and say it once, as\\none option beside cutting the task, naming the role. If a position for it\\nis already open, point to that one and what it would unlock instead of\\nasking for another. Otherwise say nothing about hiring.\\n\\n\\nEvery text the author reads follows these rules. They keep it clear; they\\nnever flatten your character — say the same clear thing the way your\\ncharacter would:\\n- Go straight to the point. No stock openings (\\\"Great question\\\", \\\"Let's\\nlook at\\\", \\\"It is important to note\\\") and no summary of yourself at the end.\\n- Concrete statements, short sentences, short overall — it has to read on\\na phone. Add detail only where it is needed. No professional jargon, and\\ndo not read their list back to them.\\n- Prose, not an article: no headings, and a list only where the content is\\none.\\n- Match the author's tone, never their mistakes.\\n- Do not agree by default: where you see a problem, explain it calmly.\\n- Where you lack information, say what you assume — the author cannot\\nanswer back. Never invent facts, experience or feelings.\\n- Bad: \\\"Absolutely! There are several ways to approach this. Let's look at\\nthe main options.\\\" Good: one clear point — \\\"Drop the second task and\\nshow the level as a video instead\\\" — in your character's words.\\n- Write so it reads at one go:\\n- One thought per sentence; most sentences under fifteen words. A long\\none is two sentences — a full stop, not a semicolon or a dash chain.\\n- The point first, then why, then what to do.\\n- Show how you got there: before a judgement, say in a few words what\\nyou looked at — \\\"I've looked at the goal and the hours your team\\nhas: …\\\". Each sentence follows from the one before it; no leaps.\\n- Who does what: active voice and verbs, not nouns made of them\\n(\\\"decide\\\", not \\\"make a decision\\\"; «решите», не «примите решение»).\\n- Concrete over abstract: the task's own words, the hours, the day —\\nnot \\\"certain aspects\\\", \\\"the work\\\", \\\"some issues\\\".\\n- Cut what adds nothing: \\\"very\\\", \\\"quite\\\", \\\"basically\\\", \\\"it seems that\\\",\\nhedges stacked on hedges. No officialese — in Russian, no\\n«осуществлять», «является», «в рамках», «данный», no chains of\\ngenitives («задача проверки реализации механики»).\\n- No parentheses or asides inside a sentence; no nested clauses two deep.\\n- One image per thought, and it has to make the point clearer, not\\ndecorate it. Never mix two images in one sentence.\\n- Read each sentence as if aloud: it should go in one breath.\\n- Where the language has a polite and a familiar \\\"you\\\" (Russian «вы» and\\n«ты»), use the polite one, always.\\n- Ends with one concrete next step: what to do now with what you said.\\n- A letter to the team closes with one short, warm line after the next\\nstep, in your own words for this point of the road: when you will meet\\nthem next (the next sprint; on the last day, the next checkpoint) and\\nthat you look forward to their devlog posts, artifacts and other\\nactivity — ending with ;). Never the same words as an earlier entry.\\n- Only where something is seriously off — the goal will not fit, nothing\\nwas shown — say once, as a plain fact, that it is common and can be fixed\\nwithin this checkpoint, or in the next one once this one is over. For a\\nsmall fix, leave it out.\\n- Never retell what the author already knows — what they added, who\\njoined, the hours they stated. Use such a fact only where it changes\\nyour advice, and then say in the same sentence what it changes.\\n- Words the author knows, never the platform's own: not \\\"lock\\\", \\\"fixation\\\",\\n\\\"card\\\", \\\"outcome\\\" — say \\\"the goal\\\", \\\"the tasks\\\", \\\"today\\\", \\\"by Friday\\\".\\nNo cheering, no pep talk, nothing about feelings or motivation.\"},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Project goal: The game is released and people play it. Every stage leads to it.\\nWorkflow stage: Prototyping\\nWhat the stage is for: Answering the concept's riskiest questions cheaply: a rough playable build of the core mechanic, an art prototype (style variants, a visual target) or a technical test, and what the team learned from it. Polish and content are not expected; a proven core and a chosen style go on to the demo.\\nStage goal, where the stage has to leave the project: The concept's riskiest questions are answered with something playable or visible: the core works and the style is chosen. A checkpoint goal sits inside it without having to reach all of it.\\nTo move on to \\\"Preparing a demo version\\\", the stage requires:\\n- [ ] Publish a devlog about the prototype\\nThe stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.\\nGoal: A playable vertical slice: two islands, the tide loop and co-op sailing, tested by five players\\n\\nTasks:\\n\\n\\n\\n\\nNo devlog for the sprint.\\n\\n\\n\\nNo artifacts added in the sprint.\\n\\n\\n\\nThe team: 1 person, 1 of whom stated their hours. Stated time: 10–15 hours a week between them, so 40–60 hours over the 28 days.\\n- Author-d16 E2E: Founder, Experienced, 10–15 h/week stated, joined on <date>\\nNo open positions.\\nPulse: 0 confirmed working, 0 did not.\\n\\nWhat the project shows — context for your judgement. It never proves an\\noutcome; only an artifact that opens does.\\nNothing else happened on the project from <date> to <date>.\"}]}],\"responseFormat\":{\"type\":\"json\",\"schema\":{\"type\":\"object\",\"properties\":{\"inShort\":{\"type\":\"string\",\"description\":\"Two or three sentences. First where the team stands, in plain words: on course, at risk or behind. Then what landed, what did not, the main risk. When nothing was shown, say that it is unknown what got done, because nothing was shown.\"},\"discussed\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"itemId\":{\"type\":\"string\"},\"text\":{\"type\":\"string\"}},\"required\":[\"itemId\",\"text\"],\"additionalProperties\":false},\"description\":\"Per task with something to say, in plan order: what the sprint showed for it.\"},\"notDiscussed\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Ids of open tasks with nothing to show yet.\"},\"outsidePlan\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Work shown that belongs to no task.\"},\"questions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Questions the team should answer for itself.\"}},\"required\":[\"inShort\",\"discussed\",\"notDiscussed\",\"outsidePlan\",\"questions\"],\"additionalProperties\":false,\"$schema\":\"http://json-schema.org/draft-<n>/schema#\"},\"name\":\"sprint_review\"}}",
+	"answer": {
+		"content": [
+			{
+				"type": "reasoning",
+				"text": "",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "rs_0395a417e077fa6b006ae3c0a9649c87d2a076ce05f2e2b483",
+						"reasoningEncryptedContent": "gAAAAABq48C2V3zSc6FAOAowMSCkYTjUZmpZCVLk7HiS7WB3DZ7tC5HBGwtb2jxkGw8qXyf2R9opCh849_NGeRtNe3AfURBI43N7NE0mJ1tiiAum6Ynts5CUhxDbXXyJXnEMg9CsxDLfz-0Y-aqG-9easXONkOFRd_HcLMv_6623nBWhRQl4q3Ka74-LEcSRMu7NZeB1Qe_rqOepRUFzB2t1C0VdglPGmB7OqDo88zWQvB-IaI7JJyhjBWTmH_vw5ffFk7LlCm4pa46XRalTgVHeY2IFb07AZMYks0W6seI_Q9opy2tYZYVDspy6PNms_NbD0xsH6yGUAxfdH5Lqne_0DvxhmDt7wNd__ojaW2CCeFL4gP3chcmvFGIL5RrAxYfVvJRw2THcEvluk9Hz9Bt0MKcHbT8hDc4e-8Gzgs5Q1ORG0x-XJRIdndqgdJUsUjcyWZUXdwxkBG5toXeECDlj_jYZ9zprNC2miwf4CRVrNe7ksOhICoCAD8R9ipQJWV7cND2I0xi2MlHvFZEA-OCVVCToV7RIu-AaamNFsFaqiiGQMWFoOtFwwrhi5TVQbGQxmUVVsBfO22-uluhV7PFx3zJ8Q0EFeJtWs6lNftM2StOStZq0JUruFp3gptDbGX4PXJBfeNxasagDLwckBVfInR0kHUrTkB1E4R57dS8l0eKIB5_WqedJW3jjMu5X0Mz9A8eCI6b1xkscHsguOIk7hQcPpmV2hAczQJXJOZCxatUnNnsnqId8PY5LazG04guSMOw-gtV_kmjHElrfYa8bnietEpJdJ7NrNtvHpTk7aXvxkxC9hMIRGatd2Sz5DSdmppSyNmAIjeY1nbWhANdpDC1mthbRfVe7UjvnGFNq6W3WI274JexjxcaDyUVJOvvkdgxGWM6Rt_f-cgv8l8GLs9Q494TrJ7LIuBVeJOYKM0xntEWOiqfwEIwNB8m6-mXzfqLwet5GMnpuKqhK5VGKi7PkGsOzQ3q1Wf73hivVYlwRdKwkgnpEWFiIOOnvZ8IJYxsKx-UFHiSTJF2ckEYhz1TXNAa3uhiJdKBoR9ALVWlb-RGVr1z7Z9lP-NXxmmcm4PnYEt5gKAXcfpUOhsftE7jagqX1_GXZ6DqLscNkWVSD0fL8LkdMi5faSw533qa8wtmTfmE1Y2N0Ngfv9_8PmUebWBwfrgoQ5-1IsnVJt6eE1lsMlMs81s87j5NyIcHd51Ml48KHhb9Cj5kzZn99aUVHfoOgR0PGfcVfTOCF4G3AiszVJ6oIQJN-2Xuz0ymhVRwZWQrQ_he19XycGcbXTHmcSrO_HD_hvjAxTp9N2yvRXraSjK5IW8GdXrOb-GbjuwafWa7Oa4-1DRZ9NalUGbdTKyx5FJki5x7JN3Ua9I8w41sOkiimTuU61tZAAW9BMGiCDtJJX7CCpI5wFdwjsvINVrY_SDMZidB3xvMsbuy6HwpW3S736UotYt62-nhJ1tjNb8jnfzdLKK_Mj0h6TIc82V4FRBHAYf-nmpQGMyetuEotK3ZrDmoT_NhPstq5ay0iKKLA--qwp8e56DiB1SOnwpXP69B3S12bBRv1no1YgbiC8Ti6LsITTFmYfTrFAh7Ug0Beh5SlcVYMZq7gc0xos8q3HggnAvqZABhLE-v6wx21JudV1TuGLdh9TlxA_Vu0LKQbWkkA0_mj0uQc5dMvXZLEWU7v5__Us1YDka73YG8Pt_GLZ4AdHw7MICHnZNGLuQC9heuG1NNqE2XZT5i2N3HN4-onE56bd_zAWr9Rzd0Iim0G_9UYKoK1N_DVcvlRhZ3vR6qpnvaxBborD8PNdTgvq_KAqTK9Ks7O6P3KvsQwJ_9ftqMr5W0SWdCuhhQWAy4-0VhOC4g-T0QdSC_T7doISVisDXv3YtiykLekk6qfwoqj9SGY6GmI2VjS1SAeujFhZV5X-pt93cn5cCG61H7Rl8PcE39ssWwzjNRt9_jzH7IEXCXN1HEv0GlT6uoGr7W0UU7iDwfwTLJVNhfr1BN10fZqdhLoP2kfxBWtUDHY3Yx_p3FqmmEQ-MIiOnZdY1ho43KMsCb_RlxJjYCMukW_x0dbdPSVLw038c0OF4ASuOAuHVZEkHcLoOXS-_MXVN3XcznDVWW3Ct6ZLz9nCB7DyPwRWcNZRMFaUiKD4QJHiw-wWQuLUwdlG11gS7RIPUsDJ3ya8VMAUfc4DVvaYrZWBkhEMc51MIm_qCCk4F0F_LW5-zfcmKPtnF9HXIcYewhcSlcaq_9Wru8MeEmZxdAZuoFYVpZj1IvSZiljDWXhMOnzkSNiUf8CwVljL_nbccY7QnEuz3scjHOs8YmuuQgq_hPCh7Sy7Ra2hlLPpDDKHUogdU4U9FvmbmZWkysukrWzARiuh6bQcbTvIbAFIkYFyEtm1x1_r03oFig_4A5wB4pDsk4ELygnpZTHYyKptXRr8fIpG_HA2rQhcuu7GSjPViZQe6j_2rdfolr7QrNWKDlorJdKJCNoCbT6WOkEvY00wnHRimaGM1JvTPj5ceTxr8JhOmw9KNUHBylTyHYUWzJW-HK2IQ1HtQRHMOFlvv2ftcPGym38gQljdyvIDINQvuOjNcotd7Y5bcUA7PjNdgeLXLZn5qV9vdY1HKcjx51p1nUfV3zhvFdJaESCGHJ-Z7p0q-0cqKfaxw_XCp5CpIyAz5YLq-YlriPvkdJY3zthwLH8sB6C_9Zo-2SKnUNVdi3P-qs6cV0vhyvgDTXIdU5tP2lQu3c02Sm0cZC9NzPHvHgL7hsMZW72ULkfw5JXkrC0A7vJMzwMfJUgqdAe7ZX1CFLWvCkfpdyVZN_rv3XwrX7oGy9zzT_TMpAbi_STX0FhLz1vNruORHiHTUQu_eBHplldoajdpqhkjnFneLKMP4TzWwf7RruFv7ucZkJzvAwavp7BThFqHXcpnl4BC74J0okD6D9el_iQ7kskgdUc3nbNSMxB7N8ieW09H9gG1wCQGtXSQSfbxdw5bwivZzgTlWEfytU_ImCz_Bncia---Mk5NY-VsSmkF91MIY5Qhw_8X-4BhrcmYD8m9Se3_7M-ZcFL0Moy1lqtvbI-Fvi2krV8D8l3VUVS5PlZ-wkToBXeM67czH5AGEo0-MFfaBIKJYPMJIHvShwHK5m4fzFOYfZtQJfCSe-Cs4On6U96vrPqQH3reixuqb4DVN3trrKZhZQittd-AF4wbT3Z3N-q3TfjcxV0AyrdCZxw8O1edoPxLyHiw-LA-oVlnfk1KWEQoDqyyXzwA5_DkoER6sXvRBUGxUUf6_wN_msRVpOb1v9cP0uDE5x8bJGa740nw0G1_PUk1-6VXnq04mVTWQH_TXP6u3A2jEWlJJfqFQgzvog9o2OgaQIxn2eqWLc8rWaKsZs9GMHCL5br9zlZvBQDQXqwXzaWsZcMiX7EL0QLSm2Gb4RHBQGJSFHzmKCmWk2UOiAJRq9z2F0lAPBlUfceRNU4Ij07ms97gGaDZDngiXt3XqEGCT9I2lLr-4UsWkaNQKcoeV9__PRQdZP9UzLPOmXR00-yALDSdSdXU7dv-mw0j2A9RlbTgWVQ_wieA6NH3cOWD-uTq2WkrKukMw4cx88G31WcDCaBdznZ2Oi06uPOpfDUh2eNGOeNBvyMfgXXAbZ3ed-sQp3paFtMz3qmm23QCTV0YB1VUaCzkgUS5LzakqdA-udz0cxZzeukM3fUfekiWLWxSLGmDnNrQX-JSBpuM2sG1QUrDoIaix9DyV5ira2-RxE3K8HGeYfEErpmP_9q5B6xWRxhS2dQfcRS8NledB2pfqgxcE6-fmIAbnuLR7rzlqKRpGkx26OYviGfgzEt6UcV873Us4YDlYXnG54stBU6Y1i8KL0LR-mxd8nUMYyKSNHrMTF9L0tiz3QeoONAa-5APceQsjgBk1ZQbe4yTxhPKJ4Q_X-tKq2uDTIVRR4PjQSuH9VS7kJ4OyM5clcocQT4seiMOQfRN1fF47vkiPRCc2tz0AvfsALci5x9mAQoYZBJtybibV4lspfmleXj975bQgPhF6ZaCpwS7JVFTrIGSIipnFalHA-eC3TMDlxeQgtANPWwFnAteBF_vLLBKXXgWA7LmZkDw2-xYqTw8-brt8QjYL4L3t64k63SewqZKiMiWDK0LJ1pTx1NQdXGtOiY9nFeDBFyoGVCnI8ZFeZtDlsMx4_HG5AHsYfgXTmWe7PdKts7pGFmE-QdT_qtTj424hWMEz78BWxUDtr8XvHEUJVxb0SvTQxE5KaTcK4o2YALoyU2TPSsLEe1gS6ub4rrgYUQpihWY1KkwoU_asuz0BAldvupcWmorHiIngvlarokNzs_KFr8iDEjxXEvppR6T3DymbqKUh0JZZFsPXZMFs0tK-MrzduvjdGVb1uPZaTMCfrNg0mQYscxpUC4xf7YW4tgo3BblSmzWqUnoJYnup1Fy8cGo4Hnv3mdOmjtNwvYLoh4tDVMjc7l3J3c3ycFltCTdo25KVVhyQEQ_CBgnKpRedex_0-sK7RzqzrWufYG4Y0DgKC5xtTrLf4axLX6MVTVCrPhtLgBxMo8bHinKN4nZasoLCkAGIhEPAnz4wRIxWBJyYkBMGACXc5Gj8cecmAY1_zweqguJJXrEoIyUS3DIAjQ84rJE00BN8pyNdWxfcnPq-zd1tnDBghby26LEohGgJS6_TdXqYCzplcJoRA4qvz6ABklkB8SAcojXPRyh_-4yhFCPKiGb_qd189-ZsGzJX-Hm1oj1owjl_EU39Q3QG0nvxzVNAtG-cCj55NQcD5ksq5J2K0FYOX91E05Tt3rEuBLrRvyCTH1khbVI7LkawSrJaw_0MI-a3Zv9QQVghCNn6aw1eYADGmDxFDF1Louj5cfj7baC-2mt21OuO08wvi1pTqIeEDQ2x2bHtBXsSzZSwxdj98PsSLCQF1zr_VD33zc_abUuGfvVV_PJTHBIh5hB6qlXjL0-GEbAjq0cE-8UZqU3J-4m0kS75WM8NnmCeGjHhpAfchZQCk7JwilaLkPHwpC2OjfgH_Gl4jav7sZggOYbtgmjVva2JtXS6vNTCPBRp2IbmD1VsZ3cl8g13nNWtsOPqClTGAeQbzvVYK8MtvNY1R0Ibqq63z-U5hS3qWLws4ChyziM7Ihl1FEw8BqfhVatLxEKXp9lqOevr0OMsf0E3_-B696x0ix3wehrsdzCo1QeU6IY6-QffvYEn8iqLl6lI-Eaj2M7LALql10G7kHXMivPoGClxw-MacdJOmFfd5NhcWy4akR4cdnA4d-4KtHageK5tgUkVjP1DfcdNZvl9a-1LyQu49mmf0ZxbSiE4zUk_hmxwX5BsCVqKgZ7TB0FAT3laCt-omkz6Xb5BU_wpW24ofs-n814OCO1NJ9EqZwrYRAQ1r2d0isWhvf9nU90X1e4I1QiklcbxCUk0-q2YeLI3GNcnUPulVqTITL_xoK6QQR4OLRdCbfBnMgGP9qCrWpUNT9OMU9omBcTuGXv1hTs8pSSF-gjVFOxPu2ujIIM0JYSQKoiokHe3jvceEV7Rj2CTd4qSYrFc14JTZXZt_rD3DDQ7k8SNDOj7atW1ryXnlgoLfhUXNQ9cP3N296vPmM_EbgTKAKxv-zOH-7KUxYPJRvf8WnNWlA39L1UFESxXbV5pHR7qNqPfNLW4swYaUM4rkeW97ejq3aX-lYZ7XdF3O_7SQ-U69TkwFIlE2ldjAdqbOhxljwsewt6dOm4Isn4YBTHLlNOBh8v-CZ-NP7ps192ash2bClZi9qyLJQFYi66CV53hFyuP3q75La1XMJrnk-8QtQYEHVn1StSbBPTRHK6pCQuy1sMzSI-Loz42xNkjYAZ7I5rKnf2tBADJI8eEepG9NTqyvMAmN5uWJakxJbI2CB50lomivGpec6ZFti_tBD2dZeHoTZgX6AyrAkzCR88ICGmuch2AlubE2LcJbq4y64TdlvJcOPdYO228T-r6_ICsSe75jQj4Mb6TBeHBzL4Be6g97_-G7UmEL7CWMF-OUj6Jav5yidlujuNLIPZdIGoNeBUtAKxQ-LGsDDIHx5YX6PVI3mBXDoV_D92O9X0M9rHkCa9Mh1yLEI-wKo5GYIFZ7LnoCp0qeHS7_HGGanLq7OZ5OemR0hS-sDc4XnIBpaRPv9KkLDLfjKrQR3Pj3rxuB5VfHTFAfi5kMmyelVKncHNJT3_VJ6pz_5SDPDs6AatYn-G6-xB-8tXsXlfQcPFAwqQLiTVxr4GMBdhDpGf3RgFDrK2Wp_MnqzGw7hoipPnQM9Wlpi5yyiSsLCgyn9S_pJiZ6d-zTovAT06clOxTAHkDIllDEaNNVLEp1wParRfOnsJHaqUCK6k8MOCGRXBRzghVirjFV42QPnJ7AKmNp4arrtXzBn9xXERC1ZYqRXh6n5JNq-18eWYzVHTVZqQMgsLOS0Sz_EVFYX52mSwVzlzXYnC1RG75Cy9Cp5Vxom7C6mrJAA6tFpbVlQCg6cIq7KKxSxGoDUGjwIrmkkj8me8UBKNrj4GUCLCtbTeNFIuhw0B3VBGlUW8eKudmAhnEVcTtzJv1APbKKveG2kUBiqPPSZkbqLwYdiz3H6HKyGfRg1u57zlugv93GgXxz0teVeKkXyD2S8J3gN0ZjNbUNlBAUn0f0wBpxCsPQtyu9SaKU1kQsBd3ztZKNAJIPrFAXD78NE3cNF4P8HYvkE5uqhHtwiD8aMRrK4TLrU6_XuBB7glRQdixYcFtXT7pmZdnEXsGYCSbX59uE7O8zisurLKgUVXUrCkB8IFvV7c1-7st_mZcTgkzmHTrdwko3vYWspnLWdx_Jt_WOkjpLLJEOMIP2kFbJf4igzudO0J5_g6HwvQCvsDg__AKFZPN3A0poF_dMMB6TxI9FfIySk28Xbvc2alaq1QacmVwqeO3D4XYwfJS5chI5vOVXJiTkurFMUyWbLUPhbtCublNObk7N0B8VPJjvzinlP2RKC_uSI-I759SxdjWHl3A9j_xfVPRcDnqhN1xjqILJ1fLCSiYVfvzVVfiETA0cz-wR0SUdfk0oWVI97BYtPSKX_2buTQ1CKHv0DRA63ob0Kjr6NioT1oSVitt1uH-c2KdDVARLzvBlyr_nsYtA_RvQjbbTYJ_Khxwzt06d25n8MDfzdDyR5glxe68VIhHNlaUspR8Lsv-rBjFoWhXLQUl8vlYLgEQlEdoyTQXjrP1YJC94mraRvE7qALNJpKLX16YPJFHp0QgasaDSpoFFqBDZnt_AWFv751qP1jJJpHo4CyDjtpXl5uaIHVGp2QhdJW3nDyXjYQAdYkA7F3YWNNeocNZiWh066luaYjACEOorFBMhfZj1vRrSsbMv1vhZDxtPOL_S0MoAr3_ZLKVycXF4-eZtFE_hc8otW94pFnXDlY2X5I-soNVxIbgL7NeESSWOksHGPTW7fmAKAaMDQ_6CPI1wTPc1JCydbB7VzwSgURukSWANKu19Oepoxx3bbX3ibyIDXjIrmZh0JWRTLGeVmANKjSVboS-GjAGx2l4t8rVpXtkMs4EP5vVrRniywznodkHJkz9nD_fS35rCQjMaYUZvJp2NkBwG4XcVLD0M9QK7FGMnWL9MWvqdhMvtRCsu2U17nAiAVcyXsY1LQiTKEzLP5jonzRnEvrhBHWddL414QAeQs5PSCpz2dspTiP9LLYPmoiqcvrXKOU-18GSDdwA6iqVky7tqQEdvvTs_1ayIh5mDuZobf6kip-Y4="
+					}
+				}
+			},
+			{
+				"type": "text",
+				"text": "{\n  \"inShort\": \"With no devlog or artifacts to open, the checkpoint is at risk. What got done is unknown because nothing was shown, leaving the playable slice and five-player test unverified. Showing nothing is common and can be fixed within this checkpoint.\",\n  \"discussed\": [],\n  \"notDiscussed\": [],\n  \"outsidePlan\": [],\n  \"questions\": [\n    \"The founder joined after this sprint, so their arrival does not establish progress toward the slice. Can two islands, the tide loop, co-op sailing and five-player testing fit the remaining hours?\",\n    \"What playable build can you publish now to show which parts of the slice work?\"\n  ]\n}",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "msg_0395a417e077fa6b006ae3c0b4830887d28c9ec379ddee7703",
+						"phase": "final_answer"
+					}
+				}
+			}
+		],
+		"finishReason": {
+			"unified": "stop"
+		},
+		"usage": {
+			"inputTokens": {
+				"total": 1794,
+				"noCache": 3,
+				"cacheRead": 0,
+				"cacheWrite": 1791
+			},
+			"outputTokens": {
+				"total": 618,
+				"text": 152,
+				"reasoning": 466
+			},
+			"raw": {
+				"input_tokens": 1794,
+				"input_tokens_details": {
+					"cache_write_tokens": 1791,
+					"cached_tokens": 0
+				},
+				"output_tokens": 618,
+				"output_tokens_details": {
+					"reasoning_tokens": 466
+				},
+				"total_tokens": 2412
+			}
+		},
+		"response": {
+			"id": "resp_0395a417e077fa6b006ae3c0a70f1887d29d49501f70c36c23",
+			"timestamp": "2026-10-29T21:54:47.000Z",
+			"modelId": "gpt-6.1-sol",
+			"headers": {
+				"access-control-expose-headers": "X-Request-ID, Server-Timing-Total, CF-Ray, CF-Ray",
+				"alt-svc": "h3=\":443\"; ma=86400",
+				"cf-cache-status": "DYNAMIC",
+				"cf-ray": "a5256bb3bbf20b81-AMS",
+				"connection": "keep-alive",
+				"content-encoding": "br",
+				"content-type": "application/json",
+				"date": "Thu, 29 Oct 2026 21:55:02 GMT",
+				"openai-organization": "gdhub",
+				"openai-processing-ms": "15690",
+				"openai-project": "proj_Sxbfe4DKP4kJZiAvrgGwGcx0",
+				"openai-version": "2020-10-01",
+				"server": "cloudflare",
+				"set-cookie": "__cf_bm=yxTCBHsIfcvpQ.J_8k7TBQLnTuYFVAf_2YHei5QKabY-1793310886.9927053-1.0.1.1-tM6o_Efcit8aXUkImMxdb4nn3DqiIoI52LiCZdo_SBIA.3Bbq_tpbaA53pcryg0LoDvZndAHLWx8JMoQP6md3Q8b0XxCnrTo3rm.B.QdlLjEWeI9wT0Co0rTv.4ZfVkU; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com; Expires=Thu, 29 Oct 2026 22:25:02 GMT",
+				"strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+				"transfer-encoding": "chunked",
+				"x-content-type-options": "nosniff",
+				"x-ratelimit-limit-requests": "10000",
+				"x-ratelimit-limit-tokens": "4000000",
+				"x-ratelimit-remaining-requests": "9999",
+				"x-ratelimit-remaining-tokens": "3999525",
+				"x-ratelimit-reset-requests": "6ms",
+				"x-ratelimit-reset-tokens": "7ms",
+				"x-request-id": "req_8eeb08646d734207a3c735d5f51f8d12"
+			},
+			"body": {
+				"id": "resp_0395a417e077fa6b006ae3c0a70f1887d29d49501f70c36c23",
+				"object": "response",
+				"created_at": 1793310887,
+				"status": "completed",
+				"access_programs": null,
+				"background": false,
+				"billing": {
+					"payer": "openai"
+				},
+				"completed_at": 1793310902,
+				"error": null,
+				"frequency_penalty": 0,
+				"incomplete_details": null,
+				"instructions": null,
+				"max_output_tokens": null,
+				"max_tool_calls": null,
+				"model": "gpt-6.1-sol",
+				"moderation": null,
+				"output": [
+					{
+						"id": "rs_0395a417e077fa6b006ae3c0a9649c87d2a076ce05f2e2b483",
+						"type": "reasoning",
+						"content": [],
+						"encrypted_content": "gAAAAABq48C2V3zSc6FAOAowMSCkYTjUZmpZCVLk7HiS7WB3DZ7tC5HBGwtb2jxkGw8qXyf2R9opCh849_NGeRtNe3AfURBI43N7NE0mJ1tiiAum6Ynts5CUhxDbXXyJXnEMg9CsxDLfz-0Y-aqG-9easXONkOFRd_HcLMv_6623nBWhRQl4q3Ka74-LEcSRMu7NZeB1Qe_rqOepRUFzB2t1C0VdglPGmB7OqDo88zWQvB-IaI7JJyhjBWTmH_vw5ffFk7LlCm4pa46XRalTgVHeY2IFb07AZMYks0W6seI_Q9opy2tYZYVDspy6PNms_NbD0xsH6yGUAxfdH5Lqne_0DvxhmDt7wNd__ojaW2CCeFL4gP3chcmvFGIL5RrAxYfVvJRw2THcEvluk9Hz9Bt0MKcHbT8hDc4e-8Gzgs5Q1ORG0x-XJRIdndqgdJUsUjcyWZUXdwxkBG5toXeECDlj_jYZ9zprNC2miwf4CRVrNe7ksOhICoCAD8R9ipQJWV7cND2I0xi2MlHvFZEA-OCVVCToV7RIu-AaamNFsFaqiiGQMWFoOtFwwrhi5TVQbGQxmUVVsBfO22-uluhV7PFx3zJ8Q0EFeJtWs6lNftM2StOStZq0JUruFp3gptDbGX4PXJBfeNxasagDLwckBVfInR0kHUrTkB1E4R57dS8l0eKIB5_WqedJW3jjMu5X0Mz9A8eCI6b1xkscHsguOIk7hQcPpmV2hAczQJXJOZCxatUnNnsnqId8PY5LazG04guSMOw-gtV_kmjHElrfYa8bnietEpJdJ7NrNtvHpTk7aXvxkxC9hMIRGatd2Sz5DSdmppSyNmAIjeY1nbWhANdpDC1mthbRfVe7UjvnGFNq6W3WI274JexjxcaDyUVJOvvkdgxGWM6Rt_f-cgv8l8GLs9Q494TrJ7LIuBVeJOYKM0xntEWOiqfwEIwNB8m6-mXzfqLwet5GMnpuKqhK5VGKi7PkGsOzQ3q1Wf73hivVYlwRdKwkgnpEWFiIOOnvZ8IJYxsKx-UFHiSTJF2ckEYhz1TXNAa3uhiJdKBoR9ALVWlb-RGVr1z7Z9lP-NXxmmcm4PnYEt5gKAXcfpUOhsftE7jagqX1_GXZ6DqLscNkWVSD0fL8LkdMi5faSw533qa8wtmTfmE1Y2N0Ngfv9_8PmUebWBwfrgoQ5-1IsnVJt6eE1lsMlMs81s87j5NyIcHd51Ml48KHhb9Cj5kzZn99aUVHfoOgR0PGfcVfTOCF4G3AiszVJ6oIQJN-2Xuz0ymhVRwZWQrQ_he19XycGcbXTHmcSrO_HD_hvjAxTp9N2yvRXraSjK5IW8GdXrOb-GbjuwafWa7Oa4-1DRZ9NalUGbdTKyx5FJki5x7JN3Ua9I8w41sOkiimTuU61tZAAW9BMGiCDtJJX7CCpI5wFdwjsvINVrY_SDMZidB3xvMsbuy6HwpW3S736UotYt62-nhJ1tjNb8jnfzdLKK_Mj0h6TIc82V4FRBHAYf-nmpQGMyetuEotK3ZrDmoT_NhPstq5ay0iKKLA--qwp8e56DiB1SOnwpXP69B3S12bBRv1no1YgbiC8Ti6LsITTFmYfTrFAh7Ug0Beh5SlcVYMZq7gc0xos8q3HggnAvqZABhLE-v6wx21JudV1TuGLdh9TlxA_Vu0LKQbWkkA0_mj0uQc5dMvXZLEWU7v5__Us1YDka73YG8Pt_GLZ4AdHw7MICHnZNGLuQC9heuG1NNqE2XZT5i2N3HN4-onE56bd_zAWr9Rzd0Iim0G_9UYKoK1N_DVcvlRhZ3vR6qpnvaxBborD8PNdTgvq_KAqTK9Ks7O6P3KvsQwJ_9ftqMr5W0SWdCuhhQWAy4-0VhOC4g-T0QdSC_T7doISVisDXv3YtiykLekk6qfwoqj9SGY6GmI2VjS1SAeujFhZV5X-pt93cn5cCG61H7Rl8PcE39ssWwzjNRt9_jzH7IEXCXN1HEv0GlT6uoGr7W0UU7iDwfwTLJVNhfr1BN10fZqdhLoP2kfxBWtUDHY3Yx_p3FqmmEQ-MIiOnZdY1ho43KMsCb_RlxJjYCMukW_x0dbdPSVLw038c0OF4ASuOAuHVZEkHcLoOXS-_MXVN3XcznDVWW3Ct6ZLz9nCB7DyPwRWcNZRMFaUiKD4QJHiw-wWQuLUwdlG11gS7RIPUsDJ3ya8VMAUfc4DVvaYrZWBkhEMc51MIm_qCCk4F0F_LW5-zfcmKPtnF9HXIcYewhcSlcaq_9Wru8MeEmZxdAZuoFYVpZj1IvSZiljDWXhMOnzkSNiUf8CwVljL_nbccY7QnEuz3scjHOs8YmuuQgq_hPCh7Sy7Ra2hlLPpDDKHUogdU4U9FvmbmZWkysukrWzARiuh6bQcbTvIbAFIkYFyEtm1x1_r03oFig_4A5wB4pDsk4ELygnpZTHYyKptXRr8fIpG_HA2rQhcuu7GSjPViZQe6j_2rdfolr7QrNWKDlorJdKJCNoCbT6WOkEvY00wnHRimaGM1JvTPj5ceTxr8JhOmw9KNUHBylTyHYUWzJW-HK2IQ1HtQRHMOFlvv2ftcPGym38gQljdyvIDINQvuOjNcotd7Y5bcUA7PjNdgeLXLZn5qV9vdY1HKcjx51p1nUfV3zhvFdJaESCGHJ-Z7p0q-0cqKfaxw_XCp5CpIyAz5YLq-YlriPvkdJY3zthwLH8sB6C_9Zo-2SKnUNVdi3P-qs6cV0vhyvgDTXIdU5tP2lQu3c02Sm0cZC9NzPHvHgL7hsMZW72ULkfw5JXkrC0A7vJMzwMfJUgqdAe7ZX1CFLWvCkfpdyVZN_rv3XwrX7oGy9zzT_TMpAbi_STX0FhLz1vNruORHiHTUQu_eBHplldoajdpqhkjnFneLKMP4TzWwf7RruFv7ucZkJzvAwavp7BThFqHXcpnl4BC74J0okD6D9el_iQ7kskgdUc3nbNSMxB7N8ieW09H9gG1wCQGtXSQSfbxdw5bwivZzgTlWEfytU_ImCz_Bncia---Mk5NY-VsSmkF91MIY5Qhw_8X-4BhrcmYD8m9Se3_7M-ZcFL0Moy1lqtvbI-Fvi2krV8D8l3VUVS5PlZ-wkToBXeM67czH5AGEo0-MFfaBIKJYPMJIHvShwHK5m4fzFOYfZtQJfCSe-Cs4On6U96vrPqQH3reixuqb4DVN3trrKZhZQittd-AF4wbT3Z3N-q3TfjcxV0AyrdCZxw8O1edoPxLyHiw-LA-oVlnfk1KWEQoDqyyXzwA5_DkoER6sXvRBUGxUUf6_wN_msRVpOb1v9cP0uDE5x8bJGa740nw0G1_PUk1-6VXnq04mVTWQH_TXP6u3A2jEWlJJfqFQgzvog9o2OgaQIxn2eqWLc8rWaKsZs9GMHCL5br9zlZvBQDQXqwXzaWsZcMiX7EL0QLSm2Gb4RHBQGJSFHzmKCmWk2UOiAJRq9z2F0lAPBlUfceRNU4Ij07ms97gGaDZDngiXt3XqEGCT9I2lLr-4UsWkaNQKcoeV9__PRQdZP9UzLPOmXR00-yALDSdSdXU7dv-mw0j2A9RlbTgWVQ_wieA6NH3cOWD-uTq2WkrKukMw4cx88G31WcDCaBdznZ2Oi06uPOpfDUh2eNGOeNBvyMfgXXAbZ3ed-sQp3paFtMz3qmm23QCTV0YB1VUaCzkgUS5LzakqdA-udz0cxZzeukM3fUfekiWLWxSLGmDnNrQX-JSBpuM2sG1QUrDoIaix9DyV5ira2-RxE3K8HGeYfEErpmP_9q5B6xWRxhS2dQfcRS8NledB2pfqgxcE6-fmIAbnuLR7rzlqKRpGkx26OYviGfgzEt6UcV873Us4YDlYXnG54stBU6Y1i8KL0LR-mxd8nUMYyKSNHrMTF9L0tiz3QeoONAa-5APceQsjgBk1ZQbe4yTxhPKJ4Q_X-tKq2uDTIVRR4PjQSuH9VS7kJ4OyM5clcocQT4seiMOQfRN1fF47vkiPRCc2tz0AvfsALci5x9mAQoYZBJtybibV4lspfmleXj975bQgPhF6ZaCpwS7JVFTrIGSIipnFalHA-eC3TMDlxeQgtANPWwFnAteBF_vLLBKXXgWA7LmZkDw2-xYqTw8-brt8QjYL4L3t64k63SewqZKiMiWDK0LJ1pTx1NQdXGtOiY9nFeDBFyoGVCnI8ZFeZtDlsMx4_HG5AHsYfgXTmWe7PdKts7pGFmE-QdT_qtTj424hWMEz78BWxUDtr8XvHEUJVxb0SvTQxE5KaTcK4o2YALoyU2TPSsLEe1gS6ub4rrgYUQpihWY1KkwoU_asuz0BAldvupcWmorHiIngvlarokNzs_KFr8iDEjxXEvppR6T3DymbqKUh0JZZFsPXZMFs0tK-MrzduvjdGVb1uPZaTMCfrNg0mQYscxpUC4xf7YW4tgo3BblSmzWqUnoJYnup1Fy8cGo4Hnv3mdOmjtNwvYLoh4tDVMjc7l3J3c3ycFltCTdo25KVVhyQEQ_CBgnKpRedex_0-sK7RzqzrWufYG4Y0DgKC5xtTrLf4axLX6MVTVCrPhtLgBxMo8bHinKN4nZasoLCkAGIhEPAnz4wRIxWBJyYkBMGACXc5Gj8cecmAY1_zweqguJJXrEoIyUS3DIAjQ84rJE00BN8pyNdWxfcnPq-zd1tnDBghby26LEohGgJS6_TdXqYCzplcJoRA4qvz6ABklkB8SAcojXPRyh_-4yhFCPKiGb_qd189-ZsGzJX-Hm1oj1owjl_EU39Q3QG0nvxzVNAtG-cCj55NQcD5ksq5J2K0FYOX91E05Tt3rEuBLrRvyCTH1khbVI7LkawSrJaw_0MI-a3Zv9QQVghCNn6aw1eYADGmDxFDF1Louj5cfj7baC-2mt21OuO08wvi1pTqIeEDQ2x2bHtBXsSzZSwxdj98PsSLCQF1zr_VD33zc_abUuGfvVV_PJTHBIh5hB6qlXjL0-GEbAjq0cE-8UZqU3J-4m0kS75WM8NnmCeGjHhpAfchZQCk7JwilaLkPHwpC2OjfgH_Gl4jav7sZggOYbtgmjVva2JtXS6vNTCPBRp2IbmD1VsZ3cl8g13nNWtsOPqClTGAeQbzvVYK8MtvNY1R0Ibqq63z-U5hS3qWLws4ChyziM7Ihl1FEw8BqfhVatLxEKXp9lqOevr0OMsf0E3_-B696x0ix3wehrsdzCo1QeU6IY6-QffvYEn8iqLl6lI-Eaj2M7LALql10G7kHXMivPoGClxw-MacdJOmFfd5NhcWy4akR4cdnA4d-4KtHageK5tgUkVjP1DfcdNZvl9a-1LyQu49mmf0ZxbSiE4zUk_hmxwX5BsCVqKgZ7TB0FAT3laCt-omkz6Xb5BU_wpW24ofs-n814OCO1NJ9EqZwrYRAQ1r2d0isWhvf9nU90X1e4I1QiklcbxCUk0-q2YeLI3GNcnUPulVqTITL_xoK6QQR4OLRdCbfBnMgGP9qCrWpUNT9OMU9omBcTuGXv1hTs8pSSF-gjVFOxPu2ujIIM0JYSQKoiokHe3jvceEV7Rj2CTd4qSYrFc14JTZXZt_rD3DDQ7k8SNDOj7atW1ryXnlgoLfhUXNQ9cP3N296vPmM_EbgTKAKxv-zOH-7KUxYPJRvf8WnNWlA39L1UFESxXbV5pHR7qNqPfNLW4swYaUM4rkeW97ejq3aX-lYZ7XdF3O_7SQ-U69TkwFIlE2ldjAdqbOhxljwsewt6dOm4Isn4YBTHLlNOBh8v-CZ-NP7ps192ash2bClZi9qyLJQFYi66CV53hFyuP3q75La1XMJrnk-8QtQYEHVn1StSbBPTRHK6pCQuy1sMzSI-Loz42xNkjYAZ7I5rKnf2tBADJI8eEepG9NTqyvMAmN5uWJakxJbI2CB50lomivGpec6ZFti_tBD2dZeHoTZgX6AyrAkzCR88ICGmuch2AlubE2LcJbq4y64TdlvJcOPdYO228T-r6_ICsSe75jQj4Mb6TBeHBzL4Be6g97_-G7UmEL7CWMF-OUj6Jav5yidlujuNLIPZdIGoNeBUtAKxQ-LGsDDIHx5YX6PVI3mBXDoV_D92O9X0M9rHkCa9Mh1yLEI-wKo5GYIFZ7LnoCp0qeHS7_HGGanLq7OZ5OemR0hS-sDc4XnIBpaRPv9KkLDLfjKrQR3Pj3rxuB5VfHTFAfi5kMmyelVKncHNJT3_VJ6pz_5SDPDs6AatYn-G6-xB-8tXsXlfQcPFAwqQLiTVxr4GMBdhDpGf3RgFDrK2Wp_MnqzGw7hoipPnQM9Wlpi5yyiSsLCgyn9S_pJiZ6d-zTovAT06clOxTAHkDIllDEaNNVLEp1wParRfOnsJHaqUCK6k8MOCGRXBRzghVirjFV42QPnJ7AKmNp4arrtXzBn9xXERC1ZYqRXh6n5JNq-18eWYzVHTVZqQMgsLOS0Sz_EVFYX52mSwVzlzXYnC1RG75Cy9Cp5Vxom7C6mrJAA6tFpbVlQCg6cIq7KKxSxGoDUGjwIrmkkj8me8UBKNrj4GUCLCtbTeNFIuhw0B3VBGlUW8eKudmAhnEVcTtzJv1APbKKveG2kUBiqPPSZkbqLwYdiz3H6HKyGfRg1u57zlugv93GgXxz0teVeKkXyD2S8J3gN0ZjNbUNlBAUn0f0wBpxCsPQtyu9SaKU1kQsBd3ztZKNAJIPrFAXD78NE3cNF4P8HYvkE5uqhHtwiD8aMRrK4TLrU6_XuBB7glRQdixYcFtXT7pmZdnEXsGYCSbX59uE7O8zisurLKgUVXUrCkB8IFvV7c1-7st_mZcTgkzmHTrdwko3vYWspnLWdx_Jt_WOkjpLLJEOMIP2kFbJf4igzudO0J5_g6HwvQCvsDg__AKFZPN3A0poF_dMMB6TxI9FfIySk28Xbvc2alaq1QacmVwqeO3D4XYwfJS5chI5vOVXJiTkurFMUyWbLUPhbtCublNObk7N0B8VPJjvzinlP2RKC_uSI-I759SxdjWHl3A9j_xfVPRcDnqhN1xjqILJ1fLCSiYVfvzVVfiETA0cz-wR0SUdfk0oWVI97BYtPSKX_2buTQ1CKHv0DRA63ob0Kjr6NioT1oSVitt1uH-c2KdDVARLzvBlyr_nsYtA_RvQjbbTYJ_Khxwzt06d25n8MDfzdDyR5glxe68VIhHNlaUspR8Lsv-rBjFoWhXLQUl8vlYLgEQlEdoyTQXjrP1YJC94mraRvE7qALNJpKLX16YPJFHp0QgasaDSpoFFqBDZnt_AWFv751qP1jJJpHo4CyDjtpXl5uaIHVGp2QhdJW3nDyXjYQAdYkA7F3YWNNeocNZiWh066luaYjACEOorFBMhfZj1vRrSsbMv1vhZDxtPOL_S0MoAr3_ZLKVycXF4-eZtFE_hc8otW94pFnXDlY2X5I-soNVxIbgL7NeESSWOksHGPTW7fmAKAaMDQ_6CPI1wTPc1JCydbB7VzwSgURukSWANKu19Oepoxx3bbX3ibyIDXjIrmZh0JWRTLGeVmANKjSVboS-GjAGx2l4t8rVpXtkMs4EP5vVrRniywznodkHJkz9nD_fS35rCQjMaYUZvJp2NkBwG4XcVLD0M9QK7FGMnWL9MWvqdhMvtRCsu2U17nAiAVcyXsY1LQiTKEzLP5jonzRnEvrhBHWddL414QAeQs5PSCpz2dspTiP9LLYPmoiqcvrXKOU-18GSDdwA6iqVky7tqQEdvvTs_1ayIh5mDuZobf6kip-Y4=",
+						"summary": []
+					},
+					{
+						"id": "msg_0395a417e077fa6b006ae3c0b4830887d28c9ec379ddee7703",
+						"type": "message",
+						"status": "completed",
+						"content": [
+							{
+								"type": "output_text",
+								"annotations": [],
+								"logprobs": [],
+								"text": "{\n  \"inShort\": \"With no devlog or artifacts to open, the checkpoint is at risk. What got done is unknown because nothing was shown, leaving the playable slice and five-player test unverified. Showing nothing is common and can be fixed within this checkpoint.\",\n  \"discussed\": [],\n  \"notDiscussed\": [],\n  \"outsidePlan\": [],\n  \"questions\": [\n    \"The founder joined after this sprint, so their arrival does not establish progress toward the slice. Can two islands, the tide loop, co-op sailing and five-player testing fit the remaining hours?\",\n    \"What playable build can you publish now to show which parts of the slice work?\"\n  ]\n}"
+							}
+						],
+						"phase": "final_answer",
+						"role": "assistant"
+					}
+				],
+				"parallel_tool_calls": true,
+				"presence_penalty": 0,
+				"previous_response_id": null,
+				"prompt_cache_key": null,
+				"prompt_cache_retention": "24h",
+				"reasoning": {
+					"context": "all_turns",
+					"effort": "medium",
+					"mode": "standard",
+					"summary": null
+				},
+				"safety_identifier": null,
+				"service_tier": "default",
+				"store": true,
+				"temperature": 1,
+				"text": {
+					"format": {
+						"type": "json_schema",
+						"description": null,
+						"name": "sprint_review",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"inShort": {
+									"type": "string",
+									"description": "Two or three sentences. First where the team stands, in plain words: on course, at risk or behind. Then what landed, what did not, the main risk. When nothing was shown, say that it is unknown what got done, because nothing was shown."
+								},
+								"discussed": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"itemId": {
+												"type": "string"
+											},
+											"text": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"itemId",
+											"text"
+										],
+										"additionalProperties": false
+									},
+									"description": "Per task with something to say, in plan order: what the sprint showed for it."
+								},
+								"notDiscussed": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"description": "Ids of open tasks with nothing to show yet."
+								},
+								"outsidePlan": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"description": "Work shown that belongs to no task."
+								},
+								"questions": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"description": "Questions the team should answer for itself."
+								}
+							},
+							"required": [
+								"inShort",
+								"discussed",
+								"notDiscussed",
+								"outsidePlan",
+								"questions"
+							],
+							"additionalProperties": false
+						},
+						"strict": true
+					},
+					"verbosity": "medium"
+				},
+				"tool_choice": "auto",
+				"tool_usage": {
+					"image_gen": {
+						"input_tokens": 0,
+						"input_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"output_tokens": 0,
+						"output_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"total_tokens": 0
+					},
+					"web_search": {
+						"num_requests": 0
+					}
+				},
+				"tools": [],
+				"top_logprobs": 0,
+				"top_p": 0.98,
+				"truncation": "disabled",
+				"usage": {
+					"input_tokens": 1794,
+					"input_tokens_details": {
+						"cache_write_tokens": 1791,
+						"cached_tokens": 0
+					},
+					"output_tokens": 618,
+					"output_tokens_details": {
+						"reasoning_tokens": 466
+					},
+					"total_tokens": 2412
+				},
+				"user": null,
+				"metadata": {}
+			}
+		},
+		"providerMetadata": {
+			"openai": {
+				"responseId": "resp_0395a417e077fa6b006ae3c0a70f1887d29d49501f70c36c23",
+				"serviceTier": "default",
+				"reasoningContext": "all_turns"
+			}
+		},
+		"warnings": []
+	}
+}

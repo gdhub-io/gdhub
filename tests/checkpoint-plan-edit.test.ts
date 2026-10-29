@@ -165,6 +165,37 @@ describe("planEdit", () => {
 	});
 });
 
+describe("the limit of five tasks", () => {
+	const task = (id: string, cut = false) => ({
+		id,
+		order: 1,
+		text: id,
+		originalText: null,
+		cut,
+		_count: { evidence: 0 },
+	});
+	const five = ["a", "b", "c", "d", "e"];
+
+	it("refuses a sixth open task", async () => {
+		checkpointFindUnique.mockResolvedValue(plan({ items: five.map((id) => task(id)) }));
+		expect(
+			await changePlan("cp", "curator", { op: "add", text: "Sixth" }, duringCall1),
+		).toBe("tooManyTasks");
+		expect(itemCreate).not.toHaveBeenCalled();
+	});
+
+	// GDHUB-125: a task cut on day 15 frees its place for a new one.
+	it("does not count a cut task", async () => {
+		checkpointFindUnique.mockResolvedValue(
+			plan({ items: five.map((id) => task(id, id === "e")) }),
+		);
+		expect(
+			await changePlan("cp", "curator", { op: "add", text: "New" }, duringCall3),
+		).toBeNull();
+		expect(itemCreate).toHaveBeenCalled();
+	});
+});
+
 describe("changePlan", () => {
 	it("lets only the curator and the project's author edit", async () => {
 		checkpointFindUnique.mockResolvedValue(plan());
@@ -316,8 +347,28 @@ describe("approvePlan, with the AI curator", () => {
 		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
+	// GDHUB-125: day 15 runs day 1's loop — the changes are sent, checked, then confirmed.
+	it("refuses to confirm day 15 before the curator checked the changes", async () => {
+		const day15 = new Date("2026-10-19T12:00:00Z");
+		checkpointFindUnique.mockResolvedValue(aiPlan({ goalAgreedAt: day1 }));
+		expect(await approvePlan("cp", "author", day15)).toBe("notChecked");
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
+	});
+
 	it("confirms the tasks on day 15, which closes the window early", async () => {
-		const approved = aiPlan({ goalAgreedAt: day1 });
+		const approved = aiPlan({
+			goalAgreedAt: day1,
+			sessions: [
+				{ id: "s1", index: 1, scheduledAt: startedAt, endedAt: null },
+				{
+					id: "s3",
+					index: 3,
+					scheduledAt: new Date("2026-10-19T00:00:00Z"),
+					endedAt: new Date("2026-10-19T01:00:00Z"),
+					content: { checkedAt: "2026-10-19T11:00:00.000Z" },
+				},
+			],
+		});
 		const day15 = new Date("2026-10-19T12:00:00Z");
 		checkpointFindUnique.mockResolvedValue(approved);
 		expect(await approvePlan("cp", "author", day15)).toBeNull();

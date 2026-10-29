@@ -171,7 +171,9 @@ test.describe.serial("a whole AI checkpoint", () => {
 
 		// Since GDHUB-117 the author sends the tasks for the AI's check and approves
 		// the plan; until then a removed task is deleted rather than cut.
-		const check = await page.request.post(`/api/checkpoint/${checkpointId}/plan/advice`);
+		const check = await page.request.post(`/api/checkpoint/${checkpointId}/plan/advice`, {
+			timeout: 180_000,
+		});
 		expect(check.ok(), await check.text()).toBe(true);
 		const approve = await page.request.post(`/api/checkpoint/${checkpointId}/plan/approve`);
 		expect(approve.ok(), await approve.text()).toBe(true);
@@ -194,7 +196,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 		log.step("The sprint 1 review is ready and readable");
 	});
 
-	test("sprint 2: day 15 cuts a task", async () => {
+	test("sprint 2: day 15 cuts a task, sends the change and confirms", async () => {
 		await makeToday(checkpointId, 12);
 		await sprintDevlog("Sprint 2: the second island, and the boat now takes damage on the reef.");
 		await nightOf(14);
@@ -208,6 +210,22 @@ test.describe.serial("a whole AI checkpoint", () => {
 		expect(cut.ok(), await cut.text()).toBe(true);
 		expect((await outcomes())[CUT].cut).toBe(true);
 		log.step("Day 15: the storyboard task is cut, kept struck through");
+
+		// GDHUB-125: day 15 runs day 1's loop — no confirming before the curator checks the changes.
+		const early = await page.request.post(`/api/checkpoint/${checkpointId}/plan/approve`);
+		expect(early.status()).toBe(400);
+		const check = await page.request.post(`/api/checkpoint/${checkpointId}/plan/advice`, {
+			timeout: 180_000,
+		});
+		expect(check.ok(), await check.text()).toBe(true);
+		const confirm = await page.request.post(`/api/checkpoint/${checkpointId}/plan/approve`);
+		expect(confirm.ok(), await confirm.text()).toBe(true);
+		const { scopeConfirmedAt } = await prisma.projectCheckpoint.findUniqueOrThrow({
+			where: { id: checkpointId },
+			select: { scopeConfirmedAt: true },
+		});
+		expect(scopeConfirmedAt).not.toBeNull();
+		log.step("Day 15: the changes were sent, checked, then confirmed");
 	});
 
 	test("sprints 3 and 4, and the verdict on day 29", async () => {

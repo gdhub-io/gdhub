@@ -523,6 +523,86 @@ describe("adviseOnPlan", () => {
 		expect(writePlanAdvice).not.toHaveBeenCalled();
 	});
 
+	// GDHUB-125: day 15 runs day 1's loop — the author sends the changes, the
+	// curator checks them once, and only then can they be confirmed.
+	describe("on day 15", () => {
+		const onDay15 = new Date("2026-10-15T10:00:00Z");
+		const review = {
+			message: "Sprint 2 review.",
+			notes: { inShort: "Two sprints in." },
+			advice: { tasks: [], add: [], hash: "the review's" },
+		};
+		const halfway = (content: unknown = review) => ({
+			...plan(),
+			goalAgreedAt: startedAt,
+			planCheckedAt: startedAt,
+			sessions: [
+				{ id: "s1", index: 1, scheduledAt: startedAt, endedAt: null, content: firstLetter },
+				{
+					id: "s3",
+					index: 3,
+					scheduledAt: new Date("2026-10-15T00:00:00Z"),
+					// The window opens once the review is written.
+					endedAt: new Date("2026-10-15T01:00:00Z"),
+					content,
+				},
+			],
+		});
+
+		it("checks the changes sent and marks day 15 checked", async () => {
+			checkpointFindUnique.mockResolvedValue(halfway());
+			writePlanAdvice.mockResolvedValue({ ...advice, message: null, goal: null });
+			expect(await adviseOnPlan("cp", "author", onDay15)).toBeNull();
+			expect(writePlanAdvice.mock.calls[0][0].moment).toBe("midway");
+			const { where, data } = sessionUpdate.mock.calls[0][0];
+			expect(where).toEqual({ id: "s3" });
+			expect(data.content).toMatchObject({
+				message: "Sprint 2 review.",
+				checkedAt: onDay15.toISOString(),
+			});
+		});
+
+		it("checks the changes only once", async () => {
+			checkpointFindUnique.mockResolvedValue(
+				halfway({ ...review, checkedAt: onDay15.toISOString() }),
+			);
+			expect(await adviseOnPlan("cp", "author", onDay15)).toBe("alreadyChecked");
+			expect(writePlanAdvice).not.toHaveBeenCalled();
+		});
+	});
+
+	// With a person curating, the goal checks go to their brief, not the author.
+	it("keeps the goal checks off a pro checkpoint's draft advice", async () => {
+		checkpointFindUnique.mockResolvedValue({
+			...plan(),
+			curatorId: "patrick",
+			curatorKind: CheckpointCuratorKind.Human,
+			sessions: [
+				{
+					id: "s1",
+					index: 1,
+					scheduledAt: new Date("2026-10-01T14:00:00Z"),
+					endedAt: null,
+					content: null,
+				},
+			],
+		});
+		writePlanAdvice.mockResolvedValue({
+			...advice,
+			tasks: [
+				...advice.tasks,
+				{ itemId: "t1", kind: "offGoal", note: "Off the goal.", suggestion: null },
+			],
+			goal: { fit: "fits", note: "Fits.", stage: { inside: false, note: "Past it." } },
+		});
+		expect(await adviseOnPlan("cp", "author", onDay1)).toBeNull();
+		const { content } = sessionUpdate.mock.calls[0][0].data;
+		expect(content.advice.tasks.map((row: { kind: string }) => row.kind)).toEqual([
+			"vague",
+		]);
+		expect(content.goal).toEqual({ fit: "fits", note: "Fits.", stage: null });
+	});
+
 	it("refuses once the plan is approved", async () => {
 		checkpointFindUnique.mockResolvedValue({ ...plan(), goalAgreedAt: onDay1 });
 		expect(
@@ -576,6 +656,39 @@ describe("the human curator's brief", () => {
 			(entry.output as { notes: typeof assessment }).notes.discussed,
 		).toEqual([{ itemId: "t1", text: "Shown." }]);
 		expect(notify).not.toHaveBeenCalled();
+		// Call 3 comes before the plan changes: its brief carries no goal checks.
+		expect(writePlanAdvice).not.toHaveBeenCalled();
+	});
+
+	// GDHUB-125: the plan set on call 1 is checked against the goal and its
+	// stage in the brief for call 2, for the curator.
+	it("carries the goal checks into the brief for call 2", async () => {
+		sessionFindUniqueOrThrow.mockResolvedValue({ index: 2, checkpointId: "cp" });
+		journalFindFirst.mockResolvedValue(null);
+		checkpointFindUniqueOrThrow.mockResolvedValue(reviewed(2));
+		writeSprintReview.mockResolvedValue(assessment);
+		writePlanAdvice.mockResolvedValue({
+			message: null,
+			tasks: [
+				{ itemId: "t1", kind: "offGoal", note: "Off the goal.", suggestion: null },
+				// Done tasks and made-up ids never reach the curator.
+				{ itemId: "t2", kind: "clear", note: "Done.", suggestion: null },
+			],
+			add: [],
+			goal: { fit: "fits", note: "Fits.", stage: { inside: false, note: "Past it." } },
+		});
+
+		await expect(writeBriefFor("s2")).resolves.toBe(true);
+
+		expect(writePlanAdvice.mock.calls[0][0]).toMatchObject({
+			moment: "start",
+			review: "Done.",
+		});
+		const { output } = vi.mocked(journal).mock.calls[0][0] as {
+			output: { goal: unknown; advice: { tasks: { itemId: string }[] } };
+		};
+		expect(output.goal).toMatchObject({ stage: { inside: false } });
+		expect(output.advice.tasks.map((row) => row.itemId)).toEqual(["t1"]);
 	});
 
 	it("is written once per call", async () => {

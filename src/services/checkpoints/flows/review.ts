@@ -131,6 +131,9 @@ export const adviseOnPlan = async (
 			: "failed";
 	}
 	if (start && checkpoint.planCheckedAt) return "alreadyChecked";
+	// Day 15 is checked once too, on the changes the author sends (GDHUB-125).
+	const midway = ai && index === SCOPE_SESSION;
+	if (midway && content?.checkedAt) return "alreadyChecked";
 	if (start && !checkpoint.items.some((item) => !item.cut)) return "noTasks";
 
 	const input = adviceInput(
@@ -152,7 +155,17 @@ export const adviseOnPlan = async (
 		checkpoint.curatorCharacter,
 		lettersSoFar(checkpoint.sessions, session.index + 1),
 	);
-	if (content?.advice?.hash === hashOf(input)) return null;
+	const checked = midway && { checkedAt: now.toISOString() };
+	if (content?.advice?.hash === hashOf(input)) {
+		// Nothing changed since the review's advice: it already answers these tasks.
+		if (checked) {
+			await prisma.checkpointSession.update({
+				where: { id: session.id },
+				data: { content: { ...content, ...checked } satisfies CuratorReview },
+			});
+		}
+		return null;
+	}
 
 	const written = await adviceFor(input, checkpoint.items, checkpointId).catch(
 		(error) => {
@@ -172,11 +185,22 @@ export const adviseOnPlan = async (
 					? content.message
 					: (written.message ?? content?.message ?? ""),
 				notes: content?.notes ?? null,
-				advice: written.advice,
-				goal: written.goal ?? content?.goal,
+				// A person curating gets the goal checks in their brief, not the author (GDHUB-125).
+				advice: ai
+					? written.advice
+					: {
+							...written.advice,
+							tasks: written.advice.tasks.filter(
+								(row) => row.kind !== "offGoal",
+							),
+						},
+				goal: written.goal
+					? { ...written.goal, ...(!ai && { stage: null }) }
+					: content?.goal,
 				...(start && {
 					firstLetter: content?.firstLetter ?? content?.message,
 				}),
+				...checked,
 			} satisfies CuratorReview,
 			// With a pro curator the session stays unwritten: call 1's notes
 			// claim it by a null status, and they replace this draft advice.
@@ -545,6 +569,33 @@ export const writeBriefFor = async (sessionId: string) => {
 		purpose: "callBrief",
 	});
 	if (!review) return false;
+	// The plan is set on call 1 and changed on call 3: the briefs after them
+	// carry the goal and each task checked against the chain (GDHUB-125).
+	const checks =
+		session.index === 2 || session.index === SCOPE_SESSION + 1
+			? await adviceFor(
+					{
+						goal: input.goal,
+						character: input.character,
+						journal: input.journal,
+						workflow: input.workflow,
+						team: input.team,
+						tasks: input.tasks,
+						moment: session.index === 2 ? "start" : "midway",
+						review: review.inShort,
+						picture: input.picture,
+					},
+					checkpoint.items,
+					checkpointId,
+				).catch((error) => {
+					console.error(
+						"[curator-brief] goal checks failed",
+						checkpointId,
+						error,
+					);
+					return null;
+				})
+			: null;
 
 	await journal({
 		checkpointId,
@@ -561,6 +612,8 @@ export const writeBriefFor = async (sessionId: string) => {
 					piece.seen ? [{ itemId: task.id, ...piece.seen }] : [],
 				),
 			),
+			goal: checks?.goal ?? null,
+			advice: checks?.advice ?? null,
 		},
 	});
 	return true;
