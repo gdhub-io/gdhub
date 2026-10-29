@@ -6,12 +6,9 @@ import {
 	type Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
-import {
-	adminVerdictOpen,
-	CURATOR_SWAPPABLE_STATUSES,
-	draftComplete,
-} from "@/lib/checkpoint-admin";
+import { adminVerdictOpen, draftComplete } from "@/lib/checkpoint-admin";
 import { refundAmount } from "@/lib/checkpoint-refund";
+import { checkpointMove, isOpen } from "@/lib/checkpoint-status";
 import {
 	bookSessions,
 	SlotTakenError,
@@ -110,14 +107,14 @@ export const writeAdminVerdict = async (
 	}
 
 	const { count } = await prisma.$transaction(async (tx) => {
+		const move = checkpointMove(
+			CheckpointStatus.Review,
+			CheckpointStatus.Closed,
+		);
 		const written = await tx.projectCheckpoint.updateMany({
-			where: {
-				id: checkpointId,
-				status: CheckpointStatus.Review,
-				verdict: null,
-			},
+			where: { id: checkpointId, ...move.where, verdict: null },
 			data: {
-				status: CheckpointStatus.Closed,
+				...move.data,
 				verdict,
 				verdictNote: note,
 				decidedAt: now,
@@ -234,16 +231,25 @@ export const assignCurator = async (
 				where: { id: checkpointId },
 				data: pick,
 			});
-			await startAiCheckpoint(checkpointId, null);
+			if (!(await startAiCheckpoint(checkpointId, null))) {
+				return { ok: false as const, error: "notSwappable" as const };
+			}
 		} else {
 			try {
-				await prisma.$transaction(async (tx) => {
-					await tx.projectCheckpoint.update({
-						where: { id: checkpointId },
-						data: { ...pick, status: CheckpointStatus.AwaitingCurator },
+				const move = checkpointMove(
+					CheckpointStatus.Draft,
+					CheckpointStatus.AwaitingCurator,
+				);
+				const asked = await prisma.$transaction(async (tx) => {
+					const { count } = await tx.projectCheckpoint.updateMany({
+						where: { id: checkpointId, ...move.where },
+						data: { ...pick, ...move.data },
 					});
-					await bookSessions(tx, checkpointId);
+					if (count) await bookSessions(tx, checkpointId);
+					return count > 0;
 				});
+				if (!asked)
+					return { ok: false as const, error: "notSwappable" as const };
 			} catch (error) {
 				if (error instanceof SlotTakenError) {
 					return { ok: false as const, error: "slotTaken" as const };
@@ -259,7 +265,7 @@ export const assignCurator = async (
 	}
 
 	if (
-		!CURATOR_SWAPPABLE_STATUSES.includes(checkpoint.status) ||
+		!isOpen(checkpoint.status) ||
 		checkpoint.curatorKind !== CheckpointCuratorKind.Human ||
 		!curator
 	) {

@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+	CHECKPOINT_AI_PRICE,
+	CHECKPOINT_MINOR_UNITS,
+} from "@/config/checkpoint";
+import {
 	bookSessions,
 	isFirstCallFree,
 } from "@/repositories/advisor-availability";
@@ -8,12 +12,17 @@ import { prisma } from "@/services/prisma";
 
 const authMock = vi.fn();
 const checkpointFindUnique = vi.fn();
-const checkpointUpdate = vi.fn();
+const checkpointFindUniqueOrThrow = vi.fn();
+const checkpointUpdateMany = vi.fn();
+const sessionDeleteMany = vi.fn();
+const sessionCreateMany = vi.fn();
 const specialityFindFirst = vi.fn();
-const paymentCount = vi.fn();
+// The payment that bought the checkpoint (`completedPaymentOf`), apart from the
+// money it holds or took (`heldAmount`): a hold is not a purchase.
+const completedPaymentFindFirst = vi.fn();
 const paymentFindFirst = vi.fn();
 const getCheckpoint = vi.fn();
-
+const writeFirstLetter = vi.fn();
 
 // The expert path is tested as it will run once open; `expert.open = false` tests the waitlist.
 const expert = vi.hoisted(() => ({ open: true }));
@@ -38,6 +47,10 @@ vi.mock("@/repositories/checkpoint.repository", () => ({
 	replaceCheckpointItems: vi.fn(),
 }));
 
+vi.mock("@/repositories/checkpoint-curator.repository", () => ({
+	writeFirstLetter: (...args: unknown[]) => writeFirstLetter(...args),
+}));
+
 vi.mock("@/repositories/advisor-availability", () => ({
 	isFirstCallFree: vi.fn(async () => true),
 	bookSessions: vi.fn(async () => undefined),
@@ -47,17 +60,24 @@ vi.mock("@/repositories/advisor-availability", () => ({
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		$transaction: vi.fn(),
-		checkpointSession: { deleteMany: vi.fn() },
+		checkpointSession: {
+			deleteMany: (...args: unknown[]) => sessionDeleteMany(...args),
+			createMany: (...args: unknown[]) => sessionCreateMany(...args),
+		},
 		projectCheckpoint: {
 			findUnique: (...args: unknown[]) => checkpointFindUnique(...args),
-			update: (...args: unknown[]) => checkpointUpdate(...args),
+			findUniqueOrThrow: (...args: unknown[]) =>
+				checkpointFindUniqueOrThrow(...args),
+			updateMany: (...args: unknown[]) => checkpointUpdateMany(...args),
 		},
 		speciality: {
 			findFirst: (...args: unknown[]) => specialityFindFirst(...args),
 		},
 		payment: {
-			count: (...args: unknown[]) => paymentCount(...args),
-			findFirst: (...args: unknown[]) => paymentFindFirst(...args),
+			findFirst: (args: { where: { status?: unknown } }) =>
+				args.where.status === "COMPLETED"
+					? completedPaymentFindFirst(args)
+					: paymentFindFirst(args),
 		},
 	},
 }));
@@ -86,9 +106,10 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	authMock.mockResolvedValue({ user: author });
 	checkpointFindUnique.mockResolvedValue({ status: "Draft" });
-	checkpointUpdate.mockResolvedValue({});
+	checkpointUpdateMany.mockResolvedValue({ count: 1 });
+	checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt: null });
 	specialityFindFirst.mockResolvedValue({ id: "sp1" });
-	paymentCount.mockResolvedValue(0);
+	completedPaymentFindFirst.mockResolvedValue(null);
 	paymentFindFirst.mockResolvedValue(null);
 	getCheckpoint.mockResolvedValue({ id: "cp1" });
 });
@@ -98,7 +119,7 @@ describe("PUT /api/checkpoint/[id] — the day it starts", () => {
 		const response = await put({ startedAt: "2026-09-10" });
 
 		expect(response.status).toBe(200);
-		const { data } = checkpointUpdate.mock.calls[0][0];
+		const { data } = checkpointUpdateMany.mock.calls[0][0];
 		expect(data.startedAt.toISOString()).toBe("2026-09-10T00:00:00.000Z");
 		// Day 1 is the start, so the 28th day is 27 days later — computed here so
 		// a browser cannot send a pair that disagrees.
@@ -108,7 +129,7 @@ describe("PUT /api/checkpoint/[id] — the day it starts", () => {
 	it("lets the day be taken back off a draft", async () => {
 		await put({ startedAt: null });
 
-		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+		expect(checkpointUpdateMany.mock.calls[0][0].data).toMatchObject({
 			startedAt: null,
 			dueAt: null,
 		});
@@ -125,7 +146,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "curatorNotOpenForMentoring",
 		});
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses the author as the curator of their own checkpoint", async () => {
@@ -135,7 +156,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "curatorIsAuthor",
 		});
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("accepts one who has, and writes them onto the draft", async () => {
@@ -158,7 +179,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 				}),
 			}),
 		);
-		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+		expect(checkpointUpdateMany.mock.calls[0][0].data).toMatchObject({
 			curatorKind: "Human",
 			curatorId: "u9",
 		});
@@ -168,29 +189,100 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// Naming someone else hands it to them; asking the author to pay twice for
 	// the same 28 days is the bug this guards.
 	it("sends a paid checkpoint to the curator picked next, unpaid again", async () => {
-		paymentCount.mockResolvedValue(1);
+		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
 		paymentFindFirst.mockResolvedValue({ amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		await put({ curatorKind: "Human", curatorId: "u9" });
 
-		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+		// Only a draft is sent on: a write racing another move changes nothing.
+		expect(checkpointUpdateMany.mock.calls[0][0].where).toEqual({
+			id: "cp1",
+			status: { in: ["Draft"] },
+		});
+		expect(checkpointUpdateMany.mock.calls[0][0].data).toMatchObject({
 			status: "AwaitingCurator",
 			curatorId: "u9",
 		});
+		expect(bookSessions).toHaveBeenCalledWith(prisma, "cp1");
+	});
+
+	it("books nobody when the paid draft moved on meanwhile", async () => {
+		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
+		paymentFindFirst.mockResolvedValue({ amount: 45000 });
+		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
+		checkpointUpdateMany.mockResolvedValue({ count: 0 });
+
+		const response = await put({ curatorKind: "Human", curatorId: "u9" });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "checkpointNotDraft",
+		});
+		expect(bookSessions).not.toHaveBeenCalled();
+	});
+
+	// Naming the AI on a paid draft starts it exactly as paying for the AI does:
+	// its review days written and its first letter sent, not just a status flipped.
+	it("starts a paid draft handed to the AI the way a payment starts it", async () => {
+		const aiPrice = CHECKPOINT_AI_PRICE * CHECKPOINT_MINOR_UNITS;
+		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
+		paymentFindFirst.mockResolvedValue({ amount: aiPrice });
+
+		const response = await put({ curatorKind: "AI", curatorId: null });
+
+		expect(response.status).toBe(200);
+		const [fields, start] = checkpointUpdateMany.mock.calls.map(
+			([args]) => args,
+		);
+		// The pick is written without touching the status, while it is still the draft read...
+		expect(fields.where).toEqual({ id: "cp1", status: "Draft" });
+		expect(fields.data).toMatchObject({ curatorKind: "AI", curatorId: null });
+		expect(fields.data.status).toBeUndefined();
+		// ...and only the guarded move makes it Active, with the payment on it.
+		expect(start.where).toEqual({
+			id: "cp1",
+			status: { in: ["Draft", "AwaitingCurator"] },
+		});
+		expect(start.data).toMatchObject({ status: "Active", paymentId: "pay1" });
+		expect(sessionDeleteMany).toHaveBeenCalledWith({
+			where: { checkpointId: "cp1" },
+		});
+		expect(sessionCreateMany.mock.calls[0][0].data).toHaveLength(5);
+		await vi.waitFor(() => expect(writeFirstLetter).toHaveBeenCalledWith("cp1"));
+	});
+
+	it("refuses the AI on a paid draft that started meanwhile", async () => {
+		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
+		paymentFindFirst.mockResolvedValue({ amount: CHECKPOINT_AI_PRICE * CHECKPOINT_MINOR_UNITS });
+		checkpointUpdateMany
+			.mockResolvedValueOnce({ count: 1 })
+			.mockResolvedValueOnce({ count: 0 });
+
+		const response = await put({ curatorKind: "AI", curatorId: null });
+
+		expect(response.status).toBe(400);
+		await expect(response.json()).resolves.toMatchObject({
+			error: "checkpointNotDraft",
+		});
+		expect(sessionCreateMany).not.toHaveBeenCalled();
 	});
 
 	it("leaves an unpaid draft a draft when its curator changes", async () => {
 		await put({ curatorKind: "Human", curatorId: "u9" });
 
-		expect(checkpointUpdate.mock.calls[0][0].data.status).toBeUndefined();
+		expect(checkpointUpdateMany.mock.calls[0][0].where).toEqual({
+			id: "cp1",
+			status: "Draft",
+		});
+		expect(checkpointUpdateMany.mock.calls[0][0].data.status).toBeUndefined();
 	});
 
 	// The way out of a curator who declined or went quiet. Everything else about
 	// a paid checkpoint is settled, so only this one field may move.
 	it("lets a waiting checkpoint be handed to somebody else", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
-		paymentCount.mockResolvedValue(1);
+		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
 		paymentFindFirst.mockResolvedValue({ amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
@@ -201,10 +293,11 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		});
 
 		expect(response.status).toBe(200);
-		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
-			status: "AwaitingCurator",
+		// Already AwaitingCurator: it stays so, only the curator is rewritten.
+		expect(checkpointUpdateMany.mock.calls[0][0].data).toMatchObject({
 			curatorId: "u9",
 		});
+		expect(checkpointUpdateMany.mock.calls[0][0].data.status).toBeUndefined();
 		// The money is held already, so the new curator's calls are booked now.
 		expect(bookSessions).toHaveBeenCalledWith(prisma, "cp1");
 	});
@@ -213,7 +306,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 	// calls are booked all the same.
 	it("books the new curator's calls on a checkpoint waiting on a hold", async () => {
 		checkpointFindUnique.mockResolvedValue({ status: "AwaitingCurator" });
-		paymentCount.mockResolvedValue(0);
+		completedPaymentFindFirst.mockResolvedValue(null);
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 
 		const response = await put({
@@ -237,7 +330,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		});
 
 		expect(response.status).toBe(400);
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	// A first call is booked in one curator's hours; with another it means nothing.
@@ -246,7 +339,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 
 		await put({ curatorKind: "Human", curatorId: "u9" });
 
-		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+		expect(checkpointUpdateMany.mock.calls[0][0].data).toMatchObject({
 			startedAt: null,
 			dueAt: null,
 		});
@@ -265,7 +358,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "curatorPriceDiffers",
 		});
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses the AI curator in place of a person already paid for", async () => {
@@ -275,7 +368,7 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		const response = await put({ curatorKind: "AI", curatorId: null });
 
 		expect(response.status).toBe(400);
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses to rewrite anything else on a waiting checkpoint", async () => {
@@ -287,16 +380,19 @@ describe("PUT /api/checkpoint/[id] — who runs it", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "checkpointNotDraft",
 		});
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	it("lets the person go when the AI curator is chosen", async () => {
 		await put({ curatorKind: "AI", curatorId: null });
 
-		expect(checkpointUpdate.mock.calls[0][0].data).toMatchObject({
+		expect(checkpointUpdateMany.mock.calls[0][0].data).toMatchObject({
 			curatorKind: "AI",
 			curatorId: null,
 		});
+		// Unpaid: picking the AI starts nothing.
+		expect(checkpointUpdateMany).toHaveBeenCalledTimes(1);
+		expect(sessionCreateMany).not.toHaveBeenCalled();
 	});
 
 	it("refuses to touch a checkpoint that has been bought", async () => {
@@ -321,13 +417,13 @@ describe("PUT /api/checkpoint/[id] — while an expert is a waitlist", () => {
 		await expect(response.json()).resolves.toMatchObject({
 			error: "expertClosed",
 		});
-		expect(checkpointUpdate).not.toHaveBeenCalled();
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
 	});
 
 	// A curator who declined a paid checkpoint must still be replaceable.
 	it("still lets a paid draft go to another expert", async () => {
 		expert.open = false;
-		paymentCount.mockResolvedValue(1);
+		completedPaymentFindFirst.mockResolvedValue({ id: "pay1" });
 		paymentFindFirst.mockResolvedValue({ amount: 45000 });
 		specialityFindFirst.mockResolvedValue({ id: "sp1", level: "Expert" });
 

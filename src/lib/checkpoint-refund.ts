@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import {
 	CHECKPOINT_PARTS,
-	CHECKPOINT_RUNNING_STATUSES,
 	FINAL_SESSION,
 	WITHDRAWAL_DAYS,
 } from "@/config/checkpoint";
@@ -10,6 +9,7 @@ import {
 	CheckpointSessionContentStatus,
 	type CheckpointStatus,
 } from "@/config/prisma-enums";
+import { isRunning } from "@/lib/checkpoint-status";
 import { verdictOverdue } from "@/lib/checkpoint-verdict-window";
 
 /**
@@ -51,9 +51,6 @@ export type RefundCase = {
 		contentStatus: CheckpointSessionContentStatus | null;
 	}[];
 };
-
-export const isRunning = (status: CheckpointStatus) =>
-	CHECKPOINT_RUNNING_STATUSES.includes(status);
 
 /**
  * Parts already delivered. A call counts once the curator joined it; an AI

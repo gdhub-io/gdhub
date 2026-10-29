@@ -23,8 +23,9 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
 
 ## Constraints
 
-- **Behaviour, API shapes, DTOs and data do not change**, except in phase 5,
-  where changing them is the point. No schema change.
+- **Behaviour, API shapes, DTOs and data do not change.** The exceptions are
+  the three race and bypass bugs fixed in phase 2 and the membership work in
+  phase 5. No schema change.
 - **Same folder scheme as the rest of the app.** A `checkpoints/` subfolder
   goes under `repositories/`, `services/` and `lib/`. There is no new
   `features/` tree. `components/checkpoints/` stays where it is.
@@ -46,11 +47,21 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
      - Technical limits (file sizes, timeouts, page sizes).
    - `getJournal` stays: `scripts/checkpoint-review.ts` uses it.
    - The curator renames moved to phase 3, so each file moves only once.
-2. **Status.**
-   - One module of named sets and predicates, with a table of allowed
-     transitions.
-   - Every status write goes through one `transition()`.
-   - Draft states move into the same module.
+2. **Status.** `lib/checkpoint-status.ts` and
+   [docs/checkpoints-status-flow.d2](../checkpoints-status-flow.d2), approved
+   2026-10-29.
+   - Named sets and predicates. The table of allowed moves has 11 edges.
+   - Every status write spreads `checkpointMove(from, to)` into an
+     `updateMany`, so the expected status is in the WHERE and a lost race
+     writes nothing. `tests/checkpoint-status.test.ts` fails on any other
+     status write.
+   - Bugs fixed:
+     - The curator's answer and the silence cron could both win.
+     - A paid draft handed to the AI skipped `startAiCheckpoint`: no
+       sessions and no first letter.
+     - An admin refund could overwrite a verdict that was just sent.
+   - Moved to phase 4: the draft-state helpers (`isDeclined`, `isSettling`),
+     which also read payment fields and differ between screens.
 3. **Layers.**
    - Move the files into the `checkpoints/` subfolders, renaming the four
      curator files after what each one does.
@@ -71,9 +82,9 @@ AI. The full list is in the issue: the 2026-10-09 simplify findings and the
 
 - [ ] Every phase leaves lint, type-check, the unit tests and the GDHUB-79
       checkpoint e2e scenarios green, and no screen differs.
-- [ ] No status set and no `status ===` comparison on a checkpoint lives
-      outside the status module. An illegal transition is refused, with a test
-      for each refusal.
+- [ ] No set of checkpoint statuses lives outside the status module. A
+      comparison with a single status is fine. An illegal transition is
+      refused, with a test for each refusal.
 - [ ] No file under `repositories/checkpoints/` imports a notification, payment,
       chat or AI service. A lint rule enforces this.
 - [ ] No checkpoint route under `app/api` imports Prisma.

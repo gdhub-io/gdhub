@@ -13,6 +13,10 @@ import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { sessionDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import {
+	CHECKPOINT_RUNNING_STATUSES,
+	checkpointMove,
+} from "@/lib/checkpoint-status";
+import {
 	settleVerdict,
 	type VerdictItem,
 	weighOutcomes,
@@ -527,16 +531,22 @@ export const closeCheckpoint = async (
 		);
 	}
 
-	await prisma.projectCheckpoint.update({
-		where: { id: checkpointId },
+	const move = checkpointMove(
+		CHECKPOINT_RUNNING_STATUSES,
+		CheckpointStatus.Closed,
+	);
+	const { count } = await prisma.projectCheckpoint.updateMany({
+		where: { id: checkpointId, ...move.where, verdict: null },
 		data: {
-			status: CheckpointStatus.Closed,
+			...move.data,
 			summary: proposed.summary,
 			verdict: settled.verdict,
 			verdictNote: proposed.verdictNote,
 			decidedAt: new Date(),
 		},
 	});
+	// A refund or an admin's verdict landed while the report was being written.
+	if (!count) return null;
 
 	await journal({
 		checkpointId,

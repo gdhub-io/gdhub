@@ -13,6 +13,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { checkpointMove } from "@/lib/checkpoint-status";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import {
@@ -27,11 +28,13 @@ import {
 } from "@/repositories/checkpoint.repository";
 import { curatorEligibleWhere } from "@/repositories/checkpoint-curators";
 import {
+	completedPaymentOf,
 	curatorCharge,
 	heldAmount,
 	isCheckpointPaid,
 	pendingCheckout,
 	reconcileCheckout,
+	startAiCheckpoint,
 } from "@/repositories/checkpoint-payment";
 import { checkpointViewer } from "@/repositories/checkpoint-viewer";
 import {
@@ -201,12 +204,17 @@ export const PUT = pipe(
 				: undefined;
 
 	// A curator who declined leaves a paid checkpoint back in Draft. Naming
-	// someone else sends it to them rather than asking the author to pay again.
-	const rehomed =
-		(curatorId !== undefined || curatorKind) && (await isCheckpointPaid(id))
-			? curatorKind === CheckpointCuratorKind.AI
-				? CheckpointStatus.Active
-				: CheckpointStatus.AwaitingCurator
+	// someone else sends it to them rather than asking the author to pay again;
+	// naming the AI starts it, exactly as paying for the AI does.
+	const paidWith =
+		curatorId !== undefined || curatorKind
+			? await completedPaymentOf(id)
+			: null;
+	const rehomedToAi = !!paidWith && curatorKind === CheckpointCuratorKind.AI;
+	const rehomedToHuman = !!paidWith && !rehomedToAi;
+	const move =
+		rehomedToHuman && checkpoint.status === CheckpointStatus.Draft
+			? checkpointMove(CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator)
 			: null;
 
 	if (
@@ -215,8 +223,10 @@ export const PUT = pipe(
 		curatorId !== undefined ||
 		start !== undefined
 	) {
+		// Unmoved, it still has to be in the state it was read in: a curator's yes may land meanwhile.
+		const where = { id, ...(move?.where ?? { status: checkpoint.status }) };
 		const data = {
-			...(rehomed && { status: rehomed }),
+			...move?.data,
 			...(goal !== undefined && { goal }),
 			...(curatorKind && { curatorKind }),
 			...(curatorId !== undefined && { curatorId }),
@@ -233,15 +243,20 @@ export const PUT = pipe(
 		// taken already — so its calls are booked now, as a payment books them.
 		const books =
 			human &&
-			(rehomed === CheckpointStatus.AwaitingCurator ||
+			(rehomedToHuman ||
 				(checkpoint.status === CheckpointStatus.AwaitingCurator &&
 					start !== undefined));
 
+		let written = 0;
 		if (books) {
 			try {
-				await prisma.$transaction(async (tx) => {
-					await tx.projectCheckpoint.update({ where: { id }, data });
-					await bookSessions(tx, id);
+				written = await prisma.$transaction(async (tx) => {
+					const { count } = await tx.projectCheckpoint.updateMany({
+						where,
+						data,
+					});
+					if (count) await bookSessions(tx, id);
+					return count;
 				});
 			} catch (error) {
 				if (error instanceof SlotTakenError)
@@ -249,7 +264,15 @@ export const PUT = pipe(
 				throw error;
 			}
 		} else {
-			await prisma.projectCheckpoint.update({ where: { id }, data });
+			({ count: written } = await prisma.projectCheckpoint.updateMany({
+				where,
+				data,
+			}));
+		}
+		if (!written) return apiError.badRequest("checkpointNotDraft");
+
+		if (rehomedToAi && !(await startAiCheckpoint(id, paidWith))) {
+			return apiError.badRequest("checkpointNotDraft");
 		}
 	}
 

@@ -1,7 +1,6 @@
 import {
 	CheckpointItemKind,
 	type CheckpointSessionContentStatus,
-	CheckpointStatus,
 } from "@/config/prisma-enums";
 import {
 	type CallState,
@@ -15,6 +14,7 @@ import {
 	planEdit,
 } from "@/lib/checkpoint-call";
 import { currentSessionOf } from "@/lib/checkpoint-sessions";
+import { isRunning } from "@/lib/checkpoint-status";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
 import {
 	checkpointNumber,
@@ -46,12 +46,6 @@ import type {
 	PlanAdvice,
 	PreviousVerdict,
 } from "@/types/checkpoints";
-
-/** Calls are held while the checkpoint runs, the final one while it is judged. */
-const CALL_STATUSES: CheckpointStatus[] = [
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 export type CallRole = "curator" | "team";
 
@@ -215,11 +209,7 @@ const loadCall = async (
 		},
 	});
 	const checkpoint = session?.checkpoint;
-	if (
-		!session ||
-		!checkpoint?.curator ||
-		!CALL_STATUSES.includes(checkpoint.status)
-	) {
+	if (!session || !checkpoint?.curator || !isRunning(checkpoint.status)) {
 		return null;
 	}
 

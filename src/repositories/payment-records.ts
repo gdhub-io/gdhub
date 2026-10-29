@@ -3,6 +3,10 @@ import {
 	type PaymentProvider,
 	PaymentStatus,
 } from "@gdhub-io/gdhub-prisma";
+import {
+	CHECKPOINT_PENDING_STATUSES,
+	checkpointMove,
+} from "@/lib/checkpoint-status";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -85,13 +89,12 @@ export const recordProviderRefund = async (
 
 	if (!whole) return;
 
+	const move = checkpointMove(
+		CHECKPOINT_PENDING_STATUSES,
+		CheckpointStatus.Cancelled,
+	);
 	await prisma.projectCheckpoint.updateMany({
-		where: {
-			id: payment.payableId,
-			status: {
-				in: [CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
-			},
-		},
-		data: { status: CheckpointStatus.Cancelled },
+		where: { id: payment.payableId, ...move.where },
+		data: move.data,
 	});
 };

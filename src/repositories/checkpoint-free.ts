@@ -1,14 +1,10 @@
-import {
-	CHECKPOINT_GOAL_MAX,
-	CHECKPOINT_OPEN_STATUSES,
-	INPUT_ARTIFACTS,
-} from "@/config/checkpoint";
+import { CHECKPOINT_GOAL_MAX, INPUT_ARTIFACTS } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
-	CheckpointStatus,
 	ProjectStatus,
 } from "@/config/prisma-enums";
+import { CHECKPOINT_CURRENT_STATUSES } from "@/lib/checkpoint-status";
 import {
 	createDraftCheckpoint,
 	getCreationBlocker,
@@ -44,7 +40,7 @@ const eligible = {
 	workflow: { currentStep: { name: { notIn: UNSELECTABLE_STAGES } } },
 	checkpoints: {
 		none: {
-			status: { in: [CheckpointStatus.Draft, ...CHECKPOINT_OPEN_STATUSES] },
+			status: { in: CHECKPOINT_CURRENT_STATUSES },
 		},
 	},
 };

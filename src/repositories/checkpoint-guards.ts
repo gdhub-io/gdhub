@@ -1,5 +1,5 @@
-import { CHECKPOINT_RUNNING_STATUSES } from "@/config/checkpoint";
 import { CheckpointVerdict } from "@/config/prisma-enums";
+import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoint-status";
 import { checkpointNumber } from "@/repositories/checkpoint-number";
 import { prisma } from "@/services/prisma";
 

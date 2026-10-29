@@ -29,10 +29,3 @@ export const adminVerdictOpen = (
 /** A draft holds what a payment would buy: a goal and something that exists. */
 export const draftComplete = (row: { goal: string; inputs: number }) =>
 	!!row.goal.trim() && row.inputs > 0;
-
-/** A person curating can be replaced while one is asked or running; not after the verdict. */
-export const CURATOR_SWAPPABLE_STATUSES: CheckpointStatus[] = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];

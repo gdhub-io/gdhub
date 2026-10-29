@@ -8,6 +8,11 @@ import {
 } from "@/config/prisma-enums";
 import { utcStartOfDay } from "@/lib/checkpoint-days";
 import {
+	CHECKPOINT_RUNNING_STATUSES,
+	checkpointMove,
+	isRunning,
+} from "@/lib/checkpoint-status";
+import {
 	type VerdictStage,
 	verdictStage,
 } from "@/lib/checkpoint-verdict-window";
@@ -37,11 +42,6 @@ export type VerdictDraftInput = {
 export type CuratorVerdictResult =
 	| { ok: true }
 	| { ok: false; reason: "notFound" | "notOpen" | "alreadyDecided" };
-
-const UNDECIDED: CheckpointStatus[] = [
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 /**
  * The curator's own checkpoint, asked for by both ids at once so one somebody
@@ -73,7 +73,7 @@ const stageOf = (
 	},
 	now: Date,
 ) =>
-	row.verdict || !row.startedAt || !UNDECIDED.includes(row.status)
+	row.verdict || !row.startedAt || !isRunning(row.status)
 		? null
 		: verdictStage(row.startedAt, row.sessions[0] ?? null, now);
 
@@ -101,7 +101,7 @@ async function writeUndecided(
 	const { count } = await prisma.projectCheckpoint.updateMany({
 		where: {
 			...curatedBy(checkpointId, curatorId),
-			status: { in: UNDECIDED },
+			status: { in: CHECKPOINT_RUNNING_STATUSES },
 			verdict: null,
 		},
 		data,
@@ -126,7 +126,8 @@ export async function writeCuratorVerdict(
 		now,
 		(stage) => stage === "send",
 		{
-			status: CheckpointStatus.Closed,
+			...checkpointMove(CHECKPOINT_RUNNING_STATUSES, CheckpointStatus.Closed)
+				.data,
 			verdict,
 			verdictNote: note,
 			decidedAt: now,
@@ -277,12 +278,10 @@ export async function getVerdictContext(
  * moves, the project cannot buy the next one.
  */
 export async function moveFinishedToReview(now = new Date()) {
+	const move = checkpointMove(CheckpointStatus.Active, CheckpointStatus.Review);
 	const moved = await prisma.projectCheckpoint.updateManyAndReturn({
-		where: {
-			status: CheckpointStatus.Active,
-			dueAt: { lt: utcStartOfDay(now) },
-		},
-		data: { status: CheckpointStatus.Review },
+		where: { ...move.where, dueAt: { lt: utcStartOfDay(now) } },
+		data: move.data,
 		select: { id: true, curatorKind: true },
 	});
 

@@ -518,6 +518,12 @@ describe("runGoalCheck", () => {
 });
 
 describe("closeCheckpoint", () => {
+	beforeEach(() => {
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 1,
+		} as never);
+	});
+
 	it("checks the evidence again before the verdict reads it", async () => {
 		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
 			running() as never,
@@ -561,14 +567,39 @@ describe("closeCheckpoint", () => {
 			verdict: CheckpointVerdict.StageClosed,
 			overrode: null,
 		});
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: {
+					id: "cp1",
+					status: {
+						in: [CheckpointStatus.Active, CheckpointStatus.Review],
+					},
+					verdict: null,
+				},
 				data: expect.objectContaining({
 					status: CheckpointStatus.Closed,
 					verdict: CheckpointVerdict.StageClosed,
 				}),
 			}),
 		);
+	});
+
+	// A refund or an admin's verdict landed while the model was writing.
+	it("journals nothing when the checkpoint was decided meanwhile", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(
+			running() as never,
+		);
+		vi.mocked(checkpointCurator.writeReport).mockResolvedValue({
+			summary: "Done.",
+			verdict: CheckpointVerdict.GoalMet,
+			verdictNote: "",
+		});
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({
+			count: 0,
+		} as never);
+
+		await expect(closeCheckpoint("cp1")).resolves.toBeNull();
+		expect(journal).not.toHaveBeenCalled();
 	});
 
 	it("overrules a verdict the evidence does not support", async () => {
@@ -585,7 +616,7 @@ describe("closeCheckpoint", () => {
 			verdict: CheckpointVerdict.GoalMissed,
 			overrode: CheckpointVerdict.StageClosed,
 		});
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
 				data: expect.objectContaining({
 					verdict: CheckpointVerdict.GoalMissed,
@@ -610,7 +641,7 @@ describe("closeCheckpoint", () => {
 		vi.mocked(checkpointCurator.writeReport).mockResolvedValue(null);
 
 		await expect(closeCheckpoint("cp1")).resolves.toBeNull();
-		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	it("does not decide a checkpoint twice", async () => {

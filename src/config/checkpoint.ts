@@ -1,7 +1,6 @@
 import { hubLegalEntity } from "@/config/legal/entities";
 import {
 	CheckpointCuratorKind,
-	CheckpointStatus,
 	PaymentProvider,
 	ProjectArtifactType,
 	type SkillLevel,
@@ -142,22 +141,6 @@ export const CHECKPOINT_MAX_ITEMS_PER_KIND = 12;
 export const CHECKPOINT_MAX_EVIDENCE_PER_ITEM = 3;
 
 // Buying one
-
-/**
- * A checkpoint under way. `AwaitingCurator` belongs here and not with the
- * drafts: it has been paid for, and a second one may not be started beside it.
- */
-export const CHECKPOINT_OPEN_STATUSES = [
-	CheckpointStatus.AwaitingCurator,
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
-
-/** Under way: the 28 days or their review. A refund only ever stops one of these. */
-export const CHECKPOINT_RUNNING_STATUSES: CheckpointStatus[] = [
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-];
 
 /** "What's done so far" on the way in: at least one line, at most this many. */
 export const CHECKPOINT_ENTRY_ITEMS_MAX = 5;

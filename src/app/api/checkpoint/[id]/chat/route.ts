@@ -1,5 +1,5 @@
-import { CheckpointStatus } from "@/config/prisma-enums";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
+import { hasRun } from "@/lib/checkpoint-status";
 import { viewerOf, viewerSelect } from "@/repositories/checkpoint-viewer";
 import { checkpointRoomFor } from "@/services/chat/checkpoint-room";
 import { prisma } from "@/services/prisma";
@@ -24,11 +24,7 @@ export const POST = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	if (!checkpoint?.curatorId) return apiError.notFound();
 
 	// The room opens with the curator's yes; before that there is nobody to talk to.
-	const started =
-		checkpoint.status === CheckpointStatus.Active ||
-		checkpoint.status === CheckpointStatus.Review ||
-		checkpoint.status === CheckpointStatus.Closed;
-	if (!started) return apiError.badRequest("notStarted");
+	if (!hasRun(checkpoint.status)) return apiError.badRequest("notStarted");
 
 	if (!viewerOf(checkpoint, caller.id)) return apiError.forbidden();
 

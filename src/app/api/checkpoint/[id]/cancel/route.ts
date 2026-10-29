@@ -1,15 +1,9 @@
-import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { apiError, json, pipe, withAuth } from "@/lib/api-handlers";
+import { isPending } from "@/lib/checkpoint-status";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
 import { returnCheckpointMoney } from "@/repositories/checkpoint-payment";
 import { prisma } from "@/services/prisma";
-
-/** The two states a checkpoint can be called off from; a running one cannot. */
-const CANCELLABLE: CheckpointStatus[] = [
-	CheckpointStatus.Draft,
-	CheckpointStatus.AwaitingCurator,
-];
 
 /**
  * Calling off a checkpoint that has not started, and returning the money if
@@ -47,7 +41,7 @@ export const POST = pipe(
 	});
 
 	if (!checkpoint) return apiError.notFound();
-	if (!CANCELLABLE.includes(checkpoint.status)) {
+	if (!isPending(checkpoint.status)) {
 		return apiError.badRequest("checkpointRunning");
 	}
 

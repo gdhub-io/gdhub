@@ -1,4 +1,4 @@
-import { CheckpointStatus, Prisma } from "@gdhub-io/gdhub-prisma";
+import { Prisma } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { after } from "next/server";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoint-status";
 import { seeDevlogMedia } from "@/repositories/evidence-seen";
 import { prisma } from "@/services/prisma";
 
@@ -87,7 +88,7 @@ export const POST = withAuth({ mode: "user" })(
 		const checkpoint = await prisma.projectCheckpoint.findFirst({
 			where: {
 				projectId,
-				status: { in: [CheckpointStatus.Active, CheckpointStatus.Review] },
+				status: { in: CHECKPOINT_RUNNING_STATUSES },
 			},
 			select: { id: true },
 		});

@@ -9,6 +9,8 @@ import {
 const checkpointFindUnique = vi.fn();
 const checkpointFindUniqueOrThrow = vi.fn();
 const checkpointUpdate = vi.fn();
+const checkpointUpdateMany = vi.fn();
+const sessionDeleteMany = vi.fn();
 const sessionFindMany = vi.fn();
 const sessionFindUniqueOrThrow = vi.fn();
 const sessionUpdate = vi.fn();
@@ -24,20 +26,23 @@ const notifyPlanChecked = vi.fn();
 const notifyVerdictSent = vi.fn();
 const journalFindFirst = vi.fn();
 
-vi.mock("@/services/prisma", () => ({
-	prisma: {
-		$transaction: vi.fn(async (ops: unknown[]) => ops),
+vi.mock("@/services/prisma", () => {
+	const prisma = {
+		$transaction: vi.fn(async (ops: unknown) =>
+			typeof ops === "function" ? ops(prisma) : ops,
+		),
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
 			findUniqueOrThrow: (...a: unknown[]) => checkpointFindUniqueOrThrow(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
+			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
 		},
 		checkpointSession: {
 			findMany: (...a: unknown[]) => sessionFindMany(...a),
 			findUniqueOrThrow: (...a: unknown[]) => sessionFindUniqueOrThrow(...a),
 			update: (...a: unknown[]) => sessionUpdate(...a),
 			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
-			deleteMany: vi.fn(),
+			deleteMany: (...a: unknown[]) => sessionDeleteMany(...a),
 			createMany: (...a: unknown[]) => sessionCreateMany(...a),
 		},
 		checkpointJournalEntry: {
@@ -45,8 +50,9 @@ vi.mock("@/services/prisma", () => ({
 		},
 		projectReport: { findMany: vi.fn(async () => [{ content: "Devlog" }]) },
 		projectArtifact: { findMany: vi.fn(async () => []) },
-	},
-}));
+	};
+	return { prisma };
+});
 vi.mock("@/repositories/evidence-seen", () => ({
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
@@ -115,15 +121,24 @@ const { journal } = await import("@/repositories/curator-journal");
 const startedAt = new Date("2026-10-01T00:00:00Z");
 const person = (id: string) => ({ id, email: `${id}@x.test` });
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+	vi.clearAllMocks();
+	checkpointUpdateMany.mockResolvedValue({ count: 1 });
+});
 
 describe("startAiCheckpoint", () => {
 	it("starts today when the day picked passed before the payment", async () => {
 		checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt });
 		const now = new Date("2026-10-04T15:00:00Z");
-		await startAiCheckpoint("cp", "pay", now);
+		expect(await startAiCheckpoint("cp", "pay", now)).toBe(true);
 
-		const data = checkpointUpdate.mock.calls[0][0].data;
+		const { where, data } = checkpointUpdateMany.mock.calls[0][0];
+		expect(where).toEqual({
+			id: "cp",
+			status: {
+				in: [CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
+			},
+		});
 		expect(data).toMatchObject({
 			status: CheckpointStatus.Active,
 			paymentId: "pay",
@@ -146,12 +161,28 @@ describe("startAiCheckpoint", () => {
 			[4, "2026-10-25"],
 			[5, "2026-11-01"],
 		]);
+		await vi.waitFor(() => expect(writeFirstLetter).toHaveBeenCalledWith("cp"));
 	});
 
 	it("keeps a day still ahead", async () => {
 		checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt });
 		await startAiCheckpoint("cp", "pay", new Date("2026-09-29T10:00:00Z"));
-		expect(checkpointUpdate.mock.calls[0][0].data.startedAt).toEqual(startedAt);
+		expect(checkpointUpdateMany.mock.calls[0][0].data.startedAt).toEqual(
+			startedAt,
+		);
+	});
+
+	it("books nothing and writes no letter when it already started or was called off", async () => {
+		checkpointFindUniqueOrThrow.mockResolvedValue({ startedAt });
+		checkpointUpdateMany.mockResolvedValueOnce({ count: 0 });
+
+		expect(
+			await startAiCheckpoint("cp", "pay", new Date("2026-10-04T15:00:00Z")),
+		).toBe(false);
+		expect(sessionDeleteMany).not.toHaveBeenCalled();
+		expect(sessionCreateMany).not.toHaveBeenCalled();
+		await new Promise((resolve) => setTimeout(resolve, 20));
+		expect(writeFirstLetter).not.toHaveBeenCalled();
 	});
 });
 

@@ -20,7 +20,11 @@ vi.mock("@/services/prisma", () => ({
 		$transaction: vi.fn(),
 		checkpointSession: { deleteMany: vi.fn() },
 		payment: { updateMany: vi.fn() },
-		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn() },
+		projectCheckpoint: {
+			findUnique: vi.fn(),
+			update: vi.fn(),
+			updateMany: vi.fn(),
+		},
 	},
 }));
 
@@ -47,6 +51,7 @@ beforeEach(() => {
 			: Promise.all(arg as unknown[])) as never);
 	vi.clearAllMocks();
 	vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 1 });
+	vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 1 });
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
 		status: CheckpointStatus.Draft,
 		curatorKind: CheckpointCuratorKind.Human,
@@ -60,8 +65,9 @@ describe("reconciling a checkout the webhook missed", () => {
 		vi.mocked(retrieveCheckout).mockResolvedValue(session("complete"));
 
 		expect(await reconcileCheckout(pending)).toBe(true);
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: { id: "cp1", status: { in: [CheckpointStatus.Draft] } },
 				data: {
 					status: CheckpointStatus.AwaitingCurator,
 					paymentId: "pay_1",
@@ -75,7 +81,7 @@ describe("reconciling a checkout the webhook missed", () => {
 
 		expect(await reconcileCheckout(pending)).toBe(false);
 		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
-		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	it("closes the row of a checkout that expired unpaid", async () => {
@@ -87,7 +93,7 @@ describe("reconciling a checkout the webhook missed", () => {
 			where: { id: "pay_1", status: PaymentStatus.PENDING },
 			data: { status: PaymentStatus.CANCELED },
 		});
-		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	it("leaves it alone when the webhook got there first", async () => {
@@ -95,6 +101,6 @@ describe("reconciling a checkout the webhook missed", () => {
 		vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 0 });
 
 		expect(await reconcileCheckout(pending)).toBe(false);
-		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 });

@@ -5,6 +5,8 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { returnToAuthor } from "@/repositories/checkpoint-payment";
+import { notifyAuthorOfAnswer } from "@/services/checkpoint-notifications";
 import { prisma } from "@/services/prisma";
 import {
 	getCheckoutReceiptUrl,
@@ -162,5 +164,45 @@ describe("the holds cron", () => {
 			where: { id: "pay_1" },
 			data: { status: PaymentStatus.CANCELED },
 		});
+	});
+
+	const staleHold = () => {
+		vi.mocked(prisma.payment.findMany)
+			.mockResolvedValueOnce([])
+			.mockResolvedValueOnce([
+				{
+					id: "pay_1",
+					payableId: "cp1",
+					provider: PaymentProvider.STRIPE,
+					providerTransactionId: "cs_1",
+				},
+			] as never);
+		vi.mocked(releaseCheckout).mockResolvedValue({} as never);
+		vi.mocked(prisma.projectCheckpoint.findFirst).mockResolvedValue({
+			curatorId: "u9",
+			curator: { name: "Marta" },
+		} as never);
+	};
+
+	it("hands a checkpoint nobody answered back to its author, and says so", async () => {
+		staleHold();
+		vi.mocked(returnToAuthor).mockResolvedValue(true);
+
+		await run();
+
+		expect(returnToAuthor).toHaveBeenCalledWith("cp1", "u9");
+		expect(notifyAuthorOfAnswer).toHaveBeenCalledWith("cp1", "Marta", "silent");
+	});
+
+	// The curator answered between the read and the write: their answer stands,
+	// and the author is not told the curator went quiet.
+	it("tells the author nothing when the curator answered meanwhile", async () => {
+		staleHold();
+		vi.mocked(returnToAuthor).mockResolvedValue(false);
+
+		await run();
+
+		expect(returnToAuthor).toHaveBeenCalledWith("cp1", "u9");
+		expect(notifyAuthorOfAnswer).not.toHaveBeenCalled();
 	});
 });

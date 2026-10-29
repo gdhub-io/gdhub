@@ -13,6 +13,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { dueDateFrom, utcStartOfDay } from "@/lib/checkpoint-days";
+import { checkpointMove } from "@/lib/checkpoint-status";
 import {
 	LegalAcceptancesSchema,
 	LegalError,
@@ -152,17 +153,28 @@ export const POST = pipe(
 	if (accept) {
 		if (acceptances.length)
 			await prisma.legalAcceptance.createMany({ data: acceptances });
-		await prisma.projectCheckpoint.update({
-			where: { id },
+		const move = checkpointMove(
+			CheckpointStatus.AwaitingCurator,
+			CheckpointStatus.Active,
+		);
+		const { count } = await prisma.projectCheckpoint.updateMany({
+			where: { id, ...move.where },
 			data: {
-				status: CheckpointStatus.Active,
+				...move.data,
 				curatorAcceptedAt: new Date(),
 				startedAt,
 				dueAt: dueDateFrom(startedAt),
 			},
 		});
-	} else {
-		await returnToAuthor(id, curator.id);
+		// Stripe will not both capture a hold and let it go, so only a decline
+		// racing this one gets here.
+		if (!count) {
+			console.error(`[checkpoint] ${id} stopped waiting while accepted`);
+			return apiError.badRequest("checkpointNotAwaiting");
+		}
+	} else if (!(await returnToAuthor(id, curator.id))) {
+		// The silence cron handed it back first and has told the author already.
+		return json({ accepted: false });
 	}
 
 	// The chat opens as the checkpoint starts, and the curator's yes is what

@@ -10,6 +10,7 @@ import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { useCreateCheckpoint } from "@/hooks/checkpoints";
 import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoint-facts";
+import { isPending } from "@/lib/checkpoint-status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointPath, type PathStepView } from "../CheckpointPath";
 import { CheckpointStepPanel } from "../CheckpointStepPanel";
@@ -56,9 +57,7 @@ export function CheckpointDetail({
 	// Nothing below Prepare exists until the 28 days run: a draft has no day one
 	// either, and a sprint that opens onto empty tabs reads as a broken page
 	// rather than as one that has not started.
-	const started =
-		checkpoint.status !== CheckpointStatus.Draft &&
-		checkpoint.status !== CheckpointStatus.AwaitingCurator;
+	const started = !isPending(checkpoint.status);
 
 	// A checkpoint that has not started opens on Prepare, whatever its dates say:
 	// the status decides that, and the date the author picked does not. Without

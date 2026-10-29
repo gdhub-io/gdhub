@@ -1,4 +1,5 @@
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
+import { isRunning } from "@/lib/checkpoint-status";
 import type { CheckpointDto } from "@/types/checkpoints";
 import {
 	PURCHASE_STEPS,
@@ -44,9 +45,7 @@ export function purchaseState(
 
 	const backFromCheckout = asked === "ready";
 	const isDraft = current?.status === CheckpointStatus.Draft;
-	const isOpen =
-		current?.status === CheckpointStatus.Active ||
-		current?.status === CheckpointStatus.Review;
+	const running = !!current && isRunning(current.status);
 	// Paid and not yet running: a person has to take it on, a curator handed it
 	// back, or the webhook has not landed — the last only once the terms were
 	// taken, so a bare `?step=ready` on an untouched draft is not "paid".
@@ -59,7 +58,7 @@ export function purchaseState(
 				(!!current.paymentId ||
 					!!current.curatorDeclinedAt ||
 					(backFromCheckout && !!current.acceptedTermsAt))) ||
-			(isOpen &&
+			(running &&
 				backFromCheckout &&
 				current.curatorKind === CheckpointCuratorKind.AI));
 
@@ -68,6 +67,6 @@ export function purchaseState(
 		isDraft,
 		paid,
 		// Running, and not the paid screen of an AI one: the workflow shows it now.
-		running: isOpen && !paid,
+		running: running && !paid,
 	};
 }

@@ -115,7 +115,8 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 
 			if (!waiting) continue;
 
-			await returnToAuthor(payment.payableId, waiting.curatorId);
+			if (!(await returnToAuthor(payment.payableId, waiting.curatorId)))
+				continue;
 			await notifyAuthorOfAnswer(
 				payment.payableId,
 				waiting.curator?.name ?? "",

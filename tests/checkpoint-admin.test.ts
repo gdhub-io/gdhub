@@ -120,7 +120,11 @@ describe("an administrator's verdict", () => {
 		);
 		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: { id: "cp1", status: CheckpointStatus.Review, verdict: null },
+				where: {
+					id: "cp1",
+					status: { in: [CheckpointStatus.Review] },
+					verdict: null,
+				},
 				data: expect.objectContaining({
 					status: CheckpointStatus.Closed,
 					verdict: CheckpointVerdict.GoalMissed,
@@ -191,6 +195,8 @@ describe("assigning a curator by hand", () => {
 
 	beforeEach(() => {
 		vi.mocked(prisma.user.findUnique).mockResolvedValue({ id: "u9", email: "c@x" } as never);
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 1 } as never);
+		vi.mocked(startAiCheckpoint).mockResolvedValue(true);
 	});
 
 	it("starts an AI checkpoint from a draft with no payment", async () => {
@@ -200,6 +206,16 @@ describe("assigning a curator by hand", () => {
 			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "Partner" }),
 		).resolves.toEqual({ ok: true });
 		expect(startAiCheckpoint).toHaveBeenCalledWith("cp1", null);
+	});
+
+	it("refuses the AI when the draft started or was called off meanwhile", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(draft() as never);
+		vi.mocked(startAiCheckpoint).mockResolvedValue(false);
+
+		await expect(
+			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "Partner" }),
+		).resolves.toEqual({ ok: false, error: "notSwappable" });
+		expect(prisma.auditLog.create).not.toHaveBeenCalled();
 	});
 
 	it("books a person's calls and asks them, as a payment would", async () => {
@@ -212,8 +228,9 @@ describe("assigning a curator by hand", () => {
 		});
 
 		expect(bookSessions).toHaveBeenCalled();
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
+				where: { id: "cp1", status: { in: [CheckpointStatus.Draft] } },
 				data: expect.objectContaining({
 					curatorId: "u9",
 					status: CheckpointStatus.AwaitingCurator,
@@ -221,6 +238,22 @@ describe("assigning a curator by hand", () => {
 			}),
 		);
 		expect(notifyCuratorAsked).toHaveBeenCalledWith("cp1");
+	});
+
+	it("books nobody and asks nobody when the draft moved meanwhile", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(draft() as never);
+		vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 0 } as never);
+
+		await expect(
+			assignCurator("cp1", "admin1", {
+				kind: CheckpointCuratorKind.Human,
+				userId: "u9",
+				reason: "Partner",
+			}),
+		).resolves.toEqual({ ok: false, error: "notSwappable" });
+		expect(bookSessions).not.toHaveBeenCalled();
+		expect(notifyCuratorAsked).not.toHaveBeenCalled();
+		expect(prisma.auditLog.create).not.toHaveBeenCalled();
 	});
 
 	it("refuses a draft without a goal, and one whose first call is taken", async () => {

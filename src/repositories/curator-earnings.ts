@@ -1,7 +1,4 @@
-import {
-	CheckpointCuratorKind,
-	CheckpointStatus,
-} from "@gdhub-io/gdhub-prisma";
+import { CheckpointCuratorKind } from "@gdhub-io/gdhub-prisma";
 import {
 	monthOf,
 	payoutDueOn,
@@ -9,6 +6,7 @@ import {
 	previousMonth,
 } from "@/lib/checkpoint-costs";
 import { noFeeReason } from "@/lib/checkpoint-fee";
+import { CHECKPOINT_ENDED_STATUSES } from "@/lib/checkpoint-status";
 import { maskAccount } from "@/lib/payout-account";
 import { checkpointNumbers } from "@/repositories/checkpoint-number";
 import { describeFees, feeSelect } from "@/repositories/checkpoint-payouts";
@@ -32,7 +30,7 @@ export const curatorEarnings = async (
 			where: {
 				curatorId,
 				curatorKind: CheckpointCuratorKind.Human,
-				status: { in: [CheckpointStatus.Closed, CheckpointStatus.Cancelled] },
+				status: { in: CHECKPOINT_ENDED_STATUSES },
 				fees: { none: { curatorId } },
 			},
 			orderBy: { updatedAt: "desc" },

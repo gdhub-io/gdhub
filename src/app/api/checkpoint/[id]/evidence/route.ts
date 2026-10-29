@@ -1,4 +1,4 @@
-import { CheckpointItemKind, CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { CheckpointItemKind } from "@gdhub-io/gdhub-prisma";
 import { after } from "next/server";
 import type { z } from "zod";
 import {
@@ -9,6 +9,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { acceptsEvidence } from "@/lib/checkpoint-status";
 import { canTakeEvidence } from "@/lib/checkpoint-verdict";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfCheckpoint } from "@/lib/space-ids";
@@ -43,10 +44,7 @@ const openCheckpoint = async (id: string) => {
 	if (!checkpoint) return { refused: apiError.notFound() };
 	// Evidence is collected while the 28 days run; once the verdict is being
 	// written the card is the record the verdict is read from.
-	if (
-		checkpoint.status !== CheckpointStatus.Active &&
-		checkpoint.status !== CheckpointStatus.Draft
-	) {
+	if (!acceptsEvidence(checkpoint.status)) {
 		return { refused: apiError.badRequest("checkpointClosed") };
 	}
 	return { checkpoint };

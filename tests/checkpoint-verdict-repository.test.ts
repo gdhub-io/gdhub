@@ -226,7 +226,7 @@ describe("moveFinishedToReview", () => {
 			vi.mocked(prisma.projectCheckpoint.updateManyAndReturn).mock.calls[0][0]
 				.where,
 		).toEqual({
-			status: CheckpointStatus.Active,
+			status: { in: [CheckpointStatus.Active] },
 			dueAt: { lt: new Date("2026-09-29T00:00:00.000Z") },
 		});
 		expect(notifyVerdictDue).toHaveBeenCalledWith(["h1"]);

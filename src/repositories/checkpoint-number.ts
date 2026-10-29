@@ -3,10 +3,9 @@ import {
 	CheckpointStatus,
 } from "@/config/prisma-enums";
 import { currentSprint } from "@/lib/checkpoint-sprints";
+import { UNNUMBERED_STATUSES } from "@/lib/checkpoint-status";
 import { prisma } from "@/services/prisma";
 import type { PreviousVerdict } from "@/types/checkpoints";
-
-export const UNNUMBERED = [CheckpointStatus.Draft, CheckpointStatus.Cancelled];
 
 /**
  * The checkpoint's number through the whole project: the ones before it that
@@ -20,7 +19,7 @@ export const checkpointNumber = async (row: {
 		where: {
 			projectId: row.projectId,
 			createdAt: { lt: row.createdAt },
-			status: { notIn: UNNUMBERED },
+			status: { notIn: UNNUMBERED_STATUSES },
 		},
 	})) + 1;
 
@@ -39,7 +38,7 @@ export const checkpointLineage = async (row: {
 		where: {
 			projectId: row.projectId,
 			createdAt: { lt: row.createdAt },
-			status: { notIn: UNNUMBERED },
+			status: { notIn: UNNUMBERED_STATUSES },
 		},
 		orderBy: { createdAt: "desc" },
 		select: { curatorKind: true },
@@ -58,7 +57,7 @@ export const checkpointNumbers = async (
 	const counted = await prisma.projectCheckpoint.findMany({
 		where: {
 			projectId: { in: [...new Set(rows.map((row) => row.projectId))] },
-			status: { notIn: UNNUMBERED },
+			status: { notIn: UNNUMBERED_STATUSES },
 		},
 		select: { projectId: true, createdAt: true },
 	});
@@ -83,7 +82,7 @@ export const checkpointIdByNumber = async (
 		await prisma.projectCheckpoint.findFirst({
 			where: {
 				project: { slug: projectSlug },
-				status: { notIn: UNNUMBERED },
+				status: { notIn: UNNUMBERED_STATUSES },
 			},
 			orderBy: { createdAt: "asc" },
 			skip: number - 1,

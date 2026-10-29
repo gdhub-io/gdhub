@@ -1,6 +1,5 @@
 import {
 	ARTIFACTS_PER_SPRINT,
-	CHECKPOINT_RUNNING_STATUSES,
 	DEVLOG_MEDIA_PER_SPRINT,
 	JOURNAL_TEXT_CHARS,
 	SPRINT_VIDEO_SECONDS,
@@ -13,12 +12,15 @@ import {
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
 import { dateOfDay } from "@/lib/checkpoint-plan";
-import { isRunning } from "@/lib/checkpoint-refund";
 import {
 	currentSprint,
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import {
+	CHECKPOINT_RUNNING_STATUSES,
+	isRunning,
+} from "@/lib/checkpoint-status";
 import { standingOf } from "@/lib/checkpoint-verdict";
 import { capped, devlogWords } from "@/lib/curator-text";
 import { checkArtifact } from "@/repositories/artifact-check";

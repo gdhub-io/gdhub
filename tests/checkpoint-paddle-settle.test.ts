@@ -37,6 +37,7 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: vi.fn(),
 			findUniqueOrThrow: vi.fn(async () => ({ startedAt: null })),
 			update: vi.fn(),
+			updateMany: vi.fn(),
 		},
 	},
 }));
@@ -71,6 +72,7 @@ beforeEach(() => {
 			? (arg as (tx: typeof prisma) => unknown)(prisma)
 			: arg) as never);
 	vi.mocked(prisma.payment.updateMany).mockResolvedValue({ count: 1 });
+	vi.mocked(prisma.projectCheckpoint.updateMany).mockResolvedValue({ count: 1 });
 	vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
 		status: CheckpointStatus.Draft,
 		curatorKind: CheckpointCuratorKind.AI,
@@ -115,9 +117,14 @@ describe("settling a Paddle checkout", () => {
 			where: { id: "pay_1" },
 			data: { status: PaymentStatus.COMPLETED, completedAt: expect.any(Date) },
 		});
-		expect(prisma.projectCheckpoint.update).toHaveBeenCalledWith(
+		expect(prisma.projectCheckpoint.updateMany).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: { id: "cp1" },
+				where: {
+					id: "cp1",
+					status: {
+						in: [CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
+					},
+				},
 				data: expect.objectContaining({
 					status: CheckpointStatus.Active,
 					paymentId: "pay_1",
@@ -137,6 +144,7 @@ describe("settling a Paddle checkout", () => {
 		});
 		expect(prisma.projectCheckpoint.findUnique).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 
 	// The webhook and the reconciliation may both arrive for the same purchase.
@@ -148,6 +156,7 @@ describe("settling a Paddle checkout", () => {
 		);
 		expect(prisma.payment.update).not.toHaveBeenCalled();
 		expect(prisma.projectCheckpoint.update).not.toHaveBeenCalled();
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
 	});
 });
 

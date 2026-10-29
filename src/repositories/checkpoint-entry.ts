@@ -8,11 +8,9 @@ import {
 	ProjectStatus,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
-import {
-	CHECKPOINT_ENTRY_ITEMS_MAX,
-	CHECKPOINT_OPEN_STATUSES,
-} from "@/config/checkpoint";
+import { CHECKPOINT_ENTRY_ITEMS_MAX } from "@/config/checkpoint";
 import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
+import { CHECKPOINT_OPEN_STATUSES } from "@/lib/checkpoint-status";
 import {
 	createCheckpointItems,
 	toArtifactRef,

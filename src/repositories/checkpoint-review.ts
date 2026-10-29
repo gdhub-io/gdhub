@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import {
 	BRIEF_AHEAD_HOURS,
-	CHECKPOINT_RUNNING_STATUSES,
 	FINAL_SESSION,
 	SCOPE_SESSION,
 } from "@/config/checkpoint";
@@ -24,6 +23,7 @@ import { MS_PER_HOUR } from "@/lib/checkpoint-days";
 import { scopeWindow } from "@/lib/checkpoint-scope";
 import { currentSessionOf } from "@/lib/checkpoint-sessions";
 import { sprintRange } from "@/lib/checkpoint-sprints";
+import { CHECKPOINT_RUNNING_STATUSES, hasRun } from "@/lib/checkpoint-status";
 import { lettersSoFar } from "@/lib/curator-letters";
 import { type CuratorNow, curatorNow } from "@/lib/curator-now";
 import { toArtifactRef } from "@/repositories/checkpoint.repository";
@@ -86,13 +86,6 @@ import type {
 	PlanAdvice,
 	PreviousVerdict,
 } from "@/types/checkpoints";
-
-/** The AI curator's pages stay readable after the verdict. */
-const REVIEW_STATUSES: CheckpointStatus[] = [
-	CheckpointStatus.Active,
-	CheckpointStatus.Review,
-	CheckpointStatus.Closed,
-];
 
 export type CheckpointReviewDto = {
 	/** The last checkpoint's verdict, through this one's first sprint. */
@@ -259,7 +252,7 @@ export const getReview = async (
 		!checkpoint?.startedAt ||
 		!checkpoint.dueAt ||
 		checkpoint.curatorKind !== CheckpointCuratorKind.AI ||
-		!REVIEW_STATUSES.includes(checkpoint.status)
+		!hasRun(checkpoint.status)
 	) {
 		return null;
 	}

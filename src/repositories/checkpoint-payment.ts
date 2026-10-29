@@ -21,6 +21,7 @@ import { type CuratorLevel, curatorPrice } from "@/config/checkpoint-pricing";
 import { dueDateFrom, sessionDay, utcStartOfDay } from "@/lib/checkpoint-days";
 import { dateOfDay } from "@/lib/checkpoint-plan";
 import type { RefundRowReason } from "@/lib/checkpoint-refund";
+import { checkpointMove } from "@/lib/checkpoint-status";
 import {
 	bookSessions,
 	isFirstCallFree,
@@ -41,15 +42,21 @@ const heldPaymentWhere = (checkpointId: string) => ({
 	status: { in: [PaymentStatus.PROCESSING, PaymentStatus.COMPLETED] },
 });
 
-/** Whether this checkpoint has been paid for, whatever state it is in now. */
+/** The payment that bought this checkpoint, whatever state it is in now. */
+export const completedPaymentOf = async (checkpointId: string) =>
+	(
+		await prisma.payment.findFirst({
+			where: {
+				payableType: PayableType.CHECKPOINT,
+				payableId: checkpointId,
+				status: PaymentStatus.COMPLETED,
+			},
+			select: { id: true },
+		})
+	)?.id ?? null;
+
 export const isCheckpointPaid = async (checkpointId: string) =>
-	(await prisma.payment.count({
-		where: {
-			payableType: PayableType.CHECKPOINT,
-			payableId: checkpointId,
-			status: PaymentStatus.COMPLETED,
-		},
-	})) > 0;
+	(await completedPaymentOf(checkpointId)) !== null;
 
 /**
  * What this curator costs for the 28 days, in minor units, or null when they
@@ -271,18 +278,22 @@ export const returnCheckpointMoney = async (
  * Hands a checkpoint back to its author after its curator said no or never
  * answered: unpaid again, with that curator kept so the picker shows them as
  * unavailable — an expert who disappears from the list is one picked again.
+ *
+ * Returns false when it was no longer waiting: the curator's answer won.
  */
 export const returnToAuthor = (
 	checkpointId: string,
 	curatorId: string | null,
 ) =>
-	prisma.$transaction([
-		// The calls were that curator's hours; the next one is booked afresh.
-		prisma.checkpointSession.deleteMany({ where: { checkpointId } }),
-		prisma.projectCheckpoint.update({
-			where: { id: checkpointId },
+	prisma.$transaction(async (tx) => {
+		const move = checkpointMove(
+			CheckpointStatus.AwaitingCurator,
+			CheckpointStatus.Draft,
+		);
+		const { count } = await tx.projectCheckpoint.updateMany({
+			where: { id: checkpointId, ...move.where },
 			data: {
-				status: CheckpointStatus.Draft,
+				...move.data,
 				curatorId: null,
 				curatorDeclinedAt: new Date(),
 				paymentId: null,
@@ -290,8 +301,13 @@ export const returnToAuthor = (
 				dueAt: null,
 				...(curatorId && { declinedCuratorIds: { push: curatorId } }),
 			},
-		}),
-	]);
+		});
+		if (!count) return false;
+
+		// The calls were that curator's hours; the next one is booked afresh.
+		await tx.checkpointSession.deleteMany({ where: { checkpointId } });
+		return true;
+	});
 
 /**
  * A completed checkout, applied: the payment becomes a hold and the checkpoint
@@ -373,7 +389,11 @@ export const settleCheckpointCheckout = async (
 	}
 
 	if (checkpoint.curatorKind === CheckpointCuratorKind.AI) {
-		await startAiCheckpoint(payment.payableId, payment.id);
+		if (!(await startAiCheckpoint(payment.payableId, payment.id))) {
+			console.error(
+				`[checkpoint] ${payment.payableId} paid but left Draft meanwhile`,
+			);
+		}
 		return true;
 	}
 
@@ -381,17 +401,19 @@ export const settleCheckpointCheckout = async (
 	// while they decide. Someone else may have taken the hour since the author
 	// picked it: then the hold is let go and the draft asks for another time.
 	try {
-		await prisma.$transaction(async (tx) => {
-			await bookSessions(tx, payment.payableId);
-			await tx.projectCheckpoint.update({
-				where: { id: payment.payableId },
-				data: {
-					status: CheckpointStatus.AwaitingCurator,
-					paymentId: payment.id,
-				},
+		const asked = await prisma.$transaction(async (tx) => {
+			const move = checkpointMove(
+				CheckpointStatus.Draft,
+				CheckpointStatus.AwaitingCurator,
+			);
+			const { count } = await tx.projectCheckpoint.updateMany({
+				where: { id: payment.payableId, ...move.where },
+				data: { ...move.data, paymentId: payment.id },
 			});
+			if (count) await bookSessions(tx, payment.payableId);
+			return count > 0;
 		});
-		await notifyCuratorAsked(payment.payableId);
+		if (asked) await notifyCuratorAsked(payment.payableId);
 	} catch (error) {
 		if (!(error instanceof SlotTakenError)) throw error;
 
@@ -415,7 +437,7 @@ export const settleCheckpointCheckout = async (
  * draft waited to be paid, so it starts today at the earliest; the plan waits
  * for the author's tasks and approval; and its five review days are written
  * like a person's calls. Then the curator takes its character and reads the
- * goal.
+ * goal. Returns false when it had already started or been called off.
  */
 export const startAiCheckpoint = async (
 	checkpointId: string,
@@ -431,27 +453,37 @@ export const startAiCheckpoint = async (
 	const picked = checkpoint.startedAt && utcStartOfDay(checkpoint.startedAt);
 	const startedAt = picked && picked > today ? picked : today;
 
-	await prisma.$transaction([
-		prisma.projectCheckpoint.update({
-			where: { id: checkpointId },
+	const started = await prisma.$transaction(async (tx) => {
+		// A draft being paid for, or one handed from a person to the AI while it waited.
+		const move = checkpointMove(
+			[CheckpointStatus.Draft, CheckpointStatus.AwaitingCurator],
+			CheckpointStatus.Active,
+		);
+		const { count } = await tx.projectCheckpoint.updateMany({
+			where: { id: checkpointId, ...move.where },
 			data: {
-				status: CheckpointStatus.Active,
+				...move.data,
 				paymentId,
 				startedAt,
 				dueAt: dueDateFrom(startedAt),
 				goalAgreedAt: null,
 				goalAgreedById: null,
 			},
-		}),
-		prisma.checkpointSession.deleteMany({ where: { checkpointId } }),
-		prisma.checkpointSession.createMany({
+		});
+		if (!count) return false;
+
+		await tx.checkpointSession.deleteMany({ where: { checkpointId } });
+		await tx.checkpointSession.createMany({
 			data: Array.from({ length: SESSIONS_PER_CHECKPOINT }, (_, offset) => ({
 				checkpointId,
 				index: offset + 1,
 				scheduledAt: dateOfDay(startedAt, sessionDay(offset + 1)),
 			})),
-		}),
-	]);
+		});
+		return true;
+	});
+	if (!started) return false;
+
 	// After the payment is answered: the read is a model call, the webhook must not wait on it.
 	afterResponse(async () => {
 		const { writeFirstLetter } = await import(
@@ -459,6 +491,7 @@ export const startAiCheckpoint = async (
 		);
 		await writeFirstLetter(checkpointId);
 	});
+	return true;
 };
 
 /** Runs `work` once the response is sent; outside a request (a script), right away. */

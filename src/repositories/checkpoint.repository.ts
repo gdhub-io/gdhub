@@ -8,7 +8,6 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import {
 	CHECKPOINT_DAYS,
-	CHECKPOINT_OPEN_STATUSES,
 	SPRINT_BUILD_TYPES,
 	SPRINTS_PER_CHECKPOINT,
 } from "@/config/checkpoint";
@@ -32,6 +31,10 @@ import {
 	sprintOfDate,
 	sprintRange,
 } from "@/lib/checkpoint-sprints";
+import {
+	CHECKPOINT_CURRENT_STATUSES,
+	CHECKPOINT_OPEN_STATUSES,
+} from "@/lib/checkpoint-status";
 import { curatorNow } from "@/lib/curator-now";
 import { checkpointLineage } from "@/repositories/checkpoint-number";
 import { heldAmount, toWholePrice } from "@/repositories/checkpoint-payment";
@@ -620,7 +623,7 @@ export const getUnfinishedCheckpoint = async (projectId: string) => {
 	const row = await prisma.projectCheckpoint.findFirst({
 		where: {
 			projectId,
-			status: { in: [CheckpointStatus.Draft, ...CHECKPOINT_OPEN_STATUSES] },
+			status: { in: CHECKPOINT_CURRENT_STATUSES },
 		},
 		orderBy: { createdAt: "desc" },
 		select: currentCheckpointSelect,

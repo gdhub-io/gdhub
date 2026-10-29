@@ -9,11 +9,7 @@ import {
 	Prisma,
 } from "@gdhub-io/gdhub-prisma";
 import { formatCheckpointMoney } from "@/config/checkpoint-pricing";
-import {
-	adminVerdictOpen,
-	CURATOR_SWAPPABLE_STATUSES,
-	draftComplete,
-} from "@/lib/checkpoint-admin";
+import { adminVerdictOpen, draftComplete } from "@/lib/checkpoint-admin";
 import {
 	callCost,
 	callPrice,
@@ -22,7 +18,6 @@ import {
 } from "@/lib/checkpoint-costs";
 import { noFeeReason } from "@/lib/checkpoint-fee";
 import {
-	isRunning,
 	REFUND_REASONS,
 	type RefundCase,
 	type RefundReason,
@@ -30,6 +25,12 @@ import {
 	reasonRefused,
 	refundAmount,
 } from "@/lib/checkpoint-refund";
+import {
+	CHECKPOINT_RUNNING_STATUSES,
+	checkpointMove,
+	isOpen,
+	isRunning,
+} from "@/lib/checkpoint-status";
 import { verdictDueBy } from "@/lib/checkpoint-verdict-window";
 import { recordCheckpointFee } from "@/repositories/checkpoint-fee";
 import {
@@ -234,13 +235,17 @@ export const issueCheckpointRefund = async (
 
 	const meta = { reason, amount, provided, parts, paid: payment.amount };
 
-	await prisma.$transaction([
-		...refundWrites(prisma, payment, providerRefund, reason),
-		// No verdict, no certificate: it ends as Cancelled, not Closed.
-		prisma.projectCheckpoint.update({
-			where: { id: checkpointId },
-			data: { status: CheckpointStatus.Cancelled },
+	// No verdict, no certificate: it ends as Cancelled, not Closed.
+	const move = checkpointMove(
+		CHECKPOINT_RUNNING_STATUSES,
+		CheckpointStatus.Cancelled,
+	);
+	const [{ count: cancelled }] = await prisma.$transaction([
+		prisma.projectCheckpoint.updateMany({
+			where: { id: checkpointId, ...move.where },
+			data: move.data,
 		}),
+		...refundWrites(prisma, payment, providerRefund, reason),
 		prisma.auditLog.create({
 			data: {
 				actorUserId: adminId,
@@ -251,6 +256,11 @@ export const issueCheckpointRefund = async (
 			},
 		}),
 	]);
+
+	// The money has gone back either way; a verdict sent meanwhile keeps it Closed.
+	if (!cancelled) {
+		console.error(`[refund] ${checkpointId} was decided while refunded`);
+	}
 
 	await Promise.all([
 		syncChat(`refund ${checkpointId}`, () => closeCheckpointRoom(checkpointId)),
@@ -581,7 +591,7 @@ export const listAdminCheckpoints = async (
 					row.status === CheckpointStatus.Draft
 						? draftComplete({ goal: row.goal, inputs: row._count.items })
 						: row.curatorKind === CheckpointCuratorKind.Human &&
-							CURATOR_SWAPPABLE_STATUSES.includes(row.status),
+							isOpen(row.status),
 			};
 		}),
 	};
