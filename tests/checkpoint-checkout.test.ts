@@ -8,7 +8,7 @@ import {
 	checkpointCheckout,
 	returnToAuthor,
 } from "@/repositories/checkpoints/payment";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 

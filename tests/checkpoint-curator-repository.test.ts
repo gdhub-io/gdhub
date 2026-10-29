@@ -11,7 +11,7 @@ import { goalCheckHash } from "@/repositories/checkpoints/ai-curator";
 import { curatorTeam } from "@/repositories/checkpoints/ai-curator-context";
 import { journal } from "@/repositories/checkpoints/journal";
 import { recheckCheckpointArtifacts } from "@/repositories/project/artifact-check";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { checkpointCurator } from "@/services/checkpoints/ai-curator";
 import { closeCheckpoint, runGoalCheck, writeFirstLetter, writeVerdictRead } from "@/services/checkpoints/flows/ai-curator";
 import { notifyDayOne } from "@/services/checkpoints/notifications";

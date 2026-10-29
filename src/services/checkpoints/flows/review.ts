@@ -14,7 +14,10 @@ import { lettersSoFar } from "@/lib/checkpoints/curator-letters";
 import { MS_PER_HOUR } from "@/lib/checkpoints/days";
 import { reviewUrl } from "@/lib/checkpoints/hrefs";
 import { sprintRange } from "@/lib/checkpoints/sprints";
-import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoints/status";
+import {
+	CHECKPOINT_DAYS_OVER_STATUSES,
+	CHECKPOINT_RUNNING_STATUSES,
+} from "@/lib/checkpoints/status";
 import {
 	curatorTeam,
 	projectPicture,
@@ -37,7 +40,7 @@ import {
 	taskSelect,
 } from "@/repositories/checkpoints/review";
 import { canEditPlan } from "@/repositories/checkpoints/viewer";
-import { CONFIRMED_MEMBERS } from "@/repositories/scout/games";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
 	midwayAdviceInput,
 	type PlanAdviceInput,
@@ -269,7 +272,7 @@ export const writeDueReviews = async (now = new Date()) => {
 					index: FINAL_SESSION,
 					checkpoint: {
 						curatorKind: CheckpointCuratorKind.AI,
-						status: { in: [CheckpointStatus.Review, CheckpointStatus.Closed] },
+						status: { in: CHECKPOINT_DAYS_OVER_STATUSES },
 					},
 				},
 			],

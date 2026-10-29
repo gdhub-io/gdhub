@@ -10,6 +10,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
+import { setCurrentStep } from "@/repositories/project/workflow";
 import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
 import { applyResetPlan } from "@/services/workflow/applyResetPlan";
@@ -118,6 +119,13 @@ export const POST = pipe(
 		if (plan.removedStepIds.length) {
 			await tx.projectWorkflowStep.deleteMany({
 				where: { id: { in: plan.removedStepIds } },
+			});
+		}
+
+		// Sent back to the start, the stages it leaves behind lose their dates.
+		if (nextCurrentId && nextCurrentId !== workflow.currentStepId) {
+			await setCurrentStep(tx, id, nextCurrentId, {
+				from: workflow.currentStepId,
 			});
 		}
 	});

@@ -3,7 +3,6 @@
  *
  * Replaces the `next-api-decorators` stack used in `src/pages/api/**`:
  *   @NextAuthGuard(mode, roles?)  → withAuth({ mode, roles })
- *   @ApiProjectTeamGuard()         → withTeamGuard()
  *   @Body(ValidationPipe) Dto      → withValidation(zodSchema, "body")
  *   @Query(ValidationPipe) Dto     → withValidation(zodSchema, "query")
  *
@@ -15,17 +14,12 @@
  *   )(async (req, ctx, { user, body }) => { ... });
  */
 
-import {
-	type Team,
-	type UserRole,
-	withAuditContext,
-} from "@gdhub-io/gdhub-prisma";
+import { type UserRole, withAuditContext } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
 import { auth } from "@/auth";
 import { env } from "@/helpers/env";
 import type { SpaceAccess } from "@/services/access/types";
-import { prisma } from "@/services/prisma";
 
 export type SessionUser = {
 	id: string;
@@ -42,7 +36,6 @@ export type SessionUser = {
 
 export type Locals = {
 	user?: SessionUser;
-	team?: Team;
 	body?: unknown;
 	query?: unknown;
 	/**
@@ -222,45 +215,6 @@ export function withAuth(opts: AuthOptions = {}) {
 			}
 
 			return apiError.unauthorized();
-		};
-	};
-}
-
-export function withTeamGuard() {
-	return function wrap<L extends Locals>(
-		handler: Handler<L & { team: Team; user: SessionUser }>,
-	): Handler<L> {
-		return async (req, ctx, locals) => {
-			const session = await auth();
-			const userId = session?.user?.id;
-
-			const url = new URL(req.url);
-			let teamId: string | undefined =
-				url.searchParams.get("teamId") ?? undefined;
-
-			if (!teamId) {
-				const body = (await req
-					.clone()
-					.json()
-					.catch(() => ({}))) as { teamId?: string };
-				teamId = body?.teamId;
-			}
-
-			if (!userId || !teamId) return apiError.forbidden();
-
-			const team = await prisma.team.findFirst({
-				where: {
-					id: teamId,
-					members: { some: { userId } },
-				},
-			});
-			if (!team) return apiError.forbidden();
-
-			return handler(req, ctx, {
-				...locals,
-				user: session.user as SessionUser,
-				team,
-			} as L & { team: Team; user: SessionUser });
 		};
 	};
 }

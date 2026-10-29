@@ -32,11 +32,11 @@ import {
 	withAcceptedTerms,
 	withCraft,
 } from "@/repositories/checkpoints/select";
+import { CONFIRMED_STATUS } from "@/repositories/project/team";
 import {
 	ensureCheckpointStage,
 	type Tx,
 } from "@/repositories/project/workflow";
-import { CONFIRMED_STATUS } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 
 /**

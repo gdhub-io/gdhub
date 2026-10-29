@@ -10,6 +10,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeam } from "@/lib/space-ids";
+import { currentMembership } from "@/repositories/project/team";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -99,14 +100,8 @@ export const POST = pipe(
 			return json({ success: true, message: "Invitation sent" });
 		}
 
-		const existingMember = await prisma.teamMember.findFirst({
-			where: {
-				teamId: data.teamId,
-				userId: userRecord.id,
-				status: {
-					in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder],
-				},
-			},
+		const existingMember = await currentMembership(userRecord.id, {
+			teamId: data.teamId,
 		});
 
 		if (existingMember) {

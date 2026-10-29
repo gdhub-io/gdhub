@@ -18,6 +18,8 @@ export const GET = withAuth({ mode: "user" })(
 		const { id } = body as z.infer<typeof QuerySchema>;
 		const teamMember = await prisma.teamMember.findFirst({
 			where: { vacancyId: id, userId: (user as SessionUser).id },
+			// The newest, as the other vacancy routes read it.
+			orderBy: { createdAt: "desc" },
 			select: { id: true },
 		});
 

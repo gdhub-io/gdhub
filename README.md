@@ -42,7 +42,7 @@ Pre-PR checklist: `bun run lint && bun run type-check && bun run test`.
 
 ## Project structure
 
-See [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) for a map of the codebase.
+See [docs/architecture.md](docs/architecture.md) for a map of the codebase.
 
 ## Conventions & AI agents
 

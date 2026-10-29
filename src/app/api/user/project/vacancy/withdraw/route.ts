@@ -11,7 +11,7 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeamMemberId } from "@/lib/space-ids";
 import {
-	removeFromCheckpointRooms,
+	reconcileCheckpointRooms,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
@@ -58,7 +58,7 @@ export const PUT = pipe(
 	const projectId = deletedMember.team.projectId;
 	if (projectId) {
 		await syncChat(`withdraw ${teamMemberId}`, () =>
-			removeFromCheckpointRooms(projectId, deletedMember.user.id),
+			reconcileCheckpointRooms(projectId, deletedMember.user.id),
 		);
 	}
 

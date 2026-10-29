@@ -32,6 +32,12 @@ export const CHECKPOINT_ENDED_STATUSES: CheckpointStatus[] = [
 /** Under way: the 28 days or their review. Calls, evidence and the verdict live here. */
 export const CHECKPOINT_RUNNING_STATUSES: CheckpointStatus[] = [Active, Review];
 
+/** Its days are over: the verdict is pending or sent. */
+export const CHECKPOINT_DAYS_OVER_STATUSES: CheckpointStatus[] = [
+	Review,
+	Closed,
+];
+
 /** Got its 28 days, whether or not the verdict is in: its pages stay readable. */
 export const CHECKPOINT_RAN_STATUSES: CheckpointStatus[] = [
 	Active,

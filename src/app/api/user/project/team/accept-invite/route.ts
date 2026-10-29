@@ -12,7 +12,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import {
-	addToCheckpointRooms,
+	reconcileCheckpointRooms,
 	syncChat,
 } from "@/services/chat/checkpoint-room";
 import { NovuService } from "@/services/novu";
@@ -159,7 +159,7 @@ export const GET = withAuth({ mode: "user" })(
 			const projectId = invitation.team.project?.id;
 			if (projectId) {
 				await syncChat(`join ${teamMember.id}`, () =>
-					addToCheckpointRooms(projectId, currentUser.id),
+					reconcileCheckpointRooms(projectId, currentUser.id),
 				);
 			}
 

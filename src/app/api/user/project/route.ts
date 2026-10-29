@@ -25,6 +25,7 @@ import {
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { limitAiCalls } from "@/lib/rate-limit";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { currentMemberOf } from "@/repositories/project/team";
 import {
 	DEFAULT_PROJECT_STAGE,
 	placeProjectOnStage,
@@ -97,7 +98,10 @@ export const GET = withAuth({ mode: "user" })(
 				slug,
 				OR: [
 					{ authorId: currentUser.id },
-					{ team: { members: { some: { userId: currentUser.id } } } },
+					// An applicant or someone who left is not inside the project.
+					{
+						team: { members: { some: currentMemberOf(currentUser.id).where } },
+					},
 				],
 			},
 			include: {

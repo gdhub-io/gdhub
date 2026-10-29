@@ -1,5 +1,9 @@
-import { AdviceRequestStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
 import { getCleanTextContent } from "@/helpers/content";
+import {
+	CONFIRMED_MEMBERS,
+	CONFIRMED_STATUS,
+} from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 /**
@@ -14,16 +18,10 @@ import { prisma } from "@/services/prisma";
 // The compact project card clamps the pitch at this length.
 const DESCRIPTION_LIMIT = 500;
 
-// Confirmed memberships surface as "projects the person works on". An
-// applicant/rejected/fired row is not a real participation.
-export const CONFIRMED_MEMBER_STATUSES = [
-	TeamMemberStatus.Hired,
-	TeamMemberStatus.Founder,
-];
-
 /** Memberships, newest first, with everything a project row draws. */
 export const personCardProjectsSelect = {
-	where: { status: { in: CONFIRMED_MEMBER_STATUSES } },
+	// Every real participation, the finished ones too: the card dates them.
+	where: CONFIRMED_STATUS,
 	orderBy: { startedAt: "desc" },
 	select: {
 		position: true,
@@ -34,7 +32,7 @@ export const personCardProjectsSelect = {
 			select: {
 				_count: {
 					select: {
-						members: { where: { status: { in: CONFIRMED_MEMBER_STATUSES } } },
+						members: { where: CONFIRMED_MEMBERS },
 					},
 				},
 				project: {

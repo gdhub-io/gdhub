@@ -1,6 +1,6 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import { json, withValidation } from "@/lib/api-handlers";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 const TeamQuerySchema = z.object({
@@ -19,11 +19,7 @@ export const GET = withValidation(
 		where: { id: teamId },
 		include: {
 			members: {
-				where: {
-					status: {
-						in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder],
-					},
-				},
+				where: CONFIRMED_MEMBERS,
 				include: { user: { select: { name: true, image: true } } },
 			},
 		},

@@ -6,6 +6,7 @@ import {
 	withAuth,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { CONFIRMED_STATUS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 export const GET = pipe(
@@ -39,7 +40,7 @@ export const GET = pipe(
 	}
 
 	const teamMembers = await prisma.teamMember.findMany({
-		where: { userId: member.userId },
+		where: { ...CONFIRMED_STATUS, userId: member.userId },
 		select: {
 			position: true,
 			startedAt: true,

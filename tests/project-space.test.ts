@@ -23,9 +23,11 @@ describe("projectSpaceAdapter", () => {
 
 		const where = vi.mocked(prisma.project.findFirst).mock.calls[0][0]?.select
 			?.team as { select: { members: { where: unknown } } };
+		// Still on the team today: a finished row no longer grants a role.
 		expect(where.select.members.where).toEqual({
 			userId: "u1",
-			status: { in: ["Founder", "Hired"] },
+			status: { in: ["Hired", "Founder"] },
+			finishedAt: null,
 		});
 		expect(access?.role).toBe(SpaceRole.Member);
 	});

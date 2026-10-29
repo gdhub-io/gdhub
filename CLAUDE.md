@@ -53,7 +53,7 @@ default branch, so its updates land on `main` and
 `dev`. Never promote in that direction by hand.
 
 Linear issues here are titles with empty descriptions, so the intent is the only
-written statement of the goal; the detailed spec (`docs/<feature>.md`) grows out of it
+written statement of the goal; the detailed spec (`docs/<feature>/README.md`, beside the feature's diagrams in the same folder) grows out of it
 afterwards, and the UI handoff (`docs/design/specs/`) out of that. A typo, a copy change
 or a one-file bug needs none of this — say so and do the work.
 
@@ -106,25 +106,21 @@ unavailable and the pre-push hook is what actually holds the line.
 
 ## Repository layout
 
+**Read [docs/architecture.md](docs/architecture.md) before creating a file.** It has
+the full directory map, the layer rules and a "where a new file goes" table. In short:
+
 ```
 src/
-  app/            Next.js App Router. Route groups: (auth) (public) (protected) (user),
-                  plus admin/, courses/, my/. API under app/api/**/route.ts.
-  components/     React components, one folder per component (PascalCase).
-  layouts/        Page layouts (Protected, Public, Admin, Landing, ...).
-  services/       External integrations (prisma, paddle, openai, novu, brevo,
-                  typesense, telegram, matrix, langgraph, legal).
-  repositories/   DB access, one folder per domain (checkpoints/, project/, scout/, …),
-                  plain kebab-case names: repositories/project/workflow.ts.
-  lib/            Core utilities (api-handlers.ts, firebase, matrix-client).
-  helpers/        Small pure helpers (env, format, access, file, ...).
-  hooks/          Reusable React hooks.
-  schemas/        Zod schemas.
-  queues/         BullMQ queues & workers.
-  i18n/           Tolgee translation JSON.
-  contexts/       React contexts and providers.
-  config/ types/ templates/ styles/
-docs/             Design docs, migration notes, legal, refund/equity policies.
+  app/            App Router. Groups: (landing) (public) (auth) (app)/(spaces)/<role>.
+                  API under app/api/<domain>/**/route.ts.
+  components/     <domain>/ folders, ui/ primitives, layouts/ shells.
+  hooks/          TanStack Query hooks, one file per domain.
+  repositories/   <domain>/ folders, Prisma only: repositories/project/workflow.ts.
+  services/       <domain>/ orchestration (checkpoints/flows/) and provider clients.
+  lib/            <domain>/ pure logic, plus api-handlers.ts and the access guards.
+  config/         every tunable number, design tokens, permissions.
+  types/          DTOs the API returns.   schemas/  Zod.   helpers/  small helpers.
+docs/             architecture.md, intent/, <feature>.md, *-flow.d2, design/.
 tests/            Vitest unit tests + tests/e2e Playwright specs.
 ```
 
@@ -139,7 +135,8 @@ decorators**. Building blocks:
 - `withAuth({ mode, roles? })` — auth gate. `mode`: `"user"` (default), `"any"`, `"api"`,
   `"public_api"`, `"vercel_cron"`, `"gumroad"`. Injects `user` into the handler's `locals`.
 - `withValidation(zodSchema, "body" | "query")` — validates input, injects parsed `body`.
-- `withTeamGuard()` — verifies the user belongs to the `teamId`, injects `team`.
+- `withSpaceGuard({ permission, idFrom })` (`@/lib/space-guard`) — checks the caller's
+  role in the project, hub or event the request names, injects `access`.
 - `pipe(...wrappers)(handler)` — compose right-to-left.
 - `json(data, init?)` and `apiError.{unauthorized,forbidden,badRequest,notFound,internal}`
   for responses.

@@ -5,14 +5,13 @@ import {
 } from "@/config/prisma-enums";
 import { totalPerCurrency } from "@/helpers/investment";
 import { checkpointNumbers } from "@/repositories/checkpoints/number";
-import { estimateInvestment } from "@/services/investment/estimate";
-import { prisma } from "@/services/prisma";
 import {
 	CONFIRMED_MEMBERS,
 	CONFIRMED_STATUS,
-	toEstimateInput,
-	VISIBLE_STATUSES,
-} from "./games";
+} from "@/repositories/project/team";
+import { estimateInvestment } from "@/services/investment/estimate";
+import { prisma } from "@/services/prisma";
+import { toEstimateInput, VISIBLE_STATUSES } from "./games";
 
 /**
  * The project a scout may open, or `null`.

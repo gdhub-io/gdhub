@@ -14,7 +14,7 @@ Hard rules:
   decorators** and no `src/pages/api`. Never reintroduce `next-api-decorators` or
   `class-validator`.
 - Auth via `withAuth({ mode, roles? })`; input validation via `withValidation(zodSchema,
-  "body" | "query")`; team membership via `withTeamGuard()`; compose with `pipe(...)`
+  "body" | "query")`; access to a project, hub or event via `withSpaceGuard({ permission, idFrom })`; compose with `pipe(...)`
   (right-to-left). Use `json(...)` and `apiError.*` for responses.
 - `ctx.params` is a Promise — `await ctx.params`.
 - DB access only through `import { prisma } from "@/services/prisma"`; Prisma types from

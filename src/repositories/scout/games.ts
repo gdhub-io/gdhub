@@ -1,4 +1,4 @@
-import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import type { SkillLevel } from "@/config/prisma-enums";
 import { prisma } from "@/services/prisma";
 
@@ -8,25 +8,6 @@ export const VISIBLE_STATUSES = [
 	ProjectStatus.Approved,
 	ProjectStatus.Released,
 ];
-
-/**
- * Someone who was really on the team rather than an applicant or a rejection —
- * whether or not they are still on it.
- */
-export const CONFIRMED_STATUS = {
-	// Not `as const`: Prisma's `in` wants a mutable array, and a readonly tuple
-	// makes it fall back to the overload without `select`, silently widening
-	// every row to the whole Project model.
-	status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder] },
-};
-
-/**
- * The team as it stands today. Without `finishedAt`, a departed member still
- * counts towards the team size and the seats the investment estimate prices —
- * so anything sizing the team wants this, and anything telling its history
- * wants `CONFIRMED_STATUS`.
- */
-export const CONFIRMED_MEMBERS = { ...CONFIRMED_STATUS, finishedAt: null };
 
 /**
  * The estimator's input, assembled once.
