@@ -1,0 +1,51 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-76 — the goal chain: every level leads to the one above" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+global: "Global goal (app config)\nthe game is released and has players"
+
+stage: "Stage goal (workflow template)\ne.g. Ideation: ideas found and defended\nbacked by the stage's required tasks"
+
+goal: "Checkpoint goal\none sentence, agreed on day 1\nfixed for all 28 days"
+
+plan: "Plan, up to 5 tasks" {
+  day1: "Day 1 plan\nthe yardstick for sprints 1–2"
+  day15: "Day 15 revision: cut / reworded / added\nthe yardstick for sprints 3–4 and the verdict\n(day 1 wording kept beside it)"
+  day1 -> day15: "call 3"
+}
+
+revise: "Revising the tasks — the same loop on day 1 and day 15" {
+  advise: "1. The curator advises\nday 1: suggested tasks · day 15: with the sprint 2 review"
+  edit1: "2. The author edits"
+  check: "3. Save and send: the curator checks once\neach task against the goal"
+  edit2: "4. The author edits and approves"
+  advise -> edit1 -> check -> edit2
+}
+revise.edit2 -> plan
+
+artifact: "Artifact\nproves a task is done"
+
+stage -> global: "the path of stages ends in release"
+goal -> stage: "day 1: the goal sits inside this stage\n(need not close it)"
+plan -> goal: "each task serves the goal\nchecked bottom-up when the author sends the edits"
+artifact -> plan: "evidence check: matches / partly / no"
+
+down: "Top-down: the AI suggests 3–5 tasks from the goal" {shape: text}
+down -> plan
+
+critical: "Critical" {
+  a: "A goal outside the stage is flagged, not blocked — the author keeps the choice"
+  b: "A task that does not lead to the goal is flagged when the author sends the edits — on day 1 and on day 15 alike"
+  d: "Sprint reviews and the verdict read the plan in force: day 1 until call 3, the revision after it"
+  c: "A task without matching evidence is not done; the verdict follows from that"
+}
