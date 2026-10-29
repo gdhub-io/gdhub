@@ -8,6 +8,7 @@ import type {
 import { GOAL_FITS } from "@/types/checkpoints";
 import {
 	CURATOR_STANCE,
+	GOAL_STAGE,
 	localeLine,
 	renderCard,
 	renderCharacter,
@@ -55,15 +56,10 @@ export const goalCheckSchema = () => ({
 				},
 				stage: {
 					type: "object",
-					description:
-						"Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else.",
+					description: GOAL_STAGE.description,
 					properties: {
 						inside: { type: "boolean" },
-						note: {
-							type: "string",
-							description:
-								"One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside.",
-						},
+						note: { type: "string", description: GOAL_STAGE.note },
 					},
 					required: ["inside", "note"],
 				},

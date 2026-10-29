@@ -46,8 +46,8 @@ describe("marking a payout paid, by date", () => {
 		expect((await markPaid("2026-10-30")).status).toBe(200);
 	});
 
-	it("refuses a transfer days ahead", async () => {
-		expect((await markPaid("2026-11-02")).status).toBe(400);
+	it("refuses a day that is not today anywhere yet", async () => {
+		expect((await markPaid("2026-10-31")).status).toBe(400);
 		expect(markPayoutPaid).not.toHaveBeenCalled();
 	});
 });

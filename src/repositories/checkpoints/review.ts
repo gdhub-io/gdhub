@@ -1,11 +1,15 @@
 import { createHash } from "node:crypto";
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
-import { SCOPE_SESSION } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 } from "@/config/prisma-enums";
-import { type PlanEdit, planCloses, planEdit } from "@/lib/checkpoints/call";
+import {
+	type PlanEdit,
+	planChecked,
+	planCloses,
+	planEdit,
+} from "@/lib/checkpoints/call";
 import { characterFace } from "@/lib/checkpoints/curator-characters";
 import { curatorNow } from "@/lib/checkpoints/curator-now";
 import { scopeWindow } from "@/lib/checkpoints/scope";
@@ -194,14 +198,7 @@ export const getReview = async (
 					...checkpoint,
 					startedAt: checkpoint.startedAt,
 				})?.toISOString() ?? null,
-			// Day 15 keeps its check on the session (GDHUB-125); day 1 on the checkpoint.
-			checked:
-				edit === "tasks"
-					? !!(
-							checkpoint.sessions.find((row) => row.index === SCOPE_SESSION)
-								?.content as CuratorReview | null
-						)?.checkedAt
-					: !!checkpoint.planCheckedAt,
+			checked: planChecked(checkpoint, edit),
 			approved: !!checkpoint.goalAgreedAt,
 			tasks: checkpoint.items.map((item) => ({
 				id: item.id,

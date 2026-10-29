@@ -10,6 +10,7 @@ import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
 	AUTHOR_VOICE,
+	GOAL_STAGE,
 	HIRING,
 	legOfSprint,
 	localeLine,
@@ -165,15 +166,9 @@ const adviceSchema = z.object({
 			stage: z
 				.object({
 					inside: z.boolean(),
-					note: z
-						.string()
-						.describe(
-							"For outside: what lies beyond the stage and what it ends with; the author may keep the goal. Empty for inside.",
-						),
+					note: z.string().describe(GOAL_STAGE.note),
 				})
-				.describe(
-					"Whether the goal sits inside the stage goal; it may stop short of it, and is outside only when it reaches past it.",
-				),
+				.describe(GOAL_STAGE.description),
 		})
 		.nullable()
 		.describe(

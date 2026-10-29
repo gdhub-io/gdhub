@@ -12,7 +12,7 @@ import { type ReactNode, useState } from "react";
 import { IconTile } from "@/components/ui";
 import { CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
 import type { CheckpointCallDto } from "@/types/checkpoint-call";
-import type { GoalAdvice } from "@/types/checkpoints";
+import type { GoalAdvice, GoalStage } from "@/types/checkpoints";
 import { usePlanChange } from "./CallPlan";
 import styles from "./style.module.scss";
 
@@ -83,16 +83,7 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 						className={styles.goalAdvice}
 					/>
 				)}
-				{advice?.stage && !advice.stage.inside && (
-					// Frame 12.10.1d: flagged, never blocked — the author may keep the goal.
-					<Alert
-						type="warning"
-						showIcon
-						icon={<IconFlag size={14} />}
-						title={advice.stage.note}
-						className={styles.goalAdvice}
-					/>
-				)}
+				<StageFlag stage={advice?.stage} className={styles.goalAdvice} />
 			</div>
 			{canEdit && !editing && (
 				<Tooltip title={t("checkpoints.call.goal.edit", "Edit the goal")}>
@@ -104,6 +95,26 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 				</Tooltip>
 			)}
 		</section>
+	);
+}
+
+/** Frame 12.10.1d: a goal past its stage is flagged, never blocked — the author may keep it. */
+export function StageFlag({
+	stage,
+	className,
+}: {
+	stage?: GoalStage | null;
+	className?: string;
+}) {
+	if (!stage || stage.inside) return null;
+	return (
+		<Alert
+			type="warning"
+			showIcon
+			icon={<IconFlag size={14} />}
+			title={stage.note}
+			className={className}
+		/>
 	);
 }
 

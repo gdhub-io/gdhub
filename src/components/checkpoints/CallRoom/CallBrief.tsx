@@ -1,8 +1,8 @@
 "use client";
 
-import { IconFlag, IconSparkles } from "@tabler/icons-react";
+import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Alert, Flex, Typography } from "antd";
+import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
 import { EvidenceMatchTag } from "@/components/checkpoints/EvidenceMatchTag";
 import { IconTile } from "@/components/ui";
@@ -10,6 +10,7 @@ import type {
 	CallBrief as CallBriefData,
 	CheckpointCallDto,
 } from "@/types/checkpoint-call";
+import { StageFlag } from "./CallGoal";
 import { AdviceLine } from "./PlanForm";
 import styles from "./style.module.scss";
 
@@ -35,11 +36,8 @@ export function CallBrief({
 			.filter((row) => row.kind === "offGoal")
 			.map((row) => [row.itemId, row.note]),
 	);
-	const discussed = new Set(brief.notes.discussed.map((row) => row.itemId));
-	const stage = brief.goal?.stage;
-
-	const goalCheck = (itemId: string) =>
-		offGoal.has(itemId) && <AdviceLine>{offGoal.get(itemId)}</AdviceLine>;
+	const discussed = new Set(notes.discussed.map((row) => row.itemId));
+	const undiscussed = [...offGoal].filter(([itemId]) => !discussed.has(itemId));
 
 	return (
 		<Flex vertical gap={12} className={styles.brief}>
@@ -63,14 +61,7 @@ export function CallBrief({
 
 			<Typography.Text>{notes.inShort}</Typography.Text>
 
-			{stage && !stage.inside && (
-				<Alert
-					type="warning"
-					showIcon
-					icon={<IconFlag size={14} />}
-					title={stage.note}
-				/>
-			)}
+			<StageFlag stage={brief.goal?.stage} />
 
 			{notes.discussed.map((row) => {
 				const match = seen.get(row.itemId);
@@ -85,19 +76,19 @@ export function CallBrief({
 						<Typography.Text type="secondary" className={styles.small}>
 							{row.text}
 						</Typography.Text>
-						{goalCheck(row.itemId)}
+						{offGoal.has(row.itemId) && (
+							<AdviceLine>{offGoal.get(row.itemId)}</AdviceLine>
+						)}
 					</Flex>
 				);
 			})}
 
-			{[...offGoal.keys()]
-				.filter((itemId) => !discussed.has(itemId))
-				.map((itemId) => (
-					<Flex key={itemId} vertical gap={4} className={styles.briefTask}>
-						<Typography.Text strong>{taskText.get(itemId)}</Typography.Text>
-						{goalCheck(itemId)}
-					</Flex>
-				))}
+			{undiscussed.map(([itemId, note]) => (
+				<Flex key={itemId} vertical gap={4} className={styles.briefTask}>
+					<Typography.Text strong>{taskText.get(itemId)}</Typography.Text>
+					<AdviceLine>{note}</AdviceLine>
+				</Flex>
+			))}
 
 			{notes.questions.length > 0 && (
 				<Flex vertical gap={6} className={styles.briefRaise}>

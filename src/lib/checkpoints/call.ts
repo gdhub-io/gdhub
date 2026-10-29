@@ -205,3 +205,21 @@ export const planSession = (edit: PlanEdit) => {
 	if (edit === "tasks") return SCOPE_SESSION;
 	return null;
 };
+
+/**
+ * Whether the curator checked the plan open now: day 1 on the checkpoint,
+ * day 15 on its session's content (GDHUB-125, no column for it).
+ */
+export const planChecked = (
+	checkpoint: {
+		planCheckedAt: Date | null;
+		sessions: { index: number; content?: unknown }[];
+	},
+	edit: PlanEdit,
+) =>
+	edit === "tasks"
+		? !!(
+				checkpoint.sessions.find((session) => session.index === SCOPE_SESSION)
+					?.content as { checkedAt?: string } | null | undefined
+			)?.checkedAt
+		: !!checkpoint.planCheckedAt;

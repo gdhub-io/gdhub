@@ -109,6 +109,13 @@ export const renderPulse = (team: CuratorTeam, week: number) => {
 	return `Pulse: ${worked.length} confirmed working${roles(worked)}, ${missing.length} did not${roles(missing)}.`;
 };
 
+/** The goal against its stage (GDHUB-125), the same words for the goal check and the plan advice. */
+export const GOAL_STAGE = {
+	description:
+		"Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else.",
+	note: "One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside.",
+};
+
 export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
 	Project goal: ${PROJECT_GOAL} Every stage leads to it.
 	Workflow stage: ${workflow.currentStage}
