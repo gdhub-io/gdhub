@@ -64,9 +64,6 @@ export const isPending = (status: CheckpointStatus) =>
 export const acceptsEvidence = (status: CheckpointStatus) =>
 	status === Draft || status === Active;
 
-export const isNumbered = (status: CheckpointStatus) =>
-	!UNNUMBERED_STATUSES.includes(status);
-
 const MOVES: Record<CheckpointStatus, CheckpointStatus[]> = {
 	[Draft]: [AwaitingCurator, Active, Cancelled],
 	[AwaitingCurator]: [Active, Draft, Cancelled],
