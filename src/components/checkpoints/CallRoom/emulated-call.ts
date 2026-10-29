@@ -188,6 +188,18 @@ class EmulatedCall {
 	participantCounts = () => ({ present: this.others.size + 1, hidden: 0 });
 	startLocalAudioLevelObserver = async () => undefined;
 	startRemoteParticipantsAudioLevelObserver = async () => undefined;
+	stopLocalAudioLevelObserver = () => undefined;
+	stopRemoteParticipantsAudioLevelObserver = () => undefined;
+	isLocalAudioLevelObserverRunning = () => false;
+	isRemoteParticipantsAudioLevelObserverRunning = () => false;
+	getLocalAudioLevel = () => 0;
+	getRemoteParticipantsAudioLevel = () => ({});
+	getSendSettings = () => ({});
+	setOutputDeviceAsync = async () => ({ speaker: {} });
+	subscribeToTracksAutomatically = () => true;
+	waitingParticipants = () => ({});
+	updateWaitingParticipant = async () => ({ id: "" });
+	updateWaitingParticipants = async () => ({ ids: [] });
 }
 
 export const emulatedCall = () => new EmulatedCall() as unknown as DailyCall;

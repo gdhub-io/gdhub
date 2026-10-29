@@ -58,7 +58,7 @@ describe("the emulated Daily", () => {
 		);
 
 		emulatedDaily(`/rooms/${room}`, "DELETE");
-		expect(emulatedRoom(room)).toEqual({ open: false, people: [] });
+		expect(emulatedRoom(room)).toMatchObject({ open: false, people: [] });
 		const meetings = emulatedDaily(`/meetings?room=${room}`, "GET") as {
 			data: { participants: { user_id: string }[] }[];
 		};

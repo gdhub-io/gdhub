@@ -11,8 +11,15 @@ import { prisma } from "../../../../src/services/prisma";
 export const GOAL =
 	"A playable vertical slice: two islands, the tide loop and co-op sailing, tested by five players";
 
-/** From the hub (`/checkpoint/new?project=…`) to the payment step. */
-export async function planCheckpoint(page: Page, doneSoFar: string) {
+/**
+ * From the hub (`/checkpoint/new?project=…`) to the payment step: with the AI
+ * curator, or with the expert named, on the first free hour they offer.
+ */
+export async function planCheckpoint(
+	page: Page,
+	doneSoFar: string,
+	expert?: string,
+) {
 	if (!page.url().includes("/checkpoint/new/project")) {
 		await page.getByRole("button", { name: "Fill in" }).click();
 	}
@@ -31,7 +38,13 @@ export async function planCheckpoint(page: Page, doneSoFar: string) {
 	if (await anyway.isVisible()) await anyway.click();
 
 	await page.waitForURL(/step=curator/);
-	await expect(page.getByRole("radio").first()).toBeChecked();
+	if (expert) {
+		await page.getByRole("button", { name: /Industry expert/ }).click();
+		await page.getByRole("row", { name: new RegExp(expert) }).first().click();
+		await page.getByRole("button", { name: /^\d\d:\d\d$/ }).first().click();
+	} else {
+		await expect(page.getByRole("radio").first()).toBeChecked();
+	}
 	await page.getByRole("button", { name: "Next — payment" }).click();
 	await page.waitForURL(/step=payment/);
 }

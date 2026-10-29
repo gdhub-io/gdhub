@@ -173,10 +173,17 @@ export const emulatedPresence = (token: string, present: boolean) => {
 
 /** Who the fake call object sees in its room, or that the room is gone. */
 export const emulatedRoom = (name: string) => {
+	// Transcript jobs of the room's recordings, for the test to finish by webhook.
+	const jobs = [...state.jobs]
+		.filter(
+			([, recordingId]) => state.recordings.get(recordingId)?.room === name,
+		)
+		.map(([id]) => id);
 	const room = state.rooms.get(name);
-	if (!room || room.deleted) return { open: false, people: [] };
+	if (!room || room.deleted) return { open: false, people: [], jobs };
 	return {
 		open: true,
+		jobs,
 		people: [...room.present.values()].map(({ userId, userName }) => ({
 			userId,
 			userName,

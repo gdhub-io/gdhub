@@ -2,6 +2,7 @@ import {
 	CheckpointItemKind,
 	CheckpointJournalKind,
 	type ProjectArtifactType,
+	SkillLevel,
 	TeamMemberStatus,
 	UserRole,
 } from "@gdhub-io/gdhub-prisma";
@@ -17,6 +18,7 @@ import type { LegalCode } from "../../../../src/config/legal/registry";
 import { MS_PER_DAY } from "../../../../src/lib/checkpoints/days";
 import { resolveLegal } from "../../../../src/lib/legal/accept";
 import { versionInEffect } from "../../../../src/lib/legal/versions";
+import { selectableStageNames } from "../../../../src/repositories/project/workflow";
 import { prisma } from "../../../../src/services/prisma";
 import { becomePersona, type PersonaKey } from "../../../personas";
 import { acceptCookieConsent } from "../../setup/cookies";
@@ -83,6 +85,60 @@ export async function grantUser(
 	});
 
 	return { id: user.id, email, name };
+}
+
+/**
+ * An industry expert who can be bought for any stage: an approved curator with
+ * an Experienced speciality, open to mentees, free every day around the clock
+ * (UTC) so a first call can be booked whenever the test runs.
+ */
+export async function grantCurator(label: string): Promise<StandUser> {
+	// Named for this run: a curator a stopped run left behind is listed too.
+	const curator = await grantUser(label, "advisor", `Expert ${RUN}`);
+	const direction = await prisma.workDirection.findFirstOrThrow({
+		orderBy: { name: "asc" },
+		select: { id: true },
+	});
+	await prisma.speciality.create({
+		data: {
+			userId: curator.id,
+			name: "Game designer",
+			specialization: "Systems design",
+			level: SkillLevel.Experienced,
+			workDirectionId: direction.id,
+			isOpenForMentoring: true,
+		},
+	});
+	await prisma.expertProfile.upsert({
+		where: { userId: curator.id },
+		create: {
+			userId: curator.id,
+			curation: true,
+			curatorApprovedAt: new Date(),
+			curatorStages: await selectableStageNames(),
+		},
+		update: {
+			curation: true,
+			curatorApprovedAt: new Date(),
+			curatorStages: await selectableStageNames(),
+		},
+	});
+	await prisma.advisorAvailability.upsert({
+		where: { userId: curator.id },
+		create: {
+			userId: curator.id,
+			timeZone: "UTC",
+			confirmedAt: new Date(),
+			rules: {
+				create: {
+					weekdays: [0, 1, 2, 3, 4, 5, 6],
+					ranges: [{ from: 0, to: 24 * 60 }],
+				},
+			},
+		},
+		update: {},
+	});
+	return curator;
 }
 
 export async function signInAs(browser: Browser, user: StandUser) {
@@ -336,6 +392,16 @@ export async function runCron(page: Page) {
 	return response.json();
 }
 
+/** The hourly run: calls, their notes, reminders before them. */
+export async function runCallsCron(page: Page) {
+	const response = await page.request.get("/api/cron/checkpoint-calls", {
+		headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
+		timeout: 300_000,
+	});
+	expect(response.ok(), await response.text()).toBe(true);
+	return response.json();
+}
+
 /**
  * Moves a running checkpoint back in time so that today is its day `day`
  * (1 = the day it started). Everything the team and the curator wrote on the
@@ -387,6 +453,15 @@ export async function removeRun() {
 	});
 	const ids = users.map((user) => user.id);
 	if (ids.length === 0) return;
+
+	// A curator's fees, payouts and requests hold the user; they go first.
+	await prisma.checkpointFee.deleteMany({ where: { curatorId: { in: ids } } });
+	await prisma.adviceRequest.deleteMany({
+		where: { OR: [{ toUserId: { in: ids } }, { fromUserId: { in: ids } }] },
+	});
+	await prisma.curatorPayout.deleteMany({
+		where: { OR: [{ curatorId: { in: ids } }, { paidById: { in: ids } }] },
+	});
 
 	const ofTheirProjects = { equity: { project: { authorId: { in: ids } } } };
 	// Equity is Restrict on the project and its transactions on the
