@@ -1,5 +1,6 @@
 import {
 	CheckpointItemKind,
+	CheckpointJournalKind,
 	type ProjectArtifactType,
 	TeamMemberStatus,
 	UserRole,
@@ -206,6 +207,24 @@ export async function postDevlog(
 		},
 	});
 	expect(response.ok(), await response.text()).toBe(true);
+	if (!withMedia) return;
+
+	// The AI reads the image and the video after the post is saved; a review run
+	// before both are read would see a different sprint on every run.
+	const { id } = await prisma.projectReport.findFirstOrThrow({
+		where: { projectId },
+		orderBy: { number: { sort: "desc", nulls: "last" } },
+		select: { id: true },
+	});
+	await expect
+		.poll(
+			() =>
+				prisma.checkpointJournalEntry.count({
+					where: { devlogId: id, kind: CheckpointJournalKind.DevlogMedia },
+				}),
+			{ timeout: 120_000 },
+		)
+		.toBe(media.length);
 }
 
 export const stageOf = (projectId: string) =>

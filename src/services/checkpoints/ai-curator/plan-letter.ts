@@ -1,8 +1,8 @@
-import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { JournalEntry } from "@/types/checkpoint-curator";
@@ -59,7 +59,7 @@ export const composePlanLetter = async (
 	try {
 		const started = Date.now();
 		const result = await generateText({
-			model: openai(AI_MODELS.curatorAssist),
+			model: aiModel(AI_MODELS.curatorAssist),
 			output: Output.object({ schema: letterSchema, name: "letter" }),
 			...request,
 		});

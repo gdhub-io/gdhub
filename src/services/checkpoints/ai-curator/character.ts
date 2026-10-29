@@ -1,4 +1,3 @@
-import { openai } from "@ai-sdk/openai";
 import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
@@ -8,6 +7,7 @@ import {
 	CURATOR_CHARACTERS,
 	characterFor,
 } from "@/lib/checkpoints/curator-characters";
+import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { CuratorPersona } from "@/types/checkpoint-curator";
@@ -79,7 +79,7 @@ export const createCharacter = async (
 	try {
 		const started = Date.now();
 		const result = await generateText({
-			model: openai(AI_MODELS.curatorAssist),
+			model: aiModel(AI_MODELS.curatorAssist),
 			output: Output.object({ schema: sheetSchema, name: "character" }),
 			...request,
 		});

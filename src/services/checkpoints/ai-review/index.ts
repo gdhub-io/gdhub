@@ -1,4 +1,3 @@
-import { openai } from "@ai-sdk/openai";
 import type { CheckpointVerdict } from "@gdhub-io/gdhub-prisma";
 import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
@@ -6,6 +5,7 @@ import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/checkpoints/curator-text";
+import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
@@ -107,7 +107,7 @@ const runStructured = async <S extends z.ZodType>(
 ) => {
 	const started = Date.now();
 	const result = await generateText({
-		model: openai(AI_MODELS.curatorReview),
+		model: aiModel(AI_MODELS.curatorReview),
 		output: Output.object({ schema, name }),
 		...request,
 	});

@@ -22,6 +22,8 @@ export const sprintEvidence = async (
 		}),
 		prisma.projectArtifact.findMany({
 			where: { projectId, createdAt: inSprint },
+			// In the order they were added, the same on every read.
+			orderBy: [{ createdAt: "asc" }, { id: "asc" }],
 			select: { type: true, name: true },
 		}),
 	]);
