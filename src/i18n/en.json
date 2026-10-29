@@ -1964,7 +1964,7 @@
 			"cancelTitle": "Cancel this checkpoint?",
 			"checkAgain": "Check again",
 			"dates": "{from} – {to}",
-			"dayOne": "Your AI curator has read your goal. Check it and set the tasks within {hours} hours — by {time}.",
+			"dayOne": "Your AI curator is reading your goal and will suggest tasks. Write one to five tasks and send them for a check.",
 			"declined": "This expert cannot take it on right now",
 			"declinedBody": "Pick another expert and the checkpoint goes to them instead.",
 			"downloadReceipt": "Download receipt",
