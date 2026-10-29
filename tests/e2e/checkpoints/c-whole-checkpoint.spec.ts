@@ -17,7 +17,7 @@ import {
 	hireMember,
 	makeProject,
 	makeToday,
-	moveNext,
+	nextButton,
 	postDevlog,
 	prove,
 	removeRun,
@@ -225,8 +225,9 @@ test.describe.serial("a whole AI checkpoint", () => {
 			select: { status: true, verdict: true, verdictNote: true },
 		});
 		expect(closed.status).toBe(CheckpointStatus.Closed);
-		// Every task not cut is delivered or taken on trust: never Goal missed.
-		expect(closed.verdict).not.toBe(CheckpointVerdict.GoalMissed);
+		// Every task is delivered or taken on trust, but the tasks are references
+		// that do not build the slice: done tasks out of step with the goal miss it.
+		expect(closed.verdict).toBe(CheckpointVerdict.GoalMissed);
 		const settled = await prisma.checkpointJournalEntry.findFirstOrThrow({
 			where: { checkpointId, kind: "Verdict" },
 			select: { output: true },
@@ -236,7 +237,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 		log.step(`Day 29: ${closed.verdict} — ${closed.verdictNote}`);
 	});
 
-	test("after the verdict: results, rating, certificate, the next stage", async () => {
+	test("after the verdict: results, rating, certificate, the stage held", async () => {
 		await page.goto(`/user/project/${project.slug}/workflow?results=${checkpointId}`);
 		const results = page.getByRole("dialog", { name: "Checkpoint 1 results" });
 		await expect(results).toBeVisible();
@@ -259,12 +260,12 @@ test.describe.serial("a whole AI checkpoint", () => {
 		await expect(page.getByText("Checkpoint").first()).toBeVisible();
 		log.step(`Certificate ${certificate.number} verifies publicly`);
 
+		// Only "Ready for the next stage" lets a project leave a stage a checkpoint
+		// ran on (2026-10-26); a missed goal keeps it there.
 		await page.goto(`/user/project/${project.slug}/workflow`);
-		await (await moveNext(page, "Prototyping", "Preparing a demo version"))
-			.getByRole("button", { name: "Move to Preparing a demo version" })
-			.click();
-		await expect.poll(() => stageOf(project.id)).toBe("Preparing a demo version");
-		log.step("Next was open after the verdict: on to Preparing a demo version");
+		await expect(await nextButton(page)).toBeDisabled();
+		expect(await stageOf(project.id)).toBe("Prototyping");
+		log.step("Goal missed: Next stays locked and the project stays on Prototyping");
 	});
 
 	test("Checkpoint 2 carries over what was proven", async () => {
@@ -295,13 +296,11 @@ test.describe.serial("a whole AI checkpoint", () => {
 			where: { id: checkpointId },
 			select: { verdict: true },
 		});
-		// Only "Ready for the next stage" closes the stage on the card; the model
-		// may judge the outcomes met and the stage not done.
-		const closed =
-			verdict === CheckpointVerdict.StageClosed
-				? "Prototyping closed after the Checkpoint 1 verdict · AI curator"
-				: "Prototyping closed by its own tasks";
-		await expect(scout.getByText(closed)).toBeVisible();
-		log.step(`Scout: "${closed}"`);
+		// The goal was missed, so the project is still on Prototyping and the card
+		// shows no stage closed.
+		expect(verdict).toBe(CheckpointVerdict.GoalMissed);
+		await expect(scout.getByText("Prototyping").first()).toBeVisible();
+		await expect(scout.getByText(/Prototyping closed/)).toHaveCount(0);
+		log.step("Scout: Prototyping is still open after the missed goal");
 	});
 });
