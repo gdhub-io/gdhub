@@ -91,6 +91,11 @@
     ]
   },
   "enabledPlugins": {
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "voltagent-lang@voltagent-subagents": false,
+    "voltagent-core-dev@voltagent-subagents": false,
+    "voltagent-qa-sec@voltagent-subagents": false,
+    "chrome-devtools-mcp@claude-plugins-official": false,
+    "playwright@claude-plugins-official": false
   }
 }

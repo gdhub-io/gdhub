@@ -99,7 +99,7 @@ Say which skill or agent takes it from here and why:
 
 - UI that does not exist yet → the **design-build** skill (design in Pencil
   first, then build).
-- Endpoints → the **api-route-builder** agent.
+- Endpoints → the **api-route** skill.
 - Anything crossing the database schema → the two-repo loop in CLAUDE.md; the
   schema change lands in `../prisma` and is released before this branch can use
   it.
