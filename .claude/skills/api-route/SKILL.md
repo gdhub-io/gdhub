@@ -1,6 +1,6 @@
 ---
 name: api-route
-description: Create or change a Next.js App Router API route handler (src/app/api/**/route.ts) — the withAuth / withValidation / withSpaceGuard / pipe pattern, Zod input, Prisma access. Use before writing or editing any route.ts.
+description: Use before creating or changing an API route handler in src/app/api/**/route.ts.
 ---
 
 # Build an API route
@@ -45,18 +45,6 @@ export const GET = withAuth({ mode: "user" })(
 Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a plain
 `export async function GET()` returning `json(...)` (see
 [src/app/api/vacancies/route.ts](../../../src/app/api/vacancies/route.ts)).
-
-## Rules that get broken anyway
-
-- No decorators and no `src/pages/api`. `next-api-decorators` and `class-validator` are
-  removed — never bring them back.
-- Every body and query goes through a Zod schema in `withValidation`; raw input is never
-  trusted.
-- Database only through `import { prisma } from "@/services/prisma"`; Prisma types and
-  enums from the package root, `@gdhub-io/gdhub-prisma`. When a field is in doubt, read
-  `node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma`.
-- A route that reads one user's rows scopes its `where` to that user — and a test covers it.
-- Env through `env()` from `@/helpers/env`.
 
 ## Done
 

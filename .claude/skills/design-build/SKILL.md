@@ -31,12 +31,12 @@ Never write component code before the frame exists — a design argued from a
 diff is a design nobody agreed to.
 
 `docs/design/platform-design.pen` is encrypted: only the `mcp__pencil__*` tools
-open it. Never `Read`, `Edit` or `Grep` a `.pen` file. Call `get_app_state`,
-then `read_skill` with its `pen-schema.md` and `execute.md` — `execute` fails
-without the schema.
+open it. Never `Read`, `Edit` or `Grep` a `.pen` file.
 
 Delegate the drawing to the **`web-designer`** agent when the screen is large;
-do it inline when it is one component. Either way:
+do it inline when it is one component — then call `get_app_state`, and
+`read_skill` with its `pen-schema.md` and `execute.md`: `execute` fails without
+the schema. Either way:
 
 - Reuse the components already in the file before adding a node type.
 - Screenshot what you made and look at it. A frame that reads fine as JSON can
@@ -60,7 +60,7 @@ Write it here, in this conversation — it already holds the frame, the node IDs
 and the decisions a handoff would lose. Load the **ui-component** skill for the
 UI and the **api-route** skill for endpoints.
 
-The stack, the API pattern and the conventions are in
+The stack and the conventions are in
 [CLAUDE.md](../../../CLAUDE.md) — do not restate them, follow them. Three that
 get broken anyway:
 

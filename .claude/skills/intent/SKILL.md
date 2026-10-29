@@ -52,7 +52,7 @@ it exactly, and keep it to a screen. Rules that matter more than the shape:
   blocked waiting on one.
 
 Do not restate the stack, the conventions or the API pattern — they are in
-[CLAUDE.md](../../../CLAUDE.md).
+[CLAUDE.md](../../../CLAUDE.md) and the **api-route** skill.
 
 ## 4. Offer to push it back to Linear
 
