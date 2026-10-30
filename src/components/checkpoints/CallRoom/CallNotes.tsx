@@ -2,9 +2,13 @@
 
 import {
 	IconCircleDashed,
+	IconCode,
 	IconHelpCircle,
 	IconHourglass,
 	IconListCheck,
+	IconSpeakerphone,
+	IconUsers,
+	type TablerIcon,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Skeleton, Table, Typography } from "antd";
@@ -112,6 +116,27 @@ function Group({
 	);
 }
 
+/** One lens of an AI review (frame 12.10.3): an outlined card, its heading with the lens's icon. */
+export function Lens({
+	icon: Icon,
+	title,
+	children,
+}: {
+	icon: TablerIcon;
+	title: string;
+	children: ReactNode;
+}) {
+	return (
+		<section className={styles.lens}>
+			<span className={styles.lensTitle}>
+				<Icon size={14} />
+				<Typography.Text className={styles.notesLabel}>{title}</Typography.Text>
+			</span>
+			{children}
+		</section>
+	);
+}
+
 /**
  * gP5gH: the summary, its task references read back from the plan. `review`
  * is the AI curator's: the same shape, read from what the team showed rather
@@ -164,6 +189,44 @@ export function NotesSummary({
 		return task ? [task] : [];
 	});
 
+	const lenses = review ? content.lenses : undefined;
+	const discussedList = (
+		<div>
+			{content.discussed.map((item, position) => {
+				const task = taskOf(item.itemId);
+				return (
+					<div key={`${item.itemId}-${position}`} className={styles.discussed}>
+						{task && (
+							<div className={styles.discussedHead}>
+								<TaskIcon task={task} />
+								<Typography.Text
+									delete={task.cut}
+									type={task.cut ? "secondary" : undefined}
+									className={styles.discussedTitle}
+								>
+									{task.text}
+								</Typography.Text>
+							</div>
+						)}
+						<Typography.Text className={styles.retelling}>
+							{item.text}
+						</Typography.Text>
+					</div>
+				);
+			})}
+		</div>
+	);
+	const notDiscussedGroup = notDiscussed.length > 0 && (
+		<Group quiet label={label.notDiscussed}>
+			{notDiscussed.map((task) => (
+				<div key={task.id} className={styles.notDiscussed}>
+					<IconCircleDashed size={16} />
+					<Typography.Text type="secondary">{task.text}</Typography.Text>
+				</div>
+			))}
+		</Group>
+	);
+
 	return (
 		<div className={styles.notes}>
 			{content.inShort && (
@@ -185,66 +248,80 @@ export function NotesSummary({
 				</div>
 			)}
 
-			{content.discussed.length > 0 && (
-				<Group label={label.discussed}>
-					<div>
-						{content.discussed.map((item, position) => {
-							const task = taskOf(item.itemId);
-							return (
-								<div
-									key={`${item.itemId}-${position}`}
-									className={styles.discussed}
-								>
-									{task && (
-										<div className={styles.discussedHead}>
-											<TaskIcon task={task} />
-											<Typography.Text
-												delete={task.cut}
-												type={task.cut ? "secondary" : undefined}
-												className={styles.discussedTitle}
-											>
-												{task.text}
-											</Typography.Text>
-										</div>
+			{lenses ? (
+				<>
+					{/* Frame 12.10.3: the four lenses (GDHUB-126), development split within / outside the tasks. */}
+					<Lens
+						icon={IconCode}
+						title={t("checkpoints.review.lens.development", "Development")}
+					>
+						{discussedList}
+						{notDiscussedGroup}
+						<Group
+							label={t("checkpoints.review.lens.outside", "Outside the tasks")}
+						>
+							{content.outsidePlan.length ? (
+								content.outsidePlan.map((text, position) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
+									<Typography.Text key={position}>{text}</Typography.Text>
+								))
+							) : (
+								<Typography.Text className={styles.tertiary}>
+									{t(
+										"checkpoints.call.notes.nothingOutside",
+										"Nothing came up beyond the plan.",
 									)}
-									<Typography.Text className={styles.retelling}>
-										{item.text}
-									</Typography.Text>
-								</div>
-							);
-						})}
-					</div>
-				</Group>
-			)}
-
-			{notDiscussed.length > 0 && (
-				<Group quiet label={label.notDiscussed}>
-					{notDiscussed.map((task) => (
-						<div key={task.id} className={styles.notDiscussed}>
-							<IconCircleDashed size={16} />
-							<Typography.Text type="secondary">{task.text}</Typography.Text>
-						</div>
-					))}
-				</Group>
-			)}
-
-			<Group
-				label={t("checkpoints.call.notes.outsidePlan", "Outside the plan")}
-			>
-				{content.outsidePlan.length ? (
-					content.outsidePlan.map((text, position) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
-						<Typography.Text key={position}>{text}</Typography.Text>
-					))
-				) : (
-					<Typography.Text className={styles.tertiary}>
-						{t(
-							"checkpoints.call.notes.nothingOutside",
-							"Nothing came up beyond the plan.",
+								</Typography.Text>
+							)}
+						</Group>
+					</Lens>
+					<Lens
+						icon={IconSpeakerphone}
+						title={t("checkpoints.review.lens.marketing", "Marketing")}
+					>
+						<Typography.Text>{lenses.marketing}</Typography.Text>
+					</Lens>
+					<Lens
+						icon={IconUsers}
+						title={t("checkpoints.review.lens.team", "Team")}
+					>
+						<Typography.Text>{lenses.team}</Typography.Text>
+					</Lens>
+					<Lens
+						icon={IconListCheck}
+						title={t(
+							"checkpoints.review.lens.management",
+							"Project management",
 						)}
-					</Typography.Text>
-				)}
-			</Group>
+					>
+						<Typography.Text>{lenses.management}</Typography.Text>
+					</Lens>
+				</>
+			) : (
+				<>
+					{content.discussed.length > 0 && (
+						<Group label={label.discussed}>{discussedList}</Group>
+					)}
+					{notDiscussedGroup}
+					<Group
+						label={t("checkpoints.call.notes.outsidePlan", "Outside the plan")}
+					>
+						{content.outsidePlan.length ? (
+							content.outsidePlan.map((text, position) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
+								<Typography.Text key={position}>{text}</Typography.Text>
+							))
+						) : (
+							<Typography.Text className={styles.tertiary}>
+								{t(
+									"checkpoints.call.notes.nothingOutside",
+									"Nothing came up beyond the plan.",
+								)}
+							</Typography.Text>
+						)}
+					</Group>
+				</>
+			)}
 
 			{content.agreed.length > 0 && (
 				<Group label={label.agreed}>

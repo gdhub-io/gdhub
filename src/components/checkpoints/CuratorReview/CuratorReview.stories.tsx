@@ -352,7 +352,19 @@ const reviewContent = (
 	extra?: Partial<CuratorReview>,
 ): CuratorReview => ({
 	message,
-	notes: notes(sprint),
+	// Frame 12.10.3: an AI review reads the sprint through the four lenses.
+	notes: {
+		...notes(sprint),
+		outsidePlan: [
+			"A tide sound loop, not in any task — it makes the flood readable, worth a task of its own.",
+		],
+		lenses: {
+			marketing:
+				"One devlog went out and drew 4 applause. On Concepting the audience can wait.",
+			team: "Four of five confirmed working all week; the artist's hours went to the island, as planned.",
+			management: `${sprint === 1 ? "Two" : "Three"} of four tasks moving — on pace for 28 days. The playtest is the one at risk.`,
+		},
+	},
 	advice: null,
 	...extra,
 });

@@ -1,5 +1,6 @@
 import {
 	CURATOR_ACTIVITY_LIMIT,
+	CURATOR_MARKETING_DEVLOGS,
 	CURATOR_STAGE_BRIEFS,
 	CURATOR_STAGE_GOALS,
 	LEAD_IN_DAYS,
@@ -7,10 +8,12 @@ import {
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
+import { lensWeights } from "@/lib/checkpoints/lenses";
 import { getProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 import type {
+	CuratorMarketing,
 	CuratorPersona,
 	CuratorTeam,
 	CuratorWorkflow,
@@ -58,6 +61,7 @@ export async function stageWorkflow(
 		nextStage: next?.name ?? null,
 		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
 		goal: CURATOR_STAGE_GOALS[currentStage] ?? null,
+		lenses: lensWeights(currentStage),
 		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
 			task.name ? [{ name: task.name, done: task.done }] : [],
 		),
@@ -243,3 +247,90 @@ export const curatorPersona = async (
 		levels: names(profile?.preferredLevels),
 	};
 };
+
+/**
+ * What the audience was told in a period and how it answered (GDHUB-126): the
+ * public devlogs with their applause and views, and where the game can be found.
+ */
+export async function curatorMarketing(
+	projectId: string,
+	period: { from: Date; to: Date },
+): Promise<CuratorMarketing> {
+	const [posts, project] = await Promise.all([
+		prisma.projectReport.findMany({
+			where: {
+				projectId,
+				isSystem: false,
+				publishedAt: { gte: period.from, lt: period.to },
+			},
+			orderBy: { publishedAt: "desc" },
+			take: CURATOR_MARKETING_DEVLOGS,
+			select: {
+				number: true,
+				content: true,
+				publishedAt: true,
+				viewsCount: true,
+				applauseActivities: {
+					select: { _count: { select: { applauses: true } } },
+				},
+			},
+		}),
+		prisma.project.findUnique({
+			where: { id: projectId },
+			select: { links: true },
+		}),
+	]);
+
+	return {
+		devlogs: posts.map((post) => ({
+			title: `Devlog${post.number ? ` #${post.number}` : ""}: ${firstLine(post.content)}`,
+			publishedAt: day(post.publishedAt),
+			applause: post.applauseActivities.reduce(
+				(sum, activity) => sum + activity._count.applauses,
+				0,
+			),
+			views: post.viewsCount,
+		})),
+		links: ((project?.links ?? []) as { platform?: string; link?: string }[])
+			.filter((row) => row.link)
+			.map((row) => `${row.platform ?? "Link"}: ${row.link}`),
+	};
+}
+
+const firstLine = (content: string) =>
+	(content.split("\n").find((line) => line.trim()) ?? "").trim().slice(0, 120);
+
+/**
+ * Everything every review moment reads about a checkpoint for one period
+ * (GDHUB-126), so the moments cannot drift apart: the stage with its lens
+ * weights, the team, what happened on the project and what the audience saw.
+ * Without a period it is the lead-in, as `projectPicture` reads it.
+ */
+export async function checkpointFacts(
+	checkpoint: {
+		id: string;
+		projectId: string;
+		stepId: string | null;
+		stageName: string;
+		/** Who joined after it is told apart; null before the start. */
+		startedAt: Date | null;
+	},
+	period?: { from: Date; to: Date },
+) {
+	const now = new Date();
+	const marketingPeriod = period ?? {
+		from: new Date(
+			(checkpoint.startedAt ?? now).getTime() - LEAD_IN_DAYS * MS_PER_DAY,
+		),
+		to: now,
+	};
+	const [workflow, team, picture, marketing] = await Promise.all([
+		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		curatorTeam(checkpoint.id, checkpoint.projectId, checkpoint.startedAt),
+		projectPicture(checkpoint.id, period),
+		curatorMarketing(checkpoint.projectId, marketingPeriod),
+	]);
+	return { workflow, team, picture, marketing };
+}
+
+export type CheckpointFacts = Awaited<ReturnType<typeof checkpointFacts>>;

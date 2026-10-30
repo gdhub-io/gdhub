@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/checkpoints/curator-text";
+import { lensWeights } from "@/lib/checkpoints/lenses";
 import {
 	curatorTeam,
 	projectPicture,
@@ -216,6 +217,7 @@ describe("the stage as the curator reads it", () => {
 			nextStage: "Demo version",
 			description: CURATOR_STAGE_BRIEFS.Prototyping,
 			goal: CURATOR_STAGE_GOALS.Prototyping,
+			lenses: lensWeights("Prototyping"),
 			requiredTasks: [
 				{ name: "Playable greybox", done: true },
 				{ name: "Playtest with five people", done: false },
@@ -236,6 +238,7 @@ describe("the stage as the curator reads it", () => {
 			nextStage: null,
 			description: null,
 			goal: null,
+			lenses: lensWeights("A stage of our own"),
 			requiredTasks: [],
 		});
 	});
@@ -253,6 +256,7 @@ describe("renderWorkflow", () => {
 			nextStage: null,
 			description: null,
 			goal: CURATOR_STAGE_GOALS.Prototyping,
+			lenses: lensWeights("Prototyping"),
 			requiredTasks: [],
 		});
 		expect(text).toContain(`Project goal: ${PROJECT_GOAL}`);

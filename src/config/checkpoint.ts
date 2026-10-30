@@ -319,3 +319,34 @@ export const CURATOR_STAGE_GOALS: Record<string, string> = {
 	"Project Completion":
 		"The project is closed with a postmortem and final numbers the team carries into its next game.",
 };
+
+// Lenses (GDHUB-126)
+
+/** How much a lens says on a stage: a low one is one line, never blame for zeros it was not meant to have. */
+export type LensWeight = "low" | "normal" | "high";
+export const CURATOR_LENSES = [
+	"development",
+	"marketing",
+	"team",
+	"management",
+] as const;
+export type CuratorLens = (typeof CURATOR_LENSES)[number];
+
+/** Lens weights per stage of the Default workflow; a lens not named here is normal. */
+export const CURATOR_LENS_WEIGHTS: Record<
+	string,
+	Partial<Record<CuratorLens, LensWeight>>
+> = {
+	Introduction: { development: "low", marketing: "low" },
+	Ideation: { development: "low", marketing: "low" },
+	Concepting: { marketing: "low" },
+	Prototyping: { development: "high", marketing: "low" },
+	"Preparing a demo version": { development: "high", marketing: "high" },
+	"Taking and analyzing metrics": { development: "low", marketing: "high" },
+	"Preparing a release version": { development: "high", marketing: "high" },
+	Support: { marketing: "high" },
+	"Project Completion": { development: "low", marketing: "low" },
+};
+
+/** Public devlogs of a period the curator reads with their applause and views. */
+export const CURATOR_MARKETING_DEVLOGS = 10;

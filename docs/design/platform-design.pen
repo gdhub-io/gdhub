@@ -288001,99 +288001,161 @@
                         },
                         {
                           "type": "frame",
-                          "id": "IsiNT",
-                          "name": "What was discussed",
+                          "id": "lyEkF",
+                          "name": "Lens card — Development",
                           "width": "fill_container",
+                          "cornerRadius": "$radius-lg",
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
+                          "gap": 16,
+                          "padding": 16,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "ogsNi",
-                              "name": "Section label",
-                              "fill": "$text-secondary",
-                              "content": "By task",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
-                            },
-                            {
                               "type": "frame",
-                              "id": "QKyjF",
-                              "name": "Task",
+                              "id": "IsiNT",
+                              "name": "What was discussed",
                               "width": "fill_container",
-                              "stroke": "$border",
-                              "strokeWidth": {
-                                "bottom": 1
-                              },
-                              "strokeAlignment": "inner",
                               "layout": "vertical",
-                              "gap": 8,
-                              "padding": [
-                                12,
-                                0
-                              ],
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "r4E3i2",
-                                  "name": "Title row",
-                                  "width": "fill_container",
-                                  "gap": 8,
+                                  "id": "K1oQjK",
+                                  "name": "Lens label",
+                                  "gap": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
                                       "type": "icon",
-                                      "id": "kuLzK",
+                                      "id": "FVzQn",
                                       "name": "Ic",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "circle-check",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "code",
                                       "library": "lucide",
-                                      "fill": "$success"
+                                      "fill": "$text-secondary"
                                     },
                                     {
                                       "type": "text",
-                                      "id": "HI3nF",
-                                      "name": "Title",
-                                      "fill": "$text-primary",
-                                      "content": "Core loop one-pager",
+                                      "id": "SvfCq",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Development ",
                                       "fontFamily": "$font",
-                                      "fontSize": 15,
+                                      "fontSize": 13,
                                       "fontWeight": "600"
-                                    },
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "QKyjF",
+                                  "name": "Task",
+                                  "width": "fill_container",
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "bottom": 1
+                                  },
+                                  "strokeAlignment": "inner",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": [
+                                    12,
+                                    0
+                                  ],
+                                  "children": [
                                     {
                                       "type": "frame",
-                                      "id": "o4UXu",
-                                      "name": "Spacer",
+                                      "id": "r4E3i2",
+                                      "name": "Title row",
                                       "width": "fill_container",
-                                      "height": 1
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "CQmv9",
-                                      "name": "Source",
-                                      "gap": 4,
+                                      "gap": 8,
                                       "alignItems": "center",
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "e6jWCF",
-                                          "name": "T",
-                                          "fill": "$text-secondary",
-                                          "content": "Document",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
+                                          "type": "icon",
+                                          "id": "kuLzK",
+                                          "name": "Ic",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "circle-check",
+                                          "library": "lucide",
+                                          "fill": "$success"
                                         },
                                         {
-                                          "type": "icon",
-                                          "id": "Fgf0V",
-                                          "name": "Ic",
-                                          "width": 14,
-                                          "height": 14,
-                                          "icon": "arrow-up-right",
-                                          "library": "lucide",
-                                          "fill": "$text-secondary"
+                                          "type": "text",
+                                          "id": "HI3nF",
+                                          "name": "Title",
+                                          "fill": "$text-primary",
+                                          "content": "Core loop one-pager",
+                                          "fontFamily": "$font",
+                                          "fontSize": 15,
+                                          "fontWeight": "600"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "o4UXu",
+                                          "name": "Spacer",
+                                          "width": "fill_container",
+                                          "height": 1
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "CQmv9",
+                                          "name": "Source",
+                                          "gap": 4,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "e6jWCF",
+                                              "name": "T",
+                                              "fill": "$text-secondary",
+                                              "content": "Document",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "icon",
+                                              "id": "Fgf0V",
+                                              "name": "Ic",
+                                              "width": 14,
+                                              "height": 14,
+                                              "icon": "arrow-up-right",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "pmswF",
+                                      "name": "Body",
+                                      "width": "fill_container",
+                                      "layout": "vertical",
+                                      "padding": [
+                                        0,
+                                        0,
+                                        0,
+                                        24
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "Jj6O8",
+                                          "name": "Text",
+                                          "fill": "$text-primary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Clear and complete. The second rise comes too fast — players cannot learn the rhythm before it hits.",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -288101,112 +288163,112 @@
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "pmswF",
-                                  "name": "Body",
+                                  "id": "eW0df",
+                                  "name": "Task",
                                   "width": "fill_container",
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "bottom": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "layout": "vertical",
+                                  "gap": 8,
                                   "padding": [
-                                    0,
-                                    0,
-                                    0,
-                                    24
+                                    12,
+                                    0
                                   ],
                                   "children": [
                                     {
-                                      "type": "text",
-                                      "id": "Jj6O8",
-                                      "name": "Text",
-                                      "fill": "$text-primary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "Clear and complete. The second rise comes too fast — players cannot learn the rhythm before it hits.",
-                                      "lineHeight": 1.5,
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "eW0df",
-                              "name": "Task",
-                              "width": "fill_container",
-                              "stroke": "$border",
-                              "strokeWidth": {
-                                "bottom": 1
-                              },
-                              "strokeAlignment": "inner",
-                              "layout": "vertical",
-                              "gap": 8,
-                              "padding": [
-                                12,
-                                0
-                              ],
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "fXBv6",
-                                  "name": "Title row",
-                                  "width": "fill_container",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "XcJZv",
-                                      "name": "Ic",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "circle",
-                                      "library": "lucide",
-                                      "fill": "$text-tertiary"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "ILYaC",
-                                      "name": "Title",
-                                      "fill": "$text-primary",
-                                      "content": "Greybox build on itch.io",
-                                      "fontFamily": "$font",
-                                      "fontSize": 15,
-                                      "fontWeight": "600"
-                                    },
-                                    {
                                       "type": "frame",
-                                      "id": "SO3cP",
-                                      "name": "Spacer",
+                                      "id": "fXBv6",
+                                      "name": "Title row",
                                       "width": "fill_container",
-                                      "height": 1
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "cWuGM",
-                                      "name": "Source",
-                                      "gap": 4,
+                                      "gap": 8,
                                       "alignItems": "center",
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "sK082",
-                                          "name": "T",
-                                          "fill": "$text-secondary",
-                                          "content": "Devlog #1",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
+                                          "type": "icon",
+                                          "id": "XcJZv",
+                                          "name": "Ic",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "circle",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
                                         },
                                         {
-                                          "type": "icon",
-                                          "id": "tXbpn",
-                                          "name": "Ic",
-                                          "width": 14,
-                                          "height": 14,
-                                          "icon": "arrow-up-right",
-                                          "library": "lucide",
-                                          "fill": "$text-secondary"
+                                          "type": "text",
+                                          "id": "ILYaC",
+                                          "name": "Title",
+                                          "fill": "$text-primary",
+                                          "content": "Greybox build on itch.io",
+                                          "fontFamily": "$font",
+                                          "fontSize": 15,
+                                          "fontWeight": "600"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "SO3cP",
+                                          "name": "Spacer",
+                                          "width": "fill_container",
+                                          "height": 1
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "cWuGM",
+                                          "name": "Source",
+                                          "gap": 4,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "sK082",
+                                              "name": "T",
+                                              "fill": "$text-secondary",
+                                              "content": "Devlog #1",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "icon",
+                                              "id": "tXbpn",
+                                              "name": "Ic",
+                                              "width": 14,
+                                              "height": 14,
+                                              "icon": "arrow-up-right",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "XTwyh",
+                                      "name": "Body",
+                                      "width": "fill_container",
+                                      "layout": "vertical",
+                                      "padding": [
+                                        0,
+                                        0,
+                                        0,
+                                        24
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "gAASN",
+                                          "name": "Text",
+                                          "fill": "$text-primary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Outrunning works in 3 of 5 tries. Drop the other two islands and polish this one — that is the checkpoint.",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -288214,112 +288276,112 @@
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "XTwyh",
-                                  "name": "Body",
+                                  "id": "Wgyy9",
+                                  "name": "Task",
                                   "width": "fill_container",
+                                  "stroke": "$border",
+                                  "strokeWidth": {
+                                    "bottom": 1
+                                  },
+                                  "strokeAlignment": "inner",
                                   "layout": "vertical",
+                                  "gap": 8,
                                   "padding": [
-                                    0,
-                                    0,
-                                    0,
-                                    24
+                                    12,
+                                    0
                                   ],
                                   "children": [
                                     {
-                                      "type": "text",
-                                      "id": "gAASN",
-                                      "name": "Text",
-                                      "fill": "$text-primary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "Outrunning works in 3 of 5 tries. Drop the other two islands and polish this one — that is the checkpoint.",
-                                      "lineHeight": 1.5,
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "type": "frame",
-                              "id": "Wgyy9",
-                              "name": "Task",
-                              "width": "fill_container",
-                              "stroke": "$border",
-                              "strokeWidth": {
-                                "bottom": 1
-                              },
-                              "strokeAlignment": "inner",
-                              "layout": "vertical",
-                              "gap": 8,
-                              "padding": [
-                                12,
-                                0
-                              ],
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "nFtLp",
-                                  "name": "Title row",
-                                  "width": "fill_container",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "EpiaC",
-                                      "name": "Ic",
-                                      "width": 16,
-                                      "height": 16,
-                                      "icon": "circle",
-                                      "library": "lucide",
-                                      "fill": "$text-tertiary"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "wASjj",
-                                      "name": "Title",
-                                      "fill": "$text-primary",
-                                      "content": "5 playtest recordings",
-                                      "fontFamily": "$font",
-                                      "fontSize": 15,
-                                      "fontWeight": "600"
-                                    },
-                                    {
                                       "type": "frame",
-                                      "id": "RqYJl",
-                                      "name": "Spacer",
+                                      "id": "nFtLp",
+                                      "name": "Title row",
                                       "width": "fill_container",
-                                      "height": 1
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "KaTI3",
-                                      "name": "Source",
-                                      "gap": 4,
+                                      "gap": 8,
                                       "alignItems": "center",
                                       "children": [
                                         {
-                                          "type": "text",
-                                          "id": "tiCfm",
-                                          "name": "T",
-                                          "fill": "$text-secondary",
-                                          "content": "Activity",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
+                                          "type": "icon",
+                                          "id": "EpiaC",
+                                          "name": "Ic",
+                                          "width": 16,
+                                          "height": 16,
+                                          "icon": "circle",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
                                         },
                                         {
-                                          "type": "icon",
-                                          "id": "QGOMA",
-                                          "name": "Ic",
-                                          "width": 14,
-                                          "height": 14,
-                                          "icon": "arrow-up-right",
-                                          "library": "lucide",
-                                          "fill": "$text-secondary"
+                                          "type": "text",
+                                          "id": "wASjj",
+                                          "name": "Title",
+                                          "fill": "$text-primary",
+                                          "content": "5 playtest recordings",
+                                          "fontFamily": "$font",
+                                          "fontSize": 15,
+                                          "fontWeight": "600"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "RqYJl",
+                                          "name": "Spacer",
+                                          "width": "fill_container",
+                                          "height": 1
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "KaTI3",
+                                          "name": "Source",
+                                          "gap": 4,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "text",
+                                              "id": "tiCfm",
+                                              "name": "T",
+                                              "fill": "$text-secondary",
+                                              "content": "Activity",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            },
+                                            {
+                                              "type": "icon",
+                                              "id": "QGOMA",
+                                              "name": "Ic",
+                                              "width": 14,
+                                              "height": 14,
+                                              "icon": "arrow-up-right",
+                                              "library": "lucide",
+                                              "fill": "$text-secondary"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "RWS7U",
+                                      "name": "Body",
+                                      "width": "fill_container",
+                                      "layout": "vertical",
+                                      "padding": [
+                                        0,
+                                        0,
+                                        0,
+                                        24
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "K02j8I",
+                                          "name": "Text",
+                                          "fill": "$text-primary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "No recordings yet; only friends have played it. Test with three people outside the team this sprint.",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -288327,29 +288389,85 @@
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "RWS7U",
-                                  "name": "Body",
+                                  "id": "n9zL9",
+                                  "name": "Not discussed",
                                   "width": "fill_container",
                                   "layout": "vertical",
+                                  "gap": 8,
                                   "padding": [
+                                    16,
                                     0,
                                     0,
-                                    0,
-                                    24
+                                    0
                                   ],
                                   "children": [
                                     {
                                       "type": "text",
-                                      "id": "K02j8I",
-                                      "name": "Text",
-                                      "fill": "$text-primary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "No recordings yet; only friends have played it. Test with three people outside the team this sprint.",
-                                      "lineHeight": 1.5,
+                                      "id": "nGSpj",
+                                      "name": "Label",
+                                      "fill": "$text-secondary",
+                                      "content": "Nothing to show yet",
                                       "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "H7Obbs",
+                                      "name": "Row",
+                                      "gap": 8,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "E4Z7tv",
+                                          "name": "Ic",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "circle-dashed",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "jqV4s",
+                                          "name": "T",
+                                          "fill": "$text-secondary",
+                                          "content": "Devlog — what the tide taught us",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "vQCbm",
+                                      "name": "Row",
+                                      "gap": 8,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "C7NoQ",
+                                          "name": "Ic",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "circle-dashed",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Juwey",
+                                          "name": "T",
+                                          "fill": "$text-secondary",
+                                          "content": "Trailer cut for the store page",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
@@ -288357,85 +288475,43 @@
                             },
                             {
                               "type": "frame",
-                              "id": "n9zL9",
-                              "name": "Not discussed",
+                              "id": "ksm1F",
+                              "name": "Outside the plan",
                               "width": "fill_container",
                               "layout": "vertical",
                               "gap": 8,
-                              "padding": [
-                                16,
-                                0,
-                                0,
-                                0
-                              ],
                               "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "T3cb7i",
+                                  "name": "Lens label",
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Q76yDG",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Outside the tasks",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
                                 {
                                   "type": "text",
-                                  "id": "nGSpj",
-                                  "name": "Label",
-                                  "fill": "$text-tertiary",
-                                  "content": "Nothing to show yet",
+                                  "id": "Vp2Km",
+                                  "name": "Empty",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "A tide sound loop, not in any task — it makes the flood readable, worth a task of its own in sprint 3.",
+                                  "lineHeight": 1.5,
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
-                                  "fontWeight": "500"
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "H7Obbs",
-                                  "name": "Row",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "E4Z7tv",
-                                      "name": "Ic",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "circle-dashed",
-                                      "library": "lucide",
-                                      "fill": "$text-tertiary"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "jqV4s",
-                                      "name": "T",
-                                      "fill": "$text-secondary",
-                                      "content": "Devlog — what the tide taught us",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "vQCbm",
-                                  "name": "Row",
-                                  "gap": 8,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "icon",
-                                      "id": "C7NoQ",
-                                      "name": "Ic",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "circle-dashed",
-                                      "library": "lucide",
-                                      "fill": "$text-tertiary"
-                                    },
-                                    {
-                                      "type": "text",
-                                      "id": "Juwey",
-                                      "name": "T",
-                                      "fill": "$text-secondary",
-                                      "content": "Trailer cut for the store page",
-                                      "fontFamily": "$font",
-                                      "fontSize": 14,
-                                      "fontWeight": "normal"
-                                    }
-                                  ]
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -288443,34 +288519,202 @@
                         },
                         {
                           "type": "frame",
-                          "id": "ksm1F",
-                          "name": "Outside the plan",
+                          "id": "Mqr2V",
+                          "name": "Lens card — Marketing",
                           "width": "fill_container",
+                          "cornerRadius": "$radius-lg",
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 8,
+                          "gap": 16,
+                          "padding": 16,
                           "children": [
                             {
-                              "type": "text",
-                              "id": "nU72Q",
-                              "name": "Section label",
-                              "fill": "$text-secondary",
-                              "content": "Outside the plan",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
-                            },
-                            {
-                              "type": "text",
-                              "id": "Vp2Km",
-                              "name": "Empty",
-                              "fill": "$text-tertiary",
-                              "textGrowth": "fixed-width",
+                              "type": "frame",
+                              "id": "UVWPa",
+                              "name": "Lens — Marketing",
                               "width": "fill_container",
-                              "content": "Nothing came up beyond the plan.",
-                              "lineHeight": 1.5,
-                              "fontFamily": "$font",
-                              "fontSize": 14,
-                              "fontWeight": "normal"
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "KlBy7",
+                                  "name": "Lens label",
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "LPpRq",
+                                      "name": "Ic",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "megaphone",
+                                      "library": "lucide",
+                                      "fill": "$text-secondary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "sSqyd",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Marketing",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "QPPnr",
+                                  "name": "Text",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "One devlog went out and drew 4 applause. On Concepting the audience can wait.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ISAXP",
+                          "name": "Lens card — Team",
+                          "width": "fill_container",
+                          "cornerRadius": "$radius-lg",
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "layout": "vertical",
+                          "gap": 16,
+                          "padding": 16,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Mk7B1",
+                              "name": "Lens — Team",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "o4Ux99",
+                                  "name": "Lens label",
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "q8jld",
+                                      "name": "Ic",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "users",
+                                      "library": "lucide",
+                                      "fill": "$text-secondary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "K0cWns",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Team",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "edYTU",
+                                  "name": "Text",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Four of five confirmed working all week; the artist's hours went to the island, as planned. No sign the hours run short yet.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H5h8e",
+                          "name": "Lens card — Project management",
+                          "width": "fill_container",
+                          "cornerRadius": "$radius-lg",
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "layout": "vertical",
+                          "gap": 16,
+                          "padding": 16,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "jHvYE",
+                              "name": "Lens — Project management",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "CL3Rm",
+                                  "name": "Lens label",
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "LJhmB",
+                                      "name": "Ic",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "list-checks",
+                                      "library": "lucide",
+                                      "fill": "$text-secondary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "FK8YA",
+                                      "name": "L",
+                                      "fill": "$text-secondary",
+                                      "content": "Project management",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "EHFcT",
+                                  "name": "Text",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Two of five tasks closed in sprint 1 — on pace for 28 days. Every open task still leads to the goal; the playtest is the one at risk.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             }
                           ]
                         },
@@ -352882,7 +353126,7 @@
                   "id": "byOUi",
                   "name": "L",
                   "fill": "$text-tertiary",
-                  "content": "The team sees the new plan on Workflow",
+                  "content": "Open until 16 Oct, 14:00 · send your changes for a check before confirming",
                   "fontFamily": "$font",
                   "fontSize": 13,
                   "fontWeight": "normal"
@@ -352903,7 +353147,7 @@
                       "id": "oF2M6",
                       "name": "L",
                       "fill": "$text-invert",
-                      "content": "Save changes",
+                      "content": "Save and send to the curator",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -354351,7 +354595,7 @@
                   "fill": "$text-primary",
                   "textGrowth": "fixed-width",
                   "width": "fill_container",
-                  "content": "I've read your goal and tasks. Two tasks are solid; one is too vague to check — I suggested a wording you can show. Adjust what you agree with, then approve the plan.",
+                  "content": "I've read your goal and tasks. Two tasks are solid; one is too vague to check, and one doesn't lead to the goal — I suggested wordings for both. Adjust what you agree with, then approve the plan.",
                   "lineHeight": 1.55,
                   "fontFamily": "$font",
                   "fontSize": 17,
@@ -355132,6 +355376,34 @@
                   }
                 },
                 {
+                  "id": "I3oRe7",
+                  "type": "ref",
+                  "ref": "IYQA7",
+                  "name": "Plan task — does not lead to the goal",
+                  "width": "fill_container",
+                  "descendants": {
+                    "RaXuR": {
+                      "stroke": "$warning"
+                    },
+                    "z0CVR": {
+                      "content": "Trailer for the store page"
+                    },
+                    "iOIfK": {
+                      "icon": "sparkles",
+                      "fill": "#382A7A",
+                      "enabled": true
+                    },
+                    "mcQHO": {
+                      "content": "Doesn't lead to the goal: a store trailer is for the demo stage, not the core loop. To serve it: \"A 30-second clip of the core loop for playtesters\".",
+                      "fill": "#382A7A"
+                    },
+                    "i0tmp3": {
+                      "content": "Use this",
+                      "enabled": true
+                    }
+                  }
+                },
+                {
                   "type": "frame",
                   "id": "VtomH",
                   "name": "Plan actions",
@@ -355157,14 +355429,14 @@
                           "height": 14,
                           "icon": "plus",
                           "library": "lucide",
-                          "fill": "$text-secondary"
+                          "fill": "$text-disabled"
                         },
                         {
                           "type": "text",
                           "id": "dDcZH",
                           "name": "L",
-                          "fill": "$text-secondary",
-                          "content": "Add task",
+                          "fill": "$text-disabled",
+                          "content": "Add task · 5 of 5",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -449034,7 +449306,7 @@
       "id": "nLpkT",
       "x": 9118,
       "y": 74292,
-      "name": "12.08.10 · Curator's Review · Pro · the curator's view, call ahead, Brief tab (/advisor/checkpoints/[id]/review/2)",
+      "name": "12.08.10 · Curator's Review · Pro · the curator's view, call ahead, Brief tab — with the goal checks (/advisor/checkpoints/[id]/review/2)",
       "clip": true,
       "width": 1265,
       "fill": "$page-bg",
@@ -451036,6 +451308,45 @@
                             },
                             {
                               "type": "frame",
+                              "id": "NXOhw",
+                              "name": "Goal and its stage",
+                              "width": "fill_container",
+                              "fill": "$warning-tint",
+                              "cornerRadius": "$radius-md",
+                              "gap": 8,
+                              "padding": [
+                                8,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "UC1p1",
+                                  "name": "I",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "flag",
+                                  "library": "lucide",
+                                  "fill": "$warning-on-tint"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "lQqk7",
+                                  "name": "T",
+                                  "fill": "$warning-on-tint",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "The goal reaches past Prototyping: \"a stranger can play for 5 minutes\" is close to a demo. Prototyping ends when the core works and the style is chosen. The author kept it — worth agreeing on the call what the 28 days are judged against.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
                               "id": "fpcyW",
                               "name": "Tasks",
                               "width": "fill_container",
@@ -451258,6 +451569,37 @@
                                       "fontFamily": "$font",
                                       "fontSize": 13,
                                       "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "sC5hu",
+                                      "name": "Goal check",
+                                      "width": "fill_container",
+                                      "gap": 8,
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "PaRt4",
+                                          "name": "Ic",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "sparkles",
+                                          "library": "lucide",
+                                          "fill": "#382A7A"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "z280tu",
+                                          "name": "L",
+                                          "fill": "#382A7A",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "Doesn't lead to the goal as written: five people prove nothing about the tide unless they play the greybox. To serve it: \"Five strangers play the greybox, notes in a doc\".",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
@@ -493434,6 +493776,486 @@
                   ]
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "DUZmi",
+      "x": 9986,
+      "y": 77516,
+      "name": "12.10.1d · Path to Checkpoint · AI · Start, the goal reaches past its stage (flagged, not blocked)",
+      "width": 801,
+      "fill": "#000000",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "U1e6W",
+          "name": "Goal card",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": "$radius-xl",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "padding": [
+            16,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "sciRz",
+              "name": "Goal",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "etm5N",
+                  "name": "Tile",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "$bg-muted",
+                  "cornerRadius": "$radius-md",
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "w1yc5",
+                      "name": "Ic",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "target",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "V0gBu",
+                  "name": "Body",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Efz9d",
+                      "name": "Label row",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "H4WlDc",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Checkpoint goal",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "PCDTL",
+                      "name": "Text",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Release the game on Steam with a store page and a launch trailer.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pe4l6",
+                      "name": "Goal advice",
+                      "width": "fill_container",
+                      "fill": "$warning-tint",
+                      "cornerRadius": "$radius-md",
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ujusl",
+                          "name": "I",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "flag",
+                          "library": "lucide",
+                          "fill": "$warning-on-tint"
+                        },
+                        {
+                          "type": "text",
+                          "id": "xUhot",
+                          "name": "T",
+                          "fill": "$warning-on-tint",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Beyond the Ideation stage: a Steam release comes after a demo and a release version. Ideation ends when one idea is chosen and defended. You can keep this goal — the 28 days will be judged against it.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "E8V0vo",
+      "x": 7720,
+      "y": 77465,
+      "name": "12.10.5a · Path to Checkpoint · AI · Sprint 3, Plan tab: day 15, the curator checked the changes — Confirm",
+      "width": 801,
+      "fill": "#000000",
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "r6Au6",
+          "name": "Footer",
+          "width": "fill_container",
+          "gap": 16,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "A7qW06",
+              "name": "L",
+              "fill": "$text-tertiary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "The curator checked your changes · adjust them if needed and confirm · confirms itself on 16 Oct, 14:00",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "Q07S8",
+              "name": "Btn Save",
+              "fill": "$btn-black",
+              "cornerRadius": "$radius-md",
+              "padding": [
+                8,
+                16
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "xNLNp",
+                  "name": "L",
+                  "fill": "$text-invert",
+                  "content": "Confirm the tasks",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HROTl",
+      "x": 6335,
+      "y": 79641,
+      "name": "12.10.3m · Path to Checkpoint · AI · Review tab: the Marketing lens at full weight (Preparing a demo version)",
+      "width": 801,
+      "fill": "$surface",
+      "cornerRadius": "$radius-lg",
+      "stroke": "$border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 8,
+      "padding": 16,
+      "children": [
+        {
+          "type": "frame",
+          "id": "EQhU7",
+          "name": "Lens label",
+          "gap": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "tFF52",
+              "name": "Ic",
+              "width": 14,
+              "height": 14,
+              "icon": "megaphone",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            },
+            {
+              "type": "text",
+              "id": "A8eEew",
+              "name": "L",
+              "fill": "$text-secondary",
+              "content": "Marketing",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "nm3Hk",
+          "name": "Text",
+          "fill": "$text-primary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "The demo is public, but only one devlog pointed to it, and the store page still has no trailer. At this stage players are the measure: two devlogs a week and the trailer on the store page would give the metrics stage something to read.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "A854T",
+          "name": "Devlogs",
+          "clip": true,
+          "width": "fill_container",
+          "cornerRadius": "$radius-lg",
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "e8fLX",
+              "name": "Row",
+              "width": "fill_container",
+              "stroke": "$border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "strokeAlignment": "inner",
+              "gap": 16,
+              "padding": [
+                12,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "AiWvR",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Devlog — the demo is out",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "qiKuf",
+                  "name": "Metric",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "AF1aJ",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "hand-heart",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "O62DNo",
+                      "name": "N",
+                      "fill": "$text-secondary",
+                      "content": "12",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "tdpGE",
+                  "name": "Metric",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "vkpgZ",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "eye",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ZHnYd",
+                      "name": "N",
+                      "fill": "$text-secondary",
+                      "content": "148",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SMwz1",
+              "name": "Row",
+              "width": "fill_container",
+              "gap": 16,
+              "padding": [
+                12,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GXOeZ",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Devlog — what the tide taught us",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "mKPYG",
+                  "name": "Metric",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "q4TUD",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "hand-heart",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "nadmG",
+                      "name": "N",
+                      "fill": "$text-secondary",
+                      "content": "3",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "u7u0w",
+                  "name": "Metric",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "qr22h",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "eye",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yAIh7",
+                      "name": "N",
+                      "fill": "$text-secondary",
+                      "content": "41",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "TLM77",
+          "name": "Store",
+          "gap": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "M77PHb",
+              "name": "Ic",
+              "width": 14,
+              "height": 14,
+              "icon": "external-link",
+              "library": "lucide",
+              "fill": "$text-tertiary"
+            },
+            {
+              "type": "text",
+              "id": "n4YwPO",
+              "name": "L",
+              "fill": "$text-tertiary",
+              "content": "Store page: itch.io · no trailer yet",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
             }
           ]
         }

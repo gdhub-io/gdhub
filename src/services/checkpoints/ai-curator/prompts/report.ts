@@ -6,10 +6,12 @@ import type { TrustReason, UnprovenReason } from "@/lib/checkpoints/verdict";
 import type { ReportInput } from "@/types/checkpoint-curator";
 import {
 	CURATOR_STANCE,
+	LENSES,
 	localeLine,
 	renderCard,
 	renderCharacter,
 	renderJournal,
+	renderMarketing,
 	renderPicture,
 	renderTeam,
 	renderWorkflow,
@@ -60,7 +62,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences: the stage's expectation, the goal, and whether the evidence shows it. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. If the goal is missed after advice the team did not take, name that advice in one sentence and say it can be made up on the way to the next checkpoint. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
+				"Why this verdict and not the others, in two to four sentences: the stage's expectation, the goal, and whether the evidence shows it. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. If the goal is missed after advice the team did not take, name that advice in one sentence and say it can be made up on the way to the next checkpoint. Where it explains the verdict, say it through the lenses: what was built, what the audience saw, the team's hours, the tasks' way to the goal — they explain, never decide. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -73,6 +75,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			${renderCharacter(input.character, "verdict")}
 
 			${CURATOR_STANCE}
+
+			${LENSES}
 
 			This is the day-${CHECKPOINT_DAYS} report. Facts only — everything you write must be
 			checkable against what is below.
@@ -202,6 +206,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			${renderTeam(input.team)}
 
 			${renderPicture(input.picture)}
+			${renderMarketing(input.marketing)}
 
 			Answer via the ${REPORT_FUNCTION_NAME} function.
 		`,

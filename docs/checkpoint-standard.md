@@ -98,7 +98,7 @@ and about 9.5 for a team of five, so two to three hours a week.
 | Artefact | When | What is in it |
 |---|---|---|
 | **Goal card** | day 1 | What exists at the start, as a list, each line with the artefact that proves it where there is one. What must exist at the end, as a list, each line with an empty slot for its artefact. The goal in one sentence. What the author bought with is kept beside anything the call changed. Not edited after the call, except on day 15. |
-| **Devlogs** | days 7, 14, 21, 28, the last day of each sprint | What got done, what is next, what is in the way. Seen by the team and the curator only. |
+| **Devlogs** | days 7, 14, 21, 28, the last day of each sprint | What got done, what is next, what is in the way. Public: anyone can read a devlog, signed-in users can applaud it, and the curator reads its applause and views through the Marketing lens. |
 | **Scope change** | day 15, if any | What came off, what was reworded — with the day-1 wording kept beside it — what was added, and why. Written beside the original, never over it. |
 | **Artefacts** | by day 26 | One per line of the outcome list: a link or an upload, screenshots and a short description. A line with nothing attached is a line that did not get done. |
 | **Result card** | by day 31 | What of the list got done and what proves it, what was cut, the verdict and the reasoning. |

@@ -149,6 +149,7 @@ export const reportSituations = (
 		devlogs: [devlog.greybox, devlog.board, devlog.playtest],
 		team: project.team("end"),
 		picture: project.picture("end"),
+		marketing: project.marketing("end"),
 	};
 	const replacing = (id: string, item: Item) => ({
 		...base,
@@ -224,6 +225,7 @@ export const reportSituations = (
 			input: {
 				...replacing("o3", outcome(outcomes.playtest)),
 				picture: withoutNotes,
+				marketing: project.marketing("end"),
 			},
 		},
 		{
@@ -252,6 +254,7 @@ export const reportSituations = (
 				],
 				devlogs: [],
 				picture: project.picture("end", ["demo", "notes"]),
+				marketing: project.marketing("end"),
 			},
 		},
 		{
@@ -288,6 +291,7 @@ export const reportSituations = (
 				revision: { revisedAt: "2026-10-15", note: t.cut },
 				devlogs: [devlog.greybox, devlog.board],
 				picture: withoutNotes,
+				marketing: project.marketing("end"),
 			},
 		},
 	];

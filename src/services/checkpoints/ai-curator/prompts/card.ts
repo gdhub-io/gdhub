@@ -1,6 +1,7 @@
 import { stripIndents } from "common-tags";
 import {
 	CHECKPOINT_DAYS,
+	CURATOR_LENSES,
 	PROJECT_GOAL,
 	SESSION_MINUTES,
 } from "@/config/checkpoint";
@@ -8,6 +9,7 @@ import { sheetOf } from "@/lib/checkpoints/curator-characters";
 import type {
 	CuratorGoalCard,
 	CuratorLine,
+	CuratorMarketing,
 	CuratorTeam,
 	CuratorWorkflow,
 	JournalEntry,
@@ -109,6 +111,42 @@ export const renderPulse = (team: CuratorTeam, week: number) => {
 	return `Pulse: ${worked.length} confirmed working${roles(worked)}, ${missing.length} did not${roles(missing)}.`;
 };
 
+/**
+ * The four lenses every review reads the project through (GDHUB-126). They
+ * explain the read; the tasks and the goal still decide it.
+ */
+export const LENSES = stripIndents`
+	Read the project through four lenses, as the stage weighs them:
+	- Development: what was built, within the tasks and outside them.
+	- Marketing: what the audience was told in public devlogs and how it
+	  answered — applause and views — and where the game can be found.
+	- Team: the hours and the pace against the goal. Context, not a verdict:
+	  one task still open is not a missing person, a task spans the whole
+	  checkpoint. Read the pace only once two sprints show it, and speak of
+	  hours first; another person is a careful last option.
+	- Project management: the tasks, how they close sprint by sprint, and the
+	  way from them to the checkpoint goal, the stage goal and the project goal.
+	A lens weighed low on this stage gets one line at most and is never blamed
+	for zeros it was not meant to have; a lens weighed high gets its full say.
+	The lenses explain; the tasks and the goal decide.
+`;
+
+/** What the audience saw in the period (GDHUB-126). */
+export const renderMarketing = (marketing: CuratorMarketing) =>
+	[
+		marketing.devlogs.length
+			? `Public devlogs of the period, as the audience saw them:\n${marketing.devlogs
+					.map(
+						(post) =>
+							`- ${post.publishedAt} · ${post.title} · ${post.applause} applause · ${post.views} views`,
+					)
+					.join("\n")}`
+			: "No public devlog in the period.",
+		marketing.links.length
+			? `Where the game can be found: ${marketing.links.join("; ")}`
+			: "The project lists no store page or link.",
+	].join("\n");
+
 /** The goal against its stage (GDHUB-125), the same words for the goal check and the plan advice. */
 export const GOAL_STAGE = {
 	description:
@@ -121,6 +159,7 @@ export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
 	Workflow stage: ${workflow.currentStage}
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
 	${workflow.goal ? `Stage goal, where the stage has to leave the project: ${workflow.goal} A checkpoint goal sits inside it without having to reach all of it.` : ""}
+	Lens weights on this stage: ${CURATOR_LENSES.map((lens) => `${lens} ${workflow.lenses[lens]}`).join(", ")}.
 	${workflow.nextStage ? `To move on to "${workflow.nextStage}", the stage requires:` : "This is the last stage of the path. It requires:"}
 	${workflow.requiredTasks.map((task) => `- [${task.done ? "x" : " "}] ${task.name}`).join("\n") || "- (nothing is required)"}
 	The stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.

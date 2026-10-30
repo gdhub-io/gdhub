@@ -122,6 +122,7 @@ export const sprintReviewSituations = (
 			focusLastReview: t.focusAfter1,
 			verdict: null,
 			picture: project.picture("sprint2"),
+			marketing: project.marketing("sprint2"),
 		};
 	};
 	const boardWith = (match: "Partly" | "DoesNotMatch", note: string) => ({
@@ -142,6 +143,7 @@ export const sprintReviewSituations = (
 		focusLastReview: [],
 		verdict: null,
 		picture: project.picture("sprint1"),
+		marketing: project.marketing("sprint1"),
 	};
 
 	return [
@@ -185,6 +187,7 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
+				marketing: project.marketing("sprint2"),
 			},
 		},
 		{
@@ -221,6 +224,7 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
+				marketing: project.marketing("sprint2"),
 			},
 		},
 		{
@@ -277,6 +281,7 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
+				marketing: project.marketing("sprint2"),
 			},
 		},
 		{
@@ -301,6 +306,7 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
+				marketing: project.marketing("sprint2"),
 			},
 		},
 		{
@@ -321,6 +327,7 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter1,
 				workflow: project.workflow("sprint2"),
 				picture: project.picture("sprint2"),
+				marketing: project.marketing("sprint2"),
 			},
 		},
 		{
@@ -341,6 +348,7 @@ export const sprintReviewSituations = (
 				focusLastReview: t.focusAfter2,
 				workflow: project.workflow("sprint3"),
 				picture: project.picture("sprint3"),
+				marketing: project.marketing("sprint3"),
 			},
 		},
 		{
@@ -366,6 +374,7 @@ export const sprintReviewSituations = (
 				verdict: { verdict: "StageClosed", note: t.verdict },
 				workflow: project.workflow("end"),
 				picture: project.picture("end"),
+				marketing: project.marketing("end"),
 			},
 		},
 	];

@@ -48,6 +48,7 @@ export const tasksCheckSituations = (
 		moment: "start" as const,
 		review: null,
 		picture: project.picture("start"),
+		marketing: project.marketing("start"),
 	};
 
 	return [
@@ -118,6 +119,7 @@ export const planAdviceSituations = (
 				moment: "midway",
 				review: t.review,
 				picture: project.picture("midway"),
+				marketing: project.marketing("midway"),
 			},
 		},
 	];

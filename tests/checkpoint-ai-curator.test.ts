@@ -85,6 +85,26 @@ vi.mock("@/repositories/checkpoints/ai-curator-context", async (actual) => ({
 	})),
 	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
+	checkpointFacts: vi.fn(async (checkpoint: { stageName: string }) => ({
+		workflow: {
+			currentStage: checkpoint.stageName,
+			nextStage: null,
+			description: null,
+			requiredTasks: [],
+		},
+		team: {
+			members: 2,
+			stated: 0,
+			hoursPerWeek: null,
+			hoursPerRun: null,
+			people: [
+				{ name: "A", role: "Game designer", level: null, hoursPerWeek: null, weeks: [true] },
+				{ name: "B", role: "Lead artist", level: null, hoursPerWeek: null, weeks: [false] },
+			],
+		},
+		picture: "The project picture.",
+		marketing: { devlogs: [], links: [] },
+	})),
 }));
 vi.mock("@/services/checkpoints/ai-review", async (original) => ({
 	midwayAdviceInput: (

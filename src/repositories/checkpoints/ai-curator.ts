@@ -127,7 +127,11 @@ export const reportEvidence = (goal: string, items: ReportItem[]) => ({
  * What a stored read answers: everything the model is given and nothing else.
  * A card edited back to what it was hashes the same and costs no second call.
  */
-export const goalCheckHash = ({ picture: _, ...input }: GoalCheckInput) =>
+export const goalCheckHash = ({
+	picture: _,
+	marketing: __,
+	...input
+}: GoalCheckInput) =>
 	// The picture carries today's date and the latest activity: it informs the
 	// read but does not make the same card worth paying for twice.
 	createHash("sha256")

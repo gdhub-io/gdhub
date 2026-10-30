@@ -12,11 +12,13 @@ import {
 	AUTHOR_VOICE,
 	GOAL_STAGE,
 	HIRING,
+	LENSES,
 	legOfSprint,
 	localeLine,
 	type RoadLeg,
 	renderCharacter,
 	renderJournal,
+	renderMarketing,
 	renderPicture,
 	renderPulse,
 	renderTeam,
@@ -28,6 +30,7 @@ import {
 	taskLine,
 } from "@/services/checkpoints/call-notes";
 import type {
+	CuratorMarketing,
 	CuratorTeam,
 	CuratorWorkflow,
 	JournalEntry,
@@ -57,6 +60,8 @@ export type PlanAdviceInput = {
 	review: string | null;
 	/** The project as its page shows it: the stage's path, the team, recent activity. */
 	picture: string;
+	/** What the audience saw in the period (GDHUB-126). */
+	marketing: CuratorMarketing;
 };
 
 export type SprintReviewInput = {
@@ -80,6 +85,8 @@ export type SprintReviewInput = {
 	/** Day 29: the verdict already settled, for the letter to agree with it. */
 	verdict: { verdict: CheckpointVerdict; note: string } | null;
 	picture: string;
+	/** What the audience saw in the period (GDHUB-126). */
+	marketing: CuratorMarketing;
 };
 
 const voice = (
@@ -195,12 +202,16 @@ export const writePlanAdvice = async (
 			fits the weeks it has, and brings the goal closer: a task that would
 			not, done or not, is offGoal, with what it would have to become to
 			serve the goal. Give one entry per open task (not done, not cut).
+			Through the lenses: where the team's stated hours cannot carry the
+			plan, say so (team); where the stage weighs marketing high and no task
+			reaches the audience, propose one in add (marketing).
 			${
 				input.moment === "start"
 					? "This is day 1: four weeks lie ahead. The author wrote these tasks after your first letter and sent them to you; this is your one check of them, and next they approve the plan. Do not greet again. Say whether the goal and the tasks hold together, and what to change before approving."
 					: "This is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding."
 			}
 			${HIRING}
+			${LENSES}
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
@@ -217,6 +228,7 @@ export const writePlanAdvice = async (
 			${input.review ? `What the sprints so far showed:\n${input.review}` : ""}
 
 			${renderPicture(input.picture)}
+			${renderMarketing(input.marketing)}
 		`,
 	};
 	return runStructured("plan_advice", adviceSchema, request, meter);
@@ -242,6 +254,27 @@ const assessmentSchema = z.object({
 	questions: z
 		.array(z.string())
 		.describe("Questions the team should answer for itself."),
+	lenses: z
+		.object({
+			marketing: z
+				.string()
+				.describe(
+					"Marketing: what the public devlogs told the audience and how it answered, by name with applause and views; one line when the stage weighs it low.",
+				),
+			team: z
+				.string()
+				.describe(
+					"Team: the hours and the pace against the goal; context, not blame. One or two sentences.",
+				),
+			management: z
+				.string()
+				.describe(
+					"Project management: how the tasks close against the 28 days, and the way from them to the goal, the stage goal and the project goal. One or two sentences.",
+				),
+		})
+		.describe(
+			"Three of the four lenses; development is discussed and outsidePlan. Each sized by the stage's weight for it.",
+		),
 });
 
 type SprintAssessment = z.infer<typeof assessmentSchema>;
@@ -274,6 +307,7 @@ export const writeSprintReview = async (
 			team chose instead that still moves the goal or a task counts — say
 			what it moved. Name a gap only where nothing moves the goal.
 			${HIRING}
+			${LENSES}
 			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over and the verdict is settled.` : ""}
 
 			${AUTHOR_VOICE}
@@ -304,6 +338,7 @@ export const writeSprintReview = async (
 			${renderPulse(input.team, input.sprint)}
 
 			${renderPicture(input.picture)}
+			${renderMarketing(input.marketing)}
 
 			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
@@ -323,6 +358,9 @@ const renderAssessment = (review: SprintAssessment, tasks: CuratorTask[]) => {
 			`Work outside the plan: ${review.outsidePlan.join("; ")}`,
 		review.questions.length &&
 			`Questions for the team: ${review.questions.join(" ")}`,
+		`Marketing: ${review.lenses.marketing}`,
+		`Team: ${review.lenses.team}`,
+		`Project management: ${review.lenses.management}`,
 	]
 		.filter(Boolean)
 		.join("\n");
@@ -363,6 +401,7 @@ export const midwayAdviceInput = (
 	moment: "midway",
 	review,
 	picture: input.picture,
+	marketing: input.marketing,
 });
 
 const letterSchema = z.object({

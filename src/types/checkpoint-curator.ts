@@ -1,3 +1,4 @@
+import type { CuratorLens, LensWeight } from "@/config/checkpoint";
 import type { CheckpointVerdict, EvidenceMatch } from "@/config/prisma-enums";
 import type {
 	PartlyOutcome,
@@ -40,6 +41,8 @@ export type CuratorWorkflow = {
 	description: string | null;
 	/** Where the stage has to leave the project (GDHUB-125); null for a stage with none. */
 	goal: string | null;
+	/** How much each lens says on this stage (GDHUB-126). */
+	lenses: Record<CuratorLens, LensWeight>;
 	/** The tasks the template requires on this stage, done or not; the optional ones never reach the model. */
 	requiredTasks: { name: string; done: boolean }[];
 };
@@ -92,6 +95,19 @@ export type CuratorOpening = {
 	applied: number;
 };
 
+/** What the audience was told in a period and how it answered (GDHUB-126). */
+export type CuratorMarketing = {
+	/** Public devlogs of the period, newest first. */
+	devlogs: {
+		title: string;
+		publishedAt: string;
+		applause: number;
+		views: number;
+	}[];
+	/** The project's store page and links, as its page lists them. */
+	links: string[];
+};
+
 /** The team, in one place for every call: who is on it, their hours and pulse, and the sums. */
 export type CuratorTeam = TeamCapacity & {
 	people: CuratorMember[];
@@ -135,6 +151,8 @@ export type GoalCheckInput = {
 	previous: { verdict: CheckpointVerdict; note: string | null } | null;
 	/** What happened on the project in the two weeks leading in. */
 	picture: string;
+	/** What the audience saw in the period (GDHUB-126). */
+	marketing: CuratorMarketing;
 };
 
 /**
@@ -180,6 +198,8 @@ export type ReportInput = {
 	/** A human curator's calls, from their notes; empty for the AI curator. */
 	calls: { index: number; inShort: string; agreed: string[] }[];
 	picture: string;
+	/** What the audience saw in the period (GDHUB-126). */
+	marketing: CuratorMarketing;
 };
 
 export type ReportResult = {
