@@ -1,5 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { skipsOnboarding } from "../../../src/components/checkpoints/entry/hrefs";
+import type { SpaceType } from "../../../src/config/spaces";
 import type { PersonaKey } from "../../personas";
 
 /**
@@ -11,7 +13,7 @@ import type { PersonaKey } from "../../personas";
 const APP = "src/app";
 
 /** Who stands for each role-gated space: an owner of the fixture `tests/personas.ts` seeds. */
-const SPACE_INSIDER: Record<string, PersonaKey> = {
+const SPACE_INSIDER: Partial<Record<SpaceType, PersonaKey>> = {
 	admin: "superAdmin",
 	dev: "superAdmin",
 	advisor: "advisor",
@@ -21,43 +23,36 @@ const SPACE_INSIDER: Record<string, PersonaKey> = {
 	course: "educator",
 };
 
-/** The proxy lets an unfinished onboarding through to these: buying finishes it. */
-const OPEN_TO_UNONBOARDED = ["/checkpoint/new", "/registration/onboarding"];
-
 export type Persona = PersonaKey | "anonymous";
 
-export type Route = {
+type Route = {
 	/** `/user/project/[slug]/team`, as the file system names it. */
 	path: string;
-	/** Who must get the page; empty means the page itself decides nothing. */
+	/** Who must get the page. */
 	allowed: Persona[];
 	/** Who must be sent away or get a 404. */
 	refused: Persona[];
 };
 
-const gateOf = (file: string) => {
-	let source = "";
+const sourceOf = (file: string) => {
 	try {
-		source = readFileSync(file, "utf8");
+		return readFileSync(file, "utf8");
 	} catch {
-		return null;
+		return "";
 	}
-	const permission = source.match(/createPermissionGate\(\s*"([^"]+)"/)?.[1];
-	const space = source.match(/createSpaceGate\(\s*"([^"]+)"/)?.[1];
-	return permission || space ? { permission, space } : null;
 };
 
-/** The route's gates, nearest first: the page, then each layout on the way up. */
-const gatesFor = (segments: string[]) => {
-	const gates: NonNullable<ReturnType<typeof gateOf>>[] = [];
-	const page = gateOf(join(APP, ...segments, "page.tsx"));
-	if (page) gates.push(page);
-	for (let depth = segments.length; depth >= 0; depth -= 1) {
-		const layout = gateOf(join(APP, ...segments.slice(0, depth), "layout.tsx"));
-		if (layout) gates.push(layout);
-	}
-	return gates;
-};
+/** The route's page, then each layout on the way up: the first gate found is the nearest. */
+const gateSources = (segments: string[]) =>
+	[
+		join(APP, ...segments, "page.tsx"),
+		...segments
+			.map((_, index) => segments.length - index)
+			.concat(0)
+			.map((depth) => join(APP, ...segments.slice(0, depth), "layout.tsx")),
+	]
+		.map(sourceOf)
+		.join("\n");
 
 /** The prefixes the proxy keeps from a signed-out visitor, read from its matcher. */
 const proxied = () => {
@@ -71,20 +66,19 @@ const proxied = () => {
 const isUnder = (path: string, root: string) =>
 	path === root || path.startsWith(`${root}/`);
 
-const classify = (
-	path: string,
-	segments: string[],
-	matcher: string[],
-): Route => {
-	const gates = gatesFor(segments);
-	const permission = gates.find((gate) => gate.permission);
-	if (permission) {
-		// The super admin crosses every line, and a plain member holds no gated permission.
+const urlOf = (segments: string[]) =>
+	`/${segments.filter((segment) => !/^\(.*\)$/.test(segment)).join("/")}`;
+
+const classify = (segments: string[], matcher: string[]): Route => {
+	const path = urlOf(segments);
+	const source = gateSources(segments);
+	// The super admin crosses every line, and a plain member holds no gated permission.
+	if (/createPermissionGate\(/.test(source)) {
 		return { path, allowed: ["superAdmin"], refused: ["anonymous", "member"] };
 	}
-	const space = gates.find((gate) => gate.space)?.space;
+	const space = source.match(/createSpaceGate\(\s*"([^"]+)"/)?.[1];
 	if (space) {
-		const insider = SPACE_INSIDER[space];
+		const insider = SPACE_INSIDER[space as SpaceType];
 		if (!insider) {
 			throw new Error(
 				`${path} is gated by the "${space}" space, which has no persona in SPACE_INSIDER (tests/e2e/smoke/routes.ts)`,
@@ -96,7 +90,7 @@ const classify = (
 		return {
 			path,
 			allowed: ["member"],
-			refused: OPEN_TO_UNONBOARDED.some((root) => isUnder(path, root))
+			refused: skipsOnboarding(path)
 				? ["anonymous"]
 				: ["anonymous", "unonboarded"],
 		};
@@ -112,12 +106,32 @@ const pagesIn = (dir: string, segments: string[] = []): string[][] =>
 		return entry.name === "page.tsx" ? [segments] : [];
 	});
 
-const urlOf = (segments: string[]) =>
-	`/${segments.filter((segment) => !/^\(.*\)$/.test(segment)).join("/")}`;
-
 export const allRoutes = (): Route[] => {
 	const matcher = proxied();
 	return pagesIn(APP)
-		.map((segments) => classify(urlOf(segments), segments, matcher))
+		.map((segments) => classify(segments, matcher))
 		.sort((a, b) => a.path.localeCompare(b.path));
+};
+
+const MADE_UP = "smoke-missing";
+
+/** Pages that need a query the smoke does not send; they 404 without it, on purpose. */
+const NEEDS_QUERY = ["/checkpoint/new/checkout"];
+
+/**
+ * The address to open, and whether every parameter in it is real: a page opened
+ * with a made-up one may fairly answer 404, and only a crash then counts. `known`
+ * is keyed by the route up to and including the parameter.
+ */
+export const addressOf = (path: string, known: Map<string, string>) => {
+	const segments = path.split("/").filter(Boolean);
+	const parts = segments.flatMap((segment, index) => {
+		if (segment.startsWith("[[...")) return [];
+		if (!segment.startsWith("[")) return [segment];
+		return known.get(`/${segments.slice(0, index + 1).join("/")}`) ?? MADE_UP;
+	});
+	return {
+		url: `/${parts.join("/")}`,
+		real: !parts.includes(MADE_UP) && !NEEDS_QUERY.includes(path),
+	};
 };

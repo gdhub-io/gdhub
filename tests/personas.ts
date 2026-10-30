@@ -1,7 +1,9 @@
 import {
 	AdviceRequestStatus,
+	CourseStatus,
 	EventType,
 	SkillLevel,
+	TeamMemberStatus,
 	UserRole,
 } from "@gdhub-io/gdhub-prisma";
 import { SpaceRole } from "@/config/permissions/roles";
@@ -80,28 +82,53 @@ const ensureSpeciality = async (userId: string, openForMentoring = false) => {
 	});
 };
 
-const slugFor = (key: PersonaKey, kind: string) => `${kind}-of-${key}`;
+export const slugFor = (key: PersonaKey, kind: string) => `${kind}-of-${key}`;
 
-const ensureProject = async (userId: string, key: PersonaKey) =>
-	prisma.project.upsert({
-		where: { slug: slugFor(key, "project") },
+export const eventTitleFor = (key: PersonaKey) => `Pitch night (${key})`;
+
+const ensureProject = async (
+	userId: string,
+	key: PersonaKey,
+	specialityId: string,
+) => {
+	const slug = slugFor(key, "project");
+	const project = await prisma.project.upsert({
+		where: { slug },
 		update: { authorId: userId },
-		create: {
-			name: "Hollow Tide",
-			slug: slugFor(key, "project"),
-			authorId: userId,
+		create: { name: "Hollow Tide", slug, authorId: userId },
+	});
+	// Only the Founder may buy the project's checkpoints.
+	const team = await prisma.team.upsert({
+		where: { projectId: project.id },
+		update: {},
+		create: { name: `${slug}'s Team`, projectId: project.id },
+	});
+	await prisma.teamMember.deleteMany({
+		where: { teamId: team.id, status: TeamMemberStatus.Founder },
+	});
+	await prisma.teamMember.create({
+		data: {
+			teamId: team.id,
+			userId,
+			specialityId,
+			position: "Founder",
+			status: TeamMemberStatus.Founder,
+			startedAt: new Date(),
 		},
 	});
+	return project;
+};
 
 const ensureCourse = async (userId: string, key: PersonaKey) => {
 	const { id: directionId } = await direction();
 
 	return prisma.course.upsert({
 		where: { slug: slugFor(key, "course") },
-		update: { createdById: userId },
+		update: { createdById: userId, status: CourseStatus.Published },
 		create: {
 			name: "Shipping your first vertical slice",
 			slug: slugFor(key, "course"),
+			status: CourseStatus.Published,
 			createdById: userId,
 			directionId,
 		},
@@ -110,7 +137,7 @@ const ensureCourse = async (userId: string, key: PersonaKey) => {
 
 /** Events are keyed by title here: `slug` is optional and nullable on the model. */
 const ensureEvent = async (userId: string, key: PersonaKey) => {
-	const title = `Pitch night (${key})`;
+	const title = eventTitleFor(key);
 	const existing = await prisma.event.findFirst({ where: { title } });
 
 	if (existing) return existing;
@@ -209,9 +236,9 @@ export const PERSONAS: Persona[] = [
 				where: { id: userId },
 				data: { roles: { set: [UserRole.Member, UserRole.Author] } },
 			});
-			await ensureSpeciality(userId);
+			const speciality = await ensureSpeciality(userId);
 			await joinSpace({ type: "hub", userId, role: SpaceRole.Member });
-			const project = await ensureProject(userId, "author");
+			const project = await ensureProject(userId, "author", speciality.id);
 			await joinSpace({
 				type: "project",
 				spaceId: project.id,

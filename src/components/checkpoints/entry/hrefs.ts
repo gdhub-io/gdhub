@@ -8,6 +8,11 @@ export const isCheckpointEntry = (pathname: string) =>
 	pathname === CHECKPOINT_ENTRY_HREF ||
 	pathname.startsWith(`${CHECKPOINT_ENTRY_HREF}/`);
 
+/** Where an unfinished onboarding may go: the checkpoint hub's "About you" finishes it too. */
+export const skipsOnboarding = (pathname: string) =>
+	pathname.startsWith("/registration/onboarding") ||
+	isCheckpointEntry(pathname);
+
 /** `?project=` carries the project the way in was opened for, from the workflow or a review. */
 const withProject = (href: string, slug?: string | null) =>
 	slug ? `${href}?${new URLSearchParams({ project: slug }).toString()}` : href;

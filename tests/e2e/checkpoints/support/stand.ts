@@ -22,6 +22,7 @@ import { selectableStageNames } from "../../../../src/repositories/project/workf
 import { prisma } from "../../../../src/services/prisma";
 import { becomePersona, type PersonaKey } from "../../../personas";
 import { acceptCookieConsent } from "../../setup/cookies";
+import { baseURL, signIn } from "../../setup/sign-in";
 
 /**
  * The stand the checkpoint suite runs on: `bun run dev:test` on :3100 against
@@ -41,8 +42,7 @@ export const IMAGE =
 const VIDEO_ID = "aqz-KE-bpKQ";
 export const VIDEO = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
 
-export const baseURL = () =>
-	test.info().project.use.baseURL ?? "http://localhost:3100";
+export { baseURL };
 
 export type StandUser = { id: string; email: string; name: string };
 type Project = Awaited<ReturnType<typeof makeProject>>;
@@ -176,22 +176,7 @@ export async function signInAs(browser: Browser, user: StandUser) {
 	contexts.push(context);
 	const page = await context.newPage();
 	await acceptCookieConsent(page, baseURL());
-
-	const { csrfToken } = (await (
-		await page.request.get("/api/auth/csrf")
-	).json()) as { csrfToken: string };
-	const signedIn = await page.request.post(
-		"/api/auth/callback/e2e-credentials",
-		{
-			form: {
-				csrfToken,
-				email: user.email,
-				callbackUrl: `${baseURL()}/hub`,
-				json: "true",
-			},
-		},
-	);
-	expect(signedIn.ok()).toBe(true);
+	await signIn(page, user.email);
 
 	return page;
 }

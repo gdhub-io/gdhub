@@ -59,24 +59,14 @@ Every spec matching `*.authed.spec.ts` is then run with that storage state.
 ## Running locally
 
 ```bash
-# 1. Spin up a test database somewhere isolated from your dev DB.
-# 2. Copy env. `gdhub-prisma` understands `--env-file` and loads it with
-#    override=true, so it wins over the project's own .env.
-cp .env.test.example .env.test
-
-# 3. Apply migrations + base seed against the test DB.
-bun run db:deploy --env-file .env.test
-bun run db:seed   --env-file .env.test
-
-# 4. Run dev server with the e2e env so the credentials provider is active.
-#    Next.js honours existing process.env, so dotenv-cli is enough here.
-bunx dotenv -e .env.test -- bun run dev
-# 5. In another terminal:
-bun run test:e2e
+cp .env.test.example .env.test   # once
+bun run test-env up              # the test database and its personas
+bun run dev:test                 # the stand on :3100
+bun run test:e2e                 # every stage; two workers, one for smoke and checkpoints
 ```
 
-Playwright will reuse an already-running dev server on port 3000 (see
-`playwright.config.ts > webServer.reuseExistingServer`).
+Smoke needs the personas, so the whole suite runs on the stand. To run a focused
+spec without waiting for smoke, add `--no-deps`.
 
 ## Writing a new authenticated spec
 

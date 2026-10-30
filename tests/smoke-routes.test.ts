@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { allRoutes } from "./e2e/smoke/routes";
+import { addressOf, allRoutes } from "./e2e/smoke/routes";
 
 // GDHUB-130: a wrong rule here makes the smoke stage check the wrong people, silently.
 describe("the smoke stage's routes", () => {
@@ -49,6 +49,33 @@ describe("the smoke stage's routes", () => {
 		expect(route("/projects")).toMatchObject({
 			allowed: ["anonymous", "member"],
 			refused: [],
+		});
+	});
+
+	describe("the address it opens", () => {
+		const known = new Map([["/user/project/[slug]", "hollow-tide"]]);
+
+		it("fills a parameter with its real value", () => {
+			expect(addressOf("/user/project/[slug]/team", known)).toEqual({
+				url: "/user/project/hollow-tide/team",
+				real: true,
+			});
+		});
+
+		it("says when a parameter is made up, so a 404 is fair", () => {
+			expect(addressOf("/advisor/checkpoints/[id]", known)).toEqual({
+				url: "/advisor/checkpoints/smoke-missing",
+				real: false,
+			});
+		});
+
+		it("drops an optional catch-all, and opens the root", () => {
+			expect(addressOf("/blog/[[...rest]]", known).url).toBe("/blog");
+			expect(addressOf("/", known)).toEqual({ url: "/", real: true });
+		});
+
+		it("does not expect a page that needs a query to open", () => {
+			expect(addressOf("/checkpoint/new/checkout", known).real).toBe(false);
 		});
 	});
 });
