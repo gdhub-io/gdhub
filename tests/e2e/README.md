@@ -1,11 +1,43 @@
 # E2E tests
 
-Two kinds of specs live in this folder:
+The suite runs in three stages, as Playwright project `dependencies`. A later stage does not start when an earlier one fails.
+
+| Stage | Project | What it does |
+| ----- | ------- | ------------ |
+| 1. Auth | `auth` | Sign-in and sign-out (`auth-flow.spec.ts`). |
+| 2. Smoke | `smoke` | Every page, as someone allowed and someone refused (`smoke/`). |
+| 3. Critical flows | `anonymous`, `onboarding`, `authenticated`, `checkpoints` | The long flows. |
 
 | Project (Playwright) | Match pattern              | State                                |
 | -------------------- | -------------------------- | ------------------------------------ |
-| `anonymous`          | the existing `*.spec.ts`   | no cookies, smoke-tests redirects    |
+| `anonymous`          | the existing `*.spec.ts`   | no cookies, tests redirects          |
 | `authenticated`      | `*.authed.spec.ts`         | uses `storage-state.json` from setup |
+
+## Smoke
+
+```bash
+bun run test-env up        # the test database and its personas
+bun run dev:test           # the stand on :3100
+bun run test:e2e:smoke     # auth, then smoke; one worker, about 3 minutes
+```
+
+`smoke/routes.ts` reads the routes from `src/app/**/page.tsx`, and the expected access from the code:
+
+- **A `createPermissionGate` or `createSpaceGate`** in the page or its nearest layouts. The allowed persona is the space's owner (`SPACE_INSIDER`), or the super admin for a permission gate. The refused personas are anonymous and a plain member.
+- **Under the proxy's matcher, with no gate.** A member gets in. Anonymous is refused, and so is someone who has not finished onboarding.
+- **Anything else** is public.
+
+A new page is covered with no change here. Three cases need a line:
+
+- A page in a new role-gated space: add the space to `SPACE_INSIDER`. The stage fails and says so until you do.
+- A page with a parameter worth a real value: add it to `fixtures()` in `smoke.spec.ts`. Without one the page is opened with a made-up value, where a 404 is fine and only a crash fails.
+- A new seeded record behind that value: add it to `tests/personas.ts`.
+
+"Opens" means no 5xx, no error boundary and no uncaught exception. Console errors do not count: dev mode logs too much noise. "Refuses" means a 404 or a redirect to sign-in or registration.
+
+The stand runs with Turbopack's disk cache off (`next.config.js`): it grew to 10 GB, slowed compiles to minutes and crashed the server with `turbo-tasks: an internal panic`, exit code 0 and nothing else in the log. Each start compiles routes afresh.
+
+`test:e2e:checkpoints` passes `--no-deps`, so working on checkpoints does not wait for smoke.
 
 ## How auth works
 

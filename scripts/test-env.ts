@@ -18,6 +18,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { rmSync } from "node:fs";
 
 const CONTAINER = "gdhub_testdb";
 const PORT = 55432;
@@ -175,6 +176,9 @@ Then open http://localhost:3000/dev-signin and pick who to be.
 }
 
 function down() {
+	// What a stand leaves behind; compiled output is not worth keeping between runs.
+	rmSync(".next-test", { recursive: true, force: true });
+
 	if (containerState() === "absent") {
 		console.log(`${CONTAINER} is not there.`);
 		return;

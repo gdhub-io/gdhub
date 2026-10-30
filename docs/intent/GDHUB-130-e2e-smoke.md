@@ -26,8 +26,8 @@ are about to go to production with about 94 pages behind them.
   stage and says what to add.
 - **Compressed matrix on the dev stand** (decided 2026-10-30). Each page is
   opened as anonymous, as one allowed persona and as one refused persona: about
-  280 loads, with no production build. The full matrix of 94 pages × 10 personas
-  is about 940 loads, too slow for this stage.
+  250 loads in one worker, with no production build: 2.5 minutes. The full matrix
+  of 94 pages × 10 personas is about 940 loads, too slow for this stage.
 - **Runs on the stand:** the database from `bun run test-env up` with its
   personas, and `bun run dev:test` on :3100. No Paddle, no model calls.
 - **Allowed** means no 5xx, no error boundary and no uncaught page exception.
@@ -74,3 +74,15 @@ are about to go to production with about 94 pages behind them.
   only uncaught exceptions count.
 - **Dynamic routes without a fixture** (a token, a CMS slug): opened with a made-up
   value, where a 404 is fine and only a crash fails. The report marks them.
+
+## Decided on the way (2026-10-30)
+
+- **The stand's Turbopack disk cache is off.** It grew to 10 GB, slowed a compile
+  to 2.5 minutes, hung the machine and crashed the server (`turbo-tasks: an
+  internal panic`, exit code 0). With it off the run takes 2.5 minutes at a load
+  of 7.
+- **One worker.** Two pushed the load up to 47 while the disk cache was on.
+- **Found:** `/advisor/checkpoints/[id]` answered 500 for every id, because the
+  devlog editor was imported on the server. Fixed here.
+- `/checkpoint/new/checkout` answers 404 without `?project=` on purpose, so the
+  stage only requires that it does not crash.

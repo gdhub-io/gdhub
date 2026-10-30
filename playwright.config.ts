@@ -20,11 +20,28 @@ export default defineConfig({
 		screenshot: "only-on-failure",
 		video: "retain-on-failure",
 	},
+	// Three stages: a later one does not start when an earlier one fails (GDHUB-130).
 	projects: [
+		{
+			name: "auth",
+			testMatch: ["**/auth-flow.spec.ts"],
+			use: { ...devices["Desktop Chrome"] },
+		},
+		{
+			// Every page from src/app, on the stand with its personas: `bun run test:e2e:smoke`.
+			name: "smoke",
+			testMatch: ["**/smoke/*.spec.ts"],
+			dependencies: ["auth"],
+			timeout: 180_000,
+			use: {
+				...devices["Desktop Chrome"],
+				// The dev server compiles a route on its first visit.
+				navigationTimeout: 150_000,
+			},
+		},
 		{
 			name: "anonymous",
 			testMatch: [
-				"**/auth-flow.spec.ts",
 				"**/home.spec.ts",
 				"**/hub.spec.ts",
 				"**/admin.spec.ts",
@@ -32,11 +49,13 @@ export default defineConfig({
 				"**/public-dynamic.spec.ts",
 				"**/static-pages.spec.ts",
 			],
+			dependencies: ["smoke"],
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
 			name: "onboarding",
 			testMatch: ["**/onboarding.spec.ts", "**/onboarding-validation.spec.ts"],
+			dependencies: ["smoke"],
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
@@ -44,6 +63,7 @@ export default defineConfig({
 			// and real model calls, so one at a time and never in CI.
 			name: "checkpoints",
 			testMatch: ["**/checkpoints/**/*.spec.ts"],
+			dependencies: ["smoke"],
 			fullyParallel: false,
 			timeout: 15 * 60_000,
 			use: {
@@ -55,6 +75,7 @@ export default defineConfig({
 		{
 			name: "authenticated",
 			testMatch: ["**/*.authed.spec.ts"],
+			dependencies: ["smoke"],
 			use: {
 				...devices["Desktop Chrome"],
 				storageState: STORAGE_STATE_PATH,
