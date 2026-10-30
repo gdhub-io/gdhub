@@ -7,8 +7,11 @@ import {
 } from "@/config/checkpoint";
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
+import { devlogWords } from "@/lib/checkpoints/curator-text";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
+import { firstLine } from "@/lib/checkpoints/journal-text";
 import { lensWeights } from "@/lib/checkpoints/lenses";
+import { dateOfDay } from "@/lib/checkpoints/plan";
 import { getProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
@@ -18,6 +21,7 @@ import type {
 	CuratorTeam,
 	CuratorWorkflow,
 } from "@/types/checkpoint-curator";
+import type { ProjectLink } from "@/types/project";
 
 const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
 
@@ -261,18 +265,18 @@ export async function curatorMarketing(
 			where: {
 				projectId,
 				isSystem: false,
-				publishedAt: { gte: period.from, lt: period.to },
+				// The sprint's own bounds: the day after it counts, as in `sprintEvidence`.
+				publishedAt: { gte: period.from, lt: dateOfDay(period.to, 2) },
 			},
 			orderBy: { publishedAt: "desc" },
 			take: CURATOR_MARKETING_DEVLOGS,
 			select: {
+				id: true,
 				number: true,
 				content: true,
+				contentEditor: true,
 				publishedAt: true,
 				viewsCount: true,
-				applauseActivities: {
-					select: { _count: { select: { applauses: true } } },
-				},
 			},
 		}),
 		prisma.project.findUnique({
@@ -280,25 +284,25 @@ export async function curatorMarketing(
 			select: { links: true },
 		}),
 	]);
+	const applause = await prisma.projectReport.getApplauseCounts({
+		projectReportIds: posts.map((post) => post.id),
+	});
+	const links = Array.isArray(project?.links)
+		? (project.links as unknown as ProjectLink[])
+		: [];
 
 	return {
 		devlogs: posts.map((post) => ({
-			title: `Devlog${post.number ? ` #${post.number}` : ""}: ${firstLine(post.content)}`,
+			title: `Devlog${post.number ? ` #${post.number}` : ""}: ${firstLine(devlogWords(post))}`,
 			publishedAt: day(post.publishedAt),
-			applause: post.applauseActivities.reduce(
-				(sum, activity) => sum + activity._count.applauses,
-				0,
-			),
+			applause: applause.get(post.id) ?? 0,
 			views: post.viewsCount,
 		})),
-		links: ((project?.links ?? []) as { platform?: string; link?: string }[])
+		links: links
 			.filter((row) => row.link)
-			.map((row) => `${row.platform ?? "Link"}: ${row.link}`),
+			.map((row) => `${row.platform}: ${row.link}`),
 	};
 }
-
-const firstLine = (content: string) =>
-	(content.split("\n").find((line) => line.trim()) ?? "").trim().slice(0, 120);
 
 /**
  * Everything every review moment reads about a checkpoint for one period

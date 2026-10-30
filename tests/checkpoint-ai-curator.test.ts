@@ -67,23 +67,6 @@ vi.mock("@/repositories/checkpoints/ai-curator-context", async (actual) => ({
 	memberRole: (await actual<typeof import("@/repositories/checkpoints/ai-curator-context")>())
 		.memberRole,
 	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
-	curatorTeam: vi.fn(async () => ({
-		members: 2,
-		stated: 0,
-		hoursPerWeek: null,
-		hoursPerRun: null,
-		people: [
-			{ name: "A", role: "Game designer", level: null, hoursPerWeek: null, weeks: [true] },
-			{ name: "B", role: "Lead artist", level: null, hoursPerWeek: null, weeks: [false] },
-		],
-	})),
-	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
-		currentStage,
-		nextStage: null,
-		description: null,
-		requiredTasks: [],
-	})),
-	projectPicture: vi.fn(async () => "The project picture."),
 	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
 	checkpointFacts: vi.fn(async (checkpoint: { stageName: string }) => ({
 		workflow: {

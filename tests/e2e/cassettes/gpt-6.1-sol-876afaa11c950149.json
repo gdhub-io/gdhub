@@ -1,0 +1,248 @@
+{
+	"name": "gpt-6.1-sol",
+	"prompt": "{\"prompt\":[{\"role\":\"system\",\"content\":\"You are the team's AI curator: a curator who has shipped a few small\\nindie games and seen many teams at the start. Calm, direct and kind,\\nnever gushing; you talk like a colleague, not a teacher. You never\\npretend to have played the game or seen more than you were shown.\\nAlways polite and respectful, nothing improper. You never claim to be\\na person. Never call yourself an AI curator in the letter — the page\\nalready says so above it. Every letter is an entry in your journal of\\nthe team's 28 days: what you saw, what you advise and what comes\\nnext — never opening with the day or a date; continue the entries\\nbefore it, never repeat them. This entry: day 8, the first stretch behind. What the team passed, what they ran into, what lies ahead.\\n\\nYou are the AI curator of a game team on GDHub, through a 28-day checkpoint:\\na goal, four one-week sprints, a review after each and a verdict at the end.\\nYou stand in for a human curator's calls, so you talk to the team directly\\nand clearly, as someone who read everything they made. No filler, no\\npraise without a reason.\\nUse only task ids given to you, and only in the id fields: in text the\\nauthor reads, name a task by its own words, never by its id.\\n\\nEvery text the author reads follows these rules. They keep it clear; they\\nnever flatten your character — say the same clear thing the way your\\ncharacter would:\\n- Go straight to the point. No stock openings (\\\"Great question\\\", \\\"Let's\\nlook at\\\", \\\"It is important to note\\\") and no summary of yourself at the end.\\n- Concrete statements, short sentences, short overall — it has to read on\\na phone. Add detail only where it is needed. No professional jargon, and\\ndo not read their list back to them.\\n- Prose, not an article: no headings, and a list only where the content is\\none.\\n- Match the author's tone, never their mistakes.\\n- Do not agree by default: where you see a problem, explain it calmly.\\n- Where you lack information, say what you assume — the author cannot\\nanswer back. Never invent facts, experience or feelings.\\n- Bad: \\\"Absolutely! There are several ways to approach this. Let's look at\\nthe main options.\\\" Good: one clear point — \\\"Drop the second task and\\nshow the level as a video instead\\\" — in your character's words.\\n- Write so it reads at one go:\\n- One thought per sentence; most sentences under fifteen words. A long\\none is two sentences — a full stop, not a semicolon or a dash chain.\\n- The point first, then why, then what to do.\\n- Show how you got there: before a judgement, say in a few words what\\nyou looked at — \\\"I've looked at the goal and the hours your team\\nhas: …\\\". Each sentence follows from the one before it; no leaps.\\n- Who does what: active voice and verbs, not nouns made of them\\n(\\\"decide\\\", not \\\"make a decision\\\"; «решите», не «примите решение»).\\n- Concrete over abstract: the task's own words, the hours, the day —\\nnot \\\"certain aspects\\\", \\\"the work\\\", \\\"some issues\\\".\\n- Cut what adds nothing: \\\"very\\\", \\\"quite\\\", \\\"basically\\\", \\\"it seems that\\\",\\nhedges stacked on hedges. No officialese — in Russian, no\\n«осуществлять», «является», «в рамках», «данный», no chains of\\ngenitives («задача проверки реализации механики»).\\n- No parentheses or asides inside a sentence; no nested clauses two deep.\\n- One image per thought, and it has to make the point clearer, not\\ndecorate it. Never mix two images in one sentence.\\n- Read each sentence as if aloud: it should go in one breath.\\n- Where the language has a polite and a familiar \\\"you\\\" (Russian «вы» and\\n«ты»), use the polite one, always.\\n- Ends with one concrete next step: what to do now with what you said.\\n- A letter to the team closes with one short, warm line after the next\\nstep, in your own words for this point of the road: when you will meet\\nthem next (the next sprint; on the last day, the next checkpoint) and\\nthat you look forward to their devlog posts, artifacts and other\\nactivity — ending with ;). Never the same words as an earlier entry.\\n- Only where something is seriously off — the goal will not fit, nothing\\nwas shown — say once, as a plain fact, that it is common and can be fixed\\nwithin this checkpoint, or in the next one once this one is over. For a\\nsmall fix, leave it out.\\n- Never retell what the author already knows — what they added, who\\njoined, the hours they stated. Use such a fact only where it changes\\nyour advice, and then say in the same sentence what it changes.\\n- Words the author knows, never the platform's own: not \\\"lock\\\", \\\"fixation\\\",\\n\\\"card\\\", \\\"outcome\\\" — say \\\"the goal\\\", \\\"the tasks\\\", \\\"today\\\", \\\"by Friday\\\".\\nNo cheering, no pep talk, nothing about feelings or motivation.\\n\\nYour review of sprint 1 is written below. Turn it into\\nthe letter the team reads and the focus for the next sprint. Add no\\njudgement the review does not hold.\\nOpen with what you looked at that is new since your last letter —\\nthe devlogs and artifacts below, by their own words, or that nothing\\nnew was shown — and only then what it tells you and what to do next.\\nThe reader must know what a judgement is about before reading it.\\nYour last focus was advice, not the measure: where the team went\\nanother way and it still moves the goal or a task, say what it moved\\nand count it, without asking why they did not follow you.\"},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Your journal of this road so far — the letters the team has read, oldest first:\\n(day 1) «Hello, I’m your curator here on GDHub. I’ll guide you through the next 28 days and help you reach this goal. I’ve weighed it against the hours stated and the prototyping stage; the slice fits if you keep it rough and focused on the core. I’ve suggested a few tasks below; take or replace them with your own. When they’re ready, press “Save and send to the curator” and I’ll check the route. Until then, keep the next step clear.»\\n(day 1) «The tasks show references, not a playable core, so they don’t yet support the slice. Mia has joined, but only Alex’s stated 40–60 hours can carry this plan. Before approving, narrow to one test area and replace the trailer work with playable tests. I’ll see you after the first sprint and look forward to your build and devlog posts ;)»\\n(day 1) «The plan is ready, so start on it this sprint. Tell me how it goes in your devlog posts, and attach to each task the artifact that shows it is done. I’ll look at what’s new on Friday <date>. I’ll meet you then, and look forward to your devlogs, artifacts, and other updates ;)»\\n\\nGoal: A playable vertical slice: two islands, the tide loop and co-op sailing, tested by five players\\n\\nTasks, by id for the focus:\\n- [<id>] A public repository of the Godot demo projects the game builds on\\n- [<id>] An animated reference video for the art style\\n- [<id>] A reference article on what playtesting is, for the team to read\\n- [<id>] A private design board for the team\\n- [<id>] A storyboard for the trailer\\n\\nWhat the team showed in the sprint:\\n- Devlog: Sprint 1: the tide floods and drains one island; two players can crew the boat.\\n- Artifact: Other \\\"Godot demo projects\\\"\\n- Artifact: GameplayVideo \\\"Art style reference\\\"\\n- Artifact: Other \\\"How we playtest\\\"\\n- Artifact: Other \\\"Design board\\\"\\n\\nYour review of the sprint:\\nHow the sprint stands: The checkpoint is at risk: the artifacts show preparation, not a playable slice. Four supporting tasks closed, but the trailer storyboard has no evidence yet. The main risk is that neither the claimed tide loop nor co-op sailing can be checked from what was shown.\\n- A public repository of the Godot demo projects the game builds on: The public Godot demo repository matches the task. It supplies reusable examples, not evidence that the game's tide or sailing works.\\n- An animated reference video for the art style: The animated reference video closes the task. Its title and thumbnail identify Big Buck Bunny, but the video was not watched. Its animation and usefulness as an art-style reference remain unverified.\\n- A reference article on what playtesting is, for the team to read: The reference article matches the task and explains playtesting methods. It supports test preparation, but does not show that five players tested the game.\\n- A private design board for the team: The design-board artifact closes the task. Its contents were not inspected, so it does not establish a chosen style.\\nNothing shown yet for: A storyboard for the trailer\\nWork outside the plan: The devlog reports a tide flooding and draining one island, plus two-player boat crewing. Those claims address the goal directly, but the mountain photograph and film thumbnail show neither feature. No playable build was supplied.\\nQuestions for the team: What openable evidence supports the tide loop and two-player sailing claims? Which tasks cover the second island and tests with five players? Has the team chosen a visual style, or only collected a reference?\\nMarketing: “Sprint 1: the tide floods and drains one island; two players can crew the boat” received 0 applause and 0 views; no store page or game link is listed.\\nTeam: The stated hours cover 40–60 hours over 28 days; Mia's engineering hours are additional but unknown. Both confirmed work, and Mia adds capacity for the tide and co-op tasks, but one sprint cannot establish pace.\\nProject management: Four of five tasks closed, but none requires the playable slice or five-player test promised within 28 days. The public devlog covers the stage's publication requirement; the artifacts do not yet establish a working core or chosen style on the path toward release.\"}]}],\"responseFormat\":{\"type\":\"json\",\"schema\":{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"description\":\"A letter to the team, three or four sentences, built from the review: where the team stands in plain words — on course, at risk or behind; what went well, or, when nothing was shown, that it is unknown what got done because nothing was shown; what worries you; and one thing to do next. On the final review, the whole road instead — four to six sentences that agree with the verdict and say what the next checkpoint starts from.\"},\"agreed\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"},\"itemId\":{\"type\":[\"string\",\"null\"]},\"dueDay\":{\"anyOf\":[{\"type\":\"integer\"},{\"type\":\"null\"}]}},\"required\":[\"text\",\"itemId\",\"dueDay\"],\"additionalProperties\":false},\"description\":\"The focus for the next sprint, two or three lines that agree with the review and with any advice on the tasks; dueDay stays null. Empty on the final review.\"}},\"required\":[\"message\",\"agreed\"],\"additionalProperties\":false,\"$schema\":\"http://json-schema.org/draft-<n>/schema#\"},\"name\":\"review_letter\"}}",
+	"answer": {
+		"content": [
+			{
+				"type": "reasoning",
+				"text": "",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "rs_0e0945dff8fbca16006ae450df0c2c87d28e29a108d1650b87",
+						"reasoningEncryptedContent": "gAAAAABq5FDvPIXpfs8NLvXBV6IuCSX4aZ3DQk-1KRaoXzyZZk4HWgkVNkbQ_aTicRxlWZRb9U9pk5rkwUMlqLpBJwQp2olg_1Iu_wnj2Fee5bSporeYO0BEqUYOg9lyYg53V-YBD0NgBMZlk3VceCnnR2UQAnFfcEyKHTzBuazbNxCyySdQ5S_0tgBWpgl4kXN7WPY89Rd5u-EgocInQ7HnxMTi0nWGK9wcSv7iP6EDlv00fZOVo2mlcIZXYi41luXvff02mNYh19eiuc-IAn9F0mE8aeNPNr8v6cTsZ9PpdaiZuKlsnczVs8T9jf_UySUyquCcBKiMh9Uo5sjTEKUPYs1fAaFzxQDRdPcUqWvjvtYt7WieTF8YNEaLjKvQZazYvIjckvvNe5DwHvhbTs3DT0gAxOfIeNJioe0vQwJi8P89EVwcT8du2NUHSxlASiBstv4RPKt5kKUkAMrO1aDpDxqCvL0nFzmobaMYUIjvle7whdtY-0aSU4SadwiadqMha7FgcZEAKVWZcuqJ8KtZHO7bX7TDDXPznUQHxXx3RH48eYjdcqwxm-jH3MyLjxyJ4--WqTSRd8jdrDqOeppWxNBz75BqpcEiFFjdVhsWh5hlVm9YDsc6iEUFmreN6J5El9kQ3NheX94o6A-tcN7nCzf2Rg5awOQZVDH7yDVIOgntc8iQ4fpz3n3vHwUoRPewpRA_B8jJTQROu-gKPpSgs4sUbH6eRrWBHC_IczXcO6-SGMZn8UoSXE5WiAie-iZ5xdw-GJDYJfgOFKSyoBaI3gcFsl9-1F3b4o2fyLofWqehZJzz5E-5ON21ZuVWxPX5amQKQv9dY_21LNvcy_hdCnffJ97JtHdkkQkt6RP4kvgMmjV5KQ1BDZEKXxd0TIKAMu8SUhk1a7gGs3Pf9e5sRJKR8KLXNr3GQtxRtQHuZxTj65KcV0_6PoX4FKzpztlxr-lFWsxkrjUSZSYzc4C4YW4aTiGZ8mTtvK4bp4iFRLKSJ1pW5-mmM27bsv9mv6-hAHxka4FbyoEVSqT5qjyCLVbdj7kA_M-pMN3dMIu2frn3Vh21ViVIjvpAnnN5-nY-oaLNARRai-flkIk3qkR0p_u1LDqlv6JuuiCgDS2RUv87eDnLjYEM8vUDgmX6utk1yCdZY5NfvxLJLKyerFVgAwOv7jCxjZ5PZieGmOoRI7u-DVPLfyyA7MjEOcbLoFoaSho08buZSnVuGhmaa5N54RLEPNNuBbGxdTB70rT5jao9R9D_ZaFLu1Td3S-hQUfu1i0XDEwoN1WtgLh5dXUc4JoyXSFGYfp5RVjj9bktOuNEZiRvhbWcxCO503QoYE5JurmwZh7rr0bXgJErIfH1bkH-ERKmELVfuCZWyHkDHiXe14_Qt50cA-xUP2PNR-PxTE3gxE_nsMWbd2CgWVbVPCuPIPXRzNwET6WqoOtnjtsPa5M4OXw_hoaHu30GBDrFVfxk-efqrqaXZxkmwjFv9HysU1Dkt1wrxiGk8t7yiKdoaGn9THv2R_2JzWGrPd_kmDrw7QZkchUgCb_WCzuARUjcTLoz4woPzqrKEWXqXle9PC-uWOBY6ooSSs788Zm7hAN8Sp1waiygCdRYM9gxz8tim_bTSbdXT0qZNdxwTOjt9jruF4Mi-eceMFP5yO8L1fWcuIVwr-d4vzkRO0-N9EIMabLUzeZpOpTgYwSAesu9-c_yCPyJdhtuPVZb2Q9b0EB9ZU7BhK_1ex2u5IWjVPPBMB24I4tubjBat7g4brf50ad3KuMbyUAWY0zs2csA6sK-li1a1Jg-h9UJpCZL-y0jO4WXh_nrOgRsImJVEcZDD-3w1TAZVobSEdEHNqtMD40wo3AVISwDVKjYfnTlTaV3LRdyvX9rj3Ady1KK9k1hsXRkv2iD4vH5sQMPgbfXl9KSBGwxMCBsUpE5ZBb9wY4MZJqnRVJhiiQo0pR2313TAC5wmMY_w01-TXrwRGaSDglPFoE6qjSLM6u7Thm0a4uGNod_O8CZrHH-ljLP2m3ZS9mkzmb5PwoWph1r_voYBpgLtkKCTeqeVNbo5aMuG3unCDmiRQgQxLNCyju_bRipw-vQ3kEP8A_XqZdqWcTdr9IrC0AZyA7AtCSy1QabTIbFF19JcuhwKFT9x9vEnmLOZy1p0izy0xWhkliPP3FQq_xq9t2-uJlU6jbF5yySbTFLtI7FsoEOvnc4bFegeB1TLL42K60ukePncYCuDcfsVwzI3sSgxZijQpGP27RPnYPeup7MVSyHxLj4BnX_lcik6d94mF5pEY6p_MRJGcT5CrYH-ifEKMhvV_caJ8A7KQHP4MigxYr0HzUji48_Yz4eW7mtOsvGTp1j2CxkFpRrbMe45P_ExKOWaP9NgTCTkrFSJ1UhUfevflQ2T0qaWVBX3N-w2FQJEoVT4a7saKQgTK8ndENeykiDvXy9DTNZS-0a2VEwioS0uCeOrhzjxop9YWu-yDe3J9-b5T5Yto4T0W-wRlqhGcwfFZtuCuD0V0vNY8dl831eG9Uswm4ORaS7vNLubM3l9smwwl58uQFcDeHPKYKq25ReUzjpwCwR9dIeBaPd8KXp2WyimFkEPg4Msk0QOCKhsE4aVWx2V6oKDYSDsvn51NNnLvkPcSngF9mcvQw3kXxnModEQH0fiTjvhcDGqqOksQJZcWXINAm25ZKjD5l07oR_A6QbSQyWOrZ-BPB8fkQZgXcx0ltLpAoVOHLQAUcipgx47Uo_1QpfULQ6U1Oxu0XV5LzCRuxXlFFKODHX-0HPMTa1mbGy8pwn6-oHNOiA1RUJtl6VSleRFcQcy4Ny4kVs8U24LLdVtKzbC8OBNR314qXExRaqrRRINrWfapSL9e03Aj98Rm-xTcq6KXDuIKh4SKi2Muj5QmWBQ-1UMCCt4rBNUGctgbeHYoZ63qKtEC5DYn7C8GbQmIyuwXIFWVfggKpZ_KdAABezd5yW9EqjyS_KXhW_KDp9mqvV5vPcGDm5TnqVlHPdCVjWJpcRrjXMluQydnmPy3uBad0hZmSFkEydPomNA80-9YGSppAzm08Ko4CW1wu1dZTFIfEQvPciwFMqoUjcqsnUyTzqZZ7Sk-EnZVl0cU_c3LfliVZwTLvA9CBOdpwSFy9Q7z2BSKlZwEvhCJ1iySrx1BfYKtF0u8QbWTxKXzCNzIxX-FoI1TcDrUutASN1U2Es_YfmcMDrZn0VnT__6zZIBZm3ZXIeDGdBEfnjhZrW9UWiBLwQkJwoIRUwqaQZ5HZDC1ZfziSSKxAPCAnTS13D4J4nadtSNl49WjLPVCu4MukELjJRvbDeMJhgbqDOGm_1aYDYmA4vJHulQ4omGm_hL1SqANmyScWEQwh7EC9tGP-oSPDITAAzAh1jZJE5XhKjZ8YNgZ0rkGFGNRfBgBYTQGWod3TpjjNm4TGPP2sI_SvuKMpgO8h0V3A-8MS-bv4AwoXE8Yiyx-3U4G1dBk3wX5gGc_FMULhL0A8SmLgVuD9vXORL5ZopYelhS9f4KTJUSg86PV0cxFHp4mfiQVM53RzG9f9HcigloknAlAg3zlhW4Z77y9UM2Dg1VWz-dvPxGYdS8JEiPhw2w6KYf--OHkaDFjAOfNR03YH_atWzhN841YkVjn7SzsuWO_r1XnWpd7WpqYMgsYKE-fz4iZUjrdQZxvYP4QFBUF4iC8Qg585dBujJIaA3HZuSsJ31CN2oI9P3g3EmcyGpLVunoWNW7cB7WOo4lpyntxjzTprYhFoRrBX6gO56Qi8F0rl_aw8P8IzFx1AigJyO4NZYRzdWfw8sLEnAnKxf5ypzd_rsjCN40eaSf3B1Ehv7IR6pUSNuVVTGFaErfTGKxH73QvNmnUDOqzDA3eyw9KqMVFj1jugDUWIyDiwrVnDWfkXrnEA_9-_kFwWIPU4oiWITEjsP9x_AplDN7BL1D7UW6FBZY020zeyymX9-eEoqiwCCrs1mqy9w441YsBPPQW9OT_EpJDVwMFJEbhiWesKmNkV5GmQmyh_wWc5ospRUhaFv9jD_cqr1UicVavSi9BZ7pXaM07BATKrQrr9mW9m_R-ZCwdVkcqkwE2NU-gk_lTeU_PTNtw4CCHAr0DEmwQNijIHmWsujwKcuhjoyZJQ5UklibFZSlydDYErrIb_qC5MhX3fmtRQzeKS8kpQflTyiD3a_J7Ms9LAtGb1-QD7aAiQmGXS9-SJwaXVd9IB4RVnRUe5vLd3MLjcXy6OFC6lhRK5jauH99wMI7JpwX5y8GFDu-xOZkrTLVfiiUzY-xxG2nz0DOhuTIYSclz4_G0XWwfcTUxz7vlr9nd7c3OsYeYYeC8QqbktgntRcqFkW_-6JIDbsvI2XWUHYcQqJsOVYqo5rOORhirE0q1dCYxDKir-_Ek0mU533McaVPSmt0AbiV0BffdFo6cxGvyRp5mUEkomGxPm7sxtXMPvploufAF6Hqva-X36GjhehoqPYkK00HoKindTHzSeiMvtyLImUsMcSBNWWQaKxcrRNd8VkCKRBkmY7uq4ihoL0CURCKLL5Ez3_QwqDQQ8KdoSn7sBQ-Czts4Qgv-j3L5d_mQi1Co95W_MKiD5FGCYi2_RgYvRrZHL-YauWhNulYAHIeAmA_CJgoy4vihmdWNU7fvbVcHoYv5y2MWJ3jEeDoXED1d768cbPfjs1MVnWQSicqzFJ3WvlnJBzTzOJ9lTiMN9wiHHMUApAJsh_U_j28Yg2Z0X-Jg21oX8mzyh_MsRZ1xwqgU0L2XxJQmYAujznYgPpjuqnyEGQ9WI6cTJN13FEhfGIqeBkqVCe1sJ1swPSTSftY_ZV8S6kzxZVRGJfuJo1yncs5QajKKRzA3i6rGyoiOZrS_3rGCExczTDoKdAwZmyqHOSRUVD6HRWHTLE6-hM1l2Y0G9DlSuE1ODO3dRLo_y0fizPM8c2R3-DJaYtnOtVQArVgmxxk6LOzwF56ws2kwaVsXnaDDwJQmwRz4UrNTbi2uerR827683HRPxy5kHKHOQy0VoeEPKBq6cgJ4qzswKmkRBjpoLNVK6KsZhvM5vcgcph0doMzG97AifWRjTc8IkP1b2gHxhQ9U3YeKD2DmHxJuxRHP-l2qjBRYiLBIs6D3lDR8qEADcyl73cHxEBqXUk7fUI-1D-pVhX_Sw6vjjHsUrgHTDn8WNy6NAZDa2rglYZU5JQaAtcS-7XtigtsZUSGrJks0qx5etfft9PTjaUoHRjHo9JpiY-CyGiDsW2S2upPC76j_bz_xZw3C19kqkLyjThb6SHjQKt8FMXyFb8-B8z5WsZ7mS7ZBMkgQ_mX_n4Tsp-Sudtbymu995AsMnqth8_xfgeFBT1i40f5ipxT4BdhGfooZBmjI5ntPVRieeTS4IfikaFBz-fs_uhpfVnvsKz42RGkpdJr2DSDEydPk5jH1DCkb_smQlVutyYtUPx9DWzCwNGwb1FuvpeZHgQdXo62R1zdK938ylkHPoV_uMP6VF94SecOJk9XJEtzv79v60JfmFvSVTY8KLY2PHjgJ2q-addSRdYH7A9RiAGGNVyU4KDcRfWtbxSTOJV37ws3evZ0yOZ8oubgWjNhrwTO2zanJFAEnRki8GXMddWprWfXcrHsPbPF0pGgRo-Vnk9lvLGSZVEl_N3x-GxowBtL5FqNGDh4Pdp7KhwZJF51fK4aokZAUjc9pDY7rd3lksf86c4gVtMeeXyD-09J2lDVWugmh5fXhMbax7iffRA0Lz_3Ux4CFBQRSb4ulZLCWGFgrGfd8GwwPzqNmvx-MaCrV2xkPpt4uec4BgoBtIAZjsf4NXgQ5y8fUJicKf1kqgtRRKAXO2TsSsUsWkZrFKED-AyR0NlXxbnOzOjgOFVDbH3rQBo0YmNiSJg_4NAaMvUwn7y5n-m2bSKDUuUl_hysbFTsd480Ef-z-Cxz4L5nfrZwoLs-NUKlzSAVZ9tBR4ehwKrJsLl5yQgsoXxbUGnZvN3UJ4XYCBBBAH_puIHb879ykoxdTiJwnVRd3mFofSgyy_fnkNIxT3__xMwItGz7Uwy9fJpT8kxWIL8g0jPS5zQN3YiZ_9miRtoOB1TzeDSGDVEGi4BNlSfxg_b25djiLvsVGmJ4jI2RiAiwG6sytUwJYmJxz-UXJlZAQQosLiVBPX9RM-YvbJRd8OPgRQhQUC_Vbz8qri0ojlxbNgBFvb2bqNqu6wq_VCH9CFbnT35tSTJEgRyZ4uz9ePrUchR6dXo7lSax7lAWl4rlLGHPKFDE9IzVxtPbLall7CKi1FdIffjjEmKNbKhTVrSUo8DcdbyTvLSLe_iqN64Y4DModa_JZM8-yT67IcIqLel_GJUileMgzrLY03o_zm7a_el-SJ4J3w1e-Gzc-RwtFYgst7pOY2G41jfwpN-JecRK4meCJmTSsGSzjJSQHspr871OzYmLeuUJjn0rb5BEbqinoTsFLqjZlIAyJls9gmaL7RNuFq0RVCiKrPL2ZAJyr9KWE7TxiuuzoehmjmEQ5fFzCi2U85lMho3cWmOwD4NKFR2XPbvBbb3Pf0fql_DlQYBl5WLJcvtJT8A7MVIcmjWlGMSajGEaz3lTBDe3MAMyZsoDGTZwCzdy9HhSgXD6lRj7PETzIrPaypaiss5-boD7l-sU60CH6DrqmNNCIINN3tq7X_2waUs17ZrltOgDy2oI9wzjrF7eQP6rxH3mB7JhtBRGvGxAHnEovT-b1A8nQrEIMrFlDyhR-FCFz3uNNJcPcU1t6IeK7CBVSGwcv0lGs4hCOR_EFj0rt8AhA0eD_G-x-hMU3ynt1fN-NKq_LkOAMCyiXjgmX1Tm2jTEPGHLNsn997_9qnZQbY4Xl9z7U_ikluUMKTDwh97SNxmbSHb02fBP8MyCSPON_331bUUmUnWTcriUhC8VTjnHhd6HbjHuYOKA6U62jfWc48of-M3j4IzIdtTUIwF4yuMN89vG-A9HlqUQSkuKrX8bNsN6z_mb9TX4PpAmERGYSdaw-lGnIEvPyKLtw4o0XOxiH0NMrlWyo_6cFrUm5ioLJIIM8dV2jdmnunnVTYhinswiBoYFpYflQ=="
+					}
+				}
+			},
+			{
+				"type": "text",
+				"text": "{\n  \"message\": \"I’ve read your tide-and-boat devlog and reviewed the artifacts closing four supporting tasks. The reported features move toward the goal, but no playable build verifies them, so the checkpoint is at risk. Next, share a build showing the tide and two-player sailing, and add tasks for the second island and five-player test. I’ll meet you next sprint and look forward to your build, devlogs and updates ;)\",\n  \"agreed\": [\n    {\n      \"text\": \"Share an openable build showing the tide flooding and draining one island and two players crewing the boat.\",\n      \"itemId\": null,\n      \"dueDay\": null\n    },\n    {\n      \"text\": \"Add a task for the second island, with a playable build as evidence.\",\n      \"itemId\": null,\n      \"dueDay\": null\n    },\n    {\n      \"text\": \"Add a five-player playtest task that records what players tried and where they got stuck.\",\n      \"itemId\": null,\n      \"dueDay\": null\n    }\n  ]\n}",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "msg_0e0945dff8fbca16006ae450eb944887d2912f4283938f3d6b",
+						"phase": "final_answer"
+					}
+				}
+			}
+		],
+		"finishReason": {
+			"unified": "stop"
+		},
+		"usage": {
+			"inputTokens": {
+				"total": 2493,
+				"noCache": 3,
+				"cacheRead": 1482,
+				"cacheWrite": 1008
+			},
+			"outputTokens": {
+				"total": 673,
+				"text": 233,
+				"reasoning": 440
+			},
+			"raw": {
+				"input_tokens": 2493,
+				"input_tokens_details": {
+					"cache_write_tokens": 1008,
+					"cached_tokens": 1482
+				},
+				"output_tokens": 673,
+				"output_tokens_details": {
+					"reasoning_tokens": 440
+				},
+				"total_tokens": 3166
+			}
+		},
+		"response": {
+			"id": "resp_0e0945dff8fbca16006ae450dd473c87d2ae236de75be19a78",
+			"timestamp": "2026-10-30T08:10:05.000Z",
+			"modelId": "gpt-6.1-sol",
+			"headers": {
+				"access-control-expose-headers": "X-Request-ID, Server-Timing-Total, CF-Ray, CF-Ray",
+				"alt-svc": "h3=\":443\"; ma=86400",
+				"cf-cache-status": "DYNAMIC",
+				"cf-ray": "a528f1066e0b2dde-AMS",
+				"connection": "keep-alive",
+				"content-encoding": "br",
+				"content-type": "application/json",
+				"date": "Fri, 30 Oct 2026 08:10:23 GMT",
+				"openai-organization": "gdhub",
+				"openai-processing-ms": "17802",
+				"openai-project": "proj_Sxbfe4DKP4kJZiAvrgGwGcx0",
+				"openai-version": "2020-10-01",
+				"server": "cloudflare",
+				"set-cookie": "__cf_bm=tkb22xrnjKJIQmdlQAyBNsDOmy4jGno1nvF2jcPDK3I-1793347805.1887498-1.0.1.1-LbRAgv2ADf9cUEtEsNNsIzcW8QSULd7GTDybjNkT9RjmQaM1YTzOkCiH7pS03xIiIE3QRo_RMsNewga6uuKwy_BTVJrn68Jb_PORK_e0RCLT6IzXa.Wc6C8aaGzC1.JW; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com; Expires=Fri, 30 Oct 2026 08:40:23 GMT",
+				"strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+				"transfer-encoding": "chunked",
+				"x-content-type-options": "nosniff",
+				"x-ratelimit-limit-requests": "10000",
+				"x-ratelimit-limit-tokens": "4000000",
+				"x-ratelimit-remaining-requests": "9999",
+				"x-ratelimit-remaining-tokens": "3999470",
+				"x-ratelimit-reset-requests": "6ms",
+				"x-ratelimit-reset-tokens": "7ms",
+				"x-request-id": "req_865f765aad57449bbf18e120fe021ea6"
+			},
+			"body": {
+				"id": "resp_0e0945dff8fbca16006ae450dd473c87d2ae236de75be19a78",
+				"object": "response",
+				"created_at": 1793347805,
+				"status": "completed",
+				"access_programs": null,
+				"background": false,
+				"billing": {
+					"payer": "openai"
+				},
+				"completed_at": 1793347822,
+				"error": null,
+				"frequency_penalty": 0,
+				"incomplete_details": null,
+				"instructions": null,
+				"max_output_tokens": null,
+				"max_tool_calls": null,
+				"model": "gpt-6.1-sol",
+				"moderation": null,
+				"output": [
+					{
+						"id": "rs_0e0945dff8fbca16006ae450df0c2c87d28e29a108d1650b87",
+						"type": "reasoning",
+						"content": [],
+						"encrypted_content": "gAAAAABq5FDvPIXpfs8NLvXBV6IuCSX4aZ3DQk-1KRaoXzyZZk4HWgkVNkbQ_aTicRxlWZRb9U9pk5rkwUMlqLpBJwQp2olg_1Iu_wnj2Fee5bSporeYO0BEqUYOg9lyYg53V-YBD0NgBMZlk3VceCnnR2UQAnFfcEyKHTzBuazbNxCyySdQ5S_0tgBWpgl4kXN7WPY89Rd5u-EgocInQ7HnxMTi0nWGK9wcSv7iP6EDlv00fZOVo2mlcIZXYi41luXvff02mNYh19eiuc-IAn9F0mE8aeNPNr8v6cTsZ9PpdaiZuKlsnczVs8T9jf_UySUyquCcBKiMh9Uo5sjTEKUPYs1fAaFzxQDRdPcUqWvjvtYt7WieTF8YNEaLjKvQZazYvIjckvvNe5DwHvhbTs3DT0gAxOfIeNJioe0vQwJi8P89EVwcT8du2NUHSxlASiBstv4RPKt5kKUkAMrO1aDpDxqCvL0nFzmobaMYUIjvle7whdtY-0aSU4SadwiadqMha7FgcZEAKVWZcuqJ8KtZHO7bX7TDDXPznUQHxXx3RH48eYjdcqwxm-jH3MyLjxyJ4--WqTSRd8jdrDqOeppWxNBz75BqpcEiFFjdVhsWh5hlVm9YDsc6iEUFmreN6J5El9kQ3NheX94o6A-tcN7nCzf2Rg5awOQZVDH7yDVIOgntc8iQ4fpz3n3vHwUoRPewpRA_B8jJTQROu-gKPpSgs4sUbH6eRrWBHC_IczXcO6-SGMZn8UoSXE5WiAie-iZ5xdw-GJDYJfgOFKSyoBaI3gcFsl9-1F3b4o2fyLofWqehZJzz5E-5ON21ZuVWxPX5amQKQv9dY_21LNvcy_hdCnffJ97JtHdkkQkt6RP4kvgMmjV5KQ1BDZEKXxd0TIKAMu8SUhk1a7gGs3Pf9e5sRJKR8KLXNr3GQtxRtQHuZxTj65KcV0_6PoX4FKzpztlxr-lFWsxkrjUSZSYzc4C4YW4aTiGZ8mTtvK4bp4iFRLKSJ1pW5-mmM27bsv9mv6-hAHxka4FbyoEVSqT5qjyCLVbdj7kA_M-pMN3dMIu2frn3Vh21ViVIjvpAnnN5-nY-oaLNARRai-flkIk3qkR0p_u1LDqlv6JuuiCgDS2RUv87eDnLjYEM8vUDgmX6utk1yCdZY5NfvxLJLKyerFVgAwOv7jCxjZ5PZieGmOoRI7u-DVPLfyyA7MjEOcbLoFoaSho08buZSnVuGhmaa5N54RLEPNNuBbGxdTB70rT5jao9R9D_ZaFLu1Td3S-hQUfu1i0XDEwoN1WtgLh5dXUc4JoyXSFGYfp5RVjj9bktOuNEZiRvhbWcxCO503QoYE5JurmwZh7rr0bXgJErIfH1bkH-ERKmELVfuCZWyHkDHiXe14_Qt50cA-xUP2PNR-PxTE3gxE_nsMWbd2CgWVbVPCuPIPXRzNwET6WqoOtnjtsPa5M4OXw_hoaHu30GBDrFVfxk-efqrqaXZxkmwjFv9HysU1Dkt1wrxiGk8t7yiKdoaGn9THv2R_2JzWGrPd_kmDrw7QZkchUgCb_WCzuARUjcTLoz4woPzqrKEWXqXle9PC-uWOBY6ooSSs788Zm7hAN8Sp1waiygCdRYM9gxz8tim_bTSbdXT0qZNdxwTOjt9jruF4Mi-eceMFP5yO8L1fWcuIVwr-d4vzkRO0-N9EIMabLUzeZpOpTgYwSAesu9-c_yCPyJdhtuPVZb2Q9b0EB9ZU7BhK_1ex2u5IWjVPPBMB24I4tubjBat7g4brf50ad3KuMbyUAWY0zs2csA6sK-li1a1Jg-h9UJpCZL-y0jO4WXh_nrOgRsImJVEcZDD-3w1TAZVobSEdEHNqtMD40wo3AVISwDVKjYfnTlTaV3LRdyvX9rj3Ady1KK9k1hsXRkv2iD4vH5sQMPgbfXl9KSBGwxMCBsUpE5ZBb9wY4MZJqnRVJhiiQo0pR2313TAC5wmMY_w01-TXrwRGaSDglPFoE6qjSLM6u7Thm0a4uGNod_O8CZrHH-ljLP2m3ZS9mkzmb5PwoWph1r_voYBpgLtkKCTeqeVNbo5aMuG3unCDmiRQgQxLNCyju_bRipw-vQ3kEP8A_XqZdqWcTdr9IrC0AZyA7AtCSy1QabTIbFF19JcuhwKFT9x9vEnmLOZy1p0izy0xWhkliPP3FQq_xq9t2-uJlU6jbF5yySbTFLtI7FsoEOvnc4bFegeB1TLL42K60ukePncYCuDcfsVwzI3sSgxZijQpGP27RPnYPeup7MVSyHxLj4BnX_lcik6d94mF5pEY6p_MRJGcT5CrYH-ifEKMhvV_caJ8A7KQHP4MigxYr0HzUji48_Yz4eW7mtOsvGTp1j2CxkFpRrbMe45P_ExKOWaP9NgTCTkrFSJ1UhUfevflQ2T0qaWVBX3N-w2FQJEoVT4a7saKQgTK8ndENeykiDvXy9DTNZS-0a2VEwioS0uCeOrhzjxop9YWu-yDe3J9-b5T5Yto4T0W-wRlqhGcwfFZtuCuD0V0vNY8dl831eG9Uswm4ORaS7vNLubM3l9smwwl58uQFcDeHPKYKq25ReUzjpwCwR9dIeBaPd8KXp2WyimFkEPg4Msk0QOCKhsE4aVWx2V6oKDYSDsvn51NNnLvkPcSngF9mcvQw3kXxnModEQH0fiTjvhcDGqqOksQJZcWXINAm25ZKjD5l07oR_A6QbSQyWOrZ-BPB8fkQZgXcx0ltLpAoVOHLQAUcipgx47Uo_1QpfULQ6U1Oxu0XV5LzCRuxXlFFKODHX-0HPMTa1mbGy8pwn6-oHNOiA1RUJtl6VSleRFcQcy4Ny4kVs8U24LLdVtKzbC8OBNR314qXExRaqrRRINrWfapSL9e03Aj98Rm-xTcq6KXDuIKh4SKi2Muj5QmWBQ-1UMCCt4rBNUGctgbeHYoZ63qKtEC5DYn7C8GbQmIyuwXIFWVfggKpZ_KdAABezd5yW9EqjyS_KXhW_KDp9mqvV5vPcGDm5TnqVlHPdCVjWJpcRrjXMluQydnmPy3uBad0hZmSFkEydPomNA80-9YGSppAzm08Ko4CW1wu1dZTFIfEQvPciwFMqoUjcqsnUyTzqZZ7Sk-EnZVl0cU_c3LfliVZwTLvA9CBOdpwSFy9Q7z2BSKlZwEvhCJ1iySrx1BfYKtF0u8QbWTxKXzCNzIxX-FoI1TcDrUutASN1U2Es_YfmcMDrZn0VnT__6zZIBZm3ZXIeDGdBEfnjhZrW9UWiBLwQkJwoIRUwqaQZ5HZDC1ZfziSSKxAPCAnTS13D4J4nadtSNl49WjLPVCu4MukELjJRvbDeMJhgbqDOGm_1aYDYmA4vJHulQ4omGm_hL1SqANmyScWEQwh7EC9tGP-oSPDITAAzAh1jZJE5XhKjZ8YNgZ0rkGFGNRfBgBYTQGWod3TpjjNm4TGPP2sI_SvuKMpgO8h0V3A-8MS-bv4AwoXE8Yiyx-3U4G1dBk3wX5gGc_FMULhL0A8SmLgVuD9vXORL5ZopYelhS9f4KTJUSg86PV0cxFHp4mfiQVM53RzG9f9HcigloknAlAg3zlhW4Z77y9UM2Dg1VWz-dvPxGYdS8JEiPhw2w6KYf--OHkaDFjAOfNR03YH_atWzhN841YkVjn7SzsuWO_r1XnWpd7WpqYMgsYKE-fz4iZUjrdQZxvYP4QFBUF4iC8Qg585dBujJIaA3HZuSsJ31CN2oI9P3g3EmcyGpLVunoWNW7cB7WOo4lpyntxjzTprYhFoRrBX6gO56Qi8F0rl_aw8P8IzFx1AigJyO4NZYRzdWfw8sLEnAnKxf5ypzd_rsjCN40eaSf3B1Ehv7IR6pUSNuVVTGFaErfTGKxH73QvNmnUDOqzDA3eyw9KqMVFj1jugDUWIyDiwrVnDWfkXrnEA_9-_kFwWIPU4oiWITEjsP9x_AplDN7BL1D7UW6FBZY020zeyymX9-eEoqiwCCrs1mqy9w441YsBPPQW9OT_EpJDVwMFJEbhiWesKmNkV5GmQmyh_wWc5ospRUhaFv9jD_cqr1UicVavSi9BZ7pXaM07BATKrQrr9mW9m_R-ZCwdVkcqkwE2NU-gk_lTeU_PTNtw4CCHAr0DEmwQNijIHmWsujwKcuhjoyZJQ5UklibFZSlydDYErrIb_qC5MhX3fmtRQzeKS8kpQflTyiD3a_J7Ms9LAtGb1-QD7aAiQmGXS9-SJwaXVd9IB4RVnRUe5vLd3MLjcXy6OFC6lhRK5jauH99wMI7JpwX5y8GFDu-xOZkrTLVfiiUzY-xxG2nz0DOhuTIYSclz4_G0XWwfcTUxz7vlr9nd7c3OsYeYYeC8QqbktgntRcqFkW_-6JIDbsvI2XWUHYcQqJsOVYqo5rOORhirE0q1dCYxDKir-_Ek0mU533McaVPSmt0AbiV0BffdFo6cxGvyRp5mUEkomGxPm7sxtXMPvploufAF6Hqva-X36GjhehoqPYkK00HoKindTHzSeiMvtyLImUsMcSBNWWQaKxcrRNd8VkCKRBkmY7uq4ihoL0CURCKLL5Ez3_QwqDQQ8KdoSn7sBQ-Czts4Qgv-j3L5d_mQi1Co95W_MKiD5FGCYi2_RgYvRrZHL-YauWhNulYAHIeAmA_CJgoy4vihmdWNU7fvbVcHoYv5y2MWJ3jEeDoXED1d768cbPfjs1MVnWQSicqzFJ3WvlnJBzTzOJ9lTiMN9wiHHMUApAJsh_U_j28Yg2Z0X-Jg21oX8mzyh_MsRZ1xwqgU0L2XxJQmYAujznYgPpjuqnyEGQ9WI6cTJN13FEhfGIqeBkqVCe1sJ1swPSTSftY_ZV8S6kzxZVRGJfuJo1yncs5QajKKRzA3i6rGyoiOZrS_3rGCExczTDoKdAwZmyqHOSRUVD6HRWHTLE6-hM1l2Y0G9DlSuE1ODO3dRLo_y0fizPM8c2R3-DJaYtnOtVQArVgmxxk6LOzwF56ws2kwaVsXnaDDwJQmwRz4UrNTbi2uerR827683HRPxy5kHKHOQy0VoeEPKBq6cgJ4qzswKmkRBjpoLNVK6KsZhvM5vcgcph0doMzG97AifWRjTc8IkP1b2gHxhQ9U3YeKD2DmHxJuxRHP-l2qjBRYiLBIs6D3lDR8qEADcyl73cHxEBqXUk7fUI-1D-pVhX_Sw6vjjHsUrgHTDn8WNy6NAZDa2rglYZU5JQaAtcS-7XtigtsZUSGrJks0qx5etfft9PTjaUoHRjHo9JpiY-CyGiDsW2S2upPC76j_bz_xZw3C19kqkLyjThb6SHjQKt8FMXyFb8-B8z5WsZ7mS7ZBMkgQ_mX_n4Tsp-Sudtbymu995AsMnqth8_xfgeFBT1i40f5ipxT4BdhGfooZBmjI5ntPVRieeTS4IfikaFBz-fs_uhpfVnvsKz42RGkpdJr2DSDEydPk5jH1DCkb_smQlVutyYtUPx9DWzCwNGwb1FuvpeZHgQdXo62R1zdK938ylkHPoV_uMP6VF94SecOJk9XJEtzv79v60JfmFvSVTY8KLY2PHjgJ2q-addSRdYH7A9RiAGGNVyU4KDcRfWtbxSTOJV37ws3evZ0yOZ8oubgWjNhrwTO2zanJFAEnRki8GXMddWprWfXcrHsPbPF0pGgRo-Vnk9lvLGSZVEl_N3x-GxowBtL5FqNGDh4Pdp7KhwZJF51fK4aokZAUjc9pDY7rd3lksf86c4gVtMeeXyD-09J2lDVWugmh5fXhMbax7iffRA0Lz_3Ux4CFBQRSb4ulZLCWGFgrGfd8GwwPzqNmvx-MaCrV2xkPpt4uec4BgoBtIAZjsf4NXgQ5y8fUJicKf1kqgtRRKAXO2TsSsUsWkZrFKED-AyR0NlXxbnOzOjgOFVDbH3rQBo0YmNiSJg_4NAaMvUwn7y5n-m2bSKDUuUl_hysbFTsd480Ef-z-Cxz4L5nfrZwoLs-NUKlzSAVZ9tBR4ehwKrJsLl5yQgsoXxbUGnZvN3UJ4XYCBBBAH_puIHb879ykoxdTiJwnVRd3mFofSgyy_fnkNIxT3__xMwItGz7Uwy9fJpT8kxWIL8g0jPS5zQN3YiZ_9miRtoOB1TzeDSGDVEGi4BNlSfxg_b25djiLvsVGmJ4jI2RiAiwG6sytUwJYmJxz-UXJlZAQQosLiVBPX9RM-YvbJRd8OPgRQhQUC_Vbz8qri0ojlxbNgBFvb2bqNqu6wq_VCH9CFbnT35tSTJEgRyZ4uz9ePrUchR6dXo7lSax7lAWl4rlLGHPKFDE9IzVxtPbLall7CKi1FdIffjjEmKNbKhTVrSUo8DcdbyTvLSLe_iqN64Y4DModa_JZM8-yT67IcIqLel_GJUileMgzrLY03o_zm7a_el-SJ4J3w1e-Gzc-RwtFYgst7pOY2G41jfwpN-JecRK4meCJmTSsGSzjJSQHspr871OzYmLeuUJjn0rb5BEbqinoTsFLqjZlIAyJls9gmaL7RNuFq0RVCiKrPL2ZAJyr9KWE7TxiuuzoehmjmEQ5fFzCi2U85lMho3cWmOwD4NKFR2XPbvBbb3Pf0fql_DlQYBl5WLJcvtJT8A7MVIcmjWlGMSajGEaz3lTBDe3MAMyZsoDGTZwCzdy9HhSgXD6lRj7PETzIrPaypaiss5-boD7l-sU60CH6DrqmNNCIINN3tq7X_2waUs17ZrltOgDy2oI9wzjrF7eQP6rxH3mB7JhtBRGvGxAHnEovT-b1A8nQrEIMrFlDyhR-FCFz3uNNJcPcU1t6IeK7CBVSGwcv0lGs4hCOR_EFj0rt8AhA0eD_G-x-hMU3ynt1fN-NKq_LkOAMCyiXjgmX1Tm2jTEPGHLNsn997_9qnZQbY4Xl9z7U_ikluUMKTDwh97SNxmbSHb02fBP8MyCSPON_331bUUmUnWTcriUhC8VTjnHhd6HbjHuYOKA6U62jfWc48of-M3j4IzIdtTUIwF4yuMN89vG-A9HlqUQSkuKrX8bNsN6z_mb9TX4PpAmERGYSdaw-lGnIEvPyKLtw4o0XOxiH0NMrlWyo_6cFrUm5ioLJIIM8dV2jdmnunnVTYhinswiBoYFpYflQ==",
+						"summary": []
+					},
+					{
+						"id": "msg_0e0945dff8fbca16006ae450eb944887d2912f4283938f3d6b",
+						"type": "message",
+						"status": "completed",
+						"content": [
+							{
+								"type": "output_text",
+								"annotations": [],
+								"logprobs": [],
+								"text": "{\n  \"message\": \"I’ve read your tide-and-boat devlog and reviewed the artifacts closing four supporting tasks. The reported features move toward the goal, but no playable build verifies them, so the checkpoint is at risk. Next, share a build showing the tide and two-player sailing, and add tasks for the second island and five-player test. I’ll meet you next sprint and look forward to your build, devlogs and updates ;)\",\n  \"agreed\": [\n    {\n      \"text\": \"Share an openable build showing the tide flooding and draining one island and two players crewing the boat.\",\n      \"itemId\": null,\n      \"dueDay\": null\n    },\n    {\n      \"text\": \"Add a task for the second island, with a playable build as evidence.\",\n      \"itemId\": null,\n      \"dueDay\": null\n    },\n    {\n      \"text\": \"Add a five-player playtest task that records what players tried and where they got stuck.\",\n      \"itemId\": null,\n      \"dueDay\": null\n    }\n  ]\n}"
+							}
+						],
+						"phase": "final_answer",
+						"role": "assistant"
+					}
+				],
+				"parallel_tool_calls": true,
+				"presence_penalty": 0,
+				"previous_response_id": null,
+				"prompt_cache_key": null,
+				"prompt_cache_retention": "24h",
+				"reasoning": {
+					"context": "all_turns",
+					"effort": "medium",
+					"mode": "standard",
+					"summary": null
+				},
+				"safety_identifier": null,
+				"service_tier": "default",
+				"store": true,
+				"temperature": 1,
+				"text": {
+					"format": {
+						"type": "json_schema",
+						"description": null,
+						"name": "review_letter",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"description": "A letter to the team, three or four sentences, built from the review: where the team stands in plain words — on course, at risk or behind; what went well, or, when nothing was shown, that it is unknown what got done because nothing was shown; what worries you; and one thing to do next. On the final review, the whole road instead — four to six sentences that agree with the verdict and say what the next checkpoint starts from."
+								},
+								"agreed": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"text": {
+												"type": "string"
+											},
+											"itemId": {
+												"type": [
+													"string",
+													"null"
+												]
+											},
+											"dueDay": {
+												"anyOf": [
+													{
+														"type": "integer"
+													},
+													{
+														"type": "null"
+													}
+												]
+											}
+										},
+										"required": [
+											"text",
+											"itemId",
+											"dueDay"
+										],
+										"additionalProperties": false
+									},
+									"description": "The focus for the next sprint, two or three lines that agree with the review and with any advice on the tasks; dueDay stays null. Empty on the final review."
+								}
+							},
+							"required": [
+								"message",
+								"agreed"
+							],
+							"additionalProperties": false
+						},
+						"strict": true
+					},
+					"verbosity": "medium"
+				},
+				"tool_choice": "auto",
+				"tool_usage": {
+					"image_gen": {
+						"input_tokens": 0,
+						"input_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"output_tokens": 0,
+						"output_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"total_tokens": 0
+					},
+					"web_search": {
+						"num_requests": 0
+					}
+				},
+				"tools": [],
+				"top_logprobs": 0,
+				"top_p": 0.98,
+				"truncation": "disabled",
+				"usage": {
+					"input_tokens": 2493,
+					"input_tokens_details": {
+						"cache_write_tokens": 1008,
+						"cached_tokens": 1482
+					},
+					"output_tokens": 673,
+					"output_tokens_details": {
+						"reasoning_tokens": 440
+					},
+					"total_tokens": 3166
+				},
+				"user": null,
+				"metadata": {}
+			}
+		},
+		"providerMetadata": {
+			"openai": {
+				"responseId": "resp_0e0945dff8fbca16006ae450dd473c87d2ae236de75be19a78",
+				"serviceTier": "default",
+				"reasoningContext": "all_turns"
+			}
+		},
+		"warnings": []
+	}
+}

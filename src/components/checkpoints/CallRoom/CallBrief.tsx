@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	IconListCheck,
-	IconSparkles,
-	IconSpeakerphone,
-	IconUsers,
-} from "@tabler/icons-react";
+import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
@@ -16,7 +11,7 @@ import type {
 	CheckpointCallDto,
 } from "@/types/checkpoint-call";
 import { StageFlag } from "./CallGoal";
-import { Lens } from "./CallNotes";
+import { ReviewLensCards } from "./CallNotes";
 import { AdviceLine } from "./PlanForm";
 import styles from "./style.module.scss";
 
@@ -96,31 +91,7 @@ export function CallBrief({
 				</Flex>
 			))}
 
-			{notes.lenses && (
-				<>
-					<Lens
-						icon={IconSpeakerphone}
-						title={t("checkpoints.review.lens.marketing", "Marketing")}
-					>
-						<Typography.Text>{notes.lenses.marketing}</Typography.Text>
-					</Lens>
-					<Lens
-						icon={IconUsers}
-						title={t("checkpoints.review.lens.team", "Team")}
-					>
-						<Typography.Text>{notes.lenses.team}</Typography.Text>
-					</Lens>
-					<Lens
-						icon={IconListCheck}
-						title={t(
-							"checkpoints.review.lens.management",
-							"Project management",
-						)}
-					>
-						<Typography.Text>{notes.lenses.management}</Typography.Text>
-					</Lens>
-				</>
-			)}
+			{notes.lenses && <ReviewLensCards lenses={notes.lenses} />}
 
 			{notes.questions.length > 0 && (
 				<Flex vertical gap={6} className={styles.briefRaise}>

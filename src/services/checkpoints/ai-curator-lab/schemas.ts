@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-	CURATOR_LENSES,
-	type CuratorLens,
-	type LensWeight,
-} from "@/config/checkpoint";
+import { LENS_WEIGHTS } from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
 	CheckpointItemKind,
@@ -46,15 +42,19 @@ const card = z.object({
 	outcomes: z.array(line),
 });
 
+const weight = z.enum(LENS_WEIGHTS);
+
 const workflow = z.object({
 	currentStage: z.string(),
 	nextStage: z.string().nullable(),
 	description: z.string().nullable(),
 	goal: z.string().nullable(),
-	lenses: z.record(
-		z.enum(CURATOR_LENSES),
-		z.enum(["low", "normal", "high"]),
-	) as z.ZodType<Record<CuratorLens, LensWeight>>,
+	lenses: z.object({
+		development: weight,
+		marketing: weight,
+		team: weight,
+		management: weight,
+	}),
 	requiredTasks: z.array(z.object({ name: z.string(), done: z.boolean() })),
 });
 

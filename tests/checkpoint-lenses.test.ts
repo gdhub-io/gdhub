@@ -1,11 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const reportFindMany = vi.fn();
+const getApplauseCounts = vi.fn();
 const projectFindUnique = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectReport: { findMany: (...a: unknown[]) => reportFindMany(...a) },
+		projectReport: {
+			findMany: (...a: unknown[]) => reportFindMany(...a),
+			getApplauseCounts: (...a: unknown[]) => getApplauseCounts(...a),
+		},
 		project: { findUnique: (...a: unknown[]) => projectFindUnique(...a) },
 	},
 }));
@@ -60,16 +64,15 @@ describe("the marketing lens", () => {
 	it("reads the period's public devlogs with their applause and views", async () => {
 		reportFindMany.mockResolvedValue([
 			{
+				id: "r4",
 				number: 4,
 				content: "\nThe first island floods\nMore below.",
-				publishedAt: new Date("2026-10-05T10:00:00Z"),
+				contentEditor: null,
+				publishedAt: new Date("2026-10-07T10:00:00Z"),
 				viewsCount: 58,
-				applauseActivities: [
-					{ _count: { applauses: 4 } },
-					{ _count: { applauses: 2 } },
-				],
 			},
 		]);
+		getApplauseCounts.mockResolvedValue(new Map([["r4", 6]]));
 		projectFindUnique.mockResolvedValue({
 			links: [
 				{ platform: "itch.io", link: "https://x.itch.io/game" },
@@ -79,16 +82,17 @@ describe("the marketing lens", () => {
 
 		const marketing = await curatorMarketing("p1", period);
 
+		// The sprint's last day and the morning after count, as in `sprintEvidence`.
 		expect(reportFindMany.mock.calls[0][0].where).toEqual({
 			projectId: "p1",
 			isSystem: false,
-			publishedAt: { gte: period.from, lt: period.to },
+			publishedAt: { gte: period.from, lt: new Date("2026-10-09T00:00:00Z") },
 		});
 		expect(marketing).toEqual({
 			devlogs: [
 				{
 					title: "Devlog #4: The first island floods",
-					publishedAt: "2026-10-05",
+					publishedAt: "2026-10-07",
 					applause: 6,
 					views: 58,
 				},

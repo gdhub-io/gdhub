@@ -16,7 +16,10 @@ import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import type { CallNotesDto, CheckpointCallDto } from "@/types/checkpoint-call";
-import type { CallNotes as CallNotesContent } from "@/types/checkpoints";
+import type {
+	CallNotes as CallNotesContent,
+	ReviewLenses,
+} from "@/types/checkpoints";
 import { TaskIcon } from "./CallPlan";
 import styles from "./style.module.scss";
 
@@ -137,6 +140,29 @@ export function Lens({
 	);
 }
 
+/** The three lenses beside development, in the review and the curator's brief. */
+export function ReviewLensCards({ lenses }: { lenses: ReviewLenses }) {
+	const { t } = useTranslate();
+	const cards: [keyof ReviewLenses, TablerIcon, string][] = [
+		[
+			"marketing",
+			IconSpeakerphone,
+			t("checkpoints.review.lens.marketing", "Marketing"),
+		],
+		["team", IconUsers, t("checkpoints.review.lens.team", "Team")],
+		[
+			"management",
+			IconListCheck,
+			t("checkpoints.review.lens.management", "Project management"),
+		],
+	];
+	return cards.map(([lens, icon, title]) => (
+		<Lens key={lens} icon={icon} title={title}>
+			<Typography.Text>{lenses[lens]}</Typography.Text>
+		</Lens>
+	));
+}
+
 /**
  * gP5gH: the summary, its task references read back from the plan. `review`
  * is the AI curator's: the same shape, read from what the team showed rather
@@ -227,6 +253,39 @@ export function NotesSummary({
 		</Group>
 	);
 
+	// The same three parts with or without lenses; only the labels differ.
+	const development = (
+		<>
+			{lenses || !content.discussed.length ? (
+				discussedList
+			) : (
+				<Group label={label.discussed}>{discussedList}</Group>
+			)}
+			{notDiscussedGroup}
+			<Group
+				label={
+					lenses
+						? t("checkpoints.review.lens.outside", "Outside the tasks")
+						: t("checkpoints.call.notes.outsidePlan", "Outside the plan")
+				}
+			>
+				{content.outsidePlan.length ? (
+					content.outsidePlan.map((text, position) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
+						<Typography.Text key={position}>{text}</Typography.Text>
+					))
+				) : (
+					<Typography.Text className={styles.tertiary}>
+						{t(
+							"checkpoints.call.notes.nothingOutside",
+							"Nothing came up beyond the plan.",
+						)}
+					</Typography.Text>
+				)}
+			</Group>
+		</>
+	);
+
 	return (
 		<div className={styles.notes}>
 			{content.inShort && (
@@ -255,72 +314,12 @@ export function NotesSummary({
 						icon={IconCode}
 						title={t("checkpoints.review.lens.development", "Development")}
 					>
-						{discussedList}
-						{notDiscussedGroup}
-						<Group
-							label={t("checkpoints.review.lens.outside", "Outside the tasks")}
-						>
-							{content.outsidePlan.length ? (
-								content.outsidePlan.map((text, position) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
-									<Typography.Text key={position}>{text}</Typography.Text>
-								))
-							) : (
-								<Typography.Text className={styles.tertiary}>
-									{t(
-										"checkpoints.call.notes.nothingOutside",
-										"Nothing came up beyond the plan.",
-									)}
-								</Typography.Text>
-							)}
-						</Group>
+						{development}
 					</Lens>
-					<Lens
-						icon={IconSpeakerphone}
-						title={t("checkpoints.review.lens.marketing", "Marketing")}
-					>
-						<Typography.Text>{lenses.marketing}</Typography.Text>
-					</Lens>
-					<Lens
-						icon={IconUsers}
-						title={t("checkpoints.review.lens.team", "Team")}
-					>
-						<Typography.Text>{lenses.team}</Typography.Text>
-					</Lens>
-					<Lens
-						icon={IconListCheck}
-						title={t(
-							"checkpoints.review.lens.management",
-							"Project management",
-						)}
-					>
-						<Typography.Text>{lenses.management}</Typography.Text>
-					</Lens>
+					<ReviewLensCards lenses={lenses} />
 				</>
 			) : (
-				<>
-					{content.discussed.length > 0 && (
-						<Group label={label.discussed}>{discussedList}</Group>
-					)}
-					{notDiscussedGroup}
-					<Group
-						label={t("checkpoints.call.notes.outsidePlan", "Outside the plan")}
-					>
-						{content.outsidePlan.length ? (
-							content.outsidePlan.map((text, position) => (
-								// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
-								<Typography.Text key={position}>{text}</Typography.Text>
-							))
-						) : (
-							<Typography.Text className={styles.tertiary}>
-								{t(
-									"checkpoints.call.notes.nothingOutside",
-									"Nothing came up beyond the plan.",
-								)}
-							</Typography.Text>
-						)}
-					</Group>
-				</>
+				development
 			)}
 
 			{content.agreed.length > 0 && (

@@ -60,7 +60,6 @@ export type PlanAdviceInput = {
 	review: string | null;
 	/** The project as its page shows it: the stage's path, the team, recent activity. */
 	picture: string;
-	/** What the audience saw in the period (GDHUB-126). */
 	marketing: CuratorMarketing;
 };
 
@@ -85,7 +84,6 @@ export type SprintReviewInput = {
 	/** Day 29: the verdict already settled, for the letter to agree with it. */
 	verdict: { verdict: CheckpointVerdict; note: string } | null;
 	picture: string;
-	/** What the audience saw in the period (GDHUB-126). */
 	marketing: CuratorMarketing;
 };
 

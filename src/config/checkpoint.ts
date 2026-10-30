@@ -323,7 +323,8 @@ export const CURATOR_STAGE_GOALS: Record<string, string> = {
 // Lenses (GDHUB-126)
 
 /** How much a lens says on a stage: a low one is one line, never blame for zeros it was not meant to have. */
-export type LensWeight = "low" | "normal" | "high";
+export const LENS_WEIGHTS = ["low", "normal", "high"] as const;
+export type LensWeight = (typeof LENS_WEIGHTS)[number];
 export const CURATOR_LENSES = [
 	"development",
 	"marketing",

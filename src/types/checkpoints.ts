@@ -6,6 +6,7 @@ import type {
 	ExpertInvoicing,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
+import type { CuratorLens } from "@/config/checkpoint";
 import type { CuratorLevel } from "@/config/checkpoint-pricing";
 import type {
 	CheckpointCuratorKind,
@@ -387,11 +388,7 @@ export type CallNotes = {
 	lenses?: ReviewLenses;
 };
 
-export type ReviewLenses = {
-	marketing: string;
-	team: string;
-	management: string;
-};
+export type ReviewLenses = Record<Exclude<CuratorLens, "development">, string>;
 
 /** How the project's last checkpoint ended, read again through the next one's first sprint. */
 export type PreviousVerdict = {

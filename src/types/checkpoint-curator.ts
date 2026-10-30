@@ -151,7 +151,6 @@ export type GoalCheckInput = {
 	previous: { verdict: CheckpointVerdict; note: string | null } | null;
 	/** What happened on the project in the two weeks leading in. */
 	picture: string;
-	/** What the audience saw in the period (GDHUB-126). */
 	marketing: CuratorMarketing;
 };
 
@@ -198,7 +197,6 @@ export type ReportInput = {
 	/** A human curator's calls, from their notes; empty for the AI curator. */
 	calls: { index: number; inShort: string; agreed: string[] }[];
 	picture: string;
-	/** What the audience saw in the period (GDHUB-126). */
 	marketing: CuratorMarketing;
 };
 
