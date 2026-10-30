@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LENS_WEIGHTS } from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
 	CheckpointItemKind,
@@ -41,12 +42,32 @@ const card = z.object({
 	outcomes: z.array(line),
 });
 
+const weight = z.enum(LENS_WEIGHTS);
+
 const workflow = z.object({
 	currentStage: z.string(),
 	nextStage: z.string().nullable(),
 	description: z.string().nullable(),
 	goal: z.string().nullable(),
+	lenses: z.object({
+		development: weight,
+		marketing: weight,
+		team: weight,
+		management: weight,
+	}),
 	requiredTasks: z.array(z.object({ name: z.string(), done: z.boolean() })),
+});
+
+const marketing = z.object({
+	devlogs: z.array(
+		z.object({
+			title: z.string(),
+			publishedAt: z.string(),
+			applause: z.number(),
+			views: z.number(),
+		}),
+	),
+	links: z.array(z.string()),
 });
 
 const hours = z.object({ from: z.number(), to: z.number() }).nullable();
@@ -113,6 +134,7 @@ export const goalCheckInput = z.object({
 		})
 		.nullable(),
 	picture: z.string(),
+	marketing,
 }) satisfies z.ZodType<GoalCheckInput>;
 
 export const planAdviceInput = z.object({
@@ -125,6 +147,7 @@ export const planAdviceInput = z.object({
 	moment: z.enum(["start", "midway"]),
 	review: z.string().nullable(),
 	picture: z.string(),
+	marketing,
 }) satisfies z.ZodType<PlanAdviceInput>;
 
 /** A sprint review before its media is looked at: the links, not what they show. */
@@ -147,6 +170,7 @@ export const sprintReviewInput = z.object({
 		.object({ verdict: z.nativeEnum(CheckpointVerdict), note: z.string() })
 		.nullable(),
 	picture: z.string(),
+	marketing,
 }) satisfies z.ZodType<Omit<SprintReviewInput, "devlogMedia">>;
 
 /** One task's evidence: a link read live, or what a read would have returned. */
@@ -201,6 +225,7 @@ export const reportInput = z.object({
 	devlogs: z.array(z.object({ publishedAt: z.string(), content: z.string() })),
 	team,
 	picture: z.string(),
+	marketing,
 });
 
 /** A prepared input for one call, named for what it tries. */

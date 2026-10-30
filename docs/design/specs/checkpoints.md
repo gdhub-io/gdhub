@@ -458,6 +458,28 @@ Where the code departs from the frames:
 - The brief puts an `offGoal` task that the sprint review did not discuss in a row of its own, after the discussed tasks. Frame 12.08.10 shows only a task the review discussed.
 - With a human curator, the author's draft advice before call 1 drops the stage verdict and the `offGoal` entries. Those reach the curator in the briefs for calls 2 and 4.
 
+### Four lenses on a review (GDHUB-126)
+
+An AI review reads the sprint through four lenses, each in an outlined card with the lens's icon in its heading:
+
+- **Development** (`IconCode`): the tasks with their evidence, "Nothing to show yet", then "Outside the tasks".
+- **Marketing** (`IconSpeakerphone`).
+- **Team** (`IconUsers`).
+- **Project management** (`IconListCheck`).
+
+The cards sit between "How Sprint N went" and "Focus for Sprint N".
+
+| State | Frame | Built in |
+|---|---|---|
+| Review tab with the four lens cards | `12.10.3` (`lmi8y`), cards `lyEkF` `Mqr2V` `ISAXP` `H5h8e` | `CallRoom/CallNotes.tsx` (`NotesSummary`, `Lens`) |
+| Marketing at full weight, with the period's devlogs, their applause and views, and the store link | `12.10.3m` (`HROTl`) | the same `Lens`; its text comes from the model |
+| The human curator's brief: Marketing, Team and Project management | — (the same cards) | `CallRoom/CallBrief.tsx` |
+
+Where the code departs from the frames:
+
+- Frame 12.10.3m draws the devlogs of the period as a table. The code shows the Marketing lens as the model's text, which names the devlogs with their applause and views; there is no separate table yet. The numbers reach the model through `curatorMarketing`.
+- Call notes from a human call keep the old layout ("What was discussed", "Outside the plan"). Only an AI review carries `lenses`.
+
 ## 7. Copy (Tolgee keys)
 
 Namespace `checkpoints`. Keys from the first pass that named weeks, the thread or devlog

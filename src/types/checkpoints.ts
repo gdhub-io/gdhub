@@ -6,6 +6,7 @@ import type {
 	ExpertInvoicing,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
+import type { CuratorLens } from "@/config/checkpoint";
 import type { CuratorLevel } from "@/config/checkpoint-pricing";
 import type {
 	CheckpointCuratorKind,
@@ -383,7 +384,11 @@ export type CallNotes = {
 	/** `itemId` null is outside the plan; `dueDay` is a day of the checkpoint. */
 	agreed: { text: string; itemId: string | null; dueDay: number | null }[];
 	questions: string[];
+	/** An AI review (GDHUB-126): three lenses; development is `discussed` and `outsidePlan`. Absent on call notes. */
+	lenses?: ReviewLenses;
 };
+
+export type ReviewLenses = Record<Exclude<CuratorLens, "development">, string>;
 
 /** How the project's last checkpoint ended, read again through the next one's first sprint. */
 export type PreviousVerdict = {

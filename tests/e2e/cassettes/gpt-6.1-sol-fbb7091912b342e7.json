@@ -1,0 +1,317 @@
+{
+	"name": "gpt-6.1-sol",
+	"prompt": "{\"prompt\":[{\"role\":\"system\",\"content\":\"You are the team's AI curator: a curator who has shipped a few small\\nindie games and seen many teams at the start. Calm, direct and kind,\\nnever gushing; you talk like a colleague, not a teacher. You never\\npretend to have played the game or seen more than you were shown.\\nAlways polite and respectful, nothing improper. You never claim to be\\na person. Never call yourself an AI curator in the letter — the page\\nalready says so above it. Every letter is an entry in your journal of\\nthe team's 28 days: what you saw, what you advise and what comes\\nnext — never opening with the day or a date; continue the entries\\nbefore it, never repeat them. This entry: day 15, half the road. Look at the map with them: what held on the first half, what changes for the second. It is the last change of route on this road.\\n\\nYou are the AI curator of a game team on GDHub, through a 28-day checkpoint:\\na goal, four one-week sprints, a review after each and a verdict at the end.\\nYou stand in for a human curator's calls, so you talk to the team directly\\nand clearly, as someone who read everything they made. No filler, no\\npraise without a reason.\\nUse only task ids given to you, and only in the id fields: in text the\\nauthor reads, name a task by its own words, never by its id.\\n\\nEvery text the author reads follows these rules. They keep it clear; they\\nnever flatten your character — say the same clear thing the way your\\ncharacter would:\\n- Go straight to the point. No stock openings (\\\"Great question\\\", \\\"Let's\\nlook at\\\", \\\"It is important to note\\\") and no summary of yourself at the end.\\n- Concrete statements, short sentences, short overall — it has to read on\\na phone. Add detail only where it is needed. No professional jargon, and\\ndo not read their list back to them.\\n- Prose, not an article: no headings, and a list only where the content is\\none.\\n- Match the author's tone, never their mistakes.\\n- Do not agree by default: where you see a problem, explain it calmly.\\n- Where you lack information, say what you assume — the author cannot\\nanswer back. Never invent facts, experience or feelings.\\n- Bad: \\\"Absolutely! There are several ways to approach this. Let's look at\\nthe main options.\\\" Good: one clear point — \\\"Drop the second task and\\nshow the level as a video instead\\\" — in your character's words.\\n- Write so it reads at one go:\\n- One thought per sentence; most sentences under fifteen words. A long\\none is two sentences — a full stop, not a semicolon or a dash chain.\\n- The point first, then why, then what to do.\\n- Show how you got there: before a judgement, say in a few words what\\nyou looked at — \\\"I've looked at the goal and the hours your team\\nhas: …\\\". Each sentence follows from the one before it; no leaps.\\n- Who does what: active voice and verbs, not nouns made of them\\n(\\\"decide\\\", not \\\"make a decision\\\"; «решите», не «примите решение»).\\n- Concrete over abstract: the task's own words, the hours, the day —\\nnot \\\"certain aspects\\\", \\\"the work\\\", \\\"some issues\\\".\\n- Cut what adds nothing: \\\"very\\\", \\\"quite\\\", \\\"basically\\\", \\\"it seems that\\\",\\nhedges stacked on hedges. No officialese — in Russian, no\\n«осуществлять», «является», «в рамках», «данный», no chains of\\ngenitives («задача проверки реализации механики»).\\n- No parentheses or asides inside a sentence; no nested clauses two deep.\\n- One image per thought, and it has to make the point clearer, not\\ndecorate it. Never mix two images in one sentence.\\n- Read each sentence as if aloud: it should go in one breath.\\n- Where the language has a polite and a familiar \\\"you\\\" (Russian «вы» and\\n«ты»), use the polite one, always.\\n- Ends with one concrete next step: what to do now with what you said.\\n- A letter to the team closes with one short, warm line after the next\\nstep, in your own words for this point of the road: when you will meet\\nthem next (the next sprint; on the last day, the next checkpoint) and\\nthat you look forward to their devlog posts, artifacts and other\\nactivity — ending with ;). Never the same words as an earlier entry.\\n- Only where something is seriously off — the goal will not fit, nothing\\nwas shown — say once, as a plain fact, that it is common and can be fixed\\nwithin this checkpoint, or in the next one once this one is over. For a\\nsmall fix, leave it out.\\n- Never retell what the author already knows — what they added, who\\njoined, the hours they stated. Use such a fact only where it changes\\nyour advice, and then say in the same sentence what it changes.\\n- Words the author knows, never the platform's own: not \\\"lock\\\", \\\"fixation\\\",\\n\\\"card\\\", \\\"outcome\\\" — say \\\"the goal\\\", \\\"the tasks\\\", \\\"today\\\", \\\"by Friday\\\".\\nNo cheering, no pep talk, nothing about feelings or motivation.\\n\\nRead the team's tasks against the goal and the time left. A good task\\nends in something anyone can open — a build, a document, a video —\\nfits the weeks it has, and brings the goal closer: a task that would\\nnot, done or not, is offGoal, with what it would have to become to\\nserve the goal. Give one entry per open task (not done, not cut).\\nThrough the lenses: where the team's stated hours cannot carry the\\nplan, say so (team); where the stage weighs marketing high and no task\\nreaches the audience, propose one in add (marketing).\\nThis is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding.\\nThe people change the plan. When someone joined during the checkpoint,\\nsomeone stopped confirming work, or a position is open, say in one\\nsentence what it changes for the tasks — never pass over it.\\nA new person is rarely the answer. Suggest finding one only when the plan\\nplainly cannot be done by this team — a task needs a skill nobody on the\\nteam has, or the hours they stated cannot hold it — and say it once, as\\none option beside cutting the task, naming the role. If a position for it\\nis already open, point to that one and what it would unlock instead of\\nasking for another. Otherwise say nothing about hiring.\\nRead the project through four lenses, as the stage weighs them:\\n- Development: what was built, within the tasks and outside them.\\n- Marketing: what the audience was told in public devlogs and how it\\nanswered — applause and views — and where the game can be found.\\n- Team: the hours and the pace against the goal. Context, not a verdict:\\none task still open is not a missing person, a task spans the whole\\ncheckpoint. Read the pace only once two sprints show it, and speak of\\nhours first; another person is a careful last option.\\n- Project management: the tasks, how they close sprint by sprint, and the\\nway from them to the checkpoint goal, the stage goal and the project goal.\\nA lens weighed low on this stage gets one line at most and is never blamed\\nfor zeros it was not meant to have; a lens weighed high gets its full say.\\nThe lenses explain; the tasks and the goal decide.\"},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Your journal of this road so far — the letters the team has read, oldest first:\\n(day 1) «Hello, I’m your curator here on GDHub. I’ll guide you through the next 28 days and help you reach this goal. I’ve weighed it against the hours stated and the prototyping stage; the slice fits if you keep it rough and focused on the core. I’ve suggested a few tasks below; take or replace them with your own. When they’re ready, press “Save and send to the curator” and I’ll check the route. Until then, keep the next step clear.»\\n(day 1) «The tasks show references, not a playable core, so they don’t yet support the slice. Mia has joined, but only Alex’s stated 40–60 hours can carry this plan. Before approving, narrow to one test area and replace the trailer work with playable tests. I’ll see you after the first sprint and look forward to your build and devlog posts ;)»\\n(day 1) «The plan is ready, so start on it this sprint. Tell me how it goes in your devlog posts, and attach to each task the artifact that shows it is done. I’ll look at what’s new on Friday <date>. I’ll meet you then, and look forward to your devlogs, artifacts, and other updates ;)»\\n(day 8) «I’ve read your tide-and-boat devlog and reviewed the artifacts closing four supporting tasks. The reported features move toward the goal, but no playable build verifies them, so the checkpoint is at risk. Next, share a build showing the tide and two-player sailing, and add tasks for the second island and five-player test. I’ll meet you next sprint and look forward to your build, devlogs and updates ;)»\\n(day 15) «I’ve read your second-island and reef-damage devlog, but without a build or gameplay footage, those advances remain unverified. The checkpoint is still at risk without playable evidence or five-player testing; this gap is common and still fixable here. With 20–30 stated hours left, drop the trailer storyboard and publish a minimal two-island build for five-player testing. I’ll see you next sprint and look forward to your build, test notes and devlogs ;)»\\n\\nProject goal: The game is released and people play it. Every stage leads to it.\\nWorkflow stage: Prototyping\\nWhat the stage is for: Answering the concept's riskiest questions cheaply: a rough playable build of the core mechanic, an art prototype (style variants, a visual target) or a technical test, and what the team learned from it. Polish and content are not expected; a proven core and a chosen style go on to the demo.\\nStage goal, where the stage has to leave the project: The concept's riskiest questions are answered with something playable or visible: the core works and the style is chosen. A checkpoint goal sits inside it without having to reach all of it.\\nLens weights on this stage: development high, marketing low, team normal, management normal.\\nTo move on to \\\"Preparing a demo version\\\", the stage requires:\\n- [x] Publish a devlog about the prototype\\nThe stage is passed when every one of these required tasks is done; nothing else holds it. A checkpoint may be one of several on a stage and owes these nothing unless its goal is to move on.\\n\\nThe team: 2 people, 1 of whom stated their hours. Stated time: 10–15 hours a week between them, so 40–60 hours over the 28 days. The other 1 stated nothing and are not in that total.\\n- Alex Author: Founder, Experienced, 10–15 h/week stated, joined on <date>; week 1 worked, week 2 worked\\n- Mia Member: Software Engineer, Experienced, hours not stated, joined on <date>; week 1 worked, week 2 not confirmed\\nNo open positions.\\nGoal: A playable vertical slice: two islands, the tide loop and co-op sailing, tested by five players\\n\\nTasks:\\n- [<id>] A public repository of the Godot demo projects the game builds on — done: Other \\\"Godot demo projects\\\" (looked at: Matches, The evidence shows the public godotengine/godot-demo-projects GitHub repository, with demo folders, an MIT license, and instructions for importing the projects into Godot.)\\n- [<id>] An animated reference video for the art style — done: GameplayVideo \\\"Art style reference\\\" (looked at: CannotTell, The title and thumbnail show Big Buck Bunny, with a stylized 3D rabbit in a grassy landscape. The video was not watched, so the animated art-style reference cannot be verified.)\\n- [<id>] A reference article on what playtesting is, for the team to read — done: Other \\\"How we playtest\\\" (looked at: Matches, The evidence contains Wikipedia’s “Playtest” article, explaining what playtesting is, its purposes, and different testing formats. This supplies the reference article promised for the team to read.)\\n- [<id>] A private design board for the team — done: Other \\\"Design board\\\"\\n- [<id>] A storyboard for the trailer — cut from the plan\\n\\nWhat the sprints so far showed:\\nThe checkpoint is at risk: neither the playable slice nor five-player testing is evidenced. It is unknown what got done in the game, because no playable build or game footage was shown. This evidence gap is common and can be fixed within this checkpoint.\\n\\nWhat the project shows — context for your judgement. It never proves an\\noutcome; only an artifact that opens does.\\nWhat happened on the project from <date> to <date>:\\n- <date> · Alex Author added \\\"Godot demo projects\\\"\\n- <date> · Alex Author added \\\"Art style reference\\\"\\n- <date> · Alex Author added \\\"How we playtest\\\"\\n- <date> · Alex Author added \\\"Design board\\\"\\nPublic devlogs of the period, as the audience saw them:\\n- <date> · Devlog #2: Sprint 2: the second island, and the boat now takes damage on the reef. · 0 applause · 0 views\\n- <date> · Devlog #1: Sprint 1: the tide floods and drains one island; two players can crew the boat. · 0 applause · 0 views\\nThe project lists no store page or link.\"}]}],\"responseFormat\":{\"type\":\"json\",\"schema\":{\"type\":\"object\",\"properties\":{\"message\":{\"type\":[\"string\",\"null\"],\"description\":\"Day 1: a short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Null halfway: that day's sprint review is the letter.\"},\"tasks\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"itemId\":{\"type\":\"string\"},\"kind\":{\"type\":\"string\",\"enum\":[\"clear\",\"risky\",\"vague\",\"shorten\",\"cut\",\"onTrack\",\"offGoal\"],\"description\":\"clear: checkable and fits; risky: may not fit the time left; vague: nobody could check it is done; shorten: keep it smaller; cut: drop it; onTrack: going as planned; offGoal: done or not, it would not bring the goal closer — the note says what the task would have to become to serve it.\"},\"note\":{\"type\":\"string\",\"description\":\"One sentence the author acts on: what to do with the task, then why — \\\"Drop it: …\\\", \\\"Keep it: …\\\", \\\"Move it to sprint 3: …\\\". There are no buttons; this sentence is the whole advice.\"},\"suggestion\":{\"type\":[\"string\",\"null\"],\"description\":\"For vague and shorten: the task reworded, ready to use. Null otherwise.\"}},\"required\":[\"itemId\",\"kind\",\"note\",\"suggestion\"],\"additionalProperties\":false}},\"add\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Up to three tasks worth adding, each ending in something anyone can open. Empty when nothing is missing.\"},\"goal\":{\"anyOf\":[{\"type\":\"object\",\"properties\":{\"fit\":{\"type\":\"string\",\"enum\":[\"fits\",\"widen\",\"narrow\"]},\"note\":{\"type\":\"string\",\"description\":\"One or two sentences: why, and for widen or narrow the goal reworded, ready to use.\"},\"stage\":{\"type\":\"object\",\"properties\":{\"inside\":{\"type\":\"boolean\"},\"note\":{\"type\":\"string\",\"description\":\"One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside.\"}},\"required\":[\"inside\",\"note\"],\"additionalProperties\":false,\"description\":\"Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else.\"}},\"required\":[\"fit\",\"note\",\"stage\"],\"additionalProperties\":false},{\"type\":\"null\"}],\"description\":\"Day 1 only, null halfway: does the goal as it stands now fit these tasks and 28 days of this team's hours — fits, widen (asks too little), narrow (outruns them).\"}},\"required\":[\"message\",\"tasks\",\"add\",\"goal\"],\"additionalProperties\":false,\"$schema\":\"http://json-schema.org/draft-<n>/schema#\"},\"name\":\"plan_advice\"}}",
+	"answer": {
+		"content": [
+			{
+				"type": "reasoning",
+				"text": "",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "rs_0b738921e916c35e006ae45150b9f487d28c52ad8a64094d77",
+						"reasoningEncryptedContent": "gAAAAABq5FFbyGb141g4xpg3wSWiQrhXe8L7RNUtOBrDvZwrG-eeIAAvlHmLmGKI0rPcD4iwdHt7Ts57dq3xIFt4AJiP4_Ffeu0POkO-7wO3OYdP7DbdsGGLbhg--LQiNEscinL5ShFIwvnreOXnwISO6uPszs8irqjzWaAwP0O3l51Ef3-t_h9VlxU3YkiWlKNjh1FtSywYOv15q3h45ayzn4CJ89RybFDbxfuaKiN_Cd2NmSrNEaVslQkDJF34SUuvkRyxc15kLES_OOCExtx_rtxCQQ7RCaC3-YsubSPG_rmJObezDzZB_oi9rXco3wwqvL7LJPJ3tHXhU-xJbXpEGfpMcoItcdEbQTUlcs_B_QBwOBsbCR8U_4oiokvMbv1uCFfJXF0ogYBi0slKPamfXA_OYhVpO8mua-lzowI24XD90rn4orGk0PEQQkBN9seTh-I_xCHi42OayrApx_T-PS0A62BnWDfGSIgcc-I5J663aytymICniK2RmBc4VaohIhEJEe8v8iy9zs68G2oqUxpEBvl_bK3pcl9xQnQfEJOWrx1-r_p-caTgdE7zYgbojgce2yloz5pdaHOxos_d_UTHDFz1kQIojNkEH_t-wNqBbs4GxWzgmdkvfTRBQ55wY5UukGEHMQFl8WQYyQXCiNl2pKcMpptrLa6hgUfLFGp3nkiBOqwlr9XGY5YPWKMJ8D_aXME2Nbvx8D2IRzp-DBPqBUSuoZ6sCQZw2rUrXVxgmsBBfFry2ih02HwyOY2GMY9z40PnkUyd-fcU8OITiBCx8_rgeb845iv8j6FWf6Vm_ibnmH_bXf64ycfw9PXsSSDpVbP_JvgWYGMafyiV647agAmWyljFeNO77rO3a4Du3oFBfuG2vToom2HRbKLBN_gRLwaSIhlDrq7xbi1aqGXNZ03Vlh9X5StYqmU7Y7SGL8UcabHk7e19FJz3-yY14KPpmr_21PjQepAp5mPKp2mpnzjX7TItJYy1P4xZlYfdUqqJ8Y7d88ETT2DLwfjH1JLWtUmPdaSY7-A5kh4NEUSSjP8z6oqzB4vWuwCwg2WpqxVCTOEQK6ngpX7E0NRBN14KcicGeknr0YOBQ7PDgOvGuRBx8pLkvPynm6_s58tNAoGGrtp8awtTGZNlU8ipUuV3Xq7Dgb5srzSec6dVmOASAWumN2KhWufT8pn4T0ruY95Ykicc1JV9Rbxt8oF1nVor-_o_2uDhal0sEKMPTv0WgVPFZmWgqPl4s8yWzD7Giyo-OK4RiiKsIH4WMo7LhFbLI3x4Eco7vGxblVtCwy3nyoReASaF8TCQueouV4iAXXxluc_mvwYrZRxyZ9iGxexJ9uJ_W86YQ7-8jRhrGMR-kerxnhiy5ORqAG4d-0PkaDoUR2mL0pzM23r84jYcI7QCojQ0fZX9Kozp9psHTC9bpXz-STnwGheJVrS4fdW9ohX6LvAbNOQqoIhxQktbBKS5d9Ujm7Xf6FmAt8zzLMqlOs1RfJCZKQoXtkWN_DmMbJmWdCbM7LQFcniJcu7Jlo_JLiXzzjQIcBDtAzWcVadfBYbb9OGuqhFfW4aSjRDfmfL9Lh3J5V9Em3IYsE57jbZ8aOXSS1iapAwdHXNFadRDbsVm_PAFGmgTS-V8Ac6ZYqS0o6tn9jbI-BmFStRWhjHJj4wIjGdBZYsBff2-CAU7Tc8V00KkRtkWbziIXYx0cslOlqSYdgtSCalKNkwy0xpID3oYLP3Nb9K398ZqYp4HKymL5htsYzg6myHi4219dMT3Yx9UhyJyCgWrwOm0YlqtIfIS2-TBhzl-WQ7qtxA7IpDtCKHYPxi2akmRonfmNbA04i-XC8C-2Ess13YxMZA16SNgFges_MdDKolQ3g0-wV0dca14cbJA98V6vjd7R8HFDvV4FmD4uNxLYSdAtJrDtMTJIIyeJmMFbTtK3KUzL5SrDf7W-PQijNUWSNHhiKql4zKyePoqtN9TM6sle9gWfuTsShVfPdT8i-2EZZgahU9vCfizX_wsIF8XqzIemgfYPU0Zu7kNZJaoc9fejMD7CD40aAgPnEzsilhTnmJhrx0DQdqDcCFIkLb2T1Bzr-YaSwmbTozsjsGOdNGzfBst7j0uw8PwcRwop5jvXWR-QJ_bOUYuV_EZ0DKNC1WFCFciLqQqhzhMS0xcKu8KGbX8zRGPXSODXrtM_0j82u2-4ZM2Aw_CZoP3YeXTHEOnqXb0x9fcqCMjVqu_Vsp7orVgS_PPEin1ja9hRU4W_FuXIHT0y3mLN5eSgcGO1uQjJ56ztVstASVzP6q_mlDMCxhYx1nSxJnYmxFabvNwcNOyOVRr1btizj_Li45jLN0smcPgYYAxx3vd9EdXXPhyXOtjntVw1PcSppR8dUSh67ogxvYtJSrpraHkHrY-Fn9Xo86uN4-iil4hUvzC3LgpED14MwgJeX9QmGsVu9wrEz1flnOp-jVAjtX-r0MTmdzDW6-m5L8KcpBohYZ8-3Q-SJnxL-f3hZSOecGbUWCGDlD39J80OyrN0OMBmQnx2LMHqfUGUwih3EcFdqJHUgr6Qw150GYvNkEzgr-EWVpGhqVsg-IDS5eUfgfBcnmSM7fUwo5dUSaRMIY1dCU2xCmHN7sHfyJyzK-rkneq-3UPtzoF7yLTsXPop9H50XJvS0NfVoquss1JycQqKrHNhpfSTJzivSKBk1d-WDdrS5e7IoTUC_YyWJ7r6CvrsCjIR8I5im64qNHUeqf6kRAeA9pNFTRD6icPmpzmLZgWKlFlU-7EGiBKkx-sRaaTZTBZzQLX-6IjeVqaT-YjuHRBhOHixYezKDTJgyZljpK748YWYenNhP3bvWgjD0pOPd1AFcoFQHN1wJKiNdG7GnpNVy_Q8IMV9hURXhqznVSA4ZFwbfFs03UmyAYJXxeo4Iw-7BMEvgVL7mZxUR3F8hLWt2Mu-iv9LXF7xhvi4fQi2Bam1kUGsPuZ501lsGhUjpp7E_Hjp_4UwBdoBxY5SBst0JU9_tPZfTVXPEUWgJ9Z8sZzyePeDy-qGQ-SPYwlqhJ9nEWyexD7FcU1mruxGvZPIwrlTs2-9pUAMeZO-NuZH1WK3R5n62q-AGh7gqIzZVF6_uVi--zQXVplk2jkfaU8Zhhq8s6uJNjXoq0MX3tkITzMbTWFp-NcgWxEiD-b6XjlciUML8gG-V4i4dTYIdIW20-zw2r5zTjrPjG8pvxcMKWATdF0pyl8SbDHqpi9A-Rh7B1X5NC-f41_C_qvVuJ4lhnXbyvCOiRmNvCaoANbybj2xiZNxy2zn2Y-zPOMCVRKwmqAudUIZ20cSNZQwJzQ_tUrJfxJ0jzVMmEckSZNjLOSDv27EKD7_u954iwRe2ec-66vlcNZ_Rwx9Aq9TMuGncqsGrSQcyPwnIMb73gF3kocX_X-8Mbi3mV98Z9GhH3J2mnvicNKwR4oLQrv6K8RMJBLSd6jNoNBFlPUsApae5-CtiLMSrXd1F5Hgn60vSTYruenLjds8FcGBXGo61a5dEmWGYKOBS5bt5vyWeSlVZzzDKkcFkrVrHZ5yurTeZ6mgpj7HsSsnNzbYMXTmbwNvg9UAxLueIANyptAzccLcODbln88x_TXYaq65-c5fSf7RzObFKGvfWrnqnYT5fAwJ2frcFTDrIVfaKxBS19Yig--qno1tFZDfy6zzB9P7W3LXWyU8l7C_e22919qvI4akRqt_nmUwXwTlbmyGypw1PP8T4BQmrfeu3A_Ww-nXpG9LYwaCe9lVOk8EB3qFRUGCB9rHbptVkxnKVPf54ZJhvoz3l8RVFj04uZuB83WXjIn2GzpDTJR6cm5o9D6CRnPpEOoDChHOLnAd-hzRivoAJDBIcXyLDKdonFGaYlqqmbWh6wBqkTcj4TqFGPI7sNXZHrbJ9OZDx59_8SSAQf2109-d4fI5Y2utFSYAXFz-c-oDG-oikdSHGv37FGurgdNPkZXZKwN1ZWP81GvwNC_dwnYob7FLSf7cAJaNp0CDcfkLQkh3ureUfzOfbpdw-PtvSrxXdKWiX8qIsK0DbelRM0ehXIUU8pfNyNCbJ1NofqP6XnM7UXHbKxlGAue-Juo9ygb1QannLtQ4vjlY7RQbDWsWCgSeECQ9ymcK7CbxHfR-4OIdsIPzsrZuDI6XpMr_nnnw5oKjIRoEz5CFP0GuymfQsJ4z0yI0eTyGpIl2R_PAhgLNYCJmXJwMI0mzcrSxXHNfoXxLH9jZ17rKZIG9fmDeXDVpmw6IdafkAGeGp2PRlcYSOOfUq-tL3_Klvb0nyqERad2cPE---WPJ_Bzm48pSk02h9Kc3RDF9uYkbq1pEJFX3uYyJultRT3-QcTYuemHwm8XRwgDfm6R0qFk1oWe_VEKm1mqfA3BmDVek6HdH5uiDVLzlYSvKv2hvDeKEHMHntu1mKh8arLxBOCoCjkMH6I6eTME9VJacenJ1q7KO-7QD1YCaHFseRFHT35eS9ZjFFe2zwnstSc5azs02Y-PkTOL_eiVK0mmScapve3m-becSuJoGHK2egDu4viR0ZhoUE5qdKiziGSu-MrNJl_gjrxKpqv2y7g6t67jobBsOrVi1TOKLaIzBaL3r3vcM1rPU64o7A7av1EceRM5IuBPlCZFl0-Nbruc0ajVrYxiIho5jJWYoBaOVtVqc3O5Pwp4tMqX05a6C7TJWQXQHDASympHxNVTnJ-1ZtuDvbhTdsLpRfHvEIzoMmkDhZNkPqVqI5aiNi5qy1-JzyXRuKgUM8dISPhMvF88L74jSrSQknEe_zww4vbo-Q25yK9knOXycMUwEyizrqnNGKlxzvzGgjHu3s81rYHW809ouMQtVUP7jyIgcx-sOpezFHGtmsQeh4Swvd7Y2Z7z99-RBGSoJhV4CNGaWt7Wwk0FOx6c5uaIsx44LNXZY4fu6rt0g242TpOGdB2wqoacfSUn-BTF9CJgApGUfoeVg0-HLMOuQo2lOHccH0iMCUph8kqa4v7bE5C5vLcp_Wq9cDtK7yYgmvmZdLXUFrpS7_6pW-86Hl36q6AzmmmWdacbZKW259WRFecYA2bTMu7TZSbFwN6IM6Q4DkT_ogJd6qmyFI5do9H2FMW3PX3FeZC3ewbEAUmo7pfHSv5PQBnRDGBnV1iddDm5cug1jsd0HKHQKrLzbCZnrYlaGpoVQaT9UA-pUgZsVoT5od5RCFopaOMCwyVzffWXelAMjNKoAPlzTec4HxnfCQxTctWwXLY59qQHvIoRATAOZrOTSxVw7iLkt075erhQ45tfNd-giKKTczF7J8K6P5YSY93TtbPhQQ8SHh-M30np12VaCXtFhdMzFbomQmSlzsSFG8vy6NZb1_DLLv6UoaK0GuFZzWkA-JzPqzhWKvGMeLJCT3V9v6RI9t_oqmFlLhM98SiOFIZrMpWUm_ihhztllBF6Uy5jHCrlhnICfcatu4NEDHUx-ubUDrAL4vQMhjEvVyRchLo_A5i6LpVnlQPPtOGRuZLVg1caAQdNVvbijd-AQjptZGphqDj-V44ch6SoduEcHtu2_TAQNlRLmE4KNRnk0Zc3q2-AU9HmdS3li1UBeTl4NpM_DjyRDQiFu_sw-JSi2uXNYzRKX6-qNHr0YH2442qhkERMRLqEMrxOfgI73Neum6i_cFO-pqwqiW9i5j_lzhYRpQaGxreg7KlPOBlT-jn28NW0iUsFNsUYVBV-jR2UdUQnSzDerdHkdbNjosGR6uJ7rsHQbj330mv6EVEQm1sDjE8jAe-4kJKsDIGiLj7XyV31hCZyrIPK21km4d-rTA6FTEEbJUSeLIMh6rWq5sqOCrJqOA_KcclmK4ohEi1Ker92ET18KoOFvP2G-bSygG_8LSWGLKoHNBhAL_EhV-qpw9UkGGU-cvkk7xJj5hRoIddLTR-Tm8Kaq4Ctliwy06tDjUOAkny6NWIa1X7CK-nPpgrLvaPWTYZBs-FObnZwNHJyEKzDXX4onjArjtevHMp-HGkw4xn_63Z1qVuk1YV05Bg_8SrX2dYYCOlpx2h6NooKHjsDBCoAY_Iv_zGWetT-xAgRyT6b6dQAqIiOIh4VeLGIlxEroVi5G12WY39PpSZA-bk_TBnU9FdNC6xoMhukAmlJkj9glDCp3Sw="
+					}
+				}
+			},
+			{
+				"type": "text",
+				"text": "{\"message\":null,\"tasks\":[],\"add\":[\"Plan within Alex’s remaining 20–30 hours because Mia’s second week is unconfirmed. Keep both islands rough and omit polish. Publish a downloadable build showing the tide loop and co-op sailing between them.\",\"Test that build with five players. Check whether they can sail together between the islands and respond to the tide. Publish readable test notes covering what worked, what failed and what needs changing.\"],\"goal\":null}",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "msg_0b738921e916c35e006ae45159022c87d2b21e869c39859640",
+						"phase": "final_answer"
+					}
+				}
+			}
+		],
+		"finishReason": {
+			"unified": "stop"
+		},
+		"usage": {
+			"inputTokens": {
+				"total": 3660,
+				"noCache": 3,
+				"cacheRead": 2193,
+				"cacheWrite": 1464
+			},
+			"outputTokens": {
+				"total": 453,
+				"text": 105,
+				"reasoning": 348
+			},
+			"raw": {
+				"input_tokens": 3660,
+				"input_tokens_details": {
+					"cache_write_tokens": 1464,
+					"cached_tokens": 2193
+				},
+				"output_tokens": 453,
+				"output_tokens_details": {
+					"reasoning_tokens": 348
+				},
+				"total_tokens": 4113
+			}
+		},
+		"response": {
+			"id": "resp_0b738921e916c35e006ae4514ed10887d2be6b15133c2abd83",
+			"timestamp": "2026-10-30T08:11:58.000Z",
+			"modelId": "gpt-6.1-sol",
+			"headers": {
+				"access-control-expose-headers": "X-Request-ID, Server-Timing-Total, CF-Ray, CF-Ray",
+				"alt-svc": "h3=\":443\"; ma=86400",
+				"cf-cache-status": "DYNAMIC",
+				"cf-ray": "a528f3cc1a96fe9f-AMS",
+				"connection": "keep-alive",
+				"content-encoding": "br",
+				"content-type": "application/json",
+				"date": "Fri, 30 Oct 2026 08:12:11 GMT",
+				"openai-organization": "gdhub",
+				"openai-processing-ms": "13111",
+				"openai-project": "proj_Sxbfe4DKP4kJZiAvrgGwGcx0",
+				"openai-version": "2020-10-01",
+				"server": "cloudflare",
+				"set-cookie": "__cf_bm=yMivrtqXx4Jo97u8qq6SD.x5zJrKWIqmrkCgv2Qf9Tw-1793347918.734364-1.0.1.1-PjpLeO4l1oBk0OoZA3_XiwJzwZPpg_.Yld0_qhiikDP0dzGn8OgeFrh_TvQYr2hPp6uzxEFeHn9Hyizv0UDRNRHU_Mc4aYUErpopZCZw0oiJjZvwq.I0tbUcKhS6WEUk; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com; Expires=Fri, 30 Oct 2026 08:42:11 GMT",
+				"strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+				"transfer-encoding": "chunked",
+				"x-content-type-options": "nosniff",
+				"x-ratelimit-limit-requests": "10000",
+				"x-ratelimit-limit-tokens": "4000000",
+				"x-ratelimit-remaining-requests": "9999",
+				"x-ratelimit-remaining-tokens": "3999690",
+				"x-ratelimit-reset-requests": "6ms",
+				"x-ratelimit-reset-tokens": "4ms",
+				"x-request-id": "req_a71ae3aa40bd4ebcb43b4028a28595dc"
+			},
+			"body": {
+				"id": "resp_0b738921e916c35e006ae4514ed10887d2be6b15133c2abd83",
+				"object": "response",
+				"created_at": 1793347918,
+				"status": "completed",
+				"access_programs": null,
+				"background": false,
+				"billing": {
+					"payer": "openai"
+				},
+				"completed_at": 1793347931,
+				"error": null,
+				"frequency_penalty": 0,
+				"incomplete_details": null,
+				"instructions": null,
+				"max_output_tokens": null,
+				"max_tool_calls": null,
+				"model": "gpt-6.1-sol",
+				"moderation": null,
+				"output": [
+					{
+						"id": "rs_0b738921e916c35e006ae45150b9f487d28c52ad8a64094d77",
+						"type": "reasoning",
+						"content": [],
+						"encrypted_content": "gAAAAABq5FFbyGb141g4xpg3wSWiQrhXe8L7RNUtOBrDvZwrG-eeIAAvlHmLmGKI0rPcD4iwdHt7Ts57dq3xIFt4AJiP4_Ffeu0POkO-7wO3OYdP7DbdsGGLbhg--LQiNEscinL5ShFIwvnreOXnwISO6uPszs8irqjzWaAwP0O3l51Ef3-t_h9VlxU3YkiWlKNjh1FtSywYOv15q3h45ayzn4CJ89RybFDbxfuaKiN_Cd2NmSrNEaVslQkDJF34SUuvkRyxc15kLES_OOCExtx_rtxCQQ7RCaC3-YsubSPG_rmJObezDzZB_oi9rXco3wwqvL7LJPJ3tHXhU-xJbXpEGfpMcoItcdEbQTUlcs_B_QBwOBsbCR8U_4oiokvMbv1uCFfJXF0ogYBi0slKPamfXA_OYhVpO8mua-lzowI24XD90rn4orGk0PEQQkBN9seTh-I_xCHi42OayrApx_T-PS0A62BnWDfGSIgcc-I5J663aytymICniK2RmBc4VaohIhEJEe8v8iy9zs68G2oqUxpEBvl_bK3pcl9xQnQfEJOWrx1-r_p-caTgdE7zYgbojgce2yloz5pdaHOxos_d_UTHDFz1kQIojNkEH_t-wNqBbs4GxWzgmdkvfTRBQ55wY5UukGEHMQFl8WQYyQXCiNl2pKcMpptrLa6hgUfLFGp3nkiBOqwlr9XGY5YPWKMJ8D_aXME2Nbvx8D2IRzp-DBPqBUSuoZ6sCQZw2rUrXVxgmsBBfFry2ih02HwyOY2GMY9z40PnkUyd-fcU8OITiBCx8_rgeb845iv8j6FWf6Vm_ibnmH_bXf64ycfw9PXsSSDpVbP_JvgWYGMafyiV647agAmWyljFeNO77rO3a4Du3oFBfuG2vToom2HRbKLBN_gRLwaSIhlDrq7xbi1aqGXNZ03Vlh9X5StYqmU7Y7SGL8UcabHk7e19FJz3-yY14KPpmr_21PjQepAp5mPKp2mpnzjX7TItJYy1P4xZlYfdUqqJ8Y7d88ETT2DLwfjH1JLWtUmPdaSY7-A5kh4NEUSSjP8z6oqzB4vWuwCwg2WpqxVCTOEQK6ngpX7E0NRBN14KcicGeknr0YOBQ7PDgOvGuRBx8pLkvPynm6_s58tNAoGGrtp8awtTGZNlU8ipUuV3Xq7Dgb5srzSec6dVmOASAWumN2KhWufT8pn4T0ruY95Ykicc1JV9Rbxt8oF1nVor-_o_2uDhal0sEKMPTv0WgVPFZmWgqPl4s8yWzD7Giyo-OK4RiiKsIH4WMo7LhFbLI3x4Eco7vGxblVtCwy3nyoReASaF8TCQueouV4iAXXxluc_mvwYrZRxyZ9iGxexJ9uJ_W86YQ7-8jRhrGMR-kerxnhiy5ORqAG4d-0PkaDoUR2mL0pzM23r84jYcI7QCojQ0fZX9Kozp9psHTC9bpXz-STnwGheJVrS4fdW9ohX6LvAbNOQqoIhxQktbBKS5d9Ujm7Xf6FmAt8zzLMqlOs1RfJCZKQoXtkWN_DmMbJmWdCbM7LQFcniJcu7Jlo_JLiXzzjQIcBDtAzWcVadfBYbb9OGuqhFfW4aSjRDfmfL9Lh3J5V9Em3IYsE57jbZ8aOXSS1iapAwdHXNFadRDbsVm_PAFGmgTS-V8Ac6ZYqS0o6tn9jbI-BmFStRWhjHJj4wIjGdBZYsBff2-CAU7Tc8V00KkRtkWbziIXYx0cslOlqSYdgtSCalKNkwy0xpID3oYLP3Nb9K398ZqYp4HKymL5htsYzg6myHi4219dMT3Yx9UhyJyCgWrwOm0YlqtIfIS2-TBhzl-WQ7qtxA7IpDtCKHYPxi2akmRonfmNbA04i-XC8C-2Ess13YxMZA16SNgFges_MdDKolQ3g0-wV0dca14cbJA98V6vjd7R8HFDvV4FmD4uNxLYSdAtJrDtMTJIIyeJmMFbTtK3KUzL5SrDf7W-PQijNUWSNHhiKql4zKyePoqtN9TM6sle9gWfuTsShVfPdT8i-2EZZgahU9vCfizX_wsIF8XqzIemgfYPU0Zu7kNZJaoc9fejMD7CD40aAgPnEzsilhTnmJhrx0DQdqDcCFIkLb2T1Bzr-YaSwmbTozsjsGOdNGzfBst7j0uw8PwcRwop5jvXWR-QJ_bOUYuV_EZ0DKNC1WFCFciLqQqhzhMS0xcKu8KGbX8zRGPXSODXrtM_0j82u2-4ZM2Aw_CZoP3YeXTHEOnqXb0x9fcqCMjVqu_Vsp7orVgS_PPEin1ja9hRU4W_FuXIHT0y3mLN5eSgcGO1uQjJ56ztVstASVzP6q_mlDMCxhYx1nSxJnYmxFabvNwcNOyOVRr1btizj_Li45jLN0smcPgYYAxx3vd9EdXXPhyXOtjntVw1PcSppR8dUSh67ogxvYtJSrpraHkHrY-Fn9Xo86uN4-iil4hUvzC3LgpED14MwgJeX9QmGsVu9wrEz1flnOp-jVAjtX-r0MTmdzDW6-m5L8KcpBohYZ8-3Q-SJnxL-f3hZSOecGbUWCGDlD39J80OyrN0OMBmQnx2LMHqfUGUwih3EcFdqJHUgr6Qw150GYvNkEzgr-EWVpGhqVsg-IDS5eUfgfBcnmSM7fUwo5dUSaRMIY1dCU2xCmHN7sHfyJyzK-rkneq-3UPtzoF7yLTsXPop9H50XJvS0NfVoquss1JycQqKrHNhpfSTJzivSKBk1d-WDdrS5e7IoTUC_YyWJ7r6CvrsCjIR8I5im64qNHUeqf6kRAeA9pNFTRD6icPmpzmLZgWKlFlU-7EGiBKkx-sRaaTZTBZzQLX-6IjeVqaT-YjuHRBhOHixYezKDTJgyZljpK748YWYenNhP3bvWgjD0pOPd1AFcoFQHN1wJKiNdG7GnpNVy_Q8IMV9hURXhqznVSA4ZFwbfFs03UmyAYJXxeo4Iw-7BMEvgVL7mZxUR3F8hLWt2Mu-iv9LXF7xhvi4fQi2Bam1kUGsPuZ501lsGhUjpp7E_Hjp_4UwBdoBxY5SBst0JU9_tPZfTVXPEUWgJ9Z8sZzyePeDy-qGQ-SPYwlqhJ9nEWyexD7FcU1mruxGvZPIwrlTs2-9pUAMeZO-NuZH1WK3R5n62q-AGh7gqIzZVF6_uVi--zQXVplk2jkfaU8Zhhq8s6uJNjXoq0MX3tkITzMbTWFp-NcgWxEiD-b6XjlciUML8gG-V4i4dTYIdIW20-zw2r5zTjrPjG8pvxcMKWATdF0pyl8SbDHqpi9A-Rh7B1X5NC-f41_C_qvVuJ4lhnXbyvCOiRmNvCaoANbybj2xiZNxy2zn2Y-zPOMCVRKwmqAudUIZ20cSNZQwJzQ_tUrJfxJ0jzVMmEckSZNjLOSDv27EKD7_u954iwRe2ec-66vlcNZ_Rwx9Aq9TMuGncqsGrSQcyPwnIMb73gF3kocX_X-8Mbi3mV98Z9GhH3J2mnvicNKwR4oLQrv6K8RMJBLSd6jNoNBFlPUsApae5-CtiLMSrXd1F5Hgn60vSTYruenLjds8FcGBXGo61a5dEmWGYKOBS5bt5vyWeSlVZzzDKkcFkrVrHZ5yurTeZ6mgpj7HsSsnNzbYMXTmbwNvg9UAxLueIANyptAzccLcODbln88x_TXYaq65-c5fSf7RzObFKGvfWrnqnYT5fAwJ2frcFTDrIVfaKxBS19Yig--qno1tFZDfy6zzB9P7W3LXWyU8l7C_e22919qvI4akRqt_nmUwXwTlbmyGypw1PP8T4BQmrfeu3A_Ww-nXpG9LYwaCe9lVOk8EB3qFRUGCB9rHbptVkxnKVPf54ZJhvoz3l8RVFj04uZuB83WXjIn2GzpDTJR6cm5o9D6CRnPpEOoDChHOLnAd-hzRivoAJDBIcXyLDKdonFGaYlqqmbWh6wBqkTcj4TqFGPI7sNXZHrbJ9OZDx59_8SSAQf2109-d4fI5Y2utFSYAXFz-c-oDG-oikdSHGv37FGurgdNPkZXZKwN1ZWP81GvwNC_dwnYob7FLSf7cAJaNp0CDcfkLQkh3ureUfzOfbpdw-PtvSrxXdKWiX8qIsK0DbelRM0ehXIUU8pfNyNCbJ1NofqP6XnM7UXHbKxlGAue-Juo9ygb1QannLtQ4vjlY7RQbDWsWCgSeECQ9ymcK7CbxHfR-4OIdsIPzsrZuDI6XpMr_nnnw5oKjIRoEz5CFP0GuymfQsJ4z0yI0eTyGpIl2R_PAhgLNYCJmXJwMI0mzcrSxXHNfoXxLH9jZ17rKZIG9fmDeXDVpmw6IdafkAGeGp2PRlcYSOOfUq-tL3_Klvb0nyqERad2cPE---WPJ_Bzm48pSk02h9Kc3RDF9uYkbq1pEJFX3uYyJultRT3-QcTYuemHwm8XRwgDfm6R0qFk1oWe_VEKm1mqfA3BmDVek6HdH5uiDVLzlYSvKv2hvDeKEHMHntu1mKh8arLxBOCoCjkMH6I6eTME9VJacenJ1q7KO-7QD1YCaHFseRFHT35eS9ZjFFe2zwnstSc5azs02Y-PkTOL_eiVK0mmScapve3m-becSuJoGHK2egDu4viR0ZhoUE5qdKiziGSu-MrNJl_gjrxKpqv2y7g6t67jobBsOrVi1TOKLaIzBaL3r3vcM1rPU64o7A7av1EceRM5IuBPlCZFl0-Nbruc0ajVrYxiIho5jJWYoBaOVtVqc3O5Pwp4tMqX05a6C7TJWQXQHDASympHxNVTnJ-1ZtuDvbhTdsLpRfHvEIzoMmkDhZNkPqVqI5aiNi5qy1-JzyXRuKgUM8dISPhMvF88L74jSrSQknEe_zww4vbo-Q25yK9knOXycMUwEyizrqnNGKlxzvzGgjHu3s81rYHW809ouMQtVUP7jyIgcx-sOpezFHGtmsQeh4Swvd7Y2Z7z99-RBGSoJhV4CNGaWt7Wwk0FOx6c5uaIsx44LNXZY4fu6rt0g242TpOGdB2wqoacfSUn-BTF9CJgApGUfoeVg0-HLMOuQo2lOHccH0iMCUph8kqa4v7bE5C5vLcp_Wq9cDtK7yYgmvmZdLXUFrpS7_6pW-86Hl36q6AzmmmWdacbZKW259WRFecYA2bTMu7TZSbFwN6IM6Q4DkT_ogJd6qmyFI5do9H2FMW3PX3FeZC3ewbEAUmo7pfHSv5PQBnRDGBnV1iddDm5cug1jsd0HKHQKrLzbCZnrYlaGpoVQaT9UA-pUgZsVoT5od5RCFopaOMCwyVzffWXelAMjNKoAPlzTec4HxnfCQxTctWwXLY59qQHvIoRATAOZrOTSxVw7iLkt075erhQ45tfNd-giKKTczF7J8K6P5YSY93TtbPhQQ8SHh-M30np12VaCXtFhdMzFbomQmSlzsSFG8vy6NZb1_DLLv6UoaK0GuFZzWkA-JzPqzhWKvGMeLJCT3V9v6RI9t_oqmFlLhM98SiOFIZrMpWUm_ihhztllBF6Uy5jHCrlhnICfcatu4NEDHUx-ubUDrAL4vQMhjEvVyRchLo_A5i6LpVnlQPPtOGRuZLVg1caAQdNVvbijd-AQjptZGphqDj-V44ch6SoduEcHtu2_TAQNlRLmE4KNRnk0Zc3q2-AU9HmdS3li1UBeTl4NpM_DjyRDQiFu_sw-JSi2uXNYzRKX6-qNHr0YH2442qhkERMRLqEMrxOfgI73Neum6i_cFO-pqwqiW9i5j_lzhYRpQaGxreg7KlPOBlT-jn28NW0iUsFNsUYVBV-jR2UdUQnSzDerdHkdbNjosGR6uJ7rsHQbj330mv6EVEQm1sDjE8jAe-4kJKsDIGiLj7XyV31hCZyrIPK21km4d-rTA6FTEEbJUSeLIMh6rWq5sqOCrJqOA_KcclmK4ohEi1Ker92ET18KoOFvP2G-bSygG_8LSWGLKoHNBhAL_EhV-qpw9UkGGU-cvkk7xJj5hRoIddLTR-Tm8Kaq4Ctliwy06tDjUOAkny6NWIa1X7CK-nPpgrLvaPWTYZBs-FObnZwNHJyEKzDXX4onjArjtevHMp-HGkw4xn_63Z1qVuk1YV05Bg_8SrX2dYYCOlpx2h6NooKHjsDBCoAY_Iv_zGWetT-xAgRyT6b6dQAqIiOIh4VeLGIlxEroVi5G12WY39PpSZA-bk_TBnU9FdNC6xoMhukAmlJkj9glDCp3Sw=",
+						"summary": []
+					},
+					{
+						"id": "msg_0b738921e916c35e006ae45159022c87d2b21e869c39859640",
+						"type": "message",
+						"status": "completed",
+						"content": [
+							{
+								"type": "output_text",
+								"annotations": [],
+								"logprobs": [],
+								"text": "{\"message\":null,\"tasks\":[],\"add\":[\"Plan within Alex’s remaining 20–30 hours because Mia’s second week is unconfirmed. Keep both islands rough and omit polish. Publish a downloadable build showing the tide loop and co-op sailing between them.\",\"Test that build with five players. Check whether they can sail together between the islands and respond to the tide. Publish readable test notes covering what worked, what failed and what needs changing.\"],\"goal\":null}"
+							}
+						],
+						"phase": "final_answer",
+						"role": "assistant"
+					}
+				],
+				"parallel_tool_calls": true,
+				"presence_penalty": 0,
+				"previous_response_id": null,
+				"prompt_cache_key": null,
+				"prompt_cache_retention": "24h",
+				"reasoning": {
+					"context": "all_turns",
+					"effort": "medium",
+					"mode": "standard",
+					"summary": null
+				},
+				"safety_identifier": null,
+				"service_tier": "default",
+				"store": true,
+				"temperature": 1,
+				"text": {
+					"format": {
+						"type": "json_schema",
+						"description": null,
+						"name": "plan_advice",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": [
+										"string",
+										"null"
+									],
+									"description": "Day 1: a short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Null halfway: that day's sprint review is the letter."
+								},
+								"tasks": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"itemId": {
+												"type": "string"
+											},
+											"kind": {
+												"type": "string",
+												"enum": [
+													"clear",
+													"risky",
+													"vague",
+													"shorten",
+													"cut",
+													"onTrack",
+													"offGoal"
+												],
+												"description": "clear: checkable and fits; risky: may not fit the time left; vague: nobody could check it is done; shorten: keep it smaller; cut: drop it; onTrack: going as planned; offGoal: done or not, it would not bring the goal closer — the note says what the task would have to become to serve it."
+											},
+											"note": {
+												"type": "string",
+												"description": "One sentence the author acts on: what to do with the task, then why — \"Drop it: …\", \"Keep it: …\", \"Move it to sprint 3: …\". There are no buttons; this sentence is the whole advice."
+											},
+											"suggestion": {
+												"type": [
+													"string",
+													"null"
+												],
+												"description": "For vague and shorten: the task reworded, ready to use. Null otherwise."
+											}
+										},
+										"required": [
+											"itemId",
+											"kind",
+											"note",
+											"suggestion"
+										],
+										"additionalProperties": false
+									}
+								},
+								"add": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									},
+									"description": "Up to three tasks worth adding, each ending in something anyone can open. Empty when nothing is missing."
+								},
+								"goal": {
+									"anyOf": [
+										{
+											"type": "object",
+											"properties": {
+												"fit": {
+													"type": "string",
+													"enum": [
+														"fits",
+														"widen",
+														"narrow"
+													]
+												},
+												"note": {
+													"type": "string",
+													"description": "One or two sentences: why, and for widen or narrow the goal reworded, ready to use."
+												},
+												"stage": {
+													"type": "object",
+													"properties": {
+														"inside": {
+															"type": "boolean"
+														},
+														"note": {
+															"type": "string",
+															"description": "One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside."
+														}
+													},
+													"required": [
+														"inside",
+														"note"
+													],
+													"additionalProperties": false,
+													"description": "Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else."
+												}
+											},
+											"required": [
+												"fit",
+												"note",
+												"stage"
+											],
+											"additionalProperties": false
+										},
+										{
+											"type": "null"
+										}
+									],
+									"description": "Day 1 only, null halfway: does the goal as it stands now fit these tasks and 28 days of this team's hours — fits, widen (asks too little), narrow (outruns them)."
+								}
+							},
+							"required": [
+								"message",
+								"tasks",
+								"add",
+								"goal"
+							],
+							"additionalProperties": false
+						},
+						"strict": true
+					},
+					"verbosity": "medium"
+				},
+				"tool_choice": "auto",
+				"tool_usage": {
+					"image_gen": {
+						"input_tokens": 0,
+						"input_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"output_tokens": 0,
+						"output_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"total_tokens": 0
+					},
+					"web_search": {
+						"num_requests": 0
+					}
+				},
+				"tools": [],
+				"top_logprobs": 0,
+				"top_p": 0.98,
+				"truncation": "disabled",
+				"usage": {
+					"input_tokens": 3660,
+					"input_tokens_details": {
+						"cache_write_tokens": 1464,
+						"cached_tokens": 2193
+					},
+					"output_tokens": 453,
+					"output_tokens_details": {
+						"reasoning_tokens": 348
+					},
+					"total_tokens": 4113
+				},
+				"user": null,
+				"metadata": {}
+			}
+		},
+		"providerMetadata": {
+			"openai": {
+				"responseId": "resp_0b738921e916c35e006ae4514ed10887d2be6b15133c2abd83",
+				"serviceTier": "default",
+				"reasoningContext": "all_turns"
+			}
+		},
+		"warnings": []
+	}
+}

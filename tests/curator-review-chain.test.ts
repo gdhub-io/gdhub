@@ -36,6 +36,7 @@ const input = {
 	focusLastReview: [],
 	verdict: null,
 	picture: "",
+	marketing: { devlogs: [], links: [] },
 };
 
 const answers: Record<string, unknown> = {
@@ -45,6 +46,11 @@ const answers: Record<string, unknown> = {
 		notDiscussed: ["t1"],
 		outsidePlan: [],
 		questions: [],
+		lenses: {
+			marketing: "No public devlog this sprint.",
+			team: "Two confirmed working.",
+			management: "Nothing closed yet.",
+		},
 	},
 	review_letter: {
 		message: "At risk.",

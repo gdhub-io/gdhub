@@ -1,4 +1,5 @@
 import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
+import { lensWeights } from "@/lib/checkpoints/lenses";
 import type { LabLanguage } from "../schemas";
 
 /**
@@ -25,6 +26,7 @@ const workflowAt = (moment: Moment) => ({
 	nextStage: "Preparing a demo version",
 	description: CURATOR_STAGE_BRIEFS.Prototyping,
 	goal: CURATOR_STAGE_GOALS.Prototyping,
+	lenses: lensWeights("Prototyping"),
 	requiredTasks: [
 		{
 			name: "Publish a devlog about the prototype",
@@ -176,12 +178,45 @@ const teamAt = (moment: Moment) => ({
 	openings: [] as { role: string; postedOn: string; applied: number }[],
 });
 
+/** The public devlogs of the moment's period with their applause and views, as `curatorMarketing` reads them. */
+const DEVLOGS = [
+	{
+		title: "Devlog #4: The first island floods",
+		publishedAt: "2026-10-05",
+		applause: 6,
+		views: 58,
+	},
+	{
+		title: "Devlog #5: Outrunning the tide",
+		publishedAt: "2026-10-12",
+		applause: 3,
+		views: 31,
+	},
+	{
+		title: "Devlog #6: Five strangers played it",
+		publishedAt: "2026-10-20",
+		applause: 9,
+		views: 102,
+	},
+];
+
+const marketingAt = (moment: Moment) => {
+	const { from, to } = MOMENTS[moment];
+	return {
+		devlogs: DEVLOGS.filter(
+			(post) => post.publishedAt >= from && post.publishedAt <= to,
+		).reverse(),
+		links: ["itch.io: https://hollowtide.itch.io/hollow-tide"],
+	};
+};
+
 export const hollowTide = (language: LabLanguage) => {
 	const text = TEXT[language];
 	return {
 		...text,
 		workflow: workflowAt,
 		team: teamAt,
+		marketing: marketingAt,
 		picture: (moment: Moment, without?: (keyof Artifacts)[]) =>
 			pictureAt(text.artifacts, moment, without),
 	};

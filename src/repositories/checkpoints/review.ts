@@ -59,7 +59,11 @@ export type TaskRow = {
 };
 
 /** What a stored advice answers: everything the model is given. */
-export const hashOf = ({ picture: _, ...input }: PlanAdviceInput) =>
+export const hashOf = ({
+	picture: _,
+	marketing: __,
+	...input
+}: PlanAdviceInput) =>
 	// The picture informs the read; the same plan is not read twice for it.
 	createHash("sha256")
 		.update(JSON.stringify(input))

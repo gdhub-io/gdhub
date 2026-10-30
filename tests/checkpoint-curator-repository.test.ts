@@ -7,6 +7,7 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import { lensWeights } from "@/lib/checkpoints/lenses";
 import { goalCheckHash } from "@/repositories/checkpoints/ai-curator";
 import { curatorTeam } from "@/repositories/checkpoints/ai-curator-context";
 import { journal } from "@/repositories/checkpoints/journal";
@@ -52,18 +53,33 @@ vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
 	devlogMediaLines: vi.fn(async () => []),
 }));
 vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
-vi.mock("@/repositories/checkpoints/ai-curator-context", () => ({
-	curatorTeam: vi.fn(async () => TEAM),
-	curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
-	stageWorkflow: vi.fn(async (_: unknown, currentStage: string) => ({
+vi.mock("@/repositories/checkpoints/ai-curator-context", () => {
+	const curatorTeam = vi.fn(async (..._: unknown[]) => TEAM);
+	const stageWorkflow = vi.fn(async (_: unknown, currentStage: string) => ({
 		currentStage,
 		nextStage: null,
 		description: null,
 		requiredTasks: [],
-	})),
-	projectPicture: vi.fn().mockResolvedValue("The project picture."),
-	runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
-}));
+	}));
+	const projectPicture = vi.fn().mockResolvedValue("The project picture.");
+	return {
+		curatorTeam,
+		curatorPersona: vi.fn(async () => ({ genres: [], settings: [], levels: [] })),
+		stageWorkflow,
+		projectPicture,
+		runPeriod: vi.fn(() => ({ from: new Date(0), to: new Date(0) })),
+		// The real collector, over the mocked parts it is made of.
+		checkpointFacts: async (
+			checkpoint: { id: string; projectId: string; stepId: string | null; stageName: string; startedAt: Date | null },
+			period?: unknown,
+		) => ({
+			workflow: await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+			team: await curatorTeam(checkpoint.id, checkpoint.projectId, checkpoint.startedAt),
+			picture: await projectPicture(checkpoint.id, period),
+			marketing: { devlogs: [], links: [] },
+		}),
+	};
+});
 
 vi.mock("@/repositories/project/artifact-check", () => ({
 	recheckCheckpointArtifacts: vi.fn(),
@@ -709,7 +725,7 @@ describe("goal check schema", () => {
 		);
 		const [, user] = goalCheckMessages({
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", nextStage: null, description: null, goal: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, goal: null, lenses: lensWeights("Ideation"), requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [], openings: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: "Ships by night", genre: "Puzzle" },
@@ -719,6 +735,7 @@ describe("goal check schema", () => {
 				experience: "Two jam games in Godot",
 			},
 			picture: "",
+			marketing: { devlogs: [], links: [] },
 		});
 
 		expect(user.content).toContain("Lantern Keeper (Puzzle)");
@@ -732,16 +749,28 @@ describe("the goal check's stored read", () => {
 	it("is not paid for again because the project picture moved on", () => {
 		const input = {
 			card: { goal: "A greybox", inputs: [], outcomes: [] },
-			workflow: { currentStage: "Ideation", nextStage: null, description: null, goal: null, requiredTasks: [] },
+			workflow: { currentStage: "Ideation", nextStage: null, description: null, goal: null, lenses: lensWeights("Ideation"), requiredTasks: [] },
 			team: { members: 1, stated: 0, hoursPerWeek: null, hoursPerRun: null, people: [], openings: [] },
 			previous: null,
 			project: { name: "Lantern Keeper", pitch: null, genre: null },
 			author: null,
+			marketing: { devlogs: [], links: [] },
 		};
 
 		expect(goalCheckHash({ ...input, picture: "Monday" })).toBe(
 			goalCheckHash({ ...input, picture: "Tuesday" }),
 		);
+		// Views and applause move daily; the same card is not read twice for them.
+		expect(
+			goalCheckHash({
+				...input,
+				picture: "",
+				marketing: {
+					devlogs: [{ title: "Devlog #1", publishedAt: "2026-10-01", applause: 3, views: 40 }],
+					links: [],
+				},
+			}),
+		).toBe(goalCheckHash({ ...input, picture: "" }));
 		expect(goalCheckHash({ ...input, picture: "" })).not.toBe(
 			goalCheckHash({
 				...input,

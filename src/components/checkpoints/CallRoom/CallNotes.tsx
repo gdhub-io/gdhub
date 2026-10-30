@@ -2,9 +2,13 @@
 
 import {
 	IconCircleDashed,
+	IconCode,
 	IconHelpCircle,
 	IconHourglass,
 	IconListCheck,
+	IconSpeakerphone,
+	IconUsers,
+	type TablerIcon,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Skeleton, Table, Typography } from "antd";
@@ -12,7 +16,10 @@ import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import type { CallNotesDto, CheckpointCallDto } from "@/types/checkpoint-call";
-import type { CallNotes as CallNotesContent } from "@/types/checkpoints";
+import type {
+	CallNotes as CallNotesContent,
+	ReviewLenses,
+} from "@/types/checkpoints";
 import { TaskIcon } from "./CallPlan";
 import styles from "./style.module.scss";
 
@@ -112,6 +119,50 @@ function Group({
 	);
 }
 
+/** One lens of an AI review (frame 12.10.3): an outlined card, its heading with the lens's icon. */
+export function Lens({
+	icon: Icon,
+	title,
+	children,
+}: {
+	icon: TablerIcon;
+	title: string;
+	children: ReactNode;
+}) {
+	return (
+		<section className={styles.lens}>
+			<span className={styles.lensTitle}>
+				<Icon size={14} />
+				<Typography.Text className={styles.notesLabel}>{title}</Typography.Text>
+			</span>
+			{children}
+		</section>
+	);
+}
+
+/** The three lenses beside development, in the review and the curator's brief. */
+export function ReviewLensCards({ lenses }: { lenses: ReviewLenses }) {
+	const { t } = useTranslate();
+	const cards: [keyof ReviewLenses, TablerIcon, string][] = [
+		[
+			"marketing",
+			IconSpeakerphone,
+			t("checkpoints.review.lens.marketing", "Marketing"),
+		],
+		["team", IconUsers, t("checkpoints.review.lens.team", "Team")],
+		[
+			"management",
+			IconListCheck,
+			t("checkpoints.review.lens.management", "Project management"),
+		],
+	];
+	return cards.map(([lens, icon, title]) => (
+		<Lens key={lens} icon={icon} title={title}>
+			<Typography.Text>{lenses[lens]}</Typography.Text>
+		</Lens>
+	));
+}
+
 /**
  * gP5gH: the summary, its task references read back from the plan. `review`
  * is the AI curator's: the same shape, read from what the team showed rather
@@ -164,6 +215,77 @@ export function NotesSummary({
 		return task ? [task] : [];
 	});
 
+	const lenses = review ? content.lenses : undefined;
+	const discussedList = (
+		<div>
+			{content.discussed.map((item, position) => {
+				const task = taskOf(item.itemId);
+				return (
+					<div key={`${item.itemId}-${position}`} className={styles.discussed}>
+						{task && (
+							<div className={styles.discussedHead}>
+								<TaskIcon task={task} />
+								<Typography.Text
+									delete={task.cut}
+									type={task.cut ? "secondary" : undefined}
+									className={styles.discussedTitle}
+								>
+									{task.text}
+								</Typography.Text>
+							</div>
+						)}
+						<Typography.Text className={styles.retelling}>
+							{item.text}
+						</Typography.Text>
+					</div>
+				);
+			})}
+		</div>
+	);
+	const notDiscussedGroup = notDiscussed.length > 0 && (
+		<Group quiet label={label.notDiscussed}>
+			{notDiscussed.map((task) => (
+				<div key={task.id} className={styles.notDiscussed}>
+					<IconCircleDashed size={16} />
+					<Typography.Text type="secondary">{task.text}</Typography.Text>
+				</div>
+			))}
+		</Group>
+	);
+
+	// The same three parts with or without lenses; only the labels differ.
+	const development = (
+		<>
+			{lenses || !content.discussed.length ? (
+				discussedList
+			) : (
+				<Group label={label.discussed}>{discussedList}</Group>
+			)}
+			{notDiscussedGroup}
+			<Group
+				label={
+					lenses
+						? t("checkpoints.review.lens.outside", "Outside the tasks")
+						: t("checkpoints.call.notes.outsidePlan", "Outside the plan")
+				}
+			>
+				{content.outsidePlan.length ? (
+					content.outsidePlan.map((text, position) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
+						<Typography.Text key={position}>{text}</Typography.Text>
+					))
+				) : (
+					<Typography.Text className={styles.tertiary}>
+						{t(
+							"checkpoints.call.notes.nothingOutside",
+							"Nothing came up beyond the plan.",
+						)}
+					</Typography.Text>
+				)}
+			</Group>
+		</>
+	);
+
 	return (
 		<div className={styles.notes}>
 			{content.inShort && (
@@ -185,66 +307,20 @@ export function NotesSummary({
 				</div>
 			)}
 
-			{content.discussed.length > 0 && (
-				<Group label={label.discussed}>
-					<div>
-						{content.discussed.map((item, position) => {
-							const task = taskOf(item.itemId);
-							return (
-								<div
-									key={`${item.itemId}-${position}`}
-									className={styles.discussed}
-								>
-									{task && (
-										<div className={styles.discussedHead}>
-											<TaskIcon task={task} />
-											<Typography.Text
-												delete={task.cut}
-												type={task.cut ? "secondary" : undefined}
-												className={styles.discussedTitle}
-											>
-												{task.text}
-											</Typography.Text>
-										</div>
-									)}
-									<Typography.Text className={styles.retelling}>
-										{item.text}
-									</Typography.Text>
-								</div>
-							);
-						})}
-					</div>
-				</Group>
+			{lenses ? (
+				<>
+					{/* Frame 12.10.3: the four lenses (GDHUB-126), development split within / outside the tasks. */}
+					<Lens
+						icon={IconCode}
+						title={t("checkpoints.review.lens.development", "Development")}
+					>
+						{development}
+					</Lens>
+					<ReviewLensCards lenses={lenses} />
+				</>
+			) : (
+				development
 			)}
-
-			{notDiscussed.length > 0 && (
-				<Group quiet label={label.notDiscussed}>
-					{notDiscussed.map((task) => (
-						<div key={task.id} className={styles.notDiscussed}>
-							<IconCircleDashed size={16} />
-							<Typography.Text type="secondary">{task.text}</Typography.Text>
-						</div>
-					))}
-				</Group>
-			)}
-
-			<Group
-				label={t("checkpoints.call.notes.outsidePlan", "Outside the plan")}
-			>
-				{content.outsidePlan.length ? (
-					content.outsidePlan.map((text, position) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: generated paragraphs have no id and never reorder
-						<Typography.Text key={position}>{text}</Typography.Text>
-					))
-				) : (
-					<Typography.Text className={styles.tertiary}>
-						{t(
-							"checkpoints.call.notes.nothingOutside",
-							"Nothing came up beyond the plan.",
-						)}
-					</Typography.Text>
-				)}
-			</Group>
 
 			{content.agreed.length > 0 && (
 				<Group label={label.agreed}>

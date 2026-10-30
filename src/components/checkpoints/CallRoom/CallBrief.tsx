@@ -11,6 +11,7 @@ import type {
 	CheckpointCallDto,
 } from "@/types/checkpoint-call";
 import { StageFlag } from "./CallGoal";
+import { ReviewLensCards } from "./CallNotes";
 import { AdviceLine } from "./PlanForm";
 import styles from "./style.module.scss";
 
@@ -89,6 +90,8 @@ export function CallBrief({
 					<AdviceLine>{note}</AdviceLine>
 				</Flex>
 			))}
+
+			{notes.lenses && <ReviewLensCards lenses={notes.lenses} />}
 
 			{notes.questions.length > 0 && (
 				<Flex vertical gap={6} className={styles.briefRaise}>

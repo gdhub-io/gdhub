@@ -1,20 +1,27 @@
 import {
 	CURATOR_ACTIVITY_LIMIT,
+	CURATOR_MARKETING_DEVLOGS,
 	CURATOR_STAGE_BRIEFS,
 	CURATOR_STAGE_GOALS,
 	LEAD_IN_DAYS,
 } from "@/config/checkpoint";
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
+import { devlogWords } from "@/lib/checkpoints/curator-text";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
+import { firstLine } from "@/lib/checkpoints/journal-text";
+import { lensWeights } from "@/lib/checkpoints/lenses";
+import { dateOfDay } from "@/lib/checkpoints/plan";
 import { getProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 import type {
+	CuratorMarketing,
 	CuratorPersona,
 	CuratorTeam,
 	CuratorWorkflow,
 } from "@/types/checkpoint-curator";
+import type { ProjectLink } from "@/types/project";
 
 const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
 
@@ -58,6 +65,7 @@ export async function stageWorkflow(
 		nextStage: next?.name ?? null,
 		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
 		goal: CURATOR_STAGE_GOALS[currentStage] ?? null,
+		lenses: lensWeights(currentStage),
 		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
 			task.name ? [{ name: task.name, done: task.done }] : [],
 		),
@@ -243,3 +251,90 @@ export const curatorPersona = async (
 		levels: names(profile?.preferredLevels),
 	};
 };
+
+/**
+ * What the audience was told in a period and how it answered (GDHUB-126): the
+ * public devlogs with their applause and views, and where the game can be found.
+ */
+export async function curatorMarketing(
+	projectId: string,
+	period: { from: Date; to: Date },
+): Promise<CuratorMarketing> {
+	const [posts, project] = await Promise.all([
+		prisma.projectReport.findMany({
+			where: {
+				projectId,
+				isSystem: false,
+				// The sprint's own bounds: the day after it counts, as in `sprintEvidence`.
+				publishedAt: { gte: period.from, lt: dateOfDay(period.to, 2) },
+			},
+			orderBy: { publishedAt: "desc" },
+			take: CURATOR_MARKETING_DEVLOGS,
+			select: {
+				id: true,
+				number: true,
+				content: true,
+				contentEditor: true,
+				publishedAt: true,
+				viewsCount: true,
+			},
+		}),
+		prisma.project.findUnique({
+			where: { id: projectId },
+			select: { links: true },
+		}),
+	]);
+	const applause = await prisma.projectReport.getApplauseCounts({
+		projectReportIds: posts.map((post) => post.id),
+	});
+	const links = Array.isArray(project?.links)
+		? (project.links as unknown as ProjectLink[])
+		: [];
+
+	return {
+		devlogs: posts.map((post) => ({
+			title: `Devlog${post.number ? ` #${post.number}` : ""}: ${firstLine(devlogWords(post))}`,
+			publishedAt: day(post.publishedAt),
+			applause: applause.get(post.id) ?? 0,
+			views: post.viewsCount,
+		})),
+		links: links
+			.filter((row) => row.link)
+			.map((row) => `${row.platform}: ${row.link}`),
+	};
+}
+
+/**
+ * Everything every review moment reads about a checkpoint for one period
+ * (GDHUB-126), so the moments cannot drift apart: the stage with its lens
+ * weights, the team, what happened on the project and what the audience saw.
+ * Without a period it is the lead-in, as `projectPicture` reads it.
+ */
+export async function checkpointFacts(
+	checkpoint: {
+		id: string;
+		projectId: string;
+		stepId: string | null;
+		stageName: string;
+		/** Who joined after it is told apart; null before the start. */
+		startedAt: Date | null;
+	},
+	period?: { from: Date; to: Date },
+) {
+	const now = new Date();
+	const marketingPeriod = period ?? {
+		from: new Date(
+			(checkpoint.startedAt ?? now).getTime() - LEAD_IN_DAYS * MS_PER_DAY,
+		),
+		to: now,
+	};
+	const [workflow, team, picture, marketing] = await Promise.all([
+		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		curatorTeam(checkpoint.id, checkpoint.projectId, checkpoint.startedAt),
+		projectPicture(checkpoint.id, period),
+		curatorMarketing(checkpoint.projectId, marketingPeriod),
+	]);
+	return { workflow, team, picture, marketing };
+}
+
+export type CheckpointFacts = Awaited<ReturnType<typeof checkpointFacts>>;

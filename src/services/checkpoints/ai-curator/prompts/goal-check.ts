@@ -9,9 +9,11 @@ import { GOAL_FITS } from "@/types/checkpoints";
 import {
 	CURATOR_STANCE,
 	GOAL_STAGE,
+	LENSES,
 	localeLine,
 	renderCard,
 	renderCharacter,
+	renderMarketing,
 	renderPicture,
 	renderTeam,
 	renderWorkflow,
@@ -102,6 +104,8 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 
 			${CURATOR_STANCE}
 
+			${LENSES}
+
 			This is day 1, right after payment: your first letter to the author.
 			They have written only the goal; the tasks come next, from them, and
 			your suggestions are where they may start. Judge whether the goal is a
@@ -144,6 +148,7 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${renderTeam(input.team)}
 
 			${renderPicture(input.picture)}
+			${renderMarketing(input.marketing)}
 
 			${
 				input.previous

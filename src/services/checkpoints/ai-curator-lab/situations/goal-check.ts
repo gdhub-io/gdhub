@@ -43,6 +43,7 @@ export const goalCheckSituations = (
 		team: project.team("start"),
 		previous: null,
 		picture: project.picture("start"),
+		marketing: project.marketing("start"),
 	};
 	const withGoal = (goal: string) => ({
 		...base,

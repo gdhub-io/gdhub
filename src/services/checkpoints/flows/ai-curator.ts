@@ -24,11 +24,9 @@ import {
 	toDevlog,
 } from "@/repositories/checkpoints/ai-curator";
 import {
+	checkpointFacts,
 	curatorPersona,
-	curatorTeam,
-	projectPicture,
 	runPeriod,
-	stageWorkflow,
 } from "@/repositories/checkpoints/ai-curator-context";
 import {
 	briefAuthor,
@@ -102,9 +100,10 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
-	const [previous, workflow] = await Promise.all([
+	const [previous, facts] = await Promise.all([
 		lastVerdict(checkpoint.projectId, checkpointId),
-		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		// Before the start nobody has joined during it, and the period is the lead-in.
+		checkpointFacts({ ...checkpoint, id: checkpointId, startedAt: null }),
 	]);
 
 	const founder = members.find(
@@ -113,18 +112,15 @@ export const runGoalCheck = async (
 
 	const input: GoalCheckInput = {
 		card: toCard(checkpoint.goal, checkpoint.items),
-		workflow,
+		...facts,
 		project: {
 			name: checkpoint.project.name,
 			pitch: checkpoint.project.description?.trim() || null,
 			genre: checkpoint.project.genre?.trim() || null,
 		},
 		author: founder ? briefAuthor(founder) : null,
-		// Before the start nobody has joined during it.
-		team: await curatorTeam(checkpointId, checkpoint.projectId, null),
 		character: checkpoint.curatorCharacter,
 		previous,
-		picture: await projectPicture(checkpointId),
 	};
 
 	const hash = goalCheckHash(input);
@@ -490,10 +486,14 @@ export const reportInputFor = async (checkpointId: string) => {
 	if (!checkpoint) return null;
 
 	const items = checkpoint.items;
+	const facts = await checkpointFacts(
+		{ ...checkpoint, id: checkpointId },
+		runPeriod(checkpoint.startedAt ?? new Date(), checkpoint.dueAt),
+	);
 
 	const reportInput = {
 		...reportEvidence(checkpoint.goal, items),
-		workflow: await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		...facts,
 		revision: checkpoint.revisedAt
 			? {
 					revisedAt: checkpoint.revisedAt.toISOString().slice(0, 10),
@@ -501,11 +501,6 @@ export const reportInputFor = async (checkpointId: string) => {
 				}
 			: null,
 		devlogs: checkpoint.reports.map(toDevlog),
-		team: await curatorTeam(
-			checkpointId,
-			checkpoint.projectId,
-			checkpoint.startedAt,
-		),
 		character: checkpoint.curatorCharacter,
 		journal: lettersSoFar(checkpoint.sessions),
 		calls:
@@ -519,10 +514,6 @@ export const reportInputFor = async (checkpointId: string) => {
 						};
 					})
 				: [],
-		picture: await projectPicture(
-			checkpointId,
-			runPeriod(checkpoint.startedAt ?? new Date(), checkpoint.dueAt),
-		),
 	};
 	return { items, reportInput };
 };

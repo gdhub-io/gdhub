@@ -19,10 +19,9 @@ import {
 	CHECKPOINT_RUNNING_STATUSES,
 } from "@/lib/checkpoints/status";
 import {
-	curatorTeam,
-	projectPicture,
+	type CheckpointFacts,
+	checkpointFacts,
 	runPeriod,
-	stageWorkflow,
 } from "@/repositories/checkpoints/ai-curator-context";
 import {
 	knownOnly,
@@ -143,13 +142,9 @@ export const adviseOnPlan = async (
 
 	const input = adviceInput(
 		checkpoint,
-		await stageWorkflow(checkpoint.stepId, checkpoint.stageName),
-		await curatorTeam(checkpointId, checkpoint.projectId, checkpoint.startedAt),
-		index === 1 ? "start" : "midway",
-		content?.notes?.inShort ?? null,
-		// Halfway reads the first two sprints, a period that does not move day by day.
-		await projectPicture(
-			checkpointId,
+		await checkpointFacts(
+			{ ...checkpoint, id: checkpointId },
+			// Halfway reads the first two sprints, a period that does not move day by day.
 			checkpoint.startedAt && index !== 1
 				? {
 						from: checkpoint.startedAt,
@@ -157,6 +152,8 @@ export const adviseOnPlan = async (
 					}
 				: undefined,
 		),
+		index === 1 ? "start" : "midway",
+		content?.notes?.inShort ?? null,
 		checkpoint.curatorCharacter,
 		lettersSoFar(checkpoint.sessions, session.index + 1),
 	);
@@ -242,23 +239,19 @@ const adviceInput = (
 		goal: string;
 		items: Parameters<typeof toCuratorTask>[0][];
 	},
-	workflow: CuratorWorkflow,
-	team: CuratorTeam,
+	facts: CheckpointFacts,
 	moment: PlanAdviceInput["moment"],
 	review: string | null,
-	picture: string,
 	character: string | null,
 	journal: JournalEntry[],
 ): PlanAdviceInput => ({
 	goal: checkpoint.goal,
 	character,
 	journal,
-	workflow,
-	team,
+	...facts,
 	tasks: checkpoint.items.map(toCuratorTask),
 	moment,
 	review,
-	picture,
 });
 
 /** The model's advice, kept for open tasks only and none it made up. */
@@ -351,18 +344,15 @@ const sprintReviewInput = async (
 	final: boolean,
 ) => {
 	const sprint = sessionIndex - 1;
-	const [{ devlogs, posts, artifacts }, picture, workflow, team] =
-		await Promise.all([
-			sprintEvidence(checkpoint.projectId, startedAt, sprint),
-			projectPicture(
-				checkpoint.id,
-				final
-					? runPeriod(startedAt, checkpoint.dueAt)
-					: sprintRange(startedAt, sprint),
-			),
-			stageWorkflow(checkpoint.stepId, checkpoint.stageName),
-			curatorTeam(checkpoint.id, checkpoint.projectId, startedAt),
-		]);
+	const [{ devlogs, posts, artifacts }, facts] = await Promise.all([
+		sprintEvidence(checkpoint.projectId, startedAt, sprint),
+		checkpointFacts(
+			{ ...checkpoint, startedAt },
+			final
+				? runPeriod(startedAt, checkpoint.dueAt)
+				: sprintRange(startedAt, sprint),
+		),
+	]);
 	const [devlogMedia, artifactsSeen] = await Promise.all([
 		devlogMediaLines(posts.map((post) => post.id)),
 		sprintArtifactLines(checkpoint.id, sprint),
@@ -380,20 +370,18 @@ const sprintReviewInput = async (
 		goal: checkpoint.goal,
 		character: checkpoint.curatorCharacter,
 		journal: lettersSoFar(checkpoint.sessions, sessionIndex),
-		workflow,
+		...facts,
 		sprint,
 		tasks: checkpoint.items.map(toCuratorTask),
 		devlogs,
 		devlogMedia,
 		artifactsSeen,
 		artifacts,
-		team,
 		focusLastReview: agreed.map((line) => line.text),
 		verdict:
 			final && checkpoint.verdict
 				? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
 				: null,
-		picture,
 	};
 };
 
