@@ -80,4 +80,3 @@ storybook-static
 
 # debug logs
 debug-*.log
-/tests/e2e/setup/storage-state.json

@@ -1,118 +1,76 @@
-import { InvitationStatus, ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { InvitationStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
-import {
-	cleanupInvitedUser,
-	ensureInvitedUser,
-	INVITED_USER_EMAIL,
-} from "./setup/invited-user";
 import { createProjectInHub } from "./setup/project";
-import { signIn } from "./setup/sign-in";
-import { TEST_USER_EMAIL } from "./setup/test-user";
+import {
+	grantUser,
+	removeRun,
+	type StandUser,
+	signInAs,
+	signInPage,
+} from "./setup/users";
 
 const ts = () => Date.now().toString(36);
 
 test.describe.serial("team invitation flow", () => {
+	let author: StandUser;
+	let invited: StandUser;
 	let projectSlug: string;
 	let invitationId: string;
 	let teamId: string;
 	const projectName = `E2E Invite ${ts()}`;
 
 	test.beforeAll(async () => {
-		await ensureInvitedUser();
+		author = await grantUser("inviter");
+		invited = await grantUser("invited", "member", "E2E Invited User");
 	});
-
-	test.afterAll(async () => {
-		await prisma.teamInvitation
-			.deleteMany({ where: { email: INVITED_USER_EMAIL } })
-			.catch(() => undefined);
-
-		const invitedUser = await prisma.user.findUnique({
-			where: { email: INVITED_USER_EMAIL },
-		});
-		if (invitedUser) {
-			await prisma.teamMember
-				.deleteMany({ where: { userId: invitedUser.id } })
-				.catch(() => undefined);
-		}
-
-		if (projectSlug) {
-			const project = await prisma.project
-				.findFirst({ where: { slug: projectSlug } })
-				.catch(() => null);
-			if (project) {
-				await prisma.project
-					.update({
-						where: { id: project.id },
-						data: { status: ProjectStatus.Archived },
-					})
-					.catch(() => undefined);
-			}
-		}
-
-		await cleanupInvitedUser();
-	});
+	test.afterAll(removeRun);
 
 	test("create project and send invitation", async ({ page }) => {
-		test.setTimeout(60_000);
-
-		// --- 1. Create a project via UI ---
+		await signInPage(page, author);
 		projectSlug = await createProjectInHub(
 			page,
 			projectName,
 			"E2E team invitation test",
 		);
 
-		// --- 2. Create invitation via Prisma (bypasses Novu) ---
-		const project = await prisma.project.findFirst({
+		// The invitation is written directly: the app's route sends it through Novu.
+		const project = await prisma.project.findFirstOrThrow({
 			where: { slug: projectSlug },
 			include: { team: true },
 		});
-		expect(project?.team).toBeTruthy();
-		teamId = project!.team!.id;
+		expect(project.team).toBeTruthy();
+		teamId = project.team?.id ?? "";
 
-		const author = await prisma.user.findUnique({
-			where: { email: TEST_USER_EMAIL },
-		});
-		const direction = await prisma.workDirection.findFirst();
-
+		const direction = await prisma.workDirection.findFirstOrThrow();
 		const invitation = await prisma.teamInvitation.create({
 			data: {
-				email: INVITED_USER_EMAIL,
+				email: invited.email,
 				position: "Game Designer",
-				directionId: direction!.id,
+				directionId: direction.id,
 				startedAt: new Date(),
-				team: { connect: { id: teamId } },
-				invitedBy: { connect: { id: author!.id } },
-				user: { connect: { email: INVITED_USER_EMAIL } },
+				teamId,
+				invitedById: author.id,
+				userId: invited.id,
 				status: InvitationStatus.Pending,
 				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 			},
 		});
 		invitationId = invitation.id;
 
-		// --- 3. Verify pending invitation in UI ---
 		await page.goto(`/user/project/${projectSlug}/team`);
 		await expect(page.getByText(/pending invitations/i)).toBeVisible({
 			timeout: 10_000,
 		});
 		await page.getByText(/pending invitations/i).click();
-		await expect(page.getByText(INVITED_USER_EMAIL)).toBeVisible({
-			timeout: 5_000,
-		});
+		await expect(page.getByText(invited.email)).toBeVisible();
 	});
 
 	test("invited user sees invitation details", async ({ browser }) => {
-		test.setTimeout(30_000);
 		expect(invitationId).toBeTruthy();
-
-		const context = await browser.newContext();
-		const page = await context.newPage();
-		await signIn(page, INVITED_USER_EMAIL);
+		const page = await signInAs(browser, invited);
 
 		await page.goto(`/invite/${invitationId}`);
-
-		// Verify invitation details are displayed
 		await expect(
 			page.getByRole("heading", { name: /team invitation/i }),
 		).toBeVisible({ timeout: 10_000 });
@@ -121,47 +79,33 @@ test.describe.serial("team invitation flow", () => {
 		await expect(
 			page.getByRole("button", { name: /accept invitation/i }),
 		).toBeVisible();
-		await expect(
-			page.getByRole("button", { name: /decline/i }),
-		).toBeVisible();
-
-		await context.close();
+		await expect(page.getByRole("button", { name: /decline/i })).toBeVisible();
 	});
 
 	test("accepted invitation adds user to team", async ({ page }) => {
-		test.setTimeout(30_000);
-
-		// Accept invitation via Prisma (bypasses Novu hang)
-		const invitedUser = await prisma.user.findUnique({
-			where: { email: INVITED_USER_EMAIL },
-			include: { specialities: true },
+		// Accepted directly: the app's route waits on Novu.
+		const speciality = await prisma.speciality.findFirstOrThrow({
+			where: { userId: invited.id },
+			select: { id: true },
 		});
-		expect(invitedUser).toBeTruthy();
-		expect(invitedUser!.specialities.length).toBeGreaterThan(0);
-
 		await prisma.teamInvitation.update({
 			where: { id: invitationId },
-			data: {
-				status: InvitationStatus.Accepted,
-				acceptedAt: new Date(),
-				user: { connect: { id: invitedUser!.id } },
-			},
+			data: { status: InvitationStatus.Accepted, acceptedAt: new Date() },
 		});
-
 		await prisma.teamMember.create({
 			data: {
 				position: "Game Designer",
-				speciality: { connect: { id: invitedUser!.specialities[0].id } },
+				specialityId: speciality.id,
 				status: TeamMemberStatus.Hired,
 				startedAt: new Date(),
-				team: { connect: { id: teamId } },
-				user: { connect: { id: invitedUser!.id } },
+				teamId,
+				userId: invited.id,
 			},
 		});
 
-		// Verify the invited user appears in the team members UI
+		await signInPage(page, author);
 		await page.goto(`/user/project/${projectSlug}/team`);
-		await expect(page.getByText("E2E Invited User")).toBeVisible({
+		await expect(page.getByText(invited.name)).toBeVisible({
 			timeout: 10_000,
 		});
 		await expect(

@@ -1,5 +1,11 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { createProjectInHub } from "./setup/project";
+import {
+	grantUser,
+	removeRun,
+	type StandUser,
+	signInPage,
+} from "./setup/users";
 
 const ts = () => Date.now().toString(36);
 
@@ -11,8 +17,17 @@ function futureDate(days: number): string {
 	return `${dd}.${mm}.${d.getFullYear()}`;
 }
 
-const createProject = (page: Page) =>
-	createProjectInHub(page, `E2E Vac ${ts()}`, "e2e vacancy");
+let author: StandUser;
+
+test.beforeAll(async () => {
+	author = await grantUser("vacancy");
+});
+test.afterAll(removeRun);
+
+const createProject = async (page: Page) => {
+	await signInPage(page, author);
+	return createProjectInHub(page, `E2E Vac ${ts()}`, "e2e vacancy");
+};
 
 // Fills the always-required fields of an open vacancy modal (not the payment block).
 async function fillVacancyBase(page: Page, modal: Locator, title: string) {
@@ -29,24 +44,9 @@ async function fillVacancyBase(page: Page, modal: Locator, title: string) {
 	await modal.getByLabel(/open position description/i).fill("e2e description");
 }
 
-async function deleteProject(page: Page, slug: string) {
-	await page.goto(`/user/project/${slug}/settings/danger`);
-	await page.getByRole("button", { name: /^delete$/i }).click();
-	const del = page.getByRole("dialog");
-	const confirmInput = del.getByRole("textbox");
-	const currentName = await confirmInput.getAttribute("placeholder");
-	if (currentName) await confirmInput.fill(currentName);
-	await Promise.all([
-		page.waitForURL(/\/hub(\/|$)/, { timeout: 30_000 }),
-		del.getByRole("button", { name: /^delete$/i }).click(),
-	]);
-}
-
 test("paid vacancy: create draft → offered comp + pending → edit reload → archive → restore duplicate", async ({
 	page,
 }) => {
-	test.setTimeout(150_000);
-
 	const slug = await createProject(page);
 	await page.goto(`/user/project/${slug}/open-positions`);
 	const addBtn = page.getByRole("button", { name: /add open position/i });
@@ -121,14 +121,11 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 		page.getByRole("row", { name: new RegExp(vacancyTitle) }),
 	).toBeVisible({ timeout: 15_000 });
 
-	await deleteProject(page, slug);
 });
 
 test("free vacancy: publish without payment → published, no fee", async ({
 	page,
 }) => {
-	test.setTimeout(150_000);
-
 	const slug = await createProject(page);
 	await page.goto(`/user/project/${slug}/open-positions`);
 	const addBtn = page.getByRole("button", { name: /add open position/i });
@@ -164,5 +161,4 @@ test("free vacancy: publish without payment → published, no fee", async ({
 	// it is editable (a published vacancy still has the Change button)
 	await expect(row.getByRole("button", { name: /^change$/i })).toBeVisible();
 
-	await deleteProject(page, slug);
 });

@@ -1,5 +1,4 @@
 import { defineConfig, devices } from "@playwright/test";
-import { STORAGE_STATE_PATH } from "./tests/e2e/setup/global-setup";
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 
@@ -8,7 +7,6 @@ const useExternalApp = !!process.env.PLAYWRIGHT_BASE_URL;
 
 export default defineConfig({
 	testDir: "./tests/e2e",
-	globalSetup: "./tests/e2e/setup/global-setup.ts",
 	fullyParallel: true,
 	forbidOnly: isCI,
 	retries: isCI ? 2 : 0,
@@ -74,10 +72,9 @@ export default defineConfig({
 			name: "authenticated",
 			testMatch: ["**/*.authed.spec.ts"],
 			dependencies: ["smoke"],
-			use: {
-				...devices["Desktop Chrome"],
-				storageState: STORAGE_STATE_PATH,
-			},
+			// Creating a project runs AI validation and compiles routes on a cold stand.
+			timeout: 150_000,
+			use: { ...devices["Desktop Chrome"] },
 		},
 	],
 	webServer: useExternalApp

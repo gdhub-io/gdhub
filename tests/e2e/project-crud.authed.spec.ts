@@ -1,14 +1,25 @@
 import { expect, test } from "@playwright/test";
 import { createProjectInHub } from "./setup/project";
+import {
+	grantUser,
+	removeRun,
+	type StandUser,
+	signInPage,
+} from "./setup/users";
 
 const ts = () => Date.now().toString(36);
+
+let author: StandUser;
+
+test.beforeAll(async () => {
+	author = await grantUser("crud");
+});
+test.afterAll(removeRun);
 
 test("create → edit in settings/general → delete via danger zone", async ({
 	page,
 }) => {
-	// Creation alone runs AI validation and can take ~25s on a dev server, so the
-	// default 30s test budget leaves nothing for the edit and delete steps.
-	test.setTimeout(120_000);
+	await signInPage(page, author);
 	const initialName = `E2E Project ${ts()}`;
 	const renamedName = `${initialName} Renamed`;
 	const description = "Created by the project-crud e2e test.";
@@ -16,7 +27,7 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	// --- 1. Create it from the hub ---
 	const slug = await createProjectInHub(page, initialName, description);
 
-	// --- 3. Edit the project in settings/general ---
+	// --- 2. Edit the project in settings/general ---
 	await page.goto(`/user/project/${slug}/settings/general`);
 	await expect(
 		page.getByRole("menuitem", { name: /general/i }),
@@ -53,7 +64,7 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	expect(putRes.status()).toBeLessThan(400);
 	await expect(nameInput).toHaveValue(renamedName);
 
-	// --- 4. Delete via danger zone ---
+	// --- 3. Delete via danger zone ---
 	await page.goto(`/user/project/${slug}/settings/danger`);
 	await page.getByRole("button", { name: /^delete$/i }).click();
 

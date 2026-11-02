@@ -4,14 +4,9 @@ The suite runs in three stages, as Playwright project `dependencies`. A later st
 
 | Stage | Project | What it does |
 | ----- | ------- | ------------ |
-| 1. Auth | `auth` | Sign-in and sign-out (`auth-flow.spec.ts`). |
+| 1. Auth | `auth` | The sign-in and registration pages (`auth-flow.spec.ts`). |
 | 2. Smoke | `smoke` | Every page, as someone allowed and someone refused (`smoke/`). |
 | 3. Critical flows | `anonymous`, `onboarding`, `authenticated`, `checkpoints` | The long flows. |
-
-| Project (Playwright) | Match pattern              | State                                |
-| -------------------- | -------------------------- | ------------------------------------ |
-| `anonymous`          | the existing `*.spec.ts`   | no cookies, tests redirects          |
-| `authenticated`      | `*.authed.spec.ts`         | uses `storage-state.json` from setup |
 
 ## Smoke
 
@@ -47,14 +42,10 @@ hidden `e2e-credentials` provider that is only loaded when **both**:
 - `process.env.NODE_ENV !== "production"`, and
 - `process.env.E2E_TEST_AUTH === "1"`.
 
-`tests/e2e/setup/global-setup.ts` runs once before the suite and:
-
-1. Upserts the test user in the DB (`tests/e2e/setup/test-user.ts`).
-2. Cleans up any orphan projects the test user might still own.
-3. POSTs to `/api/auth/callback/e2e-credentials` with a CSRF token.
-4. Saves the resulting cookies to `tests/e2e/setup/storage-state.json`.
-
-Every spec matching `*.authed.spec.ts` is then run with that storage state.
+Each spec makes its own users with `grantUser(label, persona)` from
+`setup/users.ts`, signs in with `signInPage(page, user)` or
+`signInAs(browser, user)`, and calls `removeRun()` in `afterAll`. Users are made
+per run on `example.com` addresses, so specs never share rows.
 
 ## Running locally
 
@@ -70,9 +61,8 @@ spec without waiting for smoke, add `--no-deps`.
 
 ## Writing a new authenticated spec
 
-Name it `something.authed.spec.ts`. The `authenticated` project will pick it
-up and apply the saved storage state automatically. Inside the spec you
-already have a logged-in browser context — just `page.goto(...)`.
+Name it `something.authed.spec.ts` and sign in as a user it granted
+(`project-crud.authed.spec.ts` is the shortest example).
 
 ## The checkpoint suite (GDHUB-79)
 

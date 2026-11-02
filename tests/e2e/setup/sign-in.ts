@@ -19,5 +19,8 @@ export async function signIn(page: Page, email: string) {
 			},
 		},
 	);
-	expect(signedIn.ok(), `sign-in as ${email}`).toBe(true);
+	expect(
+		signedIn.ok(),
+		`sign-in as ${email}: the stand needs E2E_TEST_AUTH=1 (bun run dev:test)`,
+	).toBe(true);
 }
