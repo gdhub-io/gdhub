@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { createProjectInHub } from "../setup/project";
 import { RunLog } from "./support/run-log";
 import {
 	grantUser,
@@ -29,22 +30,11 @@ test("a project moves through its stages, one way", async ({ browser }) => {
 	const author = await grantUser("author-a1");
 	const page = await signInAs(browser, author);
 
-	await page.goto("/hub");
-	await page.getByRole("button", { name: /^new project$/i }).click();
-	const create = page.getByRole("dialog", { name: "Create new game project" });
-	await create.getByLabel("Title").fill("Tidebound");
-	await create
-		.getByLabel("What's the game about")
-		.fill(
-			"A co-op sailing roguelike: two players crew a small boat between islands that flood and drain with the tide.",
-		);
-	await create.getByLabel("Genre").click();
-	await page.locator(".ant-select-item-option").first().click();
-	for (const box of await create.getByRole("checkbox").all()) await box.check();
-	await create.getByRole("button", { name: "Create" }).click();
-	await page.waitForURL(/\/user\/project\/[^/]+$/, { timeout: 60_000 });
-
-	const slug = page.url().split("/").pop() as string;
+	const slug = await createProjectInHub(
+		page,
+		"Tidebound",
+		"A co-op sailing roguelike: two players crew a small boat between islands that flood and drain with the tide.",
+	);
 	const project = await prisma.project.findUniqueOrThrow({
 		where: { slug },
 		select: { id: true },

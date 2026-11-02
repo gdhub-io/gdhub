@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { pick } from "./forms";
 
 /** Creates a project from the hub's "New project" modal and returns its slug. */
 export async function createProjectInHub(
@@ -13,8 +14,7 @@ export async function createProjectInHub(
 
 	await modal.getByLabel("Title").fill(name);
 	await modal.getByLabel("What's the game about").fill(pitch);
-	await modal.getByRole("combobox", { name: "Genre" }).click();
-	await page.locator(".ant-select-item-option").first().click();
+	await pick(page, "Genre");
 	await modal.getByRole("checkbox", { name: /making this game myself/i }).check();
 	await modal.getByRole("checkbox", { name: /Project Requirements/ }).check();
 

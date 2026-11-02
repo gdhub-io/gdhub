@@ -1,149 +1,51 @@
 import { expect, test } from "@playwright/test";
-import { acceptCookieConsent } from "./setup/cookies";
 import {
-	cleanupOnboardingUser,
-	ensureOnboardingUser,
-	ONBOARDING_USER_EMAIL,
-} from "./setup/onboarding-user";
+	fillProfileStep,
+	fillSpecialityStep,
+	startOnboarding,
+} from "./setup/onboarding";
+import { removeRun } from "./setup/users";
 
-test.describe.serial("onboarding flow for a new user", () => {
-	test.beforeAll(async () => {
-		await ensureOnboardingUser();
-	});
+test.afterAll(removeRun);
 
-	test.afterAll(async () => {
-		await cleanupOnboardingUser();
-	});
+test("complete onboarding from welcome to hub", async ({ browser }) => {
+	test.setTimeout(120_000);
+	const page = await startOnboarding(browser, "onboarding");
 
-	test("complete onboarding from welcome to hub", async ({ page, baseURL }) => {
-		test.setTimeout(120_000);
-		// --- Sign in as the fresh (non-onboarded) user ---
-		const csrfRes = await page.request.get("/api/auth/csrf");
-		const { csrfToken } = (await csrfRes.json()) as { csrfToken: string };
+	await fillProfileStep(page, "E2E", "Onboarding");
+	await fillSpecialityStep(page, "Game Designer");
+	await page.getByRole("button", { name: /save and continue/i }).click();
 
-		await page.request.post("/api/auth/callback/e2e-credentials", {
-			form: {
-				csrfToken,
-				email: ONBOARDING_USER_EMAIL,
-				callbackUrl: `${baseURL}/hub`,
-				json: "true",
-			},
-		});
+	// --- Step 3: Interests ---
+	// "Interests" is a label in the antd Steps bar, not a heading, so assert on
+	// the step's own content instead.
+	const authorCard = page.getByRole("radio", { name: /be author/i });
+	await expect(authorCard).toBeVisible();
+	await authorCard.click();
 
-		// Navigate — proxy should redirect non-onboarded user to onboarding
-		await acceptCookieConsent(page, baseURL);
-		await page.goto("/hub");
-		await expect(page).toHaveURL(/\/registration\/onboarding/);
+	await page.getByRole("button", { name: /save and continue/i }).click();
 
-		// --- Step 0: Welcome ---
-		await expect(
-			page.getByRole("heading", { level: 1, name: /welcome/i }),
-		).toBeVisible();
-		await page.getByRole("button", { name: /fill out the profile/i }).click();
+	// --- Step 4: Resources ---
+	await expect(
+		page.getByRole("heading", { level: 2, name: /rec?ources/i }),
+	).toBeVisible();
 
-		// --- Step 1: Profile ---
-		await expect(
-			page.getByRole("heading", { level: 2, name: /user profile/i }),
-		).toBeVisible();
+	// Fill available time min/max
+	const minInput = page.getByRole("spinbutton").first();
+	const maxInput = page.getByRole("spinbutton").nth(1);
+	await minInput.fill("5");
+	await maxInput.fill("20");
 
-		await page.getByLabel(/first name/i).fill("E2E");
-		await page.getByLabel(/last name/i).fill("Onboarding");
+	await page.getByRole("button", { name: /save/i }).click();
 
-		// Year of birth select
-		await page
-			.locator(".ant-form-item")
-			.filter({ hasText: /year of birth/i })
-			.locator(".ant-select")
-			.click();
-		await page.locator(".ant-select-item-option-content").first().click();
+	// --- Step 5: Completed ---
+	await expect(
+		page.getByRole("heading", {
+			level: 1,
+			name: /successfully completed/i,
+		}),
+	).toBeVisible({ timeout: 10_000 });
 
-		// Country autocomplete
-		await page
-			.locator(".ant-form-item")
-			.filter({ hasText: /country/i })
-			.getByRole("combobox")
-			.fill("United");
-		await page.getByTitle("United States").first().click();
-
-		await page.getByLabel(/i confirm the accuracy/i).check();
-
-		await page.getByRole("button", { name: /save and continue/i }).click();
-
-		// --- Step 2: Speciality ---
-		// "Speciality" is a label in the antd Steps bar, not a heading, so anchor
-		// on the step's own field instead.
-		const specialityName = page
-			.locator(".ant-form-item")
-			.filter({ hasText: /specialty name/i })
-			.getByRole("textbox");
-		// Saving the profile step runs AI validation, so the next step can take far
-		// longer than the default 5s expect budget to appear.
-		await expect(specialityName).toBeVisible({ timeout: 30_000 });
-		await specialityName.fill("Game Designer");
-
-		// Level select
-		await page
-			.locator(".ant-form-item")
-			.filter({ hasText: /^level/i })
-			.locator(".ant-select")
-			.click();
-		await page.locator(".ant-select-item-option-content").first().click();
-
-		// Field of Activity select
-		await page
-			.locator(".ant-form-item")
-			.filter({ hasText: /field of activity/i })
-			.locator(".ant-select")
-			.click();
-		await page.getByText("Game Design", { exact: true }).click();
-
-		// Specialization textarea
-		await page
-			.locator(".ant-form-item")
-			.filter({ hasText: /specialization/i })
-			.getByRole("textbox")
-			.fill("Systems design, level design");
-
-		// Experience textarea
-		await page
-			.locator(".ant-form-item")
-			.filter({ hasText: /experience/i })
-			.getByRole("textbox")
-			.fill("2 years of game design experience");
-
-		await page.getByRole("button", { name: /save and continue/i }).click();
-
-		// --- Step 3: Interests ---
-		// "Interests" is a label in the antd Steps bar, not a heading, so assert on
-		// the step's own content instead.
-		const authorCard = page.getByRole("radio", { name: /be author/i });
-		await expect(authorCard).toBeVisible();
-		await authorCard.click();
-
-		await page.getByRole("button", { name: /save and continue/i }).click();
-
-		// --- Step 4: Resources ---
-		await expect(
-			page.getByRole("heading", { level: 2, name: /rec?ources/i }),
-		).toBeVisible();
-
-		// Fill available time min/max
-		const minInput = page.getByRole("spinbutton").first();
-		const maxInput = page.getByRole("spinbutton").nth(1);
-		await minInput.fill("5");
-		await maxInput.fill("20");
-
-		await page.getByRole("button", { name: /save/i }).click();
-
-		// --- Step 5: Completed ---
-		await expect(
-			page.getByRole("heading", {
-				level: 1,
-				name: /successfully completed/i,
-			}),
-		).toBeVisible({ timeout: 10_000 });
-
-		await page.getByRole("button", { name: /let.*s go/i }).click();
-		await expect(page).toHaveURL(/\/hub/, { timeout: 10_000 });
-	});
+	await page.getByRole("button", { name: /let.*s go/i }).click();
+	await expect(page).toHaveURL(/\/hub/, { timeout: 10_000 });
 });

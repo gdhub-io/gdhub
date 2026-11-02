@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { pick } from "./setup/forms";
 import { createProjectInHub } from "./setup/project";
 import {
 	grantUser,
@@ -38,8 +39,7 @@ async function fillVacancyBase(page: Page, modal: Locator, title: string) {
 	await dateInput.fill(futureDate(30));
 	await dateInput.press("Enter");
 
-	await modal.getByLabel(/what direction/i).click();
-	await page.locator(".ant-select-item-option").first().click();
+	await pick(page, /what direction/i);
 
 	await modal.getByLabel(/open position description/i).fill("e2e description");
 }
@@ -94,7 +94,7 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 	modal = page.getByRole("dialog");
 	await expect(modal).toBeVisible();
 	await expect(modal.getByLabel(/amount \(eur\)/i)).toHaveValue("500");
-	await modal.locator(".ant-modal-close").click();
+	await modal.getByRole("button", { name: "Close" }).click();
 	await expect(modal).toBeHidden();
 
 	// --- archive via the 3-dot menu ---
@@ -115,7 +115,7 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 
 	const dupModal = page.getByRole("dialog");
 	await expect(dupModal).toBeVisible();
-	await dupModal.locator(".ant-modal-close").click();
+	await dupModal.getByRole("button", { name: "Close" }).click();
 
 	await expect(
 		page.getByRole("row", { name: new RegExp(vacancyTitle) }),
