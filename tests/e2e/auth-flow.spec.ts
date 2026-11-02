@@ -32,7 +32,5 @@ test("/signin?error=RefreshTokenExpired shows session-expired message", async ({
 	await page.goto("/signin?error=RefreshTokenExpired");
 	// `.first()`: React strict mode runs the effect twice in dev, so the toast
 	// renders twice and a bare locator trips strict mode.
-	await expect(page.getByText(/session has expired/i).first()).toBeVisible({
-		timeout: 5_000,
-	});
+	await expect(page.getByText(/session has expired/i).first()).toBeVisible();
 });

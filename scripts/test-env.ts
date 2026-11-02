@@ -171,7 +171,7 @@ Run the app against it, with the test sign-in screen enabled:
 
   bun run dev:test
 
-Then open http://localhost:3000/dev-signin and pick who to be.
+Then open http://localhost:3100/dev-signin and pick who to be.
 `);
 }
 

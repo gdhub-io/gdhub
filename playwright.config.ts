@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3100";
 
 const isCI = !!process.env.CI;
 const useExternalApp = !!process.env.PLAYWRIGHT_BASE_URL;
@@ -12,12 +12,14 @@ export default defineConfig({
 	retries: isCI ? 2 : 0,
 	// Two workers ran the critical stages side by side and hung a 16 GB machine.
 	workers: 1,
-	reporter: isCI ? "github" : "html",
+	// The html report is written, never served: serving it holds the run open.
+	reporter: isCI ? "github" : [["line"], ["html", { open: "never" }]],
 	use: {
 		baseURL,
-		trace: "on-first-retry",
+		// Locally there is no retry, so a trace on retry would never be recorded.
+		trace: isCI ? "on-first-retry" : "retain-on-failure",
 		screenshot: "only-on-failure",
-		video: "retain-on-failure",
+		video: "off",
 	},
 	// Three stages: a later one does not start when an earlier one fails (GDHUB-130).
 	projects: [
@@ -80,8 +82,8 @@ export default defineConfig({
 	webServer: useExternalApp
 		? undefined
 		: {
-				command: "bun run dev",
-				url: baseURL,
+				command: "bun run dev:test",
+				url: `${baseURL}/api/auth/csrf`,
 				reuseExistingServer: !isCI,
 				timeout: 180_000,
 			},
