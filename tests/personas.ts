@@ -10,6 +10,7 @@ import { SpaceRole } from "@/config/permissions/roles";
 import { createScout } from "@/repositories/scout/scout";
 import { joinSpace } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
+import { acceptTermsOfUse } from "./e2e/setup/legal";
 
 /**
  * The kinds of person a screen has to be checked as.
@@ -336,7 +337,7 @@ export async function becomePersona(userId: string, key: PersonaKey) {
 }
 
 /** Upserts the persona's own account and applies it. Idempotent. */
-export async function ensurePersona(persona: Persona) {
+async function ensurePersona(persona: Persona) {
 	const user = await prisma.user.upsert({
 		where: { email: persona.email },
 		// `Member` before `apply` runs: parts of the app still read the legacy
@@ -356,6 +357,9 @@ export async function ensurePersona(persona: Persona) {
 	});
 
 	await persona.apply(user.id);
+	// Signed up the usual way, so /dev-signin lands past the terms modal.
+	await prisma.legalAcceptance.deleteMany({ where: { userId: user.id } });
+	await acceptTermsOfUse(user.id);
 
 	return user;
 }
