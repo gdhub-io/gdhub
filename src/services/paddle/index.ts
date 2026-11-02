@@ -29,44 +29,6 @@ export async function getPaddleInstance(): Promise<Paddle> {
 	return paddleInstance;
 }
 
-export async function openPaddleCheckout(options: {
-	priceId: string;
-	customData?: Record<string, any>;
-	successUrl?: string;
-	customMessage?: string;
-	customerEmail?: string;
-}): Promise<void> {
-	const paddle = await getPaddleInstance();
-
-	if (!paddle) {
-		throw new Error("Paddle instance not initialized");
-	}
-
-	// Only prefill the (trusted) account email. We intentionally don't pass the
-	// country: providing it makes Paddle treat the details as complete and skip
-	// the "Your details" step, and the profile country may be inaccurate. Paddle
-	// shows the details step with email prefilled and detects country by IP.
-	const customer = options.customerEmail
-		? { email: options.customerEmail }
-		: undefined;
-
-	paddle.Checkout.open({
-		items: [
-			{
-				priceId: options.priceId,
-				quantity: 1,
-			},
-		],
-		customData: options.customData,
-		customer,
-		settings: {
-			displayMode: "overlay",
-			theme: "light",
-			successUrl: options.successUrl || "/",
-		},
-	});
-}
-
 /**
  * Opens the overlay for a transaction the server already made, so the price and
  * the `Payment` row it settles are fixed there rather than in the browser.
@@ -91,4 +53,4 @@ export async function openPaddleTransaction(options: {
 	});
 }
 
-export default { getPaddleInstance, openPaddleCheckout, openPaddleTransaction };
+export default { getPaddleInstance, openPaddleTransaction };

@@ -1,6 +1,7 @@
 import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, type FrameLocator, type Page } from "@playwright/test";
 import { prisma } from "../../../../src/services/prisma";
+import { paddleDetails, paddleOverlay, payByCard } from "../../setup/paddle";
 
 /**
  * The author's way from the checkpoint hub to a paid AI checkpoint: what is
@@ -55,15 +56,13 @@ export async function openOverlay(page: Page) {
 	await page.getByRole("checkbox", { name: /start before the 14-day/ }).check();
 	await page.getByRole("button", { name: /^Pay / }).click();
 
-	return page.frameLocator("iframe[name=paddle_frame]");
+	return paddleOverlay(page);
 }
 
 /** Paddle's overlay, past the details step, on the card form. */
 export async function openPaddle(page: Page) {
 	const paddle = await openOverlay(page);
-	await paddle.getByRole("textbox", { name: "ZIP/Postcode" }).fill("1011AB");
-	await paddle.getByRole("button", { name: "Continue" }).click();
-	await paddle.getByRole("textbox", { name: "Card number" }).waitFor();
+	await paddleDetails(paddle);
 
 	return paddle;
 }
@@ -74,11 +73,7 @@ export async function payInPaddle(page: Page) {
 }
 
 export async function payWithCard(page: Page, paddle: FrameLocator) {
-	await paddle.getByRole("textbox", { name: "Card number" }).fill("4242424242424242");
-	await paddle.getByRole("textbox", { name: "Card holder" }).fill("E2E Author");
-	await paddle.getByRole("textbox", { name: "Expiry" }).fill("12/30");
-	await paddle.getByRole("textbox", { name: "CVV" }).fill("100");
-	await paddle.getByRole("button", { name: /^Pay / }).click();
+	await payByCard(paddle);
 
 	await page.waitForURL(/step=ready/, { timeout: 90_000 });
 }

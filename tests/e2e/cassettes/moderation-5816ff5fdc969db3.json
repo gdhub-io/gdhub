@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"Saltglass Harbour\",\"A trading game about a harbour town that rebuilds after every storm.\"]}",
+	"answer": {
+		"id": "modr-4772",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0000041335397768930325,
+					"harassment/threatening": 9.818326983657703e-7,
+					"sexual": 0.00003514382632807918,
+					"hate": 0.0000017502925788778209,
+					"hate/threatening": 1.0348531401872454e-7,
+					"illicit": 0.000009314593042575101,
+					"illicit/violent": 0.00000640200641038395,
+					"self-harm/intent": 0.0000011843139025979655,
+					"self-harm/instructions": 5.77192003016332e-7,
+					"self-harm": 0.000002627477314480822,
+					"sexual/minors": 5.255395707074638e-7,
+					"violence": 0.00048380070743405816,
+					"violence/graphic": 0.0000041335397768930325
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 7.889262586245034e-7,
+					"harassment/threatening": 3.089494448007139e-7,
+					"sexual": 4.936988949458183e-7,
+					"hate": 2.4824800371656586e-7,
+					"hate/threatening": 4.450850519411503e-8,
+					"illicit": 0.0000020785170435063726,
+					"illicit/violent": 0.0000019525885208642222,
+					"self-harm/intent": 4.0929110499856e-7,
+					"self-harm/instructions": 6.681516500435412e-8,
+					"self-harm": 5.173918770225734e-7,
+					"sexual/minors": 8.059446204294678e-8,
+					"violence": 0.000006605214485464791,
+					"violence/graphic": 0.0000021444948420913954
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}
