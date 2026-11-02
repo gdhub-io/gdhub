@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { createProjectInHub } from "./setup/project";
 
 const ts = () => Date.now().toString(36);
 
@@ -10,28 +11,8 @@ function futureDate(days: number): string {
 	return `${dd}.${mm}.${d.getFullYear()}`;
 }
 
-async function createProject(page: Page): Promise<string> {
-	await page.goto("/hub");
-	await page
-		.getByRole("button", { name: /new project/i })
-		.first()
-		.click();
-	const modal = page.getByRole("dialog");
-	await expect(modal).toBeVisible();
-	await modal.getByLabel(/title/i).fill(`E2E Vac ${ts()}`);
-	await modal.getByLabel(/short description/i).fill("e2e vacancy");
-	await modal
-		.getByRole("checkbox", { name: /requirements for game projects/i })
-		.check();
-	await Promise.all([
-		// Generous timeout: on a cold dev server the route compiles on first hit.
-		page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 60_000 }),
-		modal.getByRole("button", { name: /^create$/i }).click(),
-	]);
-	const slug = new URL(page.url()).pathname.split("/").filter(Boolean).at(-1);
-	expect(slug, "project slug").toBeTruthy();
-	return slug as string;
-}
+const createProject = (page: Page) =>
+	createProjectInHub(page, `E2E Vac ${ts()}`, "e2e vacancy");
 
 // Fills the always-required fields of an open vacancy modal (not the payment block).
 async function fillVacancyBase(page: Page, modal: Locator, title: string) {

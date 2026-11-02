@@ -6,6 +6,8 @@ import {
 	ensureInvitedUser,
 	INVITED_USER_EMAIL,
 } from "./setup/invited-user";
+import { createProjectInHub } from "./setup/project";
+import { signIn } from "./setup/sign-in";
 import { TEST_USER_EMAIL } from "./setup/test-user";
 
 const ts = () => Date.now().toString(36);
@@ -55,31 +57,11 @@ test.describe.serial("team invitation flow", () => {
 		test.setTimeout(60_000);
 
 		// --- 1. Create a project via UI ---
-		await page.goto("/hub");
-		await expect(page).toHaveURL(/\/hub/);
-
-		await page.getByRole("button", { name: /new project/i }).first().click();
-		const createModal = page.getByRole("dialog");
-		await expect(createModal).toBeVisible();
-
-		await createModal.getByLabel(/title/i).fill(projectName);
-		await createModal
-			.getByLabel(/short description/i)
-			.fill("E2E team invitation test");
-		await createModal
-			.getByRole("checkbox", { name: /requirements/i })
-			.check();
-
-		await Promise.all([
-			page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 30_000 }),
-			createModal.getByRole("button", { name: /^create$/i }).click(),
-		]);
-
-		projectSlug = new URL(page.url()).pathname
-			.split("/")
-			.filter(Boolean)
-			.at(-1)!;
-		expect(projectSlug).toBeTruthy();
+		projectSlug = await createProjectInHub(
+			page,
+			projectName,
+			"E2E team invitation test",
+		);
 
 		// --- 2. Create invitation via Prisma (bypasses Novu) ---
 		const project = await prisma.project.findFirst({
@@ -126,22 +108,9 @@ test.describe.serial("team invitation flow", () => {
 
 		const context = await browser.newContext();
 		const page = await context.newPage();
-		const baseURL = "http://localhost:3000";
+		await signIn(page, INVITED_USER_EMAIL);
 
-		// Sign in as the invited user
-		const csrfRes = await page.request.get(`${baseURL}/api/auth/csrf`);
-		const { csrfToken } = (await csrfRes.json()) as { csrfToken: string };
-		await page.request.post(`${baseURL}/api/auth/callback/e2e-credentials`, {
-			form: {
-				csrfToken,
-				email: INVITED_USER_EMAIL,
-				callbackUrl: `${baseURL}/hub`,
-				json: "true",
-			},
-		});
-
-		// Navigate to the invite page
-		await page.goto(`${baseURL}/invite/${invitationId}`);
+		await page.goto(`/invite/${invitationId}`);
 
 		// Verify invitation details are displayed
 		await expect(

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createProjectInHub } from "./setup/project";
 
 const ts = () => Date.now().toString(36);
 
@@ -12,32 +13,8 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	const renamedName = `${initialName} Renamed`;
 	const description = "Created by the project-crud e2e test.";
 
-	// --- 1. Open hub and launch the create-project modal ---
-	await page.goto("/hub");
-	await expect(page).toHaveURL(/\/hub(\/|$)/);
-
-	await page.getByRole("button", { name: /new project/i }).first().click();
-
-	const modal = page.getByRole("dialog");
-	await expect(modal).toBeVisible();
-
-	// --- 2. Fill in the form, accept the requirements, submit ---
-	await modal.getByLabel(/title/i).fill(initialName);
-	await modal.getByLabel(/short description/i).fill(description);
-	await modal
-		.getByRole("checkbox", { name: /requirements for game projects/i })
-		.check();
-
-	await Promise.all([
-		// Same generous window as paid-vacancy: creation runs AI validation and,
-		// on a cold dev server, compiles the route on first hit. 15s was not enough.
-		page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 60_000 }),
-		modal.getByRole("button", { name: /^create$/i }).click(),
-	]);
-
-	const projectUrl = new URL(page.url());
-	const slug = projectUrl.pathname.split("/").filter(Boolean).at(-1);
-	expect(slug, "project slug in URL").toBeTruthy();
+	// --- 1. Create it from the hub ---
+	const slug = await createProjectInHub(page, initialName, description);
 
 	// --- 3. Edit the project in settings/general ---
 	await page.goto(`/user/project/${slug}/settings/general`);
