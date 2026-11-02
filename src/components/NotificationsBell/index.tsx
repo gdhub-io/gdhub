@@ -1,14 +1,15 @@
 "use client";
 
 import { Inbox } from "@novu/react";
-import { IconBell } from "@tabler/icons-react";
+import { IconInbox } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTolgee } from "@tolgee/react";
-import { Badge, theme } from "antd";
+import { theme } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Suspense, useEffect } from "react";
+import { UnreadDot } from "@/components/ui";
 import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import styles from "./style.module.scss";
 
@@ -156,15 +157,27 @@ export const NotificationsBell = () => {
 					subscriberId={session?.user.id}
 					subscriberHash={signature?.data.signature}
 					routerPush={(path: string) => router.push(path)}
-					renderBell={(unreadCount) => (
-						<Badge
-							count={unreadCount?.total ?? 0}
-							size="small"
-							offset={[-2, 2]}
-						>
-							<IconBell className={styles.bellIcon} stroke={1.75} />
-						</Badge>
-					)}
+					renderBell={(unreadCount) => {
+						const unread = unreadCount?.total ?? 0;
+						return (
+							<UnreadDot unread={unread > 0}>
+								<IconInbox
+									className={styles.bellIcon}
+									stroke={1.75}
+									role="img"
+									aria-label={
+										unread
+											? t(
+													"notifications.bell.unread",
+													"Notifications, {count} unread",
+													{ count: unread },
+												)
+											: t("notifications.bell.title", "Notifications")
+									}
+								/>
+							</UnreadDot>
+						);
+					}}
 					appearance={{
 						variables: {
 							colorPrimary: token.colorPrimaryText,

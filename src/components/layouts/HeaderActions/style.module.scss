@@ -1,0 +1,7 @@
+// The avatar drawn with the header icons' line: same colour, same weight, inside its 32px.
+.avatarButton :global(.ant-btn-icon) > * {
+  border-radius: 50%;
+  corner-shape: round;
+  outline: 1.75px solid var(--ant-color-text);
+  outline-offset: -1.75px;
+}
