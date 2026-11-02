@@ -14,14 +14,12 @@ import {
 	test,
 } from "@playwright/test";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
-import type { LegalCode } from "../../../../src/config/legal/registry";
 import { MS_PER_DAY, MS_PER_HOUR } from "../../../../src/lib/checkpoints/days";
-import { resolveLegal } from "../../../../src/lib/legal/accept";
-import { versionInEffect } from "../../../../src/lib/legal/versions";
 import { selectableStageNames } from "../../../../src/repositories/project/workflow";
 import { prisma } from "../../../../src/services/prisma";
 import { becomePersona, type PersonaKey } from "../../../personas";
 import { acceptCookieConsent } from "../../setup/cookies";
+import { accepted, acceptTermsOfUse } from "../../setup/legal";
 import { baseURL, signIn } from "../../setup/sign-in";
 
 /**
@@ -47,13 +45,6 @@ export { baseURL };
 export type StandUser = { id: string; email: string; name: string };
 type Project = Awaited<ReturnType<typeof makeProject>>;
 
-/** What a form sends for the documents it ticked, at the version in effect. */
-const accepted = (...codes: LegalCode[]) =>
-	codes.map((code) => ({
-		code,
-		version: versionInEffect(code)?.version ?? 1,
-	}));
-
 export async function grantUser(
 	label: string,
 	persona: PersonaKey = "member",
@@ -75,14 +66,7 @@ export async function grantUser(
 		select: { id: true, email: true, name: true },
 	});
 	await becomePersona(user.id, persona);
-	// Signed up the usual way, so no re-acceptance modal stands in front.
-	await prisma.legalAcceptance.createMany({
-		data: resolveLegal(accepted("TermsOfUse"), ["TermsOfUse"], {
-			userId: user.id,
-			context: "SignUp",
-			meta: { ipAddress: null, userAgent: "playwright" },
-		}),
-	});
+	await acceptTermsOfUse(user.id);
 
 	return { id: user.id, email, name };
 }

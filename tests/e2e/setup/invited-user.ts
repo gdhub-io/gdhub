@@ -1,5 +1,6 @@
 import { PrimaryInterest, SkillLevel, UserRole } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "../../../src/services/prisma";
+import { acceptTermsOfUse } from "./legal";
 
 export const INVITED_USER_EMAIL =
 	process.env.E2E_INVITED_USER_EMAIL ?? "e2e-invited@gdhub.local";
@@ -57,6 +58,9 @@ export async function ensureInvitedUser() {
 			} as never,
 		});
 	}
+
+	await prisma.legalAcceptance.deleteMany({ where: { userId: user.id } });
+	await acceptTermsOfUse(user.id);
 
 	return user;
 }
