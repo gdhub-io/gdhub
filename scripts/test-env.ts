@@ -169,7 +169,8 @@ Ready.
 
 Run the app against it, with the test sign-in screen enabled:
 
-  bun run dev:test
+  bun run dev:test                              # to look around
+  bun run stand:build && bun run stand:start    # for the e2e suite
 
 Then open http://localhost:3100/dev-signin and pick who to be.
 `);

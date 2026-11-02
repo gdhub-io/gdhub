@@ -82,7 +82,7 @@ export default defineConfig({
 	webServer: useExternalApp
 		? undefined
 		: {
-				command: "bun run dev:test",
+				command: "bun run stand:start",
 				url: `${baseURL}/api/auth/csrf`,
 				reuseExistingServer: !isCI,
 				timeout: 180_000,
