@@ -29,7 +29,9 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { useAccess } from "@/components/access/AccessProvider";
 import ModernTable from "@/components/ModernTable";
 import { ShareModal, type ShareTarget } from "@/components/ShareModal";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
@@ -79,6 +81,8 @@ export default function MyProjectDevlogPage() {
 	const [selectedReportId, setSelectedReportId] = useState<string>();
 	const [shareTarget, setShareTarget] = useState<ShareTarget | null>(null);
 	const isProjectArchived = project?.status === ("Archived" as ProjectStatus);
+	const { can, scopeOf } = useAccess();
+	const { data: session } = useSession();
 
 	const {
 		data: projectReports,
@@ -126,9 +130,16 @@ export default function MyProjectDevlogPage() {
 		});
 	};
 
+	// The same rule the server holds: the founder and admins, any post; a member, their own.
+	const mayManage = (record: ProjectReportWithProject) =>
+		!isProjectArchived &&
+		can("project.devlog.manage") &&
+		(scopeOf("project.devlog.manage") !== "own" ||
+			record.authorId === session?.user?.id);
+
 	// A post written before the editor has no blocks to open in the composer.
 	const canEdit = (record: ProjectReportWithProject) =>
-		!isProjectArchived && !!record.contentEditor;
+		mayManage(record) && !!record.contentEditor;
 
 	// Feeds hide generated posts, so nobody can have seen or applauded one.
 	const countCell = (record: ProjectReportWithProject, count: number) => (
@@ -232,7 +243,7 @@ export default function MyProjectDevlogPage() {
 						onClick: () => editPost(record.id),
 					});
 				}
-				if (!isProjectArchived) {
+				if (mayManage(record)) {
 					items.push({
 						key: "delete",
 						danger: true,
@@ -303,7 +314,7 @@ export default function MyProjectDevlogPage() {
 				"Tell the community about your project development progress",
 			)}
 			actions={
-				!isProjectArchived ? (
+				!isProjectArchived && can("project.devlog.create") ? (
 					<Button
 						type="primary"
 						icon={<IconPlus />}
