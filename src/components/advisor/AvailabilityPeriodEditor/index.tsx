@@ -283,6 +283,8 @@ export function AvailabilityPeriodEditor({
 							{
 								value: "consultations",
 								label: t("advisor.availability.consultations", "Consultations"),
+								// One-off requests do not use consultation hours yet (GDHUB-138).
+								disabled: true,
 							},
 							{
 								value: "checkpoints",
