@@ -12,7 +12,8 @@ export default defineConfig({
 	fullyParallel: true,
 	forbidOnly: isCI,
 	retries: isCI ? 2 : 0,
-	workers: isCI ? 1 : 2,
+	// Two workers ran the critical stages side by side and hung a 16 GB machine.
+	workers: 1,
 	reporter: isCI ? "github" : "html",
 	use: {
 		baseURL,
@@ -32,7 +33,6 @@ export default defineConfig({
 			name: "smoke",
 			testMatch: ["**/smoke/*.spec.ts"],
 			dependencies: ["auth"],
-			workers: 1,
 			timeout: 180_000,
 			use: {
 				...devices["Desktop Chrome"],
@@ -66,7 +66,6 @@ export default defineConfig({
 			testMatch: ["**/checkpoints/**/*.spec.ts"],
 			dependencies: ["smoke"],
 			fullyParallel: false,
-			workers: 1,
 			timeout: 15 * 60_000,
 			use: {
 				...devices["Desktop Chrome"],

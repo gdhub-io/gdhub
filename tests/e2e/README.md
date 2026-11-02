@@ -62,7 +62,7 @@ Every spec matching `*.authed.spec.ts` is then run with that storage state.
 cp .env.test.example .env.test   # once
 bun run test-env up              # the test database and its personas
 bun run dev:test                 # the stand on :3100
-bun run test:e2e                 # every stage; two workers, one for smoke and checkpoints
+bun run test:e2e                 # every stage, one worker: two hung the machine
 ```
 
 Smoke needs the personas, so the whole suite runs on the stand. To run a focused
