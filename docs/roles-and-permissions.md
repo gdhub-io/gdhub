@@ -270,7 +270,7 @@ export const projectSpace = defineSpace({
     workflow:  ["view", "edit"],
     vacancies: ["view", "manage", "review"],
     equity:    ["view", "manage"],
-    devlog:    ["view", "create", "publish"],
+    devlog:    ["view", "create", "publish", "manage"],
   },
   // …
 });
@@ -417,7 +417,7 @@ export const projectSpace = defineSpace({
     workflow:  ["view", "edit"],
     vacancies: ["view", "manage", "review"],
     equity:    ["view", "manage"],
-    devlog:    ["view", "create", "publish"],
+    devlog:    ["view", "create", "publish", "manage"],
   },
   overrides: {
     // гость бывает только по приглашению и только смотрит (§2.2)

@@ -91,7 +91,7 @@ A team making one game. Screens `04.*`, checkpoints `12.*`.
 | `checkpoints` | view, create, manage | `/user/project/[slug]/workflow/[cp]`, `/user/project/[slug]/workflow/cp/new`, `/checkpoint/new/*` | curator from **advisor** (or the AI); run from **admin** `checkpoints`; paid through Paddle; certificate at public `/verify` |
 | `room` | use, manage | the call room inside a checkpoint | Daily; nobody inside the project has `manage` |
 | `artifacts` | view, manage | `/user/project/[slug]/artifacts` | proof of checkpoint tasks; checkpoints read artifacts, never the reverse |
-| `devlog` | view, create, publish | `/user/project/[slug]/devlog`; public `/devlog/[id]` | public, applause from **hub** members; moderated by **admin** `devlog_posts` |
+| `devlog` | view, create, publish, manage (member: own posts) | `/user/project/[slug]/devlog`; public `/devlog/[id]` | public, applause from **hub** members; moderated by **admin** `devlog_posts` |
 | `equity` | view, manage | inside `/user/project/[slug]/team` | a member sees only their own share (`own`) |
 
 Overrides worth knowing: only the **owner** may buy a checkpoint (`checkpoints.create`,
@@ -228,7 +228,7 @@ The test fails when this list and the code disagree, so it only shrinks: wire a
 check, then delete its line here.
 
 - **hub:** `hub.projects.create`, `hub.jobs.apply`, `hub.courses.view`, `hub.courses.create`, `hub.chat.use`
-- **project:** `project.members.view`, `project.lifecycle.archive`, `project.lifecycle.delete`, `project.workflow.view`, `project.vacancies.view`, `project.devlog.view`, `project.devlog.create`, `project.devlog.publish`, `project.room.manage`
+- **project:** `project.members.view`, `project.lifecycle.archive`, `project.lifecycle.delete`, `project.workflow.view`, `project.vacancies.view`, `project.devlog.view`, `project.devlog.publish`, `project.room.manage`
 - **event:** `event.content.view`, `event.content.edit`, `event.schedule.view`
 - **course:** `course.info.view`, `course.info.edit`, `course.lifecycle.publish`, `course.lifecycle.delete`, `course.curriculum.view`, `course.curriculum.edit`, `course.classroom.access`, `course.classroom.teach`, `course.students.view`, `course.students.manage`, `course.groups.view`, `course.groups.manage`, `course.content.view`, `course.content.edit`, `course.certificates.view`, `course.certificates.issue`
 - **scout:** `scout.deals.create`, `scout.deals.manage`, `scout.team.invite`, `scout.team.remove`

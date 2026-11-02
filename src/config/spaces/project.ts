@@ -17,7 +17,7 @@ export const projectSpace = defineSpace({
 		workflow: ["view", "edit"],
 		vacancies: ["view", "manage", "review"],
 		equity: ["view", "manage"],
-		devlog: ["view", "create", "publish"],
+		devlog: ["view", "create", "publish", "manage"],
 	},
 	overrides: {
 		// Guests exist only by explicit invitation and only observe (§2.2).
@@ -39,6 +39,8 @@ export const projectSpace = defineSpace({
 			// A team member sees their own shares, not the whole cap table.
 			"project.equity.view": "own",
 			"project.checkpoints.create": false,
+			// Edits and deletes their own posts; the founder and admins, anyone's.
+			"project.devlog.manage": "own",
 		},
 	},
 });
