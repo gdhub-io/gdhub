@@ -1,7 +1,7 @@
-import { AdviceRequestStatus } from "@gdhub-io/gdhub-prisma";
+import { AdviceRequestStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
-import { makeProject, runCron } from "./checkpoints/support/stand";
+import { hireMember, makeProject, runCron } from "./checkpoints/support/stand";
 import { pick } from "./setup/forms";
 import {
 	grantUser,
@@ -23,32 +23,33 @@ test.describe.serial("an advice request, between a member and an advisor", () =>
 	let askerPage: Page;
 	let advisorPage: Page;
 	let projectId: string;
+	let project: Awaited<ReturnType<typeof makeProject>>;
 
-	const requestOf = (comment: string) =>
+	const requestOf = (comment: string, from = asker) =>
 		prisma.adviceRequest.findFirstOrThrow({
-			where: { fromUserId: asker.id, comment },
+			where: { fromUserId: from.id, comment },
 			select: { id: true, status: true },
 		});
 
-	/** The asker opens the advisor's card in the hub and sends a question. */
-	const ask = async (comment: string) => {
-		await askerPage.goto("/hub/experts");
-		await askerPage
+	/** Someone opens the advisor's card in the hub and sends a question. */
+	const ask = async (comment: string, page = askerPage, from = asker) => {
+		await page.goto("/hub/experts");
+		await page
 			.locator("div")
 			.filter({ hasText: advisor.name })
-			.filter({ has: askerPage.getByRole("button", { name: "Details" }) })
+			.filter({ has: page.getByRole("button", { name: "Details" }) })
 			// The innermost match is the advisor's own card.
 			.last()
 			.getByRole("button", { name: "Details" })
 			.click();
-		const modal = askerPage.getByRole("dialog");
-		await pick(askerPage, "Topic");
-		await pick(askerPage, "Your project");
+		const modal = page.getByRole("dialog");
+		await pick(page, "Topic");
+		await pick(page, "Your project");
 		await modal.getByLabel("Comment").fill(comment);
 		await modal.getByRole("button", { name: "Send request" }).click();
-		await expect(askerPage.getByText("Your request is sent")).toBeVisible();
+		await expect(page.getByText("Your request is sent")).toBeVisible();
 
-		return requestOf(comment);
+		return requestOf(comment, from);
 	};
 
 	/**
@@ -76,7 +77,8 @@ test.describe.serial("an advice request, between a member and an advisor", () =>
 		await terms.getByRole("checkbox", { name: /I accept the Advisor Agreement/ }).check();
 		await terms.getByRole("button", { name: "Accept and continue" }).click();
 		await expect(terms).toBeHidden();
-		({ id: projectId } = await makeProject(askerPage, "Moss Lantern"));
+		project = await makeProject(askerPage, "Moss Lantern");
+		projectId = project.id;
 	});
 	test.afterAll(removeRun);
 
@@ -143,6 +145,47 @@ test.describe.serial("an advice request, between a member and an advisor", () =>
 
 		const asked = await stranger.request.post("/api/user/advice-request", {
 			data: { topic: "Pricing", projectId, toUserId: advisor.id },
+		});
+		expect(asked.status()).toBe(404);
+	});
+
+	test("a teammate, not only the author, asks for the project", async ({
+		browser,
+	}) => {
+		const teammate = await grantUser("advice-teammate");
+		await hireMember(project, teammate);
+		const page = await signInAs(browser, teammate);
+
+		const comment = "Which engine version should the team lock?";
+		const { status } = await ask(comment, page, teammate);
+		expect(status).toBe(AdviceRequestStatus.Created);
+	});
+
+	test("an applicant does not get the project as their own", async ({
+		browser,
+	}) => {
+		const applicant = await grantUser("advice-applicant");
+		const speciality = await prisma.speciality.findFirstOrThrow({
+			where: { userId: applicant.id },
+			select: { id: true },
+		});
+		// Applications still live in TeamMember until GDHUB-127.
+		await prisma.teamMember.create({
+			data: {
+				userId: applicant.id,
+				teamId: project.team?.id ?? "",
+				specialityId: speciality.id,
+				status: TeamMemberStatus.Applicant,
+				startedAt: new Date(),
+			},
+		});
+		const page = await signInAs(browser, applicant);
+
+		const mine = await page.request.get("/api/user/projects");
+		expect(JSON.stringify(await mine.json())).not.toContain(projectId);
+
+		const asked = await page.request.post("/api/user/advice-request", {
+			data: { topic: "Engine", projectId, toUserId: advisor.id },
 		});
 		expect(asked.status()).toBe(404);
 	});
