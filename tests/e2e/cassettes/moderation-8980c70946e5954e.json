@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"E2E Project mvzh2qf0\",\"Created by the project-crud e2e test.\"]}",
+	"answer": {
+		"id": "modr-1950",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.00003514382632807918,
+					"harassment/threatening": 0.000012731104162213555,
+					"sexual": 0.002934750458319067,
+					"hate": 0.000009610241549947397,
+					"hate/threatening": 7.889262586245034e-7,
+					"illicit": 0.0037933785508404466,
+					"illicit/violent": 0.00002234163601827719,
+					"self-harm/intent": 0.000003944258675190877,
+					"self-harm/instructions": 0.0000017778551863194697,
+					"self-harm": 0.000007368592981140821,
+					"sexual/minors": 0.00006563728324346652,
+					"violence": 0.000602359085731457,
+					"violence/graphic": 0.00001442598644847886
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.000003321419494792514,
+					"harassment/threatening": 5.594337713435001e-7,
+					"sexual": 0.000013552078562406772,
+					"hate": 0.0000012219076020491008,
+					"hate/threatening": 4.5921356162867124e-8,
+					"illicit": 0.000009761566060239504,
+					"illicit/violent": 0.000002931153855960119,
+					"self-harm/intent": 8.80110037979258e-7,
+					"self-harm/instructions": 2.332074525844782e-7,
+					"self-harm": 0.0000018058518261159955,
+					"sexual/minors": 0.0000013420013504783412,
+					"violence": 0.00000498595821272702,
+					"violence/graphic": 0.00000201456908529364
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

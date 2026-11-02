@@ -1,0 +1,84 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"E2E Onboarding\"]}",
+	"answer": {
+		"id": "modr-7748",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0000018925148246037342,
+					"harassment/threatening": 6.339210403977636e-7,
+					"sexual": 0.0000646203290719727,
+					"hate": 5.955139348629957e-7,
+					"hate/threatening": 4.450850519411503e-8,
+					"illicit": 0.000017952796934677738,
+					"illicit/violent": 0.000002840974294610978,
+					"self-harm/intent": 1.994729721527057e-7,
+					"self-harm/instructions": 4.356879983467376e-7,
+					"self-harm": 9.818326983657703e-7,
+					"sexual/minors": 0.000006302758756443267,
+					"violence": 0.000005307507822667365,
+					"violence/graphic": 9.516251694168764e-7
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}
