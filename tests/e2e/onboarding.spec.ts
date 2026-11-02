@@ -116,9 +116,7 @@ test.describe.serial("onboarding flow for a new user", () => {
 		// --- Step 3: Interests ---
 		// "Interests" is a label in the antd Steps bar, not a heading, so assert on
 		// the step's own content instead.
-		const authorCard = page
-			.locator("[role='button']", { hasText: /author/i })
-			.first();
+		const authorCard = page.getByRole("radio", { name: /be author/i });
 		await expect(authorCard).toBeVisible();
 		await authorCard.click();
 
