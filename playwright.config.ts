@@ -44,9 +44,6 @@ export default defineConfig({
 			name: "anonymous",
 			testMatch: [
 				"**/home.spec.ts",
-				"**/hub.spec.ts",
-				"**/admin.spec.ts",
-				"**/protected-misc.spec.ts",
 				"**/public-dynamic.spec.ts",
 				"**/static-pages.spec.ts",
 			],

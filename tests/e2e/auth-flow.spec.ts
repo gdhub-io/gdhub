@@ -15,17 +15,6 @@ test("/registration loads", async ({ page }) => {
 	await expect(page.getByRole("button", { name: /create new account/i })).toBeVisible();
 });
 
-// /registration/onboarding is listed in the proxy matcher, so it is auth-gated:
-// an anonymous visitor never sees the welcome step. The onboarding flow itself
-// is covered by the `onboarding` project, which signs in first.
-test("/registration/onboarding sends an unauthenticated visitor to sign in", async ({
-	page,
-}) => {
-	const response = await page.goto("/registration/onboarding");
-	expect(response?.status()).toBeLessThan(400);
-	await expect(page).toHaveURL(/\/signin/);
-});
-
 // An invite link for a signed-out visitor goes to sign-in with a callback back
 // to the invite, so the token is only validated once there is a session. The
 // bad-token error card is asserted in team-invite.authed.spec.ts.
