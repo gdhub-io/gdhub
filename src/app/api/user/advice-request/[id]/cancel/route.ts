@@ -8,6 +8,12 @@ export const PUT = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };
 
+	// Only the person who asked withdraws a request.
+	const own = await prisma.adviceRequest.count({
+		where: { id, fromUserId: currentUser.id },
+	});
+	if (!own) return apiError.notFound();
+
 	const adviceRequest = await prisma.adviceRequest.update({
 		where: { id },
 		data: {

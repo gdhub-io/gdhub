@@ -1,3 +1,4 @@
+import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -25,6 +26,29 @@ export const POST = withAuth({ mode: "user" })(
 			if (!currentUser) return apiError.unauthorized();
 			const { topic, projectId, toUserId, comment } =
 				body as CreateAdviceRequestBody;
+
+			// Advice is asked for one's own project: authored, or a team one is on.
+			const ownProject = await prisma.project.count({
+				where: {
+					id: projectId,
+					OR: [
+						{ authorId: currentUser.id },
+						{
+							team: {
+								members: {
+									some: {
+										userId: currentUser.id,
+										status: {
+											in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired],
+										},
+									},
+								},
+							},
+						},
+					],
+				},
+			});
+			if (!ownProject) return apiError.notFound("Project not found");
 
 			const adviceRequest = await prisma.adviceRequest.create({
 				data: {
