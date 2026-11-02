@@ -1,11 +1,38 @@
 # E2E tests
 
-Two kinds of specs live in this folder:
+The suite runs in three stages, as Playwright project `dependencies`. A later stage does not start when an earlier one fails.
 
-| Project (Playwright) | Match pattern              | State                                |
-| -------------------- | -------------------------- | ------------------------------------ |
-| `anonymous`          | the existing `*.spec.ts`   | no cookies, smoke-tests redirects    |
-| `authenticated`      | `*.authed.spec.ts`         | uses `storage-state.json` from setup |
+| Stage | Project | What it does |
+| ----- | ------- | ------------ |
+| 1. Auth | `auth` | The sign-in and registration pages (`auth-flow.spec.ts`). |
+| 2. Smoke | `smoke` | Every page, as someone allowed and someone refused (`smoke/`). |
+| 3. Critical flows | `anonymous`, `onboarding`, `authenticated`, `checkpoints` | The long flows. |
+
+## Smoke
+
+```bash
+bun run test-env up        # the test database and its personas
+bun run dev:test           # the stand on :3100
+bun run test:e2e:smoke     # auth, then smoke; one worker, about 3 minutes
+```
+
+`smoke/routes.ts` reads the routes from `src/app/**/page.tsx`, and the expected access from the code:
+
+- **A `createPermissionGate` or `createSpaceGate`** in the page or its nearest layouts. The allowed persona is the space's owner (`SPACE_INSIDER`), or the super admin for a permission gate. The refused personas are anonymous and a plain member.
+- **Under the proxy's matcher, with no gate.** A member gets in. Anonymous is refused, and so is someone who has not finished onboarding.
+- **Anything else** is public.
+
+A new page is covered with no change here. Three cases need a line:
+
+- A page in a new role-gated space: add the space to `SPACE_INSIDER`. The stage fails and says so until you do.
+- A page with a parameter worth a real value: add it to `fixtures()` in `smoke.spec.ts`. Without one the page is opened with a made-up value, where a 404 is fine and only a crash fails.
+- A new seeded record behind that value: add it to `tests/personas.ts`.
+
+"Opens" means no 5xx, no error boundary and no uncaught exception. Console errors do not count: dev mode logs too much noise. "Refuses" means a 404 or a redirect to sign-in or registration.
+
+The stand runs with Turbopack's disk cache off (`next.config.js`): it grew to 10 GB, slowed compiles to minutes and crashed the server with `turbo-tasks: an internal panic`, exit code 0 and nothing else in the log. Each start compiles routes afresh.
+
+`test:e2e:checkpoints` passes `--no-deps`, so working on checkpoints does not wait for smoke.
 
 ## How auth works
 
@@ -15,42 +42,27 @@ hidden `e2e-credentials` provider that is only loaded when **both**:
 - `process.env.NODE_ENV !== "production"`, and
 - `process.env.E2E_TEST_AUTH === "1"`.
 
-`tests/e2e/setup/global-setup.ts` runs once before the suite and:
-
-1. Upserts the test user in the DB (`tests/e2e/setup/test-user.ts`).
-2. Cleans up any orphan projects the test user might still own.
-3. POSTs to `/api/auth/callback/e2e-credentials` with a CSRF token.
-4. Saves the resulting cookies to `tests/e2e/setup/storage-state.json`.
-
-Every spec matching `*.authed.spec.ts` is then run with that storage state.
+Each spec makes its own users with `grantUser(label, persona)` from
+`setup/users.ts`, signs in with `signInPage(page, user)` or
+`signInAs(browser, user)`, and calls `removeRun()` in `afterAll`. Users are made
+per run on `example.com` addresses, so specs never share rows.
 
 ## Running locally
 
 ```bash
-# 1. Spin up a test database somewhere isolated from your dev DB.
-# 2. Copy env. `gdhub-prisma` understands `--env-file` and loads it with
-#    override=true, so it wins over the project's own .env.
-cp .env.test.example .env.test
-
-# 3. Apply migrations + base seed against the test DB.
-bun run db:deploy --env-file .env.test
-bun run db:seed   --env-file .env.test
-
-# 4. Run dev server with the e2e env so the credentials provider is active.
-#    Next.js honours existing process.env, so dotenv-cli is enough here.
-bunx dotenv -e .env.test -- bun run dev
-# 5. In another terminal:
-bun run test:e2e
+cp .env.test.example .env.test   # once
+bun run test-env up              # the test database and its personas
+bun run dev:test                 # the stand on :3100
+bun run test:e2e                 # every stage, one worker: two hung the machine
 ```
 
-Playwright will reuse an already-running dev server on port 3000 (see
-`playwright.config.ts > webServer.reuseExistingServer`).
+Smoke needs the personas, so the whole suite runs on the stand. To run a focused
+spec without waiting for smoke, add `--no-deps`.
 
 ## Writing a new authenticated spec
 
-Name it `something.authed.spec.ts`. The `authenticated` project will pick it
-up and apply the saved storage state automatically. Inside the spec you
-already have a logged-in browser context — just `page.goto(...)`.
+Name it `something.authed.spec.ts` and sign in as a user it granted
+(`project-crud.authed.spec.ts` is the shortest example).
 
 ## The checkpoint suite (GDHUB-79)
 

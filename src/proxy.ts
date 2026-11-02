@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { isCheckpointEntry } from "@/components/checkpoints/entry/hrefs";
+import { skipsOnboarding } from "@/components/checkpoints/entry/hrefs";
 import { signedOutRedirect } from "@/lib/signed-out-redirect";
 
 export default auth((req) => {
@@ -28,11 +28,7 @@ export default auth((req) => {
 	const { onboardingDone } = session.user;
 
 	// The checkpoint hub's "About you" finishes onboarding; sending it there would loop.
-	if (
-		!onboardingDone &&
-		!req.nextUrl.pathname.startsWith("/registration/onboarding") &&
-		!isCheckpointEntry(req.nextUrl.pathname)
-	) {
+	if (!onboardingDone && !skipsOnboarding(req.nextUrl.pathname)) {
 		return NextResponse.redirect(new URL("/registration/onboarding", req.url));
 	}
 

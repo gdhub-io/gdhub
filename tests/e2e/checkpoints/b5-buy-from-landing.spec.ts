@@ -1,10 +1,11 @@
 import { expect, type Page, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
 import { acceptCookieConsent } from "../setup/cookies";
+import { pick } from "../setup/forms";
+import { baseURL } from "../setup/sign-in";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";
 import {
-	baseURL,
 	grantUser,
 	makeProject,
 	removeRun,
@@ -22,13 +23,6 @@ import {
 
 const log = new RunLog("B5 buy from the landing");
 
-const pick = async (page: Page, label: string, option?: string) => {
-	const select = page.getByLabel(label, { exact: true });
-	await select.click();
-	// The year list is long and virtual: typing brings the option into view.
-	if (option) await select.pressSequentially(option);
-	await page.keyboard.press("Enter");
-};
 
 const fromLanding = async (page: Page) => {
 	await page.goto("/checkpoint");
@@ -64,8 +58,7 @@ test("a new user: about, a new project, payment", async ({ browser }) => {
 	await create
 		.getByLabel("What's the game about")
 		.fill("A cosy fishing game on a tidal marsh where the catch changes with the moon.");
-	await create.getByLabel("Genre").click();
-	await page.locator(".ant-select-dropdown:visible .ant-select-item-option").first().click();
+	await pick(page, "Genre");
 	for (const box of await create.getByRole("checkbox").all()) await box.check();
 	await create.getByRole("button", { name: "Create project" }).click();
 	await expect(create).toBeHidden({ timeout: 60_000 });

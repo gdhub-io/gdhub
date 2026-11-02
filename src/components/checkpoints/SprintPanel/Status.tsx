@@ -6,10 +6,10 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Card, Flex, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { artifactLabel } from "@/components/checkpoints/EvidenceSlot";
-import { DevLogPostModal } from "@/components/modals/DevLogPostModal";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SCOPE_SESSION } from "@/config/checkpoint";
 import { CheckpointItemKind } from "@/config/prisma-enums";
@@ -21,6 +21,15 @@ import type { CheckpointDto } from "@/types/checkpoints";
 import { AskPanel, type AskRow } from "../AskPanel";
 import { GoalStrip } from "../GoalStrip";
 import styles from "./style.module.scss";
+
+// EditorJS touches the DOM as it loads, which fails on the server.
+const DevLogPostModal = dynamic(
+	() =>
+		import("@/components/modals/DevLogPostModal").then(
+			(mod) => mod.DevLogPostModal,
+		),
+	{ ssr: false },
+);
 
 export type StatusProps = {
 	checkpoint: CheckpointDto;

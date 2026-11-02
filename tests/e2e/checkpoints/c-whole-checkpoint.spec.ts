@@ -8,11 +8,11 @@ import {
 import { type Browser, expect, type Page, test } from "@playwright/test";
 import { pulseToken } from "../../../src/lib/checkpoints/pulse-token";
 import { prisma } from "../../../src/services/prisma";
+import { baseURL } from "../setup/sign-in";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";
 import {
 	addTasks,
-	baseURL,
 	grantUser,
 	hireMember,
 	makeProject,
