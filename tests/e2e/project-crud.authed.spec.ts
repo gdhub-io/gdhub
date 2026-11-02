@@ -7,7 +7,6 @@ import {
 	signInPage,
 } from "./setup/users";
 
-const ts = () => Date.now().toString(36);
 
 let author: StandUser;
 
@@ -20,7 +19,8 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	page,
 }) => {
 	await signInPage(page, author);
-	const initialName = `E2E Project ${ts()}`;
+	// A fixed name: the AI check of a new project then replays from a recording.
+	const initialName = "Driftwood Atlas";
 	const renamedName = `${initialName} Renamed`;
 	const description = "Created by the project-crud e2e test.";
 

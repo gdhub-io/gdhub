@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 const UserProjectsQuerySchema = z.object({
@@ -33,10 +34,9 @@ export const GET = withAuth({ mode: "user" })(
 					{ authorId: currentUser.id },
 					{
 						team: {
+							// On the team today: not an applicant, a rejection or someone who left.
 							members: {
-								some: {
-									userId: currentUser.id,
-								},
+								some: { ...CONFIRMED_MEMBERS, userId: currentUser.id },
 							},
 						},
 					},

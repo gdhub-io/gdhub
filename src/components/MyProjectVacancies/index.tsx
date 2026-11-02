@@ -30,7 +30,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
@@ -111,8 +111,11 @@ const MyProjectVacancies = () => {
 	const feePaidFor = searchParams.get("feePaid");
 
 	// Back from Paddle: ask whether the fee went through, whatever the webhook did.
+	const reconciled = useRef<string | null>(null);
 	useEffect(() => {
-		if (!feePaidFor) return;
+		// Once per return: the effect reruns before the query string is cleared.
+		if (!feePaidFor || reconciled.current === feePaidFor) return;
+		reconciled.current = feePaidFor;
 		reconcileListingFee(feePaidFor)
 			.then((paid) => {
 				if (paid) {

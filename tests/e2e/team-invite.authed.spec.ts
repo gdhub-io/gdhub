@@ -10,7 +10,6 @@ import {
 	signInPage,
 } from "./setup/users";
 
-const ts = () => Date.now().toString(36);
 
 test.describe.serial("team invitation flow", () => {
 	let author: StandUser;
@@ -18,7 +17,8 @@ test.describe.serial("team invitation flow", () => {
 	let projectSlug: string;
 	let invitationId: string;
 	let teamId: string;
-	const projectName = `E2E Invite ${ts()}`;
+	// A fixed name: the AI check of a new project then replays from a recording.
+	const projectName = "Copper Lanterns";
 
 	test.beforeAll(async () => {
 		author = await grantUser("inviter");
