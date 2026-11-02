@@ -1343,6 +1343,9 @@
 		"kind": {
 			"checkpoint": "Чекпоинт"
 		},
+		"panel": {
+			"titleUnread": "Сообщения, {count} непрочитано"
+		},
 		"topic": {
 			"openPositionPage": "Страница вакансии"
 		}
@@ -3766,6 +3769,12 @@
 	},
 	"no": "Нет",
 	"no-user-projects": "Здесь будет отображаться список ваших проектов.",
+	"notifications": {
+		"bell": {
+			"title": "Уведомления",
+			"unread": "Уведомления, {count} непрочитанных"
+		}
+	},
 	"novu": {
 		"dynamic": {
 			"comment-on-post": "Комментарии к записям"

@@ -11,6 +11,7 @@ import { ChatPanel } from "@/components/Chat/ChatPanel";
 import { ChatButton } from "@/components/ChatButton";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
+import styles from "./style.module.scss";
 
 const NotificationsBell = dynamic(
 	() =>
@@ -115,6 +116,7 @@ export const HeaderActions = ({
 					<Button
 						type="text"
 						shape="circle"
+						className={styles.avatarButton}
 						style={{
 							display: "inline-flex",
 							alignItems: "center",

@@ -1343,6 +1343,9 @@
 		"kind": {
 			"checkpoint": "Checkpoint"
 		},
+		"panel": {
+			"titleUnread": "Messages, {count} unread"
+		},
 		"topic": {
 			"openPositionPage": "Open position page"
 		}
@@ -3766,6 +3769,12 @@
 	},
 	"no": "No",
 	"no-user-projects": "No project yet.",
+	"notifications": {
+		"bell": {
+			"title": "Notifications",
+			"unread": "Notifications, {count} unread"
+		}
+	},
 	"novu": {
 		"dynamic": {
 			"comment-on-post": "Post comments"

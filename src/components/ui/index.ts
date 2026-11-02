@@ -37,4 +37,5 @@ export {
 	tableScrollX,
 	tableStyles,
 } from "./table";
+export { UnreadDot, type UnreadDotProps } from "./UnreadDot";
 export { ViewAllLink, type ViewAllLinkProps } from "./ViewAllLink";
