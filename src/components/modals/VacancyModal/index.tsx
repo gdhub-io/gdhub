@@ -28,7 +28,7 @@ import { TeamVacancyStatus } from "@/config/prisma-enums";
 import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
-import { usePaddle } from "@/services/paddle/usePaddle";
+import { payListingFee } from "@/hooks/useListingFee";
 import styles from "./style.module.scss";
 
 // Display-only: the actual charge is the configured Paddle price.
@@ -56,7 +56,6 @@ const VacancyModal = ({
 	const [form] = Form.useForm();
 	const { t } = useTranslate();
 	const { options: directionsOptions } = useWorkDirections();
-	const { checkout } = usePaddle();
 	const [showPromiseFields, setShowPromiseFields] = useState(false);
 	const [showPaymentFields, setShowPaymentFields] = useState(false);
 
@@ -200,48 +199,26 @@ const VacancyModal = ({
 
 				const paymentId = paymentResponse?.data?.id;
 
-				if (needsCheckout && paymentId) {
-					const priceId = process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID;
-
-					// Without a valid Paddle price id the checkout overlay fails with a
-					// generic "Something went wrong". Keep the vacancy as a saved draft
-					// (the payment is already persisted as PENDING) and tell the user.
-					if (!priceId) {
-						message.warning(
-							t(
-								"modal.vacancy.paymentNotConfigured",
-								"Payment is not configured yet. The position was saved as a draft.",
-							),
-						);
-						form.resetFields();
-						setShowPromiseFields(false);
-						setShowPaymentFields(false);
-						onOk();
-						return;
-					}
-
-					message.success(
-						t("A new open position has been added. Redirecting to payment..."),
-					);
+				if (needsCheckout && paymentId && projectSlug) {
 					form.resetFields();
 					setShowPromiseFields(false);
 					setShowPaymentFields(false);
 					onOk();
 
 					try {
-						const baseUrl =
-							typeof window !== "undefined"
-								? window.location.origin
-								: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
-						const successUrl = projectSlug
-							? `${baseUrl}/user/project/${projectSlug}/open-positions?payment_success=true`
-							: `${baseUrl}/user/project`;
-
-						await checkout({
-							priceId,
-							customData: { paymentId },
-							successUrl,
+						const opened = await payListingFee({
+							vacancyId: createdVacancyId,
+							projectSlug,
 						});
+						// No Paddle price configured: the vacancy stays a saved draft.
+						if (!opened) {
+							message.warning(
+								t(
+									"modal.vacancy.paymentNotConfigured",
+									"Payment is not configured yet. The position was saved as a draft.",
+								),
+							);
+						}
 					} catch (checkoutError) {
 						console.error("Checkout failed:", checkoutError);
 						message.error(t("Payment checkout failed. Please try again."));

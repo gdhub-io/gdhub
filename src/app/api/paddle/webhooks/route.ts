@@ -3,10 +3,9 @@ import { type NextRequest, NextResponse } from "next/server";
 import { recordPaddleAdjustment } from "@/repositories/checkpoints/payment";
 import { paymentOf, recordPaymentEvent } from "@/repositories/payments/records";
 import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
-import { NovuService } from "@/services/novu";
 import { paddleMinor, verifyPaddleWebhook } from "@/services/paddle/server";
 import { paidOfTransaction } from "@/services/payments/paddle";
-import { prisma } from "@/services/prisma";
+import { settleListingFee } from "@/services/vacancies/listing-fee";
 
 export async function POST(request: NextRequest) {
 	try {
@@ -100,72 +99,17 @@ async function handleTransactionCompleted(body: any) {
 			return NextResponse.json({ success: true });
 		}
 
-		// The real fee + provider references come from the transaction itself.
-		const grandTotal = data.details?.totals?.grand_total;
-		const amount =
-			grandTotal != null ? Number.parseInt(grandTotal, 10) : payment.amount;
-
-		// Atomic guard: only the first event that flips PENDING → COMPLETED runs the
-		// side effects (publishing); concurrent duplicates match 0 rows.
-		const { count } = await prisma.payment.updateMany({
-			where: { id: payment.id, status: { not: "COMPLETED" as any } },
-			data: {
-				status: "COMPLETED" as any,
-				providerTransactionId: transactionId,
-				providerInvoiceId: data.invoice_id ?? undefined,
-				providerCustomerId: data.customer_id ?? undefined,
-				providerPriceId: data.items?.[0]?.price?.id ?? undefined,
-				amount: Number.isFinite(amount) ? amount : payment.amount,
-				currency: data.currency_code ?? undefined,
-				completedAt: new Date(),
-			},
-		});
-
-		if (count === 0) {
-			return NextResponse.json({ success: true });
-		}
-
-		console.log("[paddle.webhook] payment completed:", payment.id);
-
-		// Publish the vacancy now that its listing fee is settled.
-		if (payment.payableType === "VACANCY") {
-			const vacancy = await prisma.teamVacancy.update({
-				where: { id: payment.payableId },
-				data: {
-					status: "Published" as any,
-					publishedAt: new Date(),
-				},
-				include: {
-					team: {
-						include: {
-							project: { include: { author: true } },
-						},
-					},
-				},
+		if (payment.payableType === PayableType.VACANCY) {
+			await settleListingFee(payment, {
+				...paidOfTransaction({
+					id: transactionId,
+					grandTotal: data.details?.totals?.grand_total,
+					customerId: data.customer_id,
+					invoiceId: data.invoice_id,
+				}),
+				priceId: data.items?.[0]?.price?.id,
+				currency: data.currency_code,
 			});
-
-			console.log("[paddle.webhook] vacancy published:", payment.payableId);
-
-			// Notify the author that their listing went live.
-			const author = vacancy.team?.project?.author;
-			const projectSlug = vacancy.team?.project?.slug;
-			if (author) {
-				try {
-					await NovuService.send({
-						template: "default-message",
-						to: { subscriberId: author.id, email: author.email ?? undefined },
-						payload: {
-							title: "Vacancy published",
-							message: `Your vacancy "${vacancy.title}" is now live.`,
-							redirectUrl: projectSlug
-								? `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${projectSlug}`
-								: undefined,
-						},
-					});
-				} catch (error) {
-					console.error("[paddle.webhook] publish notification failed:", error);
-				}
-			}
 		}
 
 		return NextResponse.json({ success: true });

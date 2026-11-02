@@ -12,16 +12,13 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfVacancy } from "@/lib/space-ids";
 import { prisma } from "@/services/prisma";
+import { ensureListingFee } from "@/services/vacancies/listing-fee";
 
 const PaymentInitSchema = z.object({
 	vacancyId: z.string(),
 });
 
 type PaymentInitBody = z.infer<typeof PaymentInitSchema>;
-
-// Placeholder fee (minor units) stored when the PENDING payment is created. The
-// webhook overwrites it with the real amount from the Paddle transaction totals.
-const LISTING_FEE_CENTS = 900;
 
 // Ensures the vacancy exists and belongs to the current user's project.
 // Returns a ready-to-return error response, or null when authorized.
@@ -67,36 +64,8 @@ export const POST = pipe(
 		const authError = await authorizeVacancy(vacancyId, currentUser.id);
 		if (authError) return authError;
 
-		// This payment represents the listing FEE (not the offered salary, which
-		// lives on the vacancy). Reuse the latest one so repeated saves don't pile
-		// up duplicates; status/amount of a completed fee stay untouched.
-		const existing = await prisma.payment.findFirst({
-			where: {
-				payableType: PayableType.VACANCY,
-				payableId: vacancyId,
-			},
-			orderBy: { createdAt: "desc" },
-		});
-
-		const providerPriceId =
-			process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID || null;
-
-		const payment = existing
-			? await prisma.payment.update({
-					where: { id: existing.id },
-					data: { payerId: currentUser.id, providerPriceId },
-				})
-			: await prisma.payment.create({
-					data: {
-						amount: LISTING_FEE_CENTS,
-						currency: "EUR",
-						status: PaymentStatus.PENDING,
-						payableType: PayableType.VACANCY,
-						payableId: vacancyId,
-						payerId: currentUser.id,
-						providerPriceId,
-					},
-				});
+		// The listing FEE, not the offered salary, which lives on the vacancy.
+		const payment = await ensureListingFee(vacancyId, currentUser.id);
 
 		return json(payment);
 	} catch (error) {
