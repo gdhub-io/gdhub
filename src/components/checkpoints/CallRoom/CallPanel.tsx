@@ -14,6 +14,7 @@ import { SprintTab } from "@/components/WorkflowPath/SprintTab";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import { useCallNotes } from "@/hooks/checkpoint-call";
 import { useAdvisePlan } from "@/hooks/checkpoint-review";
+import { directionOpen } from "@/lib/checkpoints/call";
 import { checkpointPathHref, type PathTab } from "@/lib/checkpoints/hrefs";
 import type {
 	CallBrief as CallBriefData,
@@ -99,6 +100,8 @@ export function CallPanel({
 					loading: advise.isPending,
 					onAdvise: () => advise.mutate(),
 				}}
+				checkpointId={call.checkpointId}
+				stage={call.stageName}
 				notes={notes.data}
 				notesLoading={held && notes.isPending}
 				briefs={call.role === "curator" ? call.briefs : undefined}
@@ -121,6 +124,8 @@ export type PanelBlockProps = {
 	sessions: Session[];
 	/** The page's own call; its plan is the one that may change. */
 	current: number;
+	checkpointId: string;
+	stage: string;
 	/** The last call whose day has come; the calls after it are locked. */
 	reached?: number;
 	selected: number;
@@ -151,6 +156,8 @@ export type PanelBlockProps = {
 
 /** Frames gP5gH (Notes) and Ovz5i / NBTnm / NBWf6 (Plan). */
 export function PanelBlock({
+	checkpointId,
+	stage,
 	sessions,
 	current,
 	reached = current,
@@ -226,6 +233,10 @@ export function PanelBlock({
 		label: t("checkpoints.call.panel.review", "Review"),
 		children: (
 			<NotesBody
+				checkpointId={checkpointId}
+				stage={stage}
+				curator={!!briefs}
+				directionOpen={directionOpen(sessions, selected, now)}
 				index={selected}
 				held={held}
 				plan={plan}

@@ -1080,6 +1080,12 @@
 			"alreadySent": "The verdict is sent.",
 			"artifact": "Artifact",
 			"build": "Build",
+			"change": {
+				"none": "No change",
+				"range": "Day 1 → day 28",
+				"soFar": "Day 1 → today, so far",
+				"title": "What changed over the 28 days"
+			},
 			"chipDraft": "Draft · final call {date}",
 			"chipDue": "Verdict due by {date}",
 			"chipOverdue": "Verdict overdue",
@@ -1090,6 +1096,12 @@
 			"day": "day {n}",
 			"day1": "On day 1",
 			"devlogsCount": "{n} of {total} published",
+			"direction": {
+				"goal": "Checkpoint",
+				"sprint": "S{n}",
+				"stage": "Stage",
+				"title": "Direction by sprint"
+			},
 			"draft": "Draft the verdict",
 			"draftFailed": "The draft was not saved",
 			"draftNote": "Draft saved · {when}. Only you see it.",
@@ -1102,6 +1114,7 @@
 			"noBuild": "No build was uploaded in these 28 days.",
 			"noDevlogs": "No devlogs were published.",
 			"noEvidence": "No evidence attached",
+			"noEvidenceTask": "No evidence for this task",
 			"now": "Now",
 			"openBuild": "Open the build",
 			"opensIn": "The verdict opens in sprint {n}.",
@@ -1608,6 +1621,7 @@
 				"due": "due {date}",
 				"goal": "Goal: {goal}",
 				"inShort": "In short",
+				"lensMissing": "Not covered on the call. The author does not see this lens.",
 				"lockedCall": "Notes appear after this call",
 				"noQuestions": "No open questions were left on the call.",
 				"noTranscript": "No transcript yet.",
@@ -1755,6 +1769,21 @@
 			"missingNote": "Silence is part of the record; the verdict reads it as it is.",
 			"published": "Devlog published",
 			"write": "Write the devlog"
+		},
+		"direction": {
+			"change": "Change",
+			"closed": "The directions are settled once the final call starts.",
+			"confirm": "Confirm directions",
+			"confirmHint": "Preset from the call and the brief. The author sees them once you confirm.",
+			"confirmed": "Confirmed",
+			"goal": "Checkpoint goal",
+			"idle": "Nothing done",
+			"notConfirmed": "Not confirmed",
+			"sideways": "Gone sideways",
+			"stage": "Stage goal · {stage}",
+			"stalled": "Standing still",
+			"title": "Direction",
+			"toward": "Toward the goal"
 		},
 		"draft": {
 			"chip": "Draft",

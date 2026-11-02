@@ -3,6 +3,7 @@ import {
 	CHECKPOINT_GOAL_MAX,
 	CHECKPOINT_ITEM_TEXT_MAX,
 	CHECKPOINT_MAX_ITEMS_PER_KIND,
+	DIRECTIONS,
 } from "@/config/checkpoint";
 import {
 	CheckpointCuratorKind,
@@ -91,6 +92,17 @@ export const AskCallMoveSchema = z.object({ moveTo: z.string().datetime() });
 
 /** The other side's answer to a request to move a call. */
 export const AnswerCallMoveSchema = z.object({ approve: z.boolean() });
+
+const directionRead = z.object({
+	value: z.enum(DIRECTIONS),
+	why: z.string().trim().max(400),
+});
+
+/** The human curator's word on a sprint's direction after its call (GDHUB-133). */
+export const ConfirmDirectionSchema = z.object({
+	goal: directionRead,
+	stage: directionRead,
+});
 
 export const CheckpointListQuerySchema = z.object({
 	projectId: z.string(),

@@ -1,12 +1,16 @@
 import type { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
-import { SPRINT_VIDEO_SECONDS } from "@/config/checkpoint";
+import {
+	SPRINT_VIDEO_SECONDS,
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
 import {
 	CheckpointItemKind,
 	type CheckpointVerdict,
 } from "@/config/prisma-enums";
 import { aiCostMicros } from "@/lib/checkpoints/costs";
 import { characterFace } from "@/lib/checkpoints/curator-characters";
+import { changeBetween } from "@/lib/checkpoints/picture";
 import {
 	type Standing,
 	settleVerdict,
@@ -23,6 +27,7 @@ import {
 	reviewSprint,
 	writePlanAdvice,
 } from "@/services/checkpoints/ai-review";
+import { writeCallNotes } from "@/services/checkpoints/call-notes";
 import {
 	describeRead,
 	judgeRead,
@@ -30,8 +35,10 @@ import {
 } from "@/services/checkpoints/flows/evidence-seen";
 import { type EvidenceContent, readEvidence } from "@/services/evidence/read";
 import type { JournalEntry } from "@/types/checkpoint-curator";
+import type { SprintDirection } from "@/types/checkpoints";
 import { LAB_PERSONAS } from "./personas";
 import {
+	callNotesLabInput,
 	evidenceInput,
 	goalCheckInput,
 	type LabLanguage,
@@ -43,6 +50,17 @@ import {
 	say,
 	sprintReviewInput,
 } from "./schemas";
+import {
+	E2E_CALL_TRANSCRIPT,
+	E2E_DEVLOGS,
+	E2E_GOAL,
+	E2E_ITEMS,
+	E2E_SPRINTS,
+	E2E_WORKFLOW,
+	e2ePicture,
+	e2eTasks,
+	e2eTeam,
+} from "./situations/e2e-test-game";
 import { evidenceSituations } from "./situations/evidence";
 import { goalCheckSituations } from "./situations/goal-check";
 import { hollowTide } from "./situations/hollow-tide";
@@ -248,7 +266,7 @@ const CALLS: LabCall[] = [
 				),
 			);
 			const advise =
-				input.sprint === 2 && !input.verdict
+				input.sprint === 2 && !input.final
 					? (review: string) =>
 							writePlanAdvice(
 								midwayAdviceInput(input, review),
@@ -356,6 +374,16 @@ const CALLS: LabCall[] = [
 ];
 
 type Letter = { day: number; label: string; text: string };
+
+/** One sprint of the whole-run call, as the lab page draws it. */
+export type LabRunSprint = {
+	sprint: number;
+	difference: string;
+	idle: boolean;
+	direction: SprintDirection | undefined;
+	inShort: string | undefined;
+	letter: string | undefined;
+};
 
 /** The whole road on Hollow Tide, in order: which call, on which situation, and the letter it leaves. */
 const ROAD: {
@@ -522,3 +550,166 @@ export const runLab = async (
 		ms: Date.now() - started,
 	};
 };
+
+/**
+ * GDHUB-133: the whole run on E2E Test Game through the same code as
+ * production — each sprint's picture difference, its review with the two
+ * directions (each review reading the last one's), then the verdict reading
+ * the run's difference and all four directions.
+ */
+CALLS.push(
+	call({
+		id: "run",
+		purpose: {
+			en: "Pictures 0–4 → reviews 1–4 → the verdict on E2E Test Game, a platformer whose road is known: toward, sideways, nothing done, toward; the playtest has two players, not five. Check each direction against that, that sprint 3 comes out idle, and that the verdict names the road and misses the goal.",
+			ru: "Картины 0–4 → разборы 1–4 → вердикт на E2E Test Game, платформере с известным путём: к цели, в сторону, ничего, к цели; в плейтесте двое, а не пятеро. Сверить каждое направление с этим, что спринт 3 — «ничего не делалось», и что вердикт называет путь и цель не достигнута.",
+		},
+		label: {
+			en: "The whole run, with directions",
+			ru: "Весь чекпоинт, с направлениями",
+		},
+		when: { en: "Days 1–29", ru: "Дни 1–29" },
+		model: AI_MODELS.curatorReview,
+		schema: roadInput,
+		situations: (language) => [
+			{
+				id: "e2e-test-game",
+				label: say(
+					language,
+					"E2E Test Game: toward, sideways, idle, toward",
+					"E2E Test Game: к цели, в сторону, ничего, к цели",
+				),
+				input: {},
+			},
+		],
+		run: async ({ character }, locale) => {
+			const sprints: LabRunSprint[] = [];
+			const journal: JournalEntry[] = [];
+			let lastDirection: SprintDirection | null = null;
+			let focus: string[] = [];
+
+			for (let sprint = 1; sprint <= SPRINTS_PER_CHECKPOINT; sprint++) {
+				const { difference, idle } = changeBetween(
+					e2ePicture(sprint - 1),
+					e2ePicture(sprint),
+					`the start of sprint ${sprint}`,
+				);
+				const review: Awaited<ReturnType<typeof reviewSprint>> =
+					await reviewSprint(
+						{
+							goal: E2E_GOAL,
+							character,
+							journal: [...journal],
+							workflow: E2E_WORKFLOW,
+							sprint,
+							tasks: e2eTasks(sprint),
+							devlogs: E2E_SPRINTS[sprint].devlogs,
+							devlogMedia: [],
+							artifacts: E2E_SPRINTS[sprint].artifacts,
+							team: e2eTeam(sprint),
+							focusLastReview: focus,
+							final: sprint === SPRINTS_PER_CHECKPOINT,
+							picture: "",
+							marketing: { devlogs: [], links: [] },
+							difference,
+							idle,
+							lastDirection,
+						},
+						null,
+						undefined,
+						locale,
+					);
+				sprints.push({
+					sprint,
+					difference,
+					idle,
+					direction: review?.notes.direction,
+					inShort: review?.notes.inShort,
+					letter: review?.message,
+				});
+				if (!review) continue;
+				journal.push({ day: sprint * 7 + 1, text: review.message });
+				lastDirection = review.notes.direction ?? null;
+				focus = review.notes.agreed.map((line) => line.text);
+			}
+
+			const items = E2E_ITEMS.map((item) => ({ ...item, addedAt: null }));
+			const directions = sprints.flatMap(({ sprint, direction }) =>
+				direction ? [{ sprint, direction }] : [],
+			);
+			const proposed = await checkpointCurator.writeReport(
+				{
+					...reportEvidence(E2E_GOAL, items),
+					character,
+					journal,
+					workflow: E2E_WORKFLOW,
+					revision: null,
+					devlogs: E2E_DEVLOGS,
+					team: e2eTeam(SPRINTS_PER_CHECKPOINT),
+					calls: [],
+					picture: "",
+					marketing: { devlogs: [], links: [] },
+					difference: changeBetween(
+						e2ePicture(0),
+						e2ePicture(SPRINTS_PER_CHECKPOINT),
+						"day 1",
+					).difference,
+					directions,
+				},
+				{ locale },
+			);
+			if (!proposed) return { answer: { sprints, verdict: null } };
+			const settled = settleVerdict(items, proposed.verdict);
+			return {
+				answer: { sprints, verdict: proposed },
+				settled: {
+					kind: "report",
+					proposed: proposed.verdict,
+					written: settled.verdict,
+					overrode: settled.overrode,
+					note: proposed.verdictNote,
+					tasks: items
+						.filter((item) => item.kind === CheckpointItemKind.Outcome)
+						.map((item) => ({
+							id: item.id,
+							text: item.text,
+							standing: standingOf(item),
+						})),
+				},
+			};
+		},
+	}),
+	call({
+		id: "callNotes",
+		purpose: {
+			en: "A human curator's call read into the same shape as an AI review: three lenses and the direction. A lens the call never touched must come back empty — never filled in.",
+			ru: "Звонок человека-куратора в той же форме, что разбор ИИ: три линзы и направление. Линза, о которой на звонке не говорили, должна вернуться пустой — никогда не дописанной.",
+		},
+		label: { en: "Call notes", ru: "Заметки звонка" },
+		when: { en: "After calls 2–5", ru: "После звонков 2–5" },
+		model: AI_MODELS.callNotes,
+		schema: callNotesLabInput,
+		situations: (language) => [
+			{
+				id: "no-marketing",
+				label: say(
+					language,
+					"E2E Test Game, call 2: nobody speaks of the audience",
+					"E2E Test Game, звонок 2: об аудитории ни слова",
+				),
+				input: { callIndex: 2, transcript: E2E_CALL_TRANSCRIPT },
+			},
+		],
+		run: async ({ callIndex, transcript }) => ({
+			answer: await writeCallNotes({
+				callIndex,
+				goal: E2E_GOAL,
+				tasks: e2eTasks(callIndex - 1),
+				transcript,
+				devlog: E2E_SPRINTS[callIndex - 1]?.devlogs.join("\n\n") || null,
+				artifacts: E2E_SPRINTS[callIndex - 1]?.artifacts ?? [],
+				agreedLastCall: [],
+			}),
+		}),
+	}),
+);

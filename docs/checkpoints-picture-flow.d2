@@ -1,0 +1,80 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Checkpoint pictures — from project activity to the review and the verdict" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+activity: "Project activity (as it happens)" {
+  grid-columns: 3
+  dev: "Development\nartifacts added, devlogs written"
+  team: "Team\njoined, left, invited, hours changed,\nvacancy opened / updated / archived"
+  project: "Project\ndescription, settings, links, stage"
+  signals: "Signals\nproject and devlog views, applause,\nweekly pulse"
+  plan: "Plan\ntasks proven, cut, reworded on day 15"
+}
+
+start: "Checkpoint starts\nAI: after payment · human curator: after approval"
+
+inputs: "Inputs on day 1\nthe author lists what the project already has\n(name + attached artifacts)"
+
+pictures: "Pictures — journal entries of kind Snapshot" {
+  grid-columns: 5
+  p0: "Picture 0\nday 1"
+  p1: "Picture 1\nend of sprint 1"
+  p2: "Picture 2\nend of sprint 2"
+  p3: "Picture 3\nend of sprint 3"
+  p4: "Picture 4\nend of sprint 4"
+}
+
+start -> pictures.p0: "taken at once"
+inputs -> pictures.p0: "if listed"
+activity -> pictures: "the daily run, on a sprint's last day:\nthe project as it stands"
+
+diff: "Difference between two pictures\ncomputed in code, no AI"
+
+reads: "What is inside — the AI reads, once per link\njournal: Evidence (artifact vs its task) · Artifact (outside the tasks)\nDevlogMedia (images, video) · within the sprint's budget"
+
+pictures -> diff
+activity.dev -> reads: "a new artifact or devlog"
+inputs -> reads: "new: the day-1 inputs too"
+reads -> diff: "joined by artifact / devlog id"
+
+lenses: "Four lenses, weighed by the stage" {
+  grid-columns: 4
+  dev: "Development\nwhat was done"
+  hr: "Team (HR)\nwho changed, the hours"
+  mkt: "Marketing\nsignals that came in"
+  pm: "Project management\ntasks, goals, where it heads"
+}
+
+diff -> lenses
+
+direction_: "Direction — to the checkpoint goal and to the stage goal\ntoward · sideways · stalled · idle"
+
+lenses -> direction_
+
+review: "Sprint review 1–4\npicture N−1 → N, devlogs and artifacts in full,\nlast sprint's direction"
+verdict: "Verdict\npicture 0 → 4, all four directions in a row,\nevidence per task"
+
+direction_ -> review: "per sprint"
+review -> verdict: "the directions of sprints 1–4"
+pictures.p0 -> verdict
+pictures.p4 -> verdict
+
+critical: "Critical" {
+  a: "A picture is written by the platform, never by the AI, and always — whoever the curator is"
+  e: "A picture keeps ids, names and counts; what an artifact or a medium shows lives in its read, never copied into the picture"
+  b: "Picture 0 holds the author's inputs when listed, else everything the project has; a new project gives a near-empty one"
+  c: "Counters are stored as totals; the period's numbers are the difference of two pictures"
+  d: "The tasks and the evidence decide the AI's verdict; the lenses and the direction explain it"
+  f: "One pipeline for both curators: the AI writes it, the human says it on the call and the notes take the same shape"
+  g: "A human curator chooses the verdict freely; the modal warns on every task without evidence"
+}

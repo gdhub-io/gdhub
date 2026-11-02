@@ -10,6 +10,7 @@ import {
 	localeLine,
 	renderCard,
 	renderCharacter,
+	renderDirection,
 	renderJournal,
 	renderMarketing,
 	renderPicture,
@@ -62,7 +63,7 @@ export const reportSchema = () => ({
 		verdictNote: {
 			type: "string",
 			description:
-				"Why this verdict and not the others, in two to four sentences: the stage's expectation, the goal, and whether the evidence shows it. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. If the goal is missed after advice the team did not take, name that advice in one sentence and say it can be made up on the way to the next checkpoint. Where it explains the verdict, say it through the lenses: what was built, what the audience saw, the team's hours, the tasks' way to the goal — they explain, never decide. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
+				"Why this verdict and not the others, in two to four sentences: the stage's expectation, the goal, and whether the evidence shows it. If anything was taken on trust, say plainly that you accepted it without being able to check it and that you trust the team; if anything was shown only in part, say what was missing. If the goal is missed after advice the team did not take, name that advice in one sentence and say it can be made up on the way to the next checkpoint. Where it explains the verdict, say it through the lenses: what was built, what the audience saw, the team's hours, the tasks' way to the goal — they explain, never decide. Say in one sentence how the direction went across the sprints, when the directions are given, calling each sprint by the direction it was given — toward, sideways, standing still, nothing done — never merging two into one. The direction explains the verdict; the tasks and the goal decide it. End with what to do next, in the next checkpoint. This is your verdict entry, in your voice; nothing about the road the final review already told.",
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
@@ -207,6 +208,19 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			${renderPicture(input.picture)}
 			${renderMarketing(input.marketing)}
+
+			${input.difference ?? ""}
+
+			${
+				input.directions?.length
+					? `The direction each sprint review named (toward / sideways / stalled / idle):\n${input.directions
+							.map(
+								({ sprint, direction }) =>
+									`- sprint ${sprint}: ${renderDirection(direction)}`,
+							)
+							.join("\n")}`
+					: ""
+			}
 
 			Answer via the ${REPORT_FUNCTION_NAME} function.
 		`,

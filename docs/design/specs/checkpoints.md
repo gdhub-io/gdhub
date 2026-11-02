@@ -478,7 +478,46 @@ The cards sit between "How Sprint N went" and "Focus for Sprint N".
 Where the code departs from the frames:
 
 - Frame 12.10.3m draws the devlogs of the period as a table. The code shows the Marketing lens as the model's text, which names the devlogs with their applause and views; there is no separate table yet. The numbers reach the model through `curatorMarketing`.
-- Call notes from a human call keep the old layout ("What was discussed", "Outside the plan"). Only an AI review carries `lenses`.
+- Call notes from a human call kept the old layout ("What was discussed", "Outside the plan") until GDHUB-133; they now carry the four lenses too — see the next section.
+
+### Directions and the run's difference (GDHUB-133)
+
+Every sprint review names a **direction** twice — toward the checkpoint goal and toward the stage goal — each one of four values, with one sentence on why. The direction explains the read; it never decides the verdict. `Nothing done` (`idle`) is set in code when the sprint's difference is empty, and the model cannot overrule it. A human curator may pick it too: something may have been told or shown on the call that left no trace on the platform.
+
+A human curator's call notes take the same shape as an AI review: "How Sprint N went" with the two directions, the four lens cards, the proposals. A lens the curator did not speak to on the call is absent for the author — never filled with the brief's AI text. Sample content in these frames is "E2E Test Game" (a gnome saves Christmas; Ana, programmer; Bo, 2D artist).
+
+| State | Frame | Built in |
+|---|---|---|
+| AI review: the two directions under "How Sprint N went" | `12.10.3` (`lmi8y`), block `T1MAy` in `KT7Xc` | `CallRoom/CallNotes.tsx` (`NotesSummary`) |
+| A review written before directions existed: nothing extra is shown | `12.10.3n` (`p0xkqG`) | the same |
+| The author's view of a human call: the same shape, Marketing not covered on the call and absent | `12.08.7e` (`gvIge`) | `CallRoom/CallNotes.tsx` (`NotesSummary`, `Lens`) |
+| The curator after the call: a `Segmented` per goal, preset to the brief, and one `Confirm directions`; a lens the call did not cover is plain secondary text | `12.08.7b` (`gP5gH`), block `NWjdM` | `CallRoom/CallNotes.tsx`; the preset comes from `CallRoom/CallBrief.tsx` |
+| The curator, directions confirmed: read-only, with a secondary `Change` until the final call | `12.08.7d` (`o77uDd`), block `LVfpc`, button `JIpN5` | `CallRoom/CallNotes.tsx` |
+| Verdict modal: "Direction by sprint" (S1–S4 × checkpoint and stage goal) and "What changed over the 28 days", after the goal card | `12.14` (`vC7gn`): `O2zGAP`, `zHBLr`; `12.14.1` (`F041BL`, the draft — S4 shows `—` until the final call): `UyWez`, `sYu6w` | `advisor/VerdictModal/index.tsx` |
+| Goal card, tab Now: a warning on each task no evidence proves; every verdict option stays selectable | `12.14.3` (`dVExF`) | `advisor/VerdictModal/GoalCard.tsx` (`OutcomeRow`) |
+
+A direction is always a `StatusDot` — a dot and a word, never a tag:
+
+| Value | Label | Tone |
+|---|---|---|
+| `toward` | Toward the goal | `success` |
+| `sideways` | Gone sideways | `info` |
+| `stalled` | Standing still | `warning` |
+| `idle` | Nothing done | `neutral` (`--gd-color-text-tertiary`) |
+
+Red is not used: none of the four is a failure.
+
+- The author sees a human curator's directions only once they are confirmed; until then the Review tab shows what `12.10.3n` shows.
+- `Change` on confirmed directions reopens the `Segmented` state of `12.08.7b` and is offered until the final call; after it the directions are fixed.
+- In the verdict strip each cell's tooltip carries that sprint's "why". A sprint with no direction yet — the draft before the final call, or directions never confirmed — shows `—`: the platform does not know, which is not "Nothing done".
+- "What changed" is the four lenses in a 2×2 grid of short "from → to" lines computed from picture 0 and picture 4; in the draft, from the latest picture ("Day 1 → day 27, so far"). A lens with no change says "No change" in secondary text.
+- "No evidence for this task" is `StatusDot tone="warning"` and replaces today's secondary "No evidence attached". It never disables a verdict option.
+
+Deliberate departures:
+
+- The canvas draws Lucide icons; the code uses Tabler: `code` → `IconCode`, `users` → `IconUsers`, `megaphone` → `IconSpeakerphone`, `list-checks` → `IconListCheck`, `compass` → `IconCompass` (the Directions heading), `lock` → `IconLock`.
+- Parts copied from older frames keep their off-scale type (15 in "How Sprint N went", 12 on the goal card tabs); the new blocks use 13/14/16 only.
+- In `12.10.3` and the `12.14` pulse, rows for people outside the sample team are hidden (disabled layers), not deleted.
 
 ## 7. Copy (Tolgee keys)
 

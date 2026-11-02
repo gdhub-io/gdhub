@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { App } from "antd";
 import type { ReactElement } from "react";
+import type { Direction } from "@/config/checkpoint";
 import {
 	ArtifactCheckStatus,
 	CheckpointCuratorKind,
@@ -233,6 +234,59 @@ const PROJECT: AdvisorProjectDto = {
 	})),
 };
 
+const read = (value: Direction, why: string) => ({ value, why });
+
+/** E2E Test Game's run: the jump first, a sprint lost to a menu, then the level. */
+const RUN: VerdictContextDto["run"] = {
+	directions: [
+		{
+			sprint: 1,
+			direction: {
+				goal: read("toward", "The jump with coyote time was shown in a build."),
+				stage: read("toward", "The core movement is playable."),
+			},
+		},
+		{
+			sprint: 2,
+			direction: {
+				goal: read(
+					"sideways",
+					"The sprint went into a title menu, not the level.",
+				),
+				stage: read("stalled", "Nothing new playable."),
+			},
+		},
+		{
+			sprint: 3,
+			direction: {
+				goal: read("toward", "Level 1 runs from the start to the flag."),
+				stage: read("toward", "The candy pickups and the first enemy work."),
+			},
+		},
+	],
+	difference: {
+		development: [
+			'+ artifact "E2E Test Game 0.3 · web" (ExecutableBuild)',
+			"+ devlog #3",
+			"+ devlog #4",
+		],
+		team: [
+			"Bo: hours 10–15 → 5–10 h/week",
+			'vacancy "Level designer" Published, 2 applied',
+		],
+		marketing: [
+			"project views +412",
+			"applause +31",
+			"itch link added: https://e2e-test-game.itch.io",
+		],
+		management: [
+			'task proved: "Jump with coyote time and a jump buffer"',
+			'task proved: "Level 1, from the start to the flag"',
+			'still open: "Five players outside the team reach the flag"',
+		],
+	},
+};
+
 const context = (
 	started: number,
 	overrides: Partial<VerdictContextDto>,
@@ -243,6 +297,7 @@ const context = (
 	finalCall: { scheduledAt: day(started + 28, 10), curatorJoinedAt: null },
 	currentStage: { name: "Prototyping", key: null },
 	aiRead: null,
+	run: RUN,
 	nextStage: {
 		name: "Preparing a demo version",
 		key: "workflow.story.step4.name",

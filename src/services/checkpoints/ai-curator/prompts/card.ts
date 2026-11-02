@@ -5,6 +5,7 @@ import {
 	PROJECT_GOAL,
 	SESSION_MINUTES,
 } from "@/config/checkpoint";
+import { hoursLeft, hoursSpan } from "@/lib/checkpoints/capacity";
 import { sheetOf } from "@/lib/checkpoints/curator-characters";
 import type {
 	CuratorGoalCard,
@@ -49,11 +50,12 @@ export const renderCard = (card: CuratorGoalCard) => stripIndents`
  * The team's stated time. Silence is rendered as silence: a team that stated
  * nothing must read as unknown hours, not as a team with none.
  */
-const span = (hours: { from: number; to: number }) =>
-	hours.from === hours.to ? `${hours.from}` : `${hours.from}–${hours.to}`;
 
-/** The team in one block: the sums, then each person with their hours and the weeks behind. */
-export const renderTeam = (team: CuratorTeam) => {
+/**
+ * The team in one block: the sums, then each person with their hours and the
+ * weeks behind. With `sprintsDone`, the time left at today's hours closes it.
+ */
+export const renderTeam = (team: CuratorTeam, sprintsDone?: number) => {
 	const people = `${team.members} ${team.members === 1 ? "person" : "people"}`;
 	const silent = team.members - team.stated;
 	const sums =
@@ -61,7 +63,7 @@ export const renderTeam = (team: CuratorTeam) => {
 			? `The team: ${people}. Nobody stated their hours, so the time available is unknown — which is not the same as none.`
 			: [
 					`The team: ${people}, ${team.stated} of whom stated their hours.`,
-					`Stated time: ${span(team.hoursPerWeek)} hours a week between them, so ${span(team.hoursPerRun)} hours over the ${CHECKPOINT_DAYS} days.`,
+					`Stated time: ${hoursSpan(team.hoursPerWeek)} hours a week between them, so ${hoursSpan(team.hoursPerRun)} hours over the ${CHECKPOINT_DAYS} days.`,
 					silent
 						? `The other ${silent} stated nothing and are not in that total.`
 						: "",
@@ -70,7 +72,7 @@ export const renderTeam = (team: CuratorTeam) => {
 					.join(" ");
 	const lines = team.people.map((person) => {
 		const hours = person.hoursPerWeek
-			? `${span(person.hoursPerWeek)} h/week stated`
+			? `${hoursSpan(person.hoursPerWeek)} h/week stated`
 			: "hours not stated";
 		const weeks = person.weeks.map(
 			(worked, index) =>
@@ -81,8 +83,32 @@ export const renderTeam = (team: CuratorTeam) => {
 	const openings = team.openings.length
 		? `Open positions now:\n${team.openings.map((opening) => `- ${opening.role}, posted ${opening.postedOn}, ${opening.applied} applied`).join("\n")}`
 		: "No open positions.";
-	return [sums, ...lines, openings].join("\n");
+	const left =
+		sprintsDone === undefined
+			? null
+			: hoursLeft(team.hoursPerWeek, sprintsDone);
+	const remaining = left
+		? left.sprints
+			? `Time left: about ${hoursSpan(left)} hours over the ${left.sprints} ${left.sprints === 1 ? "sprint" : "sprints"} ahead, at the hours stated now. Weigh what is still open against it.`
+			: "No time is left: the 28 days are over."
+		: null;
+	return [sums, ...lines, openings, remaining].filter(Boolean).join("\n");
 };
+
+/** A sprint's direction in one line, as every prompt reads it. */
+export const renderDirection = (direction: {
+	goal: { value: string; why: string };
+	stage: { value: string; why: string };
+}) =>
+	`the checkpoint goal ${direction.goal.value} — ${direction.goal.why}; the stage goal ${direction.stage.value} — ${direction.stage.why}`;
+
+/** How the time left bears on advice (GDHUB-133): rough, but never ignored. */
+export const TIME_LEFT = stripIndents`
+	The time left is rough — stated hours, not tracked ones — but weigh every
+	open task and every piece of advice against it. When what is still open
+	plainly outruns it, say so and say what to shorten or cut; when someone's
+	hours dropped, say what that changes.
+`;
 
 /**
  * When a role is worth suggesting (GDHUB-121). Hiring is rarely the answer and
@@ -129,6 +155,15 @@ export const LENSES = stripIndents`
 	A lens weighed low on this stage gets one line at most and is never blamed
 	for zeros it was not meant to have; a lens weighed high gets its full say.
 	The lenses explain; the tasks and the goal decide.
+`;
+
+/** What each direction means; `idle` is the platform's, the model only echoes it. */
+export const DIRECTION_RULES = stripIndents`
+	Where the sprint took the project, read from what changed and what was shown:
+	toward — new evidence on a task, or work that plainly moves the goal;
+	sideways — work was done, but outside the tasks and not moving the goal;
+	stalled — something happened, but no task moved: no new evidence, the same tasks open;
+	idle — nothing at all was done; only when the input says nothing changed.
 `;
 
 /** What the audience saw in the period (GDHUB-126). */
@@ -254,9 +289,9 @@ const LEGS: Record<RoadLeg, string> = {
 	corrected:
 		"day 22, on the corrected route with the goal in sight. What is left to the end, and what not to lose on the last stretch",
 	arrival:
-		"day 29, the end of the road. Look back over the whole of it, from where they started to where they stand: what they went through and what they overcame, calling back to your earlier entries. Reached the goal: congratulate them, warmly and by name of what they did. Not reached: hold them up — every road has its hardships, that is what a guide is for, and the next road will be easier because they know these waters now",
+		"day 29, the end of the road. Look back over the whole of it, from where they started to where they stand: what they went through and what they overcame, calling back to your earlier entries. Whether the goal was reached is the verdict's to say, right after this entry — do not say it here",
 	verdict:
-		"the verdict, after the last entry. A short entry with the decision and the reason; the story of the road is told in the final review, do not retell it",
+		"the verdict, after the last entry. The decision and the reason, and how the road went sprint by sprint. Reached the goal: congratulate them, warmly and by name of what they did. Not reached: hold them up — every road has its hardships, that is what a guide is for, and the next road will be easier because they know these waters now. The story of the road is told in the final review, do not retell it",
 };
 
 /** The leg a sprint review is written on: after sprints 1–3, and the final one. */

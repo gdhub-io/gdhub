@@ -6,7 +6,7 @@ import type {
 	ExpertInvoicing,
 	ProjectArtifactType,
 } from "@gdhub-io/gdhub-prisma";
-import type { CuratorLens } from "@/config/checkpoint";
+import type { CuratorLens, Direction } from "@/config/checkpoint";
 import type { CuratorLevel } from "@/config/checkpoint-pricing";
 import type {
 	CheckpointCuratorKind,
@@ -23,6 +23,7 @@ import type { PlanEdit } from "@/lib/checkpoints/call";
 import type { CuratorNow } from "@/lib/checkpoints/curator-now";
 import type { CuratorStatus } from "@/lib/checkpoints/curator-status";
 import type { NoFeeReason } from "@/lib/checkpoints/fee";
+import type { PictureDifference } from "@/lib/checkpoints/picture";
 import type { AuthorNextStep } from "@/lib/checkpoints/plan";
 import type {
 	RefundReason,
@@ -352,6 +353,11 @@ export type VerdictContextDto = {
 	currentStage: { name: string; key: string | null };
 	/** Null on the workflow's last stage, which hides "Ready for the next stage". */
 	nextStage: { name: string; key: string } | null;
+	/** GDHUB-133: day 1 against now by lens, and each sprint's direction; null difference before day 1's picture. */
+	run: {
+		directions: { sprint: number; direction: SprintDirection }[];
+		difference: PictureDifference | null;
+	};
 	/** The AI's read from day 29 (GDHUB-114): a reference, never the curator's answer. */
 	aiRead: {
 		proposed: CheckpointVerdict;
@@ -384,11 +390,26 @@ export type CallNotes = {
 	/** `itemId` null is outside the plan; `dueDay` is a day of the checkpoint. */
 	agreed: { text: string; itemId: string | null; dueDay: number | null }[];
 	questions: string[];
-	/** An AI review (GDHUB-126): three lenses; development is `discussed` and `outsidePlan`. Absent on call notes. */
+	/** Three lenses (GDHUB-126); development is `discussed` and `outsidePlan`. Absent on notes written before GDHUB-133. */
 	lenses?: ReviewLenses;
+	/** GDHUB-133: where the sprint took the project; absent on reviews written before it. */
+	direction?: SprintDirection;
 };
 
-export type ReviewLenses = Record<Exclude<CuratorLens, "development">, string>;
+export type DirectionRead = { value: Direction; why: string };
+
+export type SprintDirection = {
+	goal: DirectionRead;
+	stage: DirectionRead;
+	/** A human curator's call: when the curator confirmed it; the author sees it only then. */
+	confirmedAt?: string | null;
+};
+
+/** Null on a human call's notes: the call did not touch that lens, and nothing stands in for it. */
+export type ReviewLenses = Record<
+	Exclude<CuratorLens, "development">,
+	string | null
+>;
 
 /** How the project's last checkpoint ended, read again through the next one's first sprint. */
 export type PreviousVerdict = {

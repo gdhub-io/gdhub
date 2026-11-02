@@ -42,8 +42,6 @@ const TEXT = {
 		newArtistDevlog:
 			"Week 2: Lena joined us as a 2D artist on Friday and started the hero sheets; the palette is on the board.",
 		artistRole: "2D artist",
-		verdict:
-			"All three tasks are delivered and the stage's devlog is out: ready for Preparing a demo version.",
 	},
 	ru: {
 		demoSeen: "Страница на itch.io с играбельной веб-сборкой острова.",
@@ -71,8 +69,6 @@ const TEXT = {
 		newArtistDevlog:
 			"Неделя 2: в пятницу к нам пришла Лена, 2D-художник, и начала листы героев; палитра на доске.",
 		artistRole: "2D-художник",
-		verdict:
-			"Все три задачи сданы, девлог стадии опубликован: можно переходить к Preparing a demo version.",
 	},
 };
 
@@ -120,7 +116,7 @@ export const sprintReviewSituations = (
 				openings,
 			},
 			focusLastReview: t.focusAfter1,
-			verdict: null,
+			final: false,
 			picture: project.picture("sprint2"),
 			marketing: project.marketing("sprint2"),
 		};
@@ -141,7 +137,7 @@ export const sprintReviewSituations = (
 		artifacts: [{ type: "ExecutableBuild", name: artifacts.demo }],
 		team: project.team("sprint1"),
 		focusLastReview: [],
-		verdict: null,
+		final: false,
 		picture: project.picture("sprint1"),
 		marketing: project.marketing("sprint1"),
 	};
@@ -352,12 +348,12 @@ export const sprintReviewSituations = (
 			},
 		},
 		{
-			// Day 29: sprint 4 brought the playtest; the verdict is settled.
+			// Day 29: sprint 4 brought the playtest; the verdict follows.
 			id: "final",
 			label: say(
 				language,
-				"The final review, verdict settled",
-				"Итоговый разбор, вердикт уже вынесен",
+				"The final review, before the verdict",
+				"Итоговый разбор, перед вердиктом",
 			),
 			input: {
 				...sprint1,
@@ -371,7 +367,7 @@ export const sprintReviewSituations = (
 				artifacts: [{ type: "Document", name: artifacts.notes }],
 				team: project.team("end"),
 				focusLastReview: t.focusAfter3,
-				verdict: { verdict: "StageClosed", note: t.verdict },
+				final: true,
 				workflow: project.workflow("end"),
 				picture: project.picture("end"),
 				marketing: project.marketing("end"),

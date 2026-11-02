@@ -16,6 +16,8 @@ import {
 const sessionFindUnique = vi.fn();
 const sessionUpdate = vi.fn();
 const sessionUpdateMany = vi.fn();
+const sessionFindMany = vi.fn();
+const sessionFindUniqueOrThrow = vi.fn();
 const checkpointUpdateMany = vi.fn();
 const planFind = vi.fn(async () => ({
 	curatorId: "curator",
@@ -62,6 +64,8 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: (...a: unknown[]) => sessionFindUnique(...a),
 			update: (...a: unknown[]) => sessionUpdate(...a),
 			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
+			findMany: (...a: unknown[]) => sessionFindMany(...a),
+			findUniqueOrThrow: (...a: unknown[]) => sessionFindUniqueOrThrow(...a),
 		},
 		teamMember: { findMany: () => membersFind() },
 		projectCheckpoint: {
@@ -94,7 +98,9 @@ vi.mock("@/services/daily", async (importOriginal) => ({
 	transcriptOfJob: (...a: unknown[]) => transcriptOfJob(...a),
 }));
 
-const { getCall } = await import("@/repositories/checkpoints/call");
+const { confirmDirection, getCall, getCallNotes } = await import(
+	"@/repositories/checkpoints/call"
+);
 const {
 	endCall,
 	getCallPresence,
@@ -454,5 +460,59 @@ describe("callMissed", () => {
 				later,
 			),
 		).toBe(false);
+	});
+});
+
+describe("a sprint's direction after a human call", () => {
+	const direction = {
+		goal: { value: "toward" as const, why: "The jump was shown." },
+		stage: { value: "stalled" as const, why: "No level yet." },
+	};
+	const notes = (confirmedAt: string | null) => ({
+		contentStatus: CheckpointSessionContentStatus.Ready,
+		transcript: null,
+		content: {
+			inShort: "Sprint 1.",
+			discussed: [],
+			notDiscussed: [],
+			outsidePlan: [],
+			agreed: [],
+			questions: [],
+			direction: { ...direction, confirmedAt },
+		},
+	});
+
+	it("shows the team a direction only once the curator confirmed it", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		sessionFindUniqueOrThrow.mockResolvedValue(notes(null));
+		expect((await getCallNotes("abc", 2, "marta"))?.content?.direction).toBeUndefined();
+		expect((await getCallNotes("abc", 2, "curator"))?.content?.direction).toBeTruthy();
+
+		sessionFindUniqueOrThrow.mockResolvedValue(notes("2026-10-29T10:00:00Z"));
+		expect((await getCallNotes("abc", 2, "marta"))?.content?.direction?.goal.value).toBe("toward");
+	});
+
+	const sessions = (finalAt: Date) => [
+		{ index: 2, scheduledAt, ...notes(null) },
+		{ index: 5, scheduledAt: finalAt, contentStatus: null, content: null },
+	];
+
+	it("lets the curator alone set it, until the final call starts", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		sessionFindMany.mockResolvedValue(sessions(new Date("2026-11-20T14:00:00Z")));
+
+		expect(await confirmDirection("abc", 2, "marta", direction, during)).toBeNull();
+		expect(sessionUpdate).not.toHaveBeenCalled();
+
+		const confirmed = await confirmDirection("abc", 2, "curator", direction, during);
+		expect(confirmed?.confirmedAt).toBe(during.toISOString());
+		expect(sessionUpdate).toHaveBeenCalledTimes(1);
+	});
+
+	it("refuses a change once the final call has started", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		sessionFindMany.mockResolvedValue(sessions(new Date("2026-10-21T14:01:00Z")));
+		expect(await confirmDirection("abc", 2, "curator", direction, during)).toBeNull();
+		expect(sessionUpdate).not.toHaveBeenCalled();
 	});
 });
