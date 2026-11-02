@@ -77,6 +77,7 @@ Entering a space is not guarded by a permission — any role gets you in
 | `project.devlog.view` | ✅ | ✅ | ✅ | ✅ | read & take part |
 | `project.devlog.create` | ✅ | ✅ | ✅ | — | read & take part |
 | `project.devlog.publish` | ✅ | ✅ | — | — | manage |
+| `project.devlog.manage` | ✅ | ✅ | `own` | — | manage |
 
 ## event space
 
@@ -189,7 +190,18 @@ Entering a space is not guarded by a permission — any role gets you in
 | `admin.workflow.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.workflow.manage` | ✅ | ✅ | — | — | manage |
 | | | | | | |
+| `admin.checkpoints.view` | ✅ | ✅ | ✅ | — | read & take part |
+| `admin.checkpoints.manage` | ✅ | ✅ | — | — | manage |
+| | | | | | |
+| `admin.payouts.view` | ✅ | — | — | — | read & take part |
+| `admin.payouts.manage` | ✅ | — | — | — | manage |
+| | | | | | |
+| `admin.curators.view` | ✅ | — | — | — | read & take part |
+| `admin.curators.manage` | ✅ | — | — | — | manage |
+| | | | | | |
 | `admin.audit_logs.view` | ✅ | ✅ | ✅ | — | read & take part |
+| | | | | | |
+| `admin.legal.view` | ✅ | ✅ | ✅ | — | read & take part |
 | | | | | | |
 | `admin.views.view` | ✅ | ✅ | ✅ | — | read & take part |
 
