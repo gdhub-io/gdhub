@@ -1,7 +1,9 @@
 "use client";
 
 import { Flex, Timeline, Typography } from "antd";
+import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { AiReviewView } from "@/components/checkpoints/CuratorReview/AiReview";
+import { SprintDirectionView } from "@/components/checkpoints/SprintDirection";
 import { StatusDot } from "@/components/ui";
 import { AI_APPROVE_HOURS } from "@/config/checkpoint";
 import type {
@@ -12,9 +14,17 @@ import { characterFace } from "@/lib/checkpoints/curator-characters";
 import { curatorNow } from "@/lib/checkpoints/curator-now";
 import { MS_PER_HOUR } from "@/lib/checkpoints/days";
 import type { Standing } from "@/lib/checkpoints/verdict";
-import type { LabSettled } from "@/services/checkpoints/ai-curator-lab";
-import type { CheckpointReviewDto, CuratorReview } from "@/types/checkpoints";
+import type {
+	LabRunSprint,
+	LabSettled,
+} from "@/services/checkpoints/ai-curator-lab";
+import type {
+	CallNotes,
+	CheckpointReviewDto,
+	CuratorReview,
+} from "@/types/checkpoints";
 import { useStandingStatus } from "../checkpoints/EvidenceStanding";
+import styles from "./style.module.scss";
 
 const { Text } = Typography;
 
@@ -315,6 +325,74 @@ export function AuthorView({
 						</Flex>
 					),
 				}))}
+			/>
+		);
+	}
+
+	if (call === "run") {
+		const sprints = (fields.sprints as LabRunSprint[]) ?? [];
+		const verdict = fields.verdict as {
+			verdict: CheckpointVerdict;
+			verdictNote: string;
+		} | null;
+		return (
+			<Timeline
+				items={[
+					...sprints.map((row) => ({
+						children: (
+							<Flex vertical gap={8}>
+								<Text strong>Sprint {row.sprint}</Text>
+								<Text type="secondary" className={styles.pre}>
+									{row.difference}
+								</Text>
+								{row.direction && (
+									<SprintDirectionView
+										direction={row.direction}
+										stage="Prototyping"
+									/>
+								)}
+								{row.inShort && <Text>{row.inShort}</Text>}
+								{row.letter && <Text type="secondary">{row.letter}</Text>}
+							</Flex>
+						),
+					})),
+					{
+						children: verdict && (
+							<Flex vertical gap={8}>
+								<Text strong>
+									Verdict:{" "}
+									{settled?.kind === "report"
+										? settled.written
+										: verdict.verdict}
+									{settled?.kind === "report" && settled.overrode
+										? ` (proposed ${settled.overrode})`
+										: ""}
+								</Text>
+								<Text>{verdict.verdictNote}</Text>
+							</Flex>
+						),
+					},
+				]}
+			/>
+		);
+	}
+
+	if (call === "callNotes") {
+		const notes = fields as unknown as CallNotes;
+		return (
+			<NotesSummary
+				index={2}
+				content={notes}
+				plan={{ tasks: [] }}
+				curator
+				direction={
+					notes.direction && (
+						<SprintDirectionView
+							direction={notes.direction}
+							stage="Prototyping"
+						/>
+					)
+				}
 			/>
 		);
 	}

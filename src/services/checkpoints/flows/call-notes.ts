@@ -5,6 +5,7 @@ import {
 	CheckpointSessionContentStatus,
 } from "@/config/prisma-enums";
 import { appUrl, reviewUrl } from "@/lib/checkpoints/hrefs";
+import { briefDirection } from "@/repositories/checkpoints/call";
 import {
 	knownOnly,
 	sprintEvidence,
@@ -145,7 +146,16 @@ const writeNotesFor = async (sessionId: string) => {
 	);
 	if (!notes) return false;
 
-	const content = knownOnly(notes, checkpoint.items);
+	// The curator confirms the direction after the call; the call's own word
+	// first, else the brief's (GDHUB-133). The author sees it once confirmed.
+	const direction =
+		reviewed >= 1
+			? (notes.direction ?? (await briefDirection(checkpoint.id, reviewed)))
+			: undefined;
+	const content = {
+		...knownOnly(notes, checkpoint.items),
+		direction: direction && { ...direction, confirmedAt: null },
+	};
 	await prisma.checkpointSession.update({
 		where: { id: sessionId },
 		data: { content, contentStatus: CheckpointSessionContentStatus.Ready },

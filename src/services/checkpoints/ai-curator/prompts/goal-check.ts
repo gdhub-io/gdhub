@@ -142,10 +142,11 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${renderAuthor(input.author)}
 
 			${renderCard(input.card)}
+			${input.inputsSeen?.length ? `What the day-1 artifacts show, as looked at:\n${input.inputsSeen.map((line) => `- ${line}`).join("\n")}` : ""}
 
 			${renderWorkflow(input.workflow)}
 
-			${renderTeam(input.team)}
+			${renderTeam(input.team, 0)}
 
 			${renderPicture(input.picture)}
 			${renderMarketing(input.marketing)}

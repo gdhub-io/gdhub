@@ -10,6 +10,7 @@ import {
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { lettersSoFar } from "@/lib/checkpoints/curator-letters";
 import { sessionDay } from "@/lib/checkpoints/days";
+import { renderDifference } from "@/lib/checkpoints/picture";
 import { dateOfDay } from "@/lib/checkpoints/plan";
 import {
 	CHECKPOINT_RUNNING_STATUSES,
@@ -34,6 +35,7 @@ import {
 	lastVerdict,
 } from "@/repositories/checkpoints/brief";
 import { journal } from "@/repositories/checkpoints/journal";
+import { runChangeOf } from "@/repositories/checkpoints/picture";
 import { recheckCheckpointArtifacts } from "@/repositories/project/artifact-check";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { issueCheckpointCertificate } from "@/services/certificates";
@@ -46,7 +48,10 @@ import {
 } from "@/services/checkpoints/ai-curator";
 import { createCharacter } from "@/services/checkpoints/ai-curator/character";
 import { composePlanLetter } from "@/services/checkpoints/ai-curator/plan-letter";
-import { seeCheckpointEvidence } from "@/services/checkpoints/flows/evidence-seen";
+import {
+	lookedArtifactLines,
+	seeCheckpointEvidence,
+} from "@/services/checkpoints/flows/evidence-seen";
 import { notifyDayOne } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import type { CallNotes, CuratorReview } from "@/types/checkpoints";
@@ -100,10 +105,11 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
-	const [previous, facts] = await Promise.all([
+	const [previous, facts, inputsSeen] = await Promise.all([
 		lastVerdict(checkpoint.projectId, checkpointId),
 		// Before the start nobody has joined during it, and the period is the lead-in.
 		checkpointFacts({ ...checkpoint, id: checkpointId, startedAt: null }),
+		lookedArtifactLines(checkpointId, 0),
 	]);
 
 	const founder = members.find(
@@ -121,6 +127,7 @@ export const runGoalCheck = async (
 		author: founder ? briefAuthor(founder) : null,
 		character: checkpoint.curatorCharacter,
 		previous,
+		inputsSeen,
 	};
 
 	const hash = goalCheckHash(input);
@@ -515,5 +522,23 @@ export const reportInputFor = async (checkpointId: string) => {
 					})
 				: [],
 	};
-	return { items, reportInput };
+	return {
+		items,
+		reportInput: {
+			...reportInput,
+			...(await runChange(checkpointId, checkpoint.sessions)),
+		},
+	};
+};
+
+/** The whole run for the verdict (GDHUB-133), as the model reads it. */
+const runChange = async (
+	checkpointId: string,
+	sessions: { index: number; content: unknown }[],
+) => {
+	const { directions, difference } = await runChangeOf(checkpointId, sessions);
+	return {
+		directions,
+		difference: difference ? renderDifference(difference, "day 1") : undefined,
+	};
 };

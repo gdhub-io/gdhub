@@ -13,6 +13,7 @@ import { planCloses, planEdit, planSession } from "@/lib/checkpoints/call";
 import { lettersSoFar } from "@/lib/checkpoints/curator-letters";
 import { MS_PER_HOUR } from "@/lib/checkpoints/days";
 import { reviewUrl } from "@/lib/checkpoints/hrefs";
+import { changeBetween, directionOf } from "@/lib/checkpoints/picture";
 import { sprintRange } from "@/lib/checkpoints/sprints";
 import {
 	CHECKPOINT_DAYS_OVER_STATUSES,
@@ -29,6 +30,7 @@ import {
 } from "@/repositories/checkpoints/call-notes";
 import { journal } from "@/repositories/checkpoints/journal";
 import { checkpointNumber } from "@/repositories/checkpoints/number";
+import { picturesOf, takePicture } from "@/repositories/checkpoints/picture";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import {
 	type AdviceRefusal,
@@ -333,9 +335,55 @@ export const writeDueReviews = async (now = new Date()) => {
 };
 
 /**
+ * The verdict of every AI checkpoint whose final review is written, right
+ * after the reviews; one the model fails on stays in Review for the next night.
+ */
+export const closeDueCheckpoints = async () => {
+	const due = await prisma.projectCheckpoint.findMany({
+		where: {
+			curatorKind: CheckpointCuratorKind.AI,
+			status: CheckpointStatus.Review,
+			verdict: null,
+			sessions: {
+				some: {
+					index: FINAL_SESSION,
+					contentStatus: CheckpointSessionContentStatus.Ready,
+				},
+			},
+		},
+		select: { id: true },
+	});
+	let closed = 0;
+	for (const { id } of due) {
+		const settled = await closeCheckpoint(id).catch((error) => {
+			console.error("[curator-verdict] failed for checkpoint", id, error);
+			return null;
+		});
+		if (!settled) continue;
+		await notifyVerdictSent(id);
+		closed += 1;
+	}
+	return closed;
+};
+
+/**
+ * What changed in a sprint, from the picture before it to the one after it
+ * (GDHUB-133). A picture not written yet is taken now; without the one before,
+ * there is nothing to compare and the review reads the feed alone.
+ */
+const sprintChange = async (checkpointId: string, sprint: number) => {
+	const pictures = await picturesOf(checkpointId);
+	const before = pictures.get(sprint - 1);
+	if (!before) return {};
+	const after =
+		pictures.get(sprint) ?? (await takePicture(checkpointId, sprint));
+	return changeBetween(before, after, `the start of sprint ${sprint}`);
+};
+
+/**
  * The sprint behind a session, as the model reads it: its devlogs and what
  * their media show, its artifacts, the pulse, and the focus the last call or
- * review agreed. The final review reads the whole run and the settled verdict.
+ * review agreed. The final review reads the whole run; the verdict follows it.
  */
 const sprintReviewInput = async (
 	checkpoint: ReviewCheckpoint,
@@ -344,7 +392,7 @@ const sprintReviewInput = async (
 	final: boolean,
 ) => {
 	const sprint = sessionIndex - 1;
-	const [{ devlogs, posts, artifacts }, facts] = await Promise.all([
+	const [{ devlogs, posts, artifacts }, facts, change] = await Promise.all([
 		sprintEvidence(checkpoint.projectId, startedAt, sprint),
 		checkpointFacts(
 			{ ...checkpoint, startedAt },
@@ -352,6 +400,7 @@ const sprintReviewInput = async (
 				? runPeriod(startedAt, checkpoint.dueAt)
 				: sprintRange(startedAt, sprint),
 		),
+		sprintChange(checkpoint.id, sprint),
 	]);
 	const [devlogMedia, artifactsSeen] = await Promise.all([
 		devlogMediaLines(posts.map((post) => post.id)),
@@ -378,10 +427,9 @@ const sprintReviewInput = async (
 		artifactsSeen,
 		artifacts,
 		focusLastReview: agreed.map((line) => line.text),
-		verdict:
-			final && checkpoint.verdict
-				? { verdict: checkpoint.verdict, note: checkpoint.verdictNote ?? "" }
-				: null,
+		...change,
+		lastDirection: directionOf(previous) ?? null,
+		final,
 	};
 };
 
@@ -392,10 +440,9 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		select: { index: true, checkpointId: true },
 	});
 	const final = session.index === FINAL_SESSION;
-	// The verdict comes first, so the last letter can agree with it; it looks at
-	// the evidence itself. A sprint review looks first at anything missed.
-	if (final) await closeCheckpoint(session.checkpointId);
-	else await seeCheckpointEvidence(session.checkpointId);
+	// A review looks first at anything missed; the final one comes before the
+	// verdict, which reads its direction (GDHUB-133).
+	await seeCheckpointEvidence(session.checkpointId);
 
 	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
 		where: { id: session.checkpointId },
@@ -420,7 +467,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		},
 	});
 	const { startedAt } = checkpoint;
-	if (!startedAt || (final && !checkpoint.verdict)) return false;
+	if (!startedAt) return false;
 
 	const sprint = session.index - 1;
 	const input = await sprintReviewInput(
@@ -469,10 +516,8 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		output: { message: review.message, notes, advice: review.advice },
 	});
 
-	if (final) {
-		await notifyVerdictSent(checkpoint.id);
-		return true;
-	}
+	// The verdict follows in the same night run, from closeDueCheckpoints.
+	if (final) return true;
 	const number = await checkpointNumber(checkpoint);
 	const people = new Map(
 		(checkpoint.project.team?.members ?? []).map((member) => [

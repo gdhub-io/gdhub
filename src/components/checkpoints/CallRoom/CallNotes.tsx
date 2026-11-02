@@ -13,7 +13,12 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { Skeleton, Table, Typography } from "antd";
 import type { ReactNode } from "react";
+import {
+	DirectionConfirm,
+	SprintDirectionView,
+} from "@/components/checkpoints/SprintDirection";
 import { EmptyState } from "@/components/ui";
+import type { CuratorLens } from "@/config/checkpoint";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import type { CallNotesDto, CheckpointCallDto } from "@/types/checkpoint-call";
 import type {
@@ -27,6 +32,12 @@ type Plan = Pick<CheckpointCallDto["plan"], "tasks">;
 type Agreed = CallNotesContent["agreed"][number];
 
 export type NotesBodyProps = {
+	checkpointId: string;
+	stage: string;
+	/** The curator confirms the direction; the team reads it once confirmed. */
+	curator: boolean;
+	/** False once the final call has started: the directions are settled. */
+	directionOpen: boolean;
 	/** The call the notes belong to: call 1 opens the checkpoint, the rest close a sprint. */
 	index: number;
 	/** False until the call is over: there is nothing to fetch yet. */
@@ -38,6 +49,10 @@ export type NotesBodyProps = {
 
 /** The Notes tab: frames gP5gH (ready) and 08.4 (on its way). */
 export function NotesBody({
+	checkpointId,
+	stage,
+	curator,
+	directionOpen,
 	index,
 	held,
 	plan,
@@ -73,7 +88,31 @@ export function NotesBody({
 			/>
 		);
 	}
-	return <NotesSummary index={index} content={notes.content} plan={plan} />;
+	const { direction } = notes.content;
+	return (
+		<NotesSummary
+			index={index}
+			content={notes.content}
+			plan={plan}
+			curator={curator}
+			direction={
+				index > 1 &&
+				(curator ? (
+					<DirectionConfirm
+						checkpointId={checkpointId}
+						index={index}
+						direction={direction}
+						stage={stage}
+						editable={directionOpen}
+					/>
+				) : (
+					direction && (
+						<SprintDirectionView direction={direction} stage={stage} />
+					)
+				))
+			}
+		/>
+	);
 }
 
 /** The transcript tab's body; the tab itself is hidden for now. */
@@ -141,26 +180,57 @@ export function Lens({
 }
 
 /** The three lenses beside development, in the review and the curator's brief. */
-export function ReviewLensCards({ lenses }: { lenses: ReviewLenses }) {
+/** Every lens's icon and title, for the review cards and the verdict modal alike. */
+export const useLenses = () => {
 	const { t } = useTranslate();
-	const cards: [keyof ReviewLenses, TablerIcon, string][] = [
-		[
-			"marketing",
-			IconSpeakerphone,
-			t("checkpoints.review.lens.marketing", "Marketing"),
-		],
-		["team", IconUsers, t("checkpoints.review.lens.team", "Team")],
-		[
-			"management",
-			IconListCheck,
-			t("checkpoints.review.lens.management", "Project management"),
-		],
-	];
-	return cards.map(([lens, icon, title]) => (
-		<Lens key={lens} icon={icon} title={title}>
-			<Typography.Text>{lenses[lens]}</Typography.Text>
-		</Lens>
-	));
+	return {
+		development: {
+			icon: IconCode,
+			title: t("checkpoints.review.lens.development", "Development"),
+		},
+		marketing: {
+			icon: IconSpeakerphone,
+			title: t("checkpoints.review.lens.marketing", "Marketing"),
+		},
+		team: { icon: IconUsers, title: t("checkpoints.review.lens.team", "Team") },
+		management: {
+			icon: IconListCheck,
+			title: t("checkpoints.review.lens.management", "Project management"),
+		},
+	} satisfies Record<CuratorLens, { icon: TablerIcon; title: string }>;
+};
+
+export function ReviewLensCards({
+	lenses,
+	curator,
+}: {
+	lenses: ReviewLenses;
+	/** A lens the call did not touch: the curator sees why it is missing, the author nothing. */
+	curator?: boolean;
+}) {
+	const { t } = useTranslate();
+	const meta = useLenses();
+	const cards = (["marketing", "team", "management"] as const).map(
+		(lens) => [lens, meta[lens].icon, meta[lens].title] as const,
+	);
+	return cards.map(([lens, icon, title]) => {
+		const text = lenses[lens];
+		if (!text && !curator) return null;
+		return (
+			<Lens key={lens} icon={icon} title={title}>
+				{text ? (
+					<Typography.Text>{text}</Typography.Text>
+				) : (
+					<Typography.Text className={styles.tertiary}>
+						{t(
+							"checkpoints.call.notes.lensMissing",
+							"Not covered on the call. The author does not see this lens.",
+						)}
+					</Typography.Text>
+				)}
+			</Lens>
+		);
+	});
 }
 
 /**
@@ -173,11 +243,16 @@ export function NotesSummary({
 	content,
 	plan,
 	review,
+	direction,
+	curator,
 }: {
 	index: number;
 	content: CallNotesContent;
 	plan: Plan;
 	review?: boolean;
+	/** Under the summary: the sprint's direction, read only or the curator's to confirm (GDHUB-133). */
+	direction?: ReactNode;
+	curator?: boolean;
 }) {
 	const { t } = useTranslate();
 	// The AI's review has the call notes' shape; only what each part is called differs.
@@ -215,7 +290,7 @@ export function NotesSummary({
 		return task ? [task] : [];
 	});
 
-	const lenses = review ? content.lenses : undefined;
+	const { lenses } = content;
 	const discussedList = (
 		<div>
 			{content.discussed.map((item, position) => {
@@ -304,19 +379,20 @@ export function NotesSummary({
 					<Typography.Text className={styles.lead}>
 						{content.inShort}
 					</Typography.Text>
+					{direction}
 				</div>
 			)}
 
 			{lenses ? (
 				<>
-					{/* Frame 12.10.3: the four lenses (GDHUB-126), development split within / outside the tasks. */}
+					{/* Frames 12.10.3 and 12.08.7b: the four lenses (GDHUB-126), development split within / outside the tasks. */}
 					<Lens
 						icon={IconCode}
 						title={t("checkpoints.review.lens.development", "Development")}
 					>
 						{development}
 					</Lens>
-					<ReviewLensCards lenses={lenses} />
+					<ReviewLensCards lenses={lenses} curator={curator} />
 				</>
 			) : (
 				development

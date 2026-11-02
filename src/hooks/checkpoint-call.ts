@@ -13,6 +13,7 @@ import type {
 	CallPresenceDto,
 	CheckpointCallDto,
 } from "@/types/checkpoint-call";
+import type { SprintDirection } from "@/types/checkpoints";
 
 /** An early room is asked again this often, so the page opens on time. */
 const EARLY_POLL_MS = 30_000;
@@ -151,4 +152,22 @@ export const useCallMove = (id: string, index: number) => {
 			onSuccess,
 		}),
 	};
+};
+
+/** The human curator confirms or changes a sprint's direction after its call (GDHUB-133). */
+export const useConfirmDirection = (id: string, index: number) => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: async (direction: Pick<SprintDirection, "goal" | "stage">) =>
+			(
+				await axios.put<SprintDirection>(
+					`${callUrl(id, index)}/direction`,
+					direction,
+				)
+			).data,
+		onSuccess: () =>
+			queryClient.invalidateQueries({
+				queryKey: ["checkpoint-call-notes", id, index],
+			}),
+	});
 };

@@ -63,8 +63,17 @@ tell a run that drifted from one that held its course.
 - **Human call notes:** a lens or direction the curator did not speak to stays
   empty — the brief's AI text is never shown as the curator's words. After the
   call the curator confirms the two directions in one click, preset to the
-  brief's. Walking every task on the call is the curator's job, not the
+  brief's, and may change them until the final call starts. `idle` is the
+  platform's rule for the AI only: a human curator may pick any of the four,
+  `idle` included, or move off it — something may have been told or shown on
+  the call. Walking every task on the call is the curator's job, not the
   platform's.
+- **Time left.** Every review and plan check is told the team's hours left —
+  hours a week stated now × sprints ahead — and weighs the open tasks and its
+  advice against them. Rough on purpose; a cut in someone's hours narrows it.
+- **Off course, a way back.** When a sprint's direction is sideways, stalled or
+  idle, the letter names the one step back toward the goal and the focus
+  carries it.
 - **Order in the nightly run:** a sprint's picture is written before its review
   reads it.
 - **Order at the end:** the sprint 4 review comes first, with its direction;

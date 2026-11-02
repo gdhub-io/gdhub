@@ -163,6 +163,7 @@ export const CheckpointJournalKind = {
 	Verdict: "Verdict",
 	Letter: "Letter",
 	Platform: "Platform",
+	Snapshot: "Snapshot",
 } as const satisfies Record<
 	CheckpointJournalKindType,
 	CheckpointJournalKindType

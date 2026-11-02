@@ -34,7 +34,7 @@ const input = {
 	artifacts: [],
 	team: project.team("sprint2"),
 	focusLastReview: [],
-	verdict: null,
+	final: false,
 	picture: "",
 	marketing: { devlogs: [], links: [] },
 };
@@ -46,6 +46,10 @@ const answers: Record<string, unknown> = {
 		notDiscussed: ["t1"],
 		outsidePlan: [],
 		questions: [],
+		direction: {
+			goal: { value: "stalled", why: "No task moved." },
+			stage: { value: "stalled", why: "No task moved." },
+		},
 		lenses: {
 			marketing: "No public devlog this sprint.",
 			team: "Two confirmed working.",

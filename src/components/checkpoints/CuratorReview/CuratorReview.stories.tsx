@@ -225,6 +225,8 @@ function ProPage({
 						onSave={saved}
 					/>
 					<PanelBlock
+						checkpointId="cp-story"
+						stage="Prototyping"
 						sessions={call.sessions}
 						current={call.index}
 						selected={selected}

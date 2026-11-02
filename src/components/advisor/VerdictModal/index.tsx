@@ -24,6 +24,7 @@ import { AiRead } from "./AiRead";
 import { Devlogs } from "./Devlogs";
 import { GoalCard } from "./GoalCard";
 import { LastBuild } from "./LastBuild";
+import { DirectionStrip, RunDifference } from "./RunChange";
 import styles from "./style.module.scss";
 import { TeamPulse } from "./TeamPulse";
 import { VerdictForm } from "./VerdictForm";
@@ -151,6 +152,13 @@ export function VerdictModalView({
 						<div className={styles.left}>
 							{context.aiRead && <AiRead read={context.aiRead} />}
 							<GoalCard checkpoint={checkpoint} />
+							<DirectionStrip run={context.run} />
+							{context.run.difference && (
+								<RunDifference
+									difference={context.run.difference}
+									final={context.stage !== "draft"}
+								/>
+							)}
 							<LastBuild checkpoint={checkpoint} build={context.lastBuild} />
 							<Devlogs devlogs={project.devlogs} />
 							<TeamPulse team={project.team} />

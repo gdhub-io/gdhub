@@ -136,9 +136,14 @@ function OutcomeRow({ item }: { item: CheckpointItemDto }) {
 					)}
 				</Flex>
 			) : (
-				<Text type="secondary" className={styles.small}>
-					{t("advisor.verdict.noEvidence", "No evidence attached")}
-				</Text>
+				// A warning, never a lock: every verdict stays the curator's to pick (frame 12.14.3).
+				<StatusDot
+					tone="warning"
+					label={t(
+						"advisor.verdict.noEvidenceTask",
+						"No evidence for this task",
+					)}
+				/>
 			)}
 		</Flex>
 	);

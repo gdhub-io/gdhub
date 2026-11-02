@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
-import { teamCapacity } from "@/lib/checkpoints/capacity";
+import { hoursLeft, teamCapacity } from "@/lib/checkpoints/capacity";
+import { renderTeam } from "@/services/checkpoints/ai-curator/prompts/card";
 
 describe("teamCapacity", () => {
 	it("sums the stated ranges and carries them over the four sprints", () => {
@@ -60,5 +61,44 @@ describe("teamCapacity", () => {
 			hoursPerWeek: null,
 			hoursPerRun: null,
 		});
+	});
+});
+
+describe("hoursLeft", () => {
+	const week = { from: 30, to: 40 };
+
+	it("narrows sprint by sprint at the hours stated now", () => {
+		expect([0, 1, 3, 4].map((done) => hoursLeft(week, done))).toEqual([
+			{ from: 120, to: 160, sprints: 4 },
+			{ from: 90, to: 120, sprints: 3 },
+			{ from: 30, to: 40, sprints: 1 },
+			{ from: 0, to: 0, sprints: 0 },
+		]);
+	});
+
+	it("follows a cut in someone's hours: fewer a week, fewer left", () => {
+		expect(hoursLeft({ from: 20, to: 30 }, 2)).toEqual({ from: 40, to: 60, sprints: 2 });
+	});
+
+	it("is unknown, not zero, when nobody stated hours", () => {
+		expect(hoursLeft(null, 1)).toBeNull();
+	});
+});
+
+describe("renderTeam with the time left", () => {
+	const team = {
+		...teamCapacity([{ timeForWork: [15, 20] }, { timeForWork: [5, 10] }]),
+		people: [],
+		openings: [],
+	};
+
+	it("tells the model the hours left after the sprint reviewed", () => {
+		expect(renderTeam(team, 1)).toContain(
+			"Time left: about 60–90 hours over the 3 sprints ahead",
+		);
+	});
+
+	it("says nothing about time left where no sprint is given", () => {
+		expect(renderTeam(team)).not.toContain("Time left");
 	});
 });

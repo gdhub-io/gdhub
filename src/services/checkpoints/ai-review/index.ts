@@ -1,15 +1,16 @@
-import type { CheckpointVerdict } from "@gdhub-io/gdhub-prisma";
 import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
-import { CHECKPOINT_DAYS } from "@/config/checkpoint";
+import { CHECKPOINT_DAYS, DIRECTIONS } from "@/config/checkpoint";
 import { devlogText } from "@/lib/checkpoints/curator-text";
+import { settleDirection } from "@/lib/checkpoints/picture";
 import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
 	AUTHOR_VOICE,
+	DIRECTION_RULES,
 	GOAL_STAGE,
 	HIRING,
 	LENSES,
@@ -17,12 +18,14 @@ import {
 	localeLine,
 	type RoadLeg,
 	renderCharacter,
+	renderDirection,
 	renderJournal,
 	renderMarketing,
 	renderPicture,
 	renderPulse,
 	renderTeam,
 	renderWorkflow,
+	TIME_LEFT,
 } from "@/services/checkpoints/ai-curator/prompts/card";
 import {
 	artifactLines,
@@ -39,6 +42,7 @@ import {
 	type CallNotes,
 	GOAL_FITS,
 	type PlanAdvice,
+	type SprintDirection,
 	TASK_ADVICE_KINDS,
 } from "@/types/checkpoints";
 
@@ -81,10 +85,16 @@ export type SprintReviewInput = {
 	/** The team, with each member's weeks: the sprint's pulse is its last one. */
 	team: CuratorTeam;
 	focusLastReview: string[];
-	/** Day 29: the verdict already settled, for the letter to agree with it. */
-	verdict: { verdict: CheckpointVerdict; note: string } | null;
+	/** Sprint 4, day 29: the road looked back on; the verdict comes after it and reads it (GDHUB-133). */
+	final: boolean;
 	picture: string;
 	marketing: CuratorMarketing;
+	/** GDHUB-133: what changed between the sprint's two pictures, by lens. */
+	difference?: string;
+	/** Nothing changed between the pictures: the direction is `idle`, whatever the model says. */
+	idle?: boolean;
+	/** The direction the review before this one named. */
+	lastDirection?: SprintDirection | null;
 };
 
 const voice = (
@@ -209,6 +219,7 @@ export const writePlanAdvice = async (
 					: "This is halfway, after the sprint 2 review: two weeks are left and this is the last change to the tasks. Prefer shortening and cutting to adding."
 			}
 			${HIRING}
+			${TIME_LEFT}
 			${LENSES}
 			${locale ? localeLine(locale) : ""}
 		`,
@@ -217,7 +228,7 @@ export const writePlanAdvice = async (
 
 			${renderWorkflow(input.workflow)}
 
-			${renderTeam(input.team)}
+			${renderTeam(input.team, input.moment === "start" ? 0 : 2)}
 			Goal: ${input.goal}
 
 			Tasks:
@@ -231,6 +242,18 @@ export const writePlanAdvice = async (
 	};
 	return runStructured("plan_advice", adviceSchema, request, meter);
 };
+
+const directionRead = (target: string) =>
+	z
+		.object({
+			value: z.enum(DIRECTIONS),
+			why: z
+				.string()
+				.describe(
+					`One sentence: what in the sprint shows this direction toward ${target}.`,
+				),
+		})
+		.describe(`The direction toward ${target}.`);
 
 const assessmentSchema = z.object({
 	inShort: z
@@ -252,6 +275,12 @@ const assessmentSchema = z.object({
 	questions: z
 		.array(z.string())
 		.describe("Questions the team should answer for itself."),
+	direction: z
+		.object({
+			goal: directionRead("the checkpoint goal"),
+			stage: directionRead("the stage goal"),
+		})
+		.describe(DIRECTION_RULES),
 	lenses: z
 		.object({
 			marketing: z
@@ -287,7 +316,7 @@ export const writeSprintReview = async (
 	meter?: AiMeter,
 	locale?: string,
 ) => {
-	const final = input.verdict !== null;
+	const { final } = input;
 	const request = {
 		instructions: stripIndents`
 			You are the AI curator of a game team on GDHub, through a ${CHECKPOINT_DAYS}-day
@@ -305,8 +334,9 @@ export const writeSprintReview = async (
 			team chose instead that still moves the goal or a task counts — say
 			what it moved. Name a gap only where nothing moves the goal.
 			${HIRING}
+			${TIME_LEFT}
 			${LENSES}
-			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over and the verdict is settled.` : ""}
+			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over. The verdict comes after it and reads it; do not judge here whether the goal was reached.` : ""}
 
 			${AUTHOR_VOICE}
 			${locale ? localeLine(locale) : ""}
@@ -332,16 +362,30 @@ export const writeSprintReview = async (
 
 			${input.artifactsSeen?.length ? `What the sprint's artifacts beside its tasks show — its build video among them:\n${input.artifactsSeen.join("\n")}` : ""}
 
-			${renderTeam(input.team)}
+			${renderTeam(input.team, input.sprint)}
 			${renderPulse(input.team, input.sprint)}
 
 			${renderPicture(input.picture)}
 			${renderMarketing(input.marketing)}
 
-			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
+			${input.difference ?? ""}
+			${input.idle ? "Nothing at all was done in this sprint: the direction is idle for both goals." : ""}
+			${input.lastDirection ? `Last sprint's direction: ${renderDirection(input.lastDirection)}.` : ""}
+
 		`,
 	};
-	return runStructured("sprint_review", assessmentSchema, request, meter);
+	const assessment = await runStructured(
+		"sprint_review",
+		assessmentSchema,
+		request,
+		meter,
+	);
+	return (
+		assessment && {
+			...assessment,
+			direction: settleDirection(assessment.direction, !!input.idle),
+		}
+	);
 };
 
 /** The review as the next calls read it: the advice halfway, then the letter. */
@@ -349,6 +393,7 @@ const renderAssessment = (review: SprintAssessment, tasks: CuratorTask[]) => {
 	const named = (id: string) => taskName(tasks, id);
 	return [
 		`How the sprint stands: ${review.inShort}`,
+		`Direction — ${renderDirection(review.direction)}`,
 		...review.discussed.map((row) => `- ${named(row.itemId)}: ${row.text}`),
 		review.notDiscussed.length &&
 			`Nothing shown yet for: ${review.notDiscussed.map(named).join("; ")}`,
@@ -432,7 +477,7 @@ const writeReviewLetter = async (
 	meter?: AiMeter,
 	locale?: string,
 ) => {
-	const final = input.verdict !== null;
+	const { final } = input;
 	const named = (id: string) => taskName(input.tasks, id);
 	const request = {
 		instructions: stripIndents`
@@ -448,8 +493,12 @@ const writeReviewLetter = async (
 			Your last focus was advice, not the measure: where the team went
 			another way and it still moves the goal or a task, say what it moved
 			and count it, without asking why they did not follow you.
+			When the review's direction toward either goal is sideways, stalled
+			or idle, the letter says in one sentence how to get back on course —
+			the one step that turns the work toward the goal — and the focus
+			carries that step. When both are toward, say nothing about direction.
 			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it." : ""}
-			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over and the verdict is settled.` : ""}
+			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over. The verdict follows it; do not say whether the goal was reached.` : ""}
 			${locale ? localeLine(locale) : ""}
 		`,
 		prompt: stripIndents`
@@ -478,7 +527,6 @@ const writeReviewLetter = async (
 					: ""
 			}
 
-			${input.verdict ? `Verdict: ${input.verdict.verdict}. ${input.verdict.note}` : ""}
 		`,
 	};
 	return runStructured("review_letter", letterSchema, request, meter);

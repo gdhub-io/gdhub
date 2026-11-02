@@ -31,6 +31,7 @@ import {
 	syncChat,
 } from "@/services/chat/checkpoint-room";
 import { returnCheckpointMoney } from "@/services/checkpoints/flows/payment";
+import { atCheckpointStart } from "@/services/checkpoints/flows/pictures";
 import { notifyAuthorOfAnswer } from "@/services/checkpoints/notifications";
 import { gatewayFor } from "@/services/payments/gateway";
 
@@ -152,6 +153,7 @@ export const POST = pipe(
 	// so the answer does not wait on Matrix.
 	if (accept) {
 		after(() => syncChat(`start ${id}`, () => ensureCheckpointRoom(id)));
+		after(() => atCheckpointStart(id));
 	}
 
 	await notifyAuthorOfAnswer(

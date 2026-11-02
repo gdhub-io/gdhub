@@ -281,3 +281,20 @@
 	border-radius: var(--gd-radius-panel);
 	background: var(--gd-color-surface-sunken);
 }
+
+.strip {
+	display: grid;
+	grid-template-columns: auto repeat(4, minmax(0, 1fr));
+	gap: var(--gd-space-2) var(--gd-space-4);
+	align-items: center;
+}
+
+.stripRow {
+	display: contents;
+}
+
+.lenses {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+}
