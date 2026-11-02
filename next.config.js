@@ -13,9 +13,11 @@ const nextConfig = {
 	// Lets `dev:test` run beside the ordinary dev server: Next refuses a second
 	// instance sharing one build directory.
 	distDir: process.env.NEXT_DIST_DIR || ".next",
-	// The stand alone: its disk cache grew to 10 GB, slowed compiles to minutes and
-	// crashed the server with a Turbopack panic (GDHUB-130).
-	experimental: { turbopackFileSystemCacheForDev: !process.env.NEXT_DIST_DIR },
+	// The stand opens every page in one session: without dropping what the disk
+	// cache already holds, its dev server grew past 20 GB (GDHUB-130).
+	experimental: process.env.NEXT_DIST_DIR
+		? { turbopackMemoryEviction: "full" }
+		: {},
 	// Legal texts are read from disk at request time; without this they are not
 	// in the serverless bundle and every legal page renders empty in production.
 	outputFileTracingIncludes: {

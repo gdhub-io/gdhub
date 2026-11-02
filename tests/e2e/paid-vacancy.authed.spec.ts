@@ -94,7 +94,7 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 	modal = page.getByRole("dialog");
 	await expect(modal).toBeVisible();
 	await expect(modal.getByLabel(/amount \(eur\)/i)).toHaveValue("500");
-	await modal.getByRole("button", { name: "Close" }).click();
+	await modal.getByRole("button", { name: "Close" }).first().click();
 	await expect(modal).toBeHidden();
 
 	// --- archive via the 3-dot menu ---
@@ -115,7 +115,7 @@ test("paid vacancy: create draft → offered comp + pending → edit reload → 
 
 	const dupModal = page.getByRole("dialog");
 	await expect(dupModal).toBeVisible();
-	await dupModal.getByRole("button", { name: "Close" }).click();
+	await dupModal.getByRole("button", { name: "Close" }).first().click();
 
 	await expect(
 		page.getByRole("row", { name: new RegExp(vacancyTitle) }),

@@ -3,6 +3,7 @@
 
 import crypto from "node:crypto";
 import { Environment, Paddle } from "@paddle/paddle-node-sdk";
+import { paddleLive } from "./environment";
 
 /**
  * Verifies a Paddle webhook against the `Paddle-Signature` header
@@ -26,10 +27,10 @@ export function verifyPaddleWebhook(
 	const secret = process.env.PADDLE_WEBHOOK_SECRET;
 
 	if (!secret) {
-		if (process.env.NODE_ENV === "production") {
+		if (paddleLive()) {
 			return { ok: false, reason: "PADDLE_WEBHOOK_SECRET is not set" };
 		}
-		return { ok: true, reason: "skipped (no secret outside production)" };
+		return { ok: true, reason: "skipped (no secret in the sandbox)" };
 	}
 
 	if (!signatureHeader)
@@ -57,9 +58,7 @@ export function verifyPaddleWebhook(
 	return { ok: true };
 }
 
-const PRODUCTION = process.env.NODE_ENV === "production";
-
-const PADDLE_API_BASE = PRODUCTION
+const PADDLE_API_BASE = paddleLive()
 	? "https://api.paddle.com"
 	: "https://sandbox-api.paddle.com";
 
@@ -72,7 +71,7 @@ export const paddleClient = () => {
 		throw new Error("PADDLE_API_KEY is not set in environment variables");
 
 	client ??= new Paddle(key, {
-		environment: PRODUCTION ? Environment.production : Environment.sandbox,
+		environment: paddleLive() ? Environment.production : Environment.sandbox,
 	});
 
 	return client;
