@@ -131,6 +131,8 @@ describe("a checkpoint receipt", () => {
 describe("the holds cron", () => {
 	const run = async () => {
 		vi.stubEnv("CRON_SECRET", "cron");
+		// The cron gate also builds its public token; CI has no .env to read it from.
+		vi.stubEnv("NEXT_PUBLIC_API_KEY", "test-public-key");
 		const { GET } = await import("@/app/api/cron/checkpoint-holds/route");
 
 		return (GET as (r: NextRequest, c: unknown) => Promise<Response>)(
