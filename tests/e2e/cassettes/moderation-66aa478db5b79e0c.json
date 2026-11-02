@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"Lantern Keepers\",\"A co-op lighthouse keeper game about guiding ships through storms.\"]}",
+	"answer": {
+		"id": "modr-9317",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.000012533751425646102,
+					"harassment/threatening": 0.000002355261854303796,
+					"sexual": 0.000026119031909571944,
+					"hate": 0.0000022474089854291757,
+					"hate/threatening": 1.4593762210768862e-7,
+					"illicit": 0.000005391084403253366,
+					"illicit/violent": 0.000006302758756443267,
+					"self-harm/intent": 6.962256250138369e-7,
+					"self-harm/instructions": 1.6536895860212648e-7,
+					"self-harm": 0.0000016187581436151335,
+					"sexual/minors": 0.0000014738981974494932,
+					"violence": 0.0005335820331640444,
+					"violence/graphic": 0.0000070311842669149565
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0000012411496080609794,
+					"harassment/threatening": 3.288749065460498e-7,
+					"sexual": 5.955139348629957e-7,
+					"hate": 2.8130174840733105e-7,
+					"hate/threatening": 4.450850519411503e-8,
+					"illicit": 0.000004069457790466838,
+					"illicit/violent": 0.000002840974294610978,
+					"self-harm/intent": 2.4061023397180247e-7,
+					"self-harm/instructions": 5.2035710517034275e-8,
+					"self-harm": 3.668863309258988e-7,
+					"sexual/minors": 8.059446204294678e-8,
+					"violence": 0.000004469407144215697,
+					"violence/graphic": 0.0000015689549727726036
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

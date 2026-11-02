@@ -75,6 +75,19 @@ To run a focused spec without waiting for smoke, add `--no-deps`.
 Name it `something.authed.spec.ts` and sign in as a user it granted
 (`project-crud.authed.spec.ts` is the shortest example).
 
+## Vacancies (GDHUB-128)
+
+- `vacancy-author.authed.spec.ts`: free and priced vacancies, the listing fee
+  paid in Paddle's sandbox, archive and restore, expiry, a stranger refused.
+  No webhook reaches the stand: back from Paddle the page asks Paddle itself
+  (`reconcileListingFee`), which is also what saves a vacancy whose webhook got
+  lost in production.
+- `vacancy-candidate.authed.spec.ts`: two candidates apply from the public list;
+  the author rejects one and takes the other into the team. The chat needs a
+  Matrix server the stand does not have, so only its button is checked.
+- Projects get fixed names, so the AI check of a new project replays from a
+  recording instead of calling the model on every run.
+
 ## The checkpoint suite (GDHUB-79)
 
 `tests/e2e/checkpoints/` walks the AI checkpoint end to end: a project's path,
