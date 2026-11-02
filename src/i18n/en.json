@@ -889,6 +889,7 @@
 				"title": "Available hours"
 			},
 			"notConfirmed": "Your hours are not confirmed yet.",
+			"oneOffNotice": "One-off consultation requests don't use the monthly limit or your consultation hours yet: a request simply waits for your answer.",
 			"perMonth": {
 				"after": "consultations a month",
 				"before": "At most",

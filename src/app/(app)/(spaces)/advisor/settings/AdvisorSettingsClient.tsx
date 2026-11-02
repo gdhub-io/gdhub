@@ -449,6 +449,8 @@ function AvailabilityForm({
 							precision={0}
 							value={perMonth}
 							onChange={(value) => setPerMonth(value)}
+							// One-off requests do not count against it yet (GDHUB-138).
+							disabled
 							variant="filled"
 							aria-label={t(
 								"advisor.availability.perMonth.label",
@@ -468,6 +470,12 @@ function AvailabilityForm({
 							)}
 						</Typography.Text>
 					</Flex>
+					<Typography.Text type="secondary">
+						{t(
+							"advisor.availability.oneOffNotice",
+							"One-off consultation requests don't use the monthly limit or your consultation hours yet: a request simply waits for your answer.",
+						)}
+					</Typography.Text>
 				</Flex>
 			</Card>
 
