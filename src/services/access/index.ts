@@ -6,6 +6,7 @@ import {
 } from "@/config/permissions/roles";
 import { SPACES, type SpaceType } from "@/config/spaces";
 import { permissionsOf } from "@/config/spaces/define-space";
+import { onTheStand } from "@/lib/stand";
 import { SPACE_ADAPTERS } from "./adapters";
 import { customRolePermissions } from "./custom-roles";
 import { type PermissionState, permissionsForRole } from "./matrix-source";
@@ -130,7 +131,11 @@ async function resolveSpaceAccess(
 	if (!space || !user) return noAccess(type, fallbackId);
 
 	// The dev space does not exist in production, whoever asks.
-	if (type === "dev" && process.env.NODE_ENV === "production") {
+	if (
+		type === "dev" &&
+		process.env.NODE_ENV === "production" &&
+		!onTheStand()
+	) {
 		return noAccess(type, fallbackId);
 	}
 

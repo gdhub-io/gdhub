@@ -1,4 +1,5 @@
 import { initializePaddle, type Paddle } from "@paddle/paddle-js";
+import { paddleLive } from "./environment";
 
 let paddleInstance: Paddle | null = null;
 
@@ -17,8 +18,7 @@ export async function getPaddleInstance(): Promise<Paddle> {
 
 	const instance = await initializePaddle({
 		token: clientToken,
-		environment:
-			process.env.NODE_ENV === "production" ? "production" : "sandbox",
+		environment: paddleLive() ? "production" : "sandbox",
 	});
 
 	if (!instance) {

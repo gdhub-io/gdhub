@@ -29,9 +29,15 @@ afterEach(() => {
 	vi.unstubAllEnvs();
 });
 
-async function loadAuth(nodeEnv: string, flag: string) {
+async function loadAuth(
+	nodeEnv: string,
+	flag: string,
+	{ standBuild = "", vercel = "" } = {},
+) {
 	vi.stubEnv("NODE_ENV", nodeEnv);
 	vi.stubEnv("E2E_TEST_AUTH", flag);
+	vi.stubEnv("NEXT_PUBLIC_E2E_STAND", standBuild);
+	vi.stubEnv("VERCEL", vercel);
 	vi.resetModules();
 
 	const { isE2EAuth, authConfig } = await import("../src/auth");
@@ -69,5 +75,29 @@ describe("isE2EAuth", () => {
 
 		expect(auth.isE2EAuth).toBe(true);
 		expect(auth.hasCredentialsProvider).toBe(true);
+	});
+
+	// GDHUB-134: the stand runs from its own production build.
+	it("opens on the stand's own production build", async () => {
+		const auth = await loadAuth("production", "1", { standBuild: "1" });
+
+		expect(auth.isE2EAuth).toBe(true);
+		expect(auth.hasCredentialsProvider).toBe(true);
+	});
+
+	it("stays shut on a stand build deployed to Vercel", async () => {
+		const auth = await loadAuth("production", "1", {
+			standBuild: "1",
+			vercel: "1",
+		});
+
+		expect(auth.isE2EAuth).toBe(false);
+		expect(auth.hasCredentialsProvider).toBe(false);
+	});
+
+	it("stays shut on a stand build without the flag at runtime", async () => {
+		const auth = await loadAuth("production", "", { standBuild: "1" });
+
+		expect(auth.isE2EAuth).toBe(false);
 	});
 });

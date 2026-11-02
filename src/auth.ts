@@ -22,7 +22,8 @@ import type {
 } from "./services/brevo/api";
 
 // E2E-only credentials provider. Gated by env so it can NEVER reach production:
-//   - NODE_ENV must not be "production"
+//   - NODE_ENV must not be "production", unless this is the stand's own build
+//     (built with NEXT_PUBLIC_E2E_STAND=1, and not on Vercel)
 //   - E2E_TEST_AUTH must be exactly "1"
 // Lets Playwright sign in as an existing user by email, no SMTP/Google needed.
 export const isE2EAuth = onTheStand();
