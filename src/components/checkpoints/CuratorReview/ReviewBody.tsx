@@ -4,6 +4,7 @@ import { IconCalendarEvent, IconHourglass } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import dayjs from "dayjs";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
+import { SprintDirectionView } from "@/components/checkpoints/SprintDirection";
 import { EmptyState } from "@/components/ui";
 import { CheckpointSessionContentStatus } from "@/config/prisma-enums";
 import type { CheckpointReviewDto } from "@/types/checkpoints";
@@ -62,6 +63,19 @@ export function ReviewBody({
 		);
 	}
 	return (
-		<NotesSummary index={index} content={notes} plan={review.plan} review />
+		<NotesSummary
+			index={index}
+			content={notes}
+			plan={review.plan}
+			review
+			direction={
+				notes.direction && (
+					<SprintDirectionView
+						direction={notes.direction}
+						stage={review.stageName}
+					/>
+				)
+			}
+		/>
 	);
 }

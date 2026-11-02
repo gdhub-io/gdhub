@@ -2,8 +2,10 @@ import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import { sweepArtifactChecks } from "@/repositories/project/artifact-check";
 import { writeDueVerdictReads } from "@/services/checkpoints/flows/ai-curator";
+import { writeDuePictures } from "@/services/checkpoints/flows/pictures";
 import { requestPulses } from "@/services/checkpoints/flows/pulse";
 import {
+	closeDueCheckpoints,
 	writeDueBriefs,
 	writeDueReviews,
 } from "@/services/checkpoints/flows/review";
@@ -33,7 +35,11 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		pulses: await requestPulses(),
 		// Before the reviews, so they read whether the evidence opens.
 		artifactChecks: await sweepArtifactChecks(),
+		// Before the reviews, so each reads its sprint's picture.
+		pictures: await writeDuePictures(),
 		reviews: await writeDueReviews(),
+		// After the reviews: the verdict reads the final one's direction.
+		verdicts: await closeDueCheckpoints(),
 		// The human curator's: tonight's brief for a call within 24 hours, and the
 		// AI's read once the verdict is due.
 		...(await Promise.all([writeDueBriefs(), writeDueVerdictReads()]).then(

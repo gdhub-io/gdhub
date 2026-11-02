@@ -333,6 +333,8 @@ function PanelStory({
 	const [tab, setTab] = useState(initialTab);
 	return (
 		<PanelBlock
+			checkpointId="cp-story"
+			stage="Prototyping"
 			sessions={sessionsHeld(held)}
 			current={current}
 			selected={selected}

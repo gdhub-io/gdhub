@@ -54,3 +54,22 @@ export const teamCapacity = (members: StatedHours[]): TeamCapacity => {
 /** An hours range as it is read aloud: one figure when both ends agree. */
 export const hoursSpan = (range: { from: number; to: number }) =>
 	range.from === range.to ? `${range.from}` : `${range.from}–${range.to}`;
+
+/**
+ * The hours the team has left once `sprintsDone` sprints are behind it, at the
+ * hours each person states now (GDHUB-133). Rough on purpose: stated hours,
+ * not tracked ones. Null when nobody stated any.
+ */
+export const hoursLeft = (
+	hoursPerWeek: { from: number; to: number } | null,
+	sprintsDone: number,
+) => {
+	const left = Math.max(SPRINTS_PER_CHECKPOINT - sprintsDone, 0);
+	return hoursPerWeek
+		? {
+				from: hoursPerWeek.from * left,
+				to: hoursPerWeek.to * left,
+				sprints: left,
+			}
+		: null;
+};

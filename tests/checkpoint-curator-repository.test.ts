@@ -49,10 +49,17 @@ const { TEAM } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
+	lookedArtifactLines: vi.fn(async () => []),
+	seeInputArtifacts: vi.fn(async () => {}),
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 }));
 vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
+vi.mock("@/repositories/checkpoints/picture", () => ({
+	picturesOf: async () => new Map(),
+	takePicture: vi.fn(),
+	runChangeOf: async () => ({ directions: [], difference: null }),
+}));
 vi.mock("@/repositories/checkpoints/ai-curator-context", () => {
 	const curatorTeam = vi.fn(async (..._: unknown[]) => TEAM);
 	const stageWorkflow = vi.fn(async (_: unknown, currentStage: string) => ({

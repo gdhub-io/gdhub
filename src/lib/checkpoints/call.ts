@@ -3,6 +3,7 @@ import {
 	CALL_CLOSES_MINUTES,
 	CALL_MOVE_DAYS,
 	CALL_OPENS_MINUTES,
+	FINAL_SESSION,
 	PRO_PLAN_AFTER_CALL_HOURS,
 	SCOPE_SESSION,
 	SPRINT_DAYS,
@@ -223,3 +224,19 @@ export const planChecked = (
 					?.content as { checkedAt?: string } | null | undefined
 			)?.checkedAt
 		: !!checkpoint.planCheckedAt;
+
+/**
+ * Whether the human curator may still set the direction of call `index`
+ * (GDHUB-133): from call 2, until the final call starts; the final call's own
+ * stays open after it.
+ */
+export const directionOpen = (
+	sessions: { index: number; scheduledAt: Date | string }[],
+	index: number,
+	now = new Date(),
+) => {
+	if (index < 2) return false;
+	if (index === FINAL_SESSION) return true;
+	const final = sessions.find((session) => session.index === FINAL_SESSION);
+	return !final || new Date(final.scheduledAt) > now;
+};

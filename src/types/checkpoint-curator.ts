@@ -6,7 +6,11 @@ import type {
 	UnprovenOutcome,
 } from "@/lib/checkpoints/verdict";
 import type { AiPurpose } from "@/services/ai-usage";
-import type { GoalAdvice, TaskSuggestion } from "@/types/checkpoints";
+import type {
+	GoalAdvice,
+	SprintDirection,
+	TaskSuggestion,
+} from "@/types/checkpoints";
 
 /**
  * Inputs and results for the AI curator's calls.
@@ -152,6 +156,8 @@ export type GoalCheckInput = {
 	/** What happened on the project in the two weeks leading in. */
 	picture: string;
 	marketing: CuratorMarketing;
+	/** GDHUB-133: what the day-1 inputs' artifacts were seen to show, one line each. */
+	inputsSeen?: string[];
 };
 
 /**
@@ -198,6 +204,10 @@ export type ReportInput = {
 	calls: { index: number; inShort: string; agreed: string[] }[];
 	picture: string;
 	marketing: CuratorMarketing;
+	/** GDHUB-133: what changed from day 1 to day 28, by lens. */
+	difference?: string;
+	/** The direction each sprint review named, sprint 1 first; a sprint with none is absent. */
+	directions?: { sprint: number; direction: SprintDirection }[];
 };
 
 export type ReportResult = {

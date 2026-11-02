@@ -349,5 +349,11 @@ export const CURATOR_LENS_WEIGHTS: Record<
 	"Project Completion": { development: "low", marketing: "low" },
 };
 
+// Direction (GDHUB-133)
+
+/** Where a sprint took the project, toward the checkpoint goal and the stage goal; `idle` is decided in code. */
+export const DIRECTIONS = ["toward", "sideways", "stalled", "idle"] as const;
+export type Direction = (typeof DIRECTIONS)[number];
+
 /** Public devlogs of a period the curator reads with their applause and views. */
 export const CURATOR_MARKETING_DEVLOGS = 10;

@@ -307,9 +307,11 @@ export const startAiCheckpoint = async (
 
 	// After the payment is answered: the read is a model call, the webhook must not wait on it.
 	afterResponse(async () => {
-		const { writeFirstLetter } = await import(
-			"@/services/checkpoints/flows/ai-curator"
-		);
+		const [{ atCheckpointStart }, { writeFirstLetter }] = await Promise.all([
+			import("@/services/checkpoints/flows/pictures"),
+			import("@/services/checkpoints/flows/ai-curator"),
+		]);
+		await atCheckpointStart(checkpointId, now);
 		await writeFirstLetter(checkpointId);
 	});
 	return true;

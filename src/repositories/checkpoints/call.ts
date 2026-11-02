@@ -1,7 +1,12 @@
-import { CheckpointItemKind } from "@/config/prisma-enums";
+import { FINAL_SESSION } from "@/config/checkpoint";
+import {
+	CheckpointItemKind,
+	CheckpointSessionContentStatus,
+} from "@/config/prisma-enums";
 import {
 	callMissed,
 	callState,
+	directionOpen,
 	isMovable,
 	planEdit,
 } from "@/lib/checkpoints/call";
@@ -24,7 +29,11 @@ import type {
 	CallRole,
 	CheckpointCallDto,
 } from "@/types/checkpoint-call";
-import type { CallNotes, CuratorReview } from "@/types/checkpoints";
+import type {
+	CallNotes,
+	CuratorReview,
+	SprintDirection,
+} from "@/types/checkpoints";
 export const user = { select: { id: true, name: true, image: true } };
 
 /**
@@ -206,17 +215,24 @@ export const getCallNotes = async (
 	index: number,
 	userId: string,
 ): Promise<CallNotesDto | null> => {
-	if (!(await loadCall(checkpointId, index, userId))) return null;
+	const call = await loadCall(checkpointId, index, userId);
+	if (!call) return null;
 
 	const session = await prisma.checkpointSession.findUniqueOrThrow({
 		where: { checkpointId_index: { checkpointId, index } },
 		select: { contentStatus: true, content: true, transcript: true },
 	});
 	const parts = (session.transcript ?? []) as TranscriptPart[];
+	const content = (session.content as CallNotes | null) ?? null;
+	// The team reads the direction only once the curator has confirmed it.
+	const hidden =
+		call.role === "team" &&
+		content?.direction &&
+		!content.direction.confirmedAt;
 
 	return {
 		contentStatus: session.contentStatus,
-		content: (session.content as CallNotes | null) ?? null,
+		content: hidden ? { ...content, direction: undefined } : content,
 		transcript: parts.length
 			? parts.map((part) => part.text.trim()).join("\n\n")
 			: null,
@@ -229,4 +245,51 @@ export type TranscriptPart = {
 	recordingId: string;
 	startedAt: string;
 	text: string;
+};
+
+/** The direction the AI's brief proposed for a sprint: the preset the curator confirms or changes. */
+export const briefDirection = async (checkpointId: string, sprint: number) =>
+	(await getCallBriefs(checkpointId)).findLast(
+		(brief) => brief.index === sprint + 1,
+	)?.notes?.direction;
+
+/**
+ * The human curator's word on a sprint's direction, after its call; it may be
+ * changed until the final call starts. Null when it is not theirs to set now.
+ */
+export const confirmDirection = async (
+	checkpointId: string,
+	index: number,
+	userId: string,
+	direction: Pick<SprintDirection, "goal" | "stage">,
+	now = new Date(),
+) => {
+	const call = await loadCall(checkpointId, index, userId);
+	if (!call || call.role !== "curator") return null;
+	const sessions = await prisma.checkpointSession.findMany({
+		where: { checkpointId, index: { in: [index, FINAL_SESSION] } },
+		select: {
+			index: true,
+			content: true,
+			contentStatus: true,
+			scheduledAt: true,
+		},
+	});
+	const session = sessions.find((row) => row.index === index);
+	if (
+		!session?.content ||
+		session.contentStatus !== CheckpointSessionContentStatus.Ready ||
+		!directionOpen(sessions, index, now)
+	)
+		return null;
+
+	const content = {
+		...(session.content as CallNotes),
+		direction: { ...direction, confirmedAt: now.toISOString() },
+	};
+	await prisma.checkpointSession.update({
+		where: { checkpointId_index: { checkpointId, index } },
+		data: { content },
+	});
+	return content.direction;
 };

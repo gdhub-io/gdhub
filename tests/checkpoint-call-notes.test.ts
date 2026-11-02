@@ -17,6 +17,10 @@ vi.mock("@/services/checkpoints/call-notes", async (original) => ({
 vi.mock("@/services/checkpoints/notifications", () => ({
 	notify: (...a: unknown[]) => notify(...a),
 }));
+const briefDirection = vi.fn(async (..._a: unknown[]) => undefined as unknown);
+vi.mock("@/repositories/checkpoints/call", () => ({
+	briefDirection: (...a: unknown[]) => briefDirection(...a),
+}));
 vi.mock("@/repositories/checkpoints/number", () => ({
 	checkpointNumber: vi.fn(async () => 1),
 }));
@@ -119,6 +123,33 @@ describe("writeDueCallNotes", () => {
 			"https://gdhub.test/advisor/checkpoints/cp/review/2",
 		);
 		expect(letters.marta.id).toBe("cp-notes-s2-marta");
+	});
+
+	it("presets the direction the call did not name from the brief, unconfirmed", async () => {
+		const brief = {
+			goal: { value: "toward", why: "The jump was shown." },
+			stage: { value: "stalled", why: "No level yet." },
+		};
+		briefDirection.mockResolvedValueOnce(brief);
+		writeCallNotes.mockResolvedValue(notes);
+		await writeDueCallNotes();
+
+		expect(update.mock.calls[0][0].data.content.direction).toEqual({
+			...brief,
+			confirmedAt: null,
+		});
+	});
+
+	it("keeps the call's own word on the direction over the brief's", async () => {
+		const said = {
+			goal: { value: "sideways", why: "The sprint went into a menu." },
+			stage: { value: "stalled", why: "Nothing playable." },
+		};
+		writeCallNotes.mockResolvedValue({ ...notes, direction: said });
+		await writeDueCallNotes();
+
+		expect(briefDirection).not.toHaveBeenCalled();
+		expect(update.mock.calls[0][0].data.content.direction.goal.value).toBe("sideways");
 	});
 
 	it("hands the session back when the model gives nothing", async () => {

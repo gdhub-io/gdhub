@@ -375,6 +375,16 @@ export async function seeSprintArtifacts(checkpointId: string, sprint: number) {
 		.filter((artifact) => !proving.has(artifact.id) && !seen.has(artifact.link))
 		.slice(0, Math.max(0, ARTIFACTS_PER_SPRINT - looked.length));
 
+	await lookAtArtifacts(checkpointId, sprint, artifacts, looks);
+}
+
+/** Reads each artifact once and journals what it shows, inside the video budget left. */
+async function lookAtArtifacts(
+	checkpointId: string,
+	sprint: number,
+	artifacts: { link: string; type: string; name: string | null }[],
+	looks: { input: unknown }[],
+) {
 	let left = SPRINT_VIDEO_SECONDS - videoSecondsOf(looks);
 	for (const artifact of artifacts) {
 		const content = await readArtifact(artifact, left).catch(() => null);
@@ -400,12 +410,39 @@ export async function seeSprintArtifacts(checkpointId: string, sprint: number) {
 	}
 }
 
+/**
+ * Day 1 (GDHUB-133): the artifacts the author listed as already there, looked
+ * at once each as sprint 0, so the goal check and picture 0 know what they hold.
+ */
+export async function seeInputArtifacts(checkpointId: string) {
+	const looks = await sprintLooks(checkpointId, 0);
+	const seen = new Set(looks.map((look) => look.link));
+	const pieces = await prisma.checkpointItemEvidence.findMany({
+		where: { item: { checkpointId, kind: CheckpointItemKind.Input } },
+		orderBy: { createdAt: "asc" },
+		select: { artifact: { select: { link: true, type: true, name: true } } },
+	});
+	const artifacts = pieces
+		.map((piece) => piece.artifact)
+		.filter((artifact) => !seen.has(artifact.link))
+		.slice(0, Math.max(0, ARTIFACTS_PER_SPRINT - looks.length));
+	await lookAtArtifacts(checkpointId, 0, artifacts, looks);
+}
+
 /** What a sprint's other artifacts show, one line each, for its review. */
 export async function sprintArtifactLines(
 	checkpointId: string,
 	sprint: number,
 ) {
 	await seeSprintArtifacts(checkpointId, sprint);
+	return lookedArtifactLines(checkpointId, sprint);
+}
+
+/** What was already seen in a sprint's artifacts, without looking again; sprint 0 is the day-1 inputs. */
+export async function lookedArtifactLines(
+	checkpointId: string,
+	sprint: number,
+) {
 	const looked = await prisma.checkpointJournalEntry.findMany({
 		where: { checkpointId, sprint, kind: CheckpointJournalKind.Artifact },
 		orderBy: { createdAt: "asc" },

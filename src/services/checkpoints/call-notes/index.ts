@@ -2,10 +2,11 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
-import { CHECKPOINT_DAYS } from "@/config/checkpoint";
+import { CHECKPOINT_DAYS, DIRECTIONS } from "@/config/checkpoint";
 import type { EvidenceMatch } from "@/config/prisma-enums";
 import { aiModel } from "@/services/ai/model";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
+import { DIRECTION_RULES } from "@/services/checkpoints/ai-curator/prompts/card";
 import type { CallNotes } from "@/types/checkpoints";
 
 /** A plan task as every curator prompt reads it. */
@@ -57,6 +58,25 @@ export type CallNotesInput = {
 	agreedLastCall: string[];
 };
 
+/** A lens the call spoke to, in one or two sentences; null when nobody did — never filled in from elsewhere. */
+const lensSaid = (about: string) =>
+	z
+		.string()
+		.nullable()
+		.describe(
+			`What was said about ${about}; null when the call did not touch it.`,
+		);
+
+const directionSaid = (target: string) =>
+	z.object({
+		value: z.enum(DIRECTIONS),
+		why: z
+			.string()
+			.describe(
+				`One sentence: what was said that shows the direction toward ${target}.`,
+			),
+	});
+
 // Nullable rather than optional: strict structured outputs require every key.
 const schema = z.object({
 	inShort: z
@@ -85,6 +105,24 @@ const schema = z.object({
 			`What was agreed for the next call; dueDay is a day of the checkpoint, 1–${CHECKPOINT_DAYS}, when one was named.`,
 		),
 	questions: z.array(z.string()).describe("Questions left open."),
+	lenses: z
+		.object({
+			marketing: lensSaid("what the audience was told and how it answered"),
+			team: lensSaid("the people, their hours and the pace"),
+			management: lensSaid("the tasks, how they close and the way to the goal"),
+		})
+		.describe(
+			"GDHUB-133: the call through three lenses; development is discussed and outsidePlan.",
+		),
+	direction: z
+		.object({
+			goal: directionSaid("the checkpoint goal"),
+			stage: directionSaid("the stage goal"),
+		})
+		.nullable()
+		.describe(
+			`On calls 2–5, where the call said the sprint took the project: ${DIRECTION_RULES} Null when the call did not say; never guess.`,
+		),
 });
 
 const callLine = (index: number) => {
@@ -167,5 +205,7 @@ export const writeCallNotes = async (
 		`,
 	});
 	await recordAiUsage(meter, AI_MODELS.callNotes, usage);
-	return output ?? null;
+	return output
+		? { ...output, direction: output.direction ?? undefined }
+		: null;
 };

@@ -9,6 +9,7 @@ import {
 vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://gdhub.test");
 
 const checkpointFindUnique = vi.fn();
+const checkpointFindMany = vi.fn(async (..._a: unknown[]) => [] as unknown[]);
 const checkpointFindUniqueOrThrow = vi.fn();
 const checkpointUpdate = vi.fn();
 const checkpointUpdateMany = vi.fn();
@@ -35,6 +36,7 @@ vi.mock("@/services/prisma", () => {
 		),
 		projectCheckpoint: {
 			findUnique: (...a: unknown[]) => checkpointFindUnique(...a),
+			findMany: (...a: unknown[]) => checkpointFindMany(...a),
 			findUniqueOrThrow: (...a: unknown[]) => checkpointFindUniqueOrThrow(...a),
 			update: (...a: unknown[]) => checkpointUpdate(...a),
 			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
@@ -56,6 +58,8 @@ vi.mock("@/services/prisma", () => {
 	return { prisma };
 });
 vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
+	lookedArtifactLines: vi.fn(async () => []),
+	seeInputArtifacts: vi.fn(async () => {}),
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 	sprintArtifactLines: vi.fn(async () => [
@@ -63,6 +67,11 @@ vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
 	]),
 }));
 vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
+vi.mock("@/repositories/checkpoints/picture", () => ({
+	picturesOf: async () => new Map(),
+	takePicture: vi.fn(),
+	runChangeOf: async () => ({ directions: [], difference: null }),
+}));
 vi.mock("@/repositories/checkpoints/ai-curator-context", async (actual) => ({
 	memberRole: (await actual<typeof import("@/repositories/checkpoints/ai-curator-context")>())
 		.memberRole,
@@ -116,8 +125,13 @@ vi.mock("@/services/stripe/server", () => ({}));
 const { startAiCheckpoint } = await import(
 	"@/services/checkpoints/flows/payment"
 );
-const { adviseOnPlan, writeBriefFor, writeDueBriefs, writeDueReviews } =
-	await import("@/services/checkpoints/flows/review");
+const {
+	adviseOnPlan,
+	closeDueCheckpoints,
+	writeBriefFor,
+	writeDueBriefs,
+	writeDueReviews,
+} = await import("@/services/checkpoints/flows/review");
 const { journal } = await import("@/repositories/checkpoints/journal");
 
 // Started Thursday 1 Oct: sprint 1 is 1–7 Oct, its review on day 8.
@@ -369,37 +383,14 @@ describe("writeDueReviews", () => {
 		expect(advice.hash).toMatch(/^[0-9a-f]{64}$/);
 	});
 
-	it("settles the verdict before the final review and tells the author of it", async () => {
-		sessionFindUniqueOrThrow.mockResolvedValue({ index: 5, checkpointId: "cp" });
-		checkpointFindUniqueOrThrow.mockResolvedValue(
-			reviewed(5, {
-				verdict: CheckpointVerdict.StageClosed,
-				verdictNote: "All proven.",
-			}),
-		);
-		await writeDueReviews();
-
-		expect(closeCheckpoint).toHaveBeenCalledWith("cp");
-		expect(closeCheckpoint.mock.invocationCallOrder[0]).toBeLessThan(
-			reviewSprint.mock.invocationCallOrder[0],
-		);
-		expect(reviewSprint.mock.calls[0][0].verdict).toEqual({
-			verdict: CheckpointVerdict.StageClosed,
-			note: "All proven.",
-		});
-		expect(notifyVerdictSent).toHaveBeenCalledWith("cp");
-		expect(notify).not.toHaveBeenCalled();
-	});
-
-	it("hands the final back when no verdict could be settled", async () => {
+	it("writes the final review and leaves the verdict to the step after it", async () => {
 		sessionFindUniqueOrThrow.mockResolvedValue({ index: 5, checkpointId: "cp" });
 		checkpointFindUniqueOrThrow.mockResolvedValue(reviewed(5));
-		expect(await writeDueReviews()).toBe(0);
-		expect(reviewSprint).not.toHaveBeenCalled();
-		expect(sessionUpdate).toHaveBeenCalledWith({
-			where: { id: "s2" },
-			data: { contentStatus: null },
-		});
+		expect(await writeDueReviews()).toBe(1);
+
+		expect(reviewSprint.mock.calls[0][0].final).toBe(true);
+		expect(closeCheckpoint).not.toHaveBeenCalled();
+		expect(notify).not.toHaveBeenCalled();
 	});
 
 	it("hands the session back when the model gives nothing", async () => {
@@ -700,5 +691,27 @@ describe("the human curator's brief", () => {
 
 		await expect(writeBriefFor("s3")).resolves.toBe(false);
 		expect(writeSprintReview).not.toHaveBeenCalled();
+	});
+});
+
+describe("closeDueCheckpoints", () => {
+	it("settles each final-reviewed AI checkpoint and tells the author once it holds", async () => {
+		checkpointFindMany.mockResolvedValueOnce([{ id: "cp1" }, { id: "cp2" }]);
+		closeCheckpoint
+			.mockResolvedValueOnce({ verdict: CheckpointVerdict.GoalMet })
+			.mockResolvedValueOnce(null);
+		expect(await closeDueCheckpoints()).toBe(1);
+		expect(notifyVerdictSent).toHaveBeenCalledTimes(1);
+		expect(notifyVerdictSent).toHaveBeenCalledWith("cp1");
+	});
+
+	it("asks only for AI checkpoints in Review, undecided, with the final review written", async () => {
+		await closeDueCheckpoints();
+		const { where } = checkpointFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+		expect(where).toMatchObject({
+			curatorKind: CheckpointCuratorKind.AI,
+			status: CheckpointStatus.Review,
+			verdict: null,
+		});
 	});
 });

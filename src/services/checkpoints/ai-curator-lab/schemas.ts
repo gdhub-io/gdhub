@@ -6,6 +6,7 @@ import {
 	CheckpointVerdict,
 	EvidenceMatch,
 } from "@/config/prisma-enums";
+import { ConfirmDirectionSchema } from "@/schemas/checkpoint";
 import type { GoalCheckInput } from "@/services/checkpoints/ai-curator";
 import type {
 	PlanAdviceInput,
@@ -166,11 +167,12 @@ export const sprintReviewInput = z.object({
 	),
 	team,
 	focusLastReview: z.array(z.string()),
-	verdict: z
-		.object({ verdict: z.nativeEnum(CheckpointVerdict), note: z.string() })
-		.nullable(),
+	final: z.boolean(),
 	picture: z.string(),
 	marketing,
+	difference: z.string().optional(),
+	idle: z.boolean().optional(),
+	lastDirection: ConfirmDirectionSchema.nullable().optional(),
 }) satisfies z.ZodType<Omit<SprintReviewInput, "devlogMedia">>;
 
 /** One task's evidence: a link read live, or what a read would have returned. */
@@ -253,3 +255,9 @@ export const planLetterInput = z.object({
 
 /** The whole road: the character is all it takes; the situations are the lab's own. */
 export const roadInput = z.object({ character });
+
+/** A human call's transcript, read into notes (GDHUB-133). */
+export const callNotesLabInput = z.object({
+	callIndex: z.number().int().min(2).max(5),
+	transcript: z.string().min(1),
+});

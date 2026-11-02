@@ -15,6 +15,7 @@ import {
 	verdictStage,
 } from "@/lib/checkpoints/verdict-window";
 import { getVerdictRead } from "@/repositories/checkpoints/ai-curator";
+import { runChangeOf } from "@/repositories/checkpoints/picture";
 import { prisma } from "@/services/prisma";
 export type CuratorVerdictInput = {
 	verdict: CheckpointVerdict;
@@ -151,7 +152,7 @@ export async function getVerdictContext(
 
 	if (!row) return null;
 
-	const [next, build, aiRead] = await Promise.all([
+	const [next, build, aiRead, run] = await Promise.all([
 		row.step
 			? prisma.projectWorkflowStep.findFirst({
 					where: {
@@ -174,6 +175,7 @@ export async function getVerdictContext(
 				})
 			: null,
 		getVerdictRead(checkpointId),
+		runChangeOf(checkpointId),
 	]);
 
 	const stageKey = (order: number) =>
@@ -196,6 +198,7 @@ export async function getVerdictContext(
 		},
 		nextStage: next ? { name: next.name, key: stageKey(next.order) } : null,
 		aiRead,
+		run,
 		lastBuild: build
 			? {
 					name: build.name,
