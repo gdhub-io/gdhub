@@ -39,6 +39,8 @@
 		"queues:clean": "dotenv -- node scripts/clean-queues.mjs",
 		"checkpoint:review": "dotenv -- bun run scripts/checkpoint-review.ts",
 		"checkpoint:simulate": "dotenv -- bun run scripts/checkpoint-simulate.ts",
+		"top-games": "dotenv -- bun run scripts/top-games.ts",
+		"top-games:prod": "dotenv -e .env.prod.local -- bun run scripts/top-games.ts",
 		"daily:webhook": "dotenv -- bun run scripts/daily-webhook.ts",
 		"rbac:seed-matrix": "dotenv -- bun run scripts/rbac-seed-matrix.ts",
 		"rbac:matrix-doc": "bun run scripts/rbac-matrix-doc.ts",

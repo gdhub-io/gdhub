@@ -494260,6 +494260,2543 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "bP22X",
+      "x": 29184,
+      "y": 0,
+      "name": "Marketing · LinkedIn · Top games (1080×1350)",
+      "clip": true,
+      "width": 540,
+      "height": 675,
+      "fill": [
+        "$inv-bg",
+        {
+          "type": "gradient",
+          "gradientType": "radial",
+          "enabled": true,
+          "rotation": 0,
+          "size": {
+            "width": 1.35,
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "#F1554122",
+              "position": 0
+            },
+            {
+              "color": "#F1554100",
+              "position": 1
+            }
+          ],
+          "center": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "frame",
+          "id": "ccPra",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "YrEa6",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo"
+            },
+            {
+              "type": "frame",
+              "id": "iwaiR",
+              "name": "Period chip",
+              "fill": "$inv-surface",
+              "cornerRadius": 8,
+              "stroke": "$inv-border",
+              "strokeWidth": 1,
+              "gap": 6,
+              "padding": [
+                4,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "tgs0d",
+                  "name": "Dot",
+                  "fill": "$brand-primary",
+                  "width": 6,
+                  "height": 6
+                },
+                {
+                  "type": "text",
+                  "id": "dtjBB",
+                  "name": "Period",
+                  "fill": "$inv-text",
+                  "content": "Oct ’26",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "g4wP2t",
+          "name": "Title block",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "Gyf42",
+              "name": "Eyebrow",
+              "fill": "$brand-primary",
+              "content": "SCOUT'S PICK",
+              "fontFamily": "$font",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.66
+            },
+            {
+              "type": "text",
+              "id": "LoVvP",
+              "name": "Headline",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Early signals: breakout\nindie games of the month",
+              "lineHeight": 1.1,
+              "fontFamily": "$font",
+              "fontSize": 34,
+              "fontWeight": "700",
+              "letterSpacing": -1.02
+            },
+            {
+              "type": "text",
+              "id": "EDcXJ",
+              "name": "Subhead",
+              "fill": "$inv-text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "The games our community is watching most right now",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "eyBeC",
+          "name": "List",
+          "clip": true,
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "$inv-surface",
+          "cornerRadius": 16,
+          "stroke": "$inv-border",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "yPojG",
+              "name": "Row 1",
+              "width": "fill_container",
+              "height": "fill_container",
+              "stroke": "$inv-border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 16,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rw8Y4",
+                  "name": "Rank",
+                  "fill": "$brand-primary",
+                  "textGrowth": "fixed-width",
+                  "width": 24,
+                  "content": "1",
+                  "textAlign": "center",
+                  "fontFamily": "$font",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "pf4xK",
+                  "name": "Cover",
+                  "width": 144,
+                  "height": 80,
+                  "fill": [
+                    "$neutral-100",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/1.jpg",
+                      "mode": "cover"
+                    }
+                  ],
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "frame",
+                  "id": "r7s7X",
+                  "name": "Info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "x8XzE",
+                      "name": "Name",
+                      "fill": "$inv-text",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Blue Signal",
+                      "lineHeight": 1.25,
+                      "fontFamily": "$font",
+                      "fontSize": 20,
+                      "fontWeight": "600",
+                      "letterSpacing": -0.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "c5WRg",
+                      "name": "Meta",
+                      "fill": "$inv-text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Adventure / Quest · PC · Preparing a demo",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "gLr2R",
+                      "name": "Stats",
+                      "gap": 12,
+                      "padding": [
+                        4,
+                        0,
+                        0,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "iFMwX",
+                          "name": "Activity",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "w4oBF5",
+                              "name": "Activity icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "activity",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "v2pOu",
+                              "name": "Activity value",
+                              "fill": "$inv-text",
+                              "content": "45",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "F0X6g",
+                          "name": "Applause",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "GnNHg",
+                              "name": "Applause icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "hand-metal",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "JLiC7",
+                              "name": "Applause value",
+                              "fill": "$inv-text",
+                              "content": "30",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "g5g3i",
+                          "name": "Views",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "bulWR",
+                              "name": "Views icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "eye",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "e3N9z",
+                              "name": "Views value",
+                              "fill": "$inv-text",
+                              "content": "1,072",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kvXEb",
+              "name": "Row 2",
+              "width": "fill_container",
+              "height": "fill_container",
+              "stroke": "$inv-border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "gap": 16,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "J8vBd",
+                  "name": "Rank",
+                  "fill": "$inv-text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": 24,
+                  "content": "2",
+                  "textAlign": "center",
+                  "fontFamily": "$font",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "roBWs",
+                  "name": "Cover",
+                  "width": 144,
+                  "height": 80,
+                  "fill": [
+                    "$neutral-100",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/2.jpg",
+                      "mode": "cover"
+                    }
+                  ],
+                  "cornerRadius": 8
+                },
+                {
+                  "type": "frame",
+                  "id": "qjLYP",
+                  "name": "Info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "T3sMWi",
+                      "name": "Name",
+                      "fill": "$inv-text",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "The Grey Room",
+                      "lineHeight": 1.25,
+                      "fontFamily": "$font",
+                      "fontSize": 20,
+                      "fontWeight": "600",
+                      "letterSpacing": -0.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "hhoeN",
+                      "name": "Meta",
+                      "fill": "$inv-text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Horror, puzzle · PC · Preparing a demo",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "r7CD5m",
+                      "name": "Stats",
+                      "gap": 12,
+                      "padding": [
+                        4,
+                        0,
+                        0,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wEqus",
+                          "name": "Activity",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "dHiCk",
+                              "name": "Activity icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "activity",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "XuaSP",
+                              "name": "Activity value",
+                              "fill": "$inv-text",
+                              "content": "55",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "vHcuM",
+                          "name": "Applause",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "M2Ir5",
+                              "name": "Applause icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "hand-metal",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "d0wWC1",
+                              "name": "Applause value",
+                              "fill": "$inv-text",
+                              "content": "19",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "teGu3",
+                          "name": "Views",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "H485P",
+                              "name": "Views icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "eye",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "rWEdr",
+                              "name": "Views value",
+                              "fill": "$inv-text",
+                              "content": "479",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zVgPX",
+              "name": "Row 3",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 16,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "OYrKK",
+                  "name": "Rank",
+                  "fill": "$inv-text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": 24,
+                  "content": "3",
+                  "textAlign": "center",
+                  "fontFamily": "$font",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "TGgY5",
+                  "name": "Cover",
+                  "clip": true,
+                  "width": 144,
+                  "height": 80,
+                  "fill": "$inv-bg",
+                  "cornerRadius": 8,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "X8P7pq",
+                      "x": 11,
+                      "y": 22,
+                      "name": "Original DEPOZITAZ artwork",
+                      "width": 122,
+                      "height": 36,
+                      "fill": [
+                        "$surface",
+                        {
+                          "type": "image",
+                          "enabled": true,
+                          "url": "images/top-games/2026-11-02/3.jpg",
+                          "mode": "contain"
+                        }
+                      ],
+                      "cornerRadius": 3
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "BuHe9",
+                  "name": "Info",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JNB08",
+                      "name": "Name",
+                      "fill": "$inv-text",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "DEPOZITAZ",
+                      "lineHeight": 1.25,
+                      "fontFamily": "$font",
+                      "fontSize": 20,
+                      "fontWeight": "600",
+                      "letterSpacing": -0.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "MxM0U",
+                      "name": "Meta",
+                      "fill": "$inv-text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Multiplayer scavenger, light PvP · PC, Mac · Prototyping",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PA7hs",
+                      "name": "Stats",
+                      "gap": 12,
+                      "padding": [
+                        4,
+                        0,
+                        0,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "c420d",
+                          "name": "Activity",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "EHSj8",
+                              "name": "Activity icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "activity",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "KlSa1",
+                              "name": "Activity value",
+                              "fill": "$inv-text",
+                              "content": "31",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "OPXGx",
+                          "name": "Applause",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "CJNjU",
+                              "name": "Applause icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "hand-metal",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "s122g",
+                              "name": "Applause value",
+                              "fill": "$inv-text",
+                              "content": "8",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "En1Mw",
+                          "name": "Views",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "Azf2R",
+                              "name": "Views icon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "eye",
+                              "library": "lucide",
+                              "fill": "$inv-text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "v57ys",
+                              "name": "Views value",
+                              "fill": "$inv-text",
+                              "content": "255",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LWQr7",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "PYQTk",
+              "name": "Footer link",
+              "fill": "$inv-text-secondary",
+              "content": "gdhub.io/projects",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "wLE8b",
+              "name": "Swipe button",
+              "height": 40,
+              "fill": "$brand-primary",
+              "cornerRadius": 14,
+              "gap": 8,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "rkcYd",
+                  "name": "Swipe label",
+                  "fill": "$text-invert",
+                  "content": "Details on the next slides",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "SCYKf",
+                  "name": "Swipe arrow",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "arrow-right",
+                  "library": "lucide",
+                  "fill": "$text-invert"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "id": "kQZAO",
+      "x": 28612,
+      "y": 0,
+      "name": "Top games · how to rebuild",
+      "width": 540,
+      "height": 96,
+      "content": "Built at 1x on DS tokens (540×675), export at 2x → 1080×1350. Rebuild: `bun run top-games:prod` → docs/marketing/top-games/latest/top-games.json; images → ./images/top-games/<date>/ (paths in the JSON). Update Period chip, rows, Slides 1–3 (team avatars + size); carousel PDF = main + slides + CTA."
+    },
+    {
+      "type": "frame",
+      "id": "IDaFX",
+      "x": 29804,
+      "y": 0,
+      "name": "Marketing · LinkedIn · Top games · Slide 1",
+      "clip": true,
+      "width": 540,
+      "height": 675,
+      "fill": [
+        "$inv-bg",
+        {
+          "type": "gradient",
+          "gradientType": "radial",
+          "enabled": true,
+          "rotation": 0,
+          "size": {
+            "width": 1.35,
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "#F1554122",
+              "position": 0
+            },
+            {
+              "color": "#F1554100",
+              "position": 1
+            }
+          ],
+          "center": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 32,
+      "children": [
+        {
+          "type": "frame",
+          "id": "v7Du5",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "b4hAc",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo"
+            },
+            {
+              "type": "frame",
+              "id": "pWXSX",
+              "name": "Period chip",
+              "fill": "$inv-surface",
+              "cornerRadius": 8,
+              "stroke": "$inv-border",
+              "strokeWidth": 1,
+              "gap": 6,
+              "padding": [
+                4,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "WbcKv",
+                  "name": "Dot",
+                  "fill": "$brand-primary",
+                  "width": 6,
+                  "height": 6
+                },
+                {
+                  "type": "text",
+                  "id": "eEKtL",
+                  "name": "Period",
+                  "fill": "$inv-text",
+                  "content": "Oct ’26",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tEBrm",
+          "name": "Cover",
+          "width": "fill_container",
+          "height": 176,
+          "fill": [
+            "$neutral-100",
+            {
+              "type": "image",
+              "enabled": true,
+              "url": "images/top-games/2026-11-02/1.jpg",
+              "mode": "cover"
+            }
+          ],
+          "cornerRadius": 20,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "vWfkn",
+              "x": 16,
+              "y": 16,
+              "name": "Rank badge",
+              "width": 40,
+              "height": 40,
+              "fill": "$brand-primary",
+              "cornerRadius": 9999,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "BgTbW",
+                  "name": "Rank",
+                  "fill": "$text-invert",
+                  "content": "#1",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JTyYU",
+          "name": "Title",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "Uhbv4",
+              "name": "Name",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Blue Signal",
+              "lineHeight": 1.25,
+              "fontFamily": "$font",
+              "fontSize": 32,
+              "fontWeight": "600",
+              "letterSpacing": -0.64
+            },
+            {
+              "type": "text",
+              "id": "KGJiM",
+              "name": "Meta",
+              "fill": "$inv-text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Adventure / Quest · PC · Preparing a demo",
+              "lineHeight": 1.4,
+              "fontFamily": "$font",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "yHlbh",
+          "name": "Team",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "x8tcY",
+              "name": "Avatars",
+              "width": 68,
+              "height": 28,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "xPXkh",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Avatar 1",
+                  "fill": [
+                    "$neutral-700",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/team-1-1.jpg",
+                      "mode": "cover"
+                    }
+                  ],
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "cWB7o",
+                  "x": 20,
+                  "y": 0,
+                  "name": "Avatar 2",
+                  "fill": [
+                    "$neutral-700",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/team-1-2.png",
+                      "mode": "cover"
+                    }
+                  ],
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "q5JS0S",
+                  "x": 40,
+                  "y": 0,
+                  "name": "Avatar 3",
+                  "fill": [
+                    "$neutral-700",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/team-1-3.png",
+                      "mode": "cover"
+                    }
+                  ],
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "juxrD",
+                  "x": 60,
+                  "y": 0,
+                  "name": "Avatar 4",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "ej2x6",
+                  "x": 80,
+                  "y": 0,
+                  "name": "Avatar 5",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "i7WaB",
+              "name": "Team size",
+              "fill": "$text-secondary",
+              "content": "Team of 3",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "C5hNug",
+          "name": "Description",
+          "fill": "$inv-text",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "A revival of the classic 2D adventure with an AI-powered command line. A small, stylish game for PC and tablets in the spirit of early parser quests like Police Quest — set in a nostalgic 1980s, with the art to match.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "Azxhg",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "c9XcWP",
+          "name": "Stats",
+          "width": "fill_container",
+          "fill": "$inv-surface",
+          "cornerRadius": 16,
+          "stroke": "$inv-border",
+          "strokeWidth": 1,
+          "gap": 16,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "uanqm",
+              "name": "Activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JFgzT",
+                  "name": "Activity label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "aIyJU",
+                      "name": "Activity icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "activity",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ViK3O",
+                      "name": "Activity label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Activity",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "mtjdC",
+                  "name": "Activity value",
+                  "fill": "$inv-text",
+                  "content": "45",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iDXPG",
+              "name": "Applause",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QQDF3",
+                  "name": "Applause label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "J7hC3s",
+                      "name": "Applause icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "hand-metal",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "C1vsxL",
+                      "name": "Applause label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Applause",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "XbDN1",
+                  "name": "Applause value",
+                  "fill": "$inv-text",
+                  "content": "30",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "U20z5",
+              "name": "Views",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "L8Bn68",
+                  "name": "Views label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "nTGb2",
+                      "name": "Views icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "eye",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "y01dew",
+                      "name": "Views label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Views",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "m9IFIA",
+                  "name": "Views value",
+                  "fill": "$inv-text",
+                  "content": "1,072",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "T6nUxK",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "O0v1zM",
+              "name": "Project link",
+              "fill": "$inv-text",
+              "content": "gdhub.io/project/blue-signal",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "T2pQ6",
+              "name": "Page",
+              "fill": "$inv-text-secondary",
+              "content": "2 / 5",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YQVbu",
+      "x": 30424,
+      "y": 0,
+      "name": "Marketing · LinkedIn · Top games · Slide 2",
+      "clip": true,
+      "width": 540,
+      "height": 675,
+      "fill": [
+        "$inv-bg",
+        {
+          "type": "gradient",
+          "gradientType": "radial",
+          "enabled": true,
+          "rotation": 0,
+          "size": {
+            "width": 1.35,
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "#F1554122",
+              "position": 0
+            },
+            {
+              "color": "#F1554100",
+              "position": 1
+            }
+          ],
+          "center": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 32,
+      "children": [
+        {
+          "type": "frame",
+          "id": "z7t3Yt",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "l3N6O",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo"
+            },
+            {
+              "type": "frame",
+              "id": "P7ZdPs",
+              "name": "Period chip",
+              "fill": "$inv-surface",
+              "cornerRadius": 8,
+              "stroke": "$inv-border",
+              "strokeWidth": 1,
+              "gap": 6,
+              "padding": [
+                4,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "SJ1qd",
+                  "name": "Dot",
+                  "fill": "$brand-primary",
+                  "width": 6,
+                  "height": 6
+                },
+                {
+                  "type": "text",
+                  "id": "EwLAC",
+                  "name": "Period",
+                  "fill": "$inv-text",
+                  "content": "Oct ’26",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "f3zmj",
+          "name": "Cover",
+          "width": "fill_container",
+          "height": 176,
+          "fill": [
+            "$neutral-100",
+            {
+              "type": "image",
+              "enabled": true,
+              "url": "images/top-games/2026-11-02/2.jpg",
+              "mode": "cover"
+            }
+          ],
+          "cornerRadius": 20,
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "g0WHXf",
+              "x": 16,
+              "y": 16,
+              "name": "Rank badge",
+              "width": 40,
+              "height": 40,
+              "fill": "$brand-accent",
+              "cornerRadius": 9999,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "pBaN4",
+                  "name": "Rank",
+                  "fill": "$ink",
+                  "content": "#2",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Q5NYh",
+          "name": "Title",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "Jh21z",
+              "name": "Name",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "The Grey Room",
+              "lineHeight": 1.25,
+              "fontFamily": "$font",
+              "fontSize": 32,
+              "fontWeight": "600",
+              "letterSpacing": -0.64
+            },
+            {
+              "type": "text",
+              "id": "t5iHqj",
+              "name": "Meta",
+              "fill": "$inv-text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Horror, puzzle · PC · Preparing a demo",
+              "lineHeight": 1.4,
+              "fontFamily": "$font",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "wlJ58",
+          "name": "Team",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "JLuhH",
+              "name": "Avatars",
+              "width": 48,
+              "height": 28,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "zvFul",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Avatar 1",
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "g6Kipv",
+                  "x": 20,
+                  "y": 0,
+                  "name": "Avatar 2",
+                  "fill": [
+                    "$neutral-700",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/team-2-2.png",
+                      "mode": "cover"
+                    }
+                  ],
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "kxO6h",
+                  "x": 40,
+                  "y": 0,
+                  "name": "Avatar 3",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "yT3RP",
+                  "x": 60,
+                  "y": 0,
+                  "name": "Avatar 4",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "I9eeZn",
+                  "x": 80,
+                  "y": 0,
+                  "name": "Avatar 5",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "R0f2J",
+              "name": "Team size",
+              "fill": "$text-secondary",
+              "content": "Team of 2",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "WBhGC",
+          "name": "Description",
+          "fill": "$inv-text",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "You are a patient with paranoid schizophrenia, trapped in an apartment that keeps changing. Collect the shards of a broken mirror to uncover the cause of your illness — while battling your own mind.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "lAQzc",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "nFTem",
+          "name": "Stats",
+          "width": "fill_container",
+          "fill": "$inv-surface",
+          "cornerRadius": 16,
+          "stroke": "$inv-border",
+          "strokeWidth": 1,
+          "gap": 16,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "GvcR5",
+              "name": "Activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "gRCFQ",
+                  "name": "Activity label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "ygz3S",
+                      "name": "Activity icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "activity",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "g8aaa",
+                      "name": "Activity label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Activity",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "WpeCk",
+                  "name": "Activity value",
+                  "fill": "$inv-text",
+                  "content": "55",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "oAtmU",
+              "name": "Applause",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "g85EE",
+                  "name": "Applause label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "kU1lp",
+                      "name": "Applause icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "hand-metal",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "k1qBIz",
+                      "name": "Applause label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Applause",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "ESfKj",
+                  "name": "Applause value",
+                  "fill": "$inv-text",
+                  "content": "19",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "CrlHy",
+              "name": "Views",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bNcCT",
+                  "name": "Views label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "qSnOY",
+                      "name": "Views icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "eye",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Empda",
+                      "name": "Views label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Views",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "IDENk",
+                  "name": "Views value",
+                  "fill": "$inv-text",
+                  "content": "479",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HA9NL",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "tx4jj",
+              "name": "Project link",
+              "fill": "$inv-text",
+              "content": "gdhub.io/project/the-grey-room",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "t2HS2",
+              "name": "Page",
+              "fill": "$inv-text-secondary",
+              "content": "3 / 5",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "hKiS6",
+      "x": 31044,
+      "y": 0,
+      "name": "Marketing · LinkedIn · Top games · Slide 3",
+      "clip": true,
+      "width": 540,
+      "height": 675,
+      "fill": [
+        "$inv-bg",
+        {
+          "type": "gradient",
+          "gradientType": "radial",
+          "enabled": true,
+          "rotation": 0,
+          "size": {
+            "width": 1.35,
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "#F1554122",
+              "position": 0
+            },
+            {
+              "color": "#F1554100",
+              "position": 1
+            }
+          ],
+          "center": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 32,
+      "children": [
+        {
+          "type": "frame",
+          "id": "H2JyO",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "vHKrF",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo"
+            },
+            {
+              "type": "frame",
+              "id": "EoMOV",
+              "name": "Period chip",
+              "fill": "$inv-surface",
+              "cornerRadius": 8,
+              "stroke": "$inv-border",
+              "strokeWidth": 1,
+              "gap": 6,
+              "padding": [
+                4,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "QdHsi",
+                  "name": "Dot",
+                  "fill": "$brand-primary",
+                  "width": 6,
+                  "height": 6
+                },
+                {
+                  "type": "text",
+                  "id": "z1cCz",
+                  "name": "Period",
+                  "fill": "$inv-text",
+                  "content": "Oct ’26",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QZX3i",
+          "name": "Cover",
+          "clip": true,
+          "width": "fill_container",
+          "height": 176,
+          "fill": "$inv-surface",
+          "cornerRadius": 20,
+          "stroke": "$inv-border",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "Rjxek",
+              "x": 305,
+              "y": 32,
+              "name": "Oversized rank watermark",
+              "fill": "#FFFFFF0D",
+              "content": "03",
+              "fontFamily": "$font",
+              "fontSize": 128,
+              "fontWeight": "700"
+            },
+            {
+              "type": "frame",
+              "id": "ZwPKa",
+              "x": 62,
+              "y": 66,
+              "name": "Original DEPOZITAZ artwork",
+              "width": 352,
+              "height": 76,
+              "fill": [
+                "$surface",
+                {
+                  "type": "image",
+                  "enabled": true,
+                  "url": "images/top-games/2026-11-02/3.jpg",
+                  "mode": "contain"
+                }
+              ],
+              "cornerRadius": 8
+            },
+            {
+              "type": "frame",
+              "id": "mK2N7",
+              "x": 16,
+              "y": 16,
+              "name": "Rank badge",
+              "width": 40,
+              "height": 40,
+              "fill": "$brand-accent",
+              "cornerRadius": 9999,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c3lYpK",
+                  "name": "Rank",
+                  "fill": "$ink",
+                  "content": "#3",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "z7UaF9",
+          "name": "Title",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "children": [
+            {
+              "type": "text",
+              "id": "IGGcY",
+              "name": "Name",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "DEPOZITAZ",
+              "lineHeight": 1.25,
+              "fontFamily": "$font",
+              "fontSize": 32,
+              "fontWeight": "600",
+              "letterSpacing": -0.64
+            },
+            {
+              "type": "text",
+              "id": "R5Y9g",
+              "name": "Meta",
+              "fill": "$inv-text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Multiplayer scavenger, light PvP · PC, Mac · Prototyping",
+              "lineHeight": 1.4,
+              "fontFamily": "$font",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "sxd5p",
+          "name": "Team",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "V2S01",
+              "name": "Avatars",
+              "width": 28,
+              "height": 28,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "QTurx",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Avatar 1",
+                  "fill": [
+                    "$neutral-700",
+                    {
+                      "type": "image",
+                      "enabled": true,
+                      "url": "images/top-games/2026-11-02/team-3-1.png",
+                      "mode": "cover"
+                    }
+                  ],
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "U9ORx",
+                  "x": 20,
+                  "y": 0,
+                  "name": "Avatar 2",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "iMHrU",
+                  "x": 40,
+                  "y": 0,
+                  "name": "Avatar 3",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "VXwPS",
+                  "x": 60,
+                  "y": 0,
+                  "name": "Avatar 4",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "RxlmW",
+                  "x": 80,
+                  "y": 0,
+                  "name": "Avatar 5",
+                  "enabled": false,
+                  "fill": "$neutral-700",
+                  "width": 28,
+                  "height": 28,
+                  "stroke": "$inv-bg",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "outer"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "BzGFk",
+              "name": "Team size",
+              "fill": "$text-secondary",
+              "content": "Team of 1",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "r8dyX",
+          "name": "Description",
+          "fill": "$inv-text",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "A meditative bottle-collector simulator. Explore the city the morning after a loud night, find bottles and cans, judge their value and return them for coins. Enjoy the empty streets — or turn your haul into a weapon against other players.",
+          "lineHeight": 1.5,
+          "fontFamily": "$font",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "nFJ2d",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "arpph",
+          "name": "Stats",
+          "width": "fill_container",
+          "fill": "$inv-surface",
+          "cornerRadius": 16,
+          "stroke": "$inv-border",
+          "strokeWidth": 1,
+          "gap": 16,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "lWpGK",
+              "name": "Activity",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SBevx",
+                  "name": "Activity label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Rqt81",
+                      "name": "Activity icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "activity",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "F7nT1U",
+                      "name": "Activity label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Activity",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "P3Ekj1",
+                  "name": "Activity value",
+                  "fill": "$inv-text",
+                  "content": "31",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "NQP3z",
+              "name": "Applause",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pfxxS",
+                  "name": "Applause label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "baNEY",
+                      "name": "Applause icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "hand-metal",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "e9yon",
+                      "name": "Applause label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Applause",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "oanV0",
+                  "name": "Applause value",
+                  "fill": "$inv-text",
+                  "content": "8",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "wLFXj",
+              "name": "Views",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "qOm1Z",
+                  "name": "Views label row",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "zJnHe",
+                      "name": "Views icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "eye",
+                      "library": "lucide",
+                      "fill": "$inv-text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Zmko8",
+                      "name": "Views label",
+                      "fill": "$inv-text-secondary",
+                      "content": "Views",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "GUDvG",
+                  "name": "Views value",
+                  "fill": "$inv-text",
+                  "content": "255",
+                  "fontFamily": "$font",
+                  "fontSize": 28,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.56
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "bIkTo",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "q4KC9",
+              "name": "Project link",
+              "fill": "$inv-text",
+              "content": "gdhub.io/project/depozitaz",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "PObWk",
+              "name": "Page",
+              "fill": "$inv-text-secondary",
+              "content": "4 / 5",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Z9VPJ",
+      "x": 31664,
+      "y": 0,
+      "name": "Marketing · LinkedIn · Top games · Slide CTA",
+      "clip": true,
+      "width": 540,
+      "height": 675,
+      "fill": [
+        "$inv-bg",
+        {
+          "type": "gradient",
+          "gradientType": "radial",
+          "enabled": true,
+          "rotation": 0,
+          "size": {
+            "width": 1.35,
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "#F1554122",
+              "position": 0
+            },
+            {
+              "color": "#F1554100",
+              "position": 1
+            }
+          ],
+          "center": {
+            "x": 1,
+            "y": 0
+          }
+        }
+      ],
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 32,
+      "children": [
+        {
+          "type": "frame",
+          "id": "yow0Y",
+          "name": "Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "nzji1",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo"
+            },
+            {
+              "type": "frame",
+              "id": "j4QxA1",
+              "name": "Period chip",
+              "fill": "$inv-surface",
+              "cornerRadius": 8,
+              "stroke": "$inv-border",
+              "strokeWidth": 1,
+              "gap": 6,
+              "padding": [
+                4,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "w79Hc",
+                  "name": "Dot",
+                  "fill": "$brand-primary",
+                  "width": 6,
+                  "height": 6
+                },
+                {
+                  "type": "text",
+                  "id": "twvjy",
+                  "name": "Period",
+                  "fill": "$inv-text",
+                  "content": "Oct ’26",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "b6eDX",
+          "name": "Art",
+          "width": "fill_container",
+          "height": 224,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "authors-art.png",
+            "mode": "contain"
+          }
+        },
+        {
+          "type": "frame",
+          "id": "JoV3f",
+          "name": "Title block",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "text",
+              "id": "r0DJpq",
+              "name": "Eyebrow",
+              "fill": "$brand-primary",
+              "content": "FOR GAME DEVELOPERS",
+              "fontFamily": "$font",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.66
+            },
+            {
+              "type": "text",
+              "id": "NLS9V",
+              "name": "Headline",
+              "fill": "$inv-text",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Your game could be\nhere next month",
+              "lineHeight": 1.1,
+              "fontFamily": "$font",
+              "fontSize": 34,
+              "fontWeight": "700",
+              "letterSpacing": -1.02
+            },
+            {
+              "type": "text",
+              "id": "cMF10",
+              "name": "Body",
+              "fill": "$inv-text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Add your project to GDHub, post devlogs as you build, and let players, teammates and scouts find it.",
+              "lineHeight": 1.5,
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BoG6P",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "RE2AJ",
+          "name": "CTA button",
+          "width": "fill_container",
+          "height": 48,
+          "fill": "$brand-primary",
+          "cornerRadius": 14,
+          "gap": 8,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "y5lKL",
+              "name": "CTA label",
+              "fill": "$text-invert",
+              "content": "Add your game on gdhub.io",
+              "fontFamily": "$font",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "icon",
+              "id": "xVVzz",
+              "name": "CTA arrow",
+              "width": 20,
+              "height": 20,
+              "icon": "arrow-right",
+              "library": "lucide",
+              "fill": "$text-invert"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "e5tk3",
+          "name": "Footer",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "qqEbQ",
+              "name": "Project link",
+              "fill": "$inv-text",
+              "content": "gdhub.io",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "a5gibB",
+              "name": "Page",
+              "fill": "$inv-text-secondary",
+              "content": "5 / 5",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

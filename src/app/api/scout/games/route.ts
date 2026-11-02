@@ -3,6 +3,7 @@ import { z } from "zod";
 import { totalPerCurrency } from "@/helpers/investment";
 import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { pageMeta, paginateInMemory } from "@/lib/pagination";
+import { activityScore, MONTH_MS } from "@/lib/scout/activity-score";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
@@ -58,28 +59,6 @@ export type ScoutSortField = Query["sort"];
  * read, so the client is never offered a page that would come back empty.
  */
 const SORT_CAP = 500;
-
-const MONTH = 30 * 24 * 60 * 60 * 1000;
-
-/**
- * The same weighting `prisma.project.getProjectsOrderedByActivity` uses: every
- * devlog post counts double, a post from the last month counts treble, and an
- * edit in the last month is worth half a point.
- *
- * Recomputed here rather than called, because that helper only looks at
- * Approved and Released projects and drops anything still on step 0 — this list
- * shows Registered projects too, and a scout would see them scored zero. The
- * deeper fix is to parameterise the helper's visibility filter in the prisma
- * package; until then these weights and its own must be changed together.
- */
-const activityScore = (
-	reports: number,
-	recentReports: number,
-	updatedAt: Date,
-): number =>
-	reports * 2 +
-	recentReports * 3 +
-	(updatedAt.getTime() > Date.now() - MONTH ? 0.5 : 0);
 
 /** Investor money, summed inside each currency and dropped where it is zero. */
 export const GET = pipe(
@@ -172,7 +151,7 @@ export const GET = pipe(
 				by: ["projectId"],
 				where: {
 					projectId: { in: projectIds },
-					publishedAt: { gt: new Date(Date.now() - MONTH) },
+					publishedAt: { gt: new Date(Date.now() - MONTH_MS) },
 				},
 				_count: { _all: true },
 			})
