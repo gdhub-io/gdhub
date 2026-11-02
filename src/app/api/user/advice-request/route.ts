@@ -1,4 +1,3 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -7,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -27,7 +27,7 @@ export const POST = withAuth({ mode: "user" })(
 			const { topic, projectId, toUserId, comment } =
 				body as CreateAdviceRequestBody;
 
-			// Advice is asked for one's own project: authored, or a team one is on.
+			// Advice is asked for one's own project: authored, or a team one is on today.
 			const ownProject = await prisma.project.count({
 				where: {
 					id: projectId,
@@ -36,12 +36,7 @@ export const POST = withAuth({ mode: "user" })(
 						{
 							team: {
 								members: {
-									some: {
-										userId: currentUser.id,
-										status: {
-											in: [TeamMemberStatus.Founder, TeamMemberStatus.Hired],
-										},
-									},
+									some: { ...CONFIRMED_MEMBERS, userId: currentUser.id },
 								},
 							},
 						},
