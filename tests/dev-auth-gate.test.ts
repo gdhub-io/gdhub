@@ -38,6 +38,8 @@ async function loadAuth(
 	vi.stubEnv("E2E_TEST_AUTH", flag);
 	vi.stubEnv("NEXT_PUBLIC_E2E_STAND", standBuild);
 	vi.stubEnv("VERCEL", vercel);
+	// `src/auth` reads it at import; CI has no .env to read it from.
+	vi.stubEnv("NEXTAUTH_SECRET", "test-secret");
 	vi.resetModules();
 
 	const { isE2EAuth, authConfig } = await import("../src/auth");
