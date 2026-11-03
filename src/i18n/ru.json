@@ -4532,6 +4532,13 @@
 	"resources": "Ресурсы",
 	"scout": {
 		"card": {
+			"checkpoints": {
+				"empty": "Пока нет контрольных точек.",
+				"lead": "Каждый контрольный пункт, как его куратор оценил. СначалаNewest."
+			},
+			"tab": {
+				"checkpoints": "Контрольные точки"
+			},
 			"workflow": {
 				"aiCurator": "Куратор ИИ",
 				"closedByCheckpoint": "{stage} закрыт после вердикта контрольной точки {number} · {curator}",

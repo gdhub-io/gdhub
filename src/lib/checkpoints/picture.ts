@@ -335,3 +335,15 @@ export const directionOf = (content: unknown) => {
 	const direction = (notes?.notes ?? notes)?.direction;
 	return direction && direction.confirmedAt !== null ? direction : undefined;
 };
+
+/** Each sprint's direction, sprint 1 first; session 1 is day 1, before any sprint. */
+export const sprintDirections = (
+	sessions: { index: number; content: unknown }[],
+) =>
+	sessions
+		.filter((session) => session.index > 1)
+		.sort((a, b) => a.index - b.index)
+		.flatMap((session) => {
+			const direction = directionOf(session.content);
+			return direction ? [{ sprint: session.index - 1, direction }] : [];
+		});

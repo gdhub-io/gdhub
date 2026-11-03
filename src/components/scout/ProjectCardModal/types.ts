@@ -1,3 +1,6 @@
+import type { CheckpointVerdict, SkillLevel } from "@/config/prisma-enums";
+import type { DirectionRead } from "@/types/checkpoints";
+
 export type CardSpeciality = { name: string; level: string } | null;
 
 export type CardPerson = {
@@ -85,6 +88,30 @@ export type CardStep = {
 	isCurrent: boolean;
 	/** How a stage left behind was closed: after a checkpoint verdict, or by its own tasks. */
 	closedBy: { number: number; curator: string | null } | "tasks" | null;
+};
+
+/** One checkpoint as its curator judged it (GDHUB-44); `curator` null is the AI curator. */
+export type CardCheckpoint = {
+	id: string;
+	number: number;
+	stage: string;
+	goal: string;
+	running: boolean;
+	startedAt: string | null;
+	dueAt: string | null;
+	day: number | null;
+	verdict: CheckpointVerdict | null;
+	verdictNote: string | null;
+	curator: {
+		name: string | null;
+		image: string | null;
+		speciality: { id: string; name: string; level: SkillLevel } | null;
+	} | null;
+	directions: {
+		sprint: number;
+		goal: DirectionRead;
+		stage: DirectionRead;
+	}[];
 };
 
 export type CardActivityKind =

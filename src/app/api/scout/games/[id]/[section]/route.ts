@@ -9,6 +9,7 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	getProjectCardActivities,
+	getProjectCardCheckpoints,
 	getProjectCardFiles,
 	getProjectCardInvestment,
 	getProjectCardReviews,
@@ -30,6 +31,7 @@ const SECTIONS = {
 	files: getProjectCardFiles,
 	activities: getProjectCardActivities,
 	workflow: getProjectCardWorkflow,
+	checkpoints: getProjectCardCheckpoints,
 	reviews: getProjectCardReviews,
 	investment: getProjectCardInvestment,
 } satisfies Record<string, (id: string, limit?: number) => Promise<unknown>>;

@@ -506773,6 +506773,2465 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "YU95z",
+      "x": 2429,
+      "y": 34178,
+      "name": "09.07.7 · Project Modal · Checkpoints (GDHUB-44)",
+      "clip": true,
+      "width": 1120,
+      "fill": "#0F0F0F40",
+      "layout": "vertical",
+      "padding": 40,
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Q7u5P",
+          "name": "dialog",
+          "clip": true,
+          "width": 960,
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "SxgET",
+              "name": "Header",
+              "clip": true,
+              "width": "fill_container",
+              "height": 224,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "images/generated-1785059144089.png",
+                "mode": "cover"
+              },
+              "layout": "vertical",
+              "padding": [
+                24,
+                32
+              ],
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "RnkfN",
+                  "layoutPosition": "absolute",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Scrim",
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 0,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#000000B3",
+                        "position": 0
+                      },
+                      {
+                        "color": "#00000026",
+                        "position": 0.55
+                      },
+                      {
+                        "color": "#00000000",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "width": 960,
+                  "height": 224
+                },
+                {
+                  "type": "frame",
+                  "id": "T2MND",
+                  "name": "TopRow",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "wiOvw",
+                      "name": "CardKind",
+                      "fill": "#FFFFFFCC",
+                      "content": "PROJECT CARD",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "700",
+                      "letterSpacing": 1.5
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DVu2j",
+                      "name": "HeaderActions",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "J5Ajw",
+                          "name": "gamepad-2",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#18181B",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "N3fo3",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "gamepad-2",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "l4Xh3T",
+                          "name": "discord-logo",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#18181B",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "xamIM",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "discord-logo",
+                              "library": "phosphor",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "m9atL8",
+                          "name": "qr-code",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#18181B",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "otPaE",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "qr-code",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "vWnd5",
+                          "name": "Close",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#FFFFFFE6",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "WVzZo",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "x",
+                              "library": "lucide",
+                              "fill": "#181818"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "f5NsE",
+                  "name": "BottomRow",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "AXDgS",
+                      "name": "TitleWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ajK0a",
+                          "name": "Title",
+                          "fill": "#FFFFFF",
+                          "content": "Hollow Tide",
+                          "fontFamily": "$font",
+                          "fontSize": 32,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "oh6gG",
+                          "name": "Meta",
+                          "fill": "#FFFFFFD9",
+                          "content": "Adventure · PC / Steam · Updated 2 days ago",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "NKMy1",
+                      "name": "Actions",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ObWLH",
+                          "name": "MsgBtn",
+                          "width": 176,
+                          "height": 40,
+                          "fill": "$surface",
+                          "cornerRadius": 10,
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "gap": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "wxZiA",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-circle",
+                              "library": "lucide",
+                              "fill": "$text-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "yZp1U",
+                              "name": "L",
+                              "fill": "$text-primary",
+                              "content": "Message author",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "uE1No",
+                          "name": "Make Deal",
+                          "width": 176,
+                          "height": 40,
+                          "fill": "#F15541",
+                          "cornerRadius": 10,
+                          "effect": {
+                            "type": "shadow",
+                            "shadowType": "outer",
+                            "color": "#00000040",
+                            "offset": {
+                              "x": 0,
+                              "y": 6
+                            },
+                            "blur": 16
+                          },
+                          "gap": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "Q7Yz3",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "handshake",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            },
+                            {
+                              "type": "text",
+                              "id": "MXh9c",
+                              "name": "L",
+                              "fill": "#FFFFFF",
+                              "content": "Make an offer",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s9v0hV",
+              "name": "Tab Bar",
+              "width": "fill_container",
+              "fill": "$surface",
+              "stroke": "$border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "strokeAlignment": "inner",
+              "strokeLinejoin": "round",
+              "gap": 4,
+              "padding": [
+                8,
+                24
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "u5P8Wv",
+                  "name": "Tab Overview",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "COTP7",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Overview",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hK4sP",
+                  "name": "Tab Team",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ywJ7I",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Team",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "FhnZq",
+                  "name": "Tab Files",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "W2TGa2",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Files",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "peRt7",
+                  "name": "Tab Activities",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OAuxI",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Activities",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "eIoON",
+                  "name": "Tab Workflow",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xDJSK",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Workflow",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DTzDV",
+                  "name": "Tab Checkpoints",
+                  "fill": "#F0F0F0",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hagWG",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Checkpoints",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "L677bb",
+                  "name": "Tab Reviews",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ZoNrF",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Reviews",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "U2N1c",
+              "name": "Body",
+              "width": "fill_container",
+              "fill": "$surface",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "f5LWXe",
+                  "name": "H",
+                  "fill": "$text-primary",
+                  "content": "Checkpoints",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "C3C0oI",
+                  "name": "Lead",
+                  "fill": "$text-tertiary",
+                  "content": "Each checkpoint, as its curator judged it. Newest first.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "l2aMT",
+                  "name": "Checkpoint list (Collapse, outlined)",
+                  "clip": true,
+                  "width": "fill_container",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "iH7jJ",
+                      "name": "Item — Checkpoint 4 · Prototyping",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "stroke": "$border",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ynOw9",
+                          "name": "Head",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "qEjnv",
+                              "name": "Chevron",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "circle-dashed",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "AVukp",
+                              "name": "Title",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "u1V7C6",
+                                  "name": "Name",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "A playable greybox of the first island: walk from the beach to the lighthouse.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "UI7Fz",
+                                  "name": "Dates",
+                                  "fill": "$text-tertiary",
+                                  "content": "Checkpoint 4 · Prototyping · from 20 Oct 2025 · day 15 of 28",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "G8EFxe",
+                              "name": "Verdict (StatusDot)",
+                              "fill": "$info-tint",
+                              "cornerRadius": 999,
+                              "gap": 6,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "Q0tLO",
+                                  "name": "Dot",
+                                  "fill": "$info",
+                                  "width": 6,
+                                  "height": 6
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "rxbbt",
+                                  "name": "Word",
+                                  "fill": "$info-on-tint",
+                                  "content": "In progress",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "NuNtN",
+                              "name": "CuratorBadge · AI (robot)",
+                              "width": 200,
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "kHx11",
+                                  "name": "AppAvatar 32",
+                                  "width": 32,
+                                  "height": 32,
+                                  "fill": {
+                                    "type": "image",
+                                    "enabled": true,
+                                    "url": "generated-17.png",
+                                    "mode": "cover"
+                                  },
+                                  "cornerRadius": 999
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "uUKuZ",
+                                  "name": "Text",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Z0weJK",
+                                      "name": "Label",
+                                      "fill": "$text-primary",
+                                      "content": "AI curator",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "G0r62",
+                                      "name": "Basis",
+                                      "fill": "$text-tertiary",
+                                      "content": "Public game-dev knowledge",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E1KER",
+                      "name": "Item — Checkpoint 3 · Concepting",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "stroke": "$border",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Kv8RV",
+                          "name": "Head",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "uH2uR",
+                              "name": "Chevron",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "V95SOa",
+                              "name": "Title",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "jDDHc",
+                                  "name": "Name",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "A pitch video and a trailer storyboard that show the game the pitch describes.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "H9aT5b",
+                                  "name": "Dates",
+                                  "fill": "$text-tertiary",
+                                  "content": "Checkpoint 3 · Concepting · 15 Sep – 12 Oct 2025",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "AUaip",
+                              "name": "Verdict (StatusDot)",
+                              "fill": "$success-tint",
+                              "cornerRadius": 999,
+                              "gap": 6,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "vms71",
+                                  "name": "Dot",
+                                  "fill": "$success",
+                                  "width": 6,
+                                  "height": 6
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "qfqnh",
+                                  "name": "Word",
+                                  "fill": "$success-on-tint",
+                                  "content": "Stage closed",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "kTry8",
+                              "name": "CuratorBadge · AI (robot)",
+                              "width": 200,
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "aEPAA",
+                                  "name": "AppAvatar 32",
+                                  "width": 32,
+                                  "height": 32,
+                                  "fill": {
+                                    "type": "image",
+                                    "enabled": true,
+                                    "url": "generated-17.png",
+                                    "mode": "cover"
+                                  },
+                                  "cornerRadius": 999
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "lmrIG",
+                                  "name": "Text",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "wo4Mx",
+                                      "name": "Label",
+                                      "fill": "$text-primary",
+                                      "content": "AI curator",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "UeAnM",
+                                      "name": "Basis",
+                                      "fill": "$text-tertiary",
+                                      "content": "Public game-dev knowledge",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BvHlp",
+                      "name": "Item — Checkpoint 2 · Concepting",
+                      "width": "fill_container",
+                      "fill": "$bg-subtle",
+                      "stroke": "$border",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "cSyK6",
+                          "name": "Head",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "VHEGZ",
+                              "name": "Chevron",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "chevron-down",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "UJ779",
+                              "name": "Title",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "t1afF",
+                                  "name": "Name",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "A one-page pitch and a mood board the whole team agrees on.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "o9O0Y",
+                                  "name": "Dates",
+                                  "fill": "$text-tertiary",
+                                  "content": "Checkpoint 2 · Concepting · 11 Aug – 7 Sep 2025",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "uENAK",
+                              "name": "Verdict (StatusDot)",
+                              "fill": "$error-tint",
+                              "cornerRadius": 999,
+                              "gap": 6,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "dXHgS",
+                                  "name": "Dot",
+                                  "fill": "$error",
+                                  "width": 6,
+                                  "height": 6
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "JTI6C",
+                                  "name": "Word",
+                                  "fill": "$error-on-tint",
+                                  "content": "Goal missed",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "KgneX",
+                              "name": "CuratorBadge · AI (robot)",
+                              "width": 200,
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "w8u5xR",
+                                  "name": "AppAvatar 32",
+                                  "width": 32,
+                                  "height": 32,
+                                  "fill": {
+                                    "type": "image",
+                                    "enabled": true,
+                                    "url": "generated-17.png",
+                                    "mode": "cover"
+                                  },
+                                  "cornerRadius": 999
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "y5xwKc",
+                                  "name": "Text",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "w0Kfe",
+                                      "name": "Label",
+                                      "fill": "$text-primary",
+                                      "content": "AI curator",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "vVGGs",
+                                      "name": "Basis",
+                                      "fill": "$text-tertiary",
+                                      "content": "Public game-dev knowledge",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "p6vKi",
+                          "name": "Expanded — the verdict's details (read-only)",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 20,
+                          "padding": [
+                            4,
+                            16,
+                            20,
+                            48
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "QsM7n",
+                              "name": "Verdict",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "sOSZg",
+                                  "name": "Head",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "B8zUg",
+                                      "name": "Label",
+                                      "fill": "$text-tertiary",
+                                      "content": "Verdict · 8 Sep 2025",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "t3SaEH",
+                                  "name": "Text",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "The pitch one-pager shows the pitch in full. I accepted the mood board on trust: it is behind a login and I could not check it. The character sheet shows two of the three heroes. The pitch video shows a different game and the trailer link does not open, so the goal is missed.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "l6SPry",
+                              "name": "Direction by sprint (C · heading per sprint; tooltip: word + why)",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "d0q0n",
+                                  "name": "Head",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "oMdUs",
+                                      "name": "Label",
+                                      "fill": "$text-tertiary",
+                                      "content": "Direction by sprint",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "Z7s48z",
+                                      "name": "Aside",
+                                      "fill": "$text-tertiary",
+                                      "content": "Hover a sprint for the curator's reason",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "aPE2U",
+                                  "name": "Table (outlined)",
+                                  "clip": true,
+                                  "width": "fill_container",
+                                  "cornerRadius": 12,
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "strokeAlignment": "inner",
+                                  "layout": "vertical",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "VigVh",
+                                      "name": "Row — Checkpoint goal",
+                                      "width": "fill_container",
+                                      "stroke": "$border",
+                                      "strokeWidth": {
+                                        "bottom": 1
+                                      },
+                                      "strokeAlignment": "inner",
+                                      "gap": 12,
+                                      "padding": [
+                                        10,
+                                        12
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "AHKOw",
+                                          "name": "Goal",
+                                          "fill": "$text-secondary",
+                                          "textGrowth": "fixed-width",
+                                          "width": 112,
+                                          "content": "Checkpoint goal",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "iZBdB",
+                                          "name": "Track (S1–S4)",
+                                          "width": "fill_container",
+                                          "gap": 4,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "frame",
+                                              "id": "Y9fhZU",
+                                              "name": "Sprint 1 · toward (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$success-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "h6vt7",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S1",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "tEUpx",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-right",
+                                                  "library": "lucide",
+                                                  "fill": "$success-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "gml0N",
+                                                  "name": "Word",
+                                                  "fill": "$success-on-tint",
+                                                  "content": "Toward the goal",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "Ehn4Y",
+                                              "name": "Sprint 2 · toward (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$success-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "h2dVjq",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S2",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "m54qmc",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-right",
+                                                  "library": "lucide",
+                                                  "fill": "$success-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "hGpFe",
+                                                  "name": "Word",
+                                                  "fill": "$success-on-tint",
+                                                  "content": "Toward the goal",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "Q2P8t",
+                                              "name": "Sprint 3 · stalled (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$warning-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "vC0ZF",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S3",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "mOBOk",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "refresh-cw",
+                                                  "library": "lucide",
+                                                  "fill": "$warning-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "p6B6RA",
+                                                  "name": "Word",
+                                                  "fill": "$warning-on-tint",
+                                                  "content": "Standing still",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "WVSgL",
+                                              "name": "Sprint 4 · toward (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$success-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "Nr1My",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S4",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "j2nAlG",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-right",
+                                                  "library": "lucide",
+                                                  "fill": "$success-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "u5P191",
+                                                  "name": "Word",
+                                                  "fill": "$success-on-tint",
+                                                  "content": "Toward the goal",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "icon",
+                                          "id": "yHLGH",
+                                          "name": "Goal flag",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "flag",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "dZhDt",
+                                      "name": "Row — Stage goal",
+                                      "width": "fill_container",
+                                      "stroke": "$border",
+                                      "strokeAlignment": "inner",
+                                      "gap": 12,
+                                      "padding": [
+                                        10,
+                                        12
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "SuV3G",
+                                          "name": "Goal",
+                                          "fill": "$text-secondary",
+                                          "textGrowth": "fixed-width",
+                                          "width": 112,
+                                          "content": "Stage goal",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "lcs1c",
+                                          "name": "Track (S1–S4)",
+                                          "width": "fill_container",
+                                          "gap": 4,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "frame",
+                                              "id": "axqmC",
+                                              "name": "Sprint 1 · sideways (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$info-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "S2IOAL",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S1",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "leBKf",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-up",
+                                                  "library": "lucide",
+                                                  "fill": "$info-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "F7foO",
+                                                  "name": "Word",
+                                                  "fill": "$info-on-tint",
+                                                  "content": "Gone sideways",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "JINrn",
+                                              "name": "Sprint 2 · toward (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$success-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "kzl1V",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S2",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "Nn8vH",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-right",
+                                                  "library": "lucide",
+                                                  "fill": "$success-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "uv6Ff",
+                                                  "name": "Word",
+                                                  "fill": "$success-on-tint",
+                                                  "content": "Toward the goal",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "WMvX7",
+                                              "name": "Sprint 3 · toward (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$success-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "fNFgi",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S3",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "Xa6ZT",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-right",
+                                                  "library": "lucide",
+                                                  "fill": "$success-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "W377T",
+                                                  "name": "Word",
+                                                  "fill": "$success-on-tint",
+                                                  "content": "Toward the goal",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "type": "frame",
+                                              "id": "RbL7v",
+                                              "name": "Sprint 4 · toward (tooltip: the curator's reason)",
+                                              "width": "fill_container",
+                                              "height": 32,
+                                              "fill": "$success-tint",
+                                              "cornerRadius": 8,
+                                              "gap": 6,
+                                              "padding": [
+                                                0,
+                                                10
+                                              ],
+                                              "alignItems": "center",
+                                              "children": [
+                                                {
+                                                  "type": "text",
+                                                  "id": "J5kR8g",
+                                                  "name": "Sprint",
+                                                  "fill": "$text-tertiary",
+                                                  "content": "S4",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 11,
+                                                  "fontWeight": "normal"
+                                                },
+                                                {
+                                                  "type": "icon",
+                                                  "id": "dECFQ",
+                                                  "name": "Icon",
+                                                  "width": 14,
+                                                  "height": 14,
+                                                  "icon": "arrow-right",
+                                                  "library": "lucide",
+                                                  "fill": "$success-on-tint"
+                                                },
+                                                {
+                                                  "type": "text",
+                                                  "id": "Sd3B2",
+                                                  "name": "Word",
+                                                  "fill": "$success-on-tint",
+                                                  "content": "Toward the goal",
+                                                  "fontFamily": "$font",
+                                                  "fontSize": 12,
+                                                  "fontWeight": "500"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "icon",
+                                          "id": "dgHGY",
+                                          "name": "Goal flag",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "flag",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "McVAM",
+                      "name": "Item — Checkpoint 1 · Ideation",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "stroke": "$border",
+                      "strokeAlignment": "inner",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GvQPi",
+                          "name": "Head",
+                          "width": "fill_container",
+                          "gap": 16,
+                          "padding": [
+                            14,
+                            16
+                          ],
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "Gm3Bn",
+                              "name": "Chevron",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "chevron-right",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "E8bYZq",
+                              "name": "Title",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "auRg1",
+                                  "name": "Name",
+                                  "fill": "$text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "The core idea, the audience and three reference games, agreed by the team.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "tlVCy",
+                                  "name": "Dates",
+                                  "fill": "$text-tertiary",
+                                  "content": "Checkpoint 1 · Ideation · 2 Jun – 29 Jun 2025",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "OFZz0",
+                              "name": "Verdict (StatusDot)",
+                              "fill": "$success-tint",
+                              "cornerRadius": 999,
+                              "gap": 6,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "T5xwv",
+                                  "name": "Dot",
+                                  "fill": "$success",
+                                  "width": 6,
+                                  "height": 6
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "WVwhF",
+                                  "name": "Word",
+                                  "fill": "$success-on-tint",
+                                  "content": "Stage closed",
+                                  "fontFamily": "$font",
+                                  "fontSize": 12,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "vMoXS",
+                              "name": "CuratorBadge · person — opens talent card",
+                              "width": 200,
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "YzEPD",
+                                  "name": "AppAvatar 32",
+                                  "width": 32,
+                                  "height": 32,
+                                  "fill": {
+                                    "type": "image",
+                                    "enabled": true,
+                                    "url": "https://images.unsplash.com/photo-1604364721460-0cbc5866219d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1MTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                                    "mode": "cover"
+                                  },
+                                  "cornerRadius": 999
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "tzDiI",
+                                  "name": "Text",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "OV1d2",
+                                      "name": "Name",
+                                      "fill": "$link",
+                                      "content": "Marta Kowalska",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "500"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "QMpbo",
+                                      "name": "Speciality · level",
+                                      "fill": "$text-tertiary",
+                                      "content": "Game Designer · Senior",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vf97Y",
+              "name": "Footer",
+              "width": "fill_container",
+              "fill": "$surface",
+              "stroke": "$border",
+              "strokeWidth": {
+                "top": 1
+              },
+              "strokeAlignment": "inner",
+              "strokeLinejoin": "round",
+              "padding": [
+                16,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "RSylD",
+                  "name": "FL",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "hQfGv",
+                      "name": "Ic",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "history",
+                      "library": "lucide",
+                      "fill": "#A1A1AA"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tRT5h",
+                      "name": "L",
+                      "fill": "#A1A1AA",
+                      "content": "Updated 2 days ago",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "tMdco",
+      "x": 3669,
+      "y": 34178,
+      "name": "09.07.8 · Project Modal · Checkpoints · none yet (GDHUB-44)",
+      "clip": true,
+      "width": 1120,
+      "fill": "#0F0F0F40",
+      "layout": "vertical",
+      "padding": 40,
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "SO0NM",
+          "name": "dialog",
+          "clip": true,
+          "width": 960,
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#0F0F0F66",
+            "offset": {
+              "x": 0,
+              "y": 24
+            },
+            "blur": 60
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "t0eTS",
+              "name": "Header",
+              "clip": true,
+              "width": "fill_container",
+              "height": 224,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "images/generated-1785059144089.png",
+                "mode": "cover"
+              },
+              "layout": "vertical",
+              "padding": [
+                24,
+                32
+              ],
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "qDSSt",
+                  "layoutPosition": "absolute",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Scrim",
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 0,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#000000B3",
+                        "position": 0
+                      },
+                      {
+                        "color": "#00000026",
+                        "position": 0.55
+                      },
+                      {
+                        "color": "#00000000",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "width": 960,
+                  "height": 224
+                },
+                {
+                  "type": "frame",
+                  "id": "Puqth",
+                  "name": "TopRow",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "apjew",
+                      "name": "CardKind",
+                      "fill": "#FFFFFFCC",
+                      "content": "PROJECT CARD",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "700",
+                      "letterSpacing": 1.5
+                    },
+                    {
+                      "type": "frame",
+                      "id": "d2GJM",
+                      "name": "HeaderActions",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "axZEE",
+                          "name": "gamepad-2",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#18181B",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "J8wbWU",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "gamepad-2",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "W1xmGA",
+                          "name": "discord-logo",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#18181B",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "rxzFQ",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "discord-logo",
+                              "library": "phosphor",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ea1sA",
+                          "name": "qr-code",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#18181B",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "M31Jh5",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "qr-code",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Xkknl",
+                          "name": "Close",
+                          "width": 32,
+                          "height": 32,
+                          "fill": "#FFFFFFE6",
+                          "cornerRadius": 9999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "jLlrr",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "x",
+                              "library": "lucide",
+                              "fill": "#181818"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "lXHqy",
+                  "name": "BottomRow",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "justifyContent": "space_between",
+                  "alignItems": "end",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gcFOB",
+                      "name": "TitleWrap",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Q1wxz8",
+                          "name": "Title",
+                          "fill": "#FFFFFF",
+                          "content": "Hollow Tide",
+                          "fontFamily": "$font",
+                          "fontSize": 32,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "TdYcW",
+                          "name": "Meta",
+                          "fill": "#FFFFFFD9",
+                          "content": "Adventure · PC / Steam · Updated 2 days ago",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "r94rX",
+                      "name": "Actions",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "yru6U",
+                          "name": "MsgBtn",
+                          "width": 176,
+                          "height": 40,
+                          "fill": "$surface",
+                          "cornerRadius": 10,
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "gap": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "F5IiDK",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "message-circle",
+                              "library": "lucide",
+                              "fill": "$text-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "O5hT5X",
+                              "name": "L",
+                              "fill": "$text-primary",
+                              "content": "Message author",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "vN15N",
+                          "name": "Make Deal",
+                          "width": 176,
+                          "height": 40,
+                          "fill": "#F15541",
+                          "cornerRadius": 10,
+                          "effect": {
+                            "type": "shadow",
+                            "shadowType": "outer",
+                            "color": "#00000040",
+                            "offset": {
+                              "x": 0,
+                              "y": 6
+                            },
+                            "blur": 16
+                          },
+                          "gap": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "b05aw",
+                              "name": "Ic",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "handshake",
+                              "library": "lucide",
+                              "fill": "#FFFFFF"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ZkWFR",
+                              "name": "L",
+                              "fill": "#FFFFFF",
+                              "content": "Make an offer",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "u0XmWE",
+              "name": "Tab Bar",
+              "width": "fill_container",
+              "fill": "$surface",
+              "stroke": "$border",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "strokeAlignment": "inner",
+              "strokeLinejoin": "round",
+              "gap": 4,
+              "padding": [
+                8,
+                24
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bX5Va",
+                  "name": "Tab Overview",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Hh9Ny",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Overview",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "R02Ven",
+                  "name": "Tab Team",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "V51QJ",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Team",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ijjyT",
+                  "name": "Tab Files",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "MF9h2",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Files",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "p1JVD",
+                  "name": "Tab Activities",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "PjmQm",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Activities",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "E00bP",
+                  "name": "Tab Workflow",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "IifyH",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Workflow",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "W5Gkb",
+                  "name": "Tab Checkpoints",
+                  "fill": "#F0F0F0",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Dt660",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Checkpoints",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DSZ14",
+                  "name": "Tab Reviews",
+                  "fill": "#00000000",
+                  "cornerRadius": 10,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GshPR",
+                      "name": "L",
+                      "fill": "$text-secondary",
+                      "content": "Reviews",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RjPMT",
+              "name": "Body",
+              "width": "fill_container",
+              "fill": "$surface",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "v61c5d",
+                  "name": "H",
+                  "fill": "$text-primary",
+                  "content": "Checkpoints",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "u7UnM",
+                  "name": "Lead",
+                  "fill": "$text-tertiary",
+                  "content": "No checkpoints yet.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "WCuYU",
+              "name": "Footer",
+              "width": "fill_container",
+              "fill": "$surface",
+              "stroke": "$border",
+              "strokeWidth": {
+                "top": 1
+              },
+              "strokeAlignment": "inner",
+              "strokeLinejoin": "round",
+              "padding": [
+                16,
+                24
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "UXBAO",
+                  "name": "FL",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "b92nhi",
+                      "name": "Ic",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "history",
+                      "library": "lucide",
+                      "fill": "#A1A1AA"
+                    },
+                    {
+                      "type": "text",
+                      "id": "i49b7F",
+                      "name": "L",
+                      "fill": "#A1A1AA",
+                      "content": "Updated 2 days ago",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

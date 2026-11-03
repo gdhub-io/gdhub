@@ -5,8 +5,9 @@
 ## Want
 
 A scout opening a project sees how it actually moved: every checkpoint it went
-through, oldest to newest — what each one set out to do, when it ran, who
-curated it, what the verdict was, and the curator's result card. For each
+through, newest first with the running one on top — what each one set out to do, when it ran, who
+curated it, and the curator's written verdict. A
+human curator's name opens their talent card, so the scout knows who judged. For each
 sprint inside it, the scout sees which way the team was heading relative to the
 goal (toward / sideways / stalled / idle) and the curator's one-line reason.
 Unlike a devlog, this is a claim someone else checked, so it is the strongest
@@ -17,7 +18,7 @@ signal a scout gets.
 Today the scout card says only "{stage} closed after the Checkpoint N verdict ·
 {curator}" on the Workflow tab (GDHUB-31). It tells the scout that a checkpoint
 happened, but not what it aimed at or what came of it. The data that would
-answer that already exists: goals, verdicts, result cards, and since GDHUB-133
+answer that already exists: goals, verdicts, and since GDHUB-133
 the sprint directions.
 
 ## Constraints
@@ -40,13 +41,18 @@ the sprint directions.
 
 - [ ] The scout's project modal has a Checkpoints section listing every closed
       checkpoint with any verdict — stage closed, goal met or goal missed —
-      oldest first.
-- [ ] Each entry shows the checkpoint number, its goal, the start and end dates,
-      the verdict, and the curator: "AI curator" or the person's name.
-- [ ] Opening an entry shows its result card and each sprint's direction with
-      the reason.
+      newest first, the running one on top.
+- [ ] Each entry leads with its goal and verdict, then the checkpoint number,
+      stage and dates, and the curator: a person's avatar, name, speciality and level, or
+      the robot avatar with "AI curator".
+- [ ] A human curator's name opens their talent card (`SpecialistPreviewModal`,
+      as the curator picker opens it, with no hiring offer), so the scout can
+      see who judged. The AI curator has no card.
+- [ ] Opening an entry shows the verdict's details: the curator's verdict text and each
+      sprint's direction with the reason. The checkpoint's tasks and expected
+      outcomes are not shown.
 - [ ] A running checkpoint appears as "in progress" with its goal and dates
-      only: no result card and no directions.
+      only: no verdict and no directions.
 - [ ] A cancelled or draft checkpoint, or a project with no checkpoints, shows
       no entry. The latter shows a plain empty line.
 - [ ] Nothing in the response or on screen carries the author's rating, call
@@ -60,7 +66,7 @@ the sprint directions.
 2. Open `/scout/games` and pick E2E Test Game, or any project with a closed
    checkpoint. In the modal, open the Checkpoints section.
 3. Check the entry: number, goal, dates, verdict and curator. Open it: the
-   result card and four sprint rows, each with a direction and a reason.
+   goal, the verdict text and four sprint rows, each with a direction and a reason.
 4. Pick a project with a checkpoint that missed its goal. It is listed too,
    with the "Goal missed" verdict.
 5. Pick a project whose checkpoint is still running. It shows "in progress"
@@ -82,8 +88,8 @@ the sprint directions.
 ## Open questions
 
 - **A checkpoint that closed before GDHUB-133 has no sprint directions.**
-  Assumed: the entry shows the result card only, with no placeholder rows.
-- **The curator is a person.** Assumed: show the name only, not a link to their
-  profile, the same as the existing "closed by" line.
+  Assumed: the entry shows the verdict text only, with no placeholder rows.
+- **A human curator with no speciality to show.** Assumed: the name is plain
+  text, with no card link.
 - **Can the author opt out?** Assumed: no. An author who could choose which
   checkpoints to show would empty the signal.

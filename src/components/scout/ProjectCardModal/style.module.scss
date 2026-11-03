@@ -854,3 +854,109 @@
 .legalTile {
 	@include tile(40px, var(--gd-radius-control));
 }
+
+/* ── Checkpoints (GDHUB-44, frames 09.07.7 / 09.07.8) ───────────────────── */
+.checkpoints {
+	:global(.ant-collapse-header) {
+		align-items: flex-start !important;
+	}
+}
+
+.checkpointHead {
+	width: 100%;
+}
+
+.checkpointBody {
+	padding-left: var(--gd-space-6);
+}
+
+.min0 {
+	min-width: 0;
+}
+
+.cpMeta {
+	font-size: var(--gd-font-size-caption);
+}
+
+.curator {
+	width: 200px;
+	flex-shrink: 0;
+}
+
+.curatorName {
+	height: auto;
+	padding: 0;
+	justify-content: flex-start;
+}
+
+.verdictNote {
+	margin-bottom: 0 !important;
+	white-space: pre-line;
+}
+
+.directions {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+}
+
+.directionRow {
+	padding: var(--gd-space-3) var(--gd-space-3);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.directionLabel {
+	width: 112px;
+	flex-shrink: 0;
+	font-size: var(--gd-font-size-caption);
+}
+
+.flag {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+}
+
+.sprintCell {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-width: 0;
+	height: 32px;
+	padding: 0 var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+
+	&[data-direction="toward"] {
+		background: var(--gd-success-tint);
+		color: var(--gd-success-on-tint);
+	}
+	&[data-direction="sideways"] {
+		background: var(--gd-info-tint);
+		color: var(--gd-info-on-tint);
+	}
+	&[data-direction="stalled"] {
+		background: var(--gd-warning-tint);
+		color: var(--gd-warning-on-tint);
+	}
+	&[data-direction="idle"] {
+		border: 1px solid var(--gd-color-border);
+		color: var(--gd-color-text-tertiary);
+	}
+}
+
+.sprintNumber {
+	color: var(--gd-color-text-tertiary);
+	font-size: var(--gd-font-size-label);
+	font-weight: 400;
+}
+
+.sprintWord {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
