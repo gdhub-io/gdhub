@@ -30,7 +30,6 @@ const { Text } = Typography;
 
 export type WorkflowPathProps = {
 	project: { id: string; name: string; slug: string };
-	locale?: string;
 };
 
 /**
@@ -38,7 +37,7 @@ export type WorkflowPathProps = {
  * checkpoints between them and, inside the running one, its sprints. Frames
  * 01, 02 and 07–09 of the Workflow row in platform-design.pen.
  */
-export function WorkflowPath({ project, locale }: WorkflowPathProps) {
+export function WorkflowPath({ project }: WorkflowPathProps) {
 	const { t } = useTranslate();
 	const { can } = useAccess();
 	const canMove = can("project.workflow.edit");
@@ -273,7 +272,6 @@ export function WorkflowPath({ project, locale }: WorkflowPathProps) {
 				title={stepName(index)}
 				state={state}
 				dates={stageDates(index, state)}
-				locale={locale}
 				next={
 					state === "current" && canMove && nextStep
 						? {

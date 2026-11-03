@@ -25,6 +25,7 @@ import {
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
 import { limitAiCalls } from "@/lib/rate-limit";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { matchKey } from "@/lib/workflow/matchKey";
 import { currentMemberOf } from "@/repositories/project/team";
 import {
 	DEFAULT_PROJECT_STAGE,
@@ -41,7 +42,6 @@ import {
 	getProjectLifecycleNotificationSnapshot,
 	notifyProjectLifecycleRecipients,
 } from "@/services/projectLifecycleNotifications";
-import { matchKey } from "@/services/workflow/matchKey";
 
 const GetProjectQuerySchema = z.object({
 	slug: z.string(),

@@ -1,0 +1,14 @@
+// Frame 10.09: a thin outline, no fill; the blocks leave room on the left for
+// Editor.js's "+" and block menu.
+.field {
+	min-height: 160px;
+	padding: var(--gd-space-4) var(--gd-space-6) var(--gd-space-4) 52px;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+}
+
+// Editor.js centres its blocks in 650px; in a form field they run the field's width.
+.field :global(.ce-block__content),
+.field :global(.ce-toolbar__content) {
+	max-width: none;
+}

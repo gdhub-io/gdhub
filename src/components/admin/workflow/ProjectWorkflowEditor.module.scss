@@ -191,3 +191,11 @@
 	corner-shape: round;
 	background: var(--gd-warning-solid);
 }
+
+// GDHUB-97: the stage's goal and text sit above its tasks.
+.ownFields {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	margin-bottom: var(--gd-space-4);
+}

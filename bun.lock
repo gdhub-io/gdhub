@@ -5,7 +5,6 @@
     "": {
       "name": "gamelab",
       "dependencies": {
-        "@9gustin/react-notion-render": "^3.11.2",
         "@ably/chat": "^0.14.1",
         "@ably/chat-react-ui-components": "^0.1.2",
         "@ai-sdk/openai": "4.0.81",
@@ -40,12 +39,11 @@
         "@editorjs/table": "^2.4.5",
         "@firebase/app": "^0.16.2",
         "@firebase/messaging": "^0.13.3",
-        "@gdhub-io/gdhub-prisma": "2.0.0-beta.86",
+        "@gdhub-io/gdhub-prisma": "2.0.0-beta.88",
         "@gdhub-io/gdhub-typesense": "^1.0.6",
         "@hello-pangea/dnd": "^18.0.1",
         "@langchain/langgraph-sdk": "^1.12.1",
         "@mdxeditor/editor": "^3.11.5",
-        "@notionhq/client": "^2.2.1",
         "@novu/api": "^3.12.0",
         "@novu/framework": "^2.14.0",
         "@novu/react": "^3.12.0",
@@ -193,8 +191,6 @@
     "@prisma/client": "7.9.1",
   },
   "packages": {
-    "@9gustin/react-notion-render": ["@9gustin/react-notion-render@3.11.4", "", { "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-9eaxQ7Asxav2QwcTeSNy5/N2H7iLuC78Exy2oHCXu7bUXinjsRYBOL+IinknKK3maHfboZHZF4loCUrZ6LrGTw=="],
-
     "@ably/chat": ["@ably/chat@0.14.1", "", { "dependencies": { "async-mutex": "^0.5.0", "dequal": "^2.0.3", "lodash.clonedeep": "^4.5.0" }, "optionalDependencies": { "@rollup/rollup-darwin-arm64": "^4.18", "@rollup/rollup-linux-x64-gnu": "^4.18" }, "peerDependencies": { "ably": "^2.13.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-hCKTpHMePvJ98vYB/PM/PEa49iP3SYsgJ8KhbVEI/LP+nuWN2BaZui0YPfnLkWXh5eQf1Fb0d5sPhY7/x2kOww=="],
 
     "@ably/chat-react-ui-components": ["@ably/chat-react-ui-components@0.1.2", "", { "dependencies": { "clsx": "^2.1.1" }, "peerDependencies": { "@ably/chat": "^0.14.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-WEEFburLyNieOb3Fvu/KXO1h/M93cUiAo8hsp3EoJOT1y0rFcVLdnDKDm+BPIHCT0PIVMr1sWZJQ9anuqT0y6A=="],
@@ -811,7 +807,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.12", "", {}, "sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww=="],
 
-    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.86", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.86/21a966e0c3175e258c18295320887ee85d7a0eb9", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-FiQMbbT+IFdjeBrmaUTmS0eghqvBiDQ4r95L3hOpSe3Fq/xKicOKMLcXk3yZlGJmBBp7jNVLaG5hbUvY8GOd+g=="],
+    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.88", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.88/98d74f4b5ff2a1d1567d804e398f947917ec5a21", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-dZVwEOmntkn2OhJygckQ25lmNZ6TUxOSHF13++KC9FsI7WKUo5pQkpFCiwFfgvMH3adeGKT6A+zB6ExouxJI8g=="],
 
     "@gdhub-io/gdhub-typesense": ["@gdhub-io/gdhub-typesense@1.0.6", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.6/2825e41b4b51a61291221e549d82c396059e4ab1", { "dependencies": { "dayjs": "^1.11.13", "typesense": "^1.8.2", "typesense-instantsearch-adapter": "^2.8.0" } }, "sha512-jxhOwbHh0dtcAsemld5XPjODMqcjuipJjJx5nxM2z2qCKa/TGUw95j3Z78oOOlexksj0MSVqSNUluJpp9o+Rug=="],
 
@@ -1080,8 +1076,6 @@
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
 
     "@nolyfill/is-core-module": ["@nolyfill/is-core-module@1.0.39", "", {}, "sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA=="],
-
-    "@notionhq/client": ["@notionhq/client@2.3.0", "", { "dependencies": { "@types/node-fetch": "^2.5.10", "node-fetch": "^2.6.1" } }, "sha512-l7WqTCpQqC+HibkB9chghONQTYcxNQT0/rOJemBfmuKQRTu2vuV8B3yA395iKaUdDo7HI+0KvQaz9687Xskzkw=="],
 
     "@novu/api": ["@novu/api@3.18.2", "", { "dependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-nsEhlmvuRpw//IMAWJfL+w0+STJM1Yicn0ieptD/8uiwnqlTScVQWxYvK1wvdSiZeWh84KlyojoGkfJ+DvEn2Q=="],
 
@@ -4826,8 +4820,6 @@
     "@napi-rs/wasm-runtime/@emnapi/core": ["@emnapi/core@1.11.2", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.2", "tslib": "^2.4.0" } }, "sha512-TC8MkTuZUtcTSiFeuC0ksCh9QIJ5+F21MvZ4Wn4ORfYaFJ/0dsiudv5tVkejgwZlwQ39jL9WWDe2lz8x0WglOA=="],
 
     "@napi-rs/wasm-runtime/@emnapi/runtime": ["@emnapi/runtime@1.11.3", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA=="],
-
-    "@notionhq/client/node-fetch": ["node-fetch@2.7.0", "", { "dependencies": { "whatwg-url": "^5.0.0" }, "peerDependencies": { "encoding": "^0.1.0" }, "optionalPeers": ["encoding"] }, "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A=="],
 
     "@oxc-resolver/binding-wasm32-wasi/@emnapi/core": ["@emnapi/core@1.11.0", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.2", "tslib": "^2.4.0" } }, "sha512-l9Oo58x0HOP5znGzVhYW9U3e5wVuA4LAZU2AGezTmkhO1CgQRFDhDg4nneHsu/t3WniXg9QrG2nIXL/ZS8ln8Q=="],
 

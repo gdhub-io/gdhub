@@ -1,4 +1,4 @@
-import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
+import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
 import { teamCapacity } from "@/lib/checkpoints/capacity";
 import { lensWeights } from "@/lib/checkpoints/lenses";
 import type { CheckpointPicture } from "@/lib/checkpoints/picture";
@@ -48,10 +48,11 @@ const DEVLOGS = {
 };
 
 export const E2E_WORKFLOW = {
+	projectGoal: "The game is released and people play it.",
 	currentStage: "Prototyping",
 	nextStage: "Preparing a demo version",
 	description: CURATOR_STAGE_BRIEFS.Prototyping ?? null,
-	goal: CURATOR_STAGE_GOALS.Prototyping ?? null,
+	goal: "The concept's riskiest questions are answered with something playable or visible: the core works and the style is chosen.",
 	lenses: lensWeights("Prototyping"),
 	requiredTasks: [{ name: "Playable prototype", done: false }],
 };

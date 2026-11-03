@@ -9,6 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { ownStageFields } from "@/lib/workflow/own-stage";
 import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
 import { setCurrentStep } from "@/repositories/project/workflow";
 import {
@@ -185,6 +186,7 @@ export const PUT = pipe(
 					data: {
 						name: stepName(input) ?? undefined,
 						description: input.description ?? undefined,
+						...ownStageFields(input, Prisma.DbNull),
 						order,
 					},
 				});
@@ -204,6 +206,7 @@ export const PUT = pipe(
 					data: {
 						name: stepName(input) ?? "Untitled step",
 						description: input.description ?? "",
+						...ownStageFields(input, Prisma.DbNull),
 						order,
 						projectWorkflowId: id,
 					},

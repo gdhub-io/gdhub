@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
+import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
+
+const STAGE_GOAL = "The core works and the style is chosen.";
+const PROJECT_GOAL = "The game is released and people play it.";
+
 import { devlogText } from "@/lib/checkpoints/curator-text";
 import { lensWeights } from "@/lib/checkpoints/lenses";
 import {
@@ -204,7 +208,14 @@ describe("the stage as the curator reads it", () => {
 	it("names the next stage, the required tasks done or not, and the curator's own brief", async () => {
 		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
 			order: 2,
+			name: "Prototyping",
 			projectWorkflowId: "wf",
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [{}, {}, { name: "Prototyping", goal: STAGE_GOAL, tasks: [] }],
+				},
+			},
 			// The query asks for the required tasks only.
 			tasks: [
 				{ name: "Playable greybox", done: true },
@@ -213,10 +224,11 @@ describe("the stage as the curator reads it", () => {
 		} as never);
 
 		await expect(stageWorkflow("step-2", "Prototyping")).resolves.toEqual({
+			projectGoal: PROJECT_GOAL,
 			currentStage: "Prototyping",
 			nextStage: "Demo version",
 			description: CURATOR_STAGE_BRIEFS.Prototyping,
-			goal: CURATOR_STAGE_GOALS.Prototyping,
+			goal: STAGE_GOAL,
 			lenses: lensWeights("Prototyping"),
 			requiredTasks: [
 				{ name: "Playable greybox", done: true },
@@ -232,8 +244,69 @@ describe("the stage as the curator reads it", () => {
 		);
 	});
 
-	it("never hands the model the author's Notion advice", async () => {
+	it("finds the goal by the stage's name when the project's steps moved", async () => {
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
+			order: 0,
+			name: "prototyping",
+			projectWorkflowId: "wf",
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [
+						{ name: "Ideation", goal: "Ideation goal", tasks: [] },
+						{ name: "Prototyping", goal: STAGE_GOAL, tasks: [] },
+					],
+				},
+			},
+			tasks: [],
+		} as never);
+
+		expect((await stageWorkflow("step", "Prototyping")).goal).toBe(STAGE_GOAL);
+	});
+
+	it("reads the project's own stage goal before the template's", async () => {
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
+			order: 0,
+			name: "Prototyping",
+			goal: "Only this project's goal.",
+			projectWorkflowId: "wf",
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [{ name: "Prototyping", goal: STAGE_GOAL, tasks: [] }],
+				},
+			},
+			tasks: [],
+		} as never);
+
+		expect((await stageWorkflow("step", "Prototyping")).goal).toBe(
+			"Only this project's goal.",
+		);
+	});
+
+	it("keeps the goal by position when the template renamed the stage", async () => {
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
+			order: 1,
+			name: "Prototyping",
+			projectWorkflowId: "wf",
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [
+						{ name: "Ideation", goal: "Ideation goal", tasks: [] },
+						{ name: "Prototype", goal: STAGE_GOAL, tasks: [] },
+					],
+				},
+			},
+			tasks: [],
+		} as never);
+
+		expect((await stageWorkflow("step", "Prototyping")).goal).toBe(STAGE_GOAL);
+	});
+
+	it("never hands the model the author's stage text, and states no goal it does not have", async () => {
 		await expect(stageWorkflow(null, "A stage of our own")).resolves.toEqual({
+			projectGoal: null,
 			currentStage: "A stage of our own",
 			nextStage: null,
 			description: null,
@@ -250,16 +323,16 @@ describe("renderWorkflow", () => {
 		const { renderWorkflow } = await import(
 			"@/services/checkpoints/ai-curator/prompts/card"
 		);
-		const { PROJECT_GOAL } = await import("@/config/checkpoint");
 		const text = renderWorkflow({
+			projectGoal: PROJECT_GOAL,
 			currentStage: "Prototyping",
 			nextStage: null,
 			description: null,
-			goal: CURATOR_STAGE_GOALS.Prototyping,
+			goal: STAGE_GOAL,
 			lenses: lensWeights("Prototyping"),
 			requiredTasks: [],
 		});
 		expect(text).toContain(`Project goal: ${PROJECT_GOAL}`);
-		expect(text).toContain(CURATOR_STAGE_GOALS.Prototyping);
+		expect(text).toContain(STAGE_GOAL);
 	});
 });

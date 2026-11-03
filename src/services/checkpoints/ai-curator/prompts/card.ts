@@ -2,7 +2,6 @@ import { stripIndents } from "common-tags";
 import {
 	CHECKPOINT_DAYS,
 	CURATOR_LENSES,
-	PROJECT_GOAL,
 	SESSION_MINUTES,
 } from "@/config/checkpoint";
 import { hoursLeft, hoursSpan } from "@/lib/checkpoints/capacity";
@@ -190,7 +189,7 @@ export const GOAL_STAGE = {
 };
 
 export const renderWorkflow = (workflow: CuratorWorkflow) => stripIndents`
-	Project goal: ${PROJECT_GOAL} Every stage leads to it.
+	${workflow.projectGoal ? `Project goal: ${workflow.projectGoal} Every stage leads to it.` : ""}
 	Workflow stage: ${workflow.currentStage}
 	${workflow.description ? `What the stage is for: ${workflow.description}` : ""}
 	${workflow.goal ? `Stage goal, where the stage has to leave the project: ${workflow.goal} A checkpoint goal sits inside it without having to reach all of it.` : ""}

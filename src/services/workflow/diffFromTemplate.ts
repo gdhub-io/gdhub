@@ -6,15 +6,21 @@
  * reset is exactly this list.
  */
 
-import { matchKey } from "./matchKey";
+import { matchKey } from "@/lib/workflow/matchKey";
 
 type ProjectTask = { name: string | null };
-type ProjectStep = { name: string; tasks: ProjectTask[] };
+type ProjectStep = {
+	name: string;
+	tasks: ProjectTask[];
+	/** GDHUB-97: the step's own goal and text, null when it reads the template's. */
+	goal?: string | null;
+	content?: unknown;
+};
 type TemplateTask = { name: string };
 type TemplateStep = { name: string; tasks?: TemplateTask[] };
 
 export type LocalChange = {
-	kind: "added" | "removed" | "moved";
+	kind: "added" | "removed" | "moved" | "own";
 	text: string;
 };
 
@@ -43,6 +49,14 @@ export function diffFromTemplate(
 			});
 			continue;
 		}
+
+		if (step.goal)
+			changes.push({ kind: "own", text: `“${step.name}” has its own goal` });
+		if (step.content)
+			changes.push({
+				kind: "own",
+				text: `“${step.name}” has its own stage text`,
+			});
 
 		const templateTasks = new Set(
 			(templateStep.tasks ?? []).map((task) => matchKey(task.name)),

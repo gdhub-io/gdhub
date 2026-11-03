@@ -35,13 +35,16 @@ export const POST = pipe(
 	// Copying happens here rather than in the browser: the source is the stored
 	// template, not whatever a client claims it contains.
 	let initialSteps = steps ?? [];
+	let goal: string | null = null;
 	if (copyFromId) {
 		const source = await prisma.workflowSchema.findUnique({
 			where: { id: copyFromId },
-			select: { steps: true },
+			select: { steps: true, goal: true },
 		});
 		if (!source) return apiError.notFound("Template to copy was not found");
 		initialSteps = source.steps as typeof initialSteps;
+		// The copy is the whole template, its goal too (GDHUB-97).
+		goal = source.goal;
 	}
 
 	// `name` is the identifier other systems address the template by, so a
@@ -59,6 +62,7 @@ export const POST = pipe(
 			name,
 			title,
 			description: description || undefined,
+			goal,
 			steps: initialSteps,
 		},
 	});

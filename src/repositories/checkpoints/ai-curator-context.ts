@@ -2,7 +2,6 @@ import {
 	CURATOR_ACTIVITY_LIMIT,
 	CURATOR_MARKETING_DEVLOGS,
 	CURATOR_STAGE_BRIEFS,
-	CURATOR_STAGE_GOALS,
 	LEAD_IN_DAYS,
 } from "@/config/checkpoint";
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
@@ -12,6 +11,7 @@ import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
 import { firstLine } from "@/lib/checkpoints/journal-text";
 import { lensWeights } from "@/lib/checkpoints/lenses";
 import { dateOfDay } from "@/lib/checkpoints/plan";
+import { stageOf } from "@/lib/workflow/matchKey";
 import { getProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
@@ -27,7 +27,7 @@ const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
 
 /**
  * Where the project stands on its workflow, for the curator: the stage, the
- * next one, what the stage is for (the curator's brief, not the author's Notion
+ * next one, what the stage is for (the curator's brief, not the author's
  * advice) and its required tasks, done or not. The optional ones are the
  * author's call and never reach the model (Dmitry, 2026-10-26).
  */
@@ -40,7 +40,12 @@ export async function stageWorkflow(
 				where: { id: stepId },
 				select: {
 					order: true,
+					name: true,
+					goal: true,
 					projectWorkflowId: true,
+					projectWorkflow: {
+						select: { schema: { select: { goal: true, steps: true } } },
+					},
 					tasks: {
 						where: { required: true },
 						orderBy: { order: "asc" },
@@ -60,11 +65,16 @@ export async function stageWorkflow(
 			})
 		: null;
 
+	// The project's own stage goal, else its template step's (GDHUB-97).
+	const schema = step?.projectWorkflow.schema;
+	const stage = step && schema ? stageOf(schema.steps, step) : null;
+
 	return {
+		projectGoal: schema?.goal ?? null,
 		currentStage,
 		nextStage: next?.name ?? null,
 		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
-		goal: CURATOR_STAGE_GOALS[currentStage] ?? null,
+		goal: stage?.goal ?? null,
 		lenses: lensWeights(currentStage),
 		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
 			task.name ? [{ name: task.name, done: task.done }] : [],

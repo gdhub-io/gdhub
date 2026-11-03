@@ -1,0 +1,59 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-97 — a stage's text and the goals live in the workflow template" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+admin: "Administrator\n/admin/workflow/[id]" {
+  shape: person
+}
+
+template: "Workflow template\ngoal of the workflow\nsteps: name, tasks, goal, content (Editor.js)"
+
+editor: "The workflow's goal and each step's goal: plain text, for the AI only\neach step's text: an Editor.js editor (images → Sanity)"
+
+admin -> editor: edits the goals and a stage's text
+editor -> template: "Save — one PUT for the template\nan empty steps array is refused"
+
+project: "Project's workflow\nits steps copy the template's name, order and tasks\na step may hold its own goal and text"
+
+projectEditor: "Administrator\nproject's workflow editor" {
+  shape: person
+}
+projectEditor -> project: "gives a stage its own goal or text\nmarked as differing from the template"
+template -> project: "created from"
+
+author: "Author / team\nthe project's Workflow path" {
+  shape: person
+}
+
+stage: "Open a stage\nthe project's own text if it has one\nelse its template step's (by name, then position)"
+
+author -> stage
+project -> stage: "which template, which order"
+template -> stage: "content"
+
+curator: "AI curator\nthe project's own stage goal if it has one, else the template's\nthe workflow goal from the template"
+template -> curator: "goals"
+project -> curator: "which template, which stage"
+
+reset: "Reset to the template\nclears the project's own goal and text, with the rest of its local changes"
+reset -> project
+
+critical: "Critical" {
+  a: "A template edit reaches every project on it, old ones too — except a stage the project has its own value for"
+  g: "A project's own goal or text never flows back into the template"
+  e: "A goal belongs to its step, not to a stage name: renaming a stage keeps its goal"
+  f: "Goals are read by the AI curator only; the author sees the stage's text, never a goal"
+  b: "No text is a plain empty line, never an error or an endless skeleton"
+  c: "English only; nothing else in the step changes — name, tasks, conditions, order"
+  d: "Images in a stage's text are uploaded to Sanity through /api/file, never linked from elsewhere"
+}

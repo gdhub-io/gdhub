@@ -1,0 +1,21 @@
+// The label row runs the field's width, so its action sits at the far end (10.09.1).
+.item :global(.ant-form-item-label > label) {
+	width: 100%;
+}
+
+.label {
+	width: 100%;
+}
+
+// Frame 10.09.1: the template's value, read only, in a filled block.
+.inherited {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text-secondary);
+}
+
+
+.hint {
+	color: var(--gd-color-text-tertiary);
+}
