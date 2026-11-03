@@ -257,7 +257,7 @@ Games, the project card, settings.
 | 09.04 | Scout — Settings · Alerts (rebuilt) | — |
 | 09.05 | Scout — Settings · Danger zone (rebuilt) | — |
 | 09.06 | Scout Cabinet — states | — |
-| 09.07 | Project Modal — Hollow Tide (rebuilt) | 6 |
+| 09.07 | Project Modal — Hollow Tide (rebuilt) | 8 |
 
 ### 10 · Admin
 

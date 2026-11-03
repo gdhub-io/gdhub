@@ -19,6 +19,7 @@ import { platformOptions } from "@/helpers/react-content";
 import styles from "./style.module.scss";
 import {
 	ActivitiesTab,
+	CheckpointsTab,
 	FilesTab,
 	OverviewTab,
 	ReviewsTab,
@@ -101,6 +102,11 @@ export function ProjectCardModal({
 									startedAt={project.startedAt}
 								/>
 							),
+						},
+						{
+							key: "checkpoints",
+							label: t("scout.card.tab.checkpoints", "Checkpoints"),
+							children: <CheckpointsTab projectId={project.id} />,
 						},
 						{
 							key: "reviews",

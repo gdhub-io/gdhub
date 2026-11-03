@@ -4532,6 +4532,22 @@
 	"resources": "Recources",
 	"scout": {
 		"card": {
+			"checkpoints": {
+				"aiBasis": "Public game-dev knowledge",
+				"directions": "Direction by sprint",
+				"directionsHint": "Hover a sprint for the curator's reason",
+				"empty": "No checkpoints yet.",
+				"goalRow": "Checkpoint goal",
+				"inProgress": "In progress",
+				"lead": "Each checkpoint, as its curator judged it. Newest first.",
+				"meta": "Checkpoint {number} · {stage}",
+				"running": "from {start} · day {day} of 28",
+				"stageRow": "Stage goal",
+				"verdict": "Verdict"
+			},
+			"tab": {
+				"checkpoints": "Checkpoints"
+			},
 			"workflow": {
 				"aiCurator": "AI curator",
 				"closedByCheckpoint": "{stage} closed after the Checkpoint {number} verdict · {curator}",

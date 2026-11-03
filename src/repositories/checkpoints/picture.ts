@@ -6,8 +6,8 @@ import {
 import { weeklyRange } from "@/lib/checkpoints/capacity";
 import {
 	type CheckpointPicture,
-	directionOf,
 	pictureDifference,
+	sprintDirections,
 } from "@/lib/checkpoints/picture";
 import { standingOf } from "@/lib/checkpoints/verdict";
 import { curatorItemSelect } from "@/repositories/checkpoints/ai-curator";
@@ -235,13 +235,7 @@ export async function runChangeOf(
 				select: { index: true, content: true },
 			}),
 	]);
-	const directions = sessions
-		.filter((session) => session.index > 1)
-		.sort((a, b) => a.index - b.index)
-		.flatMap((session) => {
-			const direction = directionOf(session.content);
-			return direction ? [{ sprint: session.index - 1, direction }] : [];
-		});
+	const directions = sprintDirections(sessions);
 	const first = pictures.get(0);
 	if (!first) return { directions, difference: null };
 	// The night run has written picture 4 by the verdict; before that, today's stands in.

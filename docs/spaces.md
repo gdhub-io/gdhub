@@ -150,7 +150,7 @@ the space, is created by **admin** `scouts`.
 
 | Feature | Actions | Pages | Links |
 |---|---|---|---|
-| `games` | view | `/scout/games` | reads public **project** cards and checkpoint provenance |
+| `games` | view | `/scout/games` | reads public **project** cards and their checkpoint history (goal, verdict, curator, sprint directions) |
 | `deals` | view, create, manage | planned | will open a chat with the project |
 | `team` | view, invite, remove | planned | — |
 | `settings` | view, manage | `/scout/settings/*` | — |
@@ -197,7 +197,7 @@ Each row is a feature one space hands to another. This is also the list of
 | admin | `checkpoints`, `curators`, `payouts` | project, advisor | free checkpoints, refunds, curator approval, payouts | super admin ↔ author, advisor |
 | admin | `workflow` | project `workflow` | the stage template | super admin → author |
 | admin | `scouts` | scout | the cabinet, so the space exists | super admin → scout |
-| project | `info`, `checkpoints` | scout `games` | the public card and who closed each stage | author → scout |
+| project | `info`, `checkpoints` | scout `games` | the public card and its checkpoint history: goal, verdict, curator, sprint directions — never the author's rating, notes or money | author → scout |
 | project | `devlog` | hub, public | public posts, applause, views | author ↔ member |
 | admin | `devlog_posts`, `posts` | project, public | moderation, blog | super admin → everyone |
 | project | `members` | anyone | an invitation, accepted | author ↔ member |

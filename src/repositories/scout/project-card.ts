@@ -4,6 +4,12 @@ import {
 	CheckpointVerdict,
 } from "@/config/prisma-enums";
 import { totalPerCurrency } from "@/helpers/investment";
+import { checkpointDay } from "@/lib/checkpoints/days";
+import { sprintDirections } from "@/lib/checkpoints/picture";
+import {
+	CHECKPOINT_RUNNING_STATUSES,
+	UNNUMBERED_STATUSES,
+} from "@/lib/checkpoints/status";
 import { checkpointNumbers } from "@/repositories/checkpoints/number";
 import {
 	CONFIRMED_MEMBERS,
@@ -11,6 +17,7 @@ import {
 } from "@/repositories/project/team";
 import { estimateInvestment } from "@/services/investment/estimate";
 import { prisma } from "@/services/prisma";
+import type { DirectionRead } from "@/types/checkpoints";
 import { toEstimateInput, VISIBLE_STATUSES } from "./games";
 
 /**
@@ -478,6 +485,88 @@ export async function getProjectCardWorkflow(id: string) {
 		closedBy: step.finishedAt ? (closedAfter.get(step.id) ?? "tasks") : null,
 	}));
 }
+
+/**
+ * The project's checkpoints as their curators judged them (GDHUB-44), newest
+ * first. A select, never an include: the author's rating, the call notes, the
+ * journal and the money stay out of a scout's reach by never being read.
+ */
+export async function getProjectCardCheckpoints(id: string) {
+	const rows = await prisma.projectCheckpoint.findMany({
+		where: { projectId: id, status: { notIn: UNNUMBERED_STATUSES } },
+		orderBy: { createdAt: "asc" },
+		select: {
+			id: true,
+			status: true,
+			stageName: true,
+			goal: true,
+			startedAt: true,
+			dueAt: true,
+			verdict: true,
+			verdictNote: true,
+			curatorKind: true,
+			curator: {
+				select: {
+					name: true,
+					image: true,
+					profile: { select: { name: true } },
+					specialities: {
+						orderBy: [{ isOpenForMentoring: "desc" }, { isFeatured: "desc" }],
+						take: 1,
+						select: { id: true, name: true, level: true },
+					},
+				},
+			},
+			sessions: { select: { index: true, content: true } },
+		},
+	});
+
+	// Numbered among every checkpoint that ran, as everywhere else; listed are only
+	// the ones running or closed — one waiting for its curator has nothing to show.
+	return rows
+		.map((row, index) => ({ row, number: index + 1 }))
+		.filter(({ row }) => LISTED_CHECKPOINTS.includes(row.status))
+		.reverse()
+		.map(({ row, number }) => {
+			const closed = row.status === CheckpointStatus.Closed;
+			const speciality = row.curator?.specialities[0] ?? null;
+			return {
+				id: row.id,
+				number,
+				stage: row.stageName,
+				goal: row.goal,
+				running: !closed,
+				startedAt: row.startedAt,
+				dueAt: row.dueAt,
+				day: !closed && row.startedAt ? checkpointDay(row.startedAt) : null,
+				verdict: closed ? row.verdict : null,
+				verdictNote: closed ? row.verdictNote : null,
+				curator:
+					row.curatorKind === CheckpointCuratorKind.AI
+						? null
+						: {
+								name: row.curator?.profile?.name ?? row.curator?.name ?? null,
+								image: row.curator?.image ?? null,
+								speciality,
+							},
+				directions: closed
+					? sprintDirections(row.sessions).map(({ sprint, direction }) => ({
+							sprint,
+							goal: readOf(direction.goal),
+							stage: readOf(direction.stage),
+						}))
+					: [],
+			};
+		});
+}
+
+/** The direction without its confirmation stamp: who confirmed it is not the scout's. */
+const readOf = ({ value, why }: DirectionRead) => ({ value, why });
+
+const LISTED_CHECKPOINTS: CheckpointStatus[] = [
+	...CHECKPOINT_RUNNING_STATUSES,
+	CheckpointStatus.Closed,
+];
 
 /**
  * The project's log: everything the platform stamps with a date.

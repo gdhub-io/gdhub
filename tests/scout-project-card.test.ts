@@ -480,3 +480,156 @@ describe("how a stage was closed (GDHUB-37)", () => {
 		]);
 	});
 });
+
+describe("the checkpoint history a scout reads (GDHUB-44)", () => {
+	const direction = (
+		value: string,
+		confirmedAt?: string | null,
+	): Record<string, unknown> => ({
+		goal: { value, why: `goal ${value}` },
+		stage: { value, why: `stage ${value}` },
+		...(confirmedAt === undefined ? {} : { confirmedAt }),
+	});
+	const row = (over: Record<string, unknown>) => ({
+		id: "cp",
+		status: "Closed",
+		stageName: "Concepting",
+		goal: "A pitch the team agrees on.",
+		startedAt: new Date("2026-08-11"),
+		dueAt: new Date("2026-09-07"),
+		verdict: "GoalMissed",
+		verdictNote: "The pitch video shows another game.",
+		curatorKind: "AI",
+		curator: null,
+		sessions: [],
+		...over,
+	});
+
+	const read = async () => {
+		const { getProjectCardCheckpoints } = await import(
+			"@/repositories/scout/project-card"
+		);
+		return getProjectCardCheckpoints("p1");
+	};
+
+	it("lists the running and the closed, newest first, numbered among every one that ran", async () => {
+		checkpointFindMany.mockResolvedValue([
+			row({ id: "cp1", verdict: "StageClosed" }),
+			row({ id: "cp2", status: "AwaitingCurator", verdict: null }),
+			row({ id: "cp3", status: "Active", verdict: null, verdictNote: null }),
+		]);
+
+		const list = await read();
+
+		expect(list.map(({ id, number }) => [id, number])).toEqual([
+			["cp3", 3],
+			["cp1", 1],
+		]);
+		expect(checkpointFindMany).toHaveBeenCalledWith(
+			expect.objectContaining({
+				where: {
+					projectId: "p1",
+					status: { notIn: ["Draft", "Cancelled"] },
+				},
+			}),
+		);
+	});
+
+	it("gives a running checkpoint its goal only: no verdict and no directions", async () => {
+		checkpointFindMany.mockResolvedValue([
+			row({
+				status: "Review",
+				verdict: "GoalMet",
+				verdictNote: "A draft nobody sent.",
+				sessions: [{ index: 2, content: { direction: direction("toward") } }],
+			}),
+		]);
+
+		const [running] = await read();
+
+		expect(running).toMatchObject({
+			running: true,
+			verdict: null,
+			verdictNote: null,
+			directions: [],
+		});
+	});
+
+	it("reads each sprint's direction as the author sees it, without who confirmed it", async () => {
+		checkpointFindMany.mockResolvedValue([
+			row({
+				curatorKind: "Human",
+				curator: {
+					name: "patrick",
+					image: null,
+					profile: { name: "Patrick Novak" },
+					specialities: [{ id: "sp1", name: "Game Designer", level: "Experienced" }],
+				},
+				sessions: [
+					{ index: 1, content: {} },
+					{ index: 3, content: { notes: { direction: direction("toward", null) } } },
+					{ index: 2, content: { notes: { direction: direction("sideways", "2026-08-25") } } },
+				],
+			}),
+		]);
+
+		const [closed] = await read();
+
+		// Sprint 2's preset was never confirmed by the curator, so it is not theirs.
+		expect(closed.directions).toEqual([
+			{
+				sprint: 1,
+				goal: { value: "sideways", why: "goal sideways" },
+				stage: { value: "sideways", why: "stage sideways" },
+			},
+		]);
+		expect(closed.curator).toEqual({
+			name: "Patrick Novak",
+			image: null,
+			speciality: { id: "sp1", name: "Game Designer", level: "Experienced" },
+		});
+	});
+
+	it("never reads the author's rating, the notes, the journal or the money", async () => {
+		checkpointFindMany.mockResolvedValue([row({})]);
+
+		const [closed] = await read();
+		const { select } = checkpointFindMany.mock.calls[0][0];
+
+		for (const hidden of [
+			"feedback",
+			"journal",
+			"fees",
+			"paymentId",
+			"items",
+			"verdictDraft",
+			"verdictDraftNote",
+			"midNote",
+			"goalCheck",
+		]) {
+			expect(select).not.toHaveProperty(hidden);
+		}
+		expect(Object.keys(closed).sort()).toEqual(
+			[
+				"curator",
+				"day",
+				"directions",
+				"dueAt",
+				"goal",
+				"id",
+				"number",
+				"running",
+				"stage",
+				"startedAt",
+				"verdict",
+				"verdictNote",
+			].sort(),
+		);
+	});
+
+	it("answers 404 for a project a scout may not see", async () => {
+		projectFindFirst.mockResolvedValue(null);
+		const response = await call("section", { id: "p1", section: "checkpoints" });
+		expect(response.status).toBe(404);
+	});
+});
