@@ -15,6 +15,8 @@ const UpdateWorkflowSchema = z.object({
 	name: z.string().optional(),
 	title: z.string().optional(),
 	description: z.string().optional(),
+	/** For the AI curator only: where every stage leads (GDHUB-97). Empty clears it. */
+	goal: z.string().trim().max(1000).optional(),
 	// The template's steps are one JSON column: whatever arrives replaces the
 	// lot. An empty array would blank every project created from it afterwards,
 	// so the schema refuses one — a template is emptied by deleting it.
@@ -46,7 +48,7 @@ export const PUT = pipe(
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = (await ctx.params) as { id: string };
-	const { name, title, description, steps } = body as UpdateWorkflowBody;
+	const { name, title, description, goal, steps } = body as UpdateWorkflowBody;
 
 	const workflow = await prisma.workflowSchema.update({
 		where: { id },
@@ -54,6 +56,7 @@ export const PUT = pipe(
 			name: name || undefined,
 			title: title || undefined,
 			description: description || undefined,
+			goal: goal === undefined ? undefined : goal || null,
 			// Validated into the column's own declared shape, so no cast is needed.
 			steps,
 		},

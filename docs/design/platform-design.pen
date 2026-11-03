@@ -85187,7 +85187,11 @@
                           "name": "step-Concept",
                           "width": "fill_container",
                           "height": 52,
+                          "fill": "#F1F5FF",
                           "cornerRadius": 6,
+                          "stroke": "#BFD8FF",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "gap": 10,
                           "padding": [
                             0,
@@ -85211,7 +85215,7 @@
                               "name": "index",
                               "width": 22,
                               "height": 22,
-                              "fill": "#EFEFEF",
+                              "fill": "#2B5FD9",
                               "cornerRadius": 11,
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -85220,7 +85224,7 @@
                                   "type": "text",
                                   "id": "Kl0Di",
                                   "name": "label",
-                                  "fill": "#5E5E5E",
+                                  "fill": "#FFFFFF",
                                   "content": "1",
                                   "fontFamily": "$font",
                                   "fontSize": 11,
@@ -85240,11 +85244,11 @@
                                   "type": "text",
                                   "id": "p17zz",
                                   "name": "name",
-                                  "fill": "#1F1F1F",
-                                  "content": "Concept",
+                                  "fill": "#1B4BC0",
+                                  "content": "Ideation",
                                   "fontFamily": "$font",
                                   "fontSize": 14,
-                                  "fontWeight": "500"
+                                  "fontWeight": "600"
                                 },
                                 {
                                   "type": "text",
@@ -85266,7 +85270,7 @@
                               "height": 14,
                               "icon": "chevron-right",
                               "library": "lucide",
-                              "fill": "#D9D9D9"
+                              "fill": "#2B5FD9"
                             }
                           ]
                         },
@@ -85276,11 +85280,7 @@
                           "name": "step-Prototype",
                           "width": "fill_container",
                           "height": 52,
-                          "fill": "#F1F5FF",
                           "cornerRadius": 6,
-                          "stroke": "#BFD8FF",
-                          "strokeWidth": 1,
-                          "strokeAlignment": "inner",
                           "gap": 10,
                           "padding": [
                             0,
@@ -85304,7 +85304,7 @@
                               "name": "index",
                               "width": 22,
                               "height": 22,
-                              "fill": "#2B5FD9",
+                              "fill": "#EFEFEF",
                               "cornerRadius": 11,
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -85313,7 +85313,7 @@
                                   "type": "text",
                                   "id": "YM8WK",
                                   "name": "label",
-                                  "fill": "#FFFFFF",
+                                  "fill": "#5E5E5E",
                                   "content": "2",
                                   "fontFamily": "$font",
                                   "fontSize": 11,
@@ -85333,11 +85333,11 @@
                                   "type": "text",
                                   "id": "k6g886",
                                   "name": "name",
-                                  "fill": "#1B4BC0",
+                                  "fill": "#1F1F1F",
                                   "content": "Prototype",
                                   "fontFamily": "$font",
                                   "fontSize": 14,
-                                  "fontWeight": "600"
+                                  "fontWeight": "500"
                                 },
                                 {
                                   "type": "text",
@@ -85359,7 +85359,7 @@
                               "height": 14,
                               "icon": "chevron-right",
                               "library": "lucide",
-                              "fill": "#2B5FD9"
+                              "fill": "#D9D9D9"
                             }
                           ]
                         },
@@ -85746,7 +85746,7 @@
                                       "id": "uiqFw",
                                       "name": "label",
                                       "fill": "#FFFFFF",
-                                      "content": "2",
+                                      "content": "1",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "600"
@@ -85758,7 +85758,7 @@
                                   "id": "h6lDb",
                                   "name": "stepName",
                                   "fill": "#1F1F1F",
-                                  "content": "Prototype",
+                                  "content": "Ideation",
                                   "fontFamily": "$font",
                                   "fontSize": 19,
                                   "fontWeight": "500"
@@ -85801,7 +85801,7 @@
                                       "id": "ll4m5",
                                       "name": "label",
                                       "fill": "#8C8C8C",
-                                      "content": "prototype",
+                                      "content": "ideation",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -85920,45 +85920,341 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "DeSI6",
-                          "name": "field-description",
+                          "id": "rr9n1",
+                          "name": "field-goal · Form.Item + Input.TextArea",
                           "width": "fill_container",
                           "layout": "vertical",
                           "gap": 8,
                           "children": [
                             {
                               "type": "text",
-                              "id": "b1UXF",
+                              "id": "F0aChe",
                               "name": "label",
-                              "fill": "#5E5E5E",
-                              "content": "Description",
+                              "fill": "$text-primary",
+                              "content": "Goal",
                               "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "600"
+                              "fontSize": 14,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
-                              "id": "cXskE",
-                              "name": "input",
+                              "id": "ETWyX",
+                              "name": "input · TextArea autoSize 2–3 rows",
                               "width": "fill_container",
-                              "fill": "#F5F5F5",
-                              "cornerRadius": 6,
+                              "height": 68,
+                              "fill": "$page-bg",
+                              "cornerRadius": "$radius-sm",
+                              "layout": "vertical",
                               "padding": 12,
                               "children": [
                                 {
                                   "type": "text",
-                                  "id": "TfjUv",
+                                  "id": "G3ytj",
                                   "name": "value",
-                                  "fill": "#1F1F1F",
+                                  "fill": "$text-primary",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Build a playable prototype and gather the first feedback from players.",
+                                  "content": "One idea is chosen and defended: what the game is, who it is for and why this idea over the others.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
-                                  "fontWeight": "200"
+                                  "fontWeight": "normal"
                                 }
                               ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "ed8cW",
+                              "name": "helper",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "For the AI curator — the author never sees it.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ouuf4",
+                          "name": "field-stage-text · Form.Item + Editor.js",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "o95axK",
+                              "name": "label",
+                              "fill": "$text-primary",
+                              "content": "Stage text",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "QlUoL",
+                              "name": "EditorJS · blog tools",
+                              "width": "fill_container",
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$border",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "padding": [
+                                16,
+                                24,
+                                16,
+                                0
+                              ],
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Bbsuk",
+                                  "name": "blocks",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 12,
+                                  "padding": [
+                                    0,
+                                    0,
+                                    0,
+                                    52
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "rcNE8",
+                                      "name": "Block — heading",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Choose the one idea worth making",
+                                      "lineHeight": 1.3,
+                                      "fontFamily": "$font",
+                                      "fontSize": 20,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "NBcZF",
+                                      "name": "Block — paragraph",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Most games start as ten ideas at once. This stage ends with one: written down, set against the others and defended in a few sentences.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "aM8as",
+                                      "name": "Block — paragraph",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Keep it short. A pitch that fits on one page is easier to test than a design document nobody finishes.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "dZdzY",
+                                      "name": "Block — list",
+                                      "width": "fill_container",
+                                      "layout": "vertical",
+                                      "gap": 4,
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "D6zoI5",
+                                          "name": "list item",
+                                          "fill": "$text-primary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "•  What the game is, in one sentence",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font",
+                                          "fontSize": 16,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Vb1Ii",
+                                          "name": "list item",
+                                          "fill": "$text-primary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "•  Who it is for and where they already play",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font",
+                                          "fontSize": 16,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "Esybj",
+                                          "name": "list item",
+                                          "fill": "$text-primary",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
+                                          "content": "•  Why this idea over the other ones",
+                                          "lineHeight": 1.5,
+                                          "fontFamily": "$font",
+                                          "fontSize": 16,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "PWFpZ",
+                                      "name": "Block — image",
+                                      "width": "fill_container",
+                                      "layout": "vertical",
+                                      "gap": 8,
+                                      "children": [
+                                        {
+                                          "type": "frame",
+                                          "id": "e2r0Z",
+                                          "name": "image (Sanity, via /api/file)",
+                                          "metadata": {
+                                            "type": "unsplash",
+                                            "username": "vonshnauzer",
+                                            "link": "https://unsplash.com/@vonshnauzer",
+                                            "author": "Egor Myznik"
+                                          },
+                                          "width": "fill_container",
+                                          "height": 180,
+                                          "fill": {
+                                            "type": "image",
+                                            "enabled": true,
+                                            "url": "generated-24.png",
+                                            "mode": "cover"
+                                          },
+                                          "cornerRadius": "$radius-sm"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "xBPCX",
+                                          "name": "caption",
+                                          "fill": "$text-secondary",
+                                          "content": "Three one-page pitches, side by side",
+                                          "fontFamily": "$font",
+                                          "fontSize": 13,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "EA7KU",
+                                  "name": "empty line · toolbar",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "padding": [
+                                    0,
+                                    0,
+                                    0,
+                                    12
+                                  ],
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "ky5aD",
+                                      "name": "Toolbar + (IconPlus)",
+                                      "width": 24,
+                                      "height": 24,
+                                      "cornerRadius": "$radius-sm",
+                                      "stroke": "$border",
+                                      "strokeWidth": 1,
+                                      "strokeAlignment": "inner",
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "JwtPu",
+                                          "name": "plus",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "plus",
+                                          "library": "lucide",
+                                          "fill": "$text-secondary"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "mNtW9",
+                                      "name": "Tunes (IconGripVertical)",
+                                      "width": 16,
+                                      "height": 24,
+                                      "justifyContent": "center",
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "b4lO7e",
+                                          "name": "grip",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "grip-vertical",
+                                          "library": "lucide",
+                                          "fill": "$text-tertiary"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "eNIKW",
+                                      "name": "caretWrap",
+                                      "padding": [
+                                        0,
+                                        0,
+                                        0,
+                                        12
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "rectangle",
+                                          "id": "CKm3U",
+                                          "name": "caret",
+                                          "fill": "$text-primary",
+                                          "width": 1,
+                                          "height": 20
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "blGur",
+                              "name": "helper",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "What the author reads when they open the stage.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -86112,7 +86408,7 @@
                                               "id": "czA1P",
                                               "name": "name",
                                               "fill": "#1F1F1F",
-                                              "content": "Upload a playable build",
+                                              "content": "Write the one-page pitch",
                                               "fontFamily": "$font",
                                               "fontSize": 14,
                                               "fontWeight": "500"
@@ -86155,7 +86451,7 @@
                                           "fill": "#8C8C8C",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Attach at least one downloadable build to the project files.",
+                                          "content": "Attach the pitch to the project files: what the game is and who it is for.",
                                           "fontFamily": "$font",
                                           "fontSize": 12,
                                           "fontWeight": "normal"
@@ -86299,7 +86595,7 @@
                                               "id": "vOBQi",
                                               "name": "name",
                                               "fill": "#1F1F1F",
-                                              "content": "Collect at least 5 reviews",
+                                              "content": "Get 5 reactions to the pitch",
                                               "fontFamily": "$font",
                                               "fontSize": 14,
                                               "fontWeight": "500"
@@ -86313,7 +86609,7 @@
                                           "fill": "#8C8C8C",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Ask playtesters to leave a review on the project page.",
+                                          "content": "Ask players to react to the pitch on the project page.",
                                           "fontFamily": "$font",
                                           "fontSize": 12,
                                           "fontWeight": "normal"
@@ -86471,7 +86767,7 @@
                                           "fill": "#8C8C8C",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
-                                          "content": "Grow the team so the prototype can be iterated faster.",
+                                          "content": "Find the people the chosen idea needs.",
                                           "fontFamily": "$font",
                                           "fontSize": 12,
                                           "fontWeight": "normal"
@@ -87300,6 +87596,84 @@
                       "fontWeight": "200"
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "IDVke",
+              "name": "field-Workflow goal",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SApjB",
+                  "name": "labelRow",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "QIUjz",
+                      "name": "label",
+                      "fill": "$text-primary",
+                      "content": "Workflow goal",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ixVPv",
+                      "name": "optional",
+                      "fill": "$text-tertiary",
+                      "content": "(optional)",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mfTjt",
+                  "name": "input · Input.TextArea rows 2",
+                  "width": "fill_container",
+                  "height": 68,
+                  "fill": "$page-bg",
+                  "cornerRadius": "$radius-sm",
+                  "layout": "vertical",
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "JyoLP",
+                      "name": "value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "The game is released and people play it.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "NxE7u",
+                  "name": "helper",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "For the AI curator: where every stage leads.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -88405,8 +88779,8 @@
     {
       "type": "frame",
       "id": "Kolrt",
-      "x": 1560,
-      "y": 48750,
+      "x": 3120,
+      "y": 49056,
       "name": "10.09.1 · Admin — Project workflow editor (/admin/project-workflow/[id])",
       "clip": true,
       "width": 1440,
@@ -504682,6 +505056,623 @@
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YdiOW",
+      "x": 1560,
+      "y": 49403,
+      "name": "10.09.2 · Admin — Workflow editor · step with no goal and no stage text",
+      "clip": true,
+      "width": 1000,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "padding": 40,
+      "children": [
+        {
+          "type": "frame",
+          "id": "XWYcs",
+          "name": "stepDetail",
+          "clip": true,
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#EDEDED",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ScNzm",
+              "name": "paneHeader",
+              "width": "fill_container",
+              "stroke": "#EDEDED",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "strokeAlignment": "inner",
+              "strokeLinejoin": "round",
+              "gap": 16,
+              "padding": [
+                16,
+                20
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "m2Wum",
+                  "name": "left",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "BybWJ",
+                      "name": "titleRow",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "bga3Q",
+                          "name": "index",
+                          "width": 24,
+                          "height": 24,
+                          "fill": "#2B5FD9",
+                          "cornerRadius": 12,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ofDXw",
+                              "name": "label",
+                              "fill": "#FFFFFF",
+                              "content": "3",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "ErjyW",
+                          "name": "stepName",
+                          "fill": "#1F1F1F",
+                          "content": "Vertical slice",
+                          "fontFamily": "$font",
+                          "fontSize": 19,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "H1xwmz",
+                          "name": "editIcon",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "pencil",
+                          "library": "lucide",
+                          "fill": "#BFBFBF"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "NPoyo",
+                      "name": "metaRow",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "g7r60",
+                          "name": "chip-prototype",
+                          "height": 22,
+                          "fill": "#F4F3F3",
+                          "cornerRadius": 4,
+                          "gap": 5,
+                          "padding": [
+                            0,
+                            7
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nEXDj",
+                              "name": "label",
+                              "fill": "#8C8C8C",
+                              "content": "vertical-slice",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "bFl0f",
+                          "name": "meta",
+                          "fill": "#8C8C8C",
+                          "content": "0 tasks · 0 required · 0 auto-checked",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RiVTW",
+                  "name": "stepActions",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "GG63u",
+                      "name": "DuplicateBtn",
+                      "height": 32,
+                      "cornerRadius": 6,
+                      "stroke": "#D9D9D9",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "C2boR",
+                          "name": "icon",
+                          "width": 13,
+                          "height": 13,
+                          "icon": "copy",
+                          "library": "lucide",
+                          "fill": "#1F1F1F"
+                        },
+                        {
+                          "type": "text",
+                          "id": "W4p4Yn",
+                          "name": "label",
+                          "fill": "#1F1F1F",
+                          "content": "Duplicate",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DPmuh",
+                      "name": "DeleteBtn",
+                      "height": 32,
+                      "cornerRadius": 6,
+                      "stroke": "#F0BDBD",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "R5g8vl",
+                          "name": "icon",
+                          "width": 13,
+                          "height": 13,
+                          "icon": "trash-2",
+                          "library": "lucide",
+                          "fill": "#CF3B3B"
+                        },
+                        {
+                          "type": "text",
+                          "id": "o5H25c",
+                          "name": "label",
+                          "fill": "#CF3B3B",
+                          "content": "Delete",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kW2Vr",
+              "name": "paneBody",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "OAAIG",
+                  "name": "field-goal · Form.Item + Input.TextArea",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sRudL",
+                      "name": "label",
+                      "fill": "$text-primary",
+                      "content": "Goal",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "j4Dg9Y",
+                      "name": "input · TextArea autoSize 2–3 rows",
+                      "width": "fill_container",
+                      "height": 68,
+                      "fill": "$page-bg",
+                      "cornerRadius": "$radius-sm",
+                      "layout": "vertical",
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "K6LjRh",
+                          "name": "value",
+                          "fill": "$text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "The result this stage must leave the project at, in one or two sentences",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "lrhTm",
+                      "name": "helper",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "For the AI curator — the author never sees it.",
+                      "lineHeight": 1.45,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qbdrW",
+                  "name": "field-stage-text · Form.Item + Editor.js",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "NMMe1",
+                      "name": "label",
+                      "fill": "$text-primary",
+                      "content": "Stage text",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "rWAKI",
+                      "name": "EditorJS · blog tools",
+                      "width": "fill_container",
+                      "height": 160,
+                      "cornerRadius": "$radius-sm",
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": [
+                        16,
+                        24,
+                        16,
+                        0
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "sZGur",
+                          "name": "empty line · toolbar",
+                          "width": "fill_container",
+                          "height": 32,
+                          "padding": [
+                            0,
+                            0,
+                            0,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "qQBvq",
+                              "name": "Toolbar + (IconPlus)",
+                              "width": 24,
+                              "height": 24,
+                              "cornerRadius": "$radius-sm",
+                              "stroke": "$border",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "mvIfK",
+                                  "name": "plus",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "plus",
+                                  "library": "lucide",
+                                  "fill": "$text-secondary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ZIO4R",
+                              "name": "Tunes (IconGripVertical)",
+                              "width": 16,
+                              "height": 24,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "fvFb7",
+                                  "name": "grip",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "grip-vertical",
+                                  "library": "lucide",
+                                  "fill": "$text-tertiary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "YCPdj",
+                              "name": "caretWrap",
+                              "padding": [
+                                0,
+                                0,
+                                0,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "rectangle",
+                                  "id": "yNfk9",
+                                  "name": "caret",
+                                  "fill": "$text-primary",
+                                  "width": 1,
+                                  "height": 20
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "l1Ics",
+                                  "name": "placeholder",
+                                  "fill": "$text-tertiary",
+                                  "content": "Write the stage text…",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "eEvtN",
+                      "name": "helper",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "What the author reads when they open the stage.",
+                      "lineHeight": 1.45,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "suWfu",
+                  "name": "tasksSection",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "zWTv7",
+                      "name": "tasksHeader",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "UuCJi",
+                          "name": "left",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "x93Qh1",
+                              "name": "title",
+                              "fill": "#1F1F1F",
+                              "content": "Tasks",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "adziE",
+                              "name": "count",
+                              "height": 20,
+                              "fill": "#F5F5F5",
+                              "cornerRadius": 10,
+                              "padding": [
+                                0,
+                                7
+                              ],
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "NUChi",
+                                  "name": "label",
+                                  "fill": "#8C8C8C",
+                                  "content": "0",
+                                  "fontFamily": "$font",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MesKB",
+                          "name": "addTaskBtn",
+                          "height": 32,
+                          "fill": "#222222",
+                          "cornerRadius": 6,
+                          "gap": 6,
+                          "padding": [
+                            0,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "e9Kuo",
+                              "name": "icon",
+                              "width": 13,
+                              "height": 13,
+                              "icon": "plus",
+                              "library": "lucide",
+                              "fill": "#FFFDFC"
+                            },
+                            {
+                              "type": "text",
+                              "id": "GopVu",
+                              "name": "label",
+                              "fill": "#FFFDFC",
+                              "content": "Add task",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "a5C1Wq",
+                      "name": "tasksList",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jCZAu",
+                          "name": "empty · plain secondary",
+                          "fill": "$text-secondary",
+                          "content": "No tasks yet.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "F72be",
+                          "name": "addTaskInline",
+                          "width": "fill_container",
+                          "height": 40,
+                          "cornerRadius": 6,
+                          "stroke": "#E4E4E4",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "gap": 8,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "eiVbw",
+                              "name": "icon",
+                              "width": 13,
+                              "height": 13,
+                              "icon": "plus",
+                              "library": "lucide",
+                              "fill": "#BFBFBF"
+                            },
+                            {
+                              "type": "text",
+                              "id": "TyN8R",
+                              "name": "label",
+                              "fill": "#BFBFBF",
+                              "content": "Add task to this step",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }

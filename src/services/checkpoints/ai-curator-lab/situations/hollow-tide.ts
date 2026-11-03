@@ -1,4 +1,4 @@
-import { CURATOR_STAGE_BRIEFS, CURATOR_STAGE_GOALS } from "@/config/checkpoint";
+import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
 import { lensWeights } from "@/lib/checkpoints/lenses";
 import type { LabLanguage } from "../schemas";
 
@@ -22,10 +22,11 @@ import type { LabLanguage } from "../schemas";
  * (2026-10-26). Its one required task is done by the greybox devlog of 5 Oct.
  */
 const workflowAt = (moment: Moment) => ({
+	projectGoal: "The game is released and people play it.",
 	currentStage: "Prototyping",
 	nextStage: "Preparing a demo version",
 	description: CURATOR_STAGE_BRIEFS.Prototyping,
-	goal: CURATOR_STAGE_GOALS.Prototyping,
+	goal: "The concept's riskiest questions are answered with something playable or visible: the core works and the style is chosen.",
 	lenses: lensWeights("Prototyping"),
 	requiredTasks: [
 		{

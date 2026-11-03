@@ -30,7 +30,8 @@ import {
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { EditorJsField } from "@/components/admin/EditorJsField";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import WorkflowSettingsModal from "@/components/admin/WorkflowEditor/WorkflowSettingsModal";
@@ -53,6 +54,8 @@ type StepDraft = {
 	key: string;
 	name: string;
 	description?: string;
+	goal?: string;
+	content?: PrismaJson.EditorJsContent;
 	tasks: TaskDraft[];
 };
 
@@ -70,6 +73,8 @@ function toDrafts(steps: PrismaJson.WorkflowStep[]): StepDraft[] {
 		key: nextKey(),
 		name: step.name,
 		description: step.description,
+		goal: step.goal,
+		content: step.content,
 		tasks: (step.tasks ?? []).map((task) => ({
 			key: nextKey(),
 			name: task.name,
@@ -84,6 +89,8 @@ function toPayload(steps: StepDraft[]): PrismaJson.WorkflowStep[] {
 	return steps.map((step) => ({
 		name: step.name,
 		description: step.description,
+		goal: step.goal?.trim() || undefined,
+		content: step.content?.blocks.length ? step.content : undefined,
 		tasks: step.tasks.map((task) => ({
 			name: task.name,
 			description: task.description,
@@ -111,9 +118,16 @@ export function TemplateEditor({ id }: { id: string }) {
 
 	const [steps, setSteps] = useState<StepDraft[]>([]);
 	const [selectedKey, setSelectedKey] = useState<string | null>(null);
-	const [meta, setMeta] = useState({ name: "", title: "", description: "" });
+	const [meta, setMeta] = useState({
+		name: "",
+		title: "",
+		description: "",
+		goal: "",
+	});
 	const [loaded, setLoaded] = useState(false);
 	const [dirty, setDirty] = useState(false);
+	// Which step is open, by position: a reload rebuilds the keys, not the order.
+	const openAt = useRef(0);
 
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const [resetTargets, setResetTargets] = useState<ResetTarget[]>([]);
@@ -140,17 +154,23 @@ export function TemplateEditor({ id }: { id: string }) {
 			(template.steps ?? []) as PrismaJson.WorkflowStep[],
 		);
 		setSteps(drafts);
-		setSelectedKey(drafts[0]?.key ?? null);
+		// After a save the drafts are rebuilt; the step that was open stays open.
+		setSelectedKey((drafts[openAt.current] ?? drafts[0])?.key ?? null);
 		setMeta({
 			name: template.name ?? "",
 			title: template.title ?? "",
 			description: template.description ?? "",
+			goal: template.goal ?? "",
 		});
 		setLoaded(true);
 		setDirty(false);
 	}, [data]);
 
 	const selected = steps.find((step) => step.key === selectedKey) ?? null;
+	openAt.current = Math.max(
+		steps.findIndex((step) => step.key === selectedKey),
+		0,
+	);
 
 	const totals = useMemo(
 		() => ({
@@ -166,6 +186,7 @@ export function TemplateEditor({ id }: { id: string }) {
 				name: meta.name || undefined,
 				title: meta.title || undefined,
 				description: meta.description || undefined,
+				goal: meta.goal,
 				steps: toPayload(steps),
 			}),
 		onSuccess: () => {
@@ -323,7 +344,7 @@ export function TemplateEditor({ id }: { id: string }) {
 				type="info"
 				icon={<IconInfoCircle size={16} />}
 				showIcon
-				title="Changes apply to new projects only. Projects already running keep their own copy."
+				title="Steps and tasks apply to new projects only; projects already running keep their own copy. A stage's goal and text reach every project at once."
 				action={
 					<Button
 						size="small"
@@ -512,14 +533,31 @@ export function TemplateEditor({ id }: { id: string }) {
 							</Flex>
 
 							<Flex vertical gap={12} className={styles.detailBody}>
+								{/* Frame 10.09 (`rr9n1`, `ouuf4`): the goal right above the text, so each is in sight while the other is edited (GDHUB-97). */}
 								<Form layout="vertical">
-									<Form.Item label="Description" style={{ marginBottom: 0 }}>
+									<Form.Item
+										label="Goal"
+										extra="For the AI curator — the author never sees it."
+									>
 										<Input.TextArea
-											value={selected.description ?? ""}
+											value={selected.goal ?? ""}
 											autoSize={{ minRows: 2 }}
+											placeholder="The result this stage must leave the project at, in a sentence or two."
 											onChange={(event) =>
-												patchSelected({ description: event.target.value })
+												patchSelected({ goal: event.target.value })
 											}
+										/>
+									</Form.Item>
+									<Form.Item
+										label="Stage text"
+										extra="What the author reads when they open the stage."
+										style={{ marginBottom: 0 }}
+									>
+										<EditorJsField
+											key={selected.key}
+											value={selected.content}
+											placeholder="Write the stage text…"
+											onChange={(content) => patchSelected({ content })}
 										/>
 									</Form.Item>
 								</Form>

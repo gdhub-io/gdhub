@@ -42,6 +42,7 @@ describe("lens weights", () => {
 
 	it("reaches the model with the stage", () => {
 		const text = renderWorkflow({
+			projectGoal: null,
 			currentStage: "Ideation",
 			nextStage: null,
 			description: null,

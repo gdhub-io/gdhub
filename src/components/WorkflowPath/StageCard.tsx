@@ -36,12 +36,12 @@ const STAGE_ICONS: Icon[] = [
 ];
 
 export type StageCardProps = {
-	step: ProjectWorkflowStep;
+	/** The step, with its text from the workflow template (GDHUB-97). */
+	step: ProjectWorkflowStep & { content?: PrismaJson.EditorJsContent | null };
 	title: string;
 	state: "done" | "current" | "ahead";
 	/** When the project was on it: "12 Mar – 4 Jun", or "since 4 Jun" for the current one. */
 	dates?: string | null;
-	locale?: string;
 	/** Present only on the current stage, for someone who may move it. */
 	next?: {
 		onClick: () => void;
@@ -53,17 +53,10 @@ export type StageCardProps = {
 
 /**
  * A stage of the workflow on the path. Folded it is a name; open it is the
- * stage's text from Notion and, on the current one, Next — its tasks live
+ * stage's text and, on the current one, Next — its tasks live
  * in the aside.
  */
-export function StageCard({
-	step,
-	title,
-	state,
-	dates,
-	locale,
-	next,
-}: StageCardProps) {
+export function StageCard({ step, title, state, dates, next }: StageCardProps) {
 	const { t } = useTranslate();
 	const [open, setOpen] = useState(false);
 	const StageIcon = STAGE_ICONS[Math.min(step.order, STAGE_ICONS.length - 1)];
@@ -100,7 +93,7 @@ export function StageCard({
 
 			{open && (
 				<div className={styles.cardBody}>
-					<WorkflowStepContent step={step} locale={locale} />
+					<WorkflowStepContent content={step.content} />
 
 					{next && (
 						<div>

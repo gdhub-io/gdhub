@@ -46,6 +46,7 @@ const card = z.object({
 const weight = z.enum(LENS_WEIGHTS);
 
 const workflow = z.object({
+	projectGoal: z.string().nullable(),
 	currentStage: z.string(),
 	nextStage: z.string().nullable(),
 	description: z.string().nullable(),

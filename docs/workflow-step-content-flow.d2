@@ -1,0 +1,50 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-97 — a stage's text and the goals live in the workflow template" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+admin: "Administrator\n/admin/workflow/[id]" {
+  shape: person
+}
+
+template: "Workflow template\ngoal of the workflow\nsteps: name, tasks, goal, content (Editor.js)"
+
+editor: "The workflow's goal and each step's goal: plain text, for the AI only\neach step's text: an Editor.js editor (images → Sanity)"
+
+admin -> editor: edits the goals and a stage's text
+editor -> template: "Save — one PUT for the template\nan empty steps array is refused"
+
+project: "Project's workflow\nits steps copy the template's name, order and tasks"
+template -> project: "created from"
+
+author: "Author / team\nthe project's Workflow path" {
+  shape: person
+}
+
+stage: "Open a stage\nits text is the template step's of the same order\nrendered with the shared Editor.js renderers"
+
+author -> stage
+project -> stage: "which template, which order"
+template -> stage: "content"
+
+curator: "AI curator\nreads the stage goal and the workflow goal\nfrom the project's own template"
+template -> curator: "goals"
+project -> curator: "which template, which stage"
+
+critical: "Critical" {
+  a: "One text and one goal per template step: an edit reaches every project on the template, old ones too"
+  e: "A goal belongs to its step, not to a stage name: renaming a stage keeps its goal"
+  f: "Goals are read by the AI curator only; the author sees the stage's text, never a goal"
+  b: "No text is a plain empty line, never an error or an endless skeleton"
+  c: "English only; nothing else in the step changes — name, tasks, conditions, order"
+  d: "Images in a stage's text are uploaded to Sanity through /api/file, never linked from elsewhere"
+}

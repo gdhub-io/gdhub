@@ -1,73 +1,23 @@
-import { Render } from "@9gustin/react-notion-render";
-import type { ProjectWorkflowStep } from "@gdhub-io/gdhub-prisma";
-import { useQuery } from "@tanstack/react-query";
-import { useTolgee } from "@tolgee/react";
-import { Skeleton, Spin } from "antd";
-import axios from "axios";
-import { useMemo } from "react";
+import Blocks from "editorjs-blocks-react-renderer";
+import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import styles from "./style.module.scss";
 
-const prepareContentRequest = (step: ProjectWorkflowStep) => {
-	const [source, path] = step?.description?.split("::") || [];
-
-	if (source === "notion" && path) {
-		const [table, slug] = path.split(".");
-
-		return { source, table, slug };
-	}
-
-	return null;
-};
-
+/**
+ * A stage's text, as its workflow template holds it (GDHUB-97). A stage with
+ * no text shows nothing: an empty stage is a stage, not an error.
+ */
 const WorkflowStepContent = ({
-	step,
-	locale = "en",
+	content,
 }: {
-	step: ProjectWorkflowStep;
-	locale?: string;
-}) => {
-	const { getLanguage } = useTolgee();
-	const contentRequest = useMemo(() => prepareContentRequest(step), [step]);
-
-	const {
-		data: content,
-		isLoading,
-		refetch: refetchContent,
-	} = useQuery({
-		queryKey: ["workflow-step-content", step?.id],
-		queryFn: () =>
-			axios.post(`/api/notion/page`, {
-				table: contentRequest?.table,
-				locale: locale || getLanguage(),
-				pageSlug: contentRequest?.slug,
-			}),
-		enabled: !!contentRequest,
-		refetchInterval: false,
-		refetchOnWindowFocus: false,
-	});
-
-	if (!step) return null;
-
-	return (
+	content?: PrismaJson.EditorJsContent | null;
+}) =>
+	content?.blocks.length ? (
 		<div className={styles.container}>
-			<Spin spinning={!step}>
-				<Skeleton
-					active
-					title={false}
-					paragraph={{ rows: 4 }}
-					loading={isLoading}
-				>
-					<Render
-						emptyBlocks
-						blocks={content?.data}
-						classNames
-						useStyles
-						simpleTitles
-					/>
-				</Skeleton>
-			</Spin>
+			<Blocks
+				data={{ time: 0, version: "", ...content }}
+				renderers={editorjsRenderers}
+			/>
 		</div>
-	);
-};
+	) : null;
 
 export default WorkflowStepContent;

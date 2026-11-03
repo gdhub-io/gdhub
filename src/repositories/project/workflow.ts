@@ -240,3 +240,25 @@ export const ensureCheckpointStage = (
 			{ now },
 		);
 	});
+
+/**
+ * What a project's workflow template says, step by step (GDHUB-97): the author's
+ * text and the AI's goal for each stage, and the workflow's own goal. One
+ * template step serves every project made from it, matched as a reset matches
+ * them — by name, and by position where the template renamed its step.
+ */
+export const templateOf = async (workflowSchemaId: string) => {
+	const schema = await prisma.workflowSchema.findUnique({
+		where: { id: workflowSchemaId },
+		select: { goal: true, steps: true },
+	});
+	const steps = schema?.steps ?? [];
+	return {
+		goal: schema?.goal ?? null,
+		stepFor: (step: { order: number; name: string }) =>
+			(matchKey(step.name) &&
+				steps.find((each) => matchKey(each.name) === matchKey(step.name))) ||
+			steps[step.order] ||
+			null,
+	};
+};

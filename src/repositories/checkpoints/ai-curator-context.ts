@@ -2,7 +2,6 @@ import {
 	CURATOR_ACTIVITY_LIMIT,
 	CURATOR_MARKETING_DEVLOGS,
 	CURATOR_STAGE_BRIEFS,
-	CURATOR_STAGE_GOALS,
 	LEAD_IN_DAYS,
 } from "@/config/checkpoint";
 import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
@@ -14,6 +13,7 @@ import { lensWeights } from "@/lib/checkpoints/lenses";
 import { dateOfDay } from "@/lib/checkpoints/plan";
 import { getProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
+import { templateOf } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 import type {
 	CuratorMarketing,
@@ -27,7 +27,7 @@ const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
 
 /**
  * Where the project stands on its workflow, for the curator: the stage, the
- * next one, what the stage is for (the curator's brief, not the author's Notion
+ * next one, what the stage is for (the curator's brief, not the author's
  * advice) and its required tasks, done or not. The optional ones are the
  * author's call and never reach the model (Dmitry, 2026-10-26).
  */
@@ -40,7 +40,9 @@ export async function stageWorkflow(
 				where: { id: stepId },
 				select: {
 					order: true,
+					name: true,
 					projectWorkflowId: true,
+					projectWorkflow: { select: { workflowSchemaId: true } },
 					tasks: {
 						where: { required: true },
 						orderBy: { order: "asc" },
@@ -60,11 +62,17 @@ export async function stageWorkflow(
 			})
 		: null;
 
+	// The goals are the project's own template's (GDHUB-97).
+	const template = step
+		? await templateOf(step.projectWorkflow.workflowSchemaId)
+		: null;
+
 	return {
+		projectGoal: template?.goal ?? null,
 		currentStage,
 		nextStage: next?.name ?? null,
 		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
-		goal: CURATOR_STAGE_GOALS[currentStage] ?? null,
+		goal: (step && template?.stepFor(step)?.goal) || null,
 		lenses: lensWeights(currentStage),
 		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
 			task.name ? [{ name: task.name, done: task.done }] : [],

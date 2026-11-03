@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { templateOf } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 
@@ -66,8 +67,6 @@ export const GET = withAuth({ mode: "user" })(
 						id: true,
 						order: true,
 						name: true,
-						// Where the stage's text lives (notion::table.slug): the path opens any stage.
-						description: true,
 						plannedAt: true,
 						finishedAt: true,
 					},
@@ -86,6 +85,15 @@ export const GET = withAuth({ mode: "user" })(
 			);
 		}
 
-		return json(projectWorkflow);
+		if (!projectWorkflow) return json(projectWorkflow);
+		// Each stage's text is its template step's; the goals stay on the server.
+		const template = await templateOf(projectWorkflow.workflowSchemaId);
+		return json({
+			...projectWorkflow,
+			steps: projectWorkflow.steps.map((step) => ({
+				...step,
+				content: template.stepFor(step)?.content ?? null,
+			})),
+		});
 	}),
 );

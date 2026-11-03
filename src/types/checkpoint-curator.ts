@@ -38,12 +38,14 @@ export type CuratorGoalCard = {
 
 /** Where the project stands on its workflow, as the template says it. */
 export type CuratorWorkflow = {
+	/** Where every stage leads, from the project's workflow template (GDHUB-97); null when it states none. */
+	projectGoal: string | null;
 	currentStage: string;
 	/** Where moving on leads; null on the path's last stage. */
 	nextStage: string | null;
 	/** What the stage is for, written for the curator; null for a stage with none. */
 	description: string | null;
-	/** Where the stage has to leave the project (GDHUB-125); null for a stage with none. */
+	/** Where the stage has to leave the project (GDHUB-125), from its template step (GDHUB-97); null for a stage with none. */
 	goal: string | null;
 	/** How much each lens says on this stage (GDHUB-126). */
 	lenses: Record<CuratorLens, LensWeight>;

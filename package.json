@@ -57,7 +57,6 @@
 		"dev:test:live": "scripts/stand.sh live"
 	},
 	"dependencies": {
-		"@9gustin/react-notion-render": "^3.11.2",
 		"@ably/chat": "^0.14.1",
 		"@ably/chat-react-ui-components": "^0.1.2",
 		"@ai-sdk/openai": "4.0.81",
@@ -92,12 +91,11 @@
 		"@editorjs/table": "^2.4.5",
 		"@firebase/app": "^0.16.2",
 		"@firebase/messaging": "^0.13.3",
-		"@gdhub-io/gdhub-prisma": "2.0.0-beta.86",
+		"@gdhub-io/gdhub-prisma": "2.0.0-beta.87",
 		"@gdhub-io/gdhub-typesense": "^1.0.6",
 		"@hello-pangea/dnd": "^18.0.1",
 		"@langchain/langgraph-sdk": "^1.12.1",
 		"@mdxeditor/editor": "^3.11.5",
-		"@notionhq/client": "^2.2.1",
 		"@novu/api": "^3.12.0",
 		"@novu/framework": "^2.14.0",
 		"@novu/react": "^3.12.0",
