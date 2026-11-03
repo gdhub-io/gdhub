@@ -1,9 +1,26 @@
 "use client";
 
-import { IconArrowRight, IconMinus, IconPlus } from "@tabler/icons-react";
+import {
+	IconArrowRight,
+	IconEqualNot,
+	IconMinus,
+	IconPlus,
+} from "@tabler/icons-react";
 import { Flex } from "antd";
 import type { LocalChange } from "@/services/workflow/diffFromTemplate";
 import styles from "./LocalChangeList.module.scss";
+
+const ICONS = {
+	added: { Icon: IconPlus, tone: styles.added },
+	removed: { Icon: IconMinus, tone: styles.removed },
+	moved: { Icon: IconArrowRight, tone: styles.moved },
+	own: { Icon: IconEqualNot, tone: styles.moved },
+} satisfies Record<LocalChange["kind"], unknown>;
+
+function Icon({ kind }: { kind: LocalChange["kind"] }) {
+	const { Icon: Glyph, tone } = ICONS[kind];
+	return <Glyph size={14} className={`${styles.icon} ${tone}`} />;
+}
 
 /**
  * A list of differences from a template, read the same way everywhere it shows.
@@ -22,21 +39,7 @@ export function LocalChangeList({ changes }: { changes: LocalChange[] }) {
 					key={change.text}
 					className={styles.change}
 				>
-					{change.kind === "added" && (
-						<IconPlus size={14} className={`${styles.icon} ${styles.added}`} />
-					)}
-					{change.kind === "removed" && (
-						<IconMinus
-							size={14}
-							className={`${styles.icon} ${styles.removed}`}
-						/>
-					)}
-					{change.kind === "moved" && (
-						<IconArrowRight
-							size={14}
-							className={`${styles.icon} ${styles.moved}`}
-						/>
-					)}
+					<Icon kind={change.kind} />
 					<span>{change.text}</span>
 				</Flex>
 			))}

@@ -1,6 +1,7 @@
 import { CURATOR_STAGE_BRIEFS } from "@/config/checkpoint";
 import { lensWeights } from "@/lib/checkpoints/lenses";
 import type { LabLanguage } from "../schemas";
+import { E2E_WORKFLOW } from "./e2e-test-game";
 
 /**
  * The one project every situation is about, on one timeline, so each call sees
@@ -22,11 +23,11 @@ import type { LabLanguage } from "../schemas";
  * (2026-10-26). Its one required task is done by the greybox devlog of 5 Oct.
  */
 const workflowAt = (moment: Moment) => ({
-	projectGoal: "The game is released and people play it.",
+	projectGoal: E2E_WORKFLOW.projectGoal,
 	currentStage: "Prototyping",
 	nextStage: "Preparing a demo version",
 	description: CURATOR_STAGE_BRIEFS.Prototyping,
-	goal: "The concept's riskiest questions are answered with something playable or visible: the core works and the style is chosen.",
+	goal: E2E_WORKFLOW.goal,
 	lenses: lensWeights("Prototyping"),
 	requiredTasks: [
 		{

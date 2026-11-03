@@ -72,3 +72,17 @@ describe("diffFromTemplate", () => {
 		expect(diffFromTemplate(asProject(), [])).toEqual([]);
 	});
 });
+
+describe("diffFromTemplate — a project's own goal and text (GDHUB-97)", () => {
+	it("counts each as a local change, and nothing when both read the template's", () => {
+		const steps = asProject().map((step, index) =>
+			index === 0
+				? { ...step, goal: "Only ours.", content: { blocks: [{ type: "paragraph", data: {} }] } }
+				: { ...step, goal: null, content: null },
+		);
+		expect(diffFromTemplate(steps, template)).toEqual([
+			{ kind: "own", text: "“Concept” has its own goal" },
+			{ kind: "own", text: "“Concept” has its own stage text" },
+		]);
+	});
+});

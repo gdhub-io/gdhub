@@ -11,9 +11,9 @@ import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
 import { firstLine } from "@/lib/checkpoints/journal-text";
 import { lensWeights } from "@/lib/checkpoints/lenses";
 import { dateOfDay } from "@/lib/checkpoints/plan";
+import { stageOf } from "@/lib/workflow/matchKey";
 import { getProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
-import { templateOf } from "@/repositories/project/workflow";
 import { prisma } from "@/services/prisma";
 import type {
 	CuratorMarketing,
@@ -41,8 +41,11 @@ export async function stageWorkflow(
 				select: {
 					order: true,
 					name: true,
+					goal: true,
 					projectWorkflowId: true,
-					projectWorkflow: { select: { workflowSchemaId: true } },
+					projectWorkflow: {
+						select: { schema: { select: { goal: true, steps: true } } },
+					},
 					tasks: {
 						where: { required: true },
 						orderBy: { order: "asc" },
@@ -62,17 +65,16 @@ export async function stageWorkflow(
 			})
 		: null;
 
-	// The goals are the project's own template's (GDHUB-97).
-	const template = step
-		? await templateOf(step.projectWorkflow.workflowSchemaId)
-		: null;
+	// The project's own stage goal, else its template step's (GDHUB-97).
+	const schema = step?.projectWorkflow.schema;
+	const stage = step && schema ? stageOf(schema.steps, step) : null;
 
 	return {
-		projectGoal: template?.goal ?? null,
+		projectGoal: schema?.goal ?? null,
 		currentStage,
 		nextStage: next?.name ?? null,
 		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
-		goal: (step && template?.stepFor(step)?.goal) || null,
+		goal: stage?.goal ?? null,
 		lenses: lensWeights(currentStage),
 		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
 			task.name ? [{ name: task.name, done: task.done }] : [],

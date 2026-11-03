@@ -82,6 +82,10 @@ export const WorkflowStepInputSchema = z.object({
 	name: z.string().nullish(),
 	title: z.string().nullish(),
 	description: z.string().nullish(),
+	/** GDHUB-97: this project's own stage goal; null or empty reads the template's. */
+	goal: z.string().trim().max(1000).nullish(),
+	/** GDHUB-97: this project's own stage text; null or no blocks reads the template's. */
+	content: EditorJsContentSchema.nullish(),
 	tasks: z.array(WorkflowTaskInputSchema).optional(),
 });
 

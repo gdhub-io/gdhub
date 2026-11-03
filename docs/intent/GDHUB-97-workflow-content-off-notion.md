@@ -37,6 +37,15 @@ have goals of its own.
   author never sees a goal. Both are edited in the same template form. The AI curator reads the stage goal
   and the workflow goal from the project's own template; `CURATOR_STAGE_GOALS`
   and `PROJECT_GOAL` leave the code, their texts moved into the Default template.
+- **A project may differ from its template** (decided 2026-11-03), the way it
+  already may in its steps and tasks: a project's step can hold its own goal and
+  its own text (`ProjectWorkflowStep.goal`, `.content`, two nullable columns in
+  gdhub-prisma). Empty means "as the template says" — the template's value is
+  read, as for every project today. Edited in the project's workflow editor
+  (`/admin/project-workflow/[id]`), where an overridden field is marked as
+  differing from the template and counts among the project's local changes; a
+  reset to the template clears both, and its preview says so. A project's own
+  value is never written back into the template.
 - **The curator's stage briefs and lens weights stay in code**
   (`CURATOR_STAGE_BRIEFS`, `CURATOR_LENS_WEIGHTS`): they are prompt settings,
   changed with the prompts and checked in the lab (decided 2026-11-03).
@@ -74,6 +83,14 @@ have goals of its own.
       `/admin/workflow/[id]`; the next AI curator read on a project with that
       template states the new goal.
 - [ ] Renaming a stage in the template keeps its goal.
+- [ ] In a project's workflow editor an administrator gives one stage its own
+      goal and its own text: that project's author reads the project's text,
+      its AI curator reads the project's goal; other projects on the template
+      still read the template's. The field is marked as differing from the
+      template, and the project shows one more local change.
+- [ ] Clearing a project's own text or goal brings the template's back.
+- [ ] Resetting the project to its template lists the overridden goal and text
+      in the preview, and afterwards the project reads the template's again.
 - [ ] `/api/notion/page`, `src/services/notion.ts`, `@notionhq/client`,
       `@9gustin/react-notion-render` and every `NOTION_*` variable are gone.
 
@@ -86,7 +103,12 @@ have goals of its own.
    change a sentence, save. Back as the author, reload: the sentence changed.
 3. Clear a stage's text in the editor and save: the author sees the stage with
    no text and no error.
-4. In the same editor change the Prototyping goal, then in `/dev/ai-curator`
+4. `/admin/workflows` → a project's workflow → a stage: write its own text and
+   goal, save. As that project's author the stage shows the project's text; on
+   another project on the same template, the template's. Reset the project to
+   its template: the preview names the two fields, and the stage shows the
+   template's text again.
+5. In the same editor change the Prototyping goal, then in `/dev/ai-curator`
    run a call on a checkpoint at Prototyping (or `bun run checkpoint:review`):
    the prompt (Sent tab) carries the new goal.
 

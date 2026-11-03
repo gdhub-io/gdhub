@@ -35,70 +35,20 @@ import { EditorJsField } from "@/components/admin/EditorJsField";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import WorkflowSettingsModal from "@/components/admin/WorkflowEditor/WorkflowSettingsModal";
+import {
+	nextKey,
+	type StepDraft,
+	type TaskDraft,
+	toDrafts,
+	toPayload,
+} from "@/lib/workflow/template-drafts";
 import { describeCondition } from "@/services/workflow/describeCondition";
+import { GOAL_TOOLTIP } from "./InheritedField";
 import { useProjectWorkflows } from "./queries";
 import { type ResetTarget, ResetWorkflowModal } from "./ResetWorkflowModal";
 import styles from "./TemplateEditor.module.scss";
 
 const { Title, Text } = Typography;
-
-type TaskDraft = {
-	key: string;
-	name: string;
-	description?: string;
-	required: boolean;
-	condition?: PrismaJson.WorkflowTaskCondition | null;
-};
-
-type StepDraft = {
-	key: string;
-	name: string;
-	description?: string;
-	goal?: string;
-	content?: PrismaJson.EditorJsContent;
-	tasks: TaskDraft[];
-};
-
-/**
- * Template steps live in one JSON column and carry no ids — their identity is
- * their position. A rail you can reorder needs something stabler than an index,
- * so each row gets a key that lives only in the editor and never reaches the
- * column.
- */
-let keySeed = 0;
-const nextKey = () => `k${++keySeed}`;
-
-function toDrafts(steps: PrismaJson.WorkflowStep[]): StepDraft[] {
-	return steps.map((step) => ({
-		key: nextKey(),
-		name: step.name,
-		description: step.description,
-		goal: step.goal,
-		content: step.content,
-		tasks: (step.tasks ?? []).map((task) => ({
-			key: nextKey(),
-			name: task.name,
-			description: task.description,
-			required: Boolean(task.required),
-			condition: task.condition ?? null,
-		})),
-	}));
-}
-
-function toPayload(steps: StepDraft[]): PrismaJson.WorkflowStep[] {
-	return steps.map((step) => ({
-		name: step.name,
-		description: step.description,
-		goal: step.goal?.trim() || undefined,
-		content: step.content?.blocks.length ? step.content : undefined,
-		tasks: step.tasks.map((task) => ({
-			name: task.name,
-			description: task.description,
-			required: task.required,
-			...(task.condition ? { condition: task.condition } : null),
-		})),
-	}));
-}
 
 const move = <T,>(list: T[], from: number, to: number): T[] => {
 	const next = [...list];
@@ -535,10 +485,7 @@ export function TemplateEditor({ id }: { id: string }) {
 							<Flex vertical gap={12} className={styles.detailBody}>
 								{/* Frame 10.09 (`rr9n1`, `ouuf4`): the goal right above the text, so each is in sight while the other is edited (GDHUB-97). */}
 								<Form layout="vertical">
-									<Form.Item
-										label="Goal"
-										extra="For the AI curator — the author never sees it."
-									>
+									<Form.Item label="Goal" tooltip={GOAL_TOOLTIP}>
 										<Input.TextArea
 											value={selected.goal ?? ""}
 											autoSize={{ minRows: 2 }}
@@ -548,11 +495,7 @@ export function TemplateEditor({ id }: { id: string }) {
 											}
 										/>
 									</Form.Item>
-									<Form.Item
-										label="Stage text"
-										extra="What the author reads when they open the stage."
-										style={{ marginBottom: 0 }}
-									>
+									<Form.Item label="Stage text" style={{ marginBottom: 0 }}>
 										<EditorJsField
 											key={selected.key}
 											value={selected.content}

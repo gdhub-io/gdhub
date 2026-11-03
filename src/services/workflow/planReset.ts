@@ -7,7 +7,7 @@
  * is therefore what happens, and the whole thing is testable without a database.
  */
 
-import { matchKey } from "./matchKey";
+import { matchKey } from "@/lib/workflow/matchKey";
 
 export type ResetMode = "keep" | "sync" | "full";
 
@@ -16,6 +16,9 @@ export type ExistingStep = {
 	id: string;
 	name: string;
 	tasks: ExistingTask[];
+	/** GDHUB-97: the step's own goal and text; null when it reads the template's. */
+	goal?: string | null;
+	content?: unknown;
 };
 
 export type TemplateTask = {
@@ -45,6 +48,8 @@ export type PlannedStep = {
 	name: string;
 	description?: string;
 	tasks: PlannedTask[];
+	/** The step's own goal and text go, so it reads the template's again. */
+	clearOwn?: boolean;
 };
 
 export type ResetPlan = {
@@ -58,6 +63,8 @@ export type ResetPlan = {
 		tasksRemoved: number;
 		completedKept: number;
 		completedTotal: number;
+		/** A project's own goal or text a reset puts back to the template's (GDHUB-97). */
+		ownCleared: string[];
 		/**
 		 * Where the project stands afterwards. `kept: false` means the project is
 		 * sent back to another step — the one consequence a progress bar will not
@@ -103,11 +110,16 @@ export function planReset(
 	let tasksAdded = 0;
 	let tasksRemoved = 0;
 	let completedKept = 0;
+	const ownCleared: string[] = [];
 
 	const steps: PlannedStep[] = template.map((templateStep) => {
 		const match = existingByName.get(matchKey(templateStep.name));
 		if (match) usedStepIds.add(match.id);
 		else stepsAdded.push(templateStep.name);
+		if (match?.goal)
+			ownCleared.push(`“${templateStep.name}”: own goal → template's`);
+		if (match?.content)
+			ownCleared.push(`“${templateStep.name}”: own stage text → template's`);
 
 		const existingTasks = new Map(
 			(match?.tasks ?? []).map((task) => [matchKey(task.name), task]),
@@ -143,6 +155,7 @@ export function planReset(
 			name: templateStep.name,
 			description: templateStep.description,
 			tasks,
+			clearOwn: true,
 		};
 	});
 
@@ -166,6 +179,7 @@ export function planReset(
 			tasksRemoved,
 			completedKept,
 			completedTotal,
+			ownCleared,
 			currentStep: {
 				kept: currentSurvives,
 				name: currentSurvives ? currentName : (steps[0]?.name ?? null),
@@ -244,6 +258,8 @@ function planSync(
 			tasksRemoved: 0,
 			completedKept: completedTotal,
 			completedTotal,
+			// Additive: the project keeps its own goals and texts too.
+			ownCleared: [],
 			// Nothing is removed, so the project cannot be moved off its step.
 			currentStep: { kept: true, name: currentName },
 		},

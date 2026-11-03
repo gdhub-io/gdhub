@@ -1,4 +1,4 @@
-import { matchKey } from "./matchKey";
+import { matchKey } from "@/lib/workflow/matchKey";
 
 /** A project's step, reduced to what a comparison cares about. */
 export type ProjectStepShape = {

@@ -1,4 +1,5 @@
 import Blocks from "editorjs-blocks-react-renderer";
+import { hasBlocks } from "@/helpers/editorjs";
 import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import styles from "./style.module.scss";
 
@@ -11,7 +12,7 @@ const WorkflowStepContent = ({
 }: {
 	content?: PrismaJson.EditorJsContent | null;
 }) =>
-	content?.blocks.length ? (
+	hasBlocks(content) ? (
 		<div className={styles.container}>
 			<Blocks
 				data={{ time: 0, version: "", ...content }}

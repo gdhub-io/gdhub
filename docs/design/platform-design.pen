@@ -88779,8 +88779,8 @@
     {
       "type": "frame",
       "id": "Kolrt",
-      "x": 3120,
-      "y": 49056,
+      "x": 6750,
+      "y": 47797,
       "name": "10.09.1 · Admin — Project workflow editor (/admin/project-workflow/[id])",
       "clip": true,
       "width": 1440,
@@ -89260,7 +89260,7 @@
                               "id": "SzhnD",
                               "name": "label",
                               "fill": "#C08A16",
-                              "content": "2 local changes",
+                              "content": "4 local changes",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "normal"
@@ -90438,16 +90438,325 @@
                       "padding": 16,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "w6HHYV",
-                          "name": "description",
-                          "fill": "#8C8C8C",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "XUv4B",
+                          "name": "fields",
                           "width": "fill_container",
-                          "content": "Build a playable prototype and gather the first feedback from players.",
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "normal"
+                          "layout": "vertical",
+                          "gap": 20,
+                          "padding": [
+                            0,
+                            0,
+                            8,
+                            0
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "MkuPY",
+                              "name": "field-goal · overridden",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "B2jWDt",
+                                  "name": "labelRow",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "vJyKl",
+                                      "name": "left",
+                                      "gap": 12,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "ertQq",
+                                          "name": "label",
+                                          "fill": "$text-primary",
+                                          "content": "Goal",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
+                                        },
+                                        {
+                                          "type": "frame",
+                                          "id": "GPAB8",
+                                          "name": "StatusDot warning · Differs from template",
+                                          "gap": 6,
+                                          "alignItems": "center",
+                                          "children": [
+                                            {
+                                              "type": "ellipse",
+                                              "id": "gVrD3",
+                                              "name": "dot",
+                                              "fill": "$warning",
+                                              "width": 8,
+                                              "height": 8
+                                            },
+                                            {
+                                              "type": "text",
+                                              "id": "Hojy3",
+                                              "name": "word",
+                                              "fill": "$text-secondary",
+                                              "content": "Differs from template",
+                                              "fontFamily": "$font",
+                                              "fontSize": 13,
+                                              "fontWeight": "normal"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "gaUQW",
+                                      "name": "Button link small · Use the template's",
+                                      "height": 24,
+                                      "gap": 4,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "G7xRU",
+                                          "name": "IconArrowBackUp",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "undo-2",
+                                          "library": "lucide",
+                                          "fill": "$link"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "lzIw9",
+                                          "name": "label",
+                                          "fill": "$link",
+                                          "content": "Use the template's",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "TcqHz",
+                                  "name": "Input.TextArea · project's own",
+                                  "width": "fill_container",
+                                  "height": 68,
+                                  "fill": "$page-bg",
+                                  "cornerRadius": "$radius-sm",
+                                  "layout": "vertical",
+                                  "padding": 12,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "lLA5l",
+                                      "name": "value",
+                                      "fill": "$text-primary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "A build anyone on the team can download and play end to end, tried by five players, with what they did written down.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "NhZEY",
+                                  "name": "helper",
+                                  "fill": "$text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "For the AI curator — the author never sees it.",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "pP6T6",
+                              "name": "field-stage-text · inherited",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Rjskx",
+                                  "name": "labelRow",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ZQ9xg",
+                                      "name": "label",
+                                      "fill": "$text-primary",
+                                      "content": "Stage text",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "KnkJL",
+                                      "name": "Button link small · Write this project's own",
+                                      "height": 24,
+                                      "gap": 4,
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "type": "icon",
+                                          "id": "hpqxo",
+                                          "name": "IconPencil",
+                                          "width": 14,
+                                          "height": 14,
+                                          "icon": "pencil",
+                                          "library": "lucide",
+                                          "fill": "$link"
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "WEOvk",
+                                          "name": "label",
+                                          "fill": "$link",
+                                          "content": "Write this project's own",
+                                          "fontFamily": "$font",
+                                          "fontSize": 14,
+                                          "fontWeight": "normal"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "mQmA1",
+                                  "name": "read-only · template's text (renderer)",
+                                  "width": "fill_container",
+                                  "fill": "$page-bg",
+                                  "cornerRadius": "$radius-sm",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "padding": [
+                                    16,
+                                    24
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "V2WhQ",
+                                      "name": "heading",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Make it playable",
+                                      "lineHeight": 1.3,
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "N2Hpfc",
+                                      "name": "paragraph",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "A prototype answers one question: is the core loop fun? Build the smallest version that lets someone play it from start to finish, then watch them play.",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "DiscM",
+                                      "name": "list item",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "•  One loop, placeholder art is fine",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "tzn9S",
+                                      "name": "list item",
+                                      "fill": "$text-secondary",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "•  A build someone else can run without you",
+                                      "lineHeight": 1.5,
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "NlIN2",
+                                  "name": "from template",
+                                  "gap": 6,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "IRIxO",
+                                      "name": "IconTemplate",
+                                      "width": 14,
+                                      "height": 14,
+                                      "icon": "layout-template",
+                                      "library": "lucide",
+                                      "fill": "$text-tertiary"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "UW4ek",
+                                      "name": "text",
+                                      "fill": "$text-secondary",
+                                      "content": "From the template · Indie game launch",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "P8m3lY",
+                                  "name": "helper",
+                                  "fill": "$text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "What the author reads when they open the stage.",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "frame",
@@ -91356,7 +91665,7 @@
                           "id": "WS6Zs",
                           "name": "desc",
                           "fill": "#8C8C8C",
-                          "content": "Created from Indie game launch · the template was updated 2 days ago, this copy has 2 local changes.",
+                          "content": "Created from Indie game launch · the template was updated 2 days ago, this copy has 4 local changes.",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
@@ -91559,6 +91868,96 @@
                           "name": "text",
                           "fill": "#1F1F1F",
                           "content": "Task “Write a press kit” was removed from “Release”",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Gb6Cd",
+                      "name": "change",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "l92Scn",
+                          "name": "sign",
+                          "width": 16,
+                          "height": 16,
+                          "fill": "$neutral-100",
+                          "cornerRadius": 3,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "I6NTo",
+                              "name": "label",
+                              "fill": "$text-secondary",
+                              "content": "≠",
+                              "lineHeight": 1,
+                              "textAlign": "center",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "puclT",
+                          "name": "text",
+                          "fill": "$text-primary",
+                          "content": "“Prototype” has its own goal",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "POEH3",
+                      "name": "change",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "s1nitR",
+                          "name": "sign",
+                          "width": 16,
+                          "height": 16,
+                          "fill": "$neutral-100",
+                          "cornerRadius": 3,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "btDvq",
+                              "name": "label",
+                              "fill": "$text-secondary",
+                              "content": "≠",
+                              "lineHeight": 1,
+                              "textAlign": "center",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "CQaxq",
+                          "name": "text",
+                          "fill": "$text-primary",
+                          "content": "“Release” has its own stage text",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "normal"
@@ -92224,6 +92623,100 @@
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
                       "content": "2 tasks added, 1 task removed",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ocuuQ",
+                  "name": "change · own value → template's",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "D3vfDg",
+                      "name": "sign",
+                      "width": 18,
+                      "height": 18,
+                      "fill": "$neutral-100",
+                      "cornerRadius": 4,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "C06Dqt",
+                          "name": "label",
+                          "fill": "$text-secondary",
+                          "content": "↺",
+                          "lineHeight": 1,
+                          "textAlign": "center",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "KVKTk",
+                      "name": "text",
+                      "fill": "#1F1F1F",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "“Prototype”: own goal → template's",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "vnSsl",
+                  "name": "change · own value → template's",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "XDYyf",
+                      "name": "sign",
+                      "width": 18,
+                      "height": 18,
+                      "fill": "$neutral-100",
+                      "cornerRadius": 4,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "bJpDi",
+                          "name": "label",
+                          "fill": "$text-secondary",
+                          "content": "↺",
+                          "lineHeight": 1,
+                          "textAlign": "center",
+                          "fontFamily": "$font",
+                          "fontSize": 11,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "oOq2W",
+                      "name": "text",
+                      "fill": "#1F1F1F",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "“Release”: own stage text → template's",
                       "fontFamily": "$font",
                       "fontSize": 13,
                       "fontWeight": "normal"
@@ -505669,6 +506162,605 @@
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "E9CoNX",
+      "x": 6750,
+      "y": 49671,
+      "name": "10.09.3 · Admin — Project workflow editor · step with goal and stage text from the template",
+      "clip": true,
+      "width": 1340,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "padding": 40,
+      "children": [
+        {
+          "type": "frame",
+          "id": "u2jP1J",
+          "name": "stepCard-Prototype",
+          "clip": true,
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "cornerRadius": 8,
+          "stroke": "#BFD8FF",
+          "strokeWidth": 1.5,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ly9yj",
+              "name": "stepHeader",
+              "width": "fill_container",
+              "height": 60,
+              "stroke": "#EDEDED",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "strokeAlignment": "inner",
+              "strokeLinejoin": "round",
+              "gap": 12,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "z8NK0",
+                  "name": "drag",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "grip-vertical",
+                  "library": "lucide",
+                  "fill": "#D9D9D9"
+                },
+                {
+                  "type": "frame",
+                  "id": "nFe1n",
+                  "name": "index",
+                  "width": 26,
+                  "height": 26,
+                  "fill": "#2B5FD9",
+                  "cornerRadius": 13,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "J1366",
+                      "name": "label",
+                      "fill": "#FFFFFF",
+                      "content": "3",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "n5knTD",
+                  "name": "texts",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "RQFUH",
+                      "name": "name",
+                      "fill": "#1F1F1F",
+                      "content": "Vertical slice",
+                      "fontFamily": "$font",
+                      "fontSize": 15,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "CnJ1P",
+                      "x": 82,
+                      "y": 0,
+                      "name": "chip-Current step",
+                      "enabled": false,
+                      "height": 22,
+                      "fill": "#E9F1FF",
+                      "cornerRadius": 4,
+                      "stroke": "#BFD8FF",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "gap": 5,
+                      "padding": [
+                        0,
+                        7
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xwbpE",
+                          "name": "label",
+                          "fill": "#2B5FD9",
+                          "content": "Current step",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Lsm2h",
+                  "name": "meta",
+                  "fill": "#8C8C8C",
+                  "content": "0 / 1 tasks",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "icon",
+                  "id": "lPSmT",
+                  "name": "chevron",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "chevron-up",
+                  "library": "lucide",
+                  "fill": "#8C8C8C"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "L64l4",
+              "name": "stepBody",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "iYXT9",
+                  "name": "fields",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 20,
+                  "padding": [
+                    0,
+                    0,
+                    8,
+                    0
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "koBzg",
+                      "name": "field-goal · inherited",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "xSTVD",
+                          "name": "labelRow",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KCMjU",
+                              "name": "label",
+                              "fill": "$text-primary",
+                              "content": "Goal",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "gmkkO",
+                              "name": "Button link small · Write this project's own",
+                              "height": 24,
+                              "gap": 4,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "PzBwZ",
+                                  "name": "IconPencil",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "pencil",
+                                  "library": "lucide",
+                                  "fill": "$link"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "H4TSQd",
+                                  "name": "label",
+                                  "fill": "$link",
+                                  "content": "Write this project's own",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "s4k4G",
+                          "name": "read-only · template's goal",
+                          "width": "fill_container",
+                          "fill": "$page-bg",
+                          "cornerRadius": "$radius-sm",
+                          "layout": "vertical",
+                          "padding": 12,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "jeE1B",
+                              "name": "value",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "One level is finished to release quality: art, sound and difficulty as they will ship.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "h9ynyr",
+                          "name": "from template",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "n8n55Z",
+                              "name": "IconTemplate",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "layout-template",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "lVlyO",
+                              "name": "text",
+                              "fill": "$text-secondary",
+                              "content": "From the template · Indie game launch",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "F6o8Ll",
+                          "name": "helper",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "For the AI curator — the author never sees it.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "N1hqz",
+                      "name": "field-stage-text · inherited",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZOYF7",
+                          "name": "labelRow",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "YhGiq",
+                              "name": "label",
+                              "fill": "$text-primary",
+                              "content": "Stage text",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "sWA68",
+                              "name": "Button link small · Write this project's own",
+                              "height": 24,
+                              "gap": 4,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "HY5Pp",
+                                  "name": "IconPencil",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "pencil",
+                                  "library": "lucide",
+                                  "fill": "$link"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Gc4f3",
+                                  "name": "label",
+                                  "fill": "$link",
+                                  "content": "Write this project's own",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "M6gxQF",
+                          "name": "read-only · template's text (renderer)",
+                          "width": "fill_container",
+                          "fill": "$page-bg",
+                          "cornerRadius": "$radius-sm",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": [
+                            16,
+                            24
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Qrvqq",
+                              "name": "heading",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Finish one slice of the game",
+                              "lineHeight": 1.3,
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "iauSP",
+                              "name": "paragraph",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "A vertical slice is one level built to the quality the whole game will have. It shows what the rest will cost and whether the game holds up once it looks real.",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "eZ9kd",
+                              "name": "list item",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "•  Final art, sound and UI on one level",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "OjyGM",
+                              "name": "list item",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "•  Timed: how long the level took to make",
+                              "lineHeight": 1.5,
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YZOBx",
+                          "name": "from template",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "giTfb",
+                              "name": "IconTemplate",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "layout-template",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "LKXkn",
+                              "name": "text",
+                              "fill": "$text-secondary",
+                              "content": "From the template · Indie game launch",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Ew3yV",
+                          "name": "helper",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "What the author reads when they open the stage.",
+                          "lineHeight": 1.45,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "yZ8ra",
+                  "name": "task-Invite 2 team members",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 6,
+                  "stroke": "#EDEDED",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UY3BL",
+                      "name": "checkbox",
+                      "width": 18,
+                      "height": 18,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 4,
+                      "stroke": "#D9D9D9",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
+                      "justifyContent": "center",
+                      "alignItems": "center"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pKkpF",
+                      "name": "texts",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 3,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "dxZye",
+                          "name": "name",
+                          "fill": "#1F1F1F",
+                          "content": "Build one finished level",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "L2n4I",
+                      "name": "right",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "U0knIV",
+                          "name": "chip-Manual",
+                          "height": 22,
+                          "fill": "#F4F3F3",
+                          "cornerRadius": 4,
+                          "gap": 5,
+                          "padding": [
+                            0,
+                            7
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "K1TAZP",
+                              "name": "icon",
+                              "width": 11,
+                              "height": 11,
+                              "icon": "hand",
+                              "library": "lucide",
+                              "fill": "#8C8C8C"
+                            },
+                            {
+                              "type": "text",
+                              "id": "T49TO",
+                              "name": "label",
+                              "fill": "#8C8C8C",
+                              "content": "Manual",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "zqOIi",
+                          "name": "editBtn",
+                          "width": 28,
+                          "height": 28,
+                          "cornerRadius": 6,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "iit4K",
+                              "name": "icon",
+                              "width": 14,
+                              "height": 14,
+                              "icon": "pencil",
+                              "library": "lucide",
+                              "fill": "#5E5E5E"
                             }
                           ]
                         }

@@ -53,6 +53,7 @@ export async function applyResetPlan(
 			order: index,
 			done,
 			...(done ? null : { finishedAt: null }),
+			...(step.clearOwn ? { goal: null, content: dbNull } : null),
 		};
 
 		if (stepId) {

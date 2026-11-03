@@ -114,7 +114,7 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 							<span className={styles.optional}>(optional)</span>
 						</>
 					}
-					extra="For the AI curator: where every stage leads."
+					tooltip="Where every stage leads. Read by the AI curator only."
 				>
 					<Input.TextArea
 						autoSize={{ minRows: 2 }}

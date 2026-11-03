@@ -368,6 +368,10 @@ function ChangeList({ summary }: { summary: Summary }) {
 			text: `Step added \u2014 \u201c${name}\u201d`,
 		});
 	}
+	// Frame 10.12: a project's own goal or text, back to the template's (GDHUB-97).
+	for (const text of summary.ownCleared) {
+		changes.push({ kind: "own", text });
+	}
 	for (const name of summary.stepsRemoved) {
 		changes.push({
 			kind: "removed",

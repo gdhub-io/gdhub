@@ -22,7 +22,6 @@ vi.mock("@/services/prisma", () => ({
 		projectCheckpoint: { findUniqueOrThrow: vi.fn() },
 		teamVacancy: { findMany: vi.fn() },
 		projectWorkflowStep: { findUnique: vi.fn(), findFirst: vi.fn() },
-		workflowSchema: { findUnique: vi.fn() },
 		teamMember: { findMany: vi.fn() },
 		checkpointPulse: { findMany: vi.fn() },
 	},
@@ -207,15 +206,16 @@ describe("a devlog as the curator reads it", () => {
 
 describe("the stage as the curator reads it", () => {
 	it("names the next stage, the required tasks done or not, and the curator's own brief", async () => {
-		vi.mocked(prisma.workflowSchema.findUnique).mockResolvedValue({
-			goal: PROJECT_GOAL,
-			steps: [{}, {}, { name: "Prototyping", goal: STAGE_GOAL, tasks: [] }],
-		} as never);
 		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
 			order: 2,
 			name: "Prototyping",
 			projectWorkflowId: "wf",
-			projectWorkflow: { workflowSchemaId: "default" },
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [{}, {}, { name: "Prototyping", goal: STAGE_GOAL, tasks: [] }],
+				},
+			},
 			// The query asks for the required tasks only.
 			tasks: [
 				{ name: "Playable greybox", done: true },
@@ -245,37 +245,59 @@ describe("the stage as the curator reads it", () => {
 	});
 
 	it("finds the goal by the stage's name when the project's steps moved", async () => {
-		vi.mocked(prisma.workflowSchema.findUnique).mockResolvedValue({
-			goal: PROJECT_GOAL,
-			steps: [
-				{ name: "Ideation", goal: "Ideation goal", tasks: [] },
-				{ name: "Prototyping", goal: STAGE_GOAL, tasks: [] },
-			],
-		} as never);
 		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
 			order: 0,
 			name: "prototyping",
 			projectWorkflowId: "wf",
-			projectWorkflow: { workflowSchemaId: "default" },
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [
+						{ name: "Ideation", goal: "Ideation goal", tasks: [] },
+						{ name: "Prototyping", goal: STAGE_GOAL, tasks: [] },
+					],
+				},
+			},
 			tasks: [],
 		} as never);
 
 		expect((await stageWorkflow("step", "Prototyping")).goal).toBe(STAGE_GOAL);
 	});
 
-	it("keeps the goal by position when the template renamed the stage", async () => {
-		vi.mocked(prisma.workflowSchema.findUnique).mockResolvedValue({
-			goal: PROJECT_GOAL,
-			steps: [
-				{ name: "Ideation", goal: "Ideation goal", tasks: [] },
-				{ name: "Prototype", goal: STAGE_GOAL, tasks: [] },
-			],
+	it("reads the project's own stage goal before the template's", async () => {
+		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
+			order: 0,
+			name: "Prototyping",
+			goal: "Only this project's goal.",
+			projectWorkflowId: "wf",
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [{ name: "Prototyping", goal: STAGE_GOAL, tasks: [] }],
+				},
+			},
+			tasks: [],
 		} as never);
+
+		expect((await stageWorkflow("step", "Prototyping")).goal).toBe(
+			"Only this project's goal.",
+		);
+	});
+
+	it("keeps the goal by position when the template renamed the stage", async () => {
 		vi.mocked(prisma.projectWorkflowStep.findUnique).mockResolvedValue({
 			order: 1,
 			name: "Prototyping",
 			projectWorkflowId: "wf",
-			projectWorkflow: { workflowSchemaId: "default" },
+			projectWorkflow: {
+				schema: {
+					goal: PROJECT_GOAL,
+					steps: [
+						{ name: "Ideation", goal: "Ideation goal", tasks: [] },
+						{ name: "Prototype", goal: STAGE_GOAL, tasks: [] },
+					],
+				},
+			},
 			tasks: [],
 		} as never);
 

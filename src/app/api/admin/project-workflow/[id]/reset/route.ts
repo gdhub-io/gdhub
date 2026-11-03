@@ -55,6 +55,8 @@ export const POST = pipe(
 				select: {
 					id: true,
 					name: true,
+					goal: true,
+					content: true,
 					tasks: {
 						select: { id: true, name: true, done: true },
 						orderBy: { order: "asc" },

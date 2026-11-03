@@ -3,26 +3,8 @@
 import type EditorJS from "@editorjs/editorjs";
 import { useEffect, useId, useRef } from "react";
 import { tools } from "@/components/admin/BlogPostEditor/tools";
+import { sameBlocks } from "@/helpers/editorjs";
 import styles from "./style.module.scss";
-
-/** JSON with its keys sorted: the database returns them in its own order. */
-const sorted = (value: unknown): unknown =>
-	Array.isArray(value)
-		? value.map(sorted)
-		: value && typeof value === "object"
-			? Object.fromEntries(
-					Object.keys(value)
-						.sort()
-						.map((key) => [
-							key,
-							sorted((value as Record<string, unknown>)[key]),
-						]),
-				)
-			: value;
-
-/** A text's blocks as what they say, without the ids Editor.js adds. */
-const sameBlocks = (blocks: { type: string; data: unknown }[]) =>
-	JSON.stringify(sorted(blocks.map(({ type, data }) => ({ type, data }))));
 
 /**
  * An Editor.js field inside an admin form (GDHUB-97, frame 10.09): the blog
@@ -44,7 +26,7 @@ export function EditorJsField({
 	const changed = useRef(onChange);
 	changed.current = onChange;
 	const initial = useRef(value);
-	const last = useRef(sameBlocks(value?.blocks ?? []));
+	const last = useRef(value?.blocks ?? []);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -62,9 +44,8 @@ export function EditorJsField({
 					if (!saved) return;
 					// Editor.js "changes" a text it has only just loaded — new ids, its own
 					// key order; only a change of what the blocks say reaches the form.
-					const now = sameBlocks(saved.blocks);
-					if (now === last.current) return;
-					last.current = now;
+					if (sameBlocks(saved.blocks, last.current)) return;
+					last.current = saved.blocks;
 					changed.current(saved as PrismaJson.EditorJsContent);
 				},
 			});

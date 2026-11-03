@@ -7,7 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { templateOf } from "@/repositories/project/workflow";
+import { stageOf } from "@/lib/workflow/matchKey";
 import { prisma } from "@/services/prisma";
 import { recomputeStepTasks } from "@/services/workflow/recomputeStepTasks";
 
@@ -41,6 +41,8 @@ export const GET = withAuth({ mode: "user" })(
 		const projectWorkflow = await prisma.projectWorkflow.findFirst({
 			where: { projectId },
 			include: {
+				// Each stage's text falls back to its template step's (GDHUB-97).
+				schema: { select: { steps: true } },
 				currentStep: {
 					include: {
 						tasks: { orderBy: { order: "asc" } },
@@ -67,6 +69,7 @@ export const GET = withAuth({ mode: "user" })(
 						id: true,
 						order: true,
 						name: true,
+						content: true,
 						plannedAt: true,
 						finishedAt: true,
 					},
@@ -85,14 +88,14 @@ export const GET = withAuth({ mode: "user" })(
 			);
 		}
 
-		if (!projectWorkflow) return json(projectWorkflow);
-		// Each stage's text is its template step's; the goals stay on the server.
-		const template = await templateOf(projectWorkflow.workflowSchemaId);
+		if (!projectWorkflow) return json(null);
+		const { schema, ...workflow } = projectWorkflow;
+		// The goals stay on the server; only the text reaches the author.
 		return json({
-			...projectWorkflow,
-			steps: projectWorkflow.steps.map((step) => ({
+			...workflow,
+			steps: workflow.steps.map(({ content, ...step }) => ({
 				...step,
-				content: template.stepFor(step)?.content ?? null,
+				content: stageOf(schema.steps, { ...step, content }).content,
 			})),
 		});
 	}),
