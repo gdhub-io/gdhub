@@ -2,7 +2,6 @@
 
 import type EditorJS from "@editorjs/editorjs";
 import { useEffect, useId, useRef } from "react";
-import { tools } from "@/components/admin/BlogPostEditor/tools";
 import { sameBlocks } from "@/helpers/editorjs";
 import styles from "./style.module.scss";
 
@@ -31,7 +30,11 @@ export function EditorJsField({
 	useEffect(() => {
 		let cancelled = false;
 		(async () => {
-			const { default: Editor } = await import("@editorjs/editorjs");
+			// The tools touch `window` when imported, so they load with the editor, never on the server.
+			const [{ default: Editor }, { tools }] = await Promise.all([
+				import("@editorjs/editorjs"),
+				import("@/components/admin/BlogPostEditor/tools"),
+			]);
 			if (cancelled) return;
 			editor.current = new Editor({
 				holder,
