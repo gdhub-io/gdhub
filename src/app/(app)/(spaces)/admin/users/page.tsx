@@ -19,6 +19,7 @@ import {
 	Row,
 	Select,
 	Space,
+	Switch,
 	Tag,
 	Tooltip,
 	Typography,
@@ -60,6 +61,8 @@ type AdminUserRow = {
 	createdAt: string;
 	lastModifiedAt: string;
 	specializations: { id: string; name: string }[];
+	/** In the landing's "Top experts"; `null` when not an expert open to mentoring. */
+	featuredExpert: boolean | null;
 	skillCapital: {
 		scTotal: number;
 		leadershipCapital: number;
@@ -227,6 +230,13 @@ export default function UsersAdminPage() {
 	const refreshRows = () =>
 		queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
 
+	const setFeaturedExpert = useMutation({
+		mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
+			axios.patch(`/api/admin/user/${id}/featured-expert`, { isFeatured }),
+		onSuccess: refreshRows,
+		onError: () => message.error("Could not change the top expert flag"),
+	});
+
 	const syncAll = useMutation({
 		mutationFn: ({ onlyOnboarded }: { onlyOnboarded: boolean }) =>
 			axios
@@ -342,6 +352,31 @@ export default function UsersAdminPage() {
 					),
 			},
 			{
+				// The landing's "Top experts" shows only the people chosen here, or the most viewed while none is.
+				title: "Top expert",
+				dataIndex: "featuredExpert",
+				key: "featuredExpert",
+				align: "center",
+				render: (featured: AdminUserRow["featuredExpert"], record) =>
+					featured === null ? (
+						<Tooltip title="Not an expert open to mentoring">
+							<Text type="secondary">—</Text>
+						</Tooltip>
+					) : (
+						<Switch
+							size="small"
+							checked={featured}
+							loading={
+								setFeaturedExpert.isPending &&
+								setFeaturedExpert.variables?.id === record.id
+							}
+							onChange={(checked) =>
+								setFeaturedExpert.mutate({ id: record.id, isFeatured: checked })
+							}
+						/>
+					),
+			},
+			{
 				title: "Skill Capital",
 				dataIndex: ["skillCapital", "scTotal"],
 				key: "scTotal" as SortField,
@@ -452,7 +487,7 @@ export default function UsersAdminPage() {
 				),
 			},
 		],
-		[sortField, sortOrder, syncUser],
+		[sortField, sortOrder, syncUser, setFeaturedExpert],
 	);
 
 	return (

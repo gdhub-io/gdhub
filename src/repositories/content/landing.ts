@@ -1,4 +1,8 @@
-import type { PaymentRateType, SkillLevel } from "@gdhub-io/gdhub-prisma";
+import type {
+	PaymentRateType,
+	Prisma,
+	SkillLevel,
+} from "@gdhub-io/gdhub-prisma";
 import { EXPERT_SKILL_LEVELS, weeklyHours } from "@/helpers/speciality";
 import { prisma } from "@/services/prisma";
 import {
@@ -177,16 +181,36 @@ async function newTalents(): Promise<LandingTalent[]> {
 	});
 }
 
-/** Featured experts first, then the most viewed. */
+/** A speciality that can stand in "Top experts": an expert level, open to mentoring, with questions it takes. */
+export const landingExpertWhere = {
+	level: { in: EXPERT_SKILL_LEVELS },
+	isOpenForMentoring: true,
+	openForQuestions: { isEmpty: false },
+} satisfies Prisma.SpecialityWhereInput;
+
+/** `landingExpertWhere` for a speciality already read, kept beside it so the two cannot drift. */
+export const isLandingExpert = (speciality: {
+	level: SkillLevel | null;
+	isOpenForMentoring: boolean;
+	openForQuestions: unknown[];
+}) =>
+	!!speciality.level &&
+	EXPERT_SKILL_LEVELS.includes(speciality.level) &&
+	speciality.isOpenForMentoring &&
+	speciality.openForQuestions.length > 0;
+
+/**
+ * The experts an admin featured; while none is, the most viewed. One card per
+ * person, and only people with a photo — the strip is a wall of faces.
+ */
 async function topExperts(): Promise<LandingExpert[]> {
+	const where = { ...landingExpertWhere, user: { image: { not: null } } };
+	const featured = await prisma.speciality.count({
+		where: { ...where, isFeatured: true },
+	});
 	const specialities = await prisma.speciality.findMany({
-		where: {
-			level: { in: EXPERT_SKILL_LEVELS },
-			isOpenForMentoring: true,
-			openForQuestions: { isEmpty: false },
-			user: { image: { not: null } },
-		},
-		orderBy: [{ isFeatured: "desc" }, { viewsCount: "desc" }],
+		where: featured ? { ...where, isFeatured: true } : where,
+		orderBy: { viewsCount: "desc" },
 		distinct: ["userId"],
 		take: STRIP_SIZE,
 		select: {
