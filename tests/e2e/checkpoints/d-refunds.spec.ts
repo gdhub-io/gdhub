@@ -8,6 +8,7 @@ import { type Browser, expect, test } from "@playwright/test";
 import { MS_PER_DAY } from "../../../src/lib/checkpoints/days";
 import { refundedTotal } from "../../../src/repositories/checkpoints/refund";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";
 import {
@@ -31,9 +32,9 @@ const log = new RunLog("D refunds");
 
 const buy = async (browser: Browser, label: string) => {
 	const page = await signInAs(browser, await grantUser(label));
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 	await page.goto(`/checkpoint/new?project=${project.slug}`);
-	await planCheckpoint(page, "A playable greybox of one island");
+	await planCheckpoint(page, GAME.doneSoFar);
 	await payInPaddle(page);
 	const checkpoint = await activeCheckpoint(project.id);
 	log.track(checkpoint.id);
@@ -64,7 +65,7 @@ test("a withdrawal inside 14 days is refunded less the reviews written", async (
 	).json();
 	log.step(`The quote: ${JSON.stringify(quote)}`);
 
-	await refundAsAdmin(admin, "Tidebound", "Withdrawal within 14 days");
+	await refundAsAdmin(admin, GAME.name, "Withdrawal within 14 days");
 
 	const payment = await prisma.payment.findUniqueOrThrow({
 		where: { id: checkpoint.paymentId ?? "" },
@@ -82,7 +83,7 @@ test("after 14 days a withdrawal is refused", async ({ browser }) => {
 	const page = await signInAs(browser, author);
 	const checkpointId = await startWithoutPaying(
 		page,
-		await makeProject(page, "Tidebound"),
+		await makeProject(page, GAME.name),
 	);
 	await prisma.payment.create({
 		data: {

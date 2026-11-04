@@ -1,6 +1,7 @@
 import { PaymentStatus, TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, type Page, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
+import { GAME } from "./checkpoints/support/game";
 import { paddleDetails, paddleOverlay, payByCard } from "./setup/paddle";
 import { createProjectInHub } from "./setup/project";
 import {
@@ -32,8 +33,8 @@ test.describe.serial("a vacancy, from its author's side", () => {
 		// A fixed name: the AI check of a new project then replays from a recording.
 		slug = await createProjectInHub(
 			page,
-			"Lantern Keepers",
-			"A co-op lighthouse keeper game about guiding ships through storms.",
+			GAME.name,
+			GAME.description,
 		);
 	});
 	test.afterAll(removeRun);

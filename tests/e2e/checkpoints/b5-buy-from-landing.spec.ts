@@ -3,6 +3,7 @@ import { prisma } from "../../../src/services/prisma";
 import { acceptCookieConsent } from "../setup/cookies";
 import { pick } from "../setup/forms";
 import { baseURL } from "../setup/sign-in";
+import { GAME } from "./support/game";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";
 import {
@@ -78,7 +79,7 @@ test("signed out: sent to sign in, back to the checkpoint", async ({
 	browser,
 }) => {
 	const author = await grantUser("author-b5");
-	await makeProject(await signInAs(browser, author), "Tidebound");
+	await makeProject(await signInAs(browser, author), GAME.name);
 
 	const context = await browser.newContext({ baseURL: baseURL() });
 	const anonymous = await context.newPage();
@@ -103,7 +104,7 @@ test("signed out: sent to sign in, back to the checkpoint", async ({
 test("signed in: straight to the hub", async ({ browser }) => {
 	const author = await grantUser("author-b5c");
 	const page = await signInAs(browser, author);
-	await makeProject(page, "Tidebound");
+	await makeProject(page, GAME.name);
 
 	await fromLanding(page);
 	await page.waitForURL(/\/checkpoint\/new(\?|$)/);

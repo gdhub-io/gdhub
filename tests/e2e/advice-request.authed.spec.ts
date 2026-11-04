@@ -1,6 +1,7 @@
 import { AdviceRequestStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
+import { GAME } from "./checkpoints/support/game";
 import { hireMember, makeProject, runCron } from "./checkpoints/support/stand";
 import { pick } from "./setup/forms";
 import {
@@ -77,7 +78,7 @@ test.describe.serial("an advice request, between a member and an advisor", () =>
 		await terms.getByRole("checkbox", { name: /I accept the Advisor Agreement/ }).check();
 		await terms.getByRole("button", { name: "Accept and continue" }).click();
 		await expect(terms).toBeHidden();
-		project = await makeProject(askerPage, "Moss Lantern");
+		project = await makeProject(askerPage, GAME.name);
 		projectId = project.id;
 	});
 	test.afterAll(removeRun);

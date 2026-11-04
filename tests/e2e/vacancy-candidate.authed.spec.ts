@@ -1,6 +1,7 @@
 import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
 import { type Browser, expect, type Page, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
+import { GAME } from "./checkpoints/support/game";
 import { createProjectInHub } from "./setup/project";
 import {
 	grantUser,
@@ -37,7 +38,7 @@ async function apply(page: Page, greeting: string) {
 	await modal.getByRole("button", { name: "Choose" }).click();
 
 	await expect(page.getByText("Your response is sent")).toBeVisible();
-	await expect(page.getByRole("button", { name: "Cancel my response" })).toBeVisible();
+	await expect(page.getByRole("button", { name: "Withdraw application" })).toBeVisible();
 }
 
 test.describe.serial("a vacancy, between its author and its candidates", () => {
@@ -74,8 +75,8 @@ test.describe.serial("a vacancy, between its author and its candidates", () => {
 		// A fixed name: the AI check of a new project then replays from a recording.
 		slug = await createProjectInHub(
 			authorPage,
-			"Saltglass Harbour",
-			"A trading game about a harbour town that rebuilds after every storm.",
+			GAME.name,
+			GAME.description,
 		);
 		await addVacancy(authorPage, slug, VACANCY);
 	});

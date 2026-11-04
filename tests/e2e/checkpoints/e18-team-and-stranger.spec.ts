@@ -1,6 +1,7 @@
 import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import {
 	grantUser,
@@ -28,7 +29,7 @@ test("a team member looks, a stranger gets a 404", async ({ browser }) => {
 	const member = await grantUser("member-e18");
 	const stranger = await grantUser("stranger-e18");
 
-	const project = await makeProject(await signInAs(browser, author), "Tidebound");
+	const project = await makeProject(await signInAs(browser, author), GAME.name);
 	await hireMember(project, member);
 	await prisma.projectArtifact.create({
 		data: {

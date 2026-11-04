@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
 import { createProjectInHub } from "../setup/project";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import {
 	grantUser,
@@ -32,8 +33,8 @@ test("a project moves through its stages, one way", async ({ browser }) => {
 
 	const slug = await createProjectInHub(
 		page,
-		"Tidebound",
-		"A co-op sailing roguelike: two players crew a small boat between islands that flood and drain with the tide.",
+		GAME.name,
+		GAME.description,
 	);
 	const project = await prisma.project.findUniqueOrThrow({
 		where: { slug },
@@ -109,7 +110,7 @@ test("a project moves through its stages, one way", async ({ browser }) => {
 	await postDevlog(
 		page,
 		project.id,
-		"The first greybox: one island, the tide comes in and goes out.",
+		GAME.devlog.sprint1,
 	);
 	await page.reload();
 	await (await moveNext(page, "Prototyping", "Preparing a demo version"))

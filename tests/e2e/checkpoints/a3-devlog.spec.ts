@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import {
 	grantUser,
@@ -28,14 +29,14 @@ test("a devlog post is published, edited, shown and deleted", async ({
 }) => {
 	const author = await grantUser("author-a3");
 	const page = await signInAs(browser, author);
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 
 	await page.goto(`/user/project/${project.slug}/devlog`);
 	await page.getByRole("button", { name: "Add post" }).click();
 	const composer = page.getByRole("dialog");
 	const editor = composer.locator(".codex-editor [contenteditable=true]").first();
 	await editor.click();
-	await page.keyboard.type("Week one: the tide loop works on one island.");
+	await page.keyboard.type(GAME.devlog.sprint1);
 
 	await composer.getByRole("button", { name: "Video" }).click();
 	await page.getByPlaceholder("Paste a video link").fill(VIDEO);
@@ -62,7 +63,7 @@ test("a devlog post is published, edited, shown and deleted", async ({
 				...(post.contentEditor as object),
 				blocks: [
 					...blocks,
-					{ type: "image", data: { file: { url: IMAGE }, caption: "The tide out" } },
+					{ type: "image", data: { file: { url: IMAGE }, caption: "The gnome mid-jump" } },
 				],
 			},
 		},
@@ -71,7 +72,7 @@ test("a devlog post is published, edited, shown and deleted", async ({
 	log.step("Edited: an image added");
 
 	await page.goto(`/devlog/${post.id}`);
-	await expect(page.getByText("Week one: the tide loop works on one island.")).toBeVisible();
+	await expect(page.getByText(GAME.devlog.sprint1)).toBeVisible();
 	await expect(page.locator(`img[src*="Fronalpstock"]`).first()).toBeVisible();
 	log.step("The public page shows the text and the image");
 

@@ -2,6 +2,7 @@ import { CheckpointJournalKind } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
 import { type ExpertCheckpoint, expertCheckpoint } from "./support/expert";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import { hoursFromNow, makeToday, removeRun, runCron } from "./support/stand";
 
@@ -28,7 +29,7 @@ test.describe.serial("call 2 with an expert", () => {
 	});
 
 	test("a running checkpoint with an expert", async ({ browser }) => {
-		run = await expertCheckpoint(browser, "h3", "Driftwood");
+		run = await expertCheckpoint(browser, "h3", GAME.name);
 		log.track(run.checkpointId);
 		log.step("Bought with an expert, who took it on");
 	});

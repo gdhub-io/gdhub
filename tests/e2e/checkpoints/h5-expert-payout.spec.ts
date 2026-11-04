@@ -13,6 +13,7 @@ import {
 	intoReview,
 	statusBecomes,
 } from "./support/expert";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import { grantUser, removeRun, signInAs } from "./support/stand";
 
@@ -24,7 +25,7 @@ import { grantUser, removeRun, signInAs } from "./support/stand";
 
 const log = new RunLog("H5 the expert's payout and the rating");
 
-const PROJECT = "Ironmoss";
+const PROJECT = `${GAME.name} H5`;
 const REFERENCE = "GDH-E2E-H5";
 
 let run: ExpertCheckpoint;

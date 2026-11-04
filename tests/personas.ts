@@ -95,8 +95,8 @@ const ensureProject = async (
 	const slug = slugFor(key, "project");
 	const project = await prisma.project.upsert({
 		where: { slug },
-		update: { authorId: userId },
-		create: { name: "Hollow Tide", slug, authorId: userId },
+		update: { authorId: userId, name: "E2E Test Game" },
+		create: { name: "E2E Test Game", slug, authorId: userId },
 	});
 	// Only the Founder may buy the project's checkpoints.
 	const team = await prisma.team.upsert({

@@ -1,0 +1,217 @@
+{
+	"name": "gpt-6-luna",
+	"prompt": "{\"prompt\":[{\"role\":\"system\",\"content\":\"You are the team's AI curator: a curator who has shipped a few small\\nindie games and seen many teams at the start. Calm, direct and kind,\\nnever gushing; you talk like a colleague, not a teacher. You never\\npretend to have played the game or seen more than you were shown.\\nAlways polite and respectful, nothing improper. You never claim to be\\na person. Never call yourself an AI curator in the letter — the page\\nalready says so above it. Every letter is an entry in your journal of\\nthe team's 28 days: what you saw, what you advise and what comes\\nnext — never opening with the day or a date; continue the entries\\nbefore it, never repeat them. This entry: day 1, laying the route. In the first entry: where they start, where the goal is, and that you will guide them there. After they send their tasks: whether the route holds and what to fix before setting out.\\n\\nEvery text the author reads follows these rules. They keep it clear; they\\nnever flatten your character — say the same clear thing the way your\\ncharacter would:\\n- Go straight to the point. No stock openings (\\\"Great question\\\", \\\"Let's\\nlook at\\\", \\\"It is important to note\\\") and no summary of yourself at the end.\\n- Concrete statements, short sentences, short overall — it has to read on\\na phone. Add detail only where it is needed. No professional jargon, and\\ndo not read their list back to them.\\n- Prose, not an article: no headings, and a list only where the content is\\none.\\n- Match the author's tone, never their mistakes.\\n- Do not agree by default: where you see a problem, explain it calmly.\\n- Where you lack information, say what you assume — the author cannot\\nanswer back. Never invent facts, experience or feelings.\\n- Bad: \\\"Absolutely! There are several ways to approach this. Let's look at\\nthe main options.\\\" Good: one clear point — \\\"Drop the second task and\\nshow the level as a video instead\\\" — in your character's words.\\n- Write so it reads at one go:\\n- One thought per sentence; most sentences under fifteen words. A long\\none is two sentences — a full stop, not a semicolon or a dash chain.\\n- The point first, then why, then what to do.\\n- Show how you got there: before a judgement, say in a few words what\\nyou looked at — \\\"I've looked at the goal and the hours your team\\nhas: …\\\". Each sentence follows from the one before it; no leaps.\\n- Who does what: active voice and verbs, not nouns made of them\\n(\\\"decide\\\", not \\\"make a decision\\\"; «решите», не «примите решение»).\\n- Concrete over abstract: the task's own words, the hours, the day —\\nnot \\\"certain aspects\\\", \\\"the work\\\", \\\"some issues\\\".\\n- Cut what adds nothing: \\\"very\\\", \\\"quite\\\", \\\"basically\\\", \\\"it seems that\\\",\\nhedges stacked on hedges. No officialese — in Russian, no\\n«осуществлять», «является», «в рамках», «данный», no chains of\\ngenitives («задача проверки реализации механики»).\\n- No parentheses or asides inside a sentence; no nested clauses two deep.\\n- One image per thought, and it has to make the point clearer, not\\ndecorate it. Never mix two images in one sentence.\\n- Read each sentence as if aloud: it should go in one breath.\\n- Where the language has a polite and a familiar \\\"you\\\" (Russian «вы» and\\n«ты»), use the polite one, always.\\n- Ends with one concrete next step: what to do now with what you said.\\n- A letter to the team closes with one short, warm line after the next\\nstep, in your own words for this point of the road: when you will meet\\nthem next (the next sprint; on the last day, the next checkpoint) and\\nthat you look forward to their devlog posts, artifacts and other\\nactivity — ending with ;). Never the same words as an earlier entry.\\n- Only where something is seriously off — the goal will not fit, nothing\\nwas shown — say once, as a plain fact, that it is common and can be fixed\\nwithin this checkpoint, or in the next one once this one is over. For a\\nsmall fix, leave it out.\\n- Never retell what the author already knows — what they added, who\\njoined, the hours they stated. Use such a fact only where it changes\\nyour advice, and then say in the same sentence what it changes.\\n- Words the author knows, never the platform's own: not \\\"lock\\\", \\\"fixation\\\",\\n\\\"card\\\", \\\"outcome\\\" — say \\\"the goal\\\", \\\"the tasks\\\", \\\"today\\\", \\\"by Friday\\\".\\nNo cheering, no pep talk, nothing about feelings or motivation.\\n\\nThe plan is approved: the route is laid and the team sets out. Write\\nthe short entry they will read for the whole first sprint. Say the\\nplan is ready, so they start on it; ask them to tell you how it goes\\nin devlog posts and to attach to each task the artifact that shows it\\ndone; say when you will look at what is new. No advice on the tasks —\\nthat was the check before. Write in the language of the goal and the\\ntasks.\"},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Your journal of this road so far — the letters the team has read, oldest first:\\n(day 1) «Hello, I’m your curator for this 28-day checkpoint, and I’ll guide you toward the goal. I’ve checked it against the stated hours and the prototyping stage; it fits if you keep the level small. I’ve suggested a few tasks below; take or replace them with your own. When they’re ready, press “Save and send to the curator,” and I’ll check the route. Until then, keep the first step simple.»\\n(day 1) «The references do not yet lead to a playable task; this common gap is fixable here. Mia has joined, but keep the plan within the stated hours until she confirms hers. Before approving, redirect the storyboard toward the level and add the three tasks below. We’ll meet after the first sprint; I look forward to your build and devlog notes ;)»\\n\\nThe goal: A playable jump and the first level anyone can open.\\nThe tasks: \\\"A public repository of the Godot demo projects the game builds on\\\"; \\\"An animated reference video for the art style\\\"; \\\"A reference article on what playtesting is, for the team to read\\\"; \\\"A private design board for the team\\\"; \\\"A storyboard for the trailer\\\"\\nYou look at what is new on: Wednesday <date>\"}]}],\"responseFormat\":{\"type\":\"json\",\"schema\":{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\",\"maxLength\":600,\"description\":\"The letter, two to four short sentences\"}},\"required\":[\"message\"],\"additionalProperties\":false,\"$schema\":\"http://json-schema.org/draft-<n>/schema#\"},\"name\":\"letter\"}}",
+	"answer": {
+		"content": [
+			{
+				"type": "reasoning",
+				"text": "",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "rs_0b9c3a0b31bd5962006aeb235e846887d29201e8411ddfc237",
+						"reasoningEncryptedContent": "gAAAAABq6yNkSjUMKji-HSkuD9wVb4kovXM_5kXLvGI6ZuwtMbFXt6L9Ar185dyFRgXSvbSA_OvnZh6c7GwM7ywZ6ZDO9FOBmwdZb8_rh0b4CNvP4EaAl8oMTQ1tgO9pVQMg7vwgtDsjxEINwEudnLh7ZYwhvycn_iNd9jFAMDrvq4_ZSri9sA_GqQyBIIJSkXPjj71OJht9ZtoR5bl5fTuO5uzPNE0uh4XnN1wiXvngWrxCJCFccHQD-11SzCFzO8EtwQlMQE9NKUqRDj4IyzN_GaOGma33NHPdWd3pK67zWRwHgTnlUQtNwnW3y525ge6r_sonoI_nc6ZeT1lhZYvYvzdpsWvevkSLXNO72JrZI0f9Hn_HObyRWzbPbPzUbLkeyn_r9_ZcFCelM4xCzc_O0gBto2KH4c7A7Y6aNidfCr2oTOP5_dqE2TDKKRamGwECOPhEbq1c5eVNPei8hM5Ii3mmj_3k8udHHeMNWDsPPzXR5m1UJnaH81VB7uZRhP2eOL5sSB_s-zq-SK31TYKoLQhJtevSsrbcAfYnKkJPy6yX-yQ8lBA3guQTo30-fyOkwNQ23WZRRmMSkdIbOtdAWA5iOu5ifdzMmO_VtJ5W68t0GCJplJQkhHXq5mz9_acEDoJP_4VzEzex1LKOpoBD6NSoECxll39DU6y9MiLj0Z2sDGXs8JPsotClDJSPSYSWTujIh9OV_3d7ogEOQNpXMyFMSxXWbiNxQTqhPxyzlWwqjMbGQAiLXAGGKbQZXogOzmb6o9LGqC6RKy13RzMmM9r1rR-1X_NvaMBnecP4NNHq9K0D0Oly1N-iKu58gKteKm2nT5vNfYJWUNxavxP8njBSRc_MjKaNJyK9Rg1p_xwPe4MLU56n7IMbSDJNKMfskHb6BxpNZJZMZMWvzOA7D6VocgEF8ZGIA9nNMNgHDfzDtWJbA5IVw6FmxeA6wnwCR-Wi9VHfE9qyUE0o8qYo5b-UKrnoPr4FS-BcmP26nxcVjTMrehhXkycw6Md1ZYCStVwEvnaOk8HONebk2QKblmXzlE935-LFEVM1Kua5djwkKr6Uxh3CbCYfOfAMFWJvhce4F3HBBfXlhzHMO5Flxc0RauyPy-Zemw8N6ncLNadkimrwDq5UyFg0D6ye1Xo3Ovh8lI9MqCRO0pXPJg2utuNeVlXFDg4eCTFkaTr78_YsFu7ZfRneZ_xFhcP1UM9f9Eswzyo4rLAVIENrO9j_PwYXZINJr2bFklcPAjjGITeVdgGWEvLZZbML3Xd3YyqQpJMRpIltNumOdYvjQm1ObYxh-dwbkCJsBIEAQt3EvNuKqLJSZAZMYss0GjpFmYXZDg9nlIk-AFqJOUe5a8B9pGlqFZRjnNWQaQD6NESoy08FOxYwYx7iqQ8kh1I09oUv39wZm1gvklYjpVkblm3KsioJmUlhXHMJrfOoD2WqX9hDGV3X9aGbYpDbC_yw-ykilO5RO-8QEsVQZ3Wr68uhivYQgAOfqsyt7oWFfXQQHWFIAGwIg8t40zniFV-Gm7_QP500RkjgVX3zD9oAK_4hA0DRuv4RHZq5hyW0h8ZyCDPvT27jN_d_ZkK1QZebXvdEtd9MwIojuGUHsre3ILF5lLWa_ILXO3SykGyeqJTSBKaakSt92-9izvzSWsmXKbRZO46i1w16LhS1DiAwoH-ETFHv3oXGm9BAs01r2ni9Qn2IGsOeKsr0fpsH_n7yK7DYUchGJ6lN4g7YYd_vqY0nKZMSUcQ7v_r_6TmU-xSQl-EmI2R7y1y9T4RbBtkjXiQTitLUgnWijOAEV_7jp167w8Ld0EwweS4JxLgrZfzx_WuTwlExN3_R6MRVVVyezThdYpT7FfNQ4c4p5B816o7wVkXyQEdETfqxX47Kxsm137AsGwxuuqwgO75gWBLPr339VH0Y7LPyalid1xpuYa9WUPEtAE1I3EcvRCZQOA-bfPu1mJFfm4el95F732kL_1Czp3ptuQNhagttB5-E4WajusXY6lDq5kK5tmwKS-rLvtaYDlwG9ABsKji8BcMCZaQmVTqkwOCKmIUU944JQf7ZAiXvrA-jL1-pN-5uwCDHWlBrCdiJEMxPQNoNoqLOUedQiVnO-AelCc6-NbwC9McvjFOhPpMe12viguIJeu7SmRlJXcM4Ox5LbI4w-Fx9zeIXKplX9_o_Njp7_k1uNGbeQNxj5OPSDJoJSCgOyiQmW9wNkOskiSH9XhGM9_QIjmlytVqIEiGMNvNKc8MR7Pr-4Dn67CYRz165gOb_6HTFlPaYYCnYcLWYyEGj-E82YQfCiHjh37D9Xh-YJRK7-WZjMxAss4Cw-34e3tpvA6rB7iVv5wbaatdquN93uAKqHEBIdrkEgRYCZOMj46PsWa0OhssZyVVxkGV7UEt59ASaWqhlw1QIGFyE401GXFj-ftWD1YifkILGNxmCtfsyOmcIgKcp6M8d_LJTo8IDCF5cAlz4zjluVmt7sGOfw-a1EeglQ_LwHZlHwAekEH53JdaZMpcKJ0StEt_Ytd5QfNkQjPNPK1raeH4v_95gnvJS0JHrMG95FROAWFEZBqs9A-9p2xXcfDSgQgcBTTIupJQZGYu6NhKoPbiE43296js9BCgF2RVnUvORcS__150i-z8N_szr3b_iWUi_KGiEmcV26ORJryxWALB0ye1gGRKnl97zI8zJ-jFvlX96fErK33dIkwgarARnL4ndegOmVmFKtly5uHVYaLQPahDzHqk8BrSen6CvNofjRu5tY8UaJK8xvLhPl7fAy0LZvaHywCPm3IIqFHAa1tKImzd2heDv7qR5teHBOw8o0x0AsrWtJ8tmLrPdn25Q47lcvNJlVMyfA9Hk1H0anMAvWs-GntjubZmeZ5wVBW1wkMasftsfEZ59Tj3WCLGkOPBbjfAvgb0SYfTviTCAQrPgcVNLW68pby5KvSPAlDLdF2O0I0TIhh_CGavufzmHRgawTcrB3tywJr6FMSGRY-3DV_msoysFqJVu3-zgzusGJ7fQf3B_a18VQAZOmJuXUc34vm4cvtE327wn8dXURyDlyuHJR4yqMyRY_3PzlK41ozO200y5upUysvWSpi_FTf99_usJvv17KPS2T7RrrmfkOuDB_Qk92DGSPFvQ1yHlDfcp4WF1iUVqkqFAGoLCFmXCcr3-vyeP7G8SWNhexIFhx8rT6PxjiZVEjQXYn8dsWdAipgedCVyl4fabmJ7kL1bj2rTFUbl9xe7y3TkebZ_C7SDv86UxGcTnAVIIEXqDmdpw_RorvkfT0HsAJL1JsnW606fd2m4vjjV61UCL_EozjIoRL2py4j4mLG5wOt9Bd9z7nfup0LVN6HV7-sDlw4304f7l1ddJSj4Jd3GoZT5IT0yKlrOeTfojymdFJ-015esNac5hYeCxdL6A7snzdGHO6tzPMBwHq0tKpqRSY7CeZlv953Ko-wuPy3WpqYKPb53L1F_dN74746ChYKxukeXH74LsAPphaJdhDqD2s-9CqxCDEhXGPptYvR-JTWpLOZIApnmxA6DrdAcRn7eFjzfHiGTTyvS9oX_Deyt1zWePXwL7WHCmamD5AYfxqgYN2q3JGEGB8zYMFrbdvlGozOg62BIEXyE40VUm55E0NsrTZxuWGUM9ZCXJd2Z8EZvfHIlp7-D4MoEyhJQXnCozOQtTG3qit_W_e7C-zkLGPcEWfEEOZtdRNjL9w34Eg592q6NWmywxOTXGQl-SwpSi4sT60rd_sVwDHFA49z62o0Hg5Lk82SA1Tztf6u0-hJ_7_yfTH_GE8HT53mKqlWRC7kylGq0Wc-LW0v8cRtXxRyEofr-7CWSGcaOlUQcTgU69iivv9_K4FgxJ4aVmyXxejgFBCn3yvexJTOIZLpHL6n5ItDv0GalbXpjsMI56JLQ2cINWF8JQU49r_0iz3u7Uby7Xw4NgfU07uhQh_HUdUPKlmobWcgJELcl8MJOmlER5dH3NqKhClh8V7R24cSaU2XP35QPE98RpDBSANMQGIwV8kVsiozJvKKJ8QaYy5E5CXbrhdOWSZXJWVjd5gCx37klHQJJFQzduKpT0-FaZ4usH_yN9m2pErVqtB0X_CuKV0t6-nxIHkPREMbRsEZNYnPcflFx9VxT9vx3-31rgFagIYidQ81yFRrksL_Ev2aB1IyJnJPLzSKCHo5-UuI3EESSd2fnlK2L-dZAz4dUAYtm9z7n_1LLA23lm9eEWsbSyzfoUJxDXHqGlXPOWq0Imagj0GFUxDgH9JYLMEVi2Nud4G3g4Y0jHUDbhIbacjKk7kD9aX9xj3-zsYmsYfOL38eJzUy6p-T0qUd2lCAJv4VQYx33wj2G3xR7dR6pO1ewGiHmeIYfpxCnKn9C97-8RZpPFzr2vQMrJQh8Kt9UfjA4nNY9aIS4FllPXFJdk2969vuQ2PU9x1NKRDdu9CXRh5epiPx9YPlCiLsIrqsmoMoxlWtO_BFSvBfedNRE2_X5hBoMPWIkgMysBrcWPzIeMOmuBPXpjWOoMLX2wyctNLh-cMmfXob5a9xaJXKQHsKdBbJemu0Y4luto04UfYaDo4Sgd9WSOP5pKrEsEjkgrVfXQGmhUn3x9OQXQhPjI4kFUJ5K_r_Hxy4HKG0XuiPH4vLGc7qSAksYgzDHwmy38_HUFfrH3V8rx9h1dyT57Ij3btxm7wRAee3-UouwjEpbJc55opsKhd-acTl5RzEhE2CqWyCOH5vKknWGzBC_Lo-HItqmZLcimVaG4qw8RPelJDUBBu32fDScxgHc8VX1q3Ui-9uC2Iz6U8Qso9NkaB3YefeMBlTY2uIYsDkOmiDI0tTj7zL_uexFiJEJxKWATKSFhFVxJevOunHsBg3LswpchwWKnnvdmpOLIguwDLKO2VBgeUdzljgkczEl7RTulp2W8lEj22zR5F5jk5zjdbrFwQelplC4RsmZgvMl-Wm_HwpMIICifPEUPV93zVd2ySoOViNdCvMVPHKTL3Xs-A8brPV8Y8yaSKm30N4wMv2k_I63DW_21yypwffA4O4DZKu1X8-Minuy5dH8HHoZv8Gr8KZVQWI2KEiC1wsQ4TbnzvzC9ZbjRM8s7R-wSj4VMUrukl9THZS-vh_VHWwOdHmvpUO8LkbYpN9nemnCDHbLJf9zHxVLz6Dy-bccC_K3BkUx_Y_VXDKRwYj3V-yEjujXRBBeeOlsh4lJ_bXL8gCt2vJbHrKeSh9pV-lSb9CBfgR1WcaLBmgdEimDuVNz_jQ5KR-t2FIizadJK4hcpp5UgC5_7e5t0Ftncw0mE13MaQiDXzcj8FK97AOAdwQto7aBiNuv8YfnsMDm0WpVMzQlZbdka8jyXbvfm3soOulYsvejqkbeum1Q1r2DW4VnPTaLmukCFyOSH7qPR3fhYhh8jGJegRTbu6Kv8CHCPcEscHR3B9gXDtECVkM4KGWUw4EIQ6Bu-1Urfn-85DqIAYIldV19z-ZnmnPf7jw27TA81OZUv8s_gwDmTrUFY0XDUNoADU7G7yw2s9LZI2S0b70E-e8lsvmTWZ0ZXQoF7FypcmJ9IkcWABoo8btUGL2NZv77rvl0Gf9493UBlO9uQ6WA9bLztgv3TLMpK5FEiEgXCZ3NvayzCqC1MS6pXbPxCXTOCZnJ8uXZoYlHYz5nIhhw59hH2cBtQ6yG9TSZzma0eYQ9GOdzYstgFTB71UlZpvSzUptR6ziGi5_tcQPPxs-76tNVZKEJt4tYzSvqyWjbyp6rny-EJHb4Xx0cIo6mF6_LCjMoKwjjikrCzX-OinoF2o4t1KjQoL6Hgjbf5sqdxNzcO3hJHSS6apfZjKzom2EpxAXfXee6at24DksUAogRBUay4Lj0McNT3AvNTwqLQNpqPrD3JmnJmzRewehIWuIRPQ2vI0NgvZ2H0kAyil21luvzAmyRZvfzSztGMs7i7XdpcDUoTErOT_kD3ON6lMfTLeRmxEK2XTIUcG3N5Oor23jmLcDDXTdN6IpgosOOXT2ZqYBaxBgpyEpNK3sZ6ttNmIxlQKyHpSRSEr8mcPHCbfDZy5QgAFKufVJos7RwCR4vIsoaC7nuz1fY6QMPIie2II4EY1KEBAT_lsBcB6OEUopI9KomcK5vdIRNLqt7fnOjWn4nkyvUyKxC0dVTCBgxLch9LC93L2-kWEY43JIhvpANb0AUu6-gOhpVx1YJdOfvzs5lAiMY9SY80_7De1kj7HIM1ns6GxBarE3nRxlpvkuZVGhYQD8dEHXyaMXyb-SPq8nbB89wkDHIWtKkblQWF14p7seH8fvuQ3L62doHTHJUKS_Z4p4ZkNKt-F1hmQH8C9vSVtJT1Bpolu_9hdInqc6XQ6g2h-fNshy0XDFUK8Mn2PTA3Hn0g5Z55U1Zy0xv1Hu2CmAqZdE9C6z55PwE2f0zLNTNCZCd-CUXBit0V0bG4vNclWJUJw36TlDQadQ_xC-cCU16Evs0xqYoosxFVyYfgs_3dcq8ZNpk9dYR9-JgKhSyA9wH6H_RXP9Jh9jjcx9NC6qoW5GUd7CwequSH9uJjbWofACALORU-OJ7Fx27RW9SOTmEca4I8q5yIS7-Nwtx_f-17WxSsmSeE-Y_veQnnqzagCzOr6BSEZSdMr78XsvZzxvfp-2jI36KSMllCrjreCF8-YxOupVFCDttxsrKHLB5L_fj63Q8GurZWgmuxKFVSZDboDj26nCCAsuIPGmMj-jwim6inVJ9njmL6HMKGVYg4stvEsZF5zNHYcW95qV4zbAeLmDq4hEn2dQ8CyDvsYuQYDQLKXAZ16ojjevrJ4GUaKD5jYs8i7mqIo_T0sM_qbQQd3AXE7FooJHM18awuACzNNr6qh794ojpegAczXq0mELcURfFN1JZCIelQ93vRudEEEB6NCUML0gm2Y6Q8dqOv9wAx-65u9Cqi4urG6xmZk14pgVVewlIxnj-cm16TqouHbTP1FE3ub78cRRVA7jTyy_jpu6kd-_SpUjArvLCYQSvCQao83P4c_G0cBCwkhsdPVh6EgQ2CLbdimrQrvNaBwdac4EmoPwReOtC6Vx4nA-RXohPpy1P2SMo_Ud9abf6FRvAJgXATvd_Pb03deYG1nZnshOL5VeeohzMlXY2okbdyekvyIiKiUyTjRkYIL9Womm6U_HQ6teTWdlj3jYOkscuzniz0ZsnmCXhzSAHp1uBmEyoS0qU4VnR-IyDSQr8xCnbHBQsaATiX_wSRjLL-cRsVLjH86a1bs92qJHnZLxGye8PxkTI5B1casTAzAGxWVP3vc0KjFFT7AcOAVo0lzvIcXCUcMv8VQ2aKrfhLX8e6eTFzvCjE9Q=="
+					}
+				}
+			},
+			{
+				"type": "text",
+				"text": "{\"message\":\"Your plan is ready, so start this sprint. Post how it goes in your devlog, and attach an artifact to each task that shows it is done. I’ll look at what’s new on Wednesday 11 November, and we’ll meet again next sprint. I look forward to your devlog posts, artifacts, and other updates ;)\"}",
+				"providerMetadata": {
+					"openai": {
+						"itemId": "msg_0b9c3a0b31bd5962006aeb23631ef887d2a0259a6c024f583e",
+						"phase": "final_answer"
+					}
+				}
+			}
+		],
+		"finishReason": {
+			"unified": "stop"
+		},
+		"usage": {
+			"inputTokens": {
+				"total": 1456,
+				"noCache": 3,
+				"cacheRead": 0,
+				"cacheWrite": 1453
+			},
+			"outputTokens": {
+				"total": 571,
+				"text": 81,
+				"reasoning": 490
+			},
+			"raw": {
+				"input_tokens": 1456,
+				"input_tokens_details": {
+					"cache_write_tokens": 1453,
+					"cached_tokens": 0
+				},
+				"output_tokens": 571,
+				"output_tokens_details": {
+					"reasoning_tokens": 490
+				},
+				"total_tokens": 2027
+			}
+		},
+		"response": {
+			"id": "resp_0b9c3a0b31bd5962006aeb235d6ce087d2bf53be78be28759b",
+			"timestamp": "2026-11-04T12:21:49.000Z",
+			"modelId": "gpt-6-luna",
+			"headers": {
+				"access-control-expose-headers": "X-Request-ID, Server-Timing-Total, CF-Ray, CF-Ray",
+				"alt-svc": "h3=\":443\"; ma=86400",
+				"cf-cache-status": "DYNAMIC",
+				"cf-ray": "a55394a6bd741606-AMS",
+				"connection": "keep-alive",
+				"content-encoding": "br",
+				"content-type": "application/json",
+				"date": "Wed, 04 Nov 2026 12:21:56 GMT",
+				"openai-organization": "gdhub",
+				"openai-processing-ms": "7001",
+				"openai-project": "proj_Sxbfe4DKP4kJZiAvrgGwGcx0",
+				"openai-version": "2020-10-01",
+				"server": "cloudflare",
+				"set-cookie": "__cf_bm=VbyNHez56t7Pwf1tyWHxNZY1jgQkGxhlAEBN15v3DNY-1793794909.2344177-1.0.1.1-rVy1qnK8s91.ryYEgoLxAa3RH6Jb6PatiLI89Jqa05euX67CPDVFA6WRobSdBPC.PCj.Ohn6KhYPBY.7abunl2Rva5qcqhC0IWl5U_e4m8WOMXB7f9DVmMvO76tkWLKi; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com; Expires=Wed, 04 Nov 2026 12:51:56 GMT",
+				"strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+				"transfer-encoding": "chunked",
+				"x-content-type-options": "nosniff",
+				"x-ratelimit-limit-requests": "10000",
+				"x-ratelimit-limit-tokens": "10000000",
+				"x-ratelimit-remaining-requests": "9999",
+				"x-ratelimit-remaining-tokens": "9999579",
+				"x-ratelimit-reset-requests": "6ms",
+				"x-ratelimit-reset-tokens": "2ms",
+				"x-request-id": "req_bde29f9a0e6641f3b6234e6b20df8133"
+			},
+			"body": {
+				"id": "resp_0b9c3a0b31bd5962006aeb235d6ce087d2bf53be78be28759b",
+				"object": "response",
+				"created_at": 1793794909,
+				"status": "completed",
+				"access_programs": null,
+				"background": false,
+				"billing": {
+					"payer": "openai"
+				},
+				"completed_at": 1793794915,
+				"error": null,
+				"frequency_penalty": 0,
+				"image": {
+					"context_compression": "disabled"
+				},
+				"incomplete_details": null,
+				"instructions": null,
+				"max_output_tokens": null,
+				"max_tool_calls": null,
+				"model": "gpt-6-luna",
+				"moderation": null,
+				"output": [
+					{
+						"id": "rs_0b9c3a0b31bd5962006aeb235e846887d29201e8411ddfc237",
+						"type": "reasoning",
+						"content": [],
+						"encrypted_content": "gAAAAABq6yNkSjUMKji-HSkuD9wVb4kovXM_5kXLvGI6ZuwtMbFXt6L9Ar185dyFRgXSvbSA_OvnZh6c7GwM7ywZ6ZDO9FOBmwdZb8_rh0b4CNvP4EaAl8oMTQ1tgO9pVQMg7vwgtDsjxEINwEudnLh7ZYwhvycn_iNd9jFAMDrvq4_ZSri9sA_GqQyBIIJSkXPjj71OJht9ZtoR5bl5fTuO5uzPNE0uh4XnN1wiXvngWrxCJCFccHQD-11SzCFzO8EtwQlMQE9NKUqRDj4IyzN_GaOGma33NHPdWd3pK67zWRwHgTnlUQtNwnW3y525ge6r_sonoI_nc6ZeT1lhZYvYvzdpsWvevkSLXNO72JrZI0f9Hn_HObyRWzbPbPzUbLkeyn_r9_ZcFCelM4xCzc_O0gBto2KH4c7A7Y6aNidfCr2oTOP5_dqE2TDKKRamGwECOPhEbq1c5eVNPei8hM5Ii3mmj_3k8udHHeMNWDsPPzXR5m1UJnaH81VB7uZRhP2eOL5sSB_s-zq-SK31TYKoLQhJtevSsrbcAfYnKkJPy6yX-yQ8lBA3guQTo30-fyOkwNQ23WZRRmMSkdIbOtdAWA5iOu5ifdzMmO_VtJ5W68t0GCJplJQkhHXq5mz9_acEDoJP_4VzEzex1LKOpoBD6NSoECxll39DU6y9MiLj0Z2sDGXs8JPsotClDJSPSYSWTujIh9OV_3d7ogEOQNpXMyFMSxXWbiNxQTqhPxyzlWwqjMbGQAiLXAGGKbQZXogOzmb6o9LGqC6RKy13RzMmM9r1rR-1X_NvaMBnecP4NNHq9K0D0Oly1N-iKu58gKteKm2nT5vNfYJWUNxavxP8njBSRc_MjKaNJyK9Rg1p_xwPe4MLU56n7IMbSDJNKMfskHb6BxpNZJZMZMWvzOA7D6VocgEF8ZGIA9nNMNgHDfzDtWJbA5IVw6FmxeA6wnwCR-Wi9VHfE9qyUE0o8qYo5b-UKrnoPr4FS-BcmP26nxcVjTMrehhXkycw6Md1ZYCStVwEvnaOk8HONebk2QKblmXzlE935-LFEVM1Kua5djwkKr6Uxh3CbCYfOfAMFWJvhce4F3HBBfXlhzHMO5Flxc0RauyPy-Zemw8N6ncLNadkimrwDq5UyFg0D6ye1Xo3Ovh8lI9MqCRO0pXPJg2utuNeVlXFDg4eCTFkaTr78_YsFu7ZfRneZ_xFhcP1UM9f9Eswzyo4rLAVIENrO9j_PwYXZINJr2bFklcPAjjGITeVdgGWEvLZZbML3Xd3YyqQpJMRpIltNumOdYvjQm1ObYxh-dwbkCJsBIEAQt3EvNuKqLJSZAZMYss0GjpFmYXZDg9nlIk-AFqJOUe5a8B9pGlqFZRjnNWQaQD6NESoy08FOxYwYx7iqQ8kh1I09oUv39wZm1gvklYjpVkblm3KsioJmUlhXHMJrfOoD2WqX9hDGV3X9aGbYpDbC_yw-ykilO5RO-8QEsVQZ3Wr68uhivYQgAOfqsyt7oWFfXQQHWFIAGwIg8t40zniFV-Gm7_QP500RkjgVX3zD9oAK_4hA0DRuv4RHZq5hyW0h8ZyCDPvT27jN_d_ZkK1QZebXvdEtd9MwIojuGUHsre3ILF5lLWa_ILXO3SykGyeqJTSBKaakSt92-9izvzSWsmXKbRZO46i1w16LhS1DiAwoH-ETFHv3oXGm9BAs01r2ni9Qn2IGsOeKsr0fpsH_n7yK7DYUchGJ6lN4g7YYd_vqY0nKZMSUcQ7v_r_6TmU-xSQl-EmI2R7y1y9T4RbBtkjXiQTitLUgnWijOAEV_7jp167w8Ld0EwweS4JxLgrZfzx_WuTwlExN3_R6MRVVVyezThdYpT7FfNQ4c4p5B816o7wVkXyQEdETfqxX47Kxsm137AsGwxuuqwgO75gWBLPr339VH0Y7LPyalid1xpuYa9WUPEtAE1I3EcvRCZQOA-bfPu1mJFfm4el95F732kL_1Czp3ptuQNhagttB5-E4WajusXY6lDq5kK5tmwKS-rLvtaYDlwG9ABsKji8BcMCZaQmVTqkwOCKmIUU944JQf7ZAiXvrA-jL1-pN-5uwCDHWlBrCdiJEMxPQNoNoqLOUedQiVnO-AelCc6-NbwC9McvjFOhPpMe12viguIJeu7SmRlJXcM4Ox5LbI4w-Fx9zeIXKplX9_o_Njp7_k1uNGbeQNxj5OPSDJoJSCgOyiQmW9wNkOskiSH9XhGM9_QIjmlytVqIEiGMNvNKc8MR7Pr-4Dn67CYRz165gOb_6HTFlPaYYCnYcLWYyEGj-E82YQfCiHjh37D9Xh-YJRK7-WZjMxAss4Cw-34e3tpvA6rB7iVv5wbaatdquN93uAKqHEBIdrkEgRYCZOMj46PsWa0OhssZyVVxkGV7UEt59ASaWqhlw1QIGFyE401GXFj-ftWD1YifkILGNxmCtfsyOmcIgKcp6M8d_LJTo8IDCF5cAlz4zjluVmt7sGOfw-a1EeglQ_LwHZlHwAekEH53JdaZMpcKJ0StEt_Ytd5QfNkQjPNPK1raeH4v_95gnvJS0JHrMG95FROAWFEZBqs9A-9p2xXcfDSgQgcBTTIupJQZGYu6NhKoPbiE43296js9BCgF2RVnUvORcS__150i-z8N_szr3b_iWUi_KGiEmcV26ORJryxWALB0ye1gGRKnl97zI8zJ-jFvlX96fErK33dIkwgarARnL4ndegOmVmFKtly5uHVYaLQPahDzHqk8BrSen6CvNofjRu5tY8UaJK8xvLhPl7fAy0LZvaHywCPm3IIqFHAa1tKImzd2heDv7qR5teHBOw8o0x0AsrWtJ8tmLrPdn25Q47lcvNJlVMyfA9Hk1H0anMAvWs-GntjubZmeZ5wVBW1wkMasftsfEZ59Tj3WCLGkOPBbjfAvgb0SYfTviTCAQrPgcVNLW68pby5KvSPAlDLdF2O0I0TIhh_CGavufzmHRgawTcrB3tywJr6FMSGRY-3DV_msoysFqJVu3-zgzusGJ7fQf3B_a18VQAZOmJuXUc34vm4cvtE327wn8dXURyDlyuHJR4yqMyRY_3PzlK41ozO200y5upUysvWSpi_FTf99_usJvv17KPS2T7RrrmfkOuDB_Qk92DGSPFvQ1yHlDfcp4WF1iUVqkqFAGoLCFmXCcr3-vyeP7G8SWNhexIFhx8rT6PxjiZVEjQXYn8dsWdAipgedCVyl4fabmJ7kL1bj2rTFUbl9xe7y3TkebZ_C7SDv86UxGcTnAVIIEXqDmdpw_RorvkfT0HsAJL1JsnW606fd2m4vjjV61UCL_EozjIoRL2py4j4mLG5wOt9Bd9z7nfup0LVN6HV7-sDlw4304f7l1ddJSj4Jd3GoZT5IT0yKlrOeTfojymdFJ-015esNac5hYeCxdL6A7snzdGHO6tzPMBwHq0tKpqRSY7CeZlv953Ko-wuPy3WpqYKPb53L1F_dN74746ChYKxukeXH74LsAPphaJdhDqD2s-9CqxCDEhXGPptYvR-JTWpLOZIApnmxA6DrdAcRn7eFjzfHiGTTyvS9oX_Deyt1zWePXwL7WHCmamD5AYfxqgYN2q3JGEGB8zYMFrbdvlGozOg62BIEXyE40VUm55E0NsrTZxuWGUM9ZCXJd2Z8EZvfHIlp7-D4MoEyhJQXnCozOQtTG3qit_W_e7C-zkLGPcEWfEEOZtdRNjL9w34Eg592q6NWmywxOTXGQl-SwpSi4sT60rd_sVwDHFA49z62o0Hg5Lk82SA1Tztf6u0-hJ_7_yfTH_GE8HT53mKqlWRC7kylGq0Wc-LW0v8cRtXxRyEofr-7CWSGcaOlUQcTgU69iivv9_K4FgxJ4aVmyXxejgFBCn3yvexJTOIZLpHL6n5ItDv0GalbXpjsMI56JLQ2cINWF8JQU49r_0iz3u7Uby7Xw4NgfU07uhQh_HUdUPKlmobWcgJELcl8MJOmlER5dH3NqKhClh8V7R24cSaU2XP35QPE98RpDBSANMQGIwV8kVsiozJvKKJ8QaYy5E5CXbrhdOWSZXJWVjd5gCx37klHQJJFQzduKpT0-FaZ4usH_yN9m2pErVqtB0X_CuKV0t6-nxIHkPREMbRsEZNYnPcflFx9VxT9vx3-31rgFagIYidQ81yFRrksL_Ev2aB1IyJnJPLzSKCHo5-UuI3EESSd2fnlK2L-dZAz4dUAYtm9z7n_1LLA23lm9eEWsbSyzfoUJxDXHqGlXPOWq0Imagj0GFUxDgH9JYLMEVi2Nud4G3g4Y0jHUDbhIbacjKk7kD9aX9xj3-zsYmsYfOL38eJzUy6p-T0qUd2lCAJv4VQYx33wj2G3xR7dR6pO1ewGiHmeIYfpxCnKn9C97-8RZpPFzr2vQMrJQh8Kt9UfjA4nNY9aIS4FllPXFJdk2969vuQ2PU9x1NKRDdu9CXRh5epiPx9YPlCiLsIrqsmoMoxlWtO_BFSvBfedNRE2_X5hBoMPWIkgMysBrcWPzIeMOmuBPXpjWOoMLX2wyctNLh-cMmfXob5a9xaJXKQHsKdBbJemu0Y4luto04UfYaDo4Sgd9WSOP5pKrEsEjkgrVfXQGmhUn3x9OQXQhPjI4kFUJ5K_r_Hxy4HKG0XuiPH4vLGc7qSAksYgzDHwmy38_HUFfrH3V8rx9h1dyT57Ij3btxm7wRAee3-UouwjEpbJc55opsKhd-acTl5RzEhE2CqWyCOH5vKknWGzBC_Lo-HItqmZLcimVaG4qw8RPelJDUBBu32fDScxgHc8VX1q3Ui-9uC2Iz6U8Qso9NkaB3YefeMBlTY2uIYsDkOmiDI0tTj7zL_uexFiJEJxKWATKSFhFVxJevOunHsBg3LswpchwWKnnvdmpOLIguwDLKO2VBgeUdzljgkczEl7RTulp2W8lEj22zR5F5jk5zjdbrFwQelplC4RsmZgvMl-Wm_HwpMIICifPEUPV93zVd2ySoOViNdCvMVPHKTL3Xs-A8brPV8Y8yaSKm30N4wMv2k_I63DW_21yypwffA4O4DZKu1X8-Minuy5dH8HHoZv8Gr8KZVQWI2KEiC1wsQ4TbnzvzC9ZbjRM8s7R-wSj4VMUrukl9THZS-vh_VHWwOdHmvpUO8LkbYpN9nemnCDHbLJf9zHxVLz6Dy-bccC_K3BkUx_Y_VXDKRwYj3V-yEjujXRBBeeOlsh4lJ_bXL8gCt2vJbHrKeSh9pV-lSb9CBfgR1WcaLBmgdEimDuVNz_jQ5KR-t2FIizadJK4hcpp5UgC5_7e5t0Ftncw0mE13MaQiDXzcj8FK97AOAdwQto7aBiNuv8YfnsMDm0WpVMzQlZbdka8jyXbvfm3soOulYsvejqkbeum1Q1r2DW4VnPTaLmukCFyOSH7qPR3fhYhh8jGJegRTbu6Kv8CHCPcEscHR3B9gXDtECVkM4KGWUw4EIQ6Bu-1Urfn-85DqIAYIldV19z-ZnmnPf7jw27TA81OZUv8s_gwDmTrUFY0XDUNoADU7G7yw2s9LZI2S0b70E-e8lsvmTWZ0ZXQoF7FypcmJ9IkcWABoo8btUGL2NZv77rvl0Gf9493UBlO9uQ6WA9bLztgv3TLMpK5FEiEgXCZ3NvayzCqC1MS6pXbPxCXTOCZnJ8uXZoYlHYz5nIhhw59hH2cBtQ6yG9TSZzma0eYQ9GOdzYstgFTB71UlZpvSzUptR6ziGi5_tcQPPxs-76tNVZKEJt4tYzSvqyWjbyp6rny-EJHb4Xx0cIo6mF6_LCjMoKwjjikrCzX-OinoF2o4t1KjQoL6Hgjbf5sqdxNzcO3hJHSS6apfZjKzom2EpxAXfXee6at24DksUAogRBUay4Lj0McNT3AvNTwqLQNpqPrD3JmnJmzRewehIWuIRPQ2vI0NgvZ2H0kAyil21luvzAmyRZvfzSztGMs7i7XdpcDUoTErOT_kD3ON6lMfTLeRmxEK2XTIUcG3N5Oor23jmLcDDXTdN6IpgosOOXT2ZqYBaxBgpyEpNK3sZ6ttNmIxlQKyHpSRSEr8mcPHCbfDZy5QgAFKufVJos7RwCR4vIsoaC7nuz1fY6QMPIie2II4EY1KEBAT_lsBcB6OEUopI9KomcK5vdIRNLqt7fnOjWn4nkyvUyKxC0dVTCBgxLch9LC93L2-kWEY43JIhvpANb0AUu6-gOhpVx1YJdOfvzs5lAiMY9SY80_7De1kj7HIM1ns6GxBarE3nRxlpvkuZVGhYQD8dEHXyaMXyb-SPq8nbB89wkDHIWtKkblQWF14p7seH8fvuQ3L62doHTHJUKS_Z4p4ZkNKt-F1hmQH8C9vSVtJT1Bpolu_9hdInqc6XQ6g2h-fNshy0XDFUK8Mn2PTA3Hn0g5Z55U1Zy0xv1Hu2CmAqZdE9C6z55PwE2f0zLNTNCZCd-CUXBit0V0bG4vNclWJUJw36TlDQadQ_xC-cCU16Evs0xqYoosxFVyYfgs_3dcq8ZNpk9dYR9-JgKhSyA9wH6H_RXP9Jh9jjcx9NC6qoW5GUd7CwequSH9uJjbWofACALORU-OJ7Fx27RW9SOTmEca4I8q5yIS7-Nwtx_f-17WxSsmSeE-Y_veQnnqzagCzOr6BSEZSdMr78XsvZzxvfp-2jI36KSMllCrjreCF8-YxOupVFCDttxsrKHLB5L_fj63Q8GurZWgmuxKFVSZDboDj26nCCAsuIPGmMj-jwim6inVJ9njmL6HMKGVYg4stvEsZF5zNHYcW95qV4zbAeLmDq4hEn2dQ8CyDvsYuQYDQLKXAZ16ojjevrJ4GUaKD5jYs8i7mqIo_T0sM_qbQQd3AXE7FooJHM18awuACzNNr6qh794ojpegAczXq0mELcURfFN1JZCIelQ93vRudEEEB6NCUML0gm2Y6Q8dqOv9wAx-65u9Cqi4urG6xmZk14pgVVewlIxnj-cm16TqouHbTP1FE3ub78cRRVA7jTyy_jpu6kd-_SpUjArvLCYQSvCQao83P4c_G0cBCwkhsdPVh6EgQ2CLbdimrQrvNaBwdac4EmoPwReOtC6Vx4nA-RXohPpy1P2SMo_Ud9abf6FRvAJgXATvd_Pb03deYG1nZnshOL5VeeohzMlXY2okbdyekvyIiKiUyTjRkYIL9Womm6U_HQ6teTWdlj3jYOkscuzniz0ZsnmCXhzSAHp1uBmEyoS0qU4VnR-IyDSQr8xCnbHBQsaATiX_wSRjLL-cRsVLjH86a1bs92qJHnZLxGye8PxkTI5B1casTAzAGxWVP3vc0KjFFT7AcOAVo0lzvIcXCUcMv8VQ2aKrfhLX8e6eTFzvCjE9Q==",
+						"summary": []
+					},
+					{
+						"id": "msg_0b9c3a0b31bd5962006aeb23631ef887d2a0259a6c024f583e",
+						"type": "message",
+						"status": "completed",
+						"content": [
+							{
+								"type": "output_text",
+								"annotations": [],
+								"logprobs": [],
+								"text": "{\"message\":\"Your plan is ready, so start this sprint. Post how it goes in your devlog, and attach an artifact to each task that shows it is done. I’ll look at what’s new on Wednesday 11 November, and we’ll meet again next sprint. I look forward to your devlog posts, artifacts, and other updates ;)\"}"
+							}
+						],
+						"phase": "final_answer",
+						"role": "assistant"
+					}
+				],
+				"parallel_tool_calls": true,
+				"presence_penalty": 0,
+				"previous_response_id": null,
+				"prompt_cache_key": null,
+				"prompt_cache_retention": "24h",
+				"reasoning": {
+					"context": "all_turns",
+					"effort": "medium",
+					"mode": "standard",
+					"summary": null
+				},
+				"safety_identifier": null,
+				"service_tier": "default",
+				"store": true,
+				"temperature": 1,
+				"text": {
+					"format": {
+						"type": "json_schema",
+						"description": null,
+						"name": "letter",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"maxLength": 600,
+									"description": "The letter, two to four short sentences"
+								}
+							},
+							"required": [
+								"message"
+							],
+							"additionalProperties": false
+						},
+						"strict": true
+					},
+					"verbosity": "medium"
+				},
+				"tool_choice": "auto",
+				"tool_usage": {
+					"image_gen": {
+						"input_tokens": 0,
+						"input_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"output_tokens": 0,
+						"output_tokens_details": {
+							"image_tokens": 0,
+							"text_tokens": 0
+						},
+						"total_tokens": 0
+					},
+					"web_search": {
+						"num_requests": 0
+					}
+				},
+				"tools": [],
+				"top_logprobs": 0,
+				"top_p": 0.98,
+				"truncation": "disabled",
+				"usage": {
+					"input_tokens": 1456,
+					"input_tokens_details": {
+						"cache_write_tokens": 1453,
+						"cached_tokens": 0
+					},
+					"output_tokens": 571,
+					"output_tokens_details": {
+						"reasoning_tokens": 490
+					},
+					"total_tokens": 2027
+				},
+				"user": null,
+				"metadata": {}
+			}
+		},
+		"providerMetadata": {
+			"openai": {
+				"responseId": "resp_0b9c3a0b31bd5962006aeb235d6ce087d2bf53be78be28759b",
+				"serviceTier": "default",
+				"reasoningContext": "all_turns"
+			}
+		},
+		"warnings": []
+	}
+}
