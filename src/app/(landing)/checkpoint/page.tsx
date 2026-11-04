@@ -13,8 +13,6 @@ const DESCRIPTION =
 export const metadata: Metadata = {
 	title: { absolute: TITLE },
 	description: DESCRIPTION,
-	// Checkpoint is not launched yet: reachable by URL, kept out of search.
-	robots: { index: false, follow: false },
 	alternates: { canonical: "/checkpoint" },
 	openGraph: {
 		type: "website",

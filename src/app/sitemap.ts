@@ -59,6 +59,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.8,
 		},
 		{
+			url: `${websiteUrl}/checkpoint`,
+			lastModified: today.toDate(),
+			changeFrequency: "monthly",
+			priority: 0.8,
+		},
+		{
 			url: `${websiteUrl}/signin`,
 			lastModified: today.toDate(),
 			priority: 0.4,
