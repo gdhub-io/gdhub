@@ -80,7 +80,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"e3125c7f68dd36cd683dc2708c267588b52e6ce0024f1c42770262907e0c6b9e",
+					"a92dae749f9e9749d25a71b9968e2eae993de81d9c7cfbb65e646f199ad72ebf",
 			},
 		],
 	},
@@ -104,7 +104,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"3674d53a9974229deed140b9dbf767eadc9d5ff120e9aef0752f83a10bba9c1c",
+					"f1ba3407b25eeee9096b23a1b718bba279ec85b322f4791afc2f423cbb9a4805",
 			},
 		],
 	},
