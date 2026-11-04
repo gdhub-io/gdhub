@@ -6,6 +6,7 @@ import {
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
 import { type ExpertCheckpoint, expertCheckpoint, intoReview } from "./support/expert";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import { removeRun } from "./support/stand";
 
@@ -19,7 +20,7 @@ import { removeRun } from "./support/stand";
 const log = new RunLog("H4 the expert's verdict");
 
 const REASONING =
-	"The tide loop plays, but the slice was not shown to players. The playtest moves to the next checkpoint.";
+	"The jump and level 1 play, but two friends played it, not five strangers. The playtest moves to the next checkpoint.";
 
 let run: ExpertCheckpoint;
 
@@ -36,7 +37,7 @@ test.describe.serial("the verdict with an expert", () => {
 	});
 
 	test("day 29: in review, with the AI's read", async ({ browser }) => {
-		run = await expertCheckpoint(browser, "h4", "Glassreef");
+		run = await expertCheckpoint(browser, "h4", GAME.name);
 		log.track(run.checkpointId);
 
 		const night = await intoReview(run);

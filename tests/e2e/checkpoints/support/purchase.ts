@@ -2,6 +2,7 @@ import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, type FrameLocator, type Page } from "@playwright/test";
 import { prisma } from "../../../../src/services/prisma";
 import { paddleDetails, paddleOverlay, payByCard } from "../../setup/paddle";
+import { GAME } from "./game";
 
 /**
  * The author's way from the checkpoint hub to a paid AI checkpoint: what is
@@ -9,8 +10,7 @@ import { paddleDetails, paddleOverlay, payByCard } from "../../setup/paddle";
  * Paddle's sandbox overlay with its test card.
  */
 
-export const GOAL =
-	"A playable vertical slice: two islands, the tide loop and co-op sailing, tested by five players";
+export const GOAL = GAME.goal;
 
 /**
  * From the hub (`/checkpoint/new?project=…`) to the payment step: with the AI

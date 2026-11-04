@@ -1,6 +1,7 @@
 import { InvitationStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
+import { GAME } from "./checkpoints/support/game";
 import { createProjectInHub } from "./setup/project";
 import {
 	grantUser,
@@ -18,7 +19,7 @@ test.describe.serial("team invitation flow", () => {
 	let invitationId: string;
 	let teamId: string;
 	// A fixed name: the AI check of a new project then replays from a recording.
-	const projectName = "Copper Lanterns";
+	const projectName = GAME.name;
 
 	test.beforeAll(async () => {
 		author = await grantUser("inviter");
@@ -31,7 +32,7 @@ test.describe.serial("team invitation flow", () => {
 		projectSlug = await createProjectInHub(
 			page,
 			projectName,
-			"E2E team invitation test",
+			GAME.description,
 		);
 
 		// The invitation is written directly: the app's route sends it through Novu.

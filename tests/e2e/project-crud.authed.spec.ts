@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { GAME } from "./checkpoints/support/game";
 import { createProjectInHub } from "./setup/project";
 import {
 	grantUser,
@@ -20,9 +21,9 @@ test("create → edit in settings/general → delete via danger zone", async ({
 }) => {
 	await signInPage(page, author);
 	// A fixed name: the AI check of a new project then replays from a recording.
-	const initialName = "Driftwood Atlas";
+	const initialName = GAME.name;
 	const renamedName = `${initialName} Renamed`;
-	const description = "Created by the project-crud e2e test.";
+	const description = GAME.description;
 
 	// --- 1. Create it from the hub ---
 	const slug = await createProjectInHub(page, initialName, description);

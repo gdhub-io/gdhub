@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
+import { GAME } from "./checkpoints/support/game";
 import { hireMember, makeProject } from "./checkpoints/support/stand";
 import { acceptCookieConsent } from "./setup/cookies";
 import { baseURL } from "./setup/sign-in";
@@ -16,7 +17,7 @@ import {
  * (GDHUB-136), asked of the running server, not of a mocked guard.
  */
 
-const TEXT = "The tide now floods the lower island every third night.";
+const TEXT = GAME.devlog.sprint1;
 
 test.describe.serial("a devlog, from writing to applause", () => {
 	let author: StandUser;
@@ -31,7 +32,7 @@ test.describe.serial("a devlog, from writing to applause", () => {
 		teammate = await grantUser("devlog-teammate");
 		reader = await grantUser("devlog-reader");
 		authorPage = await signInAs(browser, author);
-		project = await makeProject(authorPage, "Ember Tide");
+		project = await makeProject(authorPage, GAME.name);
 		await hireMember(project, teammate);
 	});
 	test.afterAll(removeRun);

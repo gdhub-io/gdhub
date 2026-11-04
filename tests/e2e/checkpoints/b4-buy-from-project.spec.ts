@@ -1,6 +1,7 @@
 import { PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import {
 	activeCheckpoint,
 	GOAL,
@@ -27,12 +28,12 @@ test("an AI checkpoint bought from the project space starts", async ({
 }) => {
 	const author = await grantUser("author-b4");
 	const page = await signInAs(browser, author);
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 
 	await page.goto(`/user/project/${project.slug}/workflow`);
 	await page.getByRole("button", { name: "Plan this checkpoint" }).click();
 	await page.waitForURL(/\/checkpoint\/new\?project=/);
-	await planCheckpoint(page, "A playable greybox of one island with the tide loop");
+	await planCheckpoint(page, GAME.doneSoFar);
 	await expect(page.getByText("10–15 hours per sprint")).toBeVisible();
 	await expect(page.getByText(GOAL)).toBeVisible();
 	log.step("Planned: done so far, the goal, 10–15 h a sprint, the AI curator");

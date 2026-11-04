@@ -2,6 +2,7 @@ import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
 import { type Browser, expect, type Page } from "@playwright/test";
 import { MS_PER_HOUR } from "../../../../src/lib/checkpoints/days";
 import { prisma } from "../../../../src/services/prisma";
+import { GAME } from "./game";
 import { payInPaddle, planCheckpoint } from "./purchase";
 import {
 	answerAsCurator,
@@ -93,7 +94,7 @@ export async function expertCheckpoint(
 	const checkpointId = await buyWithExpert(
 		authorPage,
 		project,
-		"A greybox with its core loop",
+		GAME.doneSoFar,
 		curator.name,
 	);
 

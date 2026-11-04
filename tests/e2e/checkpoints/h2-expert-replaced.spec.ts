@@ -4,6 +4,7 @@ import { CHECKPOINT_MINOR_UNITS } from "../../../src/config/checkpoint";
 import { curatorPrice } from "../../../src/config/checkpoint-pricing";
 import { prisma } from "../../../src/services/prisma";
 import { buyWithExpert } from "./support/expert";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import {
 	answerAsCurator,
@@ -62,13 +63,13 @@ test.describe.serial("an expert checkpoint changing hands", () => {
 			grantCurator("second-h2"),
 		]);
 		authorPage = await signInAs(browser, author);
-		const project = await makeProject(authorPage, "Saltgrass");
+		const project = await makeProject(authorPage, GAME.name);
 		projectSlug = project.slug;
 
 		checkpointId = await buyWithExpert(
 			authorPage,
 			project,
-			"A marsh with one tide and a boat",
+			GAME.doneSoFar,
 			first.name,
 		);
 		// Paddle charges every checkpoint at the AI price for now: an expert's price

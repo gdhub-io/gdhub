@@ -6,6 +6,7 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import {
 	addTasks,
@@ -37,14 +38,14 @@ test("evidence of something else, or a dead link, misses the goal", async ({
 	browser,
 }) => {
 	const page = await signInAs(browser, await grantUser("author-c12"));
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 
 	const checkpointId = await startWithoutPaying(page, project);
 	log.track(checkpointId);
 
 	const outcomes = await addTasks(page, checkpointId, [
-		"Playtest notes from five players on the tide loop",
-		"A greybox build of the second island",
+		GAME.tasks[3],
+		GAME.tasks[1],
 	]);
 	const links = [
 		// A general reference page: opens, but is not five players' notes.

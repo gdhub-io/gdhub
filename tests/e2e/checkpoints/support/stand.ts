@@ -12,6 +12,7 @@ import { selectableStageNames } from "../../../../src/repositories/project/workf
 import { prisma } from "../../../../src/services/prisma";
 import { accepted } from "../../setup/legal";
 import { grantUser, RUN, type StandUser } from "../../setup/users";
+import { GAME } from "./game";
 
 /**
  * The stand the checkpoint suite runs on: `bun run dev:test` on :3100 against
@@ -125,9 +126,8 @@ export async function makeProject(page: Page, name: string) {
 	const response = await page.request.post("/api/user/project", {
 		data: {
 			name,
-			description:
-				"A co-op sailing roguelike: two players crew a small boat between islands that flood and drain with the tide.",
-			genre: "Roguelike",
+			description: GAME.description,
+			genre: GAME.genre,
 			stage: "Prototyping",
 			understandsNotAi: true,
 			legal: accepted("ProjectRequirements"),
@@ -173,7 +173,7 @@ export async function postDevlog(
 	withMedia = false,
 ) {
 	const media = [
-		{ type: "image", data: { file: { url: IMAGE }, caption: "The tide out" } },
+		{ type: "image", data: { file: { url: IMAGE }, caption: "The gnome mid-jump" } },
 		{
 			type: "embed",
 			data: {
@@ -252,7 +252,7 @@ export async function startWithoutPaying(page: Page, project: Project) {
 	const draft = await makeDraft(page, project);
 	await prisma.projectCheckpoint.update({
 		where: { id: draft },
-		data: { goal: "A second island and a build anyone can open" },
+		data: { goal: GAME.nextGoal },
 	});
 	await startAiCheckpoint(draft, null);
 
@@ -264,7 +264,7 @@ export async function makeDraft(page: Page, project: Project) {
 	const saved = await page.request.put("/api/checkpoint/entry/project", {
 		data: {
 			projectId: project.id,
-			items: [{ text: "A playable greybox of one island", artifactId: null }],
+			items: [{ text: GAME.doneSoFar, artifactId: null }],
 		},
 	});
 	expect(saved.ok(), await saved.text()).toBe(true);

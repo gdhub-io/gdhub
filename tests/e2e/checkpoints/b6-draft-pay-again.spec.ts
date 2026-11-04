@@ -1,6 +1,7 @@
 import { CheckpointStatus, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import { expect, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import {
 	activeCheckpoint,
 	openOverlay,
@@ -40,10 +41,10 @@ test("an abandoned checkout stays a draft and is paid again", async ({
 }) => {
 	const author = await grantUser("author-b6");
 	const page = await signInAs(browser, author);
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 
 	await page.goto(`/checkpoint/new?project=${project.slug}`);
-	await planCheckpoint(page, "A playable greybox of one island");
+	await planCheckpoint(page, GAME.doneSoFar);
 	const paddle = await openOverlay(page);
 	await paddle.getByRole("textbox", { name: "ZIP/Postcode" }).waitFor();
 	await paddle.getByRole("img", { name: "Close" }).click();
@@ -86,7 +87,7 @@ test("an abandoned checkout stays a draft and is paid again", async ({
 test("a draft is discarded before paying", async ({ browser }) => {
 	const author = await grantUser("author-b9");
 	const page = await signInAs(browser, author);
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 
 	await makeDraft(page, project);
 	const draft = await draftOf(project.id);

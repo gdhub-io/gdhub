@@ -9,6 +9,7 @@ import { type Browser, expect, type Page, test } from "@playwright/test";
 import { pulseToken } from "../../../src/lib/checkpoints/pulse-token";
 import { prisma } from "../../../src/services/prisma";
 import { baseURL } from "../setup/sign-in";
+import { GAME } from "./support/game";
 import { activeCheckpoint, payInPaddle, planCheckpoint } from "./support/purchase";
 import { RunLog } from "./support/run-log";
 import {
@@ -136,11 +137,11 @@ test.describe.serial("a whole AI checkpoint", () => {
 		author = await grantUser("author-c", "member", "Alex Author");
 		member = await grantUser("member-c", "member", "Mia Member");
 		page = await signInAs(browser, author);
-		project = await makeProject(page, "Tidebound");
+		project = await makeProject(page, GAME.name);
 		await hireMember(project, member);
 
 		await page.goto(`/checkpoint/new?project=${project.slug}`);
-		await planCheckpoint(page, "A playable greybox of one island with the tide loop");
+		await planCheckpoint(page, GAME.doneSoFar);
 		await payInPaddle(page);
 		checkpointId = (await activeCheckpoint(project.id)).id;
 		log.track(checkpointId);
@@ -179,7 +180,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 		expect(approve.ok(), await approve.text()).toBe(true);
 		log.step("The tasks were checked and the plan approved");
 
-		await sprintDevlog("Sprint 1: the tide floods and drains one island; two players can crew the boat.");
+		await sprintDevlog(GAME.devlog.sprint1);
 	});
 
 	test("sprint 1: pulses on day 7, the review on day 8", async ({ browser }) => {
@@ -198,7 +199,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 
 	test("sprint 2: day 15 cuts a task, sends the change and confirms", async () => {
 		await makeToday(checkpointId, 12);
-		await sprintDevlog("Sprint 2: the second island, and the boat now takes damage on the reef.");
+		await sprintDevlog(GAME.devlog.sprint2);
 		await nightOf(14);
 		const day15 = await nightOf(15);
 		expect(day15.reviews).toBeGreaterThanOrEqual(1);
@@ -230,11 +231,11 @@ test.describe.serial("a whole AI checkpoint", () => {
 
 	test("sprints 3 and 4, and the verdict on day 29", async () => {
 		await makeToday(checkpointId, 19);
-		await sprintDevlog("Sprint 3: five players tried the tide loop; notes are in the playtest doc.");
+		await sprintDevlog(GAME.devlog.sprint4[1]);
 		await nightOf(21);
 		await nightOf(22);
 		await makeToday(checkpointId, 26);
-		await sprintDevlog("Sprint 4: polish, the build is up, and the video is cut.");
+		await sprintDevlog(GAME.devlog.sprint4[0]);
 		await nightOf(28);
 		await nightOf(29);
 
@@ -300,7 +301,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 	test("the admin reads the journal; the scout sees the card", async ({ browser }) => {
 		const admin = await signInAs(browser, await grantUser("admin-c", "superAdmin"));
 		await admin.goto("/admin/checkpoints");
-		const row = admin.getByRole("row").filter({ hasText: "Tidebound" }).first();
+		const row = admin.getByRole("row").filter({ hasText: GAME.name }).first();
 		await row.getByRole("button", { name: "Curator journal" }).click();
 		const drawer = admin.getByRole("dialog", { name: /Curator journal/ });
 		await expect(drawer).toContainText(/Ready for the next stage|Goal met|Goal missed/);
@@ -308,7 +309,7 @@ test.describe.serial("a whole AI checkpoint", () => {
 
 		const scout = await signInAs(browser, await grantUser("scout-c", "scout"));
 		await scout.goto("/scout/games");
-		await scout.getByText("Tidebound").first().click();
+		await scout.getByText(GAME.name).first().click();
 		await scout.getByRole("tab", { name: "Workflow" }).click();
 		const { verdict } = await prisma.projectCheckpoint.findUniqueOrThrow({
 			where: { id: checkpointId },

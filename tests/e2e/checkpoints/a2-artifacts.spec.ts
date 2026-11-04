@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import { grantUser, makeProject, removeRun, signInAs } from "./support/stand";
 
@@ -52,18 +53,18 @@ test("artifacts are filed by stage and their links checked", async ({
 }) => {
 	const author = await grantUser("author-a2");
 	const page = await signInAs(browser, author);
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 
 	await page.goto(`/user/project/${project.slug}/artifacts`);
 	await expect(page.getByText("Your first artifact will appear here.")).toBeVisible();
 
-	await addArtifact(page, "Image", "Tide states, key art", LINKS.opens);
+	await addArtifact(page, "Image", "Gnome jump frames, key art", LINKS.opens);
 	await addArtifact(page, "Build", "Prototype build", LINKS.login);
 	await addArtifact(page, "Other", "Level plans", LINKS.gone);
 	log.step("Added three artifacts on Prototyping");
 
 	await expect
-		.poll(() => checkOf(project.id, "Tide states, key art"), { timeout: 30_000 })
+		.poll(() => checkOf(project.id, "Gnome jump frames, key art"), { timeout: 30_000 })
 		.toBe("Readable:");
 	await expect
 		.poll(() => checkOf(project.id, "Prototype build"), { timeout: 30_000 })
@@ -76,7 +77,7 @@ test("artifacts are filed by stage and their links checked", async ({
 	await page.reload();
 	await expect(page.getByText("Prototyping").first()).toBeVisible();
 	const row = (name: string) => page.getByRole("row").filter({ hasText: name });
-	await expect(row("Tide states, key art")).toContainText("Ready");
+	await expect(row("Gnome jump frames, key art")).toContainText("Ready");
 	await expect(row("Prototype build")).toContainText("Cannot be opened");
 	await expect(row("Level plans")).toContainText("Cannot be opened");
 

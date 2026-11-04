@@ -1,5 +1,6 @@
 import { expect, type FrameLocator, type Page, test } from "@playwright/test";
 import { prisma } from "../../../src/services/prisma";
+import { GAME } from "./support/game";
 import {
 	activeCheckpoint,
 	openPaddle,
@@ -70,9 +71,9 @@ test("codes lower the charge; a switched-off one is refused", async ({
 	});
 
 	const page = await signInAs(browser, await grantUser("author-b7"));
-	const project = await makeProject(page, "Tidebound");
+	const project = await makeProject(page, GAME.name);
 	await page.goto(`/checkpoint/new?project=${project.slug}`);
-	await planCheckpoint(page, "A playable greybox of one island");
+	await planCheckpoint(page, GAME.doneSoFar);
 
 	// $5 off, seen in the overlay and left unpaid: the next Pay opens a new checkout.
 	let paddle = await openPaddle(page);

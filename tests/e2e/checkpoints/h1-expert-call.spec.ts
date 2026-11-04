@@ -8,6 +8,7 @@ import { MS_PER_MINUTE } from "../../../src/lib/checkpoints/days";
 import { prisma } from "../../../src/services/prisma";
 import { finishCall, roomState } from "./support/daily";
 import { buyWithExpert } from "./support/expert";
+import { GAME } from "./support/game";
 import { RunLog } from "./support/run-log";
 import {
 	answerAsCurator,
@@ -64,13 +65,13 @@ test.describe.serial("a checkpoint with an expert", () => {
 		author = await grantUser("author-h1");
 		curator = await grantCurator("curator-h1");
 		authorPage = await signInAs(browser, author);
-		const project = await makeProject(authorPage, "Reefline");
+		const project = await makeProject(authorPage, GAME.name);
 		projectSlug = project.slug;
 
 		checkpointId = await buyWithExpert(
 			authorPage,
 			project,
-			"A greybox reef with one diving loop",
+			GAME.doneSoFar,
 			curator.name,
 		);
 		expect((await checkpointOf()).curatorId).toBe(curator.id);
