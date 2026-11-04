@@ -51,10 +51,7 @@ export default async function HubMembersPage() {
 
 	// The gate is enforced by Typesense itself: only a caller who passes it gets
 	// a key, and the key can read nothing but active specialists' card fields.
-	const parentKey = env(
-		"TYPESENSE_SEARCH_API_KEY",
-		process.env.NEXT_PUBLIC_TYPESENSE_API_KEY ?? "",
-	);
+	const parentKey = env("TYPESENSE_SEARCH_API_KEY", "");
 	const searchKey =
 		parentKey && hasApprovedProjects && can(access, "hub.talent_pool.view")
 			? scopedSearchKey(parentKey, {
