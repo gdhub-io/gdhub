@@ -1,151 +1,109 @@
-import type { CuratorEvidence } from "@/services/checkpoints/call-notes";
+import { teamCapacity } from "@/lib/checkpoints/capacity";
+import type { CuratorTeam } from "@/types/checkpoint-curator";
 import {
 	type LabLanguage,
 	type Situation,
 	say,
 	type sprintReviewInput,
 } from "../schemas";
-import { hollowTide } from "./hollow-tide";
+import { BO, DAN, e2eCheckpoint, openTask } from "./e2e-test-game";
 
 /**
- * Public, long-lived media, read live on Run like a devlog's own links. Hollow
- * Tide has no real screenshots, so both are media that are not the game.
+ * Public, long-lived media, read live on Run like a devlog's own links. E2E
+ * Test Game has no real screenshots, so both are media that are not the game.
  */
 const LANDSCAPE =
 	"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Fronalpstock_big.jpg/960px-Fronalpstock_big.jpg";
 const VIDEO = "https://www.youtube.com/watch?v=aqz-KE-bpKQ";
 
-const TEXT = {
-	en: {
-		demoSeen: "An itch.io page with a playable web build of the island.",
-		boardSeen: "A board with a palette and two character sheets.",
-		notesSeen: "Notes from five players, each with what they hit.",
-		focusAfter1: ["Start the art style board", "Book the playtest"],
-		focusAfter2: [
-			"Keep the style board to one page",
-			"Book the playtest with five players",
-		],
-		focusAfter3: ["Run the playtest with five players and write the notes up"],
-		diceSeen:
-			"A photo of colourful dice on a table; no palette or character sheets.",
-		paletteSeen: "A palette of six colours; no character sheets yet.",
-		trailer: "Teaser trailer",
-		trailerDevlog:
-			"Week 1: we cut a 30-second teaser from the concept art and posted it on X. The greybox is not started yet.",
-		boardDevlog:
-			"Week 2: the style board is on the task. The palette is settled; the hero sheets come next week.",
-		mobileDevlog:
-			"Week 2: instead of the playtest we made the island demo run on phones — most of our testers will play it there. Touch controls are in.",
-		mobileBuild: "Island demo 0.2 · mobile web",
-		noArtistDevlog:
-			"Week 2: Tom, our only artist, left the team for another job. Nobody draws now, so the style board did not move. Marta and Ivo kept polishing the island.",
-		newArtistDevlog:
-			"Week 2: Lena joined us as a 2D artist on Friday and started the hero sheets; the palette is on the board.",
-		artistRole: "2D artist",
-	},
-	ru: {
-		demoSeen: "Страница на itch.io с играбельной веб-сборкой острова.",
-		boardSeen: "Доска с палитрой и двумя листами персонажей.",
-		notesSeen: "Заметки по пяти игрокам, у каждого — на чём застрял.",
-		focusAfter1: ["Начать доску стиля", "Назначить плейтест"],
-		focusAfter2: [
-			"Свести доску стиля к одной странице",
-			"Назначить плейтест на пять игроков",
-		],
-		focusAfter3: ["Провести плейтест на пять игроков и записать заметки"],
-		diceSeen:
-			"Фото разноцветных кубиков на столе; ни палитры, ни листов персонажей.",
-		paletteSeen: "Палитра из шести цветов; листов персонажей пока нет.",
-		trailer: "Тизер-трейлер",
-		trailerDevlog:
-			"Неделя 1: смонтировали 30-секундный тизер из концепт-арта и выложили в X. Блокаут ещё не начат.",
-		boardDevlog:
-			"Неделя 2: доска стиля в задаче. Палитра готова, листы героев — на следующей неделе.",
-		mobileDevlog:
-			"Неделя 2: вместо плейтеста сделали так, чтобы демо острова шло на телефонах — большинство тестеров будут играть там. Сенсорное управление готово.",
-		mobileBuild: "Демо острова 0.2 · мобильный веб",
-		noArtistDevlog:
-			"Неделя 2: Том, наш единственный художник, ушёл на другую работу. Рисовать больше некому, доска стиля не сдвинулась. Марта и Иво доводили остров.",
-		newArtistDevlog:
-			"Неделя 2: в пятницу к нам пришла Лена, 2D-художник, и начала листы героев; палитра на доске.",
-		artistRole: "2D-художник",
-	},
+/** The level build the variants show in place of the road's own. */
+const LEVEL_BUILD = {
+	type: "ExecutableBuild",
+	name: "E2E Test Game 0.2 · web",
 };
+
+const TEXT = {
+	levelSeen: "Level 1 plays from the snowy start to the flag in the browser.",
+	halfSeen: "Level 1 up to the second pit; there is no flag yet.",
+	candySeen: "A photo of a candy cane on a desk; no level in it.",
+	focusAfter1: ["Greybox level 1 to the flag", "Book the playtest"],
+	focusAfter3: [
+		"Put level 1 on itch.io",
+		"Five players outside the team reach the flag",
+	],
+	trailerDevlog:
+		"Week 1: we cut a 30-second teaser from the title art and posted it on X. The jump is not started yet.",
+	halfDevlog:
+		"Week 2: level 1 is greyboxed to the second pit; the flag and the enemies come next week.",
+	mobileDevlog:
+		"Week 2: instead of the level we made the jump test run on phones — most of our testers will play there. Touch controls are in.",
+	noArtistDevlog:
+		"Week 2: Bo, our only artist, left the team for another job. Nobody draws now, so level 1 has no tiles. Ana kept tuning the jump.",
+	newMemberDevlog:
+		"Week 2: Dan joined us as a level designer on Friday and greyboxed level 1 to the second pit.",
+	onCourseDevlog:
+		"Week 3: level 1 is done from the start to the flag, with candies and both enemies, and it is on itch.io.",
+};
+
+/** The team with its people edited, its capacity counted again from them. */
+const withPeople = (
+	team: CuratorTeam,
+	people: CuratorTeam["people"],
+): CuratorTeam => ({
+	...team,
+	...teamCapacity(
+		people.map((person) => ({
+			timeForWork: person.hoursPerWeek
+				? [person.hoursPerWeek.from, person.hoursPerWeek.to]
+				: [],
+		})),
+	),
+	people,
+});
 
 export const sprintReviewSituations = (
 	language: LabLanguage,
 ): Situation<typeof sprintReviewInput>[] => {
-	const t = TEXT[language];
-	const project = hollowTide(language);
-	const { artifacts, devlogs } = project;
-	const { demo, board, playtest } = project.outcomes;
-	const open = (each: { id: string; text: string }) => ({
-		...each,
-		cut: false,
-		firstWording: null,
-		evidence: [] as CuratorEvidence[],
-	});
-	const done = (
-		each: { id: string; text: string },
-		type: string,
-		name: string,
+	const cp = e2eCheckpoint(3);
+	const [jump, level, build, players] = cp.tasks(1);
+	const after1 = { journal: [], focus: TEXT.focusAfter1, lastDirection: null };
+	const sprint1 = cp.sprintReview(1);
+	const sprint2 = cp.sprintReview(2, after1);
+	/** Sprint 2 as it might have gone: the road's level untouched, the rest the variant's. */
+	const variant2 = {
+		...sprint2,
+		tasks: [jump, openTask(level), openTask(build), openTask(players)],
+	};
+	const levelWith = (
+		match: "Matches" | "Partly" | "DoesNotMatch",
 		note: string,
+		type = LEVEL_BUILD.type,
 	) => ({
-		...open(each),
-		evidence: [{ type, name, seen: { match: "Matches" as const, note } }],
+		...openTask(level),
+		evidence: [{ type, name: LEVEL_BUILD.name, seen: { match, note } }],
 	});
-	const demoDone = done(demo, "ExecutableBuild", artifacts.demo, t.demoSeen);
-	/** Day 15 without the artist: Tom left in sprint 2, nobody on the team draws, and the board never moved. */
-	const shortOfArt = (
-		openings: { role: string; postedOn: string; applied: number }[],
-	) => {
-		const team = project.team("sprint2");
-		return {
-			goal: project.goal,
-			workflow: project.workflow("sprint2"),
-			sprint: 2,
-			tasks: [demoDone, open(board), open(playtest)],
-			devlogs: [t.noArtistDevlog],
-			media: [],
-			artifacts: [],
-			team: {
-				...team,
-				members: team.members - 1,
-				stated: team.stated - 1,
-				people: team.people.filter((person) => person.name !== "Tom"),
-				openings,
-			},
-			focusLastReview: t.focusAfter1,
-			final: false,
-			picture: project.picture("sprint2"),
-			marketing: project.marketing("sprint2"),
-		};
-	};
-	const boardWith = (match: "Partly" | "DoesNotMatch", note: string) => ({
-		...open(board),
-		evidence: [{ type: "Image", name: artifacts.board, seen: { match, note } }],
+	/** Day 15 without the artist: Bo left in sprint 2, nobody draws, and the level has no tiles. */
+	const shortOfArt = (openings: CuratorTeam["openings"]) => ({
+		...variant2,
+		devlogs: [TEXT.noArtistDevlog],
+		artifacts: [],
+		team: {
+			...withPeople(
+				sprint2.team,
+				sprint2.team.people.filter((person) => person.name !== BO.name),
+			),
+			openings,
+		},
 	});
-
-	// Day 8: sprint 1 landed the greybox and its demo build.
-	const sprint1 = {
-		goal: project.goal,
-		workflow: project.workflow("sprint1"),
-		sprint: 1,
-		tasks: [demoDone, open(board), open(playtest)],
-		devlogs: [devlogs.greybox],
-		media: [],
-		artifacts: [{ type: "ExecutableBuild", name: artifacts.demo }],
-		team: project.team("sprint1"),
-		focusLastReview: [],
-		final: false,
-		picture: project.picture("sprint1"),
-		marketing: project.marketing("sprint1"),
-	};
 
 	return [
 		{
 			id: "good-week",
-			label: say(language, "A good first sprint", "Хороший первый спринт"),
+			label: say(
+				language,
+				"Sprint 1: the jump, as it happened",
+				"Спринт 1: прыжок, как было",
+			),
 			input: sprint1,
 		},
 		{
@@ -167,7 +125,25 @@ export const sprintReviewSituations = (
 			input: { ...sprint1, media: [VIDEO] },
 		},
 		{
-			// Day 15: sprint 2 showed nothing, and the artist did not confirm it.
+			id: "sideways",
+			label: say(
+				language,
+				"Sprint 2: a title screen instead of the level, as it happened",
+				"Спринт 2: титульный экран вместо уровня, как было",
+			),
+			input: sprint2,
+		},
+		{
+			id: "idle",
+			label: say(
+				language,
+				"Sprint 3: nothing done, as it happened",
+				"Спринт 3: ничего не сделано, как было",
+			),
+			input: cp.sprintReview(3, after1),
+		},
+		{
+			// Day 15: sprint 2 showed nothing, and Bo did not confirm it.
 			id: "quiet",
 			label: say(
 				language,
@@ -175,15 +151,17 @@ export const sprintReviewSituations = (
 				"Нет девлога, художник выпал",
 			),
 			input: {
-				...sprint1,
-				sprint: 2,
+				...variant2,
 				devlogs: [],
 				artifacts: [],
-				team: project.team("sprint2"),
-				focusLastReview: t.focusAfter1,
-				workflow: project.workflow("sprint2"),
-				picture: project.picture("sprint2"),
-				marketing: project.marketing("sprint2"),
+				team: {
+					...variant2.team,
+					people: variant2.team.people.map((person) =>
+						person.name === BO.name
+							? { ...person, weeks: [true, false] }
+							: person,
+					),
+				},
 			},
 		},
 		{
@@ -196,35 +174,30 @@ export const sprintReviewSituations = (
 			),
 			input: {
 				...sprint1,
-				tasks: [open(demo), open(board), open(playtest)],
-				devlogs: [t.trailerDevlog],
-				artifacts: [{ type: "Video", name: t.trailer }],
+				tasks: [jump, level, build, players].map(openTask),
+				devlogs: [TEXT.trailerDevlog],
+				artifacts: [{ type: "Video", name: "Teaser trailer" }],
 			},
 		},
 		{
-			// Day 15: the last focus asked for the playtest; the team made the demo
-			// run on phones instead — another route that still serves the goal.
+			// Day 15: the last focus asked for the level; the team made the jump
+			// test run on phones instead — another route, and not the goal's.
 			id: "own-route",
 			label: say(
 				language,
-				"Day 15, the team went its own way toward the goal",
-				"День 15, команда пошла своим путём к цели",
+				"Day 15, the team went its own way",
+				"День 15, команда пошла своим путём",
 			),
 			input: {
-				...sprint1,
-				sprint: 2,
-				tasks: [demoDone, open(board), open(playtest)],
-				devlogs: [t.mobileDevlog],
-				artifacts: [{ type: "ExecutableBuild", name: t.mobileBuild }],
-				team: project.team("sprint2"),
-				focusLastReview: t.focusAfter1,
-				workflow: project.workflow("sprint2"),
-				picture: project.picture("sprint2"),
-				marketing: project.marketing("sprint2"),
+				...variant2,
+				devlogs: [TEXT.mobileDevlog],
+				artifacts: [
+					{ type: "ExecutableBuild", name: "Jump test 0.2 · mobile web" },
+				],
 			},
 		},
 		{
-			// Day 15: the only artist dropped out and the art task stalled; nobody is being sought.
+			// Day 15: the only artist dropped out and the level stalled; nobody is being sought.
 			id: "short-artist",
 			label: say(
 				language,
@@ -234,7 +207,7 @@ export const sprintReviewSituations = (
 			input: shortOfArt([]),
 		},
 		{
-			// The same, with a position for an artist already open.
+			// The same, with a position already open.
 			id: "short-artist-open",
 			label: say(
 				language,
@@ -242,46 +215,42 @@ export const sprintReviewSituations = (
 				"День 15, художника нет, вакансия уже открыта",
 			),
 			input: shortOfArt([
-				{ role: t.artistRole, postedOn: "2026-10-09", applied: 2 },
+				{ role: BO.role, postedOn: "2026-11-10", applied: 2 },
 			]),
 		},
 		{
-			// A 2D artist joined mid-sprint and the board moved.
+			// A level designer joined mid-sprint and the level moved.
 			id: "new-member",
 			label: say(
 				language,
-				"Day 15, a new artist joined mid-sprint",
-				"День 15, в середине спринта пришёл художник",
+				"Day 15, a level designer joined mid-sprint",
+				"День 15, в середине спринта пришёл левел-дизайнер",
 			),
 			input: {
-				...sprint1,
-				sprint: 2,
-				tasks: [demoDone, boardWith("Partly", t.paletteSeen), open(playtest)],
-				devlogs: [t.newArtistDevlog],
-				artifacts: [{ type: "Image", name: artifacts.board }],
-				team: {
-					...project.team("sprint2"),
-					members: 4,
-					people: [
-						...project.team("sprint2").people,
-						{
-							name: "Lena",
-							role: t.artistRole,
-							level: "Middle",
-							hoursPerWeek: { from: 15, to: 20 },
-							weeks: [false, true],
-							joinedOn: "2026-10-10",
-						},
-					],
-				},
-				focusLastReview: t.focusAfter1,
-				workflow: project.workflow("sprint2"),
-				picture: project.picture("sprint2"),
-				marketing: project.marketing("sprint2"),
+				...variant2,
+				tasks: [
+					jump,
+					levelWith("Partly", TEXT.halfSeen),
+					openTask(build),
+					openTask(players),
+				],
+				devlogs: [TEXT.newMemberDevlog],
+				artifacts: [LEVEL_BUILD],
+				team: withPeople(variant2.team, [
+					...variant2.team.people,
+					{
+						name: DAN.name,
+						role: DAN.role,
+						level: DAN.level,
+						hoursPerWeek: DAN.hours,
+						weeks: [false, true],
+						joinedOn: "2026-11-13",
+					},
+				]),
 			},
 		},
 		{
-			// Day 15: the style board is ticked, but its image is not a style board.
+			// Day 15: the level is ticked, but its image is not a level.
 			id: "mismatch",
 			label: say(
 				language,
@@ -289,89 +258,74 @@ export const sprintReviewSituations = (
 				"День 15, доказательство не совпадает с задачей",
 			),
 			input: {
-				...sprint1,
-				sprint: 2,
+				...variant2,
 				tasks: [
-					demoDone,
-					boardWith("DoesNotMatch", t.diceSeen),
-					open(playtest),
+					jump,
+					levelWith("DoesNotMatch", TEXT.candySeen, "Image"),
+					openTask(build),
+					openTask(players),
 				],
-				devlogs: [t.boardDevlog],
-				artifacts: [{ type: "Image", name: artifacts.board }],
-				team: project.team("sprint2"),
-				focusLastReview: t.focusAfter1,
-				workflow: project.workflow("sprint2"),
-				picture: project.picture("sprint2"),
-				marketing: project.marketing("sprint2"),
+				devlogs: [TEXT.halfDevlog],
+				artifacts: [{ type: "Image", name: LEVEL_BUILD.name }],
 			},
 		},
 		{
-			// Day 15: half done and a big playtest ahead — where the advice and the focus used to disagree.
+			// Day 15: half done and a playtest with strangers ahead — where the advice and the focus used to disagree.
 			id: "midway-half",
 			label: say(
 				language,
-				"Day 15, half done, a big playtest ahead",
-				"День 15, половина сделана, впереди большой плейтест",
+				"Day 15, half done, a playtest ahead",
+				"День 15, половина сделана, впереди плейтест",
 			),
 			input: {
-				...sprint1,
-				sprint: 2,
-				tasks: [demoDone, boardWith("Partly", t.paletteSeen), open(playtest)],
-				devlogs: [t.boardDevlog],
-				artifacts: [{ type: "Image", name: artifacts.board }],
-				team: project.team("sprint2"),
-				focusLastReview: t.focusAfter1,
-				workflow: project.workflow("sprint2"),
-				picture: project.picture("sprint2"),
-				marketing: project.marketing("sprint2"),
+				...variant2,
+				tasks: [
+					jump,
+					levelWith("Partly", TEXT.halfSeen),
+					openTask(build),
+					openTask(players),
+				],
+				devlogs: [TEXT.halfDevlog],
+				artifacts: [LEVEL_BUILD],
 			},
 		},
 		{
-			// Day 22: back on course after the quiet sprint 2 — the style board is in.
+			// Day 22, a better sprint 3 than the real one: level 1 is in.
 			id: "on-course",
 			label: say(language, "Day 22, back on course", "День 22, снова на курсе"),
 			input: {
-				...sprint1,
-				sprint: 3,
+				...cp.sprintReview(3, after1),
 				tasks: [
-					demoDone,
-					done(board, "Image", artifacts.board, t.boardSeen),
-					open(playtest),
+					jump,
+					levelWith("Matches", TEXT.levelSeen),
+					{
+						...openTask(build),
+						evidence: [
+							{
+								...LEVEL_BUILD,
+								seen: { match: "Matches" as const, note: TEXT.levelSeen },
+							},
+						],
+					},
+					openTask(players),
 				],
-				devlogs: [devlogs.styleBoard],
-				artifacts: [{ type: "Image", name: artifacts.board }],
-				team: project.team("sprint3"),
-				focusLastReview: t.focusAfter2,
-				workflow: project.workflow("sprint3"),
-				picture: project.picture("sprint3"),
-				marketing: project.marketing("sprint3"),
+				devlogs: [TEXT.onCourseDevlog],
+				artifacts: [LEVEL_BUILD],
 			},
 		},
 		{
-			// Day 29: sprint 4 brought the playtest; the verdict follows.
+			// Day 29 as it happened: level 1 and a playtest with two friends; the verdict follows.
 			id: "final",
 			label: say(
 				language,
 				"The final review, before the verdict",
 				"Итоговый разбор, перед вердиктом",
 			),
-			input: {
-				...sprint1,
-				sprint: 4,
-				tasks: [
-					demoDone,
-					done(board, "Image", artifacts.board, t.boardSeen),
-					done(playtest, "Document", artifacts.notes, t.notesSeen),
-				],
-				devlogs: [devlogs.playtest],
-				artifacts: [{ type: "Document", name: artifacts.notes }],
-				team: project.team("end"),
-				focusLastReview: t.focusAfter3,
-				final: true,
-				workflow: project.workflow("end"),
-				picture: project.picture("end"),
-				marketing: project.marketing("end"),
-			},
+			input: cp.sprintReview(4, {
+				journal: [],
+				focus: TEXT.focusAfter3,
+				lastDirection: null,
+			}),
 		},
 	];
 };

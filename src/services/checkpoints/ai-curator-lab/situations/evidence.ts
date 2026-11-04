@@ -4,61 +4,41 @@ import {
 	type Situation,
 	say,
 } from "../schemas";
-import { hollowTide } from "./hollow-tide";
+import { e2eCheckpoint } from "./e2e-test-game";
 
 const TEXT = {
-	en: {
-		notes: `Playtest, Saturday 24 Oct. Five players, 20 minutes each.
-- Anna: found the lighthouse, loved the tide; lost at the flooded bridge.
-- Ben: did not notice the tide timer until the second flood.
-- Chloe: finished the loop; wants a map.
-- Dan: stuck at the bridge, quit after 15 minutes.
-- Eva: asked for a sound cue before the water rises.
-Top issue: the flooded bridge (2 of 5).`,
-		notesSays: "Notes from Saturday's playtest.",
-		godot:
-			"Godot (game engine). Godot is a cross-platform, free and open-source game engine released under the MIT License.",
-		insists:
-			"Playtest with five players is done and written up — see the task.",
-		recipe: "Our recipes: lemon cake, three eggs, 200 g of flour.",
-		video: "Style board walkthrough",
-		videoText:
-			"Video title: Hollow Tide — style board walkthrough\nDescription: Palette, two hero sheets, fog study.",
-		repo: "Godot demo projects",
-	},
-	ru: {
-		notes: `Плейтест, суббота 24 октября. Пять игроков, по 20 минут.
-- Аня: нашла маяк, понравился прилив; потерялась у затопленного моста.
-- Борис: не замечал таймер прилива до второго затопления.
-- Вика: прошла цикл целиком; просит карту.
-- Денис: застрял у моста, бросил через 15 минут.
-- Ева: просит звуковой сигнал перед подъёмом воды.
-Главная проблема: затопленный мост (2 из 5).`,
-		notesSays: "Заметки с субботнего плейтеста.",
-		godot:
-			"Godot (игровой движок). Godot — кроссплатформенный, свободный игровой движок с открытым исходным кодом под лицензией MIT.",
-		insists: "Плейтест на пять игроков проведён и записан — смотрите задачу.",
-		recipe: "Наши рецепты: лимонный пирог, три яйца, 200 г муки.",
-		video: "Разбор доски стиля",
-		videoText:
-			"Название видео: Hollow Tide — разбор доски стиля\nОписание: палитра, два листа героев, этюд тумана.",
-		repo: "Демо-проекты Godot",
-	},
+	notes: `Playtest, Saturday 28 Nov. Five players from a local meetup, 15 minutes each.
+- Anna: reached the flag; loved the candy trail.
+- Ben: fell into the second pit three times, then made it.
+- Chloe: reached the flag; wants to see how many candies are left.
+- Dan: stuck at the second pit, quit after 12 minutes.
+- Eva: reached the flag; asked for a sound when the jump is buffered.
+Top issue: the second pit (3 of 5).`,
+	notesSays: "Notes from Saturday's playtest.",
+	godot:
+		"Godot (game engine). Godot is a cross-platform, free and open-source game engine released under the MIT License.",
+	insists:
+		"The playtest with five players is done and written up — see the task.",
+	recipe: "Our recipes: lemon cake, three eggs, 200 g of flour.",
+	video: "Level 1 walkthrough",
+	videoText:
+		"Video title: E2E Test Game — level 1 walkthrough\nDescription: From the snowy start to the flag: candies, the snowman, the diving crow.",
+	repo: "Godot demo projects",
 };
 
 export const evidenceSituations = (
 	language: LabLanguage,
 ): Situation<typeof evidenceInput>[] => {
-	const t = TEXT[language];
-	const project = hollowTide(language);
-	const { devlogs, outcomes, artifacts } = project;
-	// Day 26: the playtest notes arrive; the judge reads every devlog so far.
+	const cp = e2eCheckpoint(3);
+	const [jump, level, , players] = cp.checkpoint.tasks;
+	const devlogs = cp.devlogs().map((post) => post.content);
+	// Day 28: the playtest notes arrive; the judge reads every devlog so far.
 	const playtest = {
-		task: outcomes.playtest.text,
+		task: players.text,
 		artifactType: "Document",
-		artifactName: artifacts.notes,
-		description: t.notesSays,
-		devlogs: [devlogs.greybox, devlogs.styleBoard, devlogs.playtest],
+		artifactName: "Playtest notes",
+		description: TEXT.notesSays,
+		devlogs,
 	};
 	const text = (body: string | null, unread: string | null = null) => ({
 		text: body,
@@ -69,20 +49,20 @@ export const evidenceSituations = (
 		{
 			id: "matches",
 			label: say(language, "Matches the task", "Соответствует задаче"),
-			input: { ...playtest, evidence: text(t.notes) },
+			input: { ...playtest, evidence: text(TEXT.notes) },
 		},
 		{
 			id: "partly",
 			label: say(language, "Shown in part", "Показано частично"),
 			input: {
 				...playtest,
-				evidence: text(t.notes.split("\n").slice(0, 4).join("\n")),
+				evidence: text(TEXT.notes.split("\n").slice(0, 4).join("\n")),
 			},
 		},
 		{
 			id: "does-not-match",
 			label: say(language, "Not about the task", "Не про задачу"),
-			input: { ...playtest, evidence: text(t.godot) },
+			input: { ...playtest, evidence: text(TEXT.godot) },
 		},
 		{
 			id: "devlog-insists",
@@ -93,8 +73,8 @@ export const evidenceSituations = (
 			),
 			input: {
 				...playtest,
-				devlogs: [...playtest.devlogs, t.insists],
-				evidence: text(t.recipe),
+				devlogs: [...playtest.devlogs, TEXT.insists],
+				evidence: text(TEXT.recipe),
 			},
 		},
 		{
@@ -109,7 +89,7 @@ export const evidenceSituations = (
 			},
 		},
 		{
-			// Day 19: the board arrives as a video the curator only sees by its title.
+			// Day 27: level 1 arrives as a video the curator only sees by its title.
 			id: "devlog-explains",
 			label: say(
 				language,
@@ -117,13 +97,13 @@ export const evidenceSituations = (
 				"Видео только по названию, девлог поясняет",
 			),
 			input: {
-				task: outcomes.board.text,
+				task: level.text,
 				artifactType: "Video",
-				artifactName: t.video,
+				artifactName: TEXT.video,
 				description: null,
-				devlogs: [devlogs.greybox, devlogs.styleBoard],
+				devlogs,
 				evidence: text(
-					t.videoText,
+					TEXT.videoText,
 					"a youtube video: only its title and thumbnail, the video itself was not watched",
 				),
 			},
@@ -137,11 +117,11 @@ export const evidenceSituations = (
 				"Настоящая ссылка, читается сейчас (репозиторий чужой игры)",
 			),
 			input: {
-				task: outcomes.demo.text,
+				task: jump.text,
 				artifactType: "Repository",
-				artifactName: t.repo,
+				artifactName: TEXT.repo,
 				description: null,
-				devlogs: [devlogs.greybox],
+				devlogs: cp.devlogs(1).map((post) => post.content),
 				evidence: {
 					link: "https://github.com/godotengine/godot-demo-projects",
 				},

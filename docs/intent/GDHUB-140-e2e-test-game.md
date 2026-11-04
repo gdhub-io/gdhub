@@ -12,27 +12,30 @@ E2E Test Game is a classic 2D side-scrolling platformer: run, jump, stomp, colle
 
 The lab already has E2E Test Game for two situations (GDHUB-133), but its other eight situations still run on Hollow Tide, and the unit tests and e2e personas use Hollow Tide too. Two projects mean two stories, so a review on one cannot be compared with a review on the other. Hollow Tide also covers only one checkpoint. Nothing yet shows a project going through several stages, every direction and every verdict, people joining and leaving, or hours being cut.
 
-## The road (draft, to be approved before the code)
+## The road
 
-Eight checkpoints, from the idea to the release: the road ends with the game out on Steam. The team starts as Ana (programmer, 15–20 h) and Bo (2D artist, 10–15 h). All of the game's content (devlogs, artifacts, tasks, notes) is in English.
+Nine checkpoints, from the idea to the release: the road ends with the game out on Steam. The team starts as Ana (programmer, 15–20 h) and Bo (2D artist, 10–15 h). All of the game's content (devlogs, artifacts, tasks, notes) is in English. The data is in `src/services/checkpoints/ai-curator-lab/situations/e2e-road.ts`.
 
 | # | Stage | Dates | Sprints (directions) | People | Verdict |
 |---|---|---|---|---|---|
-| 1 | Ideation | 3–30 Aug 2026 | toward · toward · sideways (lore instead of the one-pager) · toward | Ana, Bo | Ready for the next stage (`StageClosed`) |
-| 2 | Concepting | 31 Aug – 27 Sep | toward · stalled (the same mood board twice) · toward · toward | Cleo (sound, 5–10 h) joins in sprint 2 | Goal met, stage not closed (`GoalMet`) |
-| 3 | Prototyping | 2–29 Nov | toward · sideways (title screen) · idle · toward | Bo cuts his hours to 5–10, and a level designer is sought | Goal missed: two players, not five (`GoalMissed`). This is the checkpoint already in `e2e-test-game.ts`. |
-| 4 | Prototyping, again | 7 Dec – 3 Jan 2027 | toward · toward · stalled · toward | Dan (level designer) is hired in sprint 1, Cleo leaves in sprint 3 | Ready for the next stage (`StageClosed`) |
-| 5 | Preparing a demo version | 11 Jan – 7 Feb 2027 | toward · sideways (trailer before the build) · toward · toward | Ana, Bo, Dan | Ready for the next stage (`StageClosed`): the demo is on Steam and the store page is live |
-| 6 | Taking and analyzing metrics | 15 Feb – 14 Mar | toward · stalled (waiting for wishlists, nothing decided) · toward · toward | Bo's hours come back to 10–15 | Ready for the next stage (`StageClosed`): drop-off at the second pit, levels 3–4 cut |
-| 7 | Preparing a release version | 22 Mar – 18 Apr | toward · toward · idle · sideways (a new boss nobody planned) | Ana cuts her hours to 10–15 in sprint 3 | Goal missed (`GoalMissed`): content not locked |
-| 8 | Preparing a release version, again | 26 Apr – 23 May | toward · toward · toward · toward | Ana, Bo, Dan | Ready for the next stage (`StageClosed`): the game is released on Steam, and moving to Support is the release |
+| 1 | Ideation | 3–30 Aug 2026 | toward · toward · sideways (lore instead of the one-pager) · toward | Ana, Bo | `StageClosed` |
+| 2 | Concepting | 31 Aug – 27 Sep | toward · stalled (the same mood board recoloured) · toward · toward | Cleo (sound, 5–10 h) joins in sprint 2 | `StageClosed` |
+| 3 | Prototyping | 2–29 Nov | toward · sideways (title screen) · idle · toward | Bo cuts his hours to 5–10; a level designer is sought | `GoalMissed`: two friends played, not five strangers |
+| 4 | Prototyping, again | 7 Dec – 3 Jan 2027 | toward · toward · stalled · toward | Dan (level designer) is hired in sprint 1; Cleo leaves in sprint 3 | `StageClosed` |
+| 5 | Preparing a demo version | 11 Jan – 7 Feb | toward · sideways (trailer before the build) · toward · toward | Ana, Bo, Dan | `GoalMet`: the demo is on itch.io, but the stage also asks for a live Steam page |
+| 6 | Preparing a demo version, again | 15 Feb – 14 Mar | toward · stalled (waiting for Steam's review) · toward · toward | | `StageClosed`: the Steam page is live with the demo |
+| 7 | Taking and analyzing metrics | 22 Mar – 18 Apr | toward · stalled (waiting for wishlists) · toward · toward | Bo's hours come back to 10–15 | `StageClosed`: levels 7–8 cut, the full game is six levels |
+| 8 | Preparing a release version | 26 Apr – 23 May | toward · toward · idle · sideways (a boss nobody planned) | Ana cuts her hours to 10–15 in sprint 2 | `GoalMissed`: content not locked |
+| 9 | Preparing a release version, again | 31 May – 27 Jun | toward · toward · toward · toward | | `StageClosed`: released on Steam |
+
+A `GoalMet` verdict keeps the project on its stage, so after checkpoint 5 there is a second demo checkpoint. That is why the road has nine checkpoints, not the eight first drafted.
 
 ## Stages of the work (one task, PRs in a row, each into `dev`)
 
 1. **The lab.**
    - The other eight situations move onto E2E Test Game: goal check, tasks check, plan letter, plan advice, sprint review, evidence, report, the whole road.
    - The data grows into the road above: devlogs, artifacts, the team and the pictures for every checkpoint.
-   - "The whole road" walks all eight checkpoints.
+   - "The whole road" walks all nine checkpoints, or any one of them.
    - Hollow Tide is removed from the lab.
 2. **Unit tests.** Checkpoint and project-creation fixtures that name Hollow Tide read E2E Test Game instead. That is about twelve test files.
 3. **e2e.**
@@ -50,7 +53,7 @@ Eight checkpoints, from the idea to the release: the road ends with the game out
 ## Done when
 
 - [ ] In `/dev/ai-curator`, every situation is about E2E Test Game. Nothing mentions Hollow Tide.
-- [ ] "The whole road" shows all eight checkpoints, from Ideation to the release, with the letters and the verdict of each. Together they cover every direction (toward, sideways, stalled, idle) and all three verdicts.
+- [ ] "The whole road" shows all nine checkpoints, from Ideation to the release, with the letters and the verdict of each. Together they cover every direction (toward, sideways, stalled, idle) and all three verdicts.
 - [ ] The people changes show in the curator's input on the right days: Cleo joins and leaves, Dan is hired, Bo's hours drop and come back, Ana's hours drop.
 - [ ] No unit test fixture names Hollow Tide. All unit tests pass.
 - [ ] The e2e personas own E2E Test Game, the cassettes are re-recorded, and the e2e suite passes against them.
@@ -58,7 +61,7 @@ Eight checkpoints, from the idea to the release: the road ends with the game out
 ## How to check it on the platform
 
 1. `/dev/ai-curator`: pick each situation in turn and look at its input. The project is E2E Test Game, and the dates and people match the table above.
-2. "The whole road" → Run: eight checkpoints. The verdicts are `StageClosed`, `GoalMet`, `GoalMissed`, `StageClosed`, `StageClosed`, `StageClosed`, `GoalMissed`, `StageClosed`. The last one is the release.
+2. "The whole road" → Run: nine checkpoints. The verdicts are `StageClosed`, `StageClosed`, `GoalMissed`, `StageClosed`, `GoalMet`, `StageClosed`, `StageClosed`, `GoalMissed`, `StageClosed`. The last one is the release.
 3. `bun run test`: green. `grep -ri "hollow tide" src/services tests/*.ts` finds nothing.
 4. `bun run test-env`, then `/dev-signin` → the author persona: their project is E2E Test Game.
 

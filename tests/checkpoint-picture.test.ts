@@ -259,24 +259,62 @@ describe("settleDirection", () => {
 	});
 });
 
-describe("the lab's E2E Test Game run", async () => {
-	const { e2ePicture } = await import(
+describe("the lab's E2E Test Game road", async () => {
+	const { E2E_ROAD, e2eCheckpoint } = await import(
 		"@/services/checkpoints/ai-curator-lab/situations/e2e-test-game"
 	);
 
-	it("is idle in sprint 3 alone", () => {
-		expect([1, 2, 3, 4].map((sprint) => isIdle(e2ePicture(sprint - 1), e2ePicture(sprint)))).toEqual([
-			false,
-			false,
-			true,
-			false,
-		]);
-	});
+	// The road says which sprints did nothing; the pictures must agree, or the lab checks the curator against a lie.
+	it.each(E2E_ROAD.map((checkpoint) => [checkpoint.number, checkpoint] as const))(
+		"checkpoint %i is idle exactly where its road says",
+		(number, checkpoint) => {
+			const cp = e2eCheckpoint(number);
+			expect([1, 2, 3, 4].map((sprint) => isIdle(cp.picture(sprint - 1), cp.picture(sprint)))).toEqual(
+				checkpoint.sprints.map((sprint) => sprint.direction === "idle"),
+			);
+		},
+	);
 
-	it("shows Bo's hours dropping in sprint 2", () => {
-		expect(pictureDifference(e2ePicture(1), e2ePicture(2)).team).toContain(
+	it("shows Bo's hours dropping in checkpoint 3, sprint 2", () => {
+		const cp = e2eCheckpoint(3);
+		expect(pictureDifference(cp.picture(1), cp.picture(2)).team).toContain(
 			"Bo Lindqvist: hours 10–15 → 5–10 h/week",
 		);
+	});
+
+	it("covers every direction and every verdict, and ends released", () => {
+		const directions = new Set(E2E_ROAD.flatMap((checkpoint) => checkpoint.sprints.map((sprint) => sprint.direction)));
+		expect([...directions].sort()).toEqual(["idle", "sideways", "stalled", "toward"]);
+		expect(new Set(E2E_ROAD.map((checkpoint) => checkpoint.verdict))).toEqual(
+			new Set(["StageClosed", "GoalMet", "GoalMissed"]),
+		);
+		expect(E2E_ROAD.at(-1)).toMatchObject({ stage: "Preparing a release version", verdict: "StageClosed" });
+	});
+
+	// A checkpoint that closes its stage hands on to the next stage; any other verdict keeps it.
+	it("moves to the next stage only after a closed one", () => {
+		for (const [before, after] of E2E_ROAD.slice(0, -1).map((checkpoint, index) => [checkpoint, E2E_ROAD[index + 1]] as const))
+			expect(after.stage).toBe(before.verdict === "StageClosed" ? before.nextStage : before.stage);
+	});
+
+	it("keeps every sprint inside its own dates", () => {
+		for (const checkpoint of E2E_ROAD) {
+			const cp = e2eCheckpoint(checkpoint.number);
+			checkpoint.sprints.forEach((sprint, index) => {
+				const from = cp.day(7 * index + 1);
+				const to = cp.day(7 * index + 7);
+				for (const dated of [...sprint.devlogs, ...sprint.artifacts, ...(sprint.team ?? [])])
+					expect([from <= dated.on, dated.on <= to], `${checkpoint.number}/${index + 1} ${dated.on}`).toEqual([true, true]);
+			});
+		}
+	});
+
+	it("tells the team on the day it changes: Dan hired, Cleo gone", () => {
+		const names = (number: number, moment: "start" | "end") =>
+			e2eCheckpoint(number).facts(moment).team.people.map((person) => person.name);
+		expect(names(4, "start")).toContain("Cleo Martin");
+		expect(names(4, "end")).toEqual(["Ana Sousa", "Bo Lindqvist", "Dan Okafor"]);
+		expect(e2eCheckpoint(4).facts("end").team.people.find((person) => person.name === "Dan Okafor")?.joinedOn).toBe("2026-12-09");
 	});
 });
 

@@ -4,6 +4,7 @@ import {
 	SPRINTS_PER_CHECKPOINT,
 	VERDICT_DUE_DAYS,
 } from "@/config/checkpoint";
+import { sessionDay } from "./days";
 import { devlogDayOf, sprintDayRange } from "./sprints";
 
 /** The day the written verdict is due by. */
@@ -57,6 +58,15 @@ export const dateOfDay = (startedAt: Date | string, day: number) => {
 
 	return date;
 };
+
+/** The day of the first sprint review, as the plan letter names it: "Monday 9 November". */
+export const reviewOnLabel = (startedAt: Date | string) =>
+	dateOfDay(startedAt, sessionDay(2)).toLocaleDateString("en-GB", {
+		weekday: "long",
+		day: "numeric",
+		month: "long",
+		timeZone: "UTC",
+	});
 
 export type AuthorNextStep =
 	| { kind: "devlog"; sprint: number; day: number; overdue: boolean }

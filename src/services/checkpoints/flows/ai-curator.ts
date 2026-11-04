@@ -9,9 +9,8 @@ import {
 } from "@gdhub-io/gdhub-prisma";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { lettersSoFar } from "@/lib/checkpoints/curator-letters";
-import { sessionDay } from "@/lib/checkpoints/days";
 import { renderDifference } from "@/lib/checkpoints/picture";
-import { dateOfDay } from "@/lib/checkpoints/plan";
+import { reviewOnLabel } from "@/lib/checkpoints/plan";
 import {
 	CHECKPOINT_RUNNING_STATUSES,
 	checkpointMove,
@@ -262,15 +261,7 @@ export const writePlanLetter = async (checkpointId: string) => {
 		goal: checkpoint.goal,
 		tasks: checkpoint.items.map((item) => item.text),
 		journal: lettersSoFar(checkpoint.sessions),
-		reviewOn: dateOfDay(checkpoint.startedAt, sessionDay(2)).toLocaleDateString(
-			"en-GB",
-			{
-				weekday: "long",
-				day: "numeric",
-				month: "long",
-				timeZone: "UTC",
-			},
-		),
+		reviewOn: reviewOnLabel(checkpoint.startedAt),
 	};
 	const message = await composePlanLetter(input, {
 		checkpointId,

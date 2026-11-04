@@ -4,52 +4,21 @@ import {
 	type Situation,
 	say,
 } from "../schemas";
-import { hollowTide } from "./hollow-tide";
+import { e2eCheckpoint, openTask } from "./e2e-test-game";
 
-const TEXT = {
-	en: {
-		tooMuch: ["All five islands playable", "Online co-op for two players"],
-		vague: ["Make the game more fun", "Work on the art"],
-		seen: "An itch.io page with a playable web build of the island.",
-		review:
-			"Sprint 1 landed the island demo. Sprint 2 showed nothing: no devlog, no artifact, and the artist did not confirm the week.",
-	},
-	ru: {
-		tooMuch: ["Все пять островов играбельны", "Онлайн-кооператив на двоих"],
-		vague: ["Сделать игру интереснее", "Поработать над артом"],
-		seen: "Страница на itch.io с играбельной веб-сборкой острова.",
-		review:
-			"Спринт 1 дал демо острова. Спринт 2 ничего не показал: ни девлога, ни артефакта, а художник не подтвердил неделю.",
-	},
-};
+const TOO_MUCH = ["All eight worlds playable", "Online co-op for two players"];
+const VAGUE = ["Make the jump feel better", "Work on the art"];
+const REVIEW =
+	"Sprint 1 landed the jump test. Sprint 2 went into a title screen and a logo instead of the level, and Bo cut his hours.";
 
-const open = (task: { id: string; text: string }) => ({
-	...task,
-	cut: false,
-	firstWording: null,
-	evidence: [],
-});
+const written = (texts: string[]) =>
+	texts.map((text, index) => openTask({ id: `w${index + 1}`, text }));
 
-const written = (texts: string[], from: number) =>
-	texts.map((text, index) => open({ id: `o${from + index}`, text }));
-
-/** Day 1: the tasks the author wrote after the first letter and sent for the one check. */
+/** Day 1 of checkpoint 3: the tasks the author wrote after the first letter and sent for the one check. */
 export const tasksCheckSituations = (
 	language: LabLanguage,
 ): Situation<typeof planAdviceInput>[] => {
-	const t = TEXT[language];
-	const project = hollowTide(language);
-	const { demo, board, playtest } = project.outcomes;
-	const start = {
-		goal: project.goal,
-		workflow: project.workflow("start"),
-		team: project.team("start"),
-		tasks: [demo, board, playtest].map(open),
-		moment: "start" as const,
-		review: null,
-		picture: project.picture("start"),
-		marketing: project.marketing("start"),
-	};
+	const start = e2eCheckpoint(3).tasksCheck();
 
 	return [
 		{
@@ -68,7 +37,7 @@ export const tasksCheckSituations = (
 				"More tasks than four weeks hold",
 				"Задач больше, чем влезет в четыре недели",
 			),
-			input: { ...start, tasks: [...start.tasks, ...written(t.tooMuch, 4)] },
+			input: { ...start, tasks: [...start.tasks, ...written(TOO_MUCH)] },
 		},
 		{
 			id: "vague",
@@ -77,50 +46,22 @@ export const tasksCheckSituations = (
 				"Tasks nobody could check",
 				"Задачи, которые никто не проверит",
 			),
-			input: { ...start, tasks: written(t.vague, 1) },
+			input: { ...start, tasks: written(VAGUE) },
 		},
 	];
 };
 
-/** Day 15: after the sprint 2 review, the last change to the tasks. */
+/** Day 15 of checkpoint 3: after the sprint 2 review, the last change to the tasks. */
 export const planAdviceSituations = (
 	language: LabLanguage,
-): Situation<typeof planAdviceInput>[] => {
-	const t = TEXT[language];
-	const project = hollowTide(language);
-	const { demo, board, playtest } = project.outcomes;
-
-	return [
-		{
-			id: "midway",
-			label: say(
-				language,
-				"Day 15, nothing shown in sprint 2",
-				"День 15, спринт 2 ничего не показал",
-			),
-			input: {
-				goal: project.goal,
-				workflow: project.workflow("midway"),
-				team: project.team("midway"),
-				tasks: [
-					{
-						...open(demo),
-						evidence: [
-							{
-								type: "ExecutableBuild",
-								name: project.artifacts.demo,
-								seen: { match: "Matches", note: t.seen },
-							},
-						],
-					},
-					open(board),
-					open(playtest),
-				],
-				moment: "midway",
-				review: t.review,
-				picture: project.picture("midway"),
-				marketing: project.marketing("midway"),
-			},
-		},
-	];
-};
+): Situation<typeof planAdviceInput>[] => [
+	{
+		id: "midway",
+		label: say(
+			language,
+			"Day 15, sprint 2 went into a title screen",
+			"День 15, спринт 2 ушёл в титульный экран",
+		),
+		input: e2eCheckpoint(3).planAdvice(REVIEW),
+	},
+];
