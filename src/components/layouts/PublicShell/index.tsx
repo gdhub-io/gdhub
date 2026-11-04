@@ -97,7 +97,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 			},
 			{
 				label: (
-					<Link href="/vacancies" title="Vacancies">
+					<Link href="/jobs" title="Open positions">
 						{screens.lg ? (
 							<Button type="text">{t("Vacancies", "Vacancies")}</Button>
 						) : (
@@ -105,7 +105,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
 						)}
 					</Link>
 				),
-				key: "/vacancies",
+				key: "/jobs",
 			},
 		],
 		[screens.lg, t],

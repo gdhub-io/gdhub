@@ -97,6 +97,7 @@ export function CheckpointPurchase({ project }: CheckpointPurchaseProps) {
 	return (
 		<PurchaseProjectProvider value={project}>
 			<EntryShell
+				projectSlug={project.slug}
 				next={(list?.closed.total ?? 0) > 0}
 				stepper={
 					!loading && (

@@ -234,6 +234,7 @@ export function AboutClient({ projectSlug }: AboutClientProps) {
 
 	return (
 		<EntryShell
+			projectSlug={projectSlug}
 			next={status.data?.hadCheckpoint}
 			heading={t("checkpointEntry.about.title", "Tell us about yourself")}
 			subtitle={t(
