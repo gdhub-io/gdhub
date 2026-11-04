@@ -8,6 +8,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { saveAvailability } from "@/repositories/user/availability";
 import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
@@ -72,6 +73,9 @@ export const PUT = withAuth({ mode: "user" })(
 			preferredSettings,
 			primaryInterest,
 			lang,
+			// Both go through `saveAvailability`, which keeps their history (GDHUB-141).
+			timeForWork,
+			isActive,
 			...othersProfileData
 		} = data;
 
@@ -132,6 +136,8 @@ export const PUT = withAuth({ mode: "user" })(
 				},
 			},
 		});
+
+		await saveAvailability(currentUser.id!, { timeForWork, isActive });
 
 		// "Available for offers" is one of the two things Brevo's `AVAILABLE_FOR`
 		// is made of, so a segment built on it has to learn about the change now

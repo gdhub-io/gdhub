@@ -85,6 +85,7 @@ Sign-in, registration, invitations, onboarding.
 | 02.22 | Onboarding — 04 / Resources | — |
 | 02.23 | Onboarding — 05 / Completed | — |
 | 02.24 | Onboarding — 06 / Error | — |
+| 02.25 | Header — my hours (time I invest per week) | 3 |
 
 ## B. Core features — across spaces
 

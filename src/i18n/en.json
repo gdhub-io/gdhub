@@ -4703,6 +4703,24 @@
 	"team-members": {
 		"title": "Team"
 	},
+	"timeInvestment": {
+		"cancel": "Cancel",
+		"changed": "Changed {when}",
+		"error": "Could not save your hours",
+		"from": "From",
+		"hint": "Hours a week you're ready to invest in game projects — your own or other authors'. Project authors see it, and checkpoints plan your team around it.",
+		"openToOthers": "Open to other authors' projects",
+		"openToOthersHint": "Authors can invite you.",
+		"save": "Save",
+		"short": "{min}–{max} h/wk",
+		"subtitle": "For your own and others' projects",
+		"title": "Your time investment",
+		"to": "To",
+		"tooltip": "Time you invest each week",
+		"tooltipHint": "Click to change it",
+		"unit": "hours a week",
+		"unset": "Set your hours"
+	},
 	"to": "to",
 	"uploadcv-error-message": "We couldn't process your file. Enter data manually",
 	"user-profile": "User Profile",
