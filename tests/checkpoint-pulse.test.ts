@@ -72,7 +72,7 @@ describe("requestPulses", () => {
 		projectId: "p",
 		curatorId: "curator",
 		project: {
-			name: "Hollow Tide",
+			name: "E2E Test Game",
 			team: {
 				members: [
 					member("marta"),
@@ -169,7 +169,7 @@ describe("the pulse page", () => {
 			projectId: "p",
 			createdAt: new Date(),
 			startedAt,
-			project: { name: "Hollow Tide", slug: "hollow-tide" },
+			project: { name: "E2E Test Game", slug: "e2e-test-game" },
 			sessions: [{ index: 2, scheduledAt: new Date("2026-10-12T14:00:00Z") }],
 			pulses: [
 				{

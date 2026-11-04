@@ -31,11 +31,11 @@ describe("myDocuments", () => {
 	it("links each acceptance to the exact version, and a project agreement to none", async () => {
 		acceptanceFindMany.mockResolvedValue([
 			{ id: "a1", code: "TermsOfUse", version: 1, context: "SignUp", acceptedAt: new Date(), project: null, checkpoint: null },
-			{ id: "a2", code: "CoDevelopmentAgreement", version: 1, context: "ShareChange", acceptedAt: new Date(), project: { name: "Hollow Tide" }, checkpoint: null },
+			{ id: "a2", code: "CoDevelopmentAgreement", version: 1, context: "ShareChange", acceptedAt: new Date(), project: { name: "E2E Test Game" }, checkpoint: null },
 		]);
 		const { acceptances } = await myDocuments("u1");
 		expect(acceptances.map((a) => a.href)).toEqual(["/legal/terms-of-use/v1", null]);
-		expect(acceptances[1].subject).toBe("Hollow Tide");
+		expect(acceptances[1].subject).toBe("E2E Test Game");
 	});
 
 	it("leaves out an event certificate still waiting for its signature", async () => {

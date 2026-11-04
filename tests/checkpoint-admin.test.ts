@@ -190,7 +190,7 @@ describe("assigning a curator by hand", () => {
 		curatorKind: CheckpointCuratorKind.Human,
 		curatorId: null,
 		startedAt: new Date("2026-11-02T09:00:00.000Z"),
-		project: { name: "Hollow Tide", slug: "hollow-tide", author: { id: "a1", email: "a@x" } },
+		project: { name: "E2E Test Game", slug: "e2e-test-game", author: { id: "a1", email: "a@x" } },
 		_count: { items: 2 },
 		sessions: [{ index: 3 }],
 		...over,
