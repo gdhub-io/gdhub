@@ -1,0 +1,48 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Sharing the AI curator's verdict as a card" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+closed: "An AI checkpoint closes\nthe settled verdict and its note"
+open: "The author opens \"Share the result\"\nin the verdict letter"
+closed -> open
+
+kept: "Line already written?" {shape: diamond}
+open -> kept
+
+write: "The curator writes the card line\nits character's voice: a playful reaction\nand a wish for what comes next"
+kept -> write: "no, first open"
+store: "Kept on the checkpoint"
+write -> store
+
+card: "The card image\navatar · line · date\nCheckpoint N · verdict · project · logo\ncover, or the red glow"
+store -> card
+kept -> card: "yes"
+
+window: "The share window\nthe card, the post text,\nthe project's link (optional)"
+card -> window
+
+out: "The author posts it themselves" {
+  grid-columns: 2
+  download: "Download the image"
+  networks: "LinkedIn · Telegram · X · Facebook\nCopy text"
+}
+window -> out
+
+critical: |md
+  **Critical**
+  - The line is written from the settled verdict, never the proposal the rule overturned.
+  - Written once, then read back: no model call on every open.
+  - Only the project's team opens the card; no public page holds the letter.
+| {
+  near: bottom-center
+}
