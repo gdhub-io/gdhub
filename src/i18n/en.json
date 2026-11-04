@@ -3767,6 +3767,7 @@
 			"notAuth": "Only registered users can respond to this vacancy. Please <register-link>register</register-link> or <signin-link>sign in</signin-link>.",
 			"paymentNonRefundable": "The listing fee is non-refundable.",
 			"paymentNotConfigured": "Payment is not configured yet. The position was saved as a draft.",
+			"paymentRefundWindow": "The listing fee is refunded in full if you ask within 14 days of payment.",
 			"refundPolicyLink": "Refund policy",
 			"vacancyCard": "Position Card",
 			"withdrawSuccess": "Your response is withdrawn"

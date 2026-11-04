@@ -484,8 +484,8 @@ const VacancyModal = ({
 									`Paid positions require a listing fee of €${PAID_VACANCY_FEE} to publish.`,
 								)}{" "}
 								{t(
-									"modal.vacancy.paymentNonRefundable",
-									"The listing fee is non-refundable.",
+									"modal.vacancy.paymentRefundWindow",
+									"The listing fee is refunded in full if you ask within 14 days of payment.",
 								)}{" "}
 								<a
 									href="/legal/refund-policy"

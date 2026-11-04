@@ -100,6 +100,9 @@ describe("validUntil", () => {
 
 	it("is open for the latest material version", () => {
 		expect(validUntil(versions, 3)).toBeNull();
-		expect(validUntil(LEGAL_DOCUMENTS.TermsOfUse.versions, 1)).toBeNull();
+		expect(validUntil(LEGAL_DOCUMENTS.TermsOfUse.versions, 1)).toBe(
+			"2026-11-18",
+		);
+		expect(validUntil(LEGAL_DOCUMENTS.TermsOfUse.versions, 2)).toBeNull();
 	});
 });
