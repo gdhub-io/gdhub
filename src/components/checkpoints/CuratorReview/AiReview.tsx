@@ -272,6 +272,7 @@ export function AiReviewView({
 			}
 			stage={
 				<Message
+					checkpointId={checkpointId}
 					review={review}
 					refreshKey={refreshKey ?? null}
 					onShowPlan={reviewTasks}

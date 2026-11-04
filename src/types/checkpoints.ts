@@ -909,3 +909,17 @@ export type CheckpointCurator = {
 	/** The earliest first call that opens five free weekly calls with them. */
 	firstCallFrom: string;
 };
+
+/** The verdict share card of a closed AI checkpoint (GDHUB-144). */
+export type ShareCardDto = {
+	number: number;
+	verdict: CheckpointVerdict;
+	decidedAt: string | null;
+	/** The curator's line: a reaction to the work and a wish for what comes next. */
+	line: string;
+	/** No name: the AI curator plays no character. */
+	curator: { name: string | null; avatar: string };
+	project: { name: string; slug: string; cover: string | null };
+	/** The card's PNG, its address versioned by what it shows. */
+	image: string;
+};

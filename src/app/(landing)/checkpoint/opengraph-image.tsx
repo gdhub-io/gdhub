@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import {
 	CHECKPOINT_AI_PRICE,
 	CHECKPOINT_DAYS,
 	CHECKPOINT_PRICE_CURRENCY,
 } from "@/config/checkpoint";
+import { ogAsset as asset, dataUrl } from "@/helpers/og-asset";
 import { ogPalette } from "@/helpers/og-palette";
 
 /**
@@ -20,8 +19,6 @@ export const alt =
 	"Checkpoint — step by step to your game's release, a 28-day program for game developers";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-const asset = (path: string) => readFile(join(process.cwd(), path));
 
 /** Built once: the card changes only with the price, which needs a deploy anyway. */
 export const dynamic = "force-static";
@@ -40,8 +37,6 @@ export default async function Image() {
 		asset("public/fonts/Onest-SemiBold.woff"),
 		asset("public/fonts/Onest-Bold.woff"),
 	]);
-	const dataUrl = (bytes: Buffer, type: string) =>
-		`data:${type};base64,${bytes.toString("base64")}`;
 
 	return new ImageResponse(
 		<div

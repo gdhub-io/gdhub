@@ -7,9 +7,9 @@
 When an AI checkpoint closes, its author can show the world how it went. "Share the result" opens a window with:
 
 - **A card image (1200×630).** It reads like a chat message: the curator character's avatar and name, the curator's line about the team's work, and the date. Under them: "Checkpoint N passed on the road to the release", the verdict, the project and the GDHub logo. The project's cover sits behind it on the right; a project with no cover gets the red glow.
-- **A ready post text** the author can edit. It can end with a link to the project's public page.
+- **A ready post text** the author can edit, with the project's public link inside it.
 
-The author downloads the image and posts it from their own account. The buttons open LinkedIn, Telegram, X or Facebook, and "Copy text" covers the networks that take only a link.
+"Share" hands the image and the text together to the system's share sheet, where the author picks LinkedIn, X, Telegram or any other app. Where the browser cannot share a file (Firefox on a desktop), "Download image" and "Copy text" do it by hand. A network's share link takes no picture, so there are no per-network buttons.
 
 ## Why now
 
@@ -29,10 +29,10 @@ A closed checkpoint is the moment an indie team has something to tell, and today
 
 ## Done when
 
-- [ ] On a closed AI checkpoint, the verdict letter's "Share the result" opens the window: the card, the post text, the link checkbox, the four networks, Copy text and Download image.
+- [ ] On a closed AI checkpoint, the verdict letter's "Share the result" opens the window: the card, the post text with the project's link, Share (where the browser shares files), Download image and Copy text.
 - [ ] The card shows the character (or the robot and "AI curator"), the line, the date, "Checkpoint N passed / done on the road to the release · verdict", the project's name and the logo; the cover or, without one, the red glow.
 - [ ] The first open writes the line once; later opens read it back with no model call.
-- [ ] Downloading gives a 1200×630 PNG. The post text ends with the project's public link while the checkbox is on.
+- [ ] Downloading gives a 1200×630 PNG. Share opens the system's sheet with the image and the text together.
 - [ ] Nobody but the project's own team can open the card or write the line.
 
 ## How to check it on the platform
@@ -40,7 +40,7 @@ A closed checkpoint is the moment an indie team has something to tell, and today
 1. `/dev-signin` → an author with a closed AI checkpoint. Open the checkpoint and its verdict letter, then "Share the result".
    - The card shows the verdict, the character and the line.
    - Close the window and open it again: the same line appears, with no new model call in the curator journal.
-2. Download the image: it is a 1200×630 PNG. Untick the link: the URL leaves the text.
+2. Download the image: it is a 1200×630 PNG. Share (Chrome or Safari) opens the system's sheet with the picture attached.
 3. Sign in as a stranger and request `GET /api/checkpoint/<id>/share` → 403/404.
 
 ## Out of scope

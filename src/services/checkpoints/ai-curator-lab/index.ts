@@ -23,6 +23,7 @@ import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoints/ai-curator";
 import { createCharacter } from "@/services/checkpoints/ai-curator/character";
 import { composePlanLetter } from "@/services/checkpoints/ai-curator/plan-letter";
+import { writeShareLine } from "@/services/checkpoints/ai-curator/share-line";
 import {
 	midwayAdviceInput,
 	reviewSprint,
@@ -54,6 +55,7 @@ import {
 } from "./schemas";
 import {
 	E2E_CALL_TRANSCRIPT,
+	E2E_PROJECT,
 	E2E_ROAD,
 	e2eCheckpoint,
 } from "./situations/e2e-test-game";
@@ -662,6 +664,44 @@ CALLS.push(
 			return {
 				answer: { stage, sprints, verdict: proposed },
 				settled: settledReport(items, proposed),
+			};
+		},
+	}),
+	call({
+		id: "shareLine",
+		purpose: {
+			en: "The line on the share card of a closed checkpoint, read by strangers on LinkedIn, X or Telegram: a playful reaction to what the team did, in the character's voice, and a wish for what comes next. Honest about a missed goal; no stage jargon. Read against the verdict the road expects.",
+			ru: "Строка на карточке закрытого чекпоинта, её читают чужие люди в LinkedIn, X или Telegram: шутливая реакция на сделанное в голосе персонажа и пожелание на ближайшее. Честно о недостигнутой цели, без жаргона этапов. Сверять с вердиктом, который ждёт дорога.",
+		},
+		label: { en: "Share card line", ru: "Строка для карточки" },
+		when: {
+			en: "After the verdict, on first share",
+			ru: "После вердикта, при первом шаринге",
+		},
+		model: AI_MODELS.curatorReview,
+		schema: runInput,
+		situations: (language) =>
+			E2E_ROAD.map(({ number }) => ({
+				id: `checkpoint-${number}`,
+				label: roadLabel(language, number),
+				input: { checkpoint: number },
+			})),
+		// The road's own verdict and its reason stand in for the report, so only the line costs a call.
+		run: async ({ character, checkpoint: number }) => {
+			const cp = e2eCheckpoint(number);
+			return {
+				answer: {
+					line: await writeShareLine({
+						character,
+						project: { name: E2E_PROJECT.name, pitch: E2E_PROJECT.pitch },
+						number,
+						stage: cp.checkpoint.stage,
+						goal: cp.checkpoint.goal,
+						verdict: cp.checkpoint.verdict,
+						verdictNote: cp.checkpoint.because,
+						devlogs: cp.devlogs().map((post) => post.content),
+					}),
+				},
 			};
 		},
 	}),
