@@ -169,6 +169,7 @@ export function LandingTalentsSection({
 						validUntilLabel={t("vacancies.list.validUntil", "Relevant to")}
 						detailsLabel={t("job-card.details-button", "Details")}
 						detailsHref={`/job/${vacancy.id}`}
+						surface="inverse"
 					/>
 				))}
 			</AudienceStrip>

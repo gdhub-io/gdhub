@@ -48,6 +48,12 @@ export const fillInverse = {
 
 export type FillStep = keyof typeof fill;
 
+/** Plates that sit on artwork, not on a surface: the same in both modes, readable on any cover. */
+export const scrim = {
+	chip: "rgba(15, 15, 14, 0.7)",
+	chipHover: "rgba(15, 15, 14, 0.85)",
+} as const;
+
 /**
  * Brand ramp. Inside the product this is an orientation colour — active tab,
  * selected row, focus ring, links — and never a button surface; a wall of

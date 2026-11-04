@@ -38,6 +38,8 @@ export type VacancyCardProps = {
 	detailsHref?: string;
 	/** Click handler for the Details button. */
 	onDetails?: () => void;
+	/** `inverse` on the dark landing: a neutral panel, the direction carried by the icon tile. */
+	surface?: "default" | "inverse";
 };
 
 /**
@@ -57,8 +59,10 @@ export function VacancyCard({
 	detailsLabel = "Details",
 	detailsHref,
 	onDetails,
+	surface = "default",
 }: VacancyCardProps) {
 	const { slug, icon: Icon, ink } = getWorkDirection(directionName);
+	const inverse = surface === "inverse";
 
 	const isPaid = offeredAmount != null && offeredRateType != null;
 	const isEquity = !isPaid && !!promisePercentage;
@@ -74,10 +78,19 @@ export function VacancyCard({
 	);
 
 	return (
-		<div className={styles.jobCard}>
-			<div className={`${styles.jobCardContent} bg-direc-${slug}`}>
+		<div className={styles.jobCard} data-surface={surface}>
+			<div
+				className={`${styles.jobCardContent} ${inverse ? "" : `bg-direc-${slug}`}`}
+			>
 				<div className={styles.jobCardHeader}>
-					<span className={styles.dirChip}>
+					<span
+						className={styles.dirChip}
+						style={
+							inverse
+								? { background: `var(--gd-direction-${slug}-tint)` }
+								: undefined
+						}
+					>
 						<Icon size={18} stroke={2} color={ink} />
 					</span>
 					{finishedAt && (
@@ -87,7 +100,11 @@ export function VacancyCard({
 					)}
 				</div>
 				<Space orientation="vertical" size={0}>
-					{projectName && <Text ellipsis>{projectName}</Text>}
+					{projectName && (
+						<Text ellipsis type={inverse ? "secondary" : undefined}>
+							{projectName}
+						</Text>
+					)}
 					<Title
 						ellipsis={{ rows: 2 }}
 						level={2}
